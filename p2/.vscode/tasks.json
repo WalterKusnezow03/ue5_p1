@@ -1,0 +1,445 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "p2 Mac Debug Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Debug Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2 Mac Debug Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Debug Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac DebugGame Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac DebugGame Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2 Mac DebugGame Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac DebugGame Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Development Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Development Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2 Mac Development Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Development Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Test Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Test",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Test Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Test",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2 Mac Test Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Test Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Test",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Shipping Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Shipping",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Shipping Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Shipping",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2 Mac Shipping Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2 Mac Shipping Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2",
+				"Mac",
+				"Shipping",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Debug Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Debug Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2Editor Mac Debug Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Debug Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Debug",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac DebugGame Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac DebugGame Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2Editor Mac DebugGame Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac DebugGame Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"DebugGame",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Development Build",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Development Rebuild",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": [
+				"p2Editor Mac Development Clean"
+			],
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		},
+		{
+			"label": "p2Editor Mac Development Clean",
+			"group": "build",
+			"command": "Engine/Build/BatchFiles/Mac/Build.sh",
+			"args": [
+				"p2Editor",
+				"Mac",
+				"Development",
+				"/Users/walterkusnezow/Documents/Unreal Projects/p2/p2.uproject",
+				"-waitmutex",
+				"-clean"
+			],
+			"problemMatcher": "$msCompile",
+			"type": "shell",
+			"options": {
+				"cwd": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2"
+			}
+		}
+	]
+}

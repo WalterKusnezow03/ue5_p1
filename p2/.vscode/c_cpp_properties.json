@@ -1,0 +1,42 @@
+{
+    "configurations": [
+        {
+            "name": "p2Editor Editor Mac Development (p2)",
+            "compilerPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "compilerArgs": [
+                "-isysroot",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk"
+            ],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "configurationProvider": "epic.ue",
+            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_p2.json",
+            "includePath": [
+                "${workspaceFolder}\\Intermediate\\**",
+                "${workspaceFolder}\\Plugins\\**",
+                "${workspaceFolder}\\Source\\**"
+            ]
+        },
+        {
+            "name": "Mac",
+            "compilerPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "compilerArgs": [
+                "-isysroot",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk"
+            ],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/System/Library/Frameworks"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "configurationProvider": "epic.ue",
+            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default.json"
+        }
+    ],
+    "version": 4
+}

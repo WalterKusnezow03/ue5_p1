@@ -1,0 +1,58 @@
+[
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/componentTest.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/componentTest.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2.Build.cs",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2GameModeBase.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2GameModeBase.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	}
+]

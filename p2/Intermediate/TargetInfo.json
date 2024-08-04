@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "p2",
+			"Path": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "p2Editor",
+			"Path": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2Editor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
