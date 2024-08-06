@@ -49,9 +49,9 @@ PathFinder::Node::Node(FVector posIn){
 PathFinder::Node::~Node(){
 }
 
-PathFinder::Quadrant::Quadrant(int xSampleIn, int zSampleIn){
+PathFinder::Quadrant::Quadrant(int xSampleIn, int ySampleIn){
     xSample = xSampleIn;
-    zSample = zSampleIn;
+    ySample = ySampleIn;
 }
 
 PathFinder::Quadrant::~Quadrant(){
@@ -128,7 +128,7 @@ void PathFinder::addNewNodeVector(std::vector<FVector>& vec){
 }
 
 void PathFinder::addNewNode(FVector a){
-    PathFinder::Quadrant *q = askforQuadrant(a.X, a.Z);
+    PathFinder::Quadrant *q = askforQuadrant(a.X, a.Y);
     if(q != nullptr){
         q->add(a);
         
@@ -142,21 +142,21 @@ void PathFinder::addNewNode(FVector a){
     }
 }
 
-PathFinder::Quadrant* PathFinder::askforQuadrant(int xIndex, int zIndex){
+PathFinder::Quadrant* PathFinder::askforQuadrant(int xIndex, int yIndex){
     //top left
-    if(xIndex < 0 && zIndex >= 0){
+    if(xIndex < 0 && yIndex >= 0){
         return this->TopLeft;
     }
     //top right
-    if(xIndex >= 0 && zIndex >= 0){
+    if(xIndex >= 0 && yIndex >= 0){
         return this->TopRight; 
     }
     //bottom left
-    if(xIndex < 0 && zIndex < 0){
+    if(xIndex < 0 && yIndex < 0){
         return this->BottomLeft;
     }
     //bottom right
-    if(xIndex >= 0 && zIndex < 0){
+    if(xIndex >= 0 && yIndex < 0){
         return this->BottomRight;
     }
     return nullptr;
@@ -169,8 +169,8 @@ PathFinder::Quadrant* PathFinder::askforQuadrant(int xIndex, int zIndex){
 /// @return 
 PathFinder::Node* PathFinder::findNode(FVector node){
     int x = node.X;
-    int z = node.Z;
-    PathFinder::Quadrant *q = askforQuadrant(x, z);
+    int y = node.Y;
+    PathFinder::Quadrant *q = askforQuadrant(x, y);
     if(q != nullptr){
         PathFinder::Node *nodeFound = q->findNode(node);
         if(nodeFound != nullptr){
@@ -395,7 +395,7 @@ std::vector<FVector> PathFinder::constructPath(PathFinder::Node *end){
 void PathFinder::Quadrant::add(FVector n){
     //std::abs(
     int x = std::abs(n.X / CHUNKSIZE); //create new chunks?
-    int y = std::abs(n.Z / CHUNKSIZE);
+    int y = std::abs(n.Y / CHUNKSIZE);
 
     while(map.size() <= x) {
         map.push_back(std::vector<PathFinder::Chunk * >());
@@ -417,11 +417,11 @@ void PathFinder::Quadrant::add(FVector n){
 //finds a node from a quadrant
 PathFinder::Node* PathFinder::Quadrant::findNode(FVector pos){
     int x1 = std::abs(pos.X / CHUNKSIZE);
-    int z1 = std::abs(pos.Z / CHUNKSIZE);
+    int y1 = std::abs(pos.Y / CHUNKSIZE);
 
-    if(map.size() > x1 && map.at(x1).size() > z1){
-        if(map.at(x1).at(z1) != nullptr){
-            return map.at(x1).at(z1)->findNode(pos);
+    if(map.size() > x1 && map.at(x1).size() > y1){
+        if(map.at(x1).at(y1) != nullptr){
+            return map.at(x1).at(y1)->findNode(pos);
         }
     }
     return nullptr;
@@ -433,19 +433,19 @@ PathFinder::Node* PathFinder::Quadrant::findNode(FVector pos){
 
 /// @brief returns all lists from all chunks enclosed by an area
 /// @param xA x value of first pos
-/// @param zA z value of first pos
+/// @param yA z value of first pos
 /// @param xB x value of second pos
 /// @param zB z value of second pos
 /// @return 
 std::vector<PathFinder::Node*> PathFinder::Quadrant::nodesEnClosedBy(
-    float xA, float zA, float xB, float zB
+    float xA, float yA, float xB, float yB
 ){
     std::vector<PathFinder::Node *> nodes;
 
     int x1 = std::abs(xA / CHUNKSIZE); //implicit conversion is allowed
-    int y1 = std::abs(zA / CHUNKSIZE);
+    int y1 = std::abs(yA / CHUNKSIZE);
     int x2 = std::abs(xB / CHUNKSIZE); //implicit conversion is allowed
-    int y2 = std::abs(zB / CHUNKSIZE);
+    int y2 = std::abs(yB / CHUNKSIZE);
 
     int fromX = std::min(x1, x2);
     int toX = std::min(x1, x2);
@@ -484,34 +484,34 @@ std::vector<PathFinder::Node*> PathFinder::Quadrant::askForArea(FVector a, FVect
     float higherX = 0;
     float higherY = 0;
     lowerX = std::min(a.X, b.X) - CHUNKSIZE; //+ extension
-    lowerY = std::min(a.Z, b.Z) - CHUNKSIZE;
+    lowerY = std::min(a.Y, b.Y) - CHUNKSIZE;
     higherX = std::max(a.X, b.X) + CHUNKSIZE;
-    higherY = std::max(a.Z, b.Z) + CHUNKSIZE;
+    higherY = std::max(a.Y, b.Y) + CHUNKSIZE;
 
     float inf = std::numeric_limits<float>::infinity();
 
-    if(xSample == 1 && zSample == 1){
+    if(xSample == 1 && ySample == 1){
         // Bottom-left quadrant
         lowerX = std::clamp(lowerX, 0.0f, inf);
         lowerY = std::clamp(lowerY, 0.0f, inf);
         return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
     }
 
-    if(xSample == -1 && zSample == -1){
+    if(xSample == -1 && ySample == -1){
         // Top-right quadrant
         higherX = std::clamp(higherX, -inf, 0.0f); 
         higherY = std::clamp(higherY, -inf, 0.0f);
         return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
     }
 
-    if(xSample == -1 && zSample == 1){
+    if(xSample == -1 && ySample == 1){
         // Bottom-right quadrant
         higherX = std::clamp(higherX, -inf, 0.0f);
         lowerY = std::clamp(lowerY, 0.0f, inf);
         return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
     }
 
-    if(xSample == 1 && zSample == -1){
+    if(xSample == 1 && ySample == -1){
         // Top-left quadrant
         lowerX = std::clamp(lowerX, 0.0f, inf);
         higherY = std::clamp(higherY, -inf, 0.0f);
@@ -530,24 +530,17 @@ std::vector<PathFinder::Node*> PathFinder::Quadrant::askForArea(FVector a, FVect
 void PathFinder::Chunk::add(FVector vec){
     //find closest node near by
     
-    
-    PathFinder::Node *closest = findNode(vec);
-    if(closest != nullptr){
-        float distance = FVector::Dist(vec, closest->pos);
-        if(distance > ONE_METER){
-            
-            nodes.push_back(new Node(vec));
-            PathFinder::countNodes += 1;
-        }
-    }else{
-        
+
+    if(hasNode(vec) == false){
         nodes.push_back(new Node(vec));
         PathFinder::countNodes += 1;
     }
-
-
-    
 }
+
+
+
+
+
 
 /// @brief returns the chunk nodes as reference
 /// @return vector<Node> nodes as &ref
@@ -586,6 +579,38 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
 }
 
 
+
+
+/// @brief tries to find a node from a chunk as BOOL
+/// @param pos position of the targetet node
+/// @return returns the closest node near by
+bool PathFinder::Chunk::hasNode(FVector pos){
+    if(nodes.size() <= 0){
+        return false;
+    }
+
+    float closest = std::numeric_limits<float>::max();
+    PathFinder::Node *closestNode = nodes.at(0);
+
+    for (int i = 0; i < nodes.size(); i++)
+    {
+        PathFinder::Node *current = nodes.at(i);
+        if (current != nullptr)
+        {
+
+            float Difference = FVector::Dist(pos, current->pos);
+
+            if(Difference < closest){
+                closest = Difference;
+                closestNode = current;
+            }
+        }
+    }
+    if(closest <= ONE_METER){
+        return true;
+    }
+    return false;
+}
 
 
 

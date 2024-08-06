@@ -32,7 +32,7 @@ public:
 
 private:
 	static constexpr int CHUNKSIZE = 20000; // 1m = 100
-	static constexpr int ONE_METER = 100;
+	static constexpr int ONE_METER = 70;
 
 	PathFinder(UWorld *worldIn);
 	class UWorld *worldPointer;
@@ -50,13 +50,14 @@ private:
 			void add(FVector vec);
 			std::vector<PathFinder::Node*> &getNodes();
 			PathFinder::Node *findNode(FVector pos);
-			
-	};
+
+			bool hasNode(FVector pos);
+		};
 
 	class Quadrant{
 		private:
 			int xSample;
-			int zSample;
+			int ySample;
 
 		public:
 			std::vector<std::vector<PathFinder::Chunk*>> map;
@@ -103,5 +104,5 @@ private:
 	bool canSee(PathFinder::Node *A, PathFinder::Node *B);
 
 
-	
+
 };
