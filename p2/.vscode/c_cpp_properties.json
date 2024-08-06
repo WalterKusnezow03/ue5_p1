@@ -14,12 +14,7 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64",
             "configurationProvider": "epic.ue",
-            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_p2.json",
-            "includePath": [
-                "${workspaceFolder}\\Intermediate\\**",
-                "${workspaceFolder}\\Plugins\\**",
-                "${workspaceFolder}\\Source\\**"
-            ]
+            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_p2.json"
         },
         {
             "name": "Mac",

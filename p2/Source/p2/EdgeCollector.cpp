@@ -76,27 +76,65 @@ std::vector<FVector>& EdgeCollector::getAllEdges(UWorld* World, float minHeight)
                 //if component is a mesh component
                 if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(component))
                 {
-                    
-                    getEdgesFromSingleMeshComponent(MeshComponent); //todo: übergabe des arrays?
+                    getEdgesFromSingleMeshComponent(MeshComponent, *edgeDataEdges);
                 }
             }
         }
 
     }
 
+    
+    
 
+    
     //copy edges bottom
     for (int i = 0; i < edgeDataEdges->size(); i++){
+        //FVector t = edgeDataEdges->at(i).bottom + (edgeDataEdges->at(i).top - edgeDataEdges->at(i).bottom) * 0.1f;
         readEdges->push_back(edgeDataEdges->at(i).bottom);
+        //readEdges->push_back(t);
     }
 
     return *readEdges;
 }
 
 
+//collect adges for an single actor passed per pointer
+//data will get append to array
+void EdgeCollector::getEdgesForActor(AActor* actor, std::vector<FVector> &vector){
+    if(actor){
+        // Iterate over all components of the actor
+        TArray<UActorComponent*> array;
+        actor->GetComponents(array);
+
+        std::vector<edgeData> vectorEdges;
+
+        //childs
+        for (UActorComponent* component : array)
+        {
+            //if component is a mesh component
+            if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(component))
+            {
+                getEdgesFromSingleMeshComponent(MeshComponent, vectorEdges); //todo: übergabe des arrays?
+            }
+        }
+
+        
+
+        
+        //copy edges bottom
+        for (int i = 0; i < vectorEdges.size(); i++){
+            vector.push_back(vectorEdges.at(i).bottom);
+        }
+    }
+}
+
+
 
 // reads static mesh from static mesh component
-void EdgeCollector::getEdgesFromSingleMeshComponent(UStaticMeshComponent* MeshComponent)
+void EdgeCollector::getEdgesFromSingleMeshComponent(
+    UStaticMeshComponent* MeshComponent,
+    std::vector<edgeData> &vector
+)
 {
     if (MeshComponent && MeshComponent->GetStaticMesh())
     {
@@ -106,7 +144,8 @@ void EdgeCollector::getEdgesFromSingleMeshComponent(UStaticMeshComponent* MeshCo
         getEdgesFromSingleMesh(
             MeshComponent->GetStaticMesh(), 
             MeshComponent->GetComponentLocation(),
-            LocalToWorldTransform
+            LocalToWorldTransform,
+            vector
         );
     }
 
@@ -115,8 +154,12 @@ void EdgeCollector::getEdgesFromSingleMeshComponent(UStaticMeshComponent* MeshCo
 
 
 // Function to get all vertical edges of a mesh as copy
-void EdgeCollector::getEdgesFromSingleMesh(UStaticMesh* StaticMesh, FVector debugPos, FTransform LocalToWorldTransform)
-{
+void EdgeCollector::getEdgesFromSingleMesh(
+    UStaticMesh* StaticMesh, 
+    FVector debugPos, 
+    FTransform LocalToWorldTransform,
+    std::vector<edgeData> &vector
+){
     if (!StaticMesh)
     {
         UE_LOG(LogTemp, Warning, TEXT("StaticMesh is null."));
@@ -131,7 +174,7 @@ void EdgeCollector::getEdgesFromSingleMesh(UStaticMesh* StaticMesh, FVector debu
         return;
     }
 
-    showPos(worldIn, debugPos);
+    //showPos(worldIn, debugPos);
 
     std::vector<edgeData> currentEdges = std::vector<edgeData>();
 
@@ -177,9 +220,15 @@ void EdgeCollector::getEdgesFromSingleMesh(UStaticMesh* StaticMesh, FVector debu
     //pass by reference
     ComputeConvexHull(currentEdges);
 
-    // insert(start orig, start appended, end appended);
-    edgeDataEdges->insert(edgeDataEdges->end(), currentEdges.begin(), currentEdges.end());
 
+    //caluclate raycast hits and apply to all edges aligning them properly
+    collectRaycasts(currentEdges, worldIn);
+
+
+
+    // insert(start orig, start appended, end appended);
+    //edgeDataEdges->insert(edgeDataEdges->end(), currentEdges.begin(), currentEdges.end());
+    vector.insert(vector.end(), currentEdges.begin(), currentEdges.end());
 
 }
 
@@ -250,7 +299,9 @@ void EdgeCollector::ComputeConvexHull(std::vector<edgeData> &points) { //passed 
 
     //Overwrite elements
     for (int i = 0; i < cSize; ++i) {
-        points[i] = convexHull[i];
+        if (i < points.size()) {
+            points[i] = convexHull[i];
+        }
     }
 
     //Remove the excess elements
@@ -313,4 +364,65 @@ EdgeCollector::edgeData::~edgeData(){
 
 
 
+/// @brief applies the raycast bottom position to the edges
+/// @param edges 
+/// @param world 
+void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world){
 
+    //calculate center pos for offset
+    FVector centerTop;
+    FVector centerBottom;
+    FVector center;
+    for (int i = 0; i < edges.size(); i++)
+    {
+        centerTop += edges.at(i).top;
+        centerBottom += edges.at(i).bottom;
+        center += edges.at(i).top + edges.at(i).bottom;
+    }
+    centerTop /= (edges.size());
+    centerBottom /= (edges.size());
+    center /= (edges.size() * 2);
+
+    //apply offset smallest
+    for (int i = 0; i < edges.size(); i++) {
+        FVector top = edges.at(i).top;
+        FVector bottom = edges.at(i).bottom;
+
+        //FVector dir = (top - center).GetSafeNormal();
+        FVector dir = (top - center).GetSafeNormal();
+        dir.Z = 0;
+        edges.at(i).top += dir * 100;
+        edges.at(i).bottom += dir * 100;
+        
+    }
+    
+    // create raycasts
+    for (int i = 0; i < edges.size(); i++)
+    {
+        collectRaycast(edges.at(i), world);
+    }
+}
+
+void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
+    if(world){
+        FVector Start = edge.top;
+        FVector End = edge.bottom;
+        End.Z -= 1000;
+
+        FHitResult HitResult;
+		FCollisionQueryParams Params;
+		//Params.AddIgnoredActor(this); // Ignore the character itself
+
+		bool bHit = world->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+
+
+		// If the raycast hit something, log the hit actor's name
+		if (bHit)
+		{
+            FVector hitPos = HitResult.ImpactPoint;
+            hitPos.Z += 50;
+            edge.bottom = hitPos;
+        }
+    }
+    //return nullptr;
+}

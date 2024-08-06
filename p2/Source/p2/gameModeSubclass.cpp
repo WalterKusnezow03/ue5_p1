@@ -2,6 +2,8 @@
 
 
 #include "gameModeSubclass.h"
+
+#include "PathFinder.h"
 #include "EdgeCollector.h"
 #include "Engine/World.h"
 
@@ -35,9 +37,9 @@ void AgameModeSubclass::createPathFinder(){
     if (World)
     {
         EdgeCollector c = EdgeCollector();
-        std::vector<FVector> edges = c.getAllEdges(World, 100.0f);
+        std::vector<FVector> &edges = c.getAllEdges(World, 100.0f);
 
-        showEdges(edges);
+        //showEdges(edges);
 
         FString string = FString::Printf(TEXT("collected %d"), edges.size());
 
@@ -46,7 +48,17 @@ void AgameModeSubclass::createPathFinder(){
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, string);
         }
 
-        
+        PathFinder *p = PathFinder::instance(World);
+        if(p != nullptr){
+            p->addNewNodeVector(edges);
+
+
+
+
+            //test path finding needed!
+            
+
+        }
     }
 }
 

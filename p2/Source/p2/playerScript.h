@@ -37,6 +37,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
     class UCameraComponent* CameraComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
+    class UAnimInstance* AnimInstance;
+
 private:
 	bool aiming;
 	bool holding;

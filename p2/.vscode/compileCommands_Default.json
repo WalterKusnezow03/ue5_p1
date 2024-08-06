@@ -1,6 +1,6 @@
 [
 	{
-		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/componentTest.cpp",
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/Damageinterface.cpp",
 		"arguments": [
 			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
 			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
@@ -8,7 +8,87 @@
 		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
 	},
 	{
-		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/componentTest.h",
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/Damageinterface.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/EdgeCollector.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/EdgeCollector.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/EntityScript.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/EntityScript.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/PathFinder.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/PathFinder.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/actorOne.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/actorOne.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/gameModeSubclass.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/gameModeSubclass.h",
 		"arguments": [
 			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
 			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
@@ -49,6 +129,70 @@
 	},
 	{
 		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/p2GameModeBase.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/playerScript.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/playerScript.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/priorityList.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/priorityList.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/sightScript.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/sightScript.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/weapon.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"
+		],
+		"directory": "/Users/walterkusnezow/Documents/UnrealEngine/UE5_2/UE_5.2/Engine/Source"
+	},
+	{
+		"file": "/Users/walterkusnezow/Documents/Unreal Projects/p2/Source/p2/weapon.h",
 		"arguments": [
 			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
 			"@/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default/p2.253.rsp"

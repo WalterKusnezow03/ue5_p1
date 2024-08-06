@@ -11,18 +11,11 @@
 	],
 	"settings": {
 		"typescript.tsc.autoDetect": "off",
-		"C_Cpp.intelliSenseEngineFallback": "enabled",
-		"C_Cpp.intelliSenseEngine": "Tag Parser",
 		"files.associations": {
-			"__locale": "cpp",
-			"*.ipp": "cpp",
-			"shared_mutex": "cpp",
-			"vector": "cpp",
-			"iosfwd": "cpp",
-			"fft": "cpp",
 			"__bit_reference": "cpp",
 			"__config": "cpp",
 			"__hash_table": "cpp",
+			"__locale": "cpp",
 			"__node_handle": "cpp",
 			"__split_buffer": "cpp",
 			"__threading_support": "cpp",
@@ -59,6 +52,7 @@
 			"initializer_list": "cpp",
 			"iomanip": "cpp",
 			"ios": "cpp",
+			"iosfwd": "cpp",
 			"iostream": "cpp",
 			"istream": "cpp",
 			"limits": "cpp",
@@ -73,6 +67,7 @@
 			"ratio": "cpp",
 			"regex": "cpp",
 			"set": "cpp",
+			"shared_mutex": "cpp",
 			"source_location": "cpp",
 			"span": "cpp",
 			"sstream": "cpp",
@@ -89,8 +84,10 @@
 			"unordered_set": "cpp",
 			"valarray": "cpp",
 			"variant": "cpp",
+			"vector": "cpp",
 			"algorithm": "cpp",
-			"hash_map": "cpp"
+			"hash_map": "cpp",
+			"*.ipp": "cpp"
 		}
 	},
 	"extensions": {
