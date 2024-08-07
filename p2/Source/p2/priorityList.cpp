@@ -5,6 +5,8 @@
 
 priorityList::priorityList()
 {
+    first = nullptr;
+    last = nullptr;
 }
 
 priorityList::~priorityList()
@@ -20,6 +22,8 @@ priorityList::~priorityList()
 priorityList::knoten::knoten(PathFinder::Node *n, priorityList *p){
     this->nutzlast = n;
     this->parent = p;
+    prev = nullptr;
+    next = nullptr;
 }
 
 priorityList::knoten::~knoten()
@@ -41,9 +45,16 @@ PathFinder::Node *priorityList::popLowestFx(){
 
     if(last != nullptr){
         PathFinder::Node *copy = last->nutzlast;
+
         priorityList::knoten *prevCopy = last->unlinklast();
-        delete (last);
-        last = prevCopy;
+        delete last;
+        if(prevCopy == nullptr){
+            last = nullptr;
+            first = nullptr; //reset all!
+        }else{
+            last = prevCopy;
+        }
+
         return copy;
     }
 
@@ -91,40 +102,67 @@ priorityList::knoten* priorityList::knoten::unlinklast(){
 }
 
 void priorityList::knoten::add(PathFinder::Node *node, priorityList *p){
-    if(node != nullptr){
+    bool deleteThis = false;
+    if (node != nullptr)
+    {
+
+        //add functionality for updating when re open?
+        if(node == this->nutzlast && node->fx < nutzlast->fx){
+            deleteThis = true;
+            if (next != nullptr)
+            {
+                next->prev = prev;
+            }
+            if(prev != nullptr){
+                prev->next = next;
+            }
+        }
+
+
+
         float fx = node->fx;
         if(fx < nutzlast->fx){
             if(next != nullptr){
                 next->add(node, p);
             }else{
-                append(node, p);
+                append(node, p); //nach mir einfügen
             }
         }else{
             insert(node, p);
         }
+    }
+
+    if(deleteThis){
+        delete this;
     }
 }
 
 //insert back of own node OK
 void priorityList::knoten::append(PathFinder::Node *n, priorityList *p){
     priorityList::knoten *knotenNeu = new knoten(n, p);
+
     if(next != nullptr){
+        knotenNeu->next = next;
         next->prev = knotenNeu;
     }
     knotenNeu->prev = this;
-    knotenNeu->next = next;
     next = knotenNeu;
+
     parent->updateLast(this, knotenNeu);
 }
 
 //append infornt of own node
 void priorityList::knoten::insert(PathFinder::Node *n, priorityList *p){
     priorityList::knoten *knotenNeu = new knoten(n, p);
+
     if(prev != nullptr){
         prev->next = knotenNeu;
+        knotenNeu->prev = prev;
     }
-    knotenNeu->prev = prev;
     knotenNeu->next = this;
     prev = knotenNeu;
     parent->updateFirst(this, knotenNeu);
 }
+
+
+

@@ -112,8 +112,15 @@ PathFinder* PathFinder::instance(UWorld *worldIn){
 
 //debug drawing
 void PathFinder::showPos(FVector e){
-    FVector End = e + FVector(0, 0, 50000);
-    DrawDebugLine(worldPointer, e, End, FColor::Green, true, 10.0f, 100, 5.0f);
+    showPos(e, FColor::Green);
+}
+
+void PathFinder::showPos(FVector e, FColor c){
+    if(worldPointer){
+         FVector End = e + FVector(0, 0, 10000);
+        DrawDebugLine(worldPointer, e, End, c, true, 10.0f, 100, 5.0f);
+    }
+   
 }
 
 
@@ -136,7 +143,7 @@ void PathFinder::addNewNode(FVector a){
         //debug testing
         PathFinder::Node *tryFind = findNode(a);
         if(tryFind != nullptr){
-            showPos(tryFind->pos);
+            //showPos(tryFind->pos);
         }
         
     }
@@ -237,6 +244,10 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
     PathFinder::Node *end = findNode(b);
 
     if(start != nullptr && end != nullptr){
+
+        showPos(start->pos, FColor::Red);
+        showPos(end->pos, FColor::Red);
+
         std::vector<PathFinder::Node *> graph = getSubGraph(a, b);
         return findPath(start, end, graph);
     }
@@ -277,10 +288,13 @@ std::vector<FVector> PathFinder::findPath(
     std::vector<PathFinder::Node*> &subgraph
 ){
 
+    screenMessage(subgraph.size());
+
     for (int i = 0; i < subgraph.size(); i++){
         PathFinder::Node *n = subgraph.at(i);
         if(n != nullptr){
             n->reset();
+            n->closedFlag = false;
         }
     }
 
@@ -306,24 +320,35 @@ std::vector<FVector> PathFinder::findPath(
 
         if (current != nullptr)
         {
-            if(current == end){
+            if(current == end){ //|| canSee(current, end)){
                 //path found
+                screenMessage(111111);
                 return constructPath(end);
             }
 
-            current->closedFlag = true;
-            for (int i = 0; i < subgraph.size(); i++){
+            //show opened nodes: debugging
+            showPos(current->pos, FColor::Blue);
+
+            current->close();
+            for (int i = 0; i < subgraph.size(); i++)
+            {
                 PathFinder::Node *n = subgraph.at(i);
                 if(n != nullptr){
-                    bool wasClosed = n->closedFlag;
-                    if(!wasClosed){
+                    //bool wasClosed = n->closedFlag;
+                    if(!n->isClosed()){
                         
                         //kante aufstellen wenn sichtverbindung
                         if(canSee(current, n)){
+                            
+
                             float gxNew = distance(current->pos, n->pos);
                             if(gxNew < n->gx){
+                                screenMessage(300);
                                 float hxEnd = distance(n->pos, end->pos);
                                 n->updateCameFrom(gxNew, hxEnd, *current);
+
+                                //ADD TO OPEN LIST!!
+                                openList_.add(n);
                             }
                         }
 
@@ -334,9 +359,29 @@ std::vector<FVector> PathFinder::findPath(
         }
     }
 
-
+    if (GEngine)
+    {
+        FString string = FString::Printf(TEXT("out of nodes"));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, string);
+    }
 
     return std::vector<FVector>();
+}
+
+
+
+void PathFinder::screenMessage(int s){
+    if (GEngine)
+    {
+        FString string = FString::Printf(TEXT("text %d"), s);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, string);
+    }
+}
+
+void PathFinder::screenMessage(FString s) {
+    if (GEngine) {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, s);
+    }
 }
 
 
@@ -351,7 +396,7 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
         FVector Start = A->pos;
 
         FVector connect_09 = Start + (B->pos - Start) * 0.95f;
-        FVector End = connect_09;  // B->pos;
+        FVector End = B->pos;  // B->pos;
 
         FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -629,3 +674,19 @@ void PathFinder::Node::updateCameFrom(float gxIn, float hxEnd, PathFinder::Node 
     gx = gxIn;
     fx = gxIn + hxEnd;
 }
+
+
+void PathFinder::Node::close(){
+    this->closedFlag = true;
+}
+
+
+bool PathFinder::Node::isClosed(){
+    return closedFlag;
+}
+
+
+
+
+
+

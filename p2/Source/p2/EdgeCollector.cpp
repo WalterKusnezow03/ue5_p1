@@ -419,9 +419,20 @@ void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
 		// If the raycast hit something, log the hit actor's name
 		if (bHit)
 		{
-            FVector hitPos = HitResult.ImpactPoint;
-            hitPos.Z += 50;
-            edge.bottom = hitPos;
+            //needed here to check if the distance between hit and start is less than 10% of distance
+            //to prevent false edges
+            float completeDistance = FVector::Dist(Start, End);
+            float hitDistanceFromTop = FVector::Dist(Start, HitResult.ImpactPoint);
+            if(completeDistance * 0.2f < hitDistanceFromTop){
+                //min 20% distance to remove false hits
+
+                FVector hitPos = HitResult.ImpactPoint;
+                hitPos.Z += 50;
+                edge.bottom = hitPos;
+            }
+
+
+            
         }
     }
     //return nullptr;

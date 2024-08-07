@@ -17,6 +17,8 @@ public:
 	void addNewNodeVector(std::vector<FVector> &vec);
 	void addNewNode(FVector a);
 
+	std::vector<FVector> getPath(FVector a, FVector b);
+
 	class Node{
 		public:
 			bool closedFlag;
@@ -28,6 +30,8 @@ public:
 			~Node();
 			void reset();
 			void updateCameFrom(float gxIn, float hxEnd, Node &came);
+			void close();
+			bool isClosed();
 	};
 
 private:
@@ -40,7 +44,8 @@ private:
 	static class PathFinder *pathFinderInstance;
 	static int countNodes;
 
-	
+	void screenMessage(int s);
+	void screenMessage(FString s);
 
 	class Chunk{
 		public:
@@ -81,13 +86,14 @@ private:
 	Node *findNode(FVector pos);
 
 	void showPos(FVector e);
+	void showPos(FVector e, FColor c);
 
 	void debugCountNodes();
 
 	float distance(Node *A, Node *B);
 	float distance(FVector A, FVector B);
 
-	std::vector<FVector> getPath(FVector a, FVector b);
+	
 
 	std::vector<PathFinder::Node *> getSubGraph(FVector a, FVector b);
 

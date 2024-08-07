@@ -56,8 +56,15 @@ void AgameModeSubclass::createPathFinder(){
 
 
             //test path finding needed!
-            
+            FVector a = FVector(0, 0, 0);
+            FVector b = FVector(-2100, -1020, 80);
 
+            //showPos(a, FColor::Red);
+            //showPos(b, FColor::Blue);
+
+            std::vector<FVector> path = p->getPath(a, b);
+
+            showPath(path);
         }
     }
 }
@@ -79,4 +86,37 @@ void AgameModeSubclass::showEdges(std::vector<FVector> &edges){
             //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, string);
         }
     }
+}
+
+
+
+void AgameModeSubclass::showPath(std::vector<FVector> &path){
+    if (GEngine)
+    {
+        FString string = FString::Printf(TEXT("nodes to dest: %d"), path.size());
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, string);
+    }
+    if(path.size() > 1){
+        for (int i = 1; i < path.size(); i++){
+            FVector Start = path.at(i);
+            FVector End = path.at(i - 1);
+            if (GetWorld())
+            {
+                DrawDebugLine(GetWorld(), Start, End, FColor::Yellow, false, 100.0f, 0, 1.0f);
+            }
+        }
+    }
+    
+}
+
+
+void AgameModeSubclass::showPos(FVector &v, FColor color){
+
+    FVector Start = v;
+    FVector End = v + FVector(0, 0, 2000);
+    if (GetWorld())
+    {
+        DrawDebugLine(GetWorld(), Start, End, color, false, 100.0f, 0, 1.0f);
+    }
+    
 }

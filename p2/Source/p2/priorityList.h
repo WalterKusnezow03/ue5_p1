@@ -19,6 +19,8 @@ public:
 
 	bool hasNodes();
 
+	
+
 private:
 	
 

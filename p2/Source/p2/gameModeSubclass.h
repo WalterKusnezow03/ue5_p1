@@ -20,4 +20,6 @@ public:
 private:
 	void createPathFinder();
 	void showEdges(std::vector<FVector> &edges);
+	void showPath(std::vector<FVector> &path);
+	void showPos(FVector &v, FColor color);
 };
