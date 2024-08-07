@@ -33,6 +33,18 @@ AplayerScript::AplayerScript()
     LookUpRateGamepad = 90.f;
 
 	health = 100;
+
+
+    // Initialize the Skeletal Mesh Component pointer
+    SkeletalMeshComponent = GetMesh();
+
+    //animations
+    idle = TEXT("/Game/Imported/Humanoid/rifle_aiming_idle.rifle_aiming_idle");
+    walking = TEXT("/Game/Imported/Humanoid/walking.walking");
+
+
+    //FString JumpAnimPath = TEXT("/Game/Animations/JumpAnim.JumpAnim");
+
 }
 
 // Called when the game starts or when spawned

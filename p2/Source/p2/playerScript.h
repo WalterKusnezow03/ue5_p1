@@ -41,6 +41,12 @@ public:
     class UAnimInstance* AnimInstance;
 
 private:
+	FString idle;
+	FString walking;
+
+	// Pointer to the Skeletal Mesh Component
+    class USkeletalMeshComponent* SkeletalMeshComponent;
+
 	bool aiming;
 	bool holding;
 

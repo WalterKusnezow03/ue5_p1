@@ -347,9 +347,10 @@ std::vector<FVector> PathFinder::findPath(
                                 float hxEnd = distance(n->pos, end->pos);
                                 n->updateCameFrom(gxNew, hxEnd, *current);
 
-                                //ADD TO OPEN LIST!!
-                                openList_.add(n);
+                                
                             }
+                            //ADD TO OPEN LIST!!
+                            openList_.add(n); 
                         }
 
                         

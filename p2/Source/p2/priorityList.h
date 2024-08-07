@@ -23,29 +23,6 @@ public:
 
 private:
 	
+	std::vector<PathFinder::Node *> nodes;
 
-	class knoten{
-		public:
-			knoten *next;
-			knoten *prev;
-			priorityList *parent;
-
-			knoten(PathFinder::Node *n, priorityList *p);
-			~knoten();
-
-			PathFinder::Node *nutzlast;
-
-			void add(PathFinder::Node *n, priorityList *p);
-			void append(PathFinder::Node *n, priorityList *p);
-			void insert(PathFinder::Node *n, priorityList *p);
-			knoten *unlinklast();
-	};
-
-	void updateFirst(knoten *oldFirst, knoten *newFirst);
-	void updateLast(knoten *oldLast, knoten *newLast);
-
-	
-
-	knoten *last;
-	knoten *first;
 };
