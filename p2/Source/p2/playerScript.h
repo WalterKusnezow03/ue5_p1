@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "weapon.h"
+#include "playerInventory.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
@@ -41,6 +42,8 @@ public:
     class UAnimInstance* AnimInstance;
 
 private:
+	class playerInventory playerInventory;
+
 	FString idle;
 	FString walking;
 

@@ -46,7 +46,7 @@ void AEntityScript::Tick(float DeltaTime)
 		
 		
 		if(spottedPlayer){
-			//attack if can see and spotted#
+			//attack if can see and spotted
 			showScreenMessage("spotted player");
 
 		}else{

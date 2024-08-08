@@ -3,6 +3,7 @@
 
 #include "playerScript.h"
 #include "weapon.h"
+#include "playerInventory.h"
 #include "referenceManager.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
@@ -171,6 +172,8 @@ void AplayerScript::LookUpAtRate(float Rate)
 void AplayerScript::interact(){
 	performRaycast();
 
+
+    
 }
 
 void AplayerScript::performRaycast()
@@ -205,8 +208,9 @@ void AplayerScript::performRaycast()
 			Aweapon *weapon = Cast<Aweapon>(actor);
 			if(weapon){
 				weapon->pickup(*CameraComponent);
-				weaponpointer = weapon;
-			}
+                playerInventory.addWeapon(weapon);
+                //weaponpointer = weapon;
+            }
 		}
 
 		
@@ -216,13 +220,17 @@ void AplayerScript::performRaycast()
 void AplayerScript::drop(){
 	if(weaponpointer != nullptr){
         weaponpointer->dropweapon();
+        
     }
+    playerInventory.dropWeapon();
 }
 
 void AplayerScript::reload(){
 	if(weaponpointer != nullptr){
+        
         weaponpointer->reload(30);
     }
+    playerInventory.reloadWeapon();
 }
 
 
@@ -231,7 +239,9 @@ void AplayerScript::aim(){
     aiming = !aiming;
     if(weaponpointer != nullptr){
         weaponpointer->aim(aiming);
+        
     }
+    playerInventory.aim(aiming);
 }
 
 /**
@@ -239,11 +249,18 @@ void AplayerScript::aim(){
  */
 void AplayerScript::shoot(){
     if(weaponpointer != nullptr){
-        if(holding){
+        if(holding){ //checks if holding mouse down
             weaponpointer->shoot();
         }else{
             weaponpointer->releaseShoot(); //abzug loslassen
         }
+    }
+
+
+    if(holding){ //checks if holding mouse down
+        playerInventory.shoot();
+    }else{
+        playerInventory.releaseShoot(); //abzug loslassen
     }
 }
 
@@ -260,8 +277,6 @@ void AplayerScript::leftMouseDown(){
 void AplayerScript::leftMouseUp(){
     setHolding(false);
 }
-
-
 
 
 

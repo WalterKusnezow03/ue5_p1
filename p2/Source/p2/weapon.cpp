@@ -274,7 +274,7 @@ void Aweapon::shoot(FVector Start, FVector End){
 bool Aweapon::canShoot(){
 	//here add too for single fire weapons
 
-	return enoughBulletsInMag() && !isCooling();
+	return enoughBulletsInMag() && !isCooling() && isVisible; //cant be show if weapon is not selected
 }
 
 /**
@@ -319,4 +319,25 @@ void Aweapon::reload(int amount){
 	if(amount > 0){
 		bulletsInMag += amount;
 	}
+}
+
+
+
+int Aweapon::getMagSize(){
+	return 30;
+}
+
+
+
+void Aweapon::showWeapon(bool show){
+	isVisible = show;
+
+	SetActorHiddenInGame(!show);  // Hides the actor if 'show' is false
+}
+
+
+/// @brief returns is active status for player (hidden or not)
+/// @return is active (visible status)
+bool Aweapon::isActive(){
+	return isVisible;
 }

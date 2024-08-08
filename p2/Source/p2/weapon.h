@@ -22,11 +22,12 @@ public:
 	// Sets default values for this actor's properties (constructor)
 	Aweapon();
 
-	void setupSight();
+	void showWeapon(bool show);
 	void pickup(UCameraComponent &cameraRefIn);
 	void dropweapon();
 	bool isPickedup();
 	void reload(int amount);
+	int getMagSize();
 	void shoot(FVector from, FVector to);
 	void shoot(); //with default camera which is passed in by then
 	void releaseShoot();
@@ -36,7 +37,13 @@ public:
 	bool enoughBulletsInMag();
 	bool canShoot();
 
+	//returns if the weapon is active or not
+	bool isActive();
+
 protected:
+	/// @brief will save whether the weapon is shown (selected or not. Blocks shooting)
+	bool isVisible;
+
 	/**
 	 * must be resetet if not a single fire weapon when cooldown complete
 	 */
@@ -53,6 +60,7 @@ protected:
 	void updateCooltime(float time);
 	void resetCoolTime(float time);
 	float calculateRpm(int rpm);
+	void setupSight();
 
 	FVector getOffsetVector();
 
