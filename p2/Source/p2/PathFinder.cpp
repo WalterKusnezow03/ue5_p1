@@ -117,7 +117,7 @@ void PathFinder::showPos(FVector e){
 
 void PathFinder::showPos(FVector e, FColor c){
     if(worldPointer){
-         FVector End = e + FVector(0, 0, 10000);
+        FVector End = e + FVector(0, 0, 10000);
         DrawDebugLine(worldPointer, e, End, c, true, 10.0f, 100, 5.0f);
     }
    
@@ -245,8 +245,8 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
 
     if(start != nullptr && end != nullptr){
 
-        showPos(start->pos, FColor::Red);
-        showPos(end->pos, FColor::Red);
+        //showPos(start->pos, FColor::Red);
+        //showPos(end->pos, FColor::Red);
 
         std::vector<PathFinder::Node *> graph = getSubGraph(a, b);
         return findPath(start, end, graph);
@@ -322,7 +322,7 @@ std::vector<FVector> PathFinder::findPath(
         {
             if(current == end){ //|| canSee(current, end)){
                 //path found
-                screenMessage(111111);
+                //screenMessage(111111);
                 return constructPath(end);
             }
 
@@ -343,7 +343,7 @@ std::vector<FVector> PathFinder::findPath(
 
                             float gxNew = distance(current->pos, n->pos);
                             if(gxNew < n->gx){
-                                screenMessage(300);
+                                //screenMessage(300);
                                 float hxEnd = distance(n->pos, end->pos);
                                 n->updateCameFrom(gxNew, hxEnd, *current);
 

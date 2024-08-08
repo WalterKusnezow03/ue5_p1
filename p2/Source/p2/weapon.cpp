@@ -88,6 +88,7 @@ void Aweapon::BeginPlay()
 {
 	Super::BeginPlay();
 	setupSight(); //better call in start right
+	enableCollider(true);
 }
 
 // Called every frame / UPDATE
@@ -104,9 +105,10 @@ void Aweapon::Tick(float DeltaTime)
  */
 void Aweapon::followPlayer(){
 	
-	if (isPickedup()) {
-        FVector targetPos = cameraPointer->GetComponentLocation() + 
-							cameraPointer->GetForwardVector() * 300.0f +
+	if (isPickedup())
+	{
+		FVector targetPos = cameraPointer->GetComponentLocation() + 
+							cameraPointer->GetForwardVector() * 100.0f +
 							getOffsetVector();
 
         FRotator targetRotation = cameraPointer->GetComponentRotation();
@@ -117,7 +119,7 @@ void Aweapon::followPlayer(){
         
         SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-    }
+	}
 }
 
 /**
@@ -161,6 +163,11 @@ void Aweapon::updateCooltime(float time){
 
 
 
+/// @brief will enable and disable the collider for the actor
+/// @param enable 
+void Aweapon::enableCollider(bool enable){
+	SetActorEnableCollision(enable);
+}
 
 
 
@@ -170,6 +177,7 @@ void Aweapon::updateCooltime(float time){
 void Aweapon::pickup(UCameraComponent &cameraRefIn){
 	if(!isPickedup()){
 		cameraPointer = &cameraRefIn; // Assign the address of cameraRefIn to cameraRef
+		enableCollider(false);
 	}
 }
 
@@ -179,6 +187,7 @@ void Aweapon::pickup(UCameraComponent &cameraRefIn){
  */
 void Aweapon::dropweapon(){
 	cameraPointer = nullptr;
+	enableCollider(true);
 }
 
 /**

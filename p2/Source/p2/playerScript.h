@@ -50,6 +50,11 @@ private:
 	bool aiming;
 	bool holding;
 
+	float timeleft;
+	void resetAnimtime(float newTime);
+	void updateAnimTime(float delta);
+	bool animationisPlaying();
+
 	void MoveForward(float Value);
     void MoveRight(float Value);
     void TurnAtRate(float Rate);
@@ -79,4 +84,6 @@ private:
 	//UPROPERTY(VisibleAnywhere)
     //class UCameraComponent* CameraComponent;
 	//class
+
+	void PlayAnimation(UAnimSequence *AnimSequence);
 };

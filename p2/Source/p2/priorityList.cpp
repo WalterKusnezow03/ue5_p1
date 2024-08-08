@@ -51,6 +51,13 @@ void priorityList::add(PathFinder::Node *n){
                     nodes.insert(nodes.begin() + i, n);
                     return; // Exit function after insertion
                 }
+
+                //replace nodes if needed, push further up to end of the list
+                if(nodes.at(i) == n){
+                    nodes.erase(nodes.begin() + i);
+                    i--;
+                }
+
             }else{
                 nodes.erase(nodes.begin() + i);
                 i--;

@@ -76,4 +76,6 @@ private:
 	FVector offset;
 
 	void showScreenMessage(FString s);
+
+	void enableCollider(bool enable);
 };

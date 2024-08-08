@@ -24,7 +24,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	bool performRaycast(AActor *target);
-	bool performRaycast(AActor &target);
 
 	
 	void setSpottingTime(float time);
@@ -44,4 +43,6 @@ private:
 	class AplayerScript* playerPointer;
 
 	void die();
+
+	void showScreenMessage(FString s);
 };

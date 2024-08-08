@@ -3,6 +3,8 @@
 
 #include "playerScript.h"
 #include "weapon.h"
+#include "referenceManager.h"
+#include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
@@ -43,6 +45,12 @@ AplayerScript::AplayerScript()
     walking = TEXT("/Game/Imported/Humanoid/walking.walking");
 
 
+    if (GEngine && SkeletalMeshComponent) {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "found skeletal mesh");
+    }
+
+    timeleft = 0;
+
     //FString JumpAnimPath = TEXT("/Game/Animations/JumpAnim.JumpAnim");
 
 }
@@ -51,7 +59,7 @@ AplayerScript::AplayerScript()
 void AplayerScript::BeginPlay()
 {
 	Super::BeginPlay();
-	
+    referenceManager::setPlayerReference(this);
 }
 
 // Called to bind functionality to input
@@ -94,6 +102,8 @@ void AplayerScript::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
     shoot(); //shoot the weapon if needed or release. Method handles automatically
+
+    updateAnimTime(DeltaTime);
 }
 
 /**
@@ -121,6 +131,9 @@ void AplayerScript::MoveForward(float Value)
 
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
         AddMovementInput(Direction, Value);
+
+        //if(!animationisPlaying())
+        //    PlayAnimation(LoadObject<UAnimSequence>(nullptr, *walking));
     }
 
 	
@@ -157,6 +170,7 @@ void AplayerScript::LookUpAtRate(float Rate)
  */
 void AplayerScript::interact(){
 	performRaycast();
+
 }
 
 void AplayerScript::performRaycast()
@@ -248,3 +262,48 @@ void AplayerScript::leftMouseUp(){
 }
 
 
+
+
+
+
+
+
+
+//testing needed
+
+void AplayerScript::PlayAnimation(UAnimSequence* AnimSequence)
+{
+    if (AnimSequence && SkeletalMeshComponent)
+    {   
+        float animationlength = AnimSequence->GetPlayLength();
+        resetAnimtime(animationlength);
+
+        SkeletalMeshComponent->PlayAnimation(AnimSequence, false); // false means don't loop
+    }else{
+
+        if (GEngine && SkeletalMeshComponent) {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "animation not found");
+        }
+    }
+}
+
+
+
+/// @brief sets the time left to a new time
+/// @param newTime 
+void AplayerScript::resetAnimtime(float newTime){
+    timeleft = newTime;
+}
+
+/// @brief update the animation time delta
+/// @param delta 
+void AplayerScript::updateAnimTime(float delta){
+    if(timeleft > 0){
+        timeleft -= delta;    
+    }
+}
+/// @brief returns if an animation is still playing
+/// @return 
+bool AplayerScript::animationisPlaying(){
+    return timeleft > 0;
+}

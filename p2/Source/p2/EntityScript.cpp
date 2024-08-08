@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "playerScript.h"
+#include "referenceManager.h"
 #include "EntityScript.h"
 
 // Sets default values
@@ -9,33 +10,45 @@ AEntityScript::AEntityScript()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
 	health = 100;
-
+	spottedPlayer = false;
 	playerPointer = nullptr;
-
 	defaultSpottingTime = 5;
+	setSpottingTime(defaultSpottingTime);
 }
 
 // Called when the game starts or when spawned
 void AEntityScript::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	health = 100;
+	spottedPlayer = false;
+	playerPointer = nullptr;
+	defaultSpottingTime = 5;
+	setSpottingTime(defaultSpottingTime);
 }
 
 // Called every frame
 void AEntityScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//get player pointer if needed
+	if(playerPointer == nullptr){
+		playerPointer = referenceManager::getPlayerPointer();
+	}
 
+	//rest of update
 	bool canSeePlayer = performRaycast(playerPointer);
 
 	
 	if(canSeePlayer){
 		
+		
 		if(spottedPlayer){
-			//attack if can see and spotted
-			
+			//attack if can see and spotted#
+			showScreenMessage("spotted player");
+
 		}else{
 			//update time if can see, but not spotted
 			updateSpottingTime(DeltaTime);
@@ -70,49 +83,53 @@ void AEntityScript::die(){
 
 
 
-bool AEntityScript::performRaycast(AActor *target){
-	if(target){
-		return performRaycast(*target); //dereference for the ref
+
+bool AEntityScript::performRaycast(AActor *target) //because a reference is expected it must be valid
+{
+	
+	if (target)
+	{
+		
+		// Get the camera location and rotation
+		FVector End = target->GetActorLocation();
+
+		// Define the start and end vectors for the raycast
+		FVector Start = this->GetActorLocation();
+
+		End = Start + (End - Start) * 1.1f; //safety reasons
+
+		// Perform the raycast
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this); // Ignore the character itself
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
+
+
+
+		// If the raycast hit something, log the hit actor's name
+		if (bHit)
+		{
+			//showScreenMessage("hit raycast");
+			AActor *actor = HitResult.GetActor();
+			if(actor == playerPointer){
+				return true;
+			}
+
+			if(actor != nullptr){
+				
+				//die POINTER vergleichen, einmal den pointer, einmal die &adresse
+				if(actor == target){
+					return true;
+				}
+			}
+
+			
+		}
 	}
 	return false;
-}
-
-bool AEntityScript::performRaycast(AActor &target) //because a reference is expected it must be valid
-{
-
-
-	// Get the camera location and rotation
-    FVector End = target.GetActorLocation();
-
-    // Define the start and end vectors for the raycast
-    FVector Start = this->GetActorLocation();
-
-	float distance = FVector::Dist(Start, End);
-
-	// Perform the raycast
-    FHitResult HitResult;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this); // Ignore the character itself
-
-    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-
-
-
-    // If the raycast hit something, log the hit actor's name
-    if (bHit)
-    {
-		AActor* actor = HitResult.GetActor();
-		if(actor != nullptr){
-			
-			//die POINTER vergleichen, einmal den pointer, einmal die &adresse
-			if(actor == &target){
-				return false;
-			}
-		}
-
-		
-    }
-	return false;
+	
 }
 
 /**
@@ -131,5 +148,16 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 	}else{
 		spottingTimeLeft = 0;
 		spottedPlayer = true;
+	}
+}
+
+
+
+
+
+void AEntityScript::showScreenMessage(FString s){
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
 	}
 }
