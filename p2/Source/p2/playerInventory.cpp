@@ -10,10 +10,13 @@ playerInventory::playerInventory()
 
 playerInventory::~playerInventory()
 {
-    while(weaponVector.size() > 0){
-        wslot *w = weaponVector.at(0);
+    while (!weaponVector.empty()) {
+        playerInventory::wslot* w = weaponVector.front();
         weaponVector.erase(weaponVector.begin());
-        delete w;
+        if (w != nullptr) {
+            delete w;
+            w = nullptr;  // Avoid dangling pointers
+        }
     }
 }
 
@@ -22,10 +25,21 @@ playerInventory::wslot::wslot(Aweapon *in){
 }
 
 playerInventory::wslot::~wslot(){
-
+    if(weaponPointer != nullptr){
+        if (IsValid(weaponPointer)) { // Ensure the weapon is still valid
+            weaponPointer->dropweapon();
+        }
+        weaponPointer = nullptr;
+    }
 }
 		
-
+//debug
+void playerInventory::showScreenMessage(FString s){
+	if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
+    }
+}
 
 
 //inventory methods
@@ -64,6 +78,8 @@ void playerInventory::addWeapon(Aweapon *weaponIn){
         weaponVector.push_back(new playerInventory::wslot(weaponIn));
         currentIndex = weaponVector.size() - 1;
         selectIndex(currentIndex);
+
+
     }
 }
 
@@ -111,6 +127,9 @@ void playerInventory::shoot(){
     if(currentIndexIsValid()){
         if(weaponVector.at(currentIndex)){
             weaponVector.at(currentIndex)->shoot();
+
+            FString Message = FString::Printf(TEXT("weapon: %d"), currentIndex);
+            showScreenMessage(Message);
         }
     }
 }
@@ -184,6 +203,7 @@ void playerInventory::wslot::show(bool show){
 void playerInventory::wslot::drop(){
     if(weaponPointer != nullptr){
         weaponPointer->dropweapon();
+        weaponPointer = nullptr;
     }
 }
 

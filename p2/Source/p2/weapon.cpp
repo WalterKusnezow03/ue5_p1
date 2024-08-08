@@ -188,6 +188,7 @@ void Aweapon::pickup(UCameraComponent &cameraRefIn){
 void Aweapon::dropweapon(){
 	cameraPointer = nullptr;
 	enableCollider(true);
+	showWeapon(true);
 }
 
 /**
@@ -218,7 +219,8 @@ void Aweapon::shoot(){
     	//FRotator CameraRotation = CameraComponent->GetComponentRotation();
 
 		// Define the start and end vectors for the raycast
-		FVector Start = CameraLocation;
+		FVector Start = CameraLocation + ForwardVector * 100; // todo: owner also by interface! to exclude from query
+
 		FVector End = Start + (ForwardVector * 50000.0f); //50000 units in front of the camera, must be changed later
 
 		shoot(Start, End);//shoot from a start to an endpoint
@@ -231,7 +233,7 @@ void Aweapon::shoot(){
  */
 void Aweapon::shoot(FVector Start, FVector End){
 	if(isPickedup() && canShoot()){
-		showScreenMessage("shoot!");
+		//showScreenMessage("shoot!");
 
 		//FVector direction = (to - from).GetSafeNormal(); // AB = B - A
 		resetCoolTime(cooldownTime);
@@ -274,7 +276,7 @@ void Aweapon::shoot(FVector Start, FVector End){
 bool Aweapon::canShoot(){
 	//here add too for single fire weapons
 
-	return enoughBulletsInMag() && !isCooling() && isVisible; //cant be show if weapon is not selected
+	return enoughBulletsInMag() && !isCooling() && isActive(); //cant be show if weapon is not selected
 }
 
 /**
@@ -284,10 +286,7 @@ void Aweapon::aim(bool aimstatus){
 	if(isPickedup()){
 		isAiming = aimstatus;
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "switch");
-		}
+		showScreenMessage("switch");
 	}
 }
 

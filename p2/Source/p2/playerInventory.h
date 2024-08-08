@@ -45,4 +45,5 @@ private:
 	int ammunition;
 
 	bool currentIndexIsValid();
+	void showScreenMessage(FString s);
 };

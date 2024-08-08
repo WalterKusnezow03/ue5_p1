@@ -47,7 +47,7 @@ void AEntityScript::Tick(float DeltaTime)
 		
 		if(spottedPlayer){
 			//attack if can see and spotted
-			showScreenMessage("spotted player");
+			//showScreenMessage("spotted player");
 
 		}else{
 			//update time if can see, but not spotted
@@ -69,6 +69,8 @@ void AEntityScript::Tick(float DeltaTime)
 
 //allows the entity to take damage
 void AEntityScript::takedamage(int d){
+
+	showScreenMessage("entity damage");
 	health -= d;
 	if(health <= 0){
 		d = 0;
