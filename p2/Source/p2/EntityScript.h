@@ -27,13 +27,19 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	//performs the raycast to a target
 	bool performRaycast(AActor *target);
 
-	
+	//raycast ignore params (setup on begin)
+	FCollisionQueryParams ignoreParams;
+	//CALL ONCE ON BEGIN!
+	void setupRaycastIgnoreParams();
+
 	void setSpottingTime(float time);
 	void updateSpottingTime(float deltaTime);
 
-	void LookAt(FVector TargetLocation);
+	void LookAt(FVector TargetLocation); 
 	void LookAt(AActor *target);
 	bool withinVisionAngle(AActor *target);
 

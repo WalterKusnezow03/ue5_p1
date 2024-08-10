@@ -29,7 +29,7 @@ void AEntityScript::BeginPlay()
 	playerPointer = nullptr;
 	defaultSpottingTime = 5;
 	setSpottingTime(defaultSpottingTime);
-
+	setupRaycastIgnoreParams();
 }
 
 // Called every frame
@@ -132,6 +132,18 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 	return false;
 }
 
+/// @brief sets up the ignore params just once for raycast to avaoid unesecarry code
+void AEntityScript::setupRaycastIgnoreParams(){
+	ignoreParams.AddIgnoredActor(this); // Ignore the character itself
+	// Iterate and ignore all child actors
+	TArray<AActor*> ChildActors;
+	this->GetAttachedActors(ChildActors);
+
+	for (AActor* ChildActor : ChildActors){
+		ignoreParams.AddIgnoredActor(ChildActor);
+	}
+}
+
 
 /// @brief performs a raycast to the target and checks if "can see it"
 /// @param target aactor from the scene
@@ -155,6 +167,9 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 
 		// Perform the raycast
 		FHitResult HitResult;
+
+
+		/*
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this); // Ignore the character itself
 		// Iterate and ignore all child actors
@@ -164,10 +179,10 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		for (AActor* ChildActor : ChildActors)
 		{
 			Params.AddIgnoredActor(ChildActor);
-		}
+		}*/
 
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
 		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
 
 
@@ -273,6 +288,8 @@ void AEntityScript::resetpath(){
 
 }
 
+/// @brief will return if any nodes are left in the path
+/// @return true false
 bool AEntityScript::hasNodesInPathLeft(){
 	return !path.empty();
 }
@@ -281,8 +298,8 @@ bool AEntityScript::hasNodesInPathLeft(){
 bool AEntityScript::reachedPosition(FVector pos){
 	FVector s = GetActorLocation();
 	float dist = FVector::Dist(s, pos);
-	float oneMeter = 50;
-	if (dist < oneMeter){
+	float epsilonDistance = 25;
+	if (dist < epsilonDistance){
 		return true;
 	}
 	return false;
@@ -298,10 +315,11 @@ void AEntityScript::LookAt(AActor *target){
 }
 
 
-
+//hier ist zum beispiel apss by value weil referenz einfach kein sinn macht
+//für so einen kurzen block
 /// @brief look at a location
-/// @param TargetLocation 
-void AEntityScript::LookAt(FVector TargetLocation)
+/// @param TargetLocation target to look at
+void AEntityScript::LookAt(FVector TargetLocation) 
 {
     // Calculate the rotation needed to look at the target location
     FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);

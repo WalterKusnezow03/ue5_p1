@@ -12,6 +12,8 @@ Aweapon::Aweapon()
 	PrimaryActorTick.bCanEverTick = true;
 	cameraPointer = nullptr;
 	botPointer = nullptr;
+	verschlussSkeletonPointer = nullptr;
+
 	// Ensure the World context is valid
 
 	isAiming = false;
@@ -24,7 +26,7 @@ Aweapon::Aweapon()
 	bulletsInMag = 30;
 }
 
-
+/// @brief finds the sight component of the weapon if existent
 void Aweapon::setupSight(){
 	TArray<AActor*> ChildActors;
     FString s;
@@ -45,12 +47,6 @@ void Aweapon::setupSight(){
             AsightScript* SightChild = Cast<AsightScript>(Child);
             if (SightChild){
 				sightPointer = SightChild;
-
-				s.Append(TEXT(" (AsightScript)"));
-                UE_LOG(LogTemp, Warning, TEXT("FOUND CHILDS NEW: %s (AsightScript)"), *SightChild->GetName());
-            }
-            else{
-                UE_LOG(LogTemp, Warning, TEXT("FOUND CHILDS NEW: %s (%s)"), *ChildName, *ChildType);
             }
         }
     }
@@ -61,8 +57,6 @@ void Aweapon::setupSight(){
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
     }
 
-    // Alternatively, you can use UE_LOG to log to the output log
-    UE_LOG(LogTemp, Warning, TEXT("FOUND CHILDS NEW: %s"), *s);
 }
 
 
@@ -89,8 +83,10 @@ void Aweapon::BeginPlay()
 {
 	Super::BeginPlay();
 	setupSight(); //better call in start right
+	setupAnimations(); //sets up the animations
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
+
 }
 
 // Called every frame / UPDATE
@@ -316,7 +312,10 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 
 			
 		}
-	
+
+
+		//lil test
+		shootAnimation();
 	}
 }
 
@@ -371,8 +370,6 @@ void Aweapon::reload(int amount){
 	}
 }
 
-
-
 int Aweapon::getMagSize(){
 	return 30;
 }
@@ -390,4 +387,72 @@ void Aweapon::showWeapon(bool show){
 /// @return is active (visible status)
 bool Aweapon::isActive(){
 	return isVisible;
+}
+
+
+
+
+////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
+
+
+void Aweapon::pistolPathSet(){
+	FString verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolAnimated/verschlussAnim");
+	setVerschlussPath(verschluss_path);
+}
+
+void Aweapon::setVerschlussPath(FString path){
+	verschlussPath = path;
+}
+
+/// @brief setups all components for the animations
+void Aweapon::setupAnimations()
+{
+	pistolPathSet();
+
+	FString s;
+	// Find all components of type USkeletalMeshComponent attached to this actor
+    TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
+    GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
+
+    // Add each component to the output array
+    for (USkeletalMeshComponent* Component : SkeletalMeshComponents)
+    {
+        if (Component)
+        {
+			FString name = Component->GetName();
+            s.Append(TEXT("Child: "));
+			s.Append(name);
+			s.Append("\n");
+
+			if (name.Contains("verschluss"))
+			{
+				verschlussSkeletonPointer = Component;
+			}
+        }
+    }
+	// Log the string to the console
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, s);
+    }
+    
+}
+
+/// @brief plays the shoot animation if possible
+void Aweapon::shootAnimation(){
+	if(verschlussSkeletonPointer != nullptr){
+		playAnimation(verschlussPath, verschlussSkeletonPointer);
+	}
+}
+
+/// @brief plays an animatin for a skeleton from a path
+/// @param AnimationPath 
+/// @param skeleton 
+void Aweapon::playAnimation(const FString& AnimationPath, USkeletalMeshComponent *skeleton){
+    UAnimSequence* AnimSequence = LoadObject<UAnimSequence>(nullptr, *AnimationPath);
+    if (AnimSequence && skeleton){
+        skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
+		// Set the animation speed
+        skeleton->SetPlayRate(60 * cooldownTime);
+    }
 }

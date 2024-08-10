@@ -75,6 +75,18 @@ protected:
 	//saves the current sight attachment
 	class AsightScript *sightPointer;
 
+	//testing anaimations
+	void shootAnimation();
+
+	void pistolPathSet();
+	void setVerschlussPath(FString path);
+	void setupAnimations();
+
+	void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton);
+
+	class USkeletalMeshComponent *verschlussSkeletonPointer;
+	FString verschlussPath;
+
 
 
 public:	
@@ -95,4 +107,7 @@ private:
 	void showScreenMessage(FString s);
 
 	void enableCollider(bool enable);
+
+
+	
 };

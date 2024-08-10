@@ -405,12 +405,13 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
             return true;
         }
 
-        Start.Z += ONE_METER;
+        //adjustments if any entity might be in way
+        Start.Z += ONE_METER * 1.5f;
         if (canSee(Start, End)){
             return true;
         }
 
-        End.Z += ONE_METER;
+        End.Z += ONE_METER * 1.5f;
         if (canSee(Start, End)){
             return true;
         }

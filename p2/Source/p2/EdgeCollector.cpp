@@ -65,18 +65,21 @@ std::vector<FVector>& EdgeCollector::getAllEdges(UWorld* World, float minHeight)
         AActor* Actor = AllActors[i];
         if (Actor)
         {
-            
-            // Iterate over all components of the actor
-            TArray<UActorComponent*> array;
-            Actor->GetComponents(array);
+            //exclude enteties
+            IDamageinterface *damageInterface = Cast<IDamageinterface>(Actor);
+            if(damageInterface == nullptr){
+                // Iterate over all components of the actor
+                TArray<UActorComponent*> array;
+                Actor->GetComponents(array);
 
-            //childs
-            for (UActorComponent* component : array)
-            {
-                //if component is a mesh component
-                if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(component))
+                //childs
+                for (UActorComponent* component : array)
                 {
-                    getEdgesFromSingleMeshComponent(MeshComponent, *edgeDataEdges);
+                    //if component is a mesh component
+                    if (UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(component))
+                    {
+                        getEdgesFromSingleMeshComponent(MeshComponent, *edgeDataEdges);
+                    }
                 }
             }
         }
