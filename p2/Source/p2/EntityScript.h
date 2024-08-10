@@ -20,6 +20,10 @@ public:
 	//inherited from interface
 	virtual void takedamage(int d) override;
 
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,22 +39,18 @@ protected:
 
 	//path
 	std::vector<FVector> path;
-	void moveTowardsPlayer(float deltaTime, bool canSeePlayer);
+	void moveTowardsPlayer(float deltaTime);
 	void resetpath();
 	void followpath(float deltaTime);
 	bool hasNodesInPathLeft();
 	bool reachedPosition(FVector pos);
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-private:
 	int health;
 	float defaultSpottingTime;
 	float spottingTimeLeft;
 
 	bool spottedPlayer;
+	bool canSeePlayer;
 
 	class AplayerScript* playerPointer;
 

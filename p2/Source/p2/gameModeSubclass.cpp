@@ -36,6 +36,19 @@ AgameModeSubclass::AgameModeSubclass()
         }
     }
 
+    //load human entity
+    static ConstructorHelpers::FObjectFinder<UClass> HumanEntityBPClass(
+        TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'")
+    );
+    if (HumanEntityBPClass.Succeeded())
+    {
+        UClass *bp = HumanEntityBPClass.Object;
+        if(i != nullptr && bp != nullptr){
+            i->setHumanEntityUClassBp(bp);
+        }
+    }
+
+
     //load weapon
     static ConstructorHelpers::FObjectFinder<UClass> weaponBpClass(
         TEXT("Blueprint'/Game/Prefabs/Weapons/weaponBP.weaponBP_C'")

@@ -69,7 +69,7 @@ void AplayerScript::BeginPlay()
         FVector spawnLocation = GetActorLocation();
         spawnLocation.Y += 300;
         spawnLocation.X += 300;
-        i->spawnEntity(GetWorld(), spawnLocation);
+        i->spawnHumanEntity(GetWorld(), spawnLocation);
 	}
     //referenceManager::setPlayerReference(this);
 
@@ -123,10 +123,11 @@ void AplayerScript::Tick(float DeltaTime)
 }
 
 /**
- * Implemented take damage method from interface
+ * Implemented take damage method from interface, need to override it, this method is not valid yet
  */
 void AplayerScript::takedamage(int d)
 {
+    
     // Implementierung der Methode
 	health -= d;
 	if(health <= 0){

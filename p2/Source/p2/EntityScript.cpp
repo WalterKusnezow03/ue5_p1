@@ -30,17 +30,6 @@ void AEntityScript::BeginPlay()
 	defaultSpottingTime = 5;
 	setSpottingTime(defaultSpottingTime);
 
-
-	//testing weapons
-	referenceManager *instance = referenceManager::instance();
-	if(instance != nullptr){
-		Aweapon *w = instance->spawnAweapon(GetWorld());
-		showScreenMessage("begin weapon");
-		if (w != nullptr){
-			showScreenMessage("pickup weapon");
-			w->pickupBot(this);
-		}
-	}
 }
 
 // Called every frame
@@ -58,11 +47,11 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	//rest of update
-	bool canSeePlayer = false;
+	canSeePlayer = false; //reset
 	bool withinAngle = withinVisionAngle(playerPointer);
 
 	//if not spotted yet, check angle, if angle ok, check vision
-	if(!spottedPlayer && withinAngle){
+	if(withinAngle){
 		canSeePlayer = performRaycast(playerPointer);
 	}
 
@@ -85,6 +74,7 @@ void AEntityScript::Tick(float DeltaTime)
 
 
 	}else{
+		//cant see player
 		if(spottedPlayer){
 			//follow
 		}else{
@@ -95,7 +85,7 @@ void AEntityScript::Tick(float DeltaTime)
 
 
 	//moves towards player is spotted and cant see player
-	moveTowardsPlayer(DeltaTime, canSeePlayer);
+	moveTowardsPlayer(DeltaTime);
 	
 }
 
@@ -149,7 +139,7 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 bool AEntityScript::performRaycast(AActor *target) //because a reference is expected it must be valid
 {
 	
-	if (target)
+	if (target != nullptr)
 	{
 		
 		// Get the camera location and rotation
@@ -158,12 +148,24 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		// Define the start and end vectors for the raycast
 		FVector Start = this->GetActorLocation();
 
-		End = Start + (End - Start) * 1.1f; //safety reasons
+		//FVector dir = (End - Start);
+
+		//End = Start + dir * 1.1f; //safety reasons
+		
 
 		// Perform the raycast
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this); // Ignore the character itself
+		// Iterate and ignore all child actors
+		TArray<AActor*> ChildActors;
+		this->GetAttachedActors(ChildActors);
+
+		for (AActor* ChildActor : ChildActors)
+		{
+			Params.AddIgnoredActor(ChildActor);
+		}
+
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
 		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
@@ -179,12 +181,8 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 				return true;
 			}
 
-			if(actor != nullptr){
-				
-				//die POINTER vergleichen, einmal den pointer, einmal die &adresse
-				if(actor == target){
-					return true;
-				}
+			if(actor == target){
+				return true;
 			}
 
 			
@@ -217,14 +215,7 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 
 
 
-
-
-
-
-
-
-
-void AEntityScript::moveTowardsPlayer(float deltaTime, bool canSeePlayer){
+void AEntityScript::moveTowardsPlayer(float deltaTime){
 	if(spottedPlayer && !canSeePlayer){
 		if(!hasNodesInPathLeft()){
 			//ask for path

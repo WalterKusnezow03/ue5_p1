@@ -19,7 +19,7 @@ Aweapon::Aweapon()
 	offset = FVector(-100, 100.0f, 0);
 
 	timeleft = 0;
-	cooldownTime = calculateRpm(700);
+	cooldownTime = calculateRpm(600);
 
 	bulletsInMag = 30;
 }
@@ -81,7 +81,7 @@ void Aweapon::showScreenMessage(FString s){
  */
 float Aweapon::calculateRpm(int rpm){
 	float rps = rpm / 60;
-	return 1 / rps; //1s / rps wait time
+	return 1 / rps; //1s / rps = wait time in seconds
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +90,7 @@ void Aweapon::BeginPlay()
 	Super::BeginPlay();
 	setupSight(); //better call in start right
 	enableCollider(true);
+	isVisible = true; //inital setting of visibilty, do not remove!
 }
 
 // Called every frame / UPDATE
@@ -107,7 +108,7 @@ void Aweapon::Tick(float DeltaTime)
 void Aweapon::followPlayer(){
 	
 
-	//player follow
+	//player follow if player picked up
 	if (isPickedup())
 	{
 		FVector targetPos = cameraPointer->GetComponentLocation() + 
@@ -122,13 +123,14 @@ void Aweapon::followPlayer(){
         
         SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-		return;
+		return; //dont check for bot.
 	}
 
-	//bot follow
+	//bot follow if bot picked up
 	if(botPointer != nullptr){
 		FVector targetPos = botPointer->GetActorLocation() +
-							botPointer->GetActorForwardVector() * 200.0f;
+							botPointer->GetActorForwardVector() * 100.0f;
+							//+ getOffsetVector();
 
 		FRotator targetRotation = botPointer->GetActorRotation();
         
@@ -175,7 +177,7 @@ void Aweapon::updateCooltime(float time){
 	if(isCooling()){
 		timeleft -= time;
 	}else{
-		abzugHinten = false;
+		abzugHinten = false; //can shoot again
 	}
 }
 
@@ -258,13 +260,14 @@ void Aweapon::shoot(){
 }
 
 /// @brief shoot method for the bot
+/// will shoot the bot weapon 
 /// @param target 
 void Aweapon::shootBot(FVector target){
 	if(botPointer != nullptr){
 		FVector start = botPointer->GetActorLocation();
-		FVector connect = (target - start);
-		start += connect * 0.1f;
-		shootProtected(start, target);
+		FVector connect = (target - start).GetSafeNormal();
+		start += connect * 50;
+		shootProtected(start, target); //protected weapon shoot call
 	}
 }
 
@@ -275,9 +278,12 @@ void Aweapon::shootBot(FVector target){
 /// @param Start pos
 /// @param End pos target
 void Aweapon::shootProtected(FVector Start, FVector End){
-	if(canShoot()){
-		//showScreenMessage("shoot!");
+	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
+	
+	if(canShoot()){ //check if can shoot
 
+		//showScreenMessage("shoot!");	
+		//showScreenMessage("shoot bot 3!");
 		//FVector direction = (to - from).GetSafeNormal(); // AB = B - A
 		resetCoolTime(cooldownTime);
 		//timeleft = cooldownTime; // reset time
@@ -317,10 +323,10 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 
 
 
-
+/// @brief will check if weapon is able to shoot: mag, cooldown, active state
+/// @return bool can shoot right now
 bool Aweapon::canShoot(){
 	//here add too for single fire weapons
-
 	return enoughBulletsInMag() && !isCooling() && isActive(); //cant be show if weapon is not selected
 }
 
@@ -345,7 +351,7 @@ void Aweapon::resetCoolTime(float time){
  * will return if the weapon is cooling at the moment
  */
 bool Aweapon::isCooling(){
-	return timeleft > 0;
+	return timeleft > 0.01f;
 }
 
 /**

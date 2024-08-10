@@ -129,7 +129,7 @@ void playerInventory::shoot(){
             weaponVector.at(currentIndex)->shoot();
 
             FString Message = FString::Printf(TEXT("weapon: %d"), currentIndex);
-            showScreenMessage(Message);
+            //showScreenMessage(Message);
         }
     }
 }

@@ -24,9 +24,11 @@ public:
 	//set class bps
 	void setEntityUClassBp(UClass *entityIn);
 	void setWeaponUClassBp(UClass *weaponIn);
+	void setHumanEntityUClassBp(UClass *humanIn);
 
 	//spawn methods
 	void spawnEntity(UWorld *world, FVector location);
+	void spawnHumanEntity(UWorld *world, FVector location);
 
 
 	Aweapon *spawnAweapon(UWorld *world);
@@ -48,5 +50,6 @@ private:
 	class AplayerScript *playerPointer;
 
 	class UClass *entityBpClass;
+	class UClass *humanEntityBpClass;
 	class UClass *weaponBpClass;
 };

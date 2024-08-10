@@ -57,6 +57,14 @@ void referenceManager::setEntityUClassBp(UClass *entityIn){
     }
 }
 
+/// @brief sets the human entity bp reference
+/// @param humanIn 
+void referenceManager::setHumanEntityUClassBp(UClass *humanIn){
+    if(humanIn != nullptr){
+        humanEntityBpClass = humanIn;
+    }
+}
+
 
 /// @brief sets the weapon bp reference
 /// @param weaponIn 
@@ -101,13 +109,16 @@ AActor *referenceManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector L
 /// @param world 
 /// @param Location 
 void referenceManager::spawnEntity(UWorld* world, FVector Location) {
-
     AActor *actor = spawnAactor(world, entityBpClass, Location);
-    
 }
 
 
-
+/// @brief spawns an human entity in the world
+/// @param world 
+/// @param Location 
+void referenceManager::spawnHumanEntity(UWorld* world, FVector Location) {
+    AActor *actor = spawnAactor(world, humanEntityBpClass, Location);
+}
 
 /// @brief spawns a weapon and returns the pointer
 /// @param world world to spawn in
