@@ -8,9 +8,10 @@ priorityList::priorityList()
     
 }
 
+/// @brief nodes are NOT deletet from the list because they are property of the path finder!
 priorityList::~priorityList()
 {
-    
+    //nodes are NOT deletet from the list because they are property of the path finder!
 }
 
 

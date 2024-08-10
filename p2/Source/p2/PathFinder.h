@@ -35,8 +35,8 @@ public:
 	};
 
 private:
-	static constexpr int CHUNKSIZE = 20000; // 1m = 100
-	static constexpr int ONE_METER = 70;
+	static constexpr int CHUNKSIZE = 2000; // 1m = 100, 20m = 2000
+	static constexpr int ONE_METER = 70; //distance to keep between nodes
 
 	PathFinder(UWorld *worldIn);
 	class UWorld *worldPointer;
@@ -108,7 +108,5 @@ private:
 	);
 
 	bool canSee(PathFinder::Node *A, PathFinder::Node *B);
-
-
-
+	bool canSee(FVector a, FVector b);
 };

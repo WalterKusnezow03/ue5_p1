@@ -383,7 +383,7 @@ void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world)
     centerBottom /= (edges.size());
     center /= (edges.size() * 2);
 
-    //apply offset smallest
+    //apply offset smallest //PUSHOUT EDGE
     for (int i = 0; i < edges.size(); i++) {
         FVector top = edges.at(i).top;
         FVector bottom = edges.at(i).bottom;
@@ -391,8 +391,8 @@ void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world)
         //FVector dir = (top - center).GetSafeNormal();
         FVector dir = (top - center).GetSafeNormal();
         dir.Z = 0;
-        edges.at(i).top += dir * 100;
-        edges.at(i).bottom += dir * 100;
+        edges.at(i).top += dir * 150; //PUSHOUT 150! 
+        edges.at(i).bottom += dir * 150;
         
     }
     
@@ -406,6 +406,7 @@ void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world)
 void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
     if(world){
         FVector Start = edge.top;
+        Start.Z += 1000;
         FVector End = edge.bottom;
         End.Z -= 1000;
 
@@ -421,13 +422,13 @@ void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
 		{
             //needed here to check if the distance between hit and start is less than 10% of distance
             //to prevent false edges
-            float completeDistance = FVector::Dist(Start, End);
+            float completeDistance = FVector::Dist(Start, edge.top);
             float hitDistanceFromTop = FVector::Dist(Start, HitResult.ImpactPoint);
             if(completeDistance * 0.2f < hitDistanceFromTop){
                 //min 20% distance to remove false hits
 
                 FVector hitPos = HitResult.ImpactPoint;
-                hitPos.Z += 50;
+                hitPos.Z += 70;
                 edge.bottom = hitPos;
             }
 

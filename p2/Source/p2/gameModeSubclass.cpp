@@ -3,6 +3,7 @@
 
 #include "gameModeSubclass.h"
 
+#include "referenceManager.h"
 #include "PathFinder.h"
 #include "EdgeCollector.h"
 #include "Engine/World.h"
@@ -17,8 +18,41 @@ AgameModeSubclass::AgameModeSubclass()
     // Set default pawn class
     //DefaultPawnClass = AplayerScript::StaticClass();
 
-    //createPathFinder();
+
+
+    //load reference manager
+    referenceManager *i = referenceManager::instance();
+
+
+    //load entity
+    static ConstructorHelpers::FObjectFinder<UClass> EntityBPClass(
+        TEXT("Blueprint'/Game/Prefabs/player/entityPrefab.entityPrefab_C'")
+    );
+    if (EntityBPClass.Succeeded())
+    {
+        UClass *bp = EntityBPClass.Object;
+        if(i != nullptr && bp != nullptr){
+            i->setEntityUClassBp(bp);
+        }
+    }
+
+    //load weapon
+    static ConstructorHelpers::FObjectFinder<UClass> weaponBpClass(
+        TEXT("Blueprint'/Game/Prefabs/Weapons/weaponBP.weaponBP_C'")
+    );
+    if (weaponBpClass.Succeeded())
+    {
+        UClass *bp = weaponBpClass.Object;
+        if(i != nullptr && bp != nullptr){
+            i->setWeaponUClassBp(bp);
+        }
+    }
+
 }
+
+
+
+
 
 void AgameModeSubclass::BeginPlay()
 {

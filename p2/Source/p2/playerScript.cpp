@@ -60,7 +60,22 @@ AplayerScript::AplayerScript()
 void AplayerScript::BeginPlay()
 {
 	Super::BeginPlay();
-    referenceManager::setPlayerReference(this);
+    referenceManager *i = referenceManager::instance();
+	if(i){
+		i->setPlayerReference(this);
+
+
+        //testing
+        FVector spawnLocation = GetActorLocation();
+        spawnLocation.Y += 300;
+        spawnLocation.X += 300;
+        i->spawnEntity(GetWorld(), spawnLocation);
+	}
+    //referenceManager::setPlayerReference(this);
+
+
+   
+    
 }
 
 // Called to bind functionality to input

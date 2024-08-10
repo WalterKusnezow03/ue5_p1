@@ -24,12 +24,17 @@ public:
 
 	void showWeapon(bool show);
 	void pickup(UCameraComponent &cameraRefIn);
+	void pickupBot(AActor *actorIn); //pickup for bot!
 	void dropweapon();
 	bool isPickedup();
 	void reload(int amount);
 	int getMagSize();
-	void shoot(FVector from, FVector to);
-	void shoot(); //with default camera which is passed in by then
+
+	//the class has 3 shoot methods: both public methods collect start and target point
+	//the "shootProtected" must only be called within the class!
+	void shoot(); //PLAYER SHOOT METHOD
+	void shootBot(FVector target); //BOT SHOOT METHOD
+
 	void releaseShoot();
 	void aim(bool aimstatus);
 
@@ -43,6 +48,9 @@ public:
 protected:
 	/// @brief will save whether the weapon is shown (selected or not. Blocks shooting)
 	bool isVisible;
+
+	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
+	void shootProtected(FVector from, FVector to);
 
 	/**
 	 * must be resetet if not a single fire weapon when cooldown complete
@@ -80,6 +88,7 @@ public:
 
 private:
 	class UCameraComponent *cameraPointer; //why class, idk, just keep it like that
+	class AActor *botPointer;
 
 	FVector offset;
 

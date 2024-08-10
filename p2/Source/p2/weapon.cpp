@@ -11,6 +11,7 @@ Aweapon::Aweapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	cameraPointer = nullptr;
+	botPointer = nullptr;
 	// Ensure the World context is valid
 
 	isAiming = false;
@@ -105,6 +106,8 @@ void Aweapon::Tick(float DeltaTime)
  */
 void Aweapon::followPlayer(){
 	
+
+	//player follow
 	if (isPickedup())
 	{
 		FVector targetPos = cameraPointer->GetComponentLocation() + 
@@ -119,32 +122,47 @@ void Aweapon::followPlayer(){
         
         SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
+		return;
+	}
+
+	//bot follow
+	if(botPointer != nullptr){
+		FVector targetPos = botPointer->GetActorLocation() +
+							botPointer->GetActorForwardVector() * 200.0f;
+
+		FRotator targetRotation = botPointer->GetActorRotation();
+        
+        // Smoothly interpolate position and rotation
+        FVector currentPos = GetActorLocation();
+        FRotator currentRotation = GetActorRotation();
+        
+        SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
+        SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
+
+		//showScreenMessage(FString::Printf(TEXT("weapon pos %d, %d"), currentPos.X, currentPos.Y));
 	}
 }
 
-/**
- * returns the offset vector of the sight by value
- */
+/// @brief Only for player:
+/// returns the offset vector of the sight and hipfire by value
+/// @return offset vector
 FVector Aweapon::getOffsetVector(){
-	
 	FVector pos = FVector(0, 0, 0);
+	if(cameraPointer != nullptr){
+		/*
+		if(sightPointer != nullptr){
+			
+			FVector sightpos = sightPointer->getSightCenter();
+			float weaponZ = GetActorLocation().Z;
+			float zOffset = sightpos.Z - weaponZ;
+			pos.Z = weaponZ;
+		}*/
 
-	/*
-	if(sightPointer != nullptr){
-		
-		FVector sightpos = sightPointer->getSightCenter();
-		float weaponZ = GetActorLocation().Z;
-		float zOffset = sightpos.Z - weaponZ;
-		pos.Z = weaponZ;
-		
-		//showScreenMessage()
-	}*/
-
-	if(!isAiming){
-		//hipfire offset
-		pos += cameraPointer->GetRightVector().GetSafeNormal() * 100;
+		if(!isAiming){
+			//hipfire offset
+			pos += cameraPointer->GetRightVector().GetSafeNormal() * 100;
+		}	
 	}
-
 	return pos;
 }
 
@@ -171,9 +189,8 @@ void Aweapon::enableCollider(bool enable){
 
 
 
-/**
- * allows the player to pickup the weapon
- */
+/// @brief allows the player to pickup the weapon
+/// @param cameraRefIn 
 void Aweapon::pickup(UCameraComponent &cameraRefIn){
 	if(!isPickedup()){
 		cameraPointer = &cameraRefIn; // Assign the address of cameraRefIn to cameraRef
@@ -181,12 +198,24 @@ void Aweapon::pickup(UCameraComponent &cameraRefIn){
 	}
 }
 
+/// @brief pickup emthod for bot
+/// @param actorIn actor bot  
+void Aweapon::pickupBot(AActor *actorIn){
+	if(botPointer == nullptr && actorIn != nullptr){
+		botPointer = actorIn;
+		enableCollider(false);
+	}
+}
+
+
 
 /**
- * will unbind the weapon from the camera Pointer passed when picking up the weapon
+ * Unbind from player or bot
+ * will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
  */
 void Aweapon::dropweapon(){
 	cameraPointer = nullptr;
+	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showWeapon(true);
 }
@@ -195,7 +224,8 @@ void Aweapon::dropweapon(){
  * returns a boolean if its picked up or not
  */
 bool Aweapon::isPickedup(){
-	return cameraPointer != nullptr;
+	return cameraPointer != nullptr; //one must be set
+	// return cameraPointer != nullptr;
 }
 
 
@@ -206,7 +236,7 @@ void Aweapon::releaseShoot(){
 	abzugHinten = false;
 }
 
-// with default camera which is passed in by then
+/// @brief shoot method for player! make sure camera is attached!
 void Aweapon::shoot(){
 	if(isPickedup() && canShoot()){
 		abzugHinten = true;
@@ -223,16 +253,29 @@ void Aweapon::shoot(){
 
 		FVector End = Start + (ForwardVector * 50000.0f); //50000 units in front of the camera, must be changed later
 
-		shoot(Start, End);//shoot from a start to an endpoint
+		shootProtected(Start, End);//shoot from a start to an endpoint
 	}
-} 
+}
+
+/// @brief shoot method for the bot
+/// @param target 
+void Aweapon::shootBot(FVector target){
+	if(botPointer != nullptr){
+		FVector start = botPointer->GetActorLocation();
+		FVector connect = (target - start);
+		start += connect * 0.1f;
+		shootProtected(start, target);
+	}
+}
 
 
-/**
- * creates a raycast from start to end point and damages first object within the line
- */
-void Aweapon::shoot(FVector Start, FVector End){
-	if(isPickedup() && canShoot()){
+
+/// @brief creates a raycast from start to end point and damages first object within the line
+/// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
+/// @param Start pos
+/// @param End pos target
+void Aweapon::shootProtected(FVector Start, FVector End){
+	if(canShoot()){
 		//showScreenMessage("shoot!");
 
 		//FVector direction = (to - from).GetSafeNormal(); // AB = B - A
@@ -270,6 +313,8 @@ void Aweapon::shoot(FVector Start, FVector End){
 	
 	}
 }
+
+
 
 
 

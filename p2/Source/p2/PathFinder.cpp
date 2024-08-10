@@ -1,5 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
+#include "PathFinder.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Damageinterface.h"
@@ -10,7 +13,7 @@
 #include <limits>
 #include "priorityList.h"
 
-#include "PathFinder.h"
+
 
 
 
@@ -60,6 +63,7 @@ PathFinder::Quadrant::~Quadrant(){
             PathFinder::Chunk *c = map.at(i).at(j);
             if(c != nullptr){
                 delete (c);
+                map.at(i).at(j) = nullptr;
             }
         }
     }
@@ -69,6 +73,7 @@ PathFinder::Chunk::~Chunk(){
     for (int i = 0; i < nodes.size(); i++){
         if(nodes.at(i) != nullptr){
             delete (nodes.at(i));
+            nodes.at(i) = nullptr;
         }
     }
 }
@@ -204,7 +209,7 @@ std::vector<PathFinder::Node *> PathFinder::getSubGraph(FVector a, FVector b){
 
             FString string = FString::Printf(TEXT("asked num size %d"), asked.size());
             if(GEngine){
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
+                //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
             }
 
 
@@ -278,17 +283,17 @@ float PathFinder::distance(FVector A, FVector B){
 
 
 /// @brief finds the path between 2 given nodes in the subgraph
-/// @param start 
-/// @param end 
-/// @param subgraph 
+/// @param start node from the graph
+/// @param end node from the graph
+/// @param subgraph graph enclosed by start and end node. Use Subgraph method
 /// @return vector of positions: path
 std::vector<FVector> PathFinder::findPath(
     Node *start, 
     Node *end, 
     std::vector<PathFinder::Node*> &subgraph
 ){
-
-    screenMessage(subgraph.size());
+    screenMessage(FString::Printf(TEXT("subgraph size %d"), subgraph.size()));
+    
 
     for (int i = 0; i < subgraph.size(); i++){
         PathFinder::Node *n = subgraph.at(i);
@@ -320,9 +325,9 @@ std::vector<FVector> PathFinder::findPath(
 
         if (current != nullptr)
         {
-            if(current == end){ //|| canSee(current, end)){
+            if((current == end)){ //|| canSee(current, end)){
                 //path found
-                //screenMessage(111111);
+                screenMessage("found path");
                 return constructPath(end);
             }
 
@@ -337,7 +342,7 @@ std::vector<FVector> PathFinder::findPath(
                     //bool wasClosed = n->closedFlag;
                     if(!n->isClosed()){
                         
-                        //kante aufstellen wenn sichtverbindung
+                        //kante aufstellen wenn sichtverbindung besteht. Dynamischer a stern modifiziert
                         if(canSee(current, n)){
                             
 
@@ -387,17 +392,36 @@ void PathFinder::screenMessage(FString s) {
 
 
 
-/// @brief checks if 2 nodes can see each other
+/// @brief checks if 2 nodes can see each other, damagable interfaces are excluded for now.
 /// @param A position A
 /// @param B position B
 /// @return can see without interrupt
 bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
     if(worldPointer && A && B){
-
         FVector Start = A->pos;
+        FVector End = B->pos;
+        //testing with more raycasts to ensure realibilty
+        if (canSee(Start, End)){
+            return true;
+        }
 
-        FVector connect_09 = Start + (B->pos - Start) * 0.95f;
-        FVector End = B->pos;  // B->pos;
+        Start.Z += ONE_METER;
+        if (canSee(Start, End)){
+            return true;
+        }
+
+        End.Z += ONE_METER;
+        if (canSee(Start, End)){
+            return true;
+        }
+
+
+        /*
+        FVector Start = A->pos;
+        FVector End = B->pos; // B->pos;
+        */
+        FVector dir = (B->pos - Start).GetSafeNormal();
+        Start += dir * 20; //offset for entity raycast failure
 
         FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -407,7 +431,24 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
 
 		// If the raycast hit something, log the hit actor's name
 		if (bHit)
-		{
+		{   
+            //ein punkt weil hier ein value bzw ref call!, merken, wichtig!
+            AActor *actor = HitResult.GetActor();
+            if(actor != nullptr){
+				
+				
+
+                //casting:
+                //DT* name = Cast<DT>(actor);
+				IDamageinterface* entity = Cast<IDamageinterface>(actor);
+				if (entity){
+                    float hitDistance = FVector::Dist(HitResult.ImpactPoint, End);
+                    if(hitDistance <= 100){
+                        return true; //ignore enteties
+                    }
+                }
+            }
+            //default hit: can see FALSE
             return false;
         }else{
             return true; //no hit: can see true
@@ -416,7 +457,25 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
     return false;
 }
 
+/// @brief checks with a simple raycasts if nodes can see each other
+/// @param Start 
+/// @param End 
+/// @return 
+bool PathFinder::canSee(FVector Start, FVector End){
+    if(worldPointer){
+        FHitResult HitResult;
+		FCollisionQueryParams Params;
+		//Params.AddIgnoredActor(this); // Ignore the character itself
 
+		bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+        if(bHit){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    return false;
+}
 
 std::vector<FVector> PathFinder::constructPath(PathFinder::Node *end){
     std::vector<FVector> list;
@@ -512,7 +571,7 @@ std::vector<PathFinder::Node*> PathFinder::Quadrant::nodesEnClosedBy(
 
                 FString string = FString::Printf(TEXT("read enclosed num size %d"), read.size());
                 if(GEngine){
-                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
+                    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
                 }
             }
         }
@@ -599,6 +658,7 @@ std::vector<PathFinder::Node*> &PathFinder::Chunk::getNodes(){
 /// @return returns the closest node near by
 PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
     if(nodes.size() <= 0){
+
         PathFinder::Node *s = new PathFinder::Node(pos);
         nodes.push_back(s);
         return s;
@@ -652,7 +712,7 @@ bool PathFinder::Chunk::hasNode(FVector pos){
             }
         }
     }
-    if(closest <= ONE_METER){
+    if(closest <= (ONE_METER)){
         return true;
     }
     return false;
