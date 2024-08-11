@@ -86,9 +86,9 @@ void AEntityScript::Tick(float DeltaTime)
 
 	//moves towards player is spotted and cant see player
 	moveTowardsPlayer(DeltaTime);
-	
-}
 
+	updatePathDelay(DeltaTime);
+}
 
 //allows the entity to take damage
 void AEntityScript::takedamage(int d){
@@ -240,10 +240,16 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 				PathFinder *p = PathFinder::instance(world);
 
 				//ask for path
-				if(p != nullptr && playerPointer != nullptr ){
+				if(p != nullptr && playerPointer != nullptr && !pathDelayRunning()){
 					FVector a = GetActorLocation();
 					FVector b = playerPointer->GetActorLocation();
 					this->path = p->getPath(a,b);
+
+					if(this->path.size() <= 0){
+						resetPathDelay(3.0f); //wait 3 seconds before asking for next path, allows player to move, 
+						//better path finding and saving resources because if an issue with the pathfinding occurs,
+						//it wont be solved unless the target moves. 
+					}
 				}
 			}
 			
@@ -342,4 +348,27 @@ void AEntityScript::showScreenMessage(FString s){
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
 	}
+}
+
+
+
+
+/// @brief reset the path delay time, allow the player to move to find better path
+/// @param time time in seconds to set
+void AEntityScript::resetPathDelay(float time){
+	pathDelay = time;
+}
+
+/// @brief call this mesthod from tick for update
+/// @param DeltaTime 
+void AEntityScript::updatePathDelay(float DeltaTime){
+	if(pathDelayRunning()){
+		pathDelay -= DeltaTime;
+	}
+}
+
+/// @brief returns if the delay is still running
+/// @return 
+bool AEntityScript::pathDelayRunning(){
+	return pathDelay > 0.01f;
 }

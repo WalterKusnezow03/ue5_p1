@@ -43,13 +43,27 @@ protected:
 	void LookAt(AActor *target);
 	bool withinVisionAngle(AActor *target);
 
-	//path
+	//path section
 	std::vector<FVector> path;
 	void moveTowardsPlayer(float deltaTime);
 	void resetpath();
 	void followpath(float deltaTime);
 	bool hasNodesInPathLeft();
 	bool reachedPosition(FVector pos);
+
+	/// @brief saves the time left for delay, if no path is found the timer should be reset
+	/// allows the player to move and better path to be found, saves performance
+	float pathDelay;
+	/// @brief reset the path delay time to a number of seconds
+	/// @param time time in deconds
+	void resetPathDelay(float time);
+	/// @brief update the path delay time, called from tick
+	/// @param DeltaTime deltatime since last frame
+	void updatePathDelay(float DeltaTime);
+	///returns if any time is left to be waited before asking for a new path
+	bool pathDelayRunning();
+	//path section end
+
 
 	int health;
 	float defaultSpottingTime;

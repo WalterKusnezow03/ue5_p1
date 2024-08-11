@@ -396,7 +396,8 @@ bool Aweapon::isActive(){
 
 
 void Aweapon::pistolPathSet(){
-	FString verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolAnimated/verschlussAnim");
+	//TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim")
+	FString verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
 	setVerschlussPath(verschluss_path);
 }
 
@@ -446,13 +447,17 @@ void Aweapon::shootAnimation(){
 }
 
 /// @brief plays an animatin for a skeleton from a path
-/// @param AnimationPath 
+/// @param AnimationPath path to the animation
 /// @param skeleton 
 void Aweapon::playAnimation(const FString& AnimationPath, USkeletalMeshComponent *skeleton){
     UAnimSequence* AnimSequence = LoadObject<UAnimSequence>(nullptr, *AnimationPath);
     if (AnimSequence && skeleton){
-        skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
+		float animationLength = AnimSequence->GetPlayLength();
+		float playRate = animationLength / cooldownTime; //properly scale
+
+		skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
 		// Set the animation speed
-        skeleton->SetPlayRate(60 * cooldownTime);
-    }
+        //skeleton->SetPlayRate(60 * cooldownTime);
+		skeleton->SetPlayRate(playRate);
+	}
 }
