@@ -75,12 +75,6 @@ void referenceManager::setWeaponUClassBp(UClass *weaponIn){
 }
 
 
-
-
-
-
-
-
 //spawn methods
 
 /// @brief spawns any actor from uclass (from content likely)

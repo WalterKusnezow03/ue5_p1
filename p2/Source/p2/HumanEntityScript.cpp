@@ -4,7 +4,7 @@
 #include "HumanEntityScript.h"
 
 #include "playerScript.h"
-#include "PathFinder.h"
+#include "pathFinding/PathFinder.h"
 #include "referenceManager.h"
 #include "Kismet/KismetMathLibrary.h"
 

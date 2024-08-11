@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "sightScript.h"
+#include "weaponEnum.h"
 
 #include "weapon.generated.h"
 
@@ -17,10 +18,15 @@ class P2_API Aweapon : public AActor
 	
 public:
 
-	
-
 	// Sets default values for this actor's properties (constructor)
 	Aweapon();
+
+	// Enum to specify the type of weapon -> is saved to create animation paths
+	// enum values will resemble their EXACT type for animation locations in folder structure!
+	// DO NOT REMOVE
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	weaponEnum Type;
+
 
 	void showWeapon(bool show);
 	void pickup(UCameraComponent &cameraRefIn);
@@ -52,6 +58,9 @@ protected:
 	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
 	void shootProtected(FVector from, FVector to);
 
+	bool singleFireModeOn;
+	bool singleFireMode();
+
 	/**
 	 * must be resetet if not a single fire weapon when cooldown complete
 	 */
@@ -78,7 +87,7 @@ protected:
 	//testing anaimations
 	void shootAnimation();
 
-	void pistolPathSet();
+	void animationPathSet();
 	void setVerschlussPath(FString path);
 	void setupAnimations();
 

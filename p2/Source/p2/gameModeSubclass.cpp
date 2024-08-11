@@ -4,8 +4,8 @@
 #include "gameModeSubclass.h"
 
 #include "referenceManager.h"
-#include "PathFinder.h"
-#include "EdgeCollector.h"
+#include "pathFinding/PathFinder.h"
+#include "pathFinding/EdgeCollector.h"
 #include "Engine/World.h"
 
 //constructor

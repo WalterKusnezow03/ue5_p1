@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "playerScript.h"
-#include "PathFinder.h"
+#include "pathFinding/PathFinder.h"
 #include "referenceManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EntityScript.h"
@@ -245,6 +245,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 					FVector b = playerPointer->GetActorLocation();
 					this->path = p->getPath(a,b);
 
+					//no path was found
 					if(this->path.size() <= 0){
 						resetPathDelay(3.0f); //wait 3 seconds before asking for next path, allows player to move, 
 						//better path finding and saving resources because if an issue with the pathfinding occurs,

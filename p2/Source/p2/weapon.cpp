@@ -3,6 +3,7 @@
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "Damageinterface.h"
+#include "weaponEnum.h"
 #include "sightScript.h"
 
 // Sets default values
@@ -17,6 +18,7 @@ Aweapon::Aweapon()
 	// Ensure the World context is valid
 
 	isAiming = false;
+	singleFireModeOn = false;
 
 	offset = FVector(-100, 100.0f, 0);
 
@@ -28,6 +30,7 @@ Aweapon::Aweapon()
 
 /// @brief finds the sight component of the weapon if existent
 void Aweapon::setupSight(){
+
 	TArray<AActor*> ChildActors;
     FString s;
     GetAllChildActors(ChildActors, true);
@@ -52,13 +55,8 @@ void Aweapon::setupSight(){
     }
 
     // Log the string to the console
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
-    }
-
+	showScreenMessage(s);
 }
-
 
 /**
  * shows a screen message for debugging
@@ -149,7 +147,7 @@ FVector Aweapon::getOffsetVector(){
 	if(cameraPointer != nullptr){
 		/*
 		if(sightPointer != nullptr){
-			
+			//apply height offset
 			FVector sightpos = sightPointer->getSightCenter();
 			float weaponZ = GetActorLocation().Z;
 			float zOffset = sightpos.Z - weaponZ;
@@ -158,7 +156,7 @@ FVector Aweapon::getOffsetVector(){
 
 		if(!isAiming){
 			//hipfire offset
-			pos += cameraPointer->GetRightVector().GetSafeNormal() * 100;
+			pos += cameraPointer->GetRightVector().GetSafeNormal() * 25;
 		}	
 	}
 	return pos;
@@ -173,11 +171,20 @@ void Aweapon::updateCooltime(float time){
 	if(isCooling()){
 		timeleft -= time;
 	}else{
-		abzugHinten = false; //can shoot again
+		if(!singleFireMode()){
+			abzugHinten = false; //can shoot again if auto release
+		}
+		
 	}
 }
-
-
+/// @brief will say if single fire is on
+/// @return true false
+bool Aweapon::singleFireMode(){
+	if(Type == weaponEnum::pistol){
+		return true;
+	}
+	return singleFireModeOn;
+}
 
 /// @brief will enable and disable the collider for the actor
 /// @param enable 
@@ -237,7 +244,6 @@ void Aweapon::releaseShoot(){
 /// @brief shoot method for player! make sure camera is attached!
 void Aweapon::shoot(){
 	if(isPickedup() && canShoot()){
-		abzugHinten = true;
 
 		FVector ForwardVector = cameraPointer->GetForwardVector();
     	// Now you can use ForwardVector which represents the direction the camera is facing
@@ -277,6 +283,8 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
+
+		abzugHinten = true;
 
 		//showScreenMessage("shoot!");	
 		//showScreenMessage("shoot bot 3!");
@@ -325,6 +333,11 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 /// @brief will check if weapon is able to shoot: mag, cooldown, active state
 /// @return bool can shoot right now
 bool Aweapon::canShoot(){
+	bool single = singleFireMode();
+	if(single && abzugHinten){
+		return false; //block if is a single fireWeapon
+	}
+
 	//here add too for single fire weapons
 	return enoughBulletsInMag() && !isCooling() && isActive(); //cant be show if weapon is not selected
 }
@@ -394,10 +407,23 @@ bool Aweapon::isActive(){
 
 ////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
 
-
-void Aweapon::pistolPathSet(){
+/// @brief will set the paths to the animations based on weapon enum type
+/// to not create subclasses! DO NOT REMOVE
+void Aweapon::animationPathSet(){
 	//TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim")
-	FString verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
+
+	FString verschluss_path = "";
+
+	//differentiate between the types to set the paths properly for each weapon (type)
+	if (Type == weaponEnum::pistol){
+		//pistol
+		verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
+	}
+	if(Type == weaponEnum::assaultRifle){
+		//assault rifle
+	}
+
+	 
 	setVerschlussPath(verschluss_path);
 }
 
@@ -408,7 +434,7 @@ void Aweapon::setVerschlussPath(FString path){
 /// @brief setups all components for the animations
 void Aweapon::setupAnimations()
 {
-	pistolPathSet();
+	animationPathSet();
 
 	FString s;
 	// Find all components of type USkeletalMeshComponent attached to this actor
