@@ -6,6 +6,7 @@
 #include "referenceManager.h"
 #include "pathFinding/PathFinder.h"
 #include "pathFinding/EdgeCollector.h"
+#include "entityManager/EntityManager.h"
 #include "Engine/World.h"
 
 //constructor
@@ -18,11 +19,8 @@ AgameModeSubclass::AgameModeSubclass()
     // Set default pawn class
     //DefaultPawnClass = AplayerScript::StaticClass();
 
-
-
-    //load reference manager
-    referenceManager *i = referenceManager::instance();
-
+    //load the entity manager
+    EntityManager *entityManager = EntityManager::instance();
 
     //load entity
     static ConstructorHelpers::FObjectFinder<UClass> EntityBPClass(
@@ -31,8 +29,8 @@ AgameModeSubclass::AgameModeSubclass()
     if (EntityBPClass.Succeeded())
     {
         UClass *bp = EntityBPClass.Object;
-        if(i != nullptr && bp != nullptr){
-            i->setEntityUClassBp(bp);
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setEntityUClassBp(bp);
         }
     }
 
@@ -43,8 +41,8 @@ AgameModeSubclass::AgameModeSubclass()
     if (HumanEntityBPClass.Succeeded())
     {
         UClass *bp = HumanEntityBPClass.Object;
-        if(i != nullptr && bp != nullptr){
-            i->setHumanEntityUClassBp(bp);
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setHumanEntityUClassBp(bp);
         }
     }
 
@@ -56,8 +54,8 @@ AgameModeSubclass::AgameModeSubclass()
     if (weaponBpClass.Succeeded())
     {
         UClass *bp = weaponBpClass.Object;
-        if(i != nullptr && bp != nullptr){
-            i->setWeaponUClassBp(bp);
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setWeaponUClassBp(bp);
         }
     }
 

@@ -1,0 +1,30 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/**
+ * 
+ */
+template <typename T>
+class P2_API EntityManagerGeneric{
+	static_assert(std::is_base_of<AActor, T>::value, "T must be derived from AActor");
+
+public:
+	EntityManagerGeneric();
+	~EntityManagerGeneric();
+
+	
+	void add(T *actor);
+
+	T *getFirstActor();
+
+	bool hasActorsLeft();
+
+private:
+	/// @brief ector vector T* pointers
+	std::vector<T *> actorVector;
+
+
+};

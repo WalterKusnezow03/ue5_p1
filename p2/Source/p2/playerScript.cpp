@@ -4,6 +4,7 @@
 #include "playerScript.h"
 #include "weapon.h"
 #include "playerInventory.h"
+#include "entityManager/EntityManager.h"
 #include "referenceManager.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
@@ -63,19 +64,18 @@ void AplayerScript::BeginPlay()
     referenceManager *i = referenceManager::instance();
 	if(i){
 		i->setPlayerReference(this);
-
-
-        //testing
+	}
+    
+    //testing
+    EntityManager *e = EntityManager::instance();
+    if(e != nullptr){
         FVector spawnLocation = GetActorLocation();
         spawnLocation.Y += 300;
         spawnLocation.X += 300;
-        i->spawnHumanEntity(GetWorld(), spawnLocation);
-	}
-    //referenceManager::setPlayerReference(this);
+        e->spawnHumanEntity(GetWorld(), spawnLocation);
+    }
 
 
-   
-    
 }
 
 // Called to bind functionality to input
@@ -234,18 +234,20 @@ void AplayerScript::performRaycast()
 }
 
 void AplayerScript::drop(){
+    /*
 	if(weaponpointer != nullptr){
         weaponpointer->dropweapon();
         
-    }
+    }*/
     playerInventory.dropWeapon();
 }
 
 void AplayerScript::reload(){
+    /*
 	if(weaponpointer != nullptr){
         
         weaponpointer->reload(30);
-    }
+    }*/
     playerInventory.reloadWeapon();
 }
 
@@ -253,10 +255,11 @@ void AplayerScript::reload(){
 
 void AplayerScript::aim(){
     aiming = !aiming;
+    /*
     if(weaponpointer != nullptr){
         weaponpointer->aim(aiming);
         
-    }
+    }*/
     playerInventory.aim(aiming);
 }
 
@@ -264,6 +267,7 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
+    /*
     if(weaponpointer != nullptr){
         if(holding){ //checks if holding mouse down
             weaponpointer->shoot();
@@ -271,6 +275,7 @@ void AplayerScript::shoot(){
             weaponpointer->releaseShoot(); //abzug loslassen
         }
     }
+    */
 
 
     if(holding){ //checks if holding mouse down

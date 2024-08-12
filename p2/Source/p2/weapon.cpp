@@ -4,6 +4,8 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "Damageinterface.h"
 #include "weaponEnum.h"
+#include "carriedItem.h"
+#include "playerScript.h"
 #include "sightScript.h"
 
 // Sets default values
@@ -14,6 +16,7 @@ Aweapon::Aweapon()
 	cameraPointer = nullptr;
 	botPointer = nullptr;
 	verschlussSkeletonPointer = nullptr;
+
 
 	// Ensure the World context is valid
 
@@ -59,16 +62,6 @@ void Aweapon::setupSight(){
 }
 
 /**
- * shows a screen message for debugging
- */
-void Aweapon::showScreenMessage(FString s){
-	if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
-    }
-}
-
-/**
  * calculates time to wait for a int of rounds per minute
  */
 float Aweapon::calculateRpm(int rpm){
@@ -92,52 +85,10 @@ void Aweapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	followPlayer();
+	//followPlayer();
 	updateCooltime(DeltaTime);
 }
 
-/**
- * will follow the player or entity if is picked up by the player
- */
-void Aweapon::followPlayer(){
-	
-
-	//player follow if player picked up
-	if (isPickedup())
-	{
-		FVector targetPos = cameraPointer->GetComponentLocation() + 
-							cameraPointer->GetForwardVector() * 100.0f +
-							getOffsetVector();
-
-        FRotator targetRotation = cameraPointer->GetComponentRotation();
-        
-        // Smoothly interpolate position and rotation
-        FVector currentPos = GetActorLocation();
-        FRotator currentRotation = GetActorRotation();
-        
-        SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
-        SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-		return; //dont check for bot.
-	}
-
-	//bot follow if bot picked up
-	if(botPointer != nullptr){
-		FVector targetPos = botPointer->GetActorLocation() +
-							botPointer->GetActorForwardVector() * 100.0f;
-							//+ getOffsetVector();
-
-		FRotator targetRotation = botPointer->GetActorRotation();
-        
-        // Smoothly interpolate position and rotation
-        FVector currentPos = GetActorLocation();
-        FRotator currentRotation = GetActorRotation();
-        
-        SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
-        SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-
-		//showScreenMessage(FString::Printf(TEXT("weapon pos %d, %d"), currentPos.X, currentPos.Y));
-	}
-}
 
 /// @brief Only for player:
 /// returns the offset vector of the sight and hipfire by value
@@ -186,32 +137,6 @@ bool Aweapon::singleFireMode(){
 	return singleFireModeOn;
 }
 
-/// @brief will enable and disable the collider for the actor
-/// @param enable 
-void Aweapon::enableCollider(bool enable){
-	SetActorEnableCollision(enable);
-}
-
-
-
-/// @brief allows the player to pickup the weapon
-/// @param cameraRefIn 
-void Aweapon::pickup(UCameraComponent &cameraRefIn){
-	if(!isPickedup()){
-		cameraPointer = &cameraRefIn; // Assign the address of cameraRefIn to cameraRef
-		enableCollider(false);
-	}
-}
-
-/// @brief pickup emthod for bot
-/// @param actorIn actor bot  
-void Aweapon::pickupBot(AActor *actorIn){
-	if(botPointer == nullptr && actorIn != nullptr){
-		botPointer = actorIn;
-		enableCollider(false);
-	}
-}
-
 
 
 /**
@@ -225,16 +150,6 @@ void Aweapon::dropweapon(){
 	showWeapon(true);
 }
 
-/**
- * returns a boolean if its picked up or not
- */
-bool Aweapon::isPickedup(){
-	return cameraPointer != nullptr; //one must be set
-	// return cameraPointer != nullptr;
-}
-
-
-
 
 
 void Aweapon::releaseShoot(){
@@ -243,7 +158,7 @@ void Aweapon::releaseShoot(){
 
 /// @brief shoot method for player! make sure camera is attached!
 void Aweapon::shoot(){
-	if(isPickedup() && canShoot()){
+	if(cameraPointer != nullptr && canShoot()){
 
 		FVector ForwardVector = cameraPointer->GetForwardVector();
     	// Now you can use ForwardVector which represents the direction the camera is facing
@@ -322,7 +237,7 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 		}
 
 
-		//lil test
+		//play animation
 		shootAnimation();
 	}
 }
@@ -342,11 +257,12 @@ bool Aweapon::canShoot(){
 	return enoughBulletsInMag() && !isCooling() && isActive(); //cant be show if weapon is not selected
 }
 
-/**
- * aim the weapon
- */
+
+
+/// @brief aim method for THE PLAYER -> update each frame.
+/// @param aimstatus aim or not 
 void Aweapon::aim(bool aimstatus){
-	if(isPickedup()){
+	if(Super::isPickedupByPlayer()){
 		isAiming = aimstatus;
 
 		showScreenMessage("switch");
@@ -387,19 +303,14 @@ int Aweapon::getMagSize(){
 	return 30;
 }
 
-
+int Aweapon::getBulletsInMag(){
+	return bulletsInMag;
+}
 
 void Aweapon::showWeapon(bool show){
 	isVisible = show;
 
 	SetActorHiddenInGame(!show);  // Hides the actor if 'show' is false
-}
-
-
-/// @brief returns is active status for player (hidden or not)
-/// @return is active (visible status)
-bool Aweapon::isActive(){
-	return isVisible;
 }
 
 

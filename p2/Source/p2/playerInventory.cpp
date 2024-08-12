@@ -90,10 +90,15 @@ void playerInventory::reloadWeapon(){
 
             Aweapon *c = weaponVector.at(currentIndex)->weaponPointer;
             if(c){
-                int mSize = c->getMagSize();
-                if(ammunition - mSize > 0){
-                    weaponVector.at(currentIndex)->reload(mSize);
-                    ammunition -= mSize;
+                //add left
+                int leftInMag = c->getBulletsInMag();
+                ammunition += leftInMag;
+
+                //reload
+                int magSize = c->getMagSize();
+                if(ammunition - magSize > 0){
+                    weaponVector.at(currentIndex)->reload(magSize);
+                    ammunition -= magSize;
                 }else{
                     weaponVector.at(currentIndex)->reload(ammunition);
                     ammunition = 0;
@@ -187,6 +192,13 @@ void playerInventory::wslot::reload(int amount){
 int playerInventory::wslot::getMagSize(){
     if(weaponPointer){
         return weaponPointer->getMagSize();
+    }
+    return 0;
+}
+
+int playerInventory::wslot::getBulletsInMag(){
+    if(weaponPointer != nullptr){
+        return weaponPointer->getBulletsInMag();
     }
     return 0;
 }

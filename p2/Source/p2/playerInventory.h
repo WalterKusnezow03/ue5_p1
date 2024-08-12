@@ -38,6 +38,7 @@ private:
 			void aim(bool aim);
 			void releaseShoot();
 			int getMagSize();
+			int getBulletsInMag();
 	};
 	std::vector<playerInventory::wslot *> weaponVector;
 	int currentIndex;
