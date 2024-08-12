@@ -2,7 +2,7 @@
 
 
 #include "playerScript.h"
-#include "weapon.h"
+#include "weapon/weapon.h"
 #include "playerInventory.h"
 #include "entityManager/EntityManager.h"
 #include "referenceManager.h"
@@ -15,7 +15,7 @@ AplayerScript::AplayerScript()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-    weaponpointer = nullptr;
+    
 
     aiming = false;
 
@@ -225,7 +225,6 @@ void AplayerScript::performRaycast()
 			if(weapon){
 				weapon->pickup(*CameraComponent);
                 playerInventory.addWeapon(weapon);
-                //weaponpointer = weapon;
             }
 		}
 
@@ -234,20 +233,10 @@ void AplayerScript::performRaycast()
 }
 
 void AplayerScript::drop(){
-    /*
-	if(weaponpointer != nullptr){
-        weaponpointer->dropweapon();
-        
-    }*/
     playerInventory.dropWeapon();
 }
 
 void AplayerScript::reload(){
-    /*
-	if(weaponpointer != nullptr){
-        
-        weaponpointer->reload(30);
-    }*/
     playerInventory.reloadWeapon();
 }
 
@@ -255,11 +244,6 @@ void AplayerScript::reload(){
 
 void AplayerScript::aim(){
     aiming = !aiming;
-    /*
-    if(weaponpointer != nullptr){
-        weaponpointer->aim(aiming);
-        
-    }*/
     playerInventory.aim(aiming);
 }
 
@@ -267,17 +251,7 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    /*
-    if(weaponpointer != nullptr){
-        if(holding){ //checks if holding mouse down
-            weaponpointer->shoot();
-        }else{
-            weaponpointer->releaseShoot(); //abzug loslassen
-        }
-    }
-    */
-
-
+    
     if(holding){ //checks if holding mouse down
         playerInventory.shoot();
     }else{

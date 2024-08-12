@@ -2,10 +2,10 @@
 
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-#include "Damageinterface.h"
+#include "p2/Damageinterface.h"
 #include "weaponEnum.h"
 #include "carriedItem.h"
-#include "playerScript.h"
+#include "p2/playerScript.h"
 #include "sightScript.h"
 
 // Sets default values

@@ -4,7 +4,6 @@
 
 #include "playerScript.h"
 #include "entities/EntityScript.h"
-#include "weapon.h"
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
 

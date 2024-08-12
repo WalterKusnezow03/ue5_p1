@@ -3,6 +3,7 @@
 #include "p2/playerScript.h"
 #include "p2/pathFinding/PathFinder.h"
 #include "p2/referenceManager.h"
+#include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EntityScript.h"
 
@@ -424,4 +425,17 @@ void AEntityScript::enableCollider(bool enable){
 /// @brief tell the entity manager to take this actor
 void AEntityScript::die(){
 
+	if(EntityManager::instance()){
+		EntityManager::instance()->add(this);
+	}
+	
+
+	/*
+	if(entityManager == nullptr){
+		entityManager = EntityManager::instance();
+	}
+
+	if(entityManager != nullptr){
+		entityManager->add(this);
+	}*/
 }

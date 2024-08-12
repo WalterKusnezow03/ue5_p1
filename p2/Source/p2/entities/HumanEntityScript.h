@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EntityScript.h"
-#include "p2/weapon.h"
+#include "p2/weapon/weapon.h"
 #include "HumanEntityScript.generated.h"
 
 /**

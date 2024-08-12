@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "weapon.h"
+//#include "weapon.h"
 #include "playerInventory.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
@@ -82,11 +82,7 @@ private:
 
 	int health;
 
-	class Aweapon *weaponpointer;
-
-	//UPROPERTY(VisibleAnywhere)
-    //class UCameraComponent* CameraComponent;
-	//class
+	
 
 	void PlayAnimation(UAnimSequence *AnimSequence);
 };

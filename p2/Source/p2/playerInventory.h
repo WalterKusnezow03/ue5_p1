@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "weapon.h"
+#include "p2/weapon/weapon.h"
 #include "CoreMinimal.h"
 
 /**

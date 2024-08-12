@@ -3,6 +3,7 @@
 
 #include "HumanEntityScript.h"
 
+#include "EntityScript.h"
 #include "p2/playerScript.h"
 #include "p2/pathFinding/PathFinder.h"
 #include "p2/referenceManager.h"
@@ -47,18 +48,21 @@ void AHumanEntityScript::BeginPlay(){
 void AHumanEntityScript::Tick(float DeltaTime){
     Super::Tick(DeltaTime);
 
-    //reload weapon
-    if(weaponPointer != nullptr){
-        if(!weaponPointer->enoughBulletsInMag()){
-            int defaultSize = 30;
-            weaponPointer->reload(defaultSize);
+    if(Super::isActivatedForUpdate()){
+        //reload weapon
+        if(weaponPointer != nullptr){
+            if(!weaponPointer->enoughBulletsInMag()){
+                int defaultSize = 30;
+                weaponPointer->reload(defaultSize);
+            }
+        }
+
+        //addition to the base entity: attack the player if in vision
+        if(canSeePlayer && spottedPlayer){
+            attackPlayer();
         }
     }
-
-    //addition to the base entity: attack the player if in vision
-    if(canSeePlayer && spottedPlayer){
-        attackPlayer();
-    }
+    
 }
 
 /// @brief attack the player if playerpointer not nullptr
@@ -85,5 +89,8 @@ void AHumanEntityScript::shootAt(FVector target){
 
 //activate de activate die method
 void AHumanEntityScript::die(){
-
+    if(weaponPointer != nullptr){
+        weaponPointer->dropweapon();
+    }
+    Super::die();
 }
