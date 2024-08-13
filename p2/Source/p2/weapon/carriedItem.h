@@ -19,7 +19,7 @@ public:
 
 	void pickup(UCameraComponent &cameraRefIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
-	void drop();
+	virtual void drop();
 	bool isPickedupByPlayer();
 	void showItem(bool show);
 
@@ -48,6 +48,8 @@ protected:
 	void enableCollider(bool enable);
 
 	void showScreenMessage(FString s);
+
+	void renderOnTop(bool enable);
 
 public:	
 	// Called every frame

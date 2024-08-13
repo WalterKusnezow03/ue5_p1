@@ -325,7 +325,7 @@ std::vector<FVector> PathFinder::findPath(
 
         if (current != nullptr)
         {
-            if((current == end)){ //|| canSee(current, end)){
+            if(current == end){ //|| canSee(current, end)){
                 //path found
                 screenMessage("found path");
                 return constructPath(end);

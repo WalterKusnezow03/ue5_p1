@@ -13,7 +13,10 @@
 class P2_API referenceManager
 {
 public:
-	
+	static const int TEAM_NEUTRAL = 0;
+	static const int TEAM_ENEMY = 1;
+	static const int TEAM_PLAYER = 2;
+
 	~referenceManager();
 
 	static referenceManager *instance();
@@ -21,9 +24,10 @@ public:
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
+	static int verifyTeam(int teamIn);
 
 private:
-	//private constructor for singleton
+	// private constructor for singleton
 	referenceManager();
 
 	static class referenceManager *instancePointer;

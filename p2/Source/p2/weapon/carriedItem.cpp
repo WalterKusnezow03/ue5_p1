@@ -39,6 +39,8 @@ void AcarriedItem::Tick(float DeltaTime)
 
 }
 
+
+
 void AcarriedItem::showScreenMessage(FString s){
 	if (GEngine)
     {
@@ -63,8 +65,14 @@ void AcarriedItem::followPlayer(){
         // Smoothly interpolate position and rotation
         FVector currentPos = GetActorLocation();
         FRotator currentRotation = GetActorRotation();
+
+		//testing
+		float smoothingFactor = 50.0f;
+		FVector smoothedPosition = FMath::Lerp(currentPos, targetPos, GetWorld()->GetDeltaSeconds() * smoothingFactor);
+		SetActorLocation(smoothedPosition);
+
         
-        SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
+        //SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
 		return; //dont check for bot.
 	}
@@ -115,6 +123,8 @@ void AcarriedItem::pickup(UCameraComponent &cameraRefIn){
 	if(!isPickedupByPlayer()){
 		cameraPointer = &cameraRefIn; // Assign the address of cameraRefIn to cameraRef
 		enableCollider(false);
+
+		//renderOnTop(true);
 	}
 }
 
@@ -149,6 +159,30 @@ bool AcarriedItem::isActive(){
 	return isVisible;
 }
 
+/// @brief drops the item and 
+void AcarriedItem::drop(){
+	cameraPointer = nullptr;
+	botPointer = nullptr; //reset bot too, for both actors designed
+	enableCollider(true);
+	//renderOnTop(false);
+}
+
+
+
+void AcarriedItem::renderOnTop(bool enable){
+	/*
+	// Enable custom depth for the weapon
+	WeaponMesh->SetRenderCustomDepth(enable);
+
+	// Set a custom stencil value for more advanced control (e.g., 1 for the player's weapon)
+	if(enable){
+		WeaponMesh->CustomDepthStencilValue = 1;
+	}else{
+		WeaponMesh->CustomDepthStencilValue = 0;
+	}
+	
+	*/
+}
 
 
 

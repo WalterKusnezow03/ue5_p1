@@ -23,6 +23,8 @@ public:
 	// Sets default values for this character's properties
 	AplayerScript();
 	virtual void takedamage(int d) override;
+	virtual void setTeam(int teamIn) override;
+	virtual int getTeam() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -42,6 +44,8 @@ public:
     class UAnimInstance* AnimInstance;
 
 private:
+	int team = 0;
+
 	class playerInventory playerInventory;
 
 	FString idle;

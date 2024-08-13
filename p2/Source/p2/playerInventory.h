@@ -24,6 +24,8 @@ public:
 	void reloadWeapon();
 	void addAmmunition(int ammunition, int type);
 
+	float recoilValue();
+
 private:
 	class wslot{
 		public:
@@ -39,6 +41,7 @@ private:
 			void releaseShoot();
 			int getMagSize();
 			int getBulletsInMag();
+			float recoilValue();
 	};
 	std::vector<playerInventory::wslot *> weaponVector;
 	int currentIndex;

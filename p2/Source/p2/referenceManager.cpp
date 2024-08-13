@@ -44,3 +44,15 @@ AplayerScript *referenceManager::getPlayerPointer(){
     return playerPointer;
 }
 
+
+
+int referenceManager::verifyTeam(int teamIn){
+    if(
+        teamIn == TEAM_ENEMY ||
+        teamIn == TEAM_NEUTRAL ||
+        teamIn == TEAM_PLAYER
+    ){
+        return teamIn;
+    }
+    return TEAM_NEUTRAL;
+}

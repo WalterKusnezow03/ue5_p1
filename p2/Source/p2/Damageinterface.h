@@ -14,7 +14,7 @@ class UDamageinterface : public UInterface
 };
 
 /**
- * 
+ * interface for taking damage and team management
  */
 class P2_API IDamageinterface
 {
@@ -22,6 +22,10 @@ class P2_API IDamageinterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void takedamage(int d) = 0;
 
+	//methods
+	virtual void takedamage(int d) = 0; //= 0 schreiben damit sie pure virtual sind
+
+	virtual void setTeam(int teamIn) = 0;
+	virtual int getTeam() = 0;
 };

@@ -6,6 +6,7 @@
 #include "playerInventory.h"
 #include "entityManager/EntityManager.h"
 #include "referenceManager.h"
+#include "DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
@@ -76,6 +77,8 @@ void AplayerScript::BeginPlay()
     }
 
 
+    setTeam(referenceManager::TEAM_PLAYER);
+
 }
 
 // Called to bind functionality to input
@@ -127,9 +130,9 @@ void AplayerScript::Tick(float DeltaTime)
  */
 void AplayerScript::takedamage(int d)
 {
-    
+    DebugHelper::showScreenMessage("Player Damage", FColor::Yellow);
     // Implementierung der Methode
-	health -= d;
+    health -= d;
 	if(health <= 0){
 		health = 0;
 	}
@@ -188,8 +191,6 @@ void AplayerScript::LookUpAtRate(float Rate)
 void AplayerScript::interact(){
 	performRaycast();
 
-
-    
 }
 
 void AplayerScript::performRaycast()
@@ -253,7 +254,14 @@ void AplayerScript::aim(){
 void AplayerScript::shoot(){
     
     if(holding){ //checks if holding mouse down
+        
+
+        //recoil apply (immidiate, will be based on canshoot of weapon)
+        float recoil = playerInventory.recoilValue();
+        LookUpAtRate(recoil);
+
         playerInventory.shoot();
+
     }else{
         playerInventory.releaseShoot(); //abzug loslassen
     }
@@ -316,4 +324,16 @@ void AplayerScript::updateAnimTime(float delta){
 /// @return 
 bool AplayerScript::animationisPlaying(){
     return timeleft > 0;
+}
+
+
+
+
+
+void AplayerScript::setTeam(int teamIn){
+    this->team = referenceManager::verifyTeam(teamIn);
+}
+
+int AplayerScript::getTeam(){
+    return team;
 }

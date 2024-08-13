@@ -14,7 +14,9 @@ class P2_API AEntityScript : public AActor, public IDamageinterface
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	
+
 	// Sets default values for this actor's properties
 	AEntityScript();
 	//inherited from interface
@@ -23,12 +25,16 @@ public:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void init();
-	
+	virtual void init();
+
+	virtual void setTeam(int teamIn) override;
+	virtual int getTeam() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
+	int team;
 
 	// performs the raycast to a target
 	bool performRaycast(AActor *target);
@@ -92,5 +98,6 @@ public:
 	void enableActiveStatus(bool enable);
 	//activate methods for manager end
 
-
+	void alert();
+	void alert(FVector lookat);
 };

@@ -28,6 +28,8 @@ Aweapon::Aweapon()
 	timeleft = 0;
 	cooldownTime = calculateRpm(600);
 
+	reloadTime = 1.5f;
+
 	bulletsInMag = 30;
 }
 
@@ -139,6 +141,11 @@ bool Aweapon::singleFireMode(){
 
 
 
+void Aweapon::drop(){
+	Super::drop();
+	dropweapon();
+}
+
 /**
  * Unbind from player or bot
  * will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
@@ -151,7 +158,7 @@ void Aweapon::dropweapon(){
 }
 
 
-
+/// @brief releases the shot (mouse up)
 void Aweapon::releaseShoot(){
 	abzugHinten = false;
 }
@@ -183,7 +190,7 @@ void Aweapon::shootBot(FVector target){
 	if(botPointer != nullptr){
 		FVector start = botPointer->GetActorLocation();
 		FVector connect = (target - start).GetSafeNormal();
-		start += connect * 50;
+		start += connect * 100;
 		shootProtected(start, target); //protected weapon shoot call
 	}
 }
@@ -211,6 +218,9 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this); // Ignore the character itself
+		if(botPointer != nullptr){
+			Params.AddIgnoredActor(botPointer);
+		}
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
 
@@ -258,7 +268,6 @@ bool Aweapon::canShoot(){
 }
 
 
-
 /// @brief aim method for THE PLAYER -> update each frame.
 /// @param aimstatus aim or not 
 void Aweapon::aim(bool aimstatus){
@@ -290,12 +299,19 @@ bool Aweapon::enoughBulletsInMag(){
 }
 
 
+/// @brief will return if the weapon can perform a reload now
+/// @return 
+bool Aweapon::canReload(){
+	return !isCooling() && isActive();
+}
+
 /**
  * reload the weapon with an amount of ammunition. negative numbers are ignored
  */
 void Aweapon::reload(int amount){
 	if(amount > 0){
 		bulletsInMag += amount;
+		resetCoolTime(reloadTime);
 	}
 }
 
@@ -397,4 +413,18 @@ void Aweapon::playAnimation(const FString& AnimationPath, USkeletalMeshComponent
         //skeleton->SetPlayRate(60 * cooldownTime);
 		skeleton->SetPlayRate(playRate);
 	}
+}
+
+
+
+/// @brief will return a recoil value to apply IF CAN SHOOT
+/// @return value (negative) for camera roatation, or 0 if cant shoot at the moment
+float Aweapon::recoilValue(){
+	if(!canShoot()){
+		return 0.0f;
+	}
+	
+
+	//must be a negative value to properly flip up the camera!
+	return -0.1f;
 }

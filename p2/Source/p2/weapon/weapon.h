@@ -35,6 +35,7 @@ public:
 	void pickupBot(AActor *actorIn); //pickup for bot!
 	*/
 	void dropweapon();
+	virtual void drop() override;
 	bool isPickedup();
 	void reload(int amount);
 	int getMagSize();
@@ -51,6 +52,9 @@ public:
 	bool isCooling();
 	bool enoughBulletsInMag();
 	bool canShoot();
+	bool canReload();
+
+	float recoilValue();
 
 	//returns if the weapon is active or not
 	//bool isActive();
@@ -74,6 +78,7 @@ protected:
 
 	float timeleft;
 	float cooldownTime;
+	float reloadTime;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

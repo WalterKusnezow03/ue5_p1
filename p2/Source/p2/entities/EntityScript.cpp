@@ -5,6 +5,7 @@
 #include "p2/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "p2/DebugHelper.h"
 #include "EntityScript.h"
 
 // Sets default values
@@ -37,9 +38,12 @@ void AEntityScript::init(){
 	defaultSpottingTime = 5;
 	setSpottingTime(defaultSpottingTime);
 	setupRaycastIgnoreParams();
+
+
+	//set team
+	setTeam(referenceManager::TEAM_ENEMY);
+
 }
-
-
 
 // Called every frame
 void AEntityScript::Tick(float DeltaTime)
@@ -108,7 +112,7 @@ void AEntityScript::Tick(float DeltaTime)
 //allows the entity to take damage
 void AEntityScript::takedamage(int d){
 
-	showScreenMessage("entity damage");
+	showScreenMessage("enemy entity damage");
 	health -= d;
 	if(health <= 0){
 		d = 0;
@@ -425,17 +429,36 @@ void AEntityScript::enableCollider(bool enable){
 /// @brief tell the entity manager to take this actor
 void AEntityScript::die(){
 
-	if(EntityManager::instance()){
-		EntityManager::instance()->add(this);
+	if(EntityManager *e = EntityManager::instance()){
+		e->add(this);
 	}
 	
+}
 
-	/*
-	if(entityManager == nullptr){
-		entityManager = EntityManager::instance();
+
+
+void AEntityScript::alert(){
+	if(!spottedPlayer){
+		setSpottingTime(defaultSpottingTime / 2);
 	}
+}
 
-	if(entityManager != nullptr){
-		entityManager->add(this);
-	}*/
+
+void AEntityScript::alert(FVector lookat){
+	if(!spottedPlayer && !canSeePlayer){
+		setSpottingTime(defaultSpottingTime / 2);
+		LookAt(lookat);
+	}
+}
+
+
+
+
+
+void AEntityScript::setTeam(int teamIn){
+    this->team = referenceManager::verifyTeam(teamIn);
+}
+
+int AEntityScript::getTeam(){
+    return team;
 }

@@ -88,20 +88,23 @@ void playerInventory::reloadWeapon(){
     if(currentIndexIsValid()){
         if(weaponVector.at(currentIndex) != nullptr){
 
-            Aweapon *c = weaponVector.at(currentIndex)->weaponPointer;
-            if(c){
-                //add left
-                int leftInMag = c->getBulletsInMag();
-                ammunition += leftInMag;
+            Aweapon *current = weaponVector.at(currentIndex)->weaponPointer;
+            if(current){
+                //reload if reload possible
+                if(current->canReload()){
+                    //add left
+                    int leftInMag = current->getBulletsInMag();
+                    ammunition += leftInMag;
 
-                //reload
-                int magSize = c->getMagSize();
-                if(ammunition - magSize > 0){
-                    weaponVector.at(currentIndex)->reload(magSize);
-                    ammunition -= magSize;
-                }else{
-                    weaponVector.at(currentIndex)->reload(ammunition);
-                    ammunition = 0;
+                    //reload
+                    int magSize = current->getMagSize();
+                    if(ammunition - magSize > 0){
+                        weaponVector.at(currentIndex)->reload(magSize);
+                        ammunition -= magSize;
+                    }else{
+                        weaponVector.at(currentIndex)->reload(ammunition);
+                        ammunition = 0;
+                    }
                 }
             }
         }
@@ -138,6 +141,16 @@ void playerInventory::shoot(){
         }
     }
 }
+
+/// @brief apply recoil value to player just before shooting, will return value based on canshoot
+/// @return returns a value != 0 if CAN SHOOT, apply immidiatly
+float playerInventory::recoilValue(){
+    if(currentIndexIsValid()){
+        return weaponVector.at(currentIndex)->recoilValue();
+    }
+    return 0.0f;
+}
+
 
 /// @brief aim the current weapon
 /// @param aim 
@@ -232,4 +245,15 @@ void playerInventory::wslot::releaseShoot(){
     if(weaponPointer){
         weaponPointer->releaseShoot();
     }
+}
+
+
+/// @brief apply recoil value to player just before shooting, will return value based on canshoot
+/// @return returns a value != 0 if CAN SHOOT, apply immidiatly
+float playerInventory::wslot::recoilValue(){
+    if(weaponPointer){
+        return weaponPointer->recoilValue(); //recoil value IF CAN SHOOT
+    }
+
+    return 0.0f;
 }

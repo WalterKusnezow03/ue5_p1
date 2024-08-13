@@ -9,6 +9,7 @@
 #include "p2/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "p2/entityManager/Outpost.h"
 
 
 // Sets default values
@@ -29,7 +30,13 @@ AHumanEntityScript::AHumanEntityScript()
 void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
 
+    this->init();
+}
 
+void AHumanEntityScript::init(){
+    Super::init();
+
+    //weapon
     EntityManager *e = EntityManager::instance();
     if(e != nullptr){
         Aweapon *w = e->spawnAweapon(GetWorld());
@@ -42,8 +49,10 @@ void AHumanEntityScript::BeginPlay(){
             weaponPointer = w;
         }
     }
-}
 
+    //outpost
+    outpost = nullptr;
+}
 
 void AHumanEntityScript::Tick(float DeltaTime){
     Super::Tick(DeltaTime);
@@ -51,7 +60,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
     if(Super::isActivatedForUpdate()){
         //reload weapon
         if(weaponPointer != nullptr){
-            if(!weaponPointer->enoughBulletsInMag()){
+            if(!weaponPointer->enoughBulletsInMag() && weaponPointer->canReload()){
                 int defaultSize = 30;
                 weaponPointer->reload(defaultSize);
             }
@@ -87,10 +96,18 @@ void AHumanEntityScript::shootAt(FVector target){
 
 
 
-//activate de activate die method
+/// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
     if(weaponPointer != nullptr){
         weaponPointer->dropweapon();
     }
-    Super::die();
+
+    if(outpost != nullptr){
+        outpost->releaseEntity(this);
+        outpost = nullptr;
+
+    }else{
+        //default entity manager death
+        Super::die();
+    }
 }

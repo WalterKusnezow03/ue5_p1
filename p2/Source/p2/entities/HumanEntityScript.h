@@ -2,10 +2,15 @@
 
 #pragma once
 
+
 #include "CoreMinimal.h"
 #include "EntityScript.h"
 #include "p2/weapon/weapon.h"
 #include "HumanEntityScript.generated.h"
+
+
+//forward declaration
+class AOutpost;
 
 /**
  * Subclass of entity: added functionality for outpost and 
@@ -18,6 +23,8 @@ class P2_API AHumanEntityScript : public AEntityScript
 	
 public:
 	AHumanEntityScript();
+	virtual void init() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -28,8 +35,12 @@ protected:
 	virtual void die() override;
 
 private:
+	//weapon
 	class Aweapon *weaponPointer;
 
 	void attackPlayer();
 	void shootAt(FVector target);
+
+	//outpost
+	class AOutpost *outpost;
 };
