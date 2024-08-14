@@ -119,12 +119,14 @@ void AcarriedItem::enableCollider(bool enable){
 
 /// @brief allows the player to pickup the weapon
 /// @param cameraRefIn 
-void AcarriedItem::pickup(UCameraComponent &cameraRefIn){
-	if(!isPickedupByPlayer()){
-		cameraPointer = &cameraRefIn; // Assign the address of cameraRefIn to cameraRef
+void AcarriedItem::pickup(UCameraComponent *cameraIn){
+	if(!isPickedupByPlayer() && cameraIn != nullptr){
+		cameraPointer = cameraIn; // Assign the address of cameraRefIn to cameraRef
+		botPointer = nullptr;
 		enableCollider(false);
 
-		//renderOnTop(true);
+		showItem(true);
+		// renderOnTop(true);
 	}
 }
 
@@ -133,7 +135,10 @@ void AcarriedItem::pickup(UCameraComponent &cameraRefIn){
 void AcarriedItem::pickupBot(AActor *actorIn){
 	if(botPointer == nullptr && actorIn != nullptr){
 		botPointer = actorIn;
+		cameraPointer = nullptr;
 		enableCollider(false);
+
+		showItem(true);
 	}
 }
 
@@ -164,10 +169,8 @@ void AcarriedItem::drop(){
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
-	//renderOnTop(false);
+	showItem(true);
 }
-
-
 
 void AcarriedItem::renderOnTop(bool enable){
 	/*

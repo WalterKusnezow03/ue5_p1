@@ -22,7 +22,6 @@ AgameModeSubclass::AgameModeSubclass()
     //load the entity manager
     EntityManager *entityManager = EntityManager::instance();
 
-    //load entity
     static ConstructorHelpers::FObjectFinder<UClass> EntityBPClass(
         TEXT("Blueprint'/Game/Prefabs/player/entityPrefab.entityPrefab_C'")
     );
@@ -34,20 +33,19 @@ AgameModeSubclass::AgameModeSubclass()
         }
     }
 
-    //load human entity
-    static ConstructorHelpers::FObjectFinder<UClass> HumanEntityBPClass(
+    static ConstructorHelpers::FObjectFinder<UClass> humanBpClass(
         TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'")
     );
-    if (HumanEntityBPClass.Succeeded())
+    if (humanBpClass.Succeeded())
     {
-        UClass *bp = HumanEntityBPClass.Object;
+        UClass *bp = humanBpClass.Object;
         if(entityManager != nullptr && bp != nullptr){
             entityManager->setHumanEntityUClassBp(bp);
         }
     }
 
 
-    //load weapon
+
     static ConstructorHelpers::FObjectFinder<UClass> weaponBpClass(
         TEXT("Blueprint'/Game/Prefabs/Weapons/weaponBP.weaponBP_C'")
     );
@@ -59,10 +57,51 @@ AgameModeSubclass::AgameModeSubclass()
         }
     }
 
+
+    static ConstructorHelpers::FObjectFinder<UClass> pistolBpClass(
+        TEXT("Blueprint'/Game/Prefabs/Weapons/pistol/pistolNew/pistolNew.pistolNew_C'")
+    );
+    if (pistolBpClass.Succeeded())
+    {
+        UClass *bp = pistolBpClass.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setPistolUClassBp(bp);
+        }
+    }
+
+
+
+    //load human entity
+    /*
+    UClass *humanBp = loadUClassBluePrint("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'");
+    if(humanBp != nullptr){
+        if(entityManager != nullptr){
+            entityManager->setHumanEntityUClassBp(humanBp);
+        }
+    }*/
+
+}
+
+/// @brief method to load blue print class from a path
+/// @param path 
+/// @return 
+UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
+    static ConstructorHelpers::FObjectFinder<UClass> bpUClass(
+        *path // Convert FString to const TCHAR*
+    );
+    if (bpUClass.Succeeded())
+    {
+        UClass *bp = bpUClass.Object;
+        if(bp != nullptr){
+            return bp;
+        }
+    }
+    return nullptr;
 }
 
 
 
+//default methods
 
 
 void AgameModeSubclass::BeginPlay()

@@ -17,7 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	AcarriedItem();
 
-	void pickup(UCameraComponent &cameraRefIn);
+	void pickup(UCameraComponent *cameraIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
 	virtual void drop();
 	bool isPickedupByPlayer();

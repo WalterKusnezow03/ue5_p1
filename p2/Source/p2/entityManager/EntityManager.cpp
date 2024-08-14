@@ -23,10 +23,15 @@ EntityManager::EntityManager()
     entityBpClass = nullptr;
 	humanEntityBpClass = nullptr;
 	weaponBpClass = nullptr;
+    pistolBpClass = nullptr;
 }
 
 EntityManager::~EntityManager()
 {
+    entityBpClass = nullptr;
+	humanEntityBpClass = nullptr;
+	weaponBpClass = nullptr;
+    pistolBpClass = nullptr;
 }
 
 
@@ -88,10 +93,13 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector Locat
         }
     }
 
+    
+
     //else create new one
     AActor *actor = spawnAactor(world, humanEntityBpClass, Location);
     AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
     if(casted != nullptr){
+        DebugHelper::showScreenMessage("try spawn human");
         return casted;
     }
     return nullptr;
@@ -132,7 +140,7 @@ AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector Loca
 /// @param world world to spawn in
 /// @return weapon reference
 Aweapon *EntityManager::spawnAweapon(UWorld* world){
-
+    DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
     AActor *spawned = spawnAactor(world, weaponBpClass, Location);
     Aweapon *w = Cast<Aweapon>(spawned);
@@ -173,3 +181,9 @@ void EntityManager::setWeaponUClassBp(UClass *weaponIn){
     }
 }
 
+
+void EntityManager::setPistolUClassBp(UClass *pistolIn){
+    if(pistolIn != nullptr){
+        pistolBpClass = pistolIn;
+    }
+}

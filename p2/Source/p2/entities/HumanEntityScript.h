@@ -43,4 +43,8 @@ private:
 
 	//outpost
 	class AOutpost *outpost;
+	void findOutPostNearby();
+
+public:
+	void setOutpost(AOutpost *outpostIn);
 };

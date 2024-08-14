@@ -60,7 +60,7 @@ void Aweapon::setupSight(){
     }
 
     // Log the string to the console
-	showScreenMessage(s);
+	//showScreenMessage(s);
 }
 
 /**
@@ -151,12 +151,12 @@ void Aweapon::drop(){
  * will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
  */
 void Aweapon::dropweapon(){
+	Super::drop();
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showWeapon(true);
 }
-
 
 /// @brief releases the shot (mouse up)
 void Aweapon::releaseShoot(){

@@ -224,7 +224,7 @@ void AplayerScript::performRaycast()
 
 			Aweapon *weapon = Cast<Aweapon>(actor);
 			if(weapon){
-				weapon->pickup(*CameraComponent);
+				weapon->pickup(CameraComponent);
                 playerInventory.addWeapon(weapon);
             }
 		}

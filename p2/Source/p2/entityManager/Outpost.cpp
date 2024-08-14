@@ -53,3 +53,16 @@ AOutpost* AOutpost::subscribe(AHumanEntityScript *entity){
 	}
 	return nullptr;
 }
+
+
+
+void AOutpost::createEntity(){
+	if(EntityManager *e = EntityManager::instance()){
+		FVector pos = GetActorLocation();
+		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
+		if(human != nullptr){
+			myEntities.push_back(human);
+			human->setOutpost(this);
+		}
+	}
+}

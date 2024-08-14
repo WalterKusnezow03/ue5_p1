@@ -29,20 +29,21 @@ AHumanEntityScript::AHumanEntityScript()
 
 void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
-
     this->init();
 }
 
 void AHumanEntityScript::init(){
     Super::init();
 
+    DebugHelper::showScreenMessage("human init");
+    
     //weapon
     EntityManager *e = EntityManager::instance();
     if(e != nullptr){
         Aweapon *w = e->spawnAweapon(GetWorld());
 		showScreenMessage("begin weapon");
 		if (w != nullptr){
-			showScreenMessage("pickup weapon");
+			showScreenMessage("human pickup weapon");
 			w->pickupBot(this);
 
             //save pointer
@@ -100,6 +101,7 @@ void AHumanEntityScript::shootAt(FVector target){
 void AHumanEntityScript::die(){
     if(weaponPointer != nullptr){
         weaponPointer->dropweapon();
+        weaponPointer = nullptr;
     }
 
     if(outpost != nullptr){
@@ -109,5 +111,25 @@ void AHumanEntityScript::die(){
     }else{
         //default entity manager death
         Super::die();
+    }
+}
+
+
+/// @brief sets the outpost reference if not a nullptr
+/// is a set method because newly created entites usually will be created by an outpost which subscribes them
+/// automatically
+/// @param outpostIn 
+void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
+    if(outpostIn != nullptr){
+        this->outpost = outpostIn;
+    }
+}
+
+
+void AHumanEntityScript::findOutPostNearby(){
+    if(outpost == nullptr){
+        //find outpost nearby 
+        //outpost manager needs to be implemented yet.
+
     }
 }

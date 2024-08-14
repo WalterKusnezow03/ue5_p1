@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * Entity Manager
+ * T must be derived from AActor
  */
 template <typename T>
 class P2_API EntityManagerGeneric{

@@ -30,6 +30,7 @@ void AEntityScript::BeginPlay()
 }
 
 void AEntityScript::init(){
+	DebugHelper::showScreenMessage("entity init");
 	enableActiveStatus(true);
 
 	health = 100;
