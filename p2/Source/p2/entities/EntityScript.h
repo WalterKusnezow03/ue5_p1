@@ -100,4 +100,5 @@ public:
 
 	void alert();
 	void alert(FVector lookat);
+	void alarm(); //sets spotting status to true
 };

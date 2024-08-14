@@ -437,24 +437,30 @@ void AEntityScript::die(){
 }
 
 
-
+/// @brief reduces the spotting time of the entity
 void AEntityScript::alert(){
 	if(!spottedPlayer){
-		setSpottingTime(defaultSpottingTime / 2);
+		defaultSpottingTime /= 2;
+		setSpottingTime(defaultSpottingTime);
 	}
 }
 
 
 void AEntityScript::alert(FVector lookat){
 	if(!spottedPlayer && !canSeePlayer){
-		setSpottingTime(defaultSpottingTime / 2);
+		defaultSpottingTime /= 2;
+		setSpottingTime(defaultSpottingTime);
 		LookAt(lookat);
 	}
 }
 
-
-
-
+/// @brief sets the player spotted status to true immidatly
+void AEntityScript::alarm(){
+	spottedPlayer = true;
+	if(playerPointer != nullptr){
+		LookAt(playerPointer->GetActorLocation());
+	}
+}
 
 void AEntityScript::setTeam(int teamIn){
     this->team = referenceManager::verifyTeam(teamIn);

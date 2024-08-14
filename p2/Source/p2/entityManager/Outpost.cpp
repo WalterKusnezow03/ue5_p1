@@ -66,3 +66,34 @@ void AOutpost::createEntity(){
 		}
 	}
 }
+
+
+/// @brief sets the spotting status to true for all entites
+void AOutpost::alertAll(){
+
+	float newTime = 2;
+
+	if (!alertEnabled)
+	{
+		for (int i = 0; i < myEntities.size(); i++){
+			AHumanEntityScript *h = myEntities.at(i);
+			if(h != nullptr){
+				h->alert();
+			}
+		}
+	}
+}
+
+
+/// @brief resets the spotting time for all entites
+void AOutpost::alarmAll(){
+
+	if(!alarmEnabled){
+		for (int i = 0; i < myEntities.size(); i++){
+			AHumanEntityScript *h = myEntities.at(i);
+			if(h != nullptr){
+				h->alarm();
+			}
+		}
+	}
+}

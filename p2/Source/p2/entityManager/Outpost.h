@@ -36,7 +36,10 @@ private:
 	std::vector<AHumanEntityScript *> myEntities;
 	void createEntity();
 
+	//alarm
+	bool alertEnabled;
+	bool alarmEnabled;
 
-
-
+	void alertAll();
+	void alarmAll();
 };

@@ -93,17 +93,22 @@ protected:
 	//saves the current sight attachment
 	class AsightScript *sightPointer;
 
-	//testing anaimations
+	//animations
 	void shootAnimation();
+	void reloadAnimation();
 
 	void animationPathSet();
 	void setVerschlussPath(FString path);
+	void setMagAnimPath(FString path);
 	void setupAnimations();
 
-	void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton);
+	//plays any anim
+	void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
+	class USkeletalMeshComponent *magSkeletonPointer;
 	FString verschlussPath;
+	FString magAnimPath;
 
 
 

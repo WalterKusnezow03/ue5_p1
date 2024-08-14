@@ -51,6 +51,7 @@ void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadi
                 AEntityScript * entity = Cast<AEntityScript>(Actor);
                 if(entity){
                     entity->alert();
+                    //entity->alarm();
                 }
             }
         }

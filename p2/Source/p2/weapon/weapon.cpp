@@ -3,6 +3,7 @@
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/Damageinterface.h"
+#include "p2/entityManager/AlertManager.h"
 #include "weaponEnum.h"
 #include "carriedItem.h"
 #include "p2/playerScript.h"
@@ -16,7 +17,7 @@ Aweapon::Aweapon()
 	cameraPointer = nullptr;
 	botPointer = nullptr;
 	verschlussSkeletonPointer = nullptr;
-
+	magSkeletonPointer = nullptr;
 
 	// Ensure the World context is valid
 
@@ -25,10 +26,12 @@ Aweapon::Aweapon()
 
 	offset = FVector(-100, 100.0f, 0);
 
+	//time
 	timeleft = 0;
 	cooldownTime = calculateRpm(600);
-
 	reloadTime = 1.5f;
+
+
 
 	bulletsInMag = 30;
 }
@@ -249,6 +252,9 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 
 		//play animation
 		shootAnimation();
+
+		float distance = 50000; //50 * 100cm = 50m
+		AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
 	}
 }
 
@@ -312,6 +318,7 @@ void Aweapon::reload(int amount){
 	if(amount > 0){
 		bulletsInMag += amount;
 		resetCoolTime(reloadTime);
+		reloadAnimation();
 	}
 }
 
@@ -339,23 +346,30 @@ void Aweapon::showWeapon(bool show){
 void Aweapon::animationPathSet(){
 	//TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim")
 
-	FString verschluss_path = "";
+	FString verschluss_anim_path = "";
+	FString mag_anim_path = "";
 
 	//differentiate between the types to set the paths properly for each weapon (type)
 	if (Type == weaponEnum::pistol){
 		//pistol
-		verschluss_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
+		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
+		mag_anim_path = TEXT("/Game/Prefabs/weapons/pistol/pistolMag/magAnim");
 	}
 	if(Type == weaponEnum::assaultRifle){
 		//assault rifle
 	}
 
 	 
-	setVerschlussPath(verschluss_path);
+	setVerschlussPath(verschluss_anim_path);
+	setMagAnimPath(mag_anim_path);
+
 }
 
 void Aweapon::setVerschlussPath(FString path){
 	verschlussPath = path;
+}
+void Aweapon::setMagAnimPath(FString path){
+	magAnimPath = path;
 }
 
 /// @brief setups all components for the animations
@@ -365,8 +379,9 @@ void Aweapon::setupAnimations()
 
 	FString s;
 	// Find all components of type USkeletalMeshComponent attached to this actor
-    TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
-    GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
+
+    TArray<USkeletalMeshComponent*> SkeletalMeshComponents; //create t array
+    GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents); // ask actor for components
 
     // Add each component to the output array
     for (USkeletalMeshComponent* Component : SkeletalMeshComponents)
@@ -378,11 +393,12 @@ void Aweapon::setupAnimations()
 			s.Append(name);
 			s.Append("\n");
 
-			if (name.Contains("verschluss"))
-			{
+			if (name.Contains("verschluss")){
 				verschlussSkeletonPointer = Component;
+			} else if(name.Contains("mag")){
+				magSkeletonPointer = Component;
 			}
-        }
+		}
     }
 	// Log the string to the console
     if (GEngine)
@@ -395,18 +411,31 @@ void Aweapon::setupAnimations()
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
 	if(verschlussSkeletonPointer != nullptr){
-		playAnimation(verschlussPath, verschlussSkeletonPointer);
+		playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
+	}
+}
+
+/// @brief plays the reload animation
+void Aweapon::reloadAnimation(){
+	if(magSkeletonPointer != nullptr){
+		playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
 	}
 }
 
 /// @brief plays an animatin for a skeleton from a path
 /// @param AnimationPath path to the animation
 /// @param skeleton 
-void Aweapon::playAnimation(const FString& AnimationPath, USkeletalMeshComponent *skeleton){
+void Aweapon::playAnimation(
+	const FString& AnimationPath, 
+	USkeletalMeshComponent *skeleton,
+	float time
+){
+
+
     UAnimSequence* AnimSequence = LoadObject<UAnimSequence>(nullptr, *AnimationPath);
     if (AnimSequence && skeleton){
 		float animationLength = AnimSequence->GetPlayLength();
-		float playRate = animationLength / cooldownTime; //properly scale
+		float playRate = animationLength / time; // cooldownTime; //properly scale
 
 		skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
 		// Set the animation speed
