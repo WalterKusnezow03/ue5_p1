@@ -365,6 +365,8 @@ void Aweapon::animationPathSet(){
 	}
 	if(Type == weaponEnum::assaultRifle){
 		//assault rifle
+		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle/verschlussAnim");
+		mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle/magAnim");
 	}
 
 	 
