@@ -9,6 +9,7 @@
 #include "p2/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "p2/entityManager/OutpostManager.h"
 #include "p2/entityManager/Outpost.h"
 
 
@@ -71,8 +72,14 @@ void AHumanEntityScript::Tick(float DeltaTime){
         if(canSeePlayer && spottedPlayer){
             attackPlayer();
         }
+
+        findOutPostNearby(); // if needed one is found
+
+        //if player spotted, enable alarm if needed
+        if(outpost != nullptr && spottedPlayer){
+            outpost->alarmAll();
+        }
     }
-    
 }
 
 /// @brief attack the player if playerpointer not nullptr
@@ -100,7 +107,7 @@ void AHumanEntityScript::shootAt(FVector target){
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
     if(weaponPointer != nullptr){
-        weaponPointer->dropweapon();
+        weaponPointer->drop();
         weaponPointer = nullptr;
     }
 
@@ -125,11 +132,15 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
     }
 }
 
-
+/// @brief finds an outpost nearby if needed and subscribes to it
 void AHumanEntityScript::findOutPostNearby(){
     if(outpost == nullptr){
         //find outpost nearby 
         //outpost manager needs to be implemented yet.
-
+        OutpostManager *instance = OutpostManager::instance();
+        if(instance != nullptr){
+            instance->tryRequestOutpost(GetWorld(), this);
+        }
     }
 }
+

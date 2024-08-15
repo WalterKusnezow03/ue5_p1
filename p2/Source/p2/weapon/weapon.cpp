@@ -143,22 +143,17 @@ bool Aweapon::singleFireMode(){
 }
 
 
-
+/// @brief Unbind from player or bot
+/// will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
 void Aweapon::drop(){
 	Super::drop();
-	dropweapon();
-}
-
-/**
- * Unbind from player or bot
- * will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
- */
-void Aweapon::dropweapon(){
-	Super::drop();
+	/*
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showWeapon(true);
+	*/
+	DebugHelper::showScreenMessage("drop weapon");
 }
 
 /// @brief releases the shot (mouse up)
@@ -182,7 +177,9 @@ void Aweapon::shoot(){
 
 		FVector End = Start + (ForwardVector * 50000.0f); //50000 units in front of the camera, must be changed later
 
-		shootProtected(Start, End);//shoot from a start to an endpoint
+
+		int NONE = -1;
+		shootProtected(Start, End , NONE);//shoot from a start to an endpoint
 	}
 }
 
@@ -194,7 +191,9 @@ void Aweapon::shootBot(FVector target){
 		FVector start = botPointer->GetActorLocation();
 		FVector connect = (target - start).GetSafeNormal();
 		start += connect * 100;
-		shootProtected(start, target); //protected weapon shoot call
+
+		int NONE = -1;
+		shootProtected(start, target, NONE); // protected weapon shoot call
 	}
 }
 
@@ -204,7 +203,7 @@ void Aweapon::shootBot(FVector target){
 /// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
 /// @param Start pos
 /// @param End pos target
-void Aweapon::shootProtected(FVector Start, FVector End){
+void Aweapon::shootProtected(FVector Start, FVector End, int ownTeam){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
@@ -239,8 +238,17 @@ void Aweapon::shootProtected(FVector Start, FVector End){
 				IDamageinterface* entity = Cast<IDamageinterface>(actor);
 				if (entity)
 				{
-					DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
-					entity->takedamage(20); //must be changed later
+					//damage entity if some other team
+					int entityTeam = entity->getTeam();
+					if(entityTeam != ownTeam){
+						DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+						entity->takedamage(20); //must be changed later
+					}else{
+						//own team hit
+						DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
+					}
+
+					
 				}
 
 

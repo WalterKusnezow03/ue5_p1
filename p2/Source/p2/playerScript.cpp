@@ -204,7 +204,7 @@ void AplayerScript::performRaycast()
 
     //100 = 1m
     //500m = 
-    FVector End = Start + (CameraRotation.Vector() * 100000.0f); //50000 units in front of the camera
+    FVector End = Start + (CameraRotation.Vector() * 100.0f); //1 meter in front of the camera
 
     // Perform the raycast
     FHitResult HitResult;

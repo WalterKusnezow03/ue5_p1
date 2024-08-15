@@ -20,8 +20,10 @@ public:
 	AOutpost();
 
 	void releaseEntity(AHumanEntityScript *entity);
-	AOutpost* subscribe(AHumanEntityScript *entity);
+	void subscribe(AHumanEntityScript *entity);
 	bool playerInArea();
+
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,6 +42,10 @@ private:
 	bool alertEnabled;
 	bool alarmEnabled;
 
+	
+	void liberate();
+
+public:
 	void alertAll();
 	void alarmAll();
 };

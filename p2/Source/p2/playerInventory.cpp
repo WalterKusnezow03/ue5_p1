@@ -27,7 +27,7 @@ playerInventory::wslot::wslot(Aweapon *in){
 playerInventory::wslot::~wslot(){
     if(weaponPointer != nullptr){
         if (IsValid(weaponPointer)) { // Ensure the weapon is still valid
-            weaponPointer->dropweapon();
+            weaponPointer->drop();
         }
         weaponPointer = nullptr;
     }
@@ -227,7 +227,7 @@ void playerInventory::wslot::show(bool show){
 /// @brief drops the weapon, "this" will be deleted from inventory 
 void playerInventory::wslot::drop(){
     if(weaponPointer != nullptr){
-        weaponPointer->dropweapon();
+        weaponPointer->drop(); //drop the weapon from player
         weaponPointer = nullptr;
     }
 }

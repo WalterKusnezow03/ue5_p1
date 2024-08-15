@@ -26,6 +26,5 @@ private:
 	std::vector<AOutpost *> outposts;
 
 	AOutpost *createOutpost(UWorld *world, FVector Location);
-
-	
+	AOutpost *nearestOutpostTo(FVector location);
 };

@@ -441,7 +441,11 @@ void AEntityScript::die(){
 void AEntityScript::alert(){
 	if(!spottedPlayer){
 		defaultSpottingTime /= 2;
-		setSpottingTime(defaultSpottingTime);
+
+		//update time if lower
+		if(defaultSpottingTime < spottingTimeLeft){
+			setSpottingTime(defaultSpottingTime);
+		}
 	}
 }
 

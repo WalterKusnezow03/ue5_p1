@@ -34,7 +34,7 @@ public:
 	void pickup(UCameraComponent &cameraRefIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
 	*/
-	void dropweapon();
+	//void dropweapon();
 	virtual void drop() override;
 	bool isPickedup();
 	void reload(int amount);
@@ -64,7 +64,7 @@ protected:
 	//bool isVisible;
 
 	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
-	virtual void shootProtected(FVector from, FVector to);
+	virtual void shootProtected(FVector from, FVector to, int ownTeam);
 
 	bool singleFireModeOn;
 	bool singleFireMode();
@@ -88,6 +88,8 @@ protected:
 	float calculateRpm(int rpm);
 	void setupSight();
 
+	/// @brief offset vector if any sight is attached, also: hipfire adjust
+	/// @return vector to add to actor location
 	virtual FVector getOffsetVector() override;
 
 	//saves the current sight attachment

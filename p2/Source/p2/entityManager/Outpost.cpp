@@ -43,15 +43,24 @@ void AOutpost::releaseEntity(AHumanEntityScript *entity){
 		if(EntityManager *e = EntityManager::instance()){
 			e->add(entity);
 		}
+		
+		//liberate if all dead
+		if(myEntities.size() <= 0){
+			liberate();
+		}
 	}
 }
 
-AOutpost* AOutpost::subscribe(AHumanEntityScript *entity){
+/// @brief subscribes an human to the outpost
+/// @param entity human in, not nullptr
+/// @return outpost
+void AOutpost::subscribe(AHumanEntityScript *entity){
 	if(entity != nullptr){
 		myEntities.push_back(entity); //weil instanz variable mit .punkt
-		return this;
+		entity->setOutpost(this);
+
+		DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
 	}
-	return nullptr;
 }
 
 
@@ -61,21 +70,22 @@ void AOutpost::createEntity(){
 		FVector pos = GetActorLocation();
 		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
 		if(human != nullptr){
-			myEntities.push_back(human);
-			human->setOutpost(this);
+			subscribe(human);
+			//myEntities.push_back(human);
+			//human->setOutpost(this);
 		}
 	}
 }
 
 
-/// @brief sets the spotting status to true for all entites
+/// @brief lowers the spotting time for all entites
 void AOutpost::alertAll(){
-
-	float newTime = 2;
 
 	if (!alertEnabled)
 	{
-		for (int i = 0; i < myEntities.size(); i++){
+		alertEnabled = true;
+		for (int i = 0; i < myEntities.size(); i++)
+		{
 			AHumanEntityScript *h = myEntities.at(i);
 			if(h != nullptr){
 				h->alert();
@@ -85,15 +95,28 @@ void AOutpost::alertAll(){
 }
 
 
-/// @brief resets the spotting time for all entites
+/// @brief sets the spotting status to true for all entites
 void AOutpost::alarmAll(){
 
 	if(!alarmEnabled){
-		for (int i = 0; i < myEntities.size(); i++){
+		alarmEnabled = true;
+		for (int i = 0; i < myEntities.size(); i++)
+		{
 			AHumanEntityScript *h = myEntities.at(i);
 			if(h != nullptr){
 				h->alarm();
 			}
 		}
+	}
+}
+
+
+
+
+/// @brief liberate the outpost if no entities are left
+void AOutpost::liberate(){
+	if(myEntities.size() <= 0){
+		alarmEnabled = false;
+		alertEnabled = false;
 	}
 }

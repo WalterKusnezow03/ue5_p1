@@ -51,14 +51,17 @@ void AcarriedItem::showScreenMessage(FString s){
 
 /// @brief follows the player or bot around when picked up
 void AcarriedItem::followPlayer(){
-	
+
+	if(cameraPointer == nullptr && botPointer == nullptr){
+		return;
+	}
 
 	//player follow if player picked up
 	if (isPickedupByPlayer())
 	{
 		FVector targetPos = cameraPointer->GetComponentLocation() + 
 							cameraPointer->GetForwardVector() * 100.0f +
-							getOffsetVector();
+							getOffsetVector(); //sight offset and hipfire
 
         FRotator targetRotation = cameraPointer->GetComponentRotation();
         
@@ -94,6 +97,16 @@ void AcarriedItem::followPlayer(){
 
 		//showScreenMessage(FString::Printf(TEXT("weapon pos %d, %d"), currentPos.X, currentPos.Y));
 	}
+
+	
+	/*
+	if(botPointer != nullptr){
+		
+		DebugHelper::showScreenMessage("picked up by bot");
+	}
+	if(cameraPointer != nullptr){
+		DebugHelper::showScreenMessage("picked up by player");
+	}*/
 }
 
 /// @brief Only for player:
@@ -120,7 +133,7 @@ void AcarriedItem::enableCollider(bool enable){
 /// @brief allows the player to pickup the weapon
 /// @param cameraRefIn 
 void AcarriedItem::pickup(UCameraComponent *cameraIn){
-	if(!isPickedupByPlayer() && cameraIn != nullptr){
+	if(!isPickedupByPlayer() && cameraIn != nullptr && botPointer == nullptr){
 		cameraPointer = cameraIn; // Assign the address of cameraRefIn to cameraRef
 		botPointer = nullptr;
 		enableCollider(false);
@@ -133,7 +146,7 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 /// @brief pickup emthod for bot
 /// @param actorIn actor bot  
 void AcarriedItem::pickupBot(AActor *actorIn){
-	if(botPointer == nullptr && actorIn != nullptr){
+	if(botPointer == nullptr && actorIn != nullptr && cameraPointer == nullptr){
 		botPointer = actorIn;
 		cameraPointer = nullptr;
 		enableCollider(false);

@@ -42,6 +42,8 @@ protected:
 	class AActor *botPointer;
 	void followPlayer();
 	FVector offset;
+
+	///offset vector, overriden by weapon script
 	virtual FVector getOffsetVector();
 	
 
