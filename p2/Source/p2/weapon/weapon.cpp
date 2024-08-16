@@ -8,6 +8,8 @@
 #include "carriedItem.h"
 #include "p2/playerScript.h"
 #include "sightScript.h"
+#include "attachmentEnums/weaponSightEnum.h"
+#include "carriedItem.h"
 
 // Sets default values
 Aweapon::Aweapon()
@@ -477,8 +479,8 @@ float Aweapon::recoilValue(){
 
 /// @brief finds all the attachments in blueprint for the weapon
 void Aweapon::findAttachmentChildActors(){
-	TArray<UChildActorComponent *> childs;
-	GetComponents<UChildActorComponent>(childs);
+	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
+	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method
 	if(childs.Num() > 0){
 		for (int i = 0; i < childs.Num(); i++){
 			if(childs[i] != nullptr){
@@ -486,9 +488,45 @@ void Aweapon::findAttachmentChildActors(){
 				if(name.Contains("reddot")){
 					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
 
-					Super::showChildActor(childs[i], false); //hide reddot test, works!
+					//Super::showChildActor(childs[i], false); //hide reddot test, works!
+
+					reddotSightChildActor = childs[i];
+				}
+				if(name.Contains("ironSight")){
+					DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
+					ironSightChildActor = childs[i];
 				}
 			}
 		}
 	}
+
+
+	//testing
+	applySight(weaponSightEnum::enum_reddot);
+}
+
+
+
+/// @brief applys a sight if possible
+/// @param sight sight value in to enable
+void Aweapon::applySight(weaponSightEnum sight){
+
+	//load all attachments and enum values in symetrical arrays to enable / disable correct attachments
+	std::vector<UChildActorComponent *> sightChilds;
+	sightChilds.push_back(reddotSightChildActor); //red,
+	sightChilds.push_back(ironSightChildActor); //iron
+
+	std::vector<weaponSightEnum> enumValues;
+	enumValues.push_back(weaponSightEnum::enum_reddot); //red
+	enumValues.push_back(weaponSightEnum::enum_ironsight); //iron
+
+	//enable correct one
+	for (int i = 0; i < enumValues.size(); i++){
+		if(enumValues.at(i) == sight){
+			Super::showChildActor(sightChilds.at(i), true);
+		}else{
+			Super::showChildActor(sightChilds.at(i), false);
+		}
+	}
+	
 }

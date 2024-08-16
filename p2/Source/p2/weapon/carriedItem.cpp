@@ -163,7 +163,8 @@ bool AcarriedItem::isPickedupByPlayer(){
 
 
 
-
+/// @brief shows or hides the item
+/// @param show 
 void AcarriedItem::showItem(bool show){
 	isVisible = show;
 
@@ -171,6 +172,9 @@ void AcarriedItem::showItem(bool show){
 }
 
 
+/// @brief shows or hides a child actor if not nullptr
+/// @param component child actor to hide
+/// @param show show true false
 void AcarriedItem::showChildActor(UChildActorComponent* component, bool show){
 	if(component != nullptr){
 		component->SetHiddenInGame(!show);  // Hides the actor if 'show' is false

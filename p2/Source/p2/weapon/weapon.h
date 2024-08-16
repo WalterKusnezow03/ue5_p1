@@ -9,6 +9,7 @@
 #include "sightScript.h"
 #include "carriedItem.h"
 #include "weaponEnum.h"
+#include "attachmentEnums/weaponSightEnum.h"
 
 #include "weapon.generated.h"
 
@@ -58,6 +59,10 @@ public:
 
 	//returns if the weapon is active or not
 	//bool isActive();
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	/// @brief will save whether the weapon is shown (selected or not. Blocks shooting)
@@ -117,27 +122,12 @@ protected:
 	//find attachments
 	void findAttachmentChildActors();
 
-	//follow
-	/*class UCameraComponent *cameraPointer; // why class, idk, just keep it like that
-	class AActor *botPointer;
+	//attachments pointers 
+	class UChildActorComponent *reddotSightChildActor;
+	class UChildActorComponent *ironSightChildActor;
 
-	FVector offset;
-
-	void showScreenMessage(FString s);
-
-	void enableCollider(bool enable);
-	*/
+	void applySight(weaponSightEnum sight);
 
 
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	
-    
-
-
-
-	
 };
