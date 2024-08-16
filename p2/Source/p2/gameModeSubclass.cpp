@@ -45,7 +45,8 @@ AgameModeSubclass::AgameModeSubclass()
     }
 
 
-
+    //DEFAULT WEAPON STICK
+    /*
     static ConstructorHelpers::FObjectFinder<UClass> weaponBpClass(
         TEXT("Blueprint'/Game/Prefabs/Weapons/weaponBP.weaponBP_C'")
     );
@@ -53,11 +54,13 @@ AgameModeSubclass::AgameModeSubclass()
     {
         UClass *bp = weaponBpClass.Object;
         if(entityManager != nullptr && bp != nullptr){
-            entityManager->setWeaponUClassBp(bp);
+            entityManager->setWeaponUClassBP(bp);
         }
-    }
+    }*/
 
+    //REAL WEARPONS
 
+    //pistol
     static ConstructorHelpers::FObjectFinder<UClass> pistolBpClass(
         TEXT("Blueprint'/Game/Prefabs/Weapons/pistol/pistolNew/pistolNew.pistolNew_C'")
     );
@@ -65,23 +68,34 @@ AgameModeSubclass::AgameModeSubclass()
     {
         UClass *bp = pistolBpClass.Object;
         if(entityManager != nullptr && bp != nullptr){
-            entityManager->setPistolUClassBp(bp);
+            entityManager->setWeaponUClassBP(bp, weaponEnum::pistol);
+        }
+    }
+
+    //assault rifle
+    static ConstructorHelpers::FObjectFinder<UClass> rifleBpClass(
+        TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
+    );
+    if (rifleBpClass.Succeeded())
+    {
+        UClass *bp = rifleBpClass.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setWeaponUClassBP(bp, weaponEnum::assaultRifle);
         }
     }
 
 
 
-    //load human entity
-    /*
-    UClass *humanBp = loadUClassBluePrint("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'");
-    if(humanBp != nullptr){
-        if(entityManager != nullptr){
-            entityManager->setHumanEntityUClassBp(humanBp);
-        }
-    }*/
+
+
+
+
+
+
 
 }
 
+// METHOD HAS ISSUES AND DOESNT WORK PROPERLY!!
 /// @brief method to load blue print class from a path
 /// @param path 
 /// @return 

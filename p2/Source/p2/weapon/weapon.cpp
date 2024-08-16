@@ -487,9 +487,6 @@ void Aweapon::findAttachmentChildActors(){
 				FString name = childs[i]->GetName();
 				if(name.Contains("reddot")){
 					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
-
-					//Super::showChildActor(childs[i], false); //hide reddot test, works!
-
 					reddotSightChildActor = childs[i];
 				}
 				if(name.Contains("ironSight")){
@@ -501,8 +498,8 @@ void Aweapon::findAttachmentChildActors(){
 	}
 
 
-	//testing
-	applySight(weaponSightEnum::enum_reddot);
+	//default value
+	applySight(weaponSightEnum::enum_ironsight);
 }
 
 
@@ -528,5 +525,5 @@ void Aweapon::applySight(weaponSightEnum sight){
 			Super::showChildActor(sightChilds.at(i), false);
 		}
 	}
-	
+
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/weapon/weaponEnum.h"
+#include "p2/weapon/attachmentEnums/weaponSightEnum.h"
 
 /**
  * 
@@ -14,15 +15,23 @@ public:
 	weaponSetupHelper();
 	~weaponSetupHelper();
 
-
+	//get the targeted weapon type
+	weaponEnum getWeaponTypeToCreate();
 
 	//apply attachments to a weapon
 	void applyAttachments(Aweapon *weaponIn);
 
+
+	//set types and attachments
+	void setWeaponTypeToCreate(weaponEnum typeIn);
+	void setSightAttachment(weaponSightEnum sightIn);
+
 private:
 	weaponEnum typeToCreate;
 
-	weaponEnum getWeaponType();
 
+
+	//attachments to set
+	weaponSightEnum sightToSet;
 
 };

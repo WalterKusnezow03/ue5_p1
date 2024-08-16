@@ -6,6 +6,8 @@
 #include "EntityManagerGeneric.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
+#include "p2/weapon/weaponEnum.h"
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
 /**
  * will spawn and hold entites which are despawned
@@ -27,16 +29,22 @@ public:
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector Location);
 	AEntityScript *spawnEntity(UWorld *world, FVector Location);
 
-	Aweapon *spawnAweapon(UWorld *world);
-	Aweapon *spawnPistol(UWorld *world);
+	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //default spawn by type
+	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
 
 	void setEntityUClassBp(UClass *entityIn);
 	void setHumanEntityUClassBp(UClass *humanIn);
-	void setWeaponUClassBp(UClass *weaponIn);
-	void setPistolUClassBp(UClass *pistolIn);
+
+	/// @brief sets the blueprint for all weapons
+	/// @param weaponIn 
+	/// @param type 
+	void setWeaponUClassBP(UClass *weaponIn, weaponEnum type);
 
 private:
 	static class EntityManager *instancePointer;
+
+	//deprecated
+	Aweapon *spawnPistol(UWorld *world);
 
 	EntityManager();
 
@@ -53,6 +61,8 @@ private:
 	UPROPERTY()
 	class UClass *pistolBpClass;
 
+	UPROPERTY()
+	class UClass *assaultRifleBpClass;
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java

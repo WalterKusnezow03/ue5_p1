@@ -6,6 +6,8 @@
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
+#include "p2/weapon/weaponEnum.h"
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
 
 //set static ref to nullptr
@@ -136,24 +138,70 @@ AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector Loca
 
 
 
-/// @brief spawns a weapon and returns the pointer
+/// @brief spawns a weapon and returns the pointer, applies default attachments
 /// @param world world to spawn in
+/// @param typeToSpawn weapon to spawn
 /// @return weapon reference
-Aweapon *EntityManager::spawnAweapon(UWorld* world){
+Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
-    AActor *spawned = spawnAactor(world, weaponBpClass, Location);
-    Aweapon *w = Cast<Aweapon>(spawned);
-    if(w != nullptr){
-        return w;
+
+    UClass *selectedBp = weaponBpClass; //to created, default is stick gun
+
+
+    //create symetrical lists
+    std::vector<weaponEnum> enumValues;
+    std::vector<UClass *> blueprints;
+
+    enumValues.push_back(weaponEnum::assaultRifle);
+    blueprints.push_back(assaultRifleBpClass);
+
+    enumValues.push_back(weaponEnum::pistol);
+    blueprints.push_back(pistolBpClass);
+
+    for (int i = 0; i < enumValues.size(); i++){
+        if(enumValues.at(i) == typeToSpawn){
+            selectedBp = blueprints.at(i);
+            break;
+        }
     }
+
+    if(selectedBp != nullptr){
+        AActor *spawned = spawnAactor(world, selectedBp, Location);
+        Aweapon *w = Cast<Aweapon>(spawned);
+        if(w != nullptr){
+            //testing as default sight
+            w->applySight(weaponSightEnum::enum_ironsight);
+
+            return w;
+        }
+    }
+
+    
     return nullptr;
 }
 
 
+//create weapon from helper object
 
+/// @brief spawns a weapon with an helper object
+/// @param world world to spawn in
+/// @param helper helper object. CANT BE NULLPTR
+/// @return weapon or nullptr
+Aweapon* EntityManager::spawnAweapon(UWorld *world, weaponSetupHelper *helper){
+    if(helper != nullptr && world != nullptr){
+        weaponEnum typeToSpawn = helper->getWeaponTypeToCreate();
+        Aweapon *created = spawnAweapon(world, typeToSpawn);
 
-//REFERENCE SETTINGS
+        if(created != nullptr){
+            helper->applyAttachments(created);
+            return created; //return the created weapon obviously
+        }
+    }
+    return nullptr;
+}
+
+//REFERENCE SETTINGS / SET U CLASS SECTION
 
 
 /// @brief set the uclass reference for spawning enteties
@@ -173,17 +221,18 @@ void EntityManager::setHumanEntityUClassBp(UClass *humanIn){
 }
 
 
-/// @brief sets the weapon bp reference
+
+/// @brief sets the weapon blue print of a specific type
 /// @param weaponIn 
-void EntityManager::setWeaponUClassBp(UClass *weaponIn){
+/// @param typeIn 
+void EntityManager::setWeaponUClassBP(UClass *weaponIn, weaponEnum typeIn){
     if(weaponIn != nullptr){
-        weaponBpClass = weaponIn;
+        switch(typeIn){
+        case weaponEnum::assaultRifle: assaultRifleBpClass = weaponIn;
+            break;
+        case weaponEnum::pistol: pistolBpClass = weaponIn;
+            break;
+        }
     }
-}
-
-
-void EntityManager::setPistolUClassBp(UClass *pistolIn){
-    if(pistolIn != nullptr){
-        pistolBpClass = pistolIn;
-    }
+    
 }

@@ -11,6 +11,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/entityManager/Outpost.h"
+#include "p2/weapon/weaponEnum.h"
+
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
 
 // Sets default values
@@ -41,7 +44,13 @@ void AHumanEntityScript::init(){
     //weapon
     EntityManager *e = EntityManager::instance();
     if(e != nullptr){
-        Aweapon *w = e->spawnAweapon(GetWorld());
+
+        //testing new helper
+        weaponSetupHelper *helper = new weaponSetupHelper();
+        helper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
+        helper->setSightAttachment(weaponSightEnum::enum_reddot);
+
+        Aweapon *w = e->spawnAweapon(GetWorld(), helper);
 		showScreenMessage("begin weapon");
 		if (w != nullptr){
 			showScreenMessage("human pickup weapon");
@@ -50,6 +59,20 @@ void AHumanEntityScript::init(){
             //save pointer
             weaponPointer = w;
         }
+
+        delete helper; //immer löschen nicht vergessen!
+        helper = nullptr;
+
+        /*
+        Aweapon *w = e->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
+		showScreenMessage("begin weapon");
+		if (w != nullptr){
+			showScreenMessage("human pickup weapon");
+			w->pickupBot(this);
+
+            //save pointer
+            weaponPointer = w;
+        }*/
     }
 
     //outpost

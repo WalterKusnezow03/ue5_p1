@@ -126,6 +126,7 @@ protected:
 	class UChildActorComponent *reddotSightChildActor;
 	class UChildActorComponent *ironSightChildActor;
 
+public:
 	void applySight(weaponSightEnum sight);
 
 
