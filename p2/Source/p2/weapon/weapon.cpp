@@ -83,6 +83,7 @@ void Aweapon::BeginPlay()
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
 
+	findAttachmentChildActors();
 }
 
 // Called every frame / UPDATE
@@ -113,7 +114,16 @@ FVector Aweapon::getOffsetVector(){
 		if(!isAiming){
 			//hipfire offset
 			pos += cameraPointer->GetRightVector().GetSafeNormal() * 25;
-		}	
+		}else{
+			
+			//ads and reddot
+			if(Type == weaponEnum::assaultRifle){
+				pos -= cameraPointer->GetForwardVector().GetSafeNormal() * 25; //20cm
+			}
+			
+			
+
+		}
 	}
 	return pos;
 }
@@ -399,9 +409,6 @@ void Aweapon::setupAnimations()
         if (Component)
         {
 			FString name = Component->GetName();
-            s.Append(TEXT("Child: "));
-			s.Append(name);
-			s.Append("\n");
 
 			if (name.Contains("verschluss")){
 				verschlussSkeletonPointer = Component;
@@ -409,11 +416,6 @@ void Aweapon::setupAnimations()
 				magSkeletonPointer = Component;
 			}
 		}
-    }
-	// Log the string to the console
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, s);
     }
     
 }
@@ -466,4 +468,27 @@ float Aweapon::recoilValue(){
 
 	//must be a negative value to properly flip up the camera!
 	return -0.1f;
+}
+
+
+
+
+
+
+/// @brief finds all the attachments in blueprint for the weapon
+void Aweapon::findAttachmentChildActors(){
+	TArray<UChildActorComponent *> childs;
+	GetComponents<UChildActorComponent>(childs);
+	if(childs.Num() > 0){
+		for (int i = 0; i < childs.Num(); i++){
+			if(childs[i] != nullptr){
+				FString name = childs[i]->GetName();
+				if(name.Contains("reddot")){
+					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
+
+					Super::showChildActor(childs[i], false); //hide reddot test, works!
+				}
+			}
+		}
+	}
 }

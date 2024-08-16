@@ -73,7 +73,8 @@ void AHumanEntityScript::Tick(float DeltaTime){
             attackPlayer();
         }
 
-        findOutPostNearby(); // if needed one is found
+        //if needed one is found
+        findOutPostNearby(); 
 
         //if player spotted, enable alarm if needed
         if(outpost != nullptr && spottedPlayer){
@@ -136,7 +137,6 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
 void AHumanEntityScript::findOutPostNearby(){
     if(outpost == nullptr){
         //find outpost nearby 
-        //outpost manager needs to be implemented yet.
         OutpostManager *instance = OutpostManager::instance();
         if(instance != nullptr){
             instance->tryRequestOutpost(GetWorld(), this);

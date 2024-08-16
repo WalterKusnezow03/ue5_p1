@@ -171,6 +171,13 @@ void AcarriedItem::showItem(bool show){
 }
 
 
+void AcarriedItem::showChildActor(UChildActorComponent* component, bool show){
+	if(component != nullptr){
+		component->SetHiddenInGame(!show);  // Hides the actor if 'show' is false
+	}
+}
+
+
 /// @brief returns is active status for player (hidden or not)
 /// @return is active (visible status)
 bool AcarriedItem::isActive(){

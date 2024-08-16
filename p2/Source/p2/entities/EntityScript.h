@@ -87,6 +87,9 @@ protected:
 	void showScreenMessage(FString s);
 
 
+	static const int MAXDISTANCE = 100000; //100m
+	bool isWithinMaxRange(FVector vec);
+
 	//activate methods for manager
 protected:
 	virtual void die();

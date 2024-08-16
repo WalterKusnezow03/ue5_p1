@@ -69,9 +69,10 @@ void AEntityScript::Tick(float DeltaTime)
 	//rest of update
 	canSeePlayer = false; //reset
 	bool withinAngle = withinVisionAngle(playerPointer);
+	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
 	//if not spotted yet, check angle, if angle ok, check vision
-	if(withinAngle){
+	if(withinAngle && withinRange){
 		canSeePlayer = performRaycast(playerPointer);
 	}
 
@@ -165,6 +166,10 @@ void AEntityScript::setupRaycastIgnoreParams(){
 
 
 
+
+bool AEntityScript::isWithinMaxRange(FVector vec){
+	return (FVector::Dist(GetActorLocation(), vec) <= MAXDISTANCE);
+}
 
 /// @brief performs a raycast to the target and checks if "can see it"
 /// @param target aactor from the scene
@@ -452,7 +457,7 @@ void AEntityScript::alert(){
 
 void AEntityScript::alert(FVector lookat){
 	if(!spottedPlayer && !canSeePlayer){
-		defaultSpottingTime /= 2;
+		defaultSpottingTime /= 2; 
 		setSpottingTime(defaultSpottingTime);
 		LookAt(lookat);
 	}

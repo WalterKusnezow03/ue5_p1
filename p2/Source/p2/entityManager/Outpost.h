@@ -23,7 +23,7 @@ public:
 	void subscribe(AHumanEntityScript *entity);
 	bool playerInArea();
 
-
+	bool isInRange(FVector &vec);
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,14 +35,18 @@ public:
 
 
 private:
+	//entities
 	std::vector<AHumanEntityScript *> myEntities;
 	void createEntity();
+
+	//distance
+	static const int MAXDISTANCE = 200000; //200m
 
 	//alarm
 	bool alertEnabled;
 	bool alarmEnabled;
 
-	
+
 	void liberate();
 
 public:

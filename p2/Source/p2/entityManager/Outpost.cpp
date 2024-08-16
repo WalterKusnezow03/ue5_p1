@@ -29,7 +29,13 @@ void AOutpost::Tick(float DeltaTime)
 
 }
 
-
+/// @brief returns if a vector is in the max range of the outpost
+/// @param vec to check
+/// @return within range
+bool AOutpost::isInRange(FVector &vec){
+	FVector ownLocation = GetActorLocation();
+	return (FVector::Dist(vec, ownLocation) <= MAXDISTANCE);
+}
 
 void AOutpost::releaseEntity(AHumanEntityScript *entity){
 	if(entity != nullptr){

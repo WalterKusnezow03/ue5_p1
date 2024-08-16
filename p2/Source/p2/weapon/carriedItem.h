@@ -34,8 +34,11 @@ protected:
 
 	/// @brief will save whether the item is shown (selected or not.)
 	bool isVisible;
-	
 
+	/// @brief shows or hides a child actor component if not nullptr
+	/// @param component 
+	/// @param show 
+	void showChildActor(UChildActorComponent *component, bool show);
 
 	//follow
 	class UCameraComponent *cameraPointer; // why class, idk, just keep it like that

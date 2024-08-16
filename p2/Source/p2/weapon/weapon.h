@@ -114,6 +114,9 @@ protected:
 
 
 
+	//find attachments
+	void findAttachmentChildActors();
+
 	//follow
 	/*class UCameraComponent *cameraPointer; // why class, idk, just keep it like that
 	class AActor *botPointer;

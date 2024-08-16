@@ -130,7 +130,8 @@ void PathFinder::showPos(FVector e, FColor c){
 
 
 
-//add nodes
+/// @brief add nodes to the graph
+/// @param vec 
 void PathFinder::addNewNodeVector(std::vector<FVector>& vec){
     for (int i = 0; i < vec.size(); i++){
         addNewNode(vec.at(i));
@@ -139,6 +140,8 @@ void PathFinder::addNewNodeVector(std::vector<FVector>& vec){
     debugCountNodes();
 }
 
+/// @brief adds a single node to the graph
+/// @param a 
 void PathFinder::addNewNode(FVector a){
     PathFinder::Quadrant *q = askforQuadrant(a.X, a.Y);
     if(q != nullptr){
@@ -242,7 +245,10 @@ void PathFinder::debugCountNodes(){
 
 
 
-
+/// @brief returns a path from a given position a to an given position b
+/// @param a fvector start point targeted
+/// @param b fvector end point targeted
+/// @return a path or an emtpy vector if no path was found
 std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
 
     PathFinder::Node *start = findNode(a);

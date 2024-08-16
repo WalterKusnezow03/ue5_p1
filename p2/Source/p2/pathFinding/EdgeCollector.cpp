@@ -45,6 +45,11 @@ std::vector<FVector>& EdgeCollector::getReadEdges(){
 
 //Function to process static meshes in the world
 //returns a reference to the edges, copy needed because object will destroy them on destruct!
+
+/// @brief will get all edges from the given world.
+/// @param World 
+/// @param minHeight 
+/// @return std::vector<FVector>& a list of nodes for your pathfinding algorythm
 std::vector<FVector>& EdgeCollector::getAllEdges(UWorld* World, float minHeight)
 {
     worldIn = World;
