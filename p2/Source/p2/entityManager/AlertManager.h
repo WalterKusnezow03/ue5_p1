@@ -15,6 +15,10 @@ public:
 
 	static void alertInArea(UWorld *world, FVector location, float radius);
 
+	static void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage);
+
 private:
 	static float deltaTime(UWorld *world);
+
+	static TArray<AActor *> getAActorsInArea(UWorld *world, FVector location, float radius);
 };

@@ -8,6 +8,9 @@
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "p2/throwableItems/throwableEnum.h"
+#include "p2/throwableItems/throwableItem.h"
+
 
 /**
  * will spawn and hold entites which are despawned
@@ -32,6 +35,8 @@ public:
 	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //default spawn by type
 	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
 
+	AthrowableItem *spawnAthrowable(UWorld *world, FVector location, throwableEnum type); //spawns a throwable if existent
+
 	void setEntityUClassBp(UClass *entityIn);
 	void setHumanEntityUClassBp(UClass *humanIn);
 
@@ -39,6 +44,12 @@ public:
 	/// @param weaponIn 
 	/// @param type 
 	void setWeaponUClassBP(UClass *weaponIn, weaponEnum type);
+
+	//throwable setting
+	void setThrowableUClassBp(UClass *throwableIn, throwableEnum type);
+
+	//testing needed
+	void setDefaultThrowerClassBp(UClass *uIn);
 
 private:
 	static class EntityManager *instancePointer;
@@ -64,6 +75,18 @@ private:
 	UPROPERTY()
 	class UClass *assaultRifleBpClass;
 
+
+	//throwables section
+	UPROPERTY()
+	class UClass *grenadeBpClass;
+	UPROPERTY()
+	class UClass *molotovBpClass;
+	UPROPERTY()
+	class UClass *rocketBpClass;
+	
+
+
+
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java
 	class EntityManagerGeneric<AEntityScript> entityList; 
@@ -84,5 +107,12 @@ private:
 	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector Location);
 	
 
+	UPROPERTY()
+	class UClass *defaultThrower;
+
 	
+
+	//testing needed
+public:
+	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
 };

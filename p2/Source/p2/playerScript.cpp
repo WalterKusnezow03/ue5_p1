@@ -79,6 +79,20 @@ void AplayerScript::BeginPlay()
 
     setTeam(referenceManager::TEAM_PLAYER);
 
+
+
+
+    //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
+    /*
+    Aweapon *w = nullptr;
+    if(e != nullptr){
+        w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
+        if(w != nullptr){
+            w->pickup(CameraComponent);
+            playerInventory.addWeapon(w);
+        }
+    }
+    */
 }
 
 // Called to bind functionality to input
@@ -130,7 +144,7 @@ void AplayerScript::Tick(float DeltaTime)
  */
 void AplayerScript::takedamage(int d)
 {
-    DebugHelper::showScreenMessage("Player Damage", FColor::Yellow);
+    //DebugHelper::showScreenMessage("Player Damage", FColor::Yellow);
     // Implementierung der Methode
     health -= d;
 	if(health <= 0){

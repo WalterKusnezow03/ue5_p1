@@ -35,21 +35,31 @@ public:
 
 
 private:
+
 	//entities
 	std::vector<AHumanEntityScript *> myEntities;
 	void createEntity();
+	void createEntity(int count);
 
 	//distance
-	static const int MAXDISTANCE = 200000; //200m
+	static const int MAXDISTANCE = 70000; //70m
+	static const int MAXDISTANCE_METERS = 70;
 
 	//alarm
 	bool alertEnabled;
 	bool alarmEnabled;
 
-
+	//liberate
+	bool isLiberated;
 	void liberate();
 
+	//despawn all
+	void releaseAll();
+
+	void initEntitiesIfNeeded();
+
 public:
+	//alert / alarm all entites
 	void alertAll();
 	void alarmAll();
 };

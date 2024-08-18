@@ -95,18 +95,9 @@ void AcarriedItem::followPlayer(){
         SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
 
-		//showScreenMessage(FString::Printf(TEXT("weapon pos %d, %d"), currentPos.X, currentPos.Y));
 	}
 
 	
-	/*
-	if(botPointer != nullptr){
-		
-		DebugHelper::showScreenMessage("picked up by bot");
-	}
-	if(cameraPointer != nullptr){
-		DebugHelper::showScreenMessage("picked up by player");
-	}*/
 }
 
 /// @brief Only for player:

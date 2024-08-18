@@ -26,9 +26,12 @@ public:
 	// Enum to specify the type of weapon -> is saved to create animation paths
 	// enum values will resemble their EXACT type for animation locations in folder structure!
 	// DO NOT REMOVE
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	weaponEnum Type;
 
+public:
+	weaponEnum readType();
 
 	void showWeapon(bool show);
 	/*
@@ -38,14 +41,14 @@ public:
 	//void dropweapon();
 	virtual void drop() override;
 	bool isPickedup();
-	void reload(int amount);
+	virtual void reload(int amount); //might be override from other classes (for example thrower weapon)
 	int getMagSize();
 	int getBulletsInMag();
 
 	//the class has 3 shoot methods: both public methods collect start and target point
 	//the "shootProtected" must only be called within the class!
-	void shoot(); //PLAYER SHOOT METHOD
-	void shootBot(FVector target); //BOT SHOOT METHOD
+	virtual void shoot(); //PLAYER SHOOT METHOD --> can be overriden for subclasses
+	virtual void shootBot(FVector target); //BOT SHOOT METHOD --> can be overriden for subclasses
 
 	void releaseShoot();
 	void aim(bool aimstatus);

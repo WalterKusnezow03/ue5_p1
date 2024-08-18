@@ -6,6 +6,7 @@
 playerInventory::playerInventory()
 {
     currentIndex = 0;
+    ammunition = 1000; //testing
 }
 
 playerInventory::~playerInventory()
@@ -86,25 +87,25 @@ void playerInventory::addWeapon(Aweapon *weaponIn){
 /// @brief reloads the current weapon if possible
 void playerInventory::reloadWeapon(){
     if(currentIndexIsValid()){
-        if(weaponVector.at(currentIndex) != nullptr){
+        Aweapon *current = weaponVector.at(currentIndex)->weaponPointer;
+        if(current){
 
-            Aweapon *current = weaponVector.at(currentIndex)->weaponPointer;
-            if(current){
-                //reload if reload possible
-                if(current->canReload()){
-                    //add left
-                    int leftInMag = current->getBulletsInMag();
-                    ammunition += leftInMag;
+            
 
-                    //reload
-                    int magSize = current->getMagSize();
-                    if(ammunition - magSize > 0){
-                        weaponVector.at(currentIndex)->reload(magSize);
-                        ammunition -= magSize;
-                    }else{
-                        weaponVector.at(currentIndex)->reload(ammunition);
-                        ammunition = 0;
-                    }
+            //reload if reload possible
+            if(current->canReload()){
+                //add left
+                int leftInMag = current->getBulletsInMag();
+                ammunition += leftInMag;
+
+                //reload
+                int magSize = current->getMagSize();
+                if(ammunition - magSize > 0){
+                    weaponVector.at(currentIndex)->reload(magSize);
+                    ammunition -= magSize;
+                }else{
+                    weaponVector.at(currentIndex)->reload(ammunition);
+                    ammunition = 0;
                 }
             }
         }

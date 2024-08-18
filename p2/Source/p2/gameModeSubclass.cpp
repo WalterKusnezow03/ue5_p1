@@ -90,9 +90,19 @@ AgameModeSubclass::AgameModeSubclass()
 
 
 
+    //throwables
+    static ConstructorHelpers::FObjectFinder<UClass> grenadeBpClass(
+        TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'")
+    );
+    if (grenadeBpClass.Succeeded())
+    {
+        UClass *bp = grenadeBpClass.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setThrowableUClassBp(bp, throwableEnum::greneade_enum);
+        }
+    }
 
-
-
+   
 }
 
 // METHOD HAS ISSUES AND DOESNT WORK PROPERLY!!

@@ -8,6 +8,9 @@
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "p2/throwableItems/throwableEnum.h"
+#include "p2/throwableItems/throwableItem.h"
+#include <map>
 
 
 //set static ref to nullptr
@@ -26,6 +29,11 @@ EntityManager::EntityManager()
 	humanEntityBpClass = nullptr;
 	weaponBpClass = nullptr;
     pistolBpClass = nullptr;
+
+    
+    grenadeBpClass = nullptr;
+    rocketBpClass = nullptr;
+    molotovBpClass = nullptr;
 }
 
 EntityManager::~EntityManager()
@@ -34,9 +42,14 @@ EntityManager::~EntityManager()
 	humanEntityBpClass = nullptr;
 	weaponBpClass = nullptr;
     pistolBpClass = nullptr;
+
+    grenadeBpClass = nullptr;
+    rocketBpClass = nullptr;
+    molotovBpClass = nullptr;
 }
 
-
+/// @brief add an entity to the manager
+/// @param entity 
 void EntityManager::add(AEntityScript *entity){
     if(entity != nullptr){
         //set location and deactivate
@@ -46,6 +59,8 @@ void EntityManager::add(AEntityScript *entity){
     }
 }
 
+/// @brief add an humanentity to the manager
+/// @param humanEntity 
 void EntityManager::add(AHumanEntityScript *humanEntity){
     if(humanEntity != nullptr){
         humanEntity->enableActiveStatus(false);
@@ -53,6 +68,15 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
     }
 }
 
+void EntityManager::add(Aweapon *weaponIn){
+    if(weaponIn != nullptr){
+        weaponEnum type = weaponIn->readType();
+
+        //push in correct vector
+
+
+    }
+}
 
 
 
@@ -148,24 +172,11 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
 
     UClass *selectedBp = weaponBpClass; //to created, default is stick gun
 
+    std::map<weaponEnum, UClass *> map;
+    map[weaponEnum::assaultRifle] = assaultRifleBpClass;
+    map[weaponEnum::pistol] = pistolBpClass;
 
-    //create symetrical lists
-    std::vector<weaponEnum> enumValues;
-    std::vector<UClass *> blueprints;
-
-    enumValues.push_back(weaponEnum::assaultRifle);
-    blueprints.push_back(assaultRifleBpClass);
-
-    enumValues.push_back(weaponEnum::pistol);
-    blueprints.push_back(pistolBpClass);
-
-    for (int i = 0; i < enumValues.size(); i++){
-        if(enumValues.at(i) == typeToSpawn){
-            selectedBp = blueprints.at(i);
-            break;
-        }
-    }
-
+    selectedBp = map[typeToSpawn];
     if(selectedBp != nullptr){
         AActor *spawned = spawnAactor(world, selectedBp, Location);
         Aweapon *w = Cast<Aweapon>(spawned);
@@ -176,7 +187,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
             return w;
         }
     }
-
     
     return nullptr;
 }
@@ -201,7 +211,83 @@ Aweapon* EntityManager::spawnAweapon(UWorld *world, weaponSetupHelper *helper){
     return nullptr;
 }
 
-//REFERENCE SETTINGS / SET U CLASS SECTION
+
+/// @brief spawns a throwable item if possible
+/// @param world world to spawn in
+/// @param location to spawn at
+/// @param type type to spawn
+/// @return pointer to the AthrowableItem (derived from aactor)
+AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector location, throwableEnum type){
+
+    if(world != nullptr){
+        std::map<throwableEnum, UClass *> typeMap;
+
+        typeMap[throwableEnum::rock_enum] = nullptr;
+        typeMap[throwableEnum::greneade_enum] = grenadeBpClass;
+        typeMap[throwableEnum::rocket_enum] = rocketBpClass;
+        typeMap[throwableEnum::molotov_enum] = molotovBpClass;
+
+        UClass *fromMap = typeMap[type];
+        if(fromMap != nullptr){
+
+            AActor * spawned = spawnAactor(world, fromMap, location);
+
+            AthrowableItem *casted = Cast<AthrowableItem>(spawned);
+            if(casted != nullptr){
+                return casted;
+            }
+        }
+    }
+    //an issue occured
+    return nullptr;
+}
+
+
+
+//testing thrower weapons
+Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
+    DebugHelper::showScreenMessage("try get weapon");
+    FVector Location = FVector(0, 0, 0);
+
+    UClass *selectedBp = nullptr; //to created, default is stick gun
+
+    std::map<throwableEnum, UClass *> map;
+    map[throwableEnum::rocket_enum] = rocketBpClass;
+    map[throwableEnum::greneade_enum] = grenadeBpClass;
+
+    selectedBp = map[typeToSpawn];
+    if(selectedBp != nullptr){
+        AActor *spawned = spawnAactor(world, selectedBp, Location);
+        Aweapon *w = Cast<Aweapon>(spawned);
+        if(w != nullptr){
+
+            return w;
+        }
+    }
+
+    return nullptr;
+}
+
+//testing needed
+void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
+    if(defaultThrower == nullptr){
+        defaultThrower = uIn;
+    }
+}
+
+
+
+
+
+
+
+
+
+/**
+ * REFERENCE SETTINGS / SET U CLASS SECTION
+ * 
+ * 
+ */
 
 
 /// @brief set the uclass reference for spawning enteties
@@ -235,4 +321,21 @@ void EntityManager::setWeaponUClassBP(UClass *weaponIn, weaponEnum typeIn){
         }
     }
     
+}
+
+
+/// @brief sets the throwable item for all throwables if possible
+/// @param throwableIn u class derived of throwableItems/throwableItem
+/// @param typeIn type of the throwable
+void EntityManager::setThrowableUClassBp(UClass *throwableIn, throwableEnum typeIn){
+    if(throwableIn != nullptr){
+        switch(typeIn){
+        case throwableEnum::rocket_enum: rocketBpClass = throwableIn;
+            break;
+        case throwableEnum::greneade_enum: grenadeBpClass = throwableIn;
+            break;
+        case throwableEnum::molotov_enum: molotovBpClass = throwableIn;
+            break;
+        }
+    }
 }

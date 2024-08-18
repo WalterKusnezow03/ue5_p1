@@ -87,8 +87,9 @@ protected:
 	void showScreenMessage(FString s);
 
 
-	static const int MAXDISTANCE = 100000; //100m
-	bool isWithinMaxRange(FVector vec);
+	static const int MAXDISTANCE = 70000; //70m
+public:
+	virtual bool isWithinMaxRange(FVector vec);
 
 	//activate methods for manager
 protected:
@@ -100,6 +101,8 @@ public:
 	//must be public
 	void enableActiveStatus(bool enable);
 	//activate methods for manager end
+
+	virtual void despawn();
 
 	void alert();
 	void alert(FVector lookat);

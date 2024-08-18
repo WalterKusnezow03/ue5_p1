@@ -29,8 +29,12 @@ void AEntityScript::BeginPlay()
 	init();
 }
 
+/// @brief will enable the entity for tick
+/// set the player pointer, 
+/// set the spotting time and
+/// the entity team
 void AEntityScript::init(){
-	DebugHelper::showScreenMessage("entity init");
+	//DebugHelper::showScreenMessage("entity init");
 	enableActiveStatus(true);
 
 	health = 100;
@@ -42,7 +46,7 @@ void AEntityScript::init(){
 
 
 	//set team
-	setTeam(referenceManager::TEAM_ENEMY);
+	setTeam(referenceManager::TEAM_NEUTRAL);
 
 }
 
@@ -62,8 +66,6 @@ void AEntityScript::Tick(float DeltaTime)
 		if(i){
 			playerPointer = i->getPlayerPointer();
 		}
-
-		
 	}
 
 	//rest of update
@@ -166,7 +168,9 @@ void AEntityScript::setupRaycastIgnoreParams(){
 
 
 
-
+/// @brief returns if the distance to a entity is within the max range
+/// @param vec 
+/// @return 
 bool AEntityScript::isWithinMaxRange(FVector vec){
 	return (FVector::Dist(GetActorLocation(), vec) <= MAXDISTANCE);
 }
@@ -432,15 +436,18 @@ void AEntityScript::enableCollider(bool enable){
 	SetActorEnableCollision(enable);
 }
 
-/// @brief tell the entity manager to take this actor
+/// @brief will release the entity to the entity manager
 void AEntityScript::die(){
 
 	if(EntityManager *e = EntityManager::instance()){
 		e->add(this);
 	}
-	
 }
 
+/// @brief despawns the entity
+void AEntityScript::despawn(){
+	die();
+}
 
 /// @brief reduces the spotting time of the entity
 void AEntityScript::alert(){

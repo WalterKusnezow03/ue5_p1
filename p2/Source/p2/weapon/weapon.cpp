@@ -16,13 +16,16 @@ Aweapon::Aweapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 	cameraPointer = nullptr;
 	botPointer = nullptr;
 	verschlussSkeletonPointer = nullptr;
 	magSkeletonPointer = nullptr;
 
-	// Ensure the World context is valid
+	reddotSightChildActor = nullptr;
+	ironSightChildActor = nullptr;
 
+	// Ensure the World context is valid
 	isAiming = false;
 	singleFireModeOn = false;
 
@@ -38,6 +41,10 @@ Aweapon::Aweapon()
 	bulletsInMag = 30;
 }
 
+
+
+
+
 /// @brief finds the sight component of the weapon if existent
 void Aweapon::setupSight(){
 
@@ -48,13 +55,13 @@ void Aweapon::setupSight(){
     {
         if (Child)
         {
-            FString ChildName = Child->GetName();
+            //FString ChildName = Child->GetName();
             FString ChildType = Child->GetClass()->GetName();
 
-            s.Append(ChildName);
+            /*s.Append(ChildName);
             s.Append(TEXT(" - "));
             s.Append(ChildType);
-            s.Append(TEXT("\n"));
+            s.Append(TEXT("\n"));*/
 
             // Check if the child is of type AsightScript
             AsightScript* SightChild = Cast<AsightScript>(Child);
@@ -220,13 +227,10 @@ void Aweapon::shootProtected(FVector Start, FVector End, int ownTeam){
 	
 	if(canShoot()){ //check if can shoot
 
+		//DONT FORGET THESE!! OTHERWISE NO FIRERATE IS APPLIED
 		abzugHinten = true;
-
-		//showScreenMessage("shoot!");	
-		//showScreenMessage("shoot bot 3!");
-		//FVector direction = (to - from).GetSafeNormal(); // AB = B - A
 		resetCoolTime(cooldownTime);
-		//timeleft = cooldownTime; // reset time
+		bulletsInMag--;
 
 		// Perform the raycast
 		FHitResult HitResult;
@@ -299,8 +303,6 @@ bool Aweapon::canShoot(){
 void Aweapon::aim(bool aimstatus){
 	if(Super::isPickedupByPlayer()){
 		isAiming = aimstatus;
-
-		showScreenMessage("switch");
 	}
 }
 
@@ -314,7 +316,7 @@ void Aweapon::resetCoolTime(float time){
  * will return if the weapon is cooling at the moment
  */
 bool Aweapon::isCooling(){
-	return timeleft > 0.01f;
+	return timeleft > 0.05f;
 }
 
 /**
@@ -356,8 +358,9 @@ void Aweapon::showWeapon(bool show){
 	SetActorHiddenInGame(!show);  // Hides the actor if 'show' is false
 }
 
-
-
+weaponEnum Aweapon::readType(){
+	return Type;
+}
 
 ////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
 

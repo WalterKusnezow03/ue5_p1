@@ -87,7 +87,8 @@
 			"vector": "cpp",
 			"algorithm": "cpp",
 			"hash_map": "cpp",
-			"*.ipp": "cpp"
+			"*.ipp": "cpp",
+			"type_traits": "cpp"
 		}
 	},
 	"extensions": {

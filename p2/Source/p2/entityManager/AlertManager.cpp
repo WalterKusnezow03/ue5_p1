@@ -4,6 +4,7 @@
 #include "AlertManager.h"
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
+#include "p2/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -16,9 +17,70 @@ AlertManager::~AlertManager()
 {
 }
 
-
-
+///@brief alerts all aactors in a given area
+///@param world world to get from
+///@param location center of radius
+///@param SphereRadius collect in radius
 void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadius){
+    TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
+    // Process the results
+    for (AActor* Actor : actors){
+        // Notify or process the actor in some way
+        if (Actor){
+            AEntityScript *entity = Cast<AEntityScript>(Actor);
+            if(entity){
+
+                if(entity->isWithinMaxRange(location)){
+                    //look at immidiatly
+                    entity->alarm();
+                }else{
+                    entity->alert();
+                }
+                
+            }
+        }
+    }
+
+}
+
+
+///@brief alerts all aactors in a given area
+///@param world world to get from
+///@param location center of radius
+///@param SphereRadius collect in radius
+void AlertManager::damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage){
+    TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
+    // Process the results
+    for (AActor* Actor : actors){
+        // Notify or process the actor in some way (based on distance)
+        if (Actor){
+            AEntityScript *entity = Cast<AEntityScript>(Actor);
+            if(entity){
+
+                if(entity->isWithinMaxRange(location)){
+                    //look at immidiatly
+                    entity->alarm();
+                }else{
+                    entity->alert();
+                }
+                
+            }
+
+            IDamageinterface *damagable = Cast<IDamageinterface>(Actor);
+            if(damagable != nullptr){
+                damagable->takedamage(damage);
+            }
+        }
+    }
+}
+
+
+///@brief gets all aactors in a given area
+///@param world world to get fromworld)
+
+///@param location center of radius
+///@param SphereRadius collect in radius
+TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location, float SphereRadius){
     if(world != nullptr){
 
         float delta = AlertManager::deltaTime(world);
@@ -44,20 +106,18 @@ void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadi
             OverlappingActors
         );
 
-        // Process the results
-        for (AActor* Actor : OverlappingActors){
-            // Notify or process the actor in some way
-            if (Actor){
-                AEntityScript * entity = Cast<AEntityScript>(Actor);
-                if(entity){
-                    entity->alert();
-                    //entity->alarm();
-                }
-            }
-        }
+        return OverlappingActors;
     }
 
+    //empty array
+    TArray<AActor*> t;
+    return t;
 }
+
+
+
+
+
 
 
 /**

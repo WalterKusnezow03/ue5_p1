@@ -45,7 +45,7 @@ void AHumanEntityScript::init(){
     EntityManager *e = EntityManager::instance();
     if(e != nullptr){
 
-        //testing new helper
+        //testing new helper (works as expected)
         weaponSetupHelper *helper = new weaponSetupHelper();
         helper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
         helper->setSightAttachment(weaponSightEnum::enum_reddot);
@@ -63,25 +63,19 @@ void AHumanEntityScript::init(){
         delete helper; //immer löschen nicht vergessen!
         helper = nullptr;
 
-        /*
-        Aweapon *w = e->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
-		showScreenMessage("begin weapon");
-		if (w != nullptr){
-			showScreenMessage("human pickup weapon");
-			w->pickupBot(this);
-
-            //save pointer
-            weaponPointer = w;
-        }*/
     }
 
     //outpost
     outpost = nullptr;
+
+    //team
+    setTeam(referenceManager::TEAM_ENEMY);
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){
-    Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime); //entity tick (spotting)
 
+    //only tick if wanted
     if(Super::isActivatedForUpdate()){
         //reload weapon
         if(weaponPointer != nullptr){
@@ -126,7 +120,24 @@ void AHumanEntityScript::shootAt(FVector target){
 
 
 
+/// @brief checks if the player is within a max given range or the outpost. Is a overriden method from 
+/// AEntityScript
+/// @param vec to check if in range
+/// @return bool in range or not
+bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 
+    //float dist = FVector::Dist(GetActorLocation(), vec) / 100;
+    //DebugHelper::showScreenMessage(FString::Printf(TEXT("dist human %f"), dist));
+
+    //within range of outpost (instead to check to find a path or not)
+    if(outpost != nullptr){
+        return outpost->isInRange(vec);
+    }
+    
+    //default is in range
+    return Super::isWithinMaxRange(vec);
+    
+}
 
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
@@ -135,21 +146,35 @@ void AHumanEntityScript::die(){
         weaponPointer = nullptr;
     }
 
+    //release over outpost, so the outpost ca remove the entity from its own list
     if(outpost != nullptr){
         outpost->releaseEntity(this);
         outpost = nullptr;
 
     }else{
         //default entity manager death
-        Super::die();
+        //Super::die();
+        if(EntityManager *e = EntityManager::instance()){
+            e->add(this); //cant call entity super method because super method would add entity instead of human entity
+        }
     }
 }
 
+/// @brief despawns the entity (placeholder to keep "die()" protected for now.)
+void AHumanEntityScript::despawn(){
+    //despawn weapon manually to the entity manager too.
 
-/// @brief sets the outpost reference if not a nullptr
-/// is a set method because newly created entites usually will be created by an outpost which subscribes them
-/// automatically
-/// @param outpostIn 
+
+    die();
+}
+
+/// @brief sets the outpost reference if is not a nullptr,
+/// newly created entites usually will be created by an outpost which subscribes them
+/// automatically, if an entity doesnt have an outpost,
+/// the findOutPostNearby method will manange the search. The outpostmanager will
+/// will find or create an outpost and also subscribe the human entity with this 
+/// method.
+/// @param outpostIn outpost to subscribe to
 void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
     if(outpostIn != nullptr){
         this->outpost = outpostIn;
@@ -159,10 +184,10 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
 /// @brief finds an outpost nearby if needed and subscribes to it
 void AHumanEntityScript::findOutPostNearby(){
     if(outpost == nullptr){
-        //find outpost nearby 
+        //try find outpost nearby 
         OutpostManager *instance = OutpostManager::instance();
         if(instance != nullptr){
-            instance->tryRequestOutpost(GetWorld(), this);
+            instance->tryRequestOutpost(GetWorld(), this); //manager will subscribe the entity on success
         }
     }
 }

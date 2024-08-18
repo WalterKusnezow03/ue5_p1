@@ -45,6 +45,11 @@ private:
 	class AOutpost *outpost;
 	void findOutPostNearby();
 
+	//range of outpost check
+	virtual bool isWithinMaxRange(FVector vec) override;
+
 public:
 	void setOutpost(AOutpost *outpostIn);
+
+	virtual void despawn() override;
 };
