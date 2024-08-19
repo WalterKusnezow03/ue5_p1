@@ -6,7 +6,7 @@
 #include "EntityScript.h"
 #include "p2/playerScript.h"
 #include "p2/pathFinding/PathFinder.h"
-#include "p2/referenceManager.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entityManager/OutpostManager.h"

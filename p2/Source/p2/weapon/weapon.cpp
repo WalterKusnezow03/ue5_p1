@@ -388,6 +388,11 @@ void Aweapon::animationPathSet(){
 	setVerschlussPath(verschluss_anim_path);
 	setMagAnimPath(mag_anim_path);
 
+
+	//pre load the animations
+	verschlussAnimationSquence = LoadObject<UAnimSequence>(nullptr, *verschluss_anim_path);
+	magAnimationSequence = LoadObject<UAnimSequence>(nullptr, *mag_anim_path);
+
 }
 
 void Aweapon::setVerschlussPath(FString path){
@@ -428,17 +433,21 @@ void Aweapon::setupAnimations()
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
 	if(verschlussSkeletonPointer != nullptr){
-		playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
+		//playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
+		playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 	}
 }
 
 /// @brief plays the reload animation
 void Aweapon::reloadAnimation(){
 	if(magSkeletonPointer != nullptr){
-		playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
+		//playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
+		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime);
 	}
 }
 
+
+// DEPRECATED
 /// @brief plays an animatin for a skeleton from a path
 /// @param AnimationPath path to the animation
 /// @param skeleton 
@@ -460,6 +469,33 @@ void Aweapon::playAnimation(
 		skeleton->SetPlayRate(playRate);
 	}
 }
+
+
+
+
+
+/// @brief plays an animation for an skeleton pointer and the anim sequence
+/// @param AnimSequence 
+/// @param skeleton 
+/// @param time 
+void Aweapon::playAnimation(
+	UAnimSequence *AnimSequence, 
+	USkeletalMeshComponent *skeleton,
+	float time
+){
+    if (AnimSequence && skeleton){
+		float animationLength = AnimSequence->GetPlayLength();
+		float playRate = animationLength / time; // cooldownTime; //properly scale
+
+		skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
+		// Set the animation speed
+        //skeleton->SetPlayRate(60 * cooldownTime);
+		skeleton->SetPlayRate(playRate);
+	}
+}
+
+
+
 
 
 

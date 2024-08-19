@@ -114,13 +114,16 @@ protected:
 
 	//plays any anim
 	void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
+	void playAnimation(UAnimSequence *AnimSequence, USkeletalMeshComponent *skeleton, float time);
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;
 	FString verschlussPath;
 	FString magAnimPath;
-
-
+	
+	//saves the preloaded animation sequences
+	class UAnimSequence *verschlussAnimationSquence;
+	class UAnimSequence *magAnimationSequence;
 
 	//find attachments
 	void findAttachmentChildActors();

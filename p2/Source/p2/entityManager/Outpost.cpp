@@ -3,7 +3,7 @@
 
 
 #include "Outpost.h"
-#include "p2/referenceManager.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
 
 

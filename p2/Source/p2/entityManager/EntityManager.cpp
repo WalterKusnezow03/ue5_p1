@@ -73,8 +73,14 @@ void EntityManager::add(Aweapon *weaponIn){
         weaponEnum type = weaponIn->readType();
 
         //push in correct vector
+        std::map<weaponEnum, EntityManagerGeneric<Aweapon> *> map;
+        map[weaponEnum::assaultRifle] = &assault_weaponList;
+        map[weaponEnum::pistol] = &pistol_weaponList;
 
-
+        EntityManagerGeneric<Aweapon> *m = map[type];
+        if(m != nullptr){
+            m->add(weaponIn);
+        }
     }
 }
 

@@ -21,6 +21,7 @@ public:
 
 	class Node{
 		public:
+			static const int noneFx = -1;
 			bool closedFlag;
 			PathFinder::Node *camefrom;
 			float fx;
@@ -32,6 +33,8 @@ public:
 			void updateCameFrom(float gxIn, float hxEnd, Node &came);
 			void close();
 			bool isClosed();
+
+			float oldfx;
 	};
 
 private:

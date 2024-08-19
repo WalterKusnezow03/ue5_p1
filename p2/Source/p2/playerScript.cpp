@@ -5,7 +5,7 @@
 #include "weapon/weapon.h"
 #include "playerInventory.h"
 #include "entityManager/EntityManager.h"
-#include "referenceManager.h"
+#include "p2/entityManager/referenceManager.h"
 #include "DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
@@ -281,7 +281,8 @@ void AplayerScript::shoot(){
     }
 }
 
-
+/// @brief sets the left mouse holding status for the weapon
+/// @param h 
 void AplayerScript::setHolding(bool h){
     holding = h;
 }
@@ -313,9 +314,7 @@ void AplayerScript::PlayAnimation(UAnimSequence* AnimSequence)
         SkeletalMeshComponent->PlayAnimation(AnimSequence, false); // false means don't loop
     }else{
 
-        if (GEngine && SkeletalMeshComponent) {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "animation not found");
-        }
+        DebugHelper::showScreenMessage("player animation not found");
     }
 }
 

@@ -60,6 +60,7 @@ void priorityList::add(PathFinder::Node *n){
                 }
 
             }else{
+                //remove null nodes
                 nodes.erase(nodes.begin() + i);
                 i--;
             }

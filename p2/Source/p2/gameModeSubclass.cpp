@@ -3,7 +3,7 @@
 
 #include "gameModeSubclass.h"
 
-#include "referenceManager.h"
+#include "p2/entityManager/referenceManager.h"
 #include "pathFinding/PathFinder.h"
 #include "pathFinding/EdgeCollector.h"
 #include "entityManager/EntityManager.h"

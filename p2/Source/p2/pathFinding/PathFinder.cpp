@@ -12,6 +12,7 @@
 #include "CoreMinimal.h"
 #include <limits>
 #include "priorityList.h"
+#include "p2/pathFinding/priorityQueue.h"
 
 
 
@@ -319,9 +320,10 @@ std::vector<FVector> PathFinder::findPath(
 
     std::vector<PathFinder::Node*> openList;
 
-    priorityList openList_;
+    //priorityList openList_;
+    priorityQueue openList_;
     openList_.add(start);
-    
+
     while(openList_.hasNodes()){
     //while(openList_.size() > 0){
 
@@ -739,6 +741,9 @@ void PathFinder::Node::reset(){
 
 void PathFinder::Node::updateCameFrom(float gxIn, float hxEnd, PathFinder::Node &came){
     this->camefrom = &came;
+
+    oldfx = fx; //copy
+
     gx = gxIn;
     fx = gxIn + hxEnd;
 }
