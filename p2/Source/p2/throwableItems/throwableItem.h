@@ -18,7 +18,7 @@ public:
 
 	void setLocation(FVector location);
 	void setRotation(FRotator rotation);
-	void throwIntoDirection(FVector start, FVector direction);
+	virtual void throwIntoDirection(FVector start, FVector direction);
 
 	void enablePhysics(bool enable);
 
@@ -30,12 +30,13 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	bool isThrown;
+
+	void reset();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	bool isThrown;
-	
+
 };

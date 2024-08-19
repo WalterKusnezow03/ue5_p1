@@ -5,6 +5,7 @@
 #include "Outpost.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
+#include <cstdlib>
 
 
 
@@ -109,11 +110,20 @@ void AOutpost::createEntity(){
 	if(EntityManager *e = EntityManager::instance()){
 		FVector pos = GetActorLocation();
 		pos.Z += 100;
+		pos += randomOffset(200);
 		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
 		if(human != nullptr){
 			subscribe(human);
 		}
 	}
+}
+
+FVector AOutpost::randomOffset(int range){
+	int x = std::rand();
+	int y = std::rand();
+	x = x % range;
+	y = y % range;
+	return FVector(x, y, 0);
 }
 
 void AOutpost::createEntity(int count){
@@ -172,7 +182,11 @@ void AOutpost::liberate(){
 	if(myEntities.size() <= 0){
 		alarmEnabled = false;
 		alertEnabled = false;
-		isLiberated = true;
+		isLiberated = true; 
+
+		//testing recreation --> testing completed, works as expected with generic entity manager
+		isLiberated = false;
+		initEntitiesIfNeeded();
 
 		DebugHelper::showScreenMessage("liberated outpost", FColor::Yellow);
 	}

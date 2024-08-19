@@ -4,7 +4,7 @@
 #include "HumanEntityScript.h"
 
 #include "EntityScript.h"
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 #include "p2/pathFinding/PathFinder.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
@@ -46,11 +46,11 @@ void AHumanEntityScript::init(){
     if(e != nullptr){
 
         //testing new helper (works as expected)
-        weaponSetupHelper *helper = new weaponSetupHelper();
-        helper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
-        helper->setSightAttachment(weaponSightEnum::enum_reddot);
+        weaponSetupHelper *setuphelper = new weaponSetupHelper();
+        setuphelper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
+        setuphelper->setSightAttachment(weaponSightEnum::enum_reddot);
 
-        Aweapon *w = e->spawnAweapon(GetWorld(), helper);
+        Aweapon *w = e->spawnAweapon(GetWorld(), setuphelper);
 		showScreenMessage("begin weapon");
 		if (w != nullptr){
 			showScreenMessage("human pickup weapon");
@@ -60,8 +60,8 @@ void AHumanEntityScript::init(){
             weaponPointer = w;
         }
 
-        delete helper; //immer löschen nicht vergessen!
-        helper = nullptr;
+        delete setuphelper; //immer löschen nicht vergessen!
+        setuphelper = nullptr;
 
     }
 
@@ -91,7 +91,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
         }
 
         //if needed one is found
-        findOutPostNearby(); 
+        findOutPostNearby();
 
         //if player spotted, enable alarm if needed
         if(outpost != nullptr && spottedPlayer){
@@ -143,6 +143,13 @@ bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 void AHumanEntityScript::die(){
     if(weaponPointer != nullptr){
         weaponPointer->drop();
+
+        //TESTING (Completed, weapon in queue testing)
+        if(EntityManager *e = EntityManager::instance()){
+            e->add(weaponPointer);
+        }
+
+
         weaponPointer = nullptr;
     }
 
@@ -160,10 +167,17 @@ void AHumanEntityScript::die(){
     }
 }
 
-/// @brief despawns the entity (placeholder to keep "die()" protected for now.)
+/// @brief despawns the entity 
 void AHumanEntityScript::despawn(){
     //despawn weapon manually to the entity manager too.
+    if(weaponPointer != nullptr){
+        weaponPointer->drop();
+        if(EntityManager *e = EntityManager::instance()){
+            e->add(weaponPointer);
+        }
 
+        weaponPointer = nullptr;
+    }
 
     die();
 }

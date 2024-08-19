@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 
 /**
  * 

@@ -58,6 +58,8 @@ private:
 
 	void initEntitiesIfNeeded();
 
+	FVector randomOffset(int range);
+
 public:
 	//alert / alarm all entites
 	void alertAll();

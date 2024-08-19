@@ -10,7 +10,7 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
 
-#include "Damageinterface.h"
+#include "p2/Damageinterface.h"
 
 #include "playerScript.generated.h"
 
@@ -29,6 +29,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	//derived from ACharacter
+	virtual void Jump() override;
 
 public:	
 	// Called every frame
@@ -56,6 +59,9 @@ private:
 
 	bool aiming;
 	bool holding;
+	bool sprinting;
+	void sprint();
+	static const int SPRINT_MULTIPLY = 3;
 
 	float timeleft;
 	void resetAnimtime(float newTime);

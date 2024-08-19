@@ -7,6 +7,9 @@
 #include "p2/weapon/attachmentEnums/weaponSightEnum.h"
 
 /**
+ * This class will safe the type and the targeted attachments for a weapon
+ * the entity manager will process this request, spawn a weapon if possible
+ * and enable all wanted attachments if possible.
  * 
  */
 class P2_API weaponSetupHelper

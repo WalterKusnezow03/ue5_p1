@@ -19,7 +19,7 @@ AthrowableItem::AthrowableItem()
 void AthrowableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	enablePhysics(false);
+	reset();
 }
 
 // Called every frame
@@ -54,7 +54,7 @@ void AthrowableItem::throwIntoDirection(FVector start, FVector direction){
 		DebugHelper::showScreenMessage("throw!");
 		isThrown = true;
 		int velocity = 1000; //verlängern
-		
+
 
 		SetActorLocation(start);
 		enablePhysics(true);
@@ -83,4 +83,11 @@ void AthrowableItem::enablePhysics(bool enable){
 			c->SetSimulatePhysics(enable);
 		}
 	}
+}
+
+
+
+void AthrowableItem::reset(){
+	isThrown = false;
+	enablePhysics(false);
 }

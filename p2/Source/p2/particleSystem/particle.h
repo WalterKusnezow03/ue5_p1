@@ -1,0 +1,40 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "p2/util/timer.h"
+#include "particle.generated.h"
+
+UCLASS()
+class P2_API Aparticle : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	Aparticle();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	void disablePhysics();
+	void move(float DeltaTime);
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	void applyImpulse(FVector directionIn, float speedIn);
+
+private:
+	FVector direction;
+	float speed;
+	class timer timer;
+
+	bool enabledForTick;
+
+	void relase();
+	void show(bool show);
+};

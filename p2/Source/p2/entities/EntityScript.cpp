@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 #include "p2/pathFinding/PathFinder.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"

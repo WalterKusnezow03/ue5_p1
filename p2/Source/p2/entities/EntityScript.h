@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "p2/Damageinterface.h"
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 
 #include "EntityScript.generated.h"
 

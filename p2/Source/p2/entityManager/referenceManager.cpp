@@ -2,7 +2,7 @@
 
 #include "referenceManager.h"
 
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 #include "p2/entities/EntityScript.h"
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"

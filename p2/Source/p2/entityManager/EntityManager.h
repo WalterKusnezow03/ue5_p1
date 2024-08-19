@@ -96,8 +96,7 @@ private:
 	class EntityManagerGeneric<Aweapon> assault_weaponList;
 	class EntityManagerGeneric<Aweapon> pistol_weaponList;
 
-
-
+	EntityManagerGeneric<Aweapon> *getWeaponManagerFor(weaponEnum type);
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!

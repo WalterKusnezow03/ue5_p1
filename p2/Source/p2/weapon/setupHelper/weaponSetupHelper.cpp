@@ -21,7 +21,8 @@ weaponSetupHelper::~weaponSetupHelper()
 
 //SET ATTACHMENT SECTION
 
-//set type section
+/// @brief sets the weapon (type) which should be created from the entity manager
+/// @param typeIn 
 void weaponSetupHelper::setWeaponTypeToCreate(weaponEnum typeIn){
     typeToCreate = typeIn;
 }

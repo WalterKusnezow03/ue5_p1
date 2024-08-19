@@ -2,11 +2,11 @@
 
 
 #include "playerScript.h"
-#include "weapon/weapon.h"
+#include "p2/weapon/weapon.h"
 #include "playerInventory.h"
-#include "entityManager/EntityManager.h"
+#include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/referenceManager.h"
-#include "DebugHelper.h"
+#include "p2/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
@@ -56,6 +56,7 @@ AplayerScript::AplayerScript()
 
     //FString JumpAnimPath = TEXT("/Game/Animations/JumpAnim.JumpAnim");
 
+    sprinting = false;
 }
 
 // Called when the game starts or when spawned
@@ -115,8 +116,12 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AplayerScript::interact);
 	PlayerInputComponent->BindAction("ReloadKey", IE_Pressed, this, &AplayerScript::reload);
 	PlayerInputComponent->BindAction("DropKey", IE_Pressed, this, &AplayerScript::drop);
+    PlayerInputComponent->BindAction("JumpKey", IE_Pressed, this, &AplayerScript::Jump);
 
-	// Bind the key down action, here, not needed
+    PlayerInputComponent->BindAction("sprintKey", IE_Pressed, this, &AplayerScript::sprint);
+    PlayerInputComponent->BindAction("sprintKey", IE_Released, this, &AplayerScript::sprint);
+
+    // Bind the key down action, here, not needed
 	// PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AplayerScript::OnInteractKeyDown);
 	// Bind the key up action
     PlayerInputComponent->BindAction("leftMouse", IE_Pressed, this, &AplayerScript::leftMouseDown);
@@ -160,6 +165,12 @@ void AplayerScript::MoveForward(float Value)
 {
     if ((Controller != nullptr) && (Value != 0.0f))
     {
+        //testing
+        if(sprinting){
+            //DebugHelper::showScreenMessage("sprint");
+            Value *= SPRINT_MULTIPLY;
+        }
+
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -198,6 +209,16 @@ void AplayerScript::LookUpAtRate(float Rate)
 	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
 }
 
+void AplayerScript::Jump(){
+    if (CanJump())
+    {
+        ACharacter::Jump(); // Calls the base class jump function
+    }
+}
+
+void AplayerScript::sprint(){
+    sprinting = !sprinting;
+}
 
 /**
  * allows the player to interact

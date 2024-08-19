@@ -69,9 +69,22 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
 }
 
 void EntityManager::add(Aweapon *weaponIn){
+    
     if(weaponIn != nullptr){
+        weaponIn->showWeapon(false);
+
         weaponEnum type = weaponIn->readType();
 
+        FVector hiddenLocation = FVector(0, 0, -1000);
+        weaponIn->SetActorLocation(hiddenLocation);
+
+        EntityManagerGeneric<Aweapon> *m = getWeaponManagerFor(type);
+        if(m != nullptr){
+            
+            m->add(weaponIn);
+        }
+
+        /*
         //push in correct vector
         std::map<weaponEnum, EntityManagerGeneric<Aweapon> *> map;
         map[weaponEnum::assaultRifle] = &assault_weaponList;
@@ -80,7 +93,7 @@ void EntityManager::add(Aweapon *weaponIn){
         EntityManagerGeneric<Aweapon> *m = map[type];
         if(m != nullptr){
             m->add(weaponIn);
-        }
+        }*/
     }
 }
 
@@ -119,6 +132,8 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector Locat
     if(humanEntityList.hasActorsLeft()){
         AHumanEntityScript *human = humanEntityList.getFirstActor();
         if(human != nullptr){
+            //DebugHelper::showScreenMessage("human from list !", FColor::Yellow);
+
             human->init();
             human->SetActorLocation(Location);
             return human;
@@ -173,9 +188,29 @@ AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector Loca
 /// @param typeToSpawn weapon to spawn
 /// @return weapon reference
 Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
-    DebugHelper::showScreenMessage("try get weapon");
+    
     FVector Location = FVector(0, 0, 0);
 
+    //try get from list ----> Testing complete
+    EntityManagerGeneric<Aweapon> *a = getWeaponManagerFor(typeToSpawn);
+    if(a != nullptr){
+        if(a->hasActorsLeft()){
+            Aweapon *fromManager = a->getFirstActor();
+            if (fromManager != nullptr)
+            {
+                fromManager->showItem(true);
+
+                //testing as default sight
+                fromManager->applySight(weaponSightEnum::enum_ironsight);
+
+                return fromManager;
+            }
+        }
+    }
+
+
+
+    //default spawn if needed
     UClass *selectedBp = weaponBpClass; //to created, default is stick gun
 
     std::map<weaponEnum, UClass *> map;
@@ -187,6 +222,9 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
         AActor *spawned = spawnAactor(world, selectedBp, Location);
         Aweapon *w = Cast<Aweapon>(spawned);
         if(w != nullptr){
+            //show weapon
+            w->showItem(true);
+
             //testing as default sight
             w->applySight(weaponSightEnum::enum_ironsight);
 
@@ -282,12 +320,20 @@ void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
 }
 
 
+/// @brief gets the correct manager for a type as pointer, DO NOT DELETE
+/// @param type 
+/// @return 
+EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum type){
+    std::map<weaponEnum, EntityManagerGeneric<Aweapon> *> map;
+    map[weaponEnum::assaultRifle] = &assault_weaponList; //referenz der value iv eingeben für den pointer
+    map[weaponEnum::pistol] = &pistol_weaponList;
 
-
-
-
-
-
+    EntityManagerGeneric<Aweapon> *list = map[type];
+    if(list != nullptr){
+        return list;
+    }
+    return nullptr;
+}
 
 /**
  * REFERENCE SETTINGS / SET U CLASS SECTION

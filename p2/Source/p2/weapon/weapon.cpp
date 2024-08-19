@@ -6,7 +6,7 @@
 #include "p2/entityManager/AlertManager.h"
 #include "weaponEnum.h"
 #include "carriedItem.h"
-#include "p2/playerScript.h"
+#include "p2/player/playerScript.h"
 #include "sightScript.h"
 #include "attachmentEnums/weaponSightEnum.h"
 #include "carriedItem.h"

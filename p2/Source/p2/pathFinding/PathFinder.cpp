@@ -350,7 +350,7 @@ std::vector<FVector> PathFinder::findPath(
                     //bool wasClosed = n->closedFlag;
                     if(!n->isClosed()){
                         
-                        //kante aufstellen wenn sichtverbindung besteht. Dynamischer a stern modifiziert
+                        //kante aufstellen wenn sichtverbindung besteht. Dynamischer a stern / modifiziert
                         if(canSee(current, n)){
                             
 
