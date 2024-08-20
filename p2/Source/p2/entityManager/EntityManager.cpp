@@ -3,6 +3,10 @@
 
 #include "EntityManager.h"
 #include "EntityManagerGeneric.h"
+#include "p2/particleSystem/particle.h"
+#include "p2/particleSystem/particleEnum.h"
+
+
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
@@ -10,7 +14,8 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "p2/particleSystem/particleEnum.h"
+#include "p2/util/FVectorUtil.h"
+
 #include <map>
 
 
@@ -335,7 +340,50 @@ EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum typ
 
 
 
+
+
+void EntityManager::createExplosion(UWorld *world, FVector location, float radius){
+    if(world != nullptr){
+        int amount = 20;
+        float speed = 200.0f; //2 * 100 cm/s = 2ms
+        for (int i = 0; i < amount; i++)
+        {
+            FVector dir = FVectorUtil::randomOffset(100); //lets say just one meter because its normalized
+
+            createParticle(world, particleEnum::smoke_enum, location, dir, speed);
+        }
+    }
+}
+
+/// @brief creates an indivudual particle from an enum type
+/// @param world to spawn in
+/// @param enumtype type of particle
+/// @param location to spawn at
+/// @param dir direction of impulse
+/// @param speed speed to apply
+void EntityManager::createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed){
+    
+    if(world != nullptr){
+        UClass *bp = getParticleBp(enumtype);
+
+        if(bp != nullptr){
+            AActor *a = spawnAactor(world, bp, location);
+            if(a != nullptr){
+                Aparticle *created = Cast<Aparticle>(a);
+                if(created != nullptr){
+                    created->applyImpulse(dir, speed);
+                }
+            }
+        }
+    }
+    
+}
+
+
+
 /**
+ * 
+ * 
  * REFERENCE SETTINGS / SET U CLASS SECTION
  * 
  * 
@@ -395,15 +443,24 @@ void EntityManager::setThrowableUClassBp(UClass *throwableIn, throwableEnum type
 
 /// @brief sets all particle blueprints
 /// @param uIn 
-/// @param typeIn 
-void EntityManager::setparticleBp(UClass *uIn, particleEnum typeIn){
+/// @param type 
+void EntityManager::setparticleBp(UClass *uIn, particleEnum type){
 
     if(uIn != nullptr){
-        switch(typeIn){
+        switch(type){
         case particleEnum::smoke_enum:
             smokeParticleBp = uIn;
             break;
         }
     }
 
+}
+
+UClass *EntityManager::getParticleBp(particleEnum type){
+    switch(type){
+    case particleEnum::smoke_enum:
+        return smokeParticleBp;
+    
+    }
+    return nullptr;
 }

@@ -22,6 +22,9 @@ public:
 
 	void enablePhysics(bool enable);
 
+	//show or hide this actor
+	void show(bool show);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "throwabletype")
 	throwableEnum throwableType;
 
@@ -33,6 +36,8 @@ protected:
 	bool isThrown;
 
 	void reset();
+
+	
 
 public:	
 	// Called every frame

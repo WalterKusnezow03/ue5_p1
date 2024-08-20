@@ -33,7 +33,7 @@ protected:
 public:
 	weaponEnum readType();
 
-	void showWeapon(bool show);
+	virtual void showWeapon(bool show);
 	/*
 	void pickup(UCameraComponent &cameraRefIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
@@ -120,7 +120,7 @@ protected:
 	class USkeletalMeshComponent *magSkeletonPointer;
 	FString verschlussPath;
 	FString magAnimPath;
-	
+
 	//saves the preloaded animation sequences
 	class UAnimSequence *verschlussAnimationSquence;
 	class UAnimSequence *magAnimationSequence;

@@ -38,6 +38,8 @@ public:
 
 	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //no attachments, only spawn by type
 	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
+	//spawn a thrower weapon
+	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
 
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector location, throwableEnum type); //spawns a throwable if existent
 
@@ -60,6 +62,9 @@ public:
 
 	//particles
 	void setparticleBp(UClass *uIn, particleEnum typeIn);
+
+	void createExplosion(UWorld *world, FVector location, float radius);
+
 
 private:
 	static class EntityManager *instancePointer;
@@ -124,12 +129,19 @@ private:
 	/// @param Location location to spawn at 
 	/// @return 
 	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector Location);
-	
 
 
-	
 
-	//testing needed
-public:
-	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
+
+	//Particles 
+
+	/// @brief returns a pointer (which should be dereferenced for a set for the blueprint)
+	/// or used to instantiate the correct particle
+	/// @param type type to get from this iv variables
+	/// @return uclass or nullptr 
+	UClass *getParticleBp(particleEnum type);
+
+	void createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed);
+
+
 };

@@ -43,7 +43,7 @@ void AthrowableItem::setRotation(FRotator rotation){
 }
 
 
-/// @brief throws the item into a direction
+/// @brief throws the item into a direction, shows it enables physics
 /// @param start 
 /// @param direction 
 void AthrowableItem::throwIntoDirection(FVector start, FVector direction){
@@ -58,6 +58,7 @@ void AthrowableItem::throwIntoDirection(FVector start, FVector direction){
 
 		SetActorLocation(start);
 		enablePhysics(true);
+		show(true);
 
 		UStaticMeshComponent *mesh = FindComponentByClass<UStaticMeshComponent>();
 		if(mesh ){ //&& mesh->IsSimulatingPhysics()
@@ -90,4 +91,11 @@ void AthrowableItem::enablePhysics(bool enable){
 void AthrowableItem::reset(){
 	isThrown = false;
 	enablePhysics(false);
+}
+
+
+/// @brief shows or hides the item
+/// @param show bool as described
+void AthrowableItem::show(bool show){
+	SetActorHiddenInGame(!show);
 }

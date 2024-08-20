@@ -29,6 +29,9 @@ void AgrenadeItem::Tick(float deltaTime){
 
 }
 
+/// @brief throws the grenade into a direction
+/// @param start 
+/// @param direction 
 void AgrenadeItem::throwIntoDirection(FVector start, FVector direction){
     if(!isThrown){
         isDetonated = false;
@@ -39,9 +42,17 @@ void AgrenadeItem::throwIntoDirection(FVector start, FVector direction){
     }
 }
 
-
+/// @brief detonates the grenade
 void AgrenadeItem::detonate(){
     AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE);
     isDetonated = true;
     DebugHelper::showScreenMessage("grenade detonate"); //works as expected
+
+    float radius = 500.0f; // 5 * 100 = 5m
+    if(EntityManager *e = EntityManager::instance()){
+        e->createExplosion(GetWorld(), GetActorLocation(), radius);
+    }
+
+    //hide after detonate
+    show(false);
 }

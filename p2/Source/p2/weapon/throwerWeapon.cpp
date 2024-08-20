@@ -111,3 +111,15 @@ void AthrowerWeapon::reload(int amount){
 void AthrowerWeapon::setThrowableType(throwableEnum type){
     throwableTypeToThrow = type;
 }
+
+
+/// @brief overriden for thrower weapon to also hide the item
+/// @param show bool show or hide
+void AthrowerWeapon::showWeapon(bool show){
+
+    Super::showWeapon(show);
+    
+    if(throwableActorPointer != nullptr){
+        throwableActorPointer->show(show);
+    }
+}

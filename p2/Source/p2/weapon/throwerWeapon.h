@@ -21,6 +21,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void showWeapon(bool show) override;
+
 	void setThrowableType(throwableEnum type);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "throwabletype")
