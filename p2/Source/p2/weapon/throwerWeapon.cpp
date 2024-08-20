@@ -106,7 +106,7 @@ void AthrowerWeapon::reload(int amount){
 
 
 
-/// @brief sets the throwable type to request and throw
+/// @brief sets the throwable type to request and throw (should be called upon instantiation)
 /// @param type type to throw
 void AthrowerWeapon::setThrowableType(throwableEnum type){
     throwableTypeToThrow = type;

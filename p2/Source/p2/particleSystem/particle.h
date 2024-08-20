@@ -35,6 +35,6 @@ private:
 
 	bool enabledForTick;
 
-	void relase();
+	void release();
 	void show(bool show);
 };

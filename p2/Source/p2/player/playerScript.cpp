@@ -84,7 +84,7 @@ void AplayerScript::BeginPlay()
 
 
     //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
-    /*
+    
     Aweapon *w = nullptr;
     if(e != nullptr){
         w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
@@ -93,7 +93,7 @@ void AplayerScript::BeginPlay()
             playerInventory.addWeapon(w);
         }
     }
-    */
+    
 }
 
 // Called to bind functionality to input

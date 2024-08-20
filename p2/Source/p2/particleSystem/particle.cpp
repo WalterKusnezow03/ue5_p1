@@ -30,6 +30,7 @@ void Aparticle::Tick(float DeltaTime)
 		timer.Tick(DeltaTime);
 		if(timer.timesUp()){
 			//queu free self
+			release();
 		}
 	}
 	
@@ -58,6 +59,7 @@ void Aparticle::applyImpulse(FVector directionIn, float velocity){
 
 	enabledForTick = true;
 	show(true);
+	disablePhysics();
 }
 
 /// @brief disables physics entirely
@@ -80,7 +82,7 @@ void Aparticle::show(bool show){
 }
 
 /// @brief will release the particle to the entitymanager
-void Aparticle::relase(){
+void Aparticle::release(){
 	show(false);
 	enabledForTick = false;
 	if(EntityManager *e = EntityManager::instance())

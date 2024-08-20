@@ -10,6 +10,7 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
+#include "p2/particleSystem/particleEnum.h"
 #include <map>
 
 
@@ -34,6 +35,7 @@ EntityManager::EntityManager()
     grenadeBpClass = nullptr;
     rocketBpClass = nullptr;
     molotovBpClass = nullptr;
+    defaultThrower = nullptr; //immer am anfang setzen, sonst crash potenziell!
 }
 
 EntityManager::~EntityManager()
@@ -46,6 +48,7 @@ EntityManager::~EntityManager()
     grenadeBpClass = nullptr;
     rocketBpClass = nullptr;
     molotovBpClass = nullptr;
+    defaultThrower = nullptr;
 }
 
 /// @brief add an entity to the manager
@@ -293,26 +296,19 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
 
-    UClass *selectedBp = nullptr; //to created, default is stick gun
-
-    std::map<throwableEnum, UClass *> map;
-    map[throwableEnum::rocket_enum] = rocketBpClass;
-    map[throwableEnum::greneade_enum] = grenadeBpClass;
-
-    selectedBp = map[typeToSpawn];
-    if(selectedBp != nullptr){
-        AActor *spawned = spawnAactor(world, selectedBp, Location);
-        Aweapon *w = Cast<Aweapon>(spawned);
+    if(defaultThrower != nullptr){
+        
+        AActor *spawned = spawnAactor(world, defaultThrower, Location);
+        AthrowerWeapon *w = Cast<AthrowerWeapon>(spawned);
         if(w != nullptr){
-
+            w->setThrowableType(typeToSpawn);
             return w;
         }
     }
-
     return nullptr;
 }
 
-//testing needed
+//default "thrower / werfer"
 void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
     if(defaultThrower == nullptr){
         defaultThrower = uIn;
@@ -320,7 +316,9 @@ void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
 }
 
 
-/// @brief gets the correct manager for a type as pointer, DO NOT DELETE
+
+
+/// @brief gets the correct generic manager for a type as pointer, DO NOT DELETE
 /// @param type 
 /// @return 
 EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum type){
@@ -334,6 +332,8 @@ EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum typ
     }
     return nullptr;
 }
+
+
 
 /**
  * REFERENCE SETTINGS / SET U CLASS SECTION
@@ -390,4 +390,20 @@ void EntityManager::setThrowableUClassBp(UClass *throwableIn, throwableEnum type
             break;
         }
     }
+}
+
+
+/// @brief sets all particle blueprints
+/// @param uIn 
+/// @param typeIn 
+void EntityManager::setparticleBp(UClass *uIn, particleEnum typeIn){
+
+    if(uIn != nullptr){
+        switch(typeIn){
+        case particleEnum::smoke_enum:
+            smokeParticleBp = uIn;
+            break;
+        }
+    }
+
 }

@@ -10,11 +10,15 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
+#include "p2/particleSystem/particleEnum.h"
 
 
 /**
+ * OBJECT POOL MANAGER
+ * 
  * will spawn and hold entites which are despawned
  * only this class will spawn any enteties and manage them if they are not needed!
+ * will help with object pooling for the whole game
  */
 class P2_API EntityManager
 {
@@ -32,10 +36,13 @@ public:
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector Location);
 	AEntityScript *spawnEntity(UWorld *world, FVector Location);
 
-	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //default spawn by type
+	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //no attachments, only spawn by type
 	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
 
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector location, throwableEnum type); //spawns a throwable if existent
+
+
+	//Set bp methods
 
 	void setEntityUClassBp(UClass *entityIn);
 	void setHumanEntityUClassBp(UClass *humanIn);
@@ -48,8 +55,11 @@ public:
 	//throwable setting
 	void setThrowableUClassBp(UClass *throwableIn, throwableEnum type);
 
-	//testing needed
+	//thrower default (type is set upon instantiating request)
 	void setDefaultThrowerClassBp(UClass *uIn);
+
+	//particles
+	void setparticleBp(UClass *uIn, particleEnum typeIn);
 
 private:
 	static class EntityManager *instancePointer;
@@ -61,29 +71,39 @@ private:
 
 	//bp classes USE "UPROPERTY()" TO SAFELY USE UCLASS POINTER!
 	UPROPERTY()
-	class UClass *entityBpClass;
+	class UClass *entityBpClass = nullptr;
 
 	UPROPERTY()
-	class UClass *humanEntityBpClass;
+	class UClass *humanEntityBpClass = nullptr;
 
 	UPROPERTY()
-	class UClass *weaponBpClass;
+	class UClass *weaponBpClass = nullptr;
 
 	UPROPERTY()
-	class UClass *pistolBpClass;
+	class UClass *pistolBpClass = nullptr;
 
 	UPROPERTY()
-	class UClass *assaultRifleBpClass;
+	class UClass *assaultRifleBpClass = nullptr;
 
 
 	//throwables section
 	UPROPERTY()
-	class UClass *grenadeBpClass;
+	class UClass *grenadeBpClass = nullptr;
 	UPROPERTY()
-	class UClass *molotovBpClass;
+	class UClass *molotovBpClass = nullptr;
 	UPROPERTY()
-	class UClass *rocketBpClass;
+	class UClass *rocketBpClass = nullptr;
+
+	//thrower
+	UPROPERTY()
+	class UClass *defaultThrower = nullptr;
 	
+
+	//particle section
+	UPROPERTY()
+	class UClass *smokeParticleBp = nullptr;
+
+
 
 
 
@@ -106,8 +126,6 @@ private:
 	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector Location);
 	
 
-	UPROPERTY()
-	class UClass *defaultThrower;
 
 	
 

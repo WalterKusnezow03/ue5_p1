@@ -185,8 +185,8 @@ void AOutpost::liberate(){
 		isLiberated = true; 
 
 		//testing recreation --> testing completed, works as expected with generic entity manager
-		isLiberated = false;
-		initEntitiesIfNeeded();
+		//isLiberated = false;
+		//initEntitiesIfNeeded();
 
 		DebugHelper::showScreenMessage("liberated outpost", FColor::Yellow);
 	}

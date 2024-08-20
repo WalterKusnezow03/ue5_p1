@@ -86,8 +86,24 @@ AgameModeSubclass::AgameModeSubclass()
 
 
 
+    //---- RIFLE END ----
 
 
+
+
+
+
+    //thrower default
+    static ConstructorHelpers::FObjectFinder<UClass> throwerDefault(
+        TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'")
+    );
+    if (throwerDefault.Succeeded())
+    {
+        UClass *bp = throwerDefault.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setDefaultThrowerClassBp(bp);
+        }
+    }
 
 
     //throwables
@@ -101,6 +117,27 @@ AgameModeSubclass::AgameModeSubclass()
             entityManager->setThrowableUClassBp(bp, throwableEnum::greneade_enum);
         }
     }
+
+    //---- THROWABLES END ----
+    
+    //---- PARTICLES ----
+    //particles
+    static ConstructorHelpers::FObjectFinder<UClass> smokeParticle(
+        TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'")
+    );
+    if (smokeParticle.Succeeded())
+    {
+        UClass *bp = smokeParticle.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setparticleBp(bp, particleEnum::smoke_enum);
+        }
+    }
+
+
+
+
+
+    //---- PARTICLES END ----
 
    
 }

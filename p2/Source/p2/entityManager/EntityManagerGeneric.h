@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 /**
- * Entity Manager
+ * Entity Manager -> this class is an individual object pool for a type parameter <T>
  * T must be derived from AActor
  */
 template <typename T>
