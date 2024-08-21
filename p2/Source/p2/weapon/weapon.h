@@ -9,6 +9,7 @@
 #include "sightScript.h"
 #include "carriedItem.h"
 #include "weaponEnum.h"
+#include "ammunitionEnum.h"
 #include "attachmentEnums/weaponSightEnum.h"
 
 #include "weapon.generated.h"
@@ -135,6 +136,6 @@ protected:
 public:
 	void applySight(weaponSightEnum sight);
 
-
-
+	//get ammuntion type for this weapon
+	ammunitionEnum getAmmunitionType();
 };

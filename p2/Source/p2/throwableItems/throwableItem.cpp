@@ -61,7 +61,7 @@ void AthrowableItem::throwIntoDirection(FVector start, FVector direction){
 		show(true);
 
 		UStaticMeshComponent *mesh = FindComponentByClass<UStaticMeshComponent>();
-		if(mesh ){ //&& mesh->IsSimulatingPhysics()
+		if(mesh){ 
 			mesh->AddImpulse(direction * velocity);
 		}
 	}
@@ -74,7 +74,8 @@ throwableEnum AthrowableItem::getType(){
 }
 
 
-
+/// @brief enable or disable physics for this actor (and all static mesh components)
+/// @param enable bool
 void AthrowableItem::enablePhysics(bool enable){
 	TArray<UStaticMeshComponent *> components;
 	GetComponents<UStaticMeshComponent>(components);

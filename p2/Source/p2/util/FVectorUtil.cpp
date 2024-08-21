@@ -24,7 +24,22 @@ FVector FVectorUtil::randomOffset(int range){
     y %= range;
     z %= range;
 
-    return FVector(x, y, z);
+    //return FVector(x, y, z);
+     return FVector(
+        randomNumber(range),
+        randomNumber(range),
+        randomNumber(range)
+     );
+}
+
+int FVectorUtil::randomNumber(int range){
+    int r = std::rand();
+    r %= range;
+    int negate = std::rand() % 2;
+    if(negate == 1){
+        r *= -1;
+    }
+    return r;
 }
 
 /// @brief finds a look rotation from own location to target

@@ -1,12 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/weapon/weapon.h"
+#include "p2/weapon/ammunitionEnum.h"
 #include "p2/player/playerInventory.h"
 
 playerInventory::playerInventory()
 {
     currentIndex = 0;
     ammunition = 1000; //testing
+
+    ammunitionMap[ammunitionEnum::assaultrifle556] = 100;
+    ammunitionMap[ammunitionEnum::pistol9] = 50;
+    ammunitionMap[ammunitionEnum::heavy762] = 200;
 }
 
 playerInventory::~playerInventory()
@@ -69,7 +74,6 @@ void playerInventory::selectIndex(int index){
             }
         }
     }
-    
 }
 
 /// @brief adds a weapon to the inventory and selects it
@@ -94,22 +98,55 @@ void playerInventory::reloadWeapon(){
 
             //reload if reload possible
             if(current->canReload()){
-                //add left
-                int leftInMag = current->getBulletsInMag();
-                ammunition += leftInMag;
 
-                //reload
-                int magSize = current->getMagSize();
-                if(ammunition - magSize > 0){
-                    weaponVector.at(currentIndex)->reload(magSize);
-                    ammunition -= magSize;
-                }else{
-                    weaponVector.at(currentIndex)->reload(ammunition);
-                    ammunition = 0;
+                //new ---> testing needed with debug messages
+                ammunitionEnum aType = current->getAmmunitionType();
+                int leftInMag = current->getBulletsInMag();
+                addToAmmunition(aType, leftInMag);
+
+                //debug
+                /*
+                if(aType == ammunitionEnum::assaultrifle556){
+                    DebugHelper::showScreenMessage("ar bullet");
                 }
+                if(aType == ammunitionEnum::pistol9){
+                    DebugHelper::showScreenMessage("pistol bullet");
+                }*/
+
+                int magSize = current->getMagSize();
+                weaponVector.at(currentIndex)->reload(getFromAmmunition(aType, magSize));
+
+
             }
         }
     }
+}
+
+void playerInventory::addToAmmunition(ammunitionEnum type, int amount){
+    if(amount > 0){
+        ammunitionMap[type] += amount;
+    }
+}
+
+/// @brief returns the targeted ammunition for a type if anough left or the left over
+/// @param type ammunition type
+/// @param amount amount to get
+/// @return between inclusive 0 and amount passed
+int playerInventory::getFromAmmunition(ammunitionEnum type, int amount){
+    if(amount > 0){
+        int available = ammunitionMap[type];
+        if(available > 0){
+            if(available >= amount){
+                available -= amount; //update count 
+                ammunitionMap[type] = available;
+                return amount;
+            }else{
+                ammunitionMap[type] = 0; //set to 0
+                return available; //return whats left
+            }
+        }
+    }
+    return 0;
 }
 
 /// @brief adds ammunition to the inventory
@@ -118,6 +155,9 @@ void playerInventory::reloadWeapon(){
 void playerInventory::addAmmunition(int ammunitionIn, int type){
     ammunition += ammunitionIn;
 }
+
+
+
 
 /// @brief drops the current weapon if possible
 void playerInventory::dropWeapon(){

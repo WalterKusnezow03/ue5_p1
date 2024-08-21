@@ -3,6 +3,8 @@
 #pragma once
 
 #include "p2/weapon/weapon.h"
+#include "p2/weapon/ammunitionEnum.h"
+#include <map>
 #include "CoreMinimal.h"
 
 /**
@@ -50,4 +52,9 @@ private:
 
 	bool currentIndexIsValid();
 	void showScreenMessage(FString s);
+
+	void addToAmmunition(ammunitionEnum type, int amount);
+	int getFromAmmunition(ammunitionEnum type, int amount);
+
+	std::map<ammunitionEnum, int> ammunitionMap;
 };

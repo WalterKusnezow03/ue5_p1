@@ -12,6 +12,7 @@ class P2_API FVectorUtil
 public:
 	static FVector randomOffset(int range);
 	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
+	static int randomNumber(int range);
 
 private:
 	FVectorUtil();

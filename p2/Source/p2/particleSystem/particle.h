@@ -31,6 +31,7 @@ public:
 private:
 	FVector direction;
 	float speed;
+	float decrease = -9.81f;
 	class timer timer;
 
 	bool enabledForTick;

@@ -9,6 +9,7 @@
 #include "p2/player/playerScript.h"
 #include "sightScript.h"
 #include "attachmentEnums/weaponSightEnum.h"
+#include "ammunitionEnum.h"
 #include "carriedItem.h"
 
 // Sets default values
@@ -565,4 +566,21 @@ void Aweapon::applySight(weaponSightEnum sight){
 		}
 	}
 
+}
+
+
+
+/// @brief returns the ammunition type for this weapon
+/// @return 
+ammunitionEnum Aweapon::getAmmunitionType(){
+	weaponEnum type = readType();
+	switch(type){
+	case weaponEnum::assaultRifle:
+	return ammunitionEnum::assaultrifle556;
+
+	case weaponEnum::pistol:
+		return ammunitionEnum::pistol9;
+	}
+
+	return ammunitionEnum::assaultrifle556;
 }

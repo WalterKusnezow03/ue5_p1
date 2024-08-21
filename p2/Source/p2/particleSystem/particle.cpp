@@ -29,7 +29,7 @@ void Aparticle::Tick(float DeltaTime)
 
 		timer.Tick(DeltaTime);
 		if(timer.timesUp()){
-			//queu free self
+			//release self
 			release();
 		}
 	}
@@ -39,11 +39,27 @@ void Aparticle::Tick(float DeltaTime)
 void Aparticle::move(float DeltaTime){
 	//x0
 	FVector x_O = GetActorLocation();
+
+	float scaleSlowedDown = (speed * DeltaTime - ((1 / 2) * (decrease * DeltaTime * DeltaTime)));
+	if(scaleSlowedDown < 0){
+		scaleSlowedDown = 0;
+	}
+
+	FVector testing = x_O + scaleSlowedDown * direction;
+	SetActorLocation(testing);
+	return;
+
+
+
 	//m/s * s = m
 	//v0 * t = meter
 	//x(t) = x0 + v0t + (1/2)at^2
-	//--> x(t) = x0 + v0t * vdir.normalasiert
+	//--> x(t) = x0 + v0t * vdir.normalasiert + 1/2at^2
+	//FVector gravity = FVector(0, 0, (1 / 2 * decrease)) * (DeltaTime * DeltaTime);
+	
+
 	FVector scaled = x_O + (speed * DeltaTime) * direction;  // gx = A + r*(B - A)
+	//scaled += gravity;
 	SetActorLocation(scaled);
 }
 
@@ -87,6 +103,6 @@ void Aparticle::release(){
 	enabledForTick = false;
 	if(EntityManager *e = EntityManager::instance())
 	{
-		//to implement: release to entity manager
+		//to implement: release to entity manager for particles
 	}
 }
