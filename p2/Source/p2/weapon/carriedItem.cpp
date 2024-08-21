@@ -70,10 +70,12 @@ void AcarriedItem::followPlayer(){
         FRotator currentRotation = GetActorRotation();
 
 		//testing
-		float smoothingFactor = 50.0f;
-		FVector smoothedPosition = FMath::Lerp(currentPos, targetPos, GetWorld()->GetDeltaSeconds() * smoothingFactor);
-		SetActorLocation(smoothedPosition);
+		//float smoothingFactor = 50.0f;
+		//FVector smoothedPosition = FMath::Lerp(currentPos, targetPos, GetWorld()->GetDeltaSeconds() * smoothingFactor);
+		//SetActorLocation(smoothedPosition);
 
+
+		SetActorLocation(targetPos);
         
         //SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));

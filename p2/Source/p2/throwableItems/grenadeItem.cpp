@@ -48,7 +48,7 @@ void AgrenadeItem::detonate(){
     isDetonated = true;
     DebugHelper::showScreenMessage("grenade detonate"); //works as expected
 
-    float radius = 500.0f; // 5 * 100 = 5m
+    float radius = 1000.0f; // 5 * 100 = 5m
     if(EntityManager *e = EntityManager::instance()){
         e->createExplosion(GetWorld(), GetActorLocation(), radius);
     }

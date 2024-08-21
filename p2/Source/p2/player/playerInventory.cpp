@@ -12,6 +12,10 @@ playerInventory::playerInventory()
     ammunitionMap[ammunitionEnum::assaultrifle556] = 100;
     ammunitionMap[ammunitionEnum::pistol9] = 50;
     ammunitionMap[ammunitionEnum::heavy762] = 200;
+
+    ammunitionMap[ammunitionEnum::grenade_ammunition] = 5;
+    ammunitionMap[ammunitionEnum::rpg_ammunition] = 5;
+    ammunitionMap[ammunitionEnum::molotov_ammunition] = 5;
 }
 
 playerInventory::~playerInventory()
@@ -104,7 +108,7 @@ void playerInventory::reloadWeapon(){
                 int leftInMag = current->getBulletsInMag();
                 addToAmmunition(aType, leftInMag);
 
-                //debug
+                //debug messages
                 /*
                 if(aType == ammunitionEnum::assaultrifle556){
                     DebugHelper::showScreenMessage("ar bullet");
@@ -122,6 +126,9 @@ void playerInventory::reloadWeapon(){
     }
 }
 
+/// @brief adds amuntion to the correct map index
+/// @param type ammunition type from the enum
+/// @param amount amount to add to the map
 void playerInventory::addToAmmunition(ammunitionEnum type, int amount){
     if(amount > 0){
         ammunitionMap[type] += amount;

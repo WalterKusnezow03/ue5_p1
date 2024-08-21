@@ -14,6 +14,8 @@ public:
 	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
 	static int randomNumber(int range);
 
+	static FRotator randomRotation(FVector ownLocation);
+
 private:
 	FVectorUtil();
 	~FVectorUtil();

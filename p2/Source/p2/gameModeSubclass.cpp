@@ -134,6 +134,18 @@ AgameModeSubclass::AgameModeSubclass()
     }
 
 
+    static ConstructorHelpers::FObjectFinder<UClass> fireParticle(
+        TEXT("Blueprint'/Game/Prefabs/particle/particleFire.particleFire_C'")
+    );
+    if (fireParticle.Succeeded())
+    {
+        UClass *bp = fireParticle.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setparticleBp(bp, particleEnum::fire_enum);
+        }
+    }
+
+
 
 
 

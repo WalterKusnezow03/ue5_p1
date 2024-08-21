@@ -137,5 +137,5 @@ public:
 	void applySight(weaponSightEnum sight);
 
 	//get ammuntion type for this weapon
-	ammunitionEnum getAmmunitionType();
+	virtual ammunitionEnum getAmmunitionType();
 };

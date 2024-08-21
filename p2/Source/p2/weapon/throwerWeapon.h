@@ -38,5 +38,8 @@ protected:
 	void requestNewThrowable();
 
 
+public:
+	//get ammuntion type for this weapon, overriden for thrower weapons to return their throwable
+	virtual ammunitionEnum getAmmunitionType() override;
 	
 };

@@ -52,9 +52,19 @@ FRotator FVectorUtil::lookAt(FVector ownlocation, FVector TargetLocation)
     FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownlocation, TargetLocation);
 
     // Optionally, you can set only the yaw to rotate around the Z-axis
-    LookAtRotation.Pitch = 0.0f;
-    LookAtRotation.Roll = 0.0f;
+    //LookAtRotation.Pitch = 0.0f;
+    //LookAtRotation.Roll = 0.0f;
 
     // Apply this rotation to the actor
     return LookAtRotation;
+}
+
+
+
+/// @brief creates a random rotation
+/// @param ownLocation own location of the object
+/// @return rotation to set
+FRotator FVectorUtil::randomRotation(FVector ownLocation){
+    FVector toLook = ownLocation + randomOffset(1000);
+    return lookAt(ownLocation, toLook);
 }

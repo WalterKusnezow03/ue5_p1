@@ -118,8 +118,23 @@ void AthrowerWeapon::setThrowableType(throwableEnum type){
 void AthrowerWeapon::showWeapon(bool show){
 
     Super::showWeapon(show);
-    
+
     if(throwableActorPointer != nullptr){
         throwableActorPointer->show(show);
     }
+}
+
+
+
+
+ammunitionEnum AthrowerWeapon::getAmmunitionType(){
+    switch(throwableTypeToThrow){
+    case throwableEnum::greneade_enum:
+        return ammunitionEnum::grenade_ammunition;
+    case throwableEnum::rocket_enum:
+        return ammunitionEnum::rpg_ammunition;
+    case throwableEnum::molotov_enum:
+        return ammunitionEnum::molotov_ammunition;
+    }
+    return ammunitionEnum::grenade_ammunition;
 }

@@ -346,11 +346,21 @@ void EntityManager::createExplosion(UWorld *world, FVector location, float radiu
     if(world != nullptr){
         int amount = 20;
         float speed = 200.0f; //2 * 100 cm/s = 2ms
+
+        float smokeLifeTime = 20.0f;
+        float fireLifeTime = 3.0f;
+
         for (int i = 0; i < amount; i++)
         {
             FVector dir = FVectorUtil::randomOffset(100); //lets say just one meter because its normalized
 
-            createParticle(world, particleEnum::smoke_enum, location, dir, speed);
+            createParticle(world, particleEnum::smoke_enum, location, dir, speed, smokeLifeTime);
+
+
+            //fire testing
+            if(i < 10){
+                createParticle(world, particleEnum::fire_enum, location, dir, speed * 10, fireLifeTime);
+            }
         }
     }
 }
@@ -361,7 +371,14 @@ void EntityManager::createExplosion(UWorld *world, FVector location, float radiu
 /// @param location to spawn at
 /// @param dir direction of impulse
 /// @param speed speed to apply
-void EntityManager::createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed){
+void EntityManager::createParticle(
+    UWorld *world, 
+    particleEnum enumtype, 
+    FVector location, 
+    FVector dir, 
+    float speed, 
+    float lifeTime
+){
     
     if(world != nullptr){
         UClass *bp = getParticleBp(enumtype);
@@ -371,7 +388,7 @@ void EntityManager::createParticle(UWorld *world, particleEnum enumtype, FVector
             if(a != nullptr){
                 Aparticle *created = Cast<Aparticle>(a);
                 if(created != nullptr){
-                    created->applyImpulse(dir, speed);
+                    created->applyImpulse(dir, speed, lifeTime);
                 }
             }
         }
@@ -451,6 +468,9 @@ void EntityManager::setparticleBp(UClass *uIn, particleEnum type){
         case particleEnum::smoke_enum:
             smokeParticleBp = uIn;
             break;
+        case particleEnum::fire_enum:
+            fireParticleBp = uIn;
+            break;
         }
     }
 
@@ -460,7 +480,8 @@ UClass *EntityManager::getParticleBp(particleEnum type){
     switch(type){
     case particleEnum::smoke_enum:
         return smokeParticleBp;
-    
+    case particleEnum::fire_enum:
+        return fireParticleBp;
     }
     return nullptr;
 }

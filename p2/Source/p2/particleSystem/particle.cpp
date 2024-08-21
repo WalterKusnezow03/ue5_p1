@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/entityManager/EntityManager.h"
+#include "p2/util/FVectorUtil.h"
 #include "particle.h"
 
 // Sets default values
@@ -66,16 +67,21 @@ void Aparticle::move(float DeltaTime){
 /// @brief apply an impulse to the particle, constant speed, no decelerate
 /// @param directionIn direction, will be normalized
 /// @param velocity constant velocity to apply 
-void Aparticle::applyImpulse(FVector directionIn, float velocity){
+void Aparticle::applyImpulse(FVector directionIn, float velocity, float lifeTime){
 	direction = directionIn.GetSafeNormal();
 	speed = velocity;
 
-	float lifeTime = 20.0f; //to be implemented randomly or function param
+	//float lifeTime = 20.0f; //to be implemented randomly or function param
 	timer.Begin(lifeTime);
 
 	enabledForTick = true;
 	show(true);
 	disablePhysics();
+
+
+	//apply random look rotation
+	SetActorRotation(FVectorUtil::randomRotation(GetActorLocation()));
+
 }
 
 /// @brief disables physics entirely

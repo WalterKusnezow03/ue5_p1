@@ -108,9 +108,11 @@ private:
 	UPROPERTY()
 	class UClass *smokeParticleBp = nullptr;
 
+	UPROPERTY()
+	class UClass *fireParticleBp = nullptr;
 
 
-
+	
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java
@@ -141,7 +143,7 @@ private:
 	/// @return uclass or nullptr 
 	UClass *getParticleBp(particleEnum type);
 
-	void createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed);
+	void createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed, float lifeTime);
 
 
 };

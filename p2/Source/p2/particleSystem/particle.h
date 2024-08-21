@@ -26,7 +26,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void applyImpulse(FVector directionIn, float speedIn);
+	void applyImpulse(FVector directionIn, float speedIn, float lifeTime);
 
 private:
 	FVector direction;

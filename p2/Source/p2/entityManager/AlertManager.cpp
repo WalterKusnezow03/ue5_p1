@@ -68,6 +68,7 @@ void AlertManager::damageAndAlertInArea(UWorld *world, FVector location, float S
 
             IDamageinterface *damagable = Cast<IDamageinterface>(Actor);
             if(damagable != nullptr){
+                DebugHelper::showScreenMessage("damageable found", FColor::Red);
                 damagable->takedamage(damage);
             }
         }
