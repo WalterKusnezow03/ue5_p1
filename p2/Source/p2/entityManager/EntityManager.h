@@ -11,6 +11,7 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/particleSystem/particleEnum.h"
+#include "p2/rooms/room.h"
 
 
 /**
@@ -67,6 +68,10 @@ public:
 	void createExplosion(UWorld *world, FVector &location);
 
 
+
+	//rooms
+	Aroom *createRoom(UWorld *worldIn, FVector &location);
+
 private:
 	static class EntityManager *instancePointer;
 
@@ -111,6 +116,13 @@ private:
 
 	UPROPERTY()
 	class UClass *fireParticleBp = nullptr;
+
+
+	//room section
+	UPROPERTY()
+	class UClass *room1 = nullptr;
+
+
 
 
 

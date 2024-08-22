@@ -13,11 +13,15 @@ public:
 	layoutCreator();
 	~layoutCreator();
 
+	void createRooms(FVector location);
+
 	std::vector<std::vector<int>> generateLayout(int sizeX, int sizeY);
 
 private:
 	class roomBounds{
 		public:
+
+			//create room type too!
 			
 			roomBounds(int xIn, int yIn);
 			~roomBounds();
@@ -29,11 +33,23 @@ private:
 			int y;
 	};
 
-	void addRoom(std::vector<std::vector<int>> &map, int &nextX, int &nextY, int roomNum);
-	bool isFree(int a);
-	void blockArea(std::vector<std::vector<int>> &map, int x, int y, int xSize, int ySize, int roomNum);
+	void addRoom(std::vector<std::vector<int>> &map, int &nextX, int &nextY, int roomNum, 
+		std::vector<layoutCreator::roomBounds *> &created
+	);
 
-	roomBounds pickRoom(int xMax, int yMax);
+
+	bool isFree(int a);
+	void blockArea(
+		std::vector<std::vector<int>> &map, 
+		int x, 
+		int y, 
+		int xSize, 
+		int ySize, 
+		int roomNum
+		//already created rooms, append to list.
+	);
+
+	roomBounds *pickRoom(int xMax, int yMax);
 
 
 

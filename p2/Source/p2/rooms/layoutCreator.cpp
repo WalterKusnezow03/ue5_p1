@@ -27,6 +27,41 @@ int layoutCreator::roomBounds::yValue(){
 }
 
 
+void layoutCreator::createRooms(FVector location){
+    int sizeX = 10;
+    int sizeY = 10;
+
+    //change here to return type vector of inner class room size
+    std::vector<std::vector<int>> map = generateLayout(sizeX, sizeY);
+
+
+    //man muss sich halt überlegen wie man das mit den layouts umsetzt
+    //basierend auf den layouts und den räumen die es dann gibt muss es dann auch befüllt udn instanziiert werden
+    //bevor die layouts erstellt werden müssen alle möglichen räume quasi in das "system"
+    //eingegeben werden und dann das layout angefordert und alle räume die auch lgoischer weise
+    //auf dem aactor basieren z.b. vom entity manager instanziiert werden
+    //wenn du dich restirktiv daran hälst dass der entity manager alle uclass bps hält
+    //musst du sie auch dort haben (auch wenn das erstmal seltsam wirkt ist das vielleicht besser so)
+    //dann gibt es eine instanz mit den ganzen daten was grundsätzlich vielleicht nicht so schlecht
+    //ist. Die raum typen solltest du dann auch mit einem enum identifizieren wie bei den waffen und throwables
+
+    //sobald alle räume erstellt wurden musst du halt die türen alle "einsetzen" und die wände austauschen
+
+
+
+
+    //ausserdem muss man basierend auf der raum grösse dann ein statndard maß festlegen und dann mit modulo die koor
+    //-dinaten bestimmen bzw anhand des vector indexes
+
+
+
+
+    //die map erstellt nur das layout aber statt integer bzw für jeden raum sollte man die maße
+    //einspeichern und eine seperate liste ertsellen und nicht in dem 2d map dings, doof , lieber gleich einfügen
+
+    //for (int i = 0; i < ) //---> itertate over created room list and request from entity manaegr
+}
+
 std::vector<std::vector<int>> layoutCreator::generateLayout(int sizeX, int sizeY){
     sizeX = (sizeX > 1 ? sizeX : 1);
     sizeY = (sizeY > 1 ? sizeY : 1);
@@ -41,7 +76,8 @@ std::vector<std::vector<int>> layoutCreator::generateLayout(int sizeX, int sizeY
         map.push_back(inner);
     }
 
-    
+    std::vector<layoutCreator::roomBounds *> created; //by value um es danach weiter zu verarbeiten
+
 
     // fill
     int roomCount = 10;
@@ -49,7 +85,7 @@ std::vector<std::vector<int>> layoutCreator::generateLayout(int sizeX, int sizeY
     int ystart = 0;
     for (int i = 0; i < roomCount; i++)
     {
-        addRoom(map, xstart, ystart, i);
+        addRoom(map, xstart, ystart, i, created);
     }
 
     //debug show
@@ -69,9 +105,14 @@ std::vector<std::vector<int>> layoutCreator::generateLayout(int sizeX, int sizeY
     return map;
 }
 
+void layoutCreator::addRoom(
+    std::vector<std::vector<int>> &map,
+    int &nextX,
+    int &nextY,
+    int roomNum,
+    std::vector<layoutCreator::roomBounds *> &created
+){
 
-void layoutCreator::addRoom(std::vector<std::vector<int>> &map, int &nextX, int &nextY, int roomNum){ 
-    
     //find next free place
     while (nextX < map.size() && nextY < map.at(0).size() && !isFree(map.at(nextX).at(nextY))) {
         
@@ -111,10 +152,10 @@ void layoutCreator::addRoom(std::vector<std::vector<int>> &map, int &nextX, int 
             return;
         }
 
-        layoutCreator::roomBounds s = pickRoom(upperX,upperY); //mus be made by choosing random from rooms which exist somewhere else, DO LATER!
+        layoutCreator::roomBounds *s = pickRoom(upperX,upperY); //mus be made by choosing random from rooms which exist somewhere else, DO LATER!
 
-        int outerX = nextX + s.xValue();
-        int outerY = nextY + s.yValue();
+        int outerX = nextX + s->xValue();
+        int outerY = nextY + s->yValue();
 
         if (
             outerX < map.size() && outerY < map.at(0).size()
@@ -142,6 +183,9 @@ void layoutCreator::addRoom(std::vector<std::vector<int>> &map, int &nextX, int 
                 }else{
                     nextX = outerX; //x update only
                 }*/
+
+                //add created room
+                created.push_back(s); //adresse reingeben
 
                 return;
             }
@@ -173,8 +217,8 @@ void layoutCreator::blockArea(
 
 
 
-layoutCreator::roomBounds layoutCreator::pickRoom(int xMax, int yMax){
+layoutCreator::roomBounds* layoutCreator::pickRoom(int xMax, int yMax){
     //mus be made by choosing random from rooms which exist somewhere else, DO LATER!
-    layoutCreator::roomBounds s(xMax, yMax);
+    layoutCreator::roomBounds *s = new roomBounds(xMax, yMax);
     return s;
 }

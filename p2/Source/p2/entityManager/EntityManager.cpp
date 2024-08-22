@@ -15,6 +15,7 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/rooms/room.h"
 
 #include <map>
 
@@ -521,5 +522,47 @@ UClass *EntityManager::getParticleBp(particleEnum type){
     case particleEnum::fire_enum:
         return fireParticleBp;
     }
+    return nullptr;
+}
+
+
+
+
+
+
+
+
+
+/** 
+ * 
+ * ----- SECTION FOR ROOM CREATION -----
+ * 
+*/
+
+/// @brief will create a room based on the given type if possible
+/// @return 
+Aroom *EntityManager::createRoom(UWorld *world, FVector &location){
+    if(world != nullptr){
+
+        //get proper room later
+        UClass *r = room1;
+
+        //code to get the room based on the type...
+
+
+        if(r != nullptr){
+            AActor *a = spawnAactor(world, r, location);
+            if(a != nullptr){
+                Aroom *toReturn = Cast<Aroom>(a);
+                if(toReturn != nullptr){
+                    return toReturn;
+                }
+            }
+        }
+
+        
+    }
+
+
     return nullptr;
 }
