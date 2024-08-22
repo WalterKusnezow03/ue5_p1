@@ -24,7 +24,7 @@ OutpostManager * OutpostManager::instance(){
 }
 
 
-AOutpost *OutpostManager::requestOutpost(UWorld *world, FVector ownLocation){
+AOutpost *OutpostManager::requestOutpost(UWorld *world, FVector &ownLocation){
     if(world != nullptr){
 
         //iterate foudn outpost, or create
@@ -68,6 +68,7 @@ AOutpost *OutpostManager::nearestOutpostTo(FVector location){
 
     float distanceMax = 100 * 100; //100m
 
+    
     AOutpost *found = outposts.front();
     float foundDist = FVector::Dist(found->GetActorLocation(), location);
 
@@ -93,7 +94,7 @@ AOutpost *OutpostManager::nearestOutpostTo(FVector location){
 /// @param world 
 /// @param Location 
 /// @return 
-AOutpost *OutpostManager::createOutpost(UWorld *world, FVector Location){
+AOutpost *OutpostManager::createOutpost(UWorld *world, FVector &Location){
     if(world != nullptr){
         UClass* OutpostClass = AOutpost::StaticClass();
         if (OutpostClass)
@@ -106,10 +107,15 @@ AOutpost *OutpostManager::createOutpost(UWorld *world, FVector Location){
                 SpawnParams
             );
 
-            AOutpost *p = Cast<AOutpost>(SpawnedOutpost);
-            if(p != nullptr){
-                return p;
+            if(SpawnedOutpost != nullptr){
+                SpawnedOutpost->SetActorLocation(Location);
+                AOutpost *p = Cast<AOutpost>(SpawnedOutpost);
+                if(p != nullptr){
+                    return p;
+                }
             }
+
+            
         }
     }
     return nullptr;

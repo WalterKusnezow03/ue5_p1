@@ -44,13 +44,16 @@ void AgrenadeItem::throwIntoDirection(FVector start, FVector direction){
 
 /// @brief detonates the grenade
 void AgrenadeItem::detonate(){
-    AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE);
+
+    FVector location = GetActorLocation();
+
+    AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE, EXPLOSION_RADIUS / 10);
     isDetonated = true;
     DebugHelper::showScreenMessage("grenade detonate"); //works as expected
 
     float radius = 1000.0f; // 5 * 100 = 5m
     if(EntityManager *e = EntityManager::instance()){
-        e->createExplosion(GetWorld(), GetActorLocation(), radius);
+        e->createExplosion(GetWorld(), location);
     }
 
     //hide after detonate

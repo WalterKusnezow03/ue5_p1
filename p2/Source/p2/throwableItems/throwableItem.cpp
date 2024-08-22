@@ -51,13 +51,13 @@ void AthrowableItem::throwIntoDirection(FVector start, FVector direction){
 	
 	if (!isThrown)
 	{
+		enablePhysics(true);
 		DebugHelper::showScreenMessage("throw!");
 		isThrown = true;
 		int velocity = 1000; //verlängern
 
-
 		SetActorLocation(start);
-		enablePhysics(true);
+		
 		show(true);
 
 		UStaticMeshComponent *mesh = FindComponentByClass<UStaticMeshComponent>();
@@ -99,4 +99,13 @@ void AthrowableItem::reset(){
 /// @param show bool as described
 void AthrowableItem::show(bool show){
 	SetActorHiddenInGame(!show);
+}
+
+
+void AthrowableItem::release(){
+	show(false);
+	enablePhysics(false);
+	if(EntityManager *e = EntityManager::instance()){
+		
+	}
 }

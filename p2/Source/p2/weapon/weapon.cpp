@@ -10,7 +10,9 @@
 #include "sightScript.h"
 #include "attachmentEnums/weaponSightEnum.h"
 #include "ammunitionEnum.h"
+#include <map>
 #include "carriedItem.h"
+
 
 // Sets default values
 Aweapon::Aweapon()
@@ -548,6 +550,26 @@ void Aweapon::findAttachmentChildActors(){
 /// @param sight sight value in to enable
 void Aweapon::applySight(weaponSightEnum sight){
 
+	std::map<weaponSightEnum, UChildActorComponent *> map;
+	map[weaponSightEnum::enum_reddot] = reddotSightChildActor;
+	map[weaponSightEnum::enum_ironsight] = ironSightChildActor;
+
+	for (const auto& pair : map) {
+
+		if(pair.first == sight){
+			Super::showChildActor(pair.second, true);
+		}else{
+			Super::showChildActor(pair.second, false);
+		}
+
+
+		//access the key with .first and value with .second
+        //std::cout << pair.first << " => " << pair.second << '\n';
+    }
+
+
+
+	/*
 	//load all attachments and enum values in symetrical arrays to enable / disable correct attachments
 	std::vector<UChildActorComponent *> sightChilds;
 	sightChilds.push_back(reddotSightChildActor); //red,
@@ -564,7 +586,7 @@ void Aweapon::applySight(weaponSightEnum sight){
 		}else{
 			Super::showChildActor(sightChilds.at(i), false);
 		}
-	}
+	}*/
 
 }
 
@@ -576,7 +598,7 @@ ammunitionEnum Aweapon::getAmmunitionType(){
 	weaponEnum type = readType();
 	switch(type){
 	case weaponEnum::assaultRifle:
-	return ammunitionEnum::assaultrifle556;
+		return ammunitionEnum::assaultrifle556;
 
 	case weaponEnum::pistol:
 		return ammunitionEnum::pistol9;

@@ -16,7 +16,7 @@ public:
 	static OutpostManager *instance();
 	~OutpostManager();
 
-	AOutpost *requestOutpost(UWorld *world, FVector ownLocation);
+	AOutpost *requestOutpost(UWorld *world, FVector &ownLocation);
 	void tryRequestOutpost(UWorld *world, AHumanEntityScript *human);
 
 private:
@@ -25,6 +25,6 @@ private:
 
 	std::vector<AOutpost *> outposts;
 
-	AOutpost *createOutpost(UWorld *world, FVector Location);
-	AOutpost *nearestOutpostTo(FVector location);
+	AOutpost *createOutpost(UWorld *world, FVector &Location);
+	AOutpost *nearestOutpostTo(FVector location); //passed by value because of fVector::dist
 };

@@ -42,6 +42,14 @@ int FVectorUtil::randomNumber(int range){
     return r;
 }
 
+int FVectorUtil::randomNumber(int lower, int higher){
+    int a = randomNumber(higher);
+    if(a < lower){
+        return lower;
+    }
+    return a;
+}
+
 /// @brief finds a look rotation from own location to target
 /// @param ownlocation own location
 /// @param TargetLocation target to look at
@@ -67,4 +75,22 @@ FRotator FVectorUtil::lookAt(FVector ownlocation, FVector TargetLocation)
 FRotator FVectorUtil::randomRotation(FVector ownLocation){
     FVector toLook = ownLocation + randomOffset(1000);
     return lookAt(ownLocation, toLook);
+}
+
+
+/// @brief returns a random scale to apply to your aactor
+/// @param range range to clamp
+/// @param symetric symetric on x,y and z axis or not
+/// @return fvector scale
+FVector FVectorUtil::randomScale(int lowerRange, int higherRange, bool symetric){
+
+    if(symetric){
+        int a = randomNumber(lowerRange, higherRange);
+        return FVector(a, a, a);
+    }
+
+    int x = randomNumber(lowerRange, higherRange);
+    int y = randomNumber(lowerRange, higherRange);
+    int z = randomNumber(lowerRange, higherRange);
+    return FVector(x, y, z);
 }

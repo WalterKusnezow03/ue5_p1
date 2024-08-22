@@ -74,7 +74,8 @@ void AthrowerWeapon::requestNewThrowable(){
         throwableActorPointer = nullptr;
 
         if(EntityManager *e = EntityManager::instance()){
-            throwableActorPointer = e->spawnAthrowable(GetWorld(), GetActorLocation(), throwableTypeToThrow);
+            FVector a = GetActorLocation();
+            throwableActorPointer = e->spawnAthrowable(GetWorld(), a, throwableTypeToThrow);
         }
         
     }

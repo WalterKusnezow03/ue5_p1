@@ -15,7 +15,7 @@ public:
 
 	static void alertInArea(UWorld *world, FVector location, float radius);
 
-	static void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage);
+	static void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage, float damageRadius);
 
 private:
 	static float deltaTime(UWorld *world);

@@ -37,7 +37,7 @@ protected:
 
 	void reset();
 
-	
+	void release();
 
 public:	
 	// Called every frame

@@ -48,7 +48,14 @@ void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadi
 ///@param world world to get from
 ///@param location center of radius
 ///@param SphereRadius collect in radius
-void AlertManager::damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage){
+void AlertManager::damageAndAlertInArea(
+    UWorld *world, 
+    FVector location, 
+    float SphereRadius, 
+    int damage,
+    float damageRadius
+){
+
     TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
     // Process the results
     for (AActor* Actor : actors){
@@ -68,8 +75,15 @@ void AlertManager::damageAndAlertInArea(UWorld *world, FVector location, float S
 
             IDamageinterface *damagable = Cast<IDamageinterface>(Actor);
             if(damagable != nullptr){
-                DebugHelper::showScreenMessage("damageable found", FColor::Red);
-                damagable->takedamage(damage);
+                
+                float distance = FVector::Dist(Actor->GetActorLocation(), location);
+                if(distance <= damageRadius){
+                    DebugHelper::showScreenMessage("damageable found", FColor::Red);
+                    damagable->takedamage(damage);
+                }
+
+
+                
             }
         }
     }

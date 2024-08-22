@@ -105,12 +105,25 @@ void EntityManager::add(Aweapon *weaponIn){
     }
 }
 
+void EntityManager::add(AthrowableItem *throwableItem){
+    if(throwableItem != nullptr){
+        throwableEnum type = throwableItem->getType();
+
+        EntityManagerGeneric<AthrowableItem> *m = getThrowableManagerFor(type);
+        if(m != nullptr){
+            m->add(throwableItem);
+        }
+    }
+}
+
+
+
 
 
 /// @brief spawns an entity in the world
 /// @param world 
 /// @param Location 
-AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector Location) {
+AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
 
     //get from list if any left
     if(entityList.hasActorsLeft()){
@@ -134,7 +147,7 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector Location) {
 /// @brief spawns an human entity in the world
 /// @param world 
 /// @param Location 
-AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector Location) {
+AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Location) {
 
     //get from list if any left
     if(humanEntityList.hasActorsLeft()){
@@ -168,7 +181,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector Locat
 /// @param toSpawn actor to spawn
 /// @param Location location to spawn at
 /// @return spawned actor pointer
-AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector Location){
+AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector &Location){
     if(world != nullptr && toSpawn != nullptr){
 
         // Initialize SpawnParams if needed
@@ -269,9 +282,17 @@ Aweapon* EntityManager::spawnAweapon(UWorld *world, weaponSetupHelper *helper){
 /// @param location to spawn at
 /// @param type type to spawn
 /// @return pointer to the AthrowableItem (derived from aactor)
-AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector location, throwableEnum type){
+AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location, throwableEnum type){
 
     if(world != nullptr){
+
+        EntityManagerGeneric<AthrowableItem> *m = getThrowableManagerFor(type);
+        if(m != nullptr && m->hasActorsLeft()){
+            return m->getFirstActor();
+        }
+
+
+
         std::map<throwableEnum, UClass *> typeMap;
 
         typeMap[throwableEnum::rock_enum] = nullptr;
@@ -296,7 +317,7 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector location, 
 
 
 
-//testing thrower weapons
+//testing thrower weapons (works for grenades)
 Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
@@ -338,17 +359,30 @@ EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum typ
     return nullptr;
 }
 
+EntityManagerGeneric<AthrowableItem> *EntityManager::getThrowableManagerFor(throwableEnum type){
+    std::map<throwableEnum, EntityManagerGeneric<AthrowableItem> *> map;
+    map[throwableEnum::greneade_enum] = &grenadeList; //referenz der value iv eingeben für den pointer
+    map[throwableEnum::rocket_enum] = &rocketList;
+    map[throwableEnum::molotov_enum] = &molotovList;
+
+    EntityManagerGeneric<AthrowableItem> *list = map[type];
+    if(list != nullptr){
+        return list;
+    }
+    return nullptr;
+}
 
 
 
 
-void EntityManager::createExplosion(UWorld *world, FVector location, float radius){
+
+void EntityManager::createExplosion(UWorld *world, FVector &location){
     if(world != nullptr){
         int amount = 20;
         float speed = 200.0f; //2 * 100 cm/s = 2ms
 
         float smokeLifeTime = 20.0f;
-        float fireLifeTime = 3.0f;
+        float fireLifeTime = 1.0f;
 
         for (int i = 0; i < amount; i++)
         {
@@ -374,8 +408,8 @@ void EntityManager::createExplosion(UWorld *world, FVector location, float radiu
 void EntityManager::createParticle(
     UWorld *world, 
     particleEnum enumtype, 
-    FVector location, 
-    FVector dir, 
+    FVector &location, 
+    FVector &dir, 
     float speed, 
     float lifeTime
 ){
@@ -395,6 +429,10 @@ void EntityManager::createParticle(
     }
     
 }
+
+
+
+
 
 
 

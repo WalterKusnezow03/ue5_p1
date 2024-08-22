@@ -82,6 +82,8 @@ void Aparticle::applyImpulse(FVector directionIn, float velocity, float lifeTime
 	//apply random look rotation
 	SetActorRotation(FVectorUtil::randomRotation(GetActorLocation()));
 
+	//apply random scale
+	SetActorScale3D(FVectorUtil::randomScale(1, 3, true));
 }
 
 /// @brief disables physics entirely

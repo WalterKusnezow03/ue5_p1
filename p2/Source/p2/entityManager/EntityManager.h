@@ -31,17 +31,18 @@ public:
 	void add(AEntityScript *entity);
 	void add(AHumanEntityScript *humanEntity);
 	void add(Aweapon *weaponIn);
+	void add(AthrowableItem *throwableItem);
 
 	//spawn section
-	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector Location);
-	AEntityScript *spawnEntity(UWorld *world, FVector Location);
+	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location);
+	AEntityScript *spawnEntity(UWorld *world, FVector &Location);
 
 	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //no attachments, only spawn by type
 	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
 	//spawn a thrower weapon
 	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
 
-	AthrowableItem *spawnAthrowable(UWorld *world, FVector location, throwableEnum type); //spawns a throwable if existent
+	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
 
 
 	//Set bp methods
@@ -63,7 +64,7 @@ public:
 	//particles
 	void setparticleBp(UClass *uIn, particleEnum typeIn);
 
-	void createExplosion(UWorld *world, FVector location, float radius);
+	void createExplosion(UWorld *world, FVector &location);
 
 
 private:
@@ -112,7 +113,7 @@ private:
 	class UClass *fireParticleBp = nullptr;
 
 
-	
+
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java
@@ -125,12 +126,21 @@ private:
 
 	EntityManagerGeneric<Aweapon> *getWeaponManagerFor(weaponEnum type);
 
+
+	//throwables
+	class EntityManagerGeneric<AthrowableItem> grenadeList;
+	class EntityManagerGeneric<AthrowableItem> rocketList;
+	class EntityManagerGeneric<AthrowableItem> molotovList;
+	class EntityManagerGeneric<AthrowableItem> rockList;
+
+	EntityManagerGeneric<AthrowableItem> *getThrowableManagerFor(throwableEnum type);
+
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!
 	/// @param toSpawn class / bp to spawn
 	/// @param Location location to spawn at 
 	/// @return 
-	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector Location);
+	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector &Location);
 
 
 
@@ -143,7 +153,7 @@ private:
 	/// @return uclass or nullptr 
 	UClass *getParticleBp(particleEnum type);
 
-	void createParticle(UWorld *world, particleEnum enumtype, FVector location, FVector dir, float speed, float lifeTime);
+	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
 
 
 };
