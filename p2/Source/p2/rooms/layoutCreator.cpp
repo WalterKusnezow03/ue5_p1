@@ -85,9 +85,6 @@ layoutCreator::grid::grid(int x, int y){
         }
         data.Add(ar);
     }
-
-    latestX = 0;
-    latestY = 0;
 }
 layoutCreator::grid::~grid(){
 
@@ -156,10 +153,8 @@ bool layoutCreator::grid::isAreaFree(int x, int y, int x1, int y1){
 }
 
 /// @brief will try to find a position and add the room, returns true on success, false on failure
-/// @param x 
-/// @param y 
-/// @param p 
-/// @return 
+/// @param p room bounds to add with size
+/// @return added or not
 bool layoutCreator::grid::findAndAdd(layoutCreator::roomBounds *p){
     if(p != nullptr){
         int xSize = p->xscale();
@@ -251,7 +246,8 @@ void layoutCreator::clean(){
     }
 }
 
-
+/// @brief copy the created rooms
+/// @return vector of roomBounds
 std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
     std::vector<layoutCreator::roomBounds> copy;
     if(created.size() > 0){
