@@ -22,6 +22,10 @@ public:
 
 	void add(UWorld *world, UClass *uclass);
 
+	void createALayout(UWorld *world, int x, int y);
+
+	bool contains(int x, int y);
+
 private:
 	static const int ONE_METER = 100;
 
@@ -29,7 +33,19 @@ private:
 
 	std::string createKey(int xSize, int ySize);
 
-	bool contains(int x, int y);
 	bool contains(std::string &key);
+
+	int convertMeterToIndex(int a);
+	int convertScaleToMeter(int a);
+	void showKeys(); //debug
+
+
+
+	FString logResult;
+	void addLog(FString s);
+	void showLog();
+
+
+	
 
 };

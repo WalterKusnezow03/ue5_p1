@@ -540,7 +540,10 @@ UClass *EntityManager::getParticleBp(particleEnum type){
 */
 
 
-
+/// @brief adds a room to the correct room manager
+/// room types must be added later
+/// @param world 
+/// @param uclass 
 void EntityManager::setRoomuClassBp(UWorld *world, UClass *uclass){
     if(uclass != nullptr && world != nullptr){
         roomType1Manager.add(world, uclass);
@@ -573,4 +576,15 @@ Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, i
 
 
     return nullptr;
+}
+
+
+void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale, int yscale){
+    
+    DebugHelper::showScreenMessage("TRY CREATE ROOMS", FColor::Red);
+    
+    //must be selected a room type too
+    roomType1Manager.createALayout(worldIn, xscale, yscale);
+
+    
 }

@@ -14,4 +14,6 @@ public:
 	~DebugHelper();
 	static void showScreenMessage(FString s);
 	static void showScreenMessage(FString s, FColor color);
+	static void showLineBetween(UWorld *world, FVector Start, FVector End);
+	static void showLineBetween(UWorld *world, FVector Start, FVector End, FColor color);
 };

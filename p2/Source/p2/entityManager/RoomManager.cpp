@@ -3,7 +3,11 @@
 
 #include <string>
 #include <map>
+#include "p2/rooms/layoutCreator.h"
 #include "p2/entityManager/RoomManager.h"
+
+
+
 
 RoomManager::RoomManager()
 {
@@ -12,6 +16,8 @@ RoomManager::RoomManager()
 RoomManager::~RoomManager()
 {
 }
+
+
 
 void RoomManager::add(UWorld *world, UClass *uclass){
     if(uclass != nullptr && world != nullptr){
@@ -22,18 +28,42 @@ void RoomManager::add(UWorld *world, UClass *uclass){
 
         if (TempActor)
         {
+            /**
+             * from doc:
+             *  AActor::GetActorBounds(...){}
+             * 
+                virtual void GetActorBounds  
+                &40;  
+                    bool bOnlyCollidingComponents,  
+                    FVector & Origin,  
+                    FVector & BoxExtent,  
+                    bool bIncludeFromChildActors  
+                &41; const  
+
+             */
+            FVector Origin;
+            FVector Extent;
+            TempActor->GetActorBounds(true, Origin, Extent); //leg mir das da rein prinzip
+
+            /*
             FBox BoundingBox = TempActor->GetComponentsBoundingBox(true);
             FVector Origin = BoundingBox.GetCenter();
-            FVector Extent = BoundingBox.GetExtent();
+            FVector Extent = BoundingBox.GetExtent();*/
 
-            int xScale = (int) (Extent.X * 2) % ONE_METER;
-            int yScale = (int) (Extent.Y * 2) % ONE_METER;
-            int zScale = (int) (Extent.Z * 2) % ONE_METER;
-
+            int xScale = (int)(Extent.X * 2) / ONE_METER;
+            int yScale = (int)(Extent.Y * 2) / ONE_METER;
+            int zScale = (int)(Extent.Z * 2) / ONE_METER;
 
             std::string key = createKey(xScale, yScale);
             if(!contains(key)){
                 map[key] = uclass;
+
+                
+                FString s(UTF8_TO_TCHAR(key.c_str()));
+                s.Append(FString::Printf(TEXT("added ")));
+                DebugHelper::showScreenMessage(s);
+
+                addLog(s);
             }
 
             //std::string newKey = createKey(xScale, yScale);
@@ -63,7 +93,10 @@ UClass *RoomManager::getBpFor(int x, int y){
 }
 
 
-
+/// @brief creates a key from 2 values
+/// @param x int first
+/// @param y int second
+/// @return key from x and y
 std::string RoomManager::createKey(int x, int y){
     return (std::to_string(x) + "-" + std::to_string(y));
 }
@@ -77,4 +110,84 @@ bool RoomManager::contains(int x, int y){
 bool RoomManager::contains(std::string &key){
     UClass *read = map[key];
     return read != nullptr;
+}
+
+
+
+void RoomManager::createALayout(UWorld* world, int x, int y){
+    //showKeys(); //debug
+    showLog(); //shows previous log
+
+    layoutCreator l(this);
+    l.createRooms(x, y);
+
+    //copy data
+    std::vector<layoutCreator::roomBounds> copy = l.copyData();
+
+    //continue with instantiating objects
+    if(EntityManager *e = EntityManager::instance()){
+        for (int i = 0; i < copy.size(); i++){
+
+            layoutCreator::roomBounds *roomToCreate = &copy.at(i);
+            UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale());
+
+            int xposInGrid = roomToCreate->xpos(); //must be converted
+            int yposInGrid = roomToCreate->ypos();
+
+            //convert positions
+            int xpos = convertScaleToMeter(xposInGrid);
+            int ypos = convertScaleToMeter(yposInGrid);
+
+            //create rooms- 
+            
+            
+            
+            //and doors / added later or on constructor. Think about it needed.
+            std::vector<FVector> &doorPositions = roomToCreate->readDoorPositions();
+
+
+
+        }
+    }
+
+
+}
+
+/// @brief converts a unreal engine scale (cm) to m as int. Will introduce conversion loss!
+/// @param a cm
+/// @return a in meter, value floored
+int RoomManager::convertMeterToIndex(int a){
+    return (int)(a / ONE_METER);
+}
+
+/// @brief converts an meter index to cm
+/// @param a meter index
+/// @return as cm position / unreal position scale
+int RoomManager::convertScaleToMeter(int a){
+    return a * ONE_METER;
+}
+
+void RoomManager::showKeys(){
+
+    FString result = FString(TEXT("keys: "));
+    FString n = FString(TEXT("\n"));
+
+    for (auto& pair : map) {
+        FString s = FString(pair.first.c_str());
+        result += s;
+        result += n;
+    }
+    DebugHelper::showScreenMessage(result);
+}
+
+
+
+void RoomManager::addLog(FString s){
+    logResult += s;
+    FString r = FString(TEXT("\n"));
+    logResult += r;
+}
+
+void RoomManager::showLog(){
+    DebugHelper::showScreenMessage(logResult);
 }

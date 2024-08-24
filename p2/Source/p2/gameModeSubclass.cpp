@@ -156,8 +156,34 @@ void AgameModeSubclass::loadParticles(EntityManager *entityManager){
 }
 
 
+// ---- LOAD ROOMS ----
+
 void AgameModeSubclass::loadRooms(EntityManager *entityManager){
 
+    //needs uworld for rooms
+    UWorld *world = GetWorld();
+
+    static ConstructorHelpers::FObjectFinder<UClass> room1(
+        TEXT("Blueprint'/Game/Prefabs/rooms/room1.room1_C'")
+    );
+    if (room1.Succeeded())
+    {
+        UClass *bp = room1.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setRoomuClassBp(world, bp);
+        }
+    }
+
+    static ConstructorHelpers::FObjectFinder<UClass> room2(
+        TEXT("Blueprint'/Game/Prefabs/rooms/room2.room2_C'")
+    );
+    if (room2.Succeeded())
+    {
+        UClass *bp = room2.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setRoomuClassBp(world, bp);
+        }
+    }
 }
 
 
@@ -193,7 +219,8 @@ UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
 
 
 
-//default methods
+// ----- DEFAULT METHODS -----
+//will create edge collector and path finder instance on start!
 
 
 void AgameModeSubclass::BeginPlay()

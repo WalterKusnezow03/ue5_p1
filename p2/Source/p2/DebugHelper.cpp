@@ -25,3 +25,15 @@ void DebugHelper::showScreenMessage(FString s, FColor color){
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, color, s);
 	}
 }
+
+
+
+void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End, FColor color){
+	if(world != nullptr){
+		DrawDebugLine(world, Start, End, color, false, 100.0f, 0, 1.0f);
+	}
+}
+
+void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End){
+	showLineBetween(world, Start, End, FColor::Blue);
+}

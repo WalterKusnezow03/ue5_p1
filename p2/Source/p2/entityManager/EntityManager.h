@@ -74,6 +74,9 @@ public:
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
 	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale);
 
+	//testing
+	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
+
 private:
 	static class EntityManager *instancePointer;
 

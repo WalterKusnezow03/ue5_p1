@@ -3,12 +3,17 @@
 
 #include "p2/rooms/room.h"
 #include "p2/rooms/layoutCreator.h"
+#include "p2/entityManager/RoomManager.h"
 #include <list>
 
-layoutCreator::layoutCreator()
+class RoomManager;
+
+layoutCreator::layoutCreator(RoomManager *m)
 {
     map = nullptr;
     number = 0;
+
+    manager = m;
 }
 
 layoutCreator::~layoutCreator()
@@ -45,6 +50,29 @@ int layoutCreator::roomBounds::xscale(){
 }
 int layoutCreator::roomBounds::yscale(){
     return yScale;
+}
+int layoutCreator::roomBounds::xpos() { return xPos; }
+int layoutCreator::roomBounds::ypos() { return yPos; }
+int layoutCreator::roomBounds::xOuteredge(){
+    return xPos + xScale;
+}
+int layoutCreator::roomBounds::yOuteredge(){
+    return yPos + yScale;
+}
+
+void layoutCreator::roomBounds::updatePosition(int x, int y){
+    xPos = x;
+    yPos = y;
+}
+/// @brief adds a door position 
+/// @param x x pos
+/// @param y y pos
+void layoutCreator::roomBounds::addDoorPosition(int x, int y){
+    doorPositions.push_back(FVector(x, y, 0));
+}
+
+std::vector<FVector> &layoutCreator::roomBounds::readDoorPositions(){
+    return doorPositions;
 }
 
 // ---- grid methods ----
@@ -98,6 +126,11 @@ bool layoutCreator::grid::isFree(int x, int y){
     }
     return false;
 }
+
+/// @brief will return whether the given coordinates are within the 2D bounds
+/// @param x pos in
+/// @param y pos in
+/// @return true or false, bounds or not
 bool layoutCreator::grid::isValidIndex(int x, int y){
     if(x >= 0 && y >= 0 && x < data.Num() && y < data[x].Num()){
         return true;
@@ -132,7 +165,10 @@ bool layoutCreator::grid::findAndAdd(layoutCreator::roomBounds *p){
         for (int i = 0; i < data.Num(); i++){
             for (int j = 0; j < data[i].Num(); j++){
                 if(isAreaFree(i,j, i + xSize, j + ySize)){
-                    fill(i, j, i + xSize, j + ySize, p);
+                    fill(i, j, i + xSize, j + ySize, p); //fill map
+
+                    p->updatePosition(i, j); // update position in grid
+
                     return true; //found and filled
                 }
             }
@@ -160,22 +196,53 @@ FString layoutCreator::grid::toString(){
     return a;
 }
 
+/// @brief returns the room at a specified position if not nullptr, else nullptr
+/// @param x 
+/// @param y 
+/// @return 
+layoutCreator::roomBounds *layoutCreator::grid::tryGetPosition(int x, int y){
+    if(isValidIndex(x,y)){
+        return data[x][y];
+    }
+    return nullptr;
+}
+
 // ---- layout creator methods ----
 
 
-
-void layoutCreator::createRooms(UWorld *worldIn, FVector location){
+/// @brief main method. Creates rooms in a specified size
+/// @param x x grid size
+/// @param y y grid size
+void layoutCreator::createRooms(int x, int y){
+    if(x < 2){
+        x = 2;
+    }
+    if(y < 2){
+        y = 2;
+    }
 
     //clean up
-    //clean();
+    clean();
 
     map = new layoutCreator::grid(10, 10);
     fillLayout();
+    connectNeighbors();
 }
 
+
+/// @brief aquivalent to destructor, will clean up the map and created list (delete all room bounds)
 void layoutCreator::clean(){
-    created.clear();
-    if(map != nullptr){
+    if(created.size() > 0){
+        for (int i = 0; i < created.size(); i++){
+            if(created.at(i) != nullptr){
+                delete created.at(i);
+                created.at(i) = nullptr;
+            }
+        }
+        created.clear();
+    }
+    if (map != nullptr)
+    {
         delete map;
         map = nullptr;
     }
@@ -214,8 +281,12 @@ void layoutCreator::debugPrintMap(){
     
 }
 
+/// @brief tries to create a room from a starting size
+/// will only work if the Room manager can privide the targeted size
+/// @param x 
+/// @param y 
 void layoutCreator::createRoomStartingFromSize(int x, int y){
-
+    
     
     layoutCreator::roomBounds *room = testRoom(x, y);
 
@@ -234,6 +305,13 @@ void layoutCreator::createRoomStartingFromSize(int x, int y){
             room = nullptr;
             x--;
             y--;
+
+            //to small
+            if(x <= 0 || y <= 0){
+                return;
+            }
+
+            //try new room
             room = testRoom(x,y);
         }
 
@@ -245,7 +323,93 @@ void layoutCreator::createRoomStartingFromSize(int x, int y){
     }
 }
 
+/// @brief will return whether a size can be created or not
+/// @param x 
+/// @param y 
+/// @return 
+bool layoutCreator::canCreate(int x, int y){
+    FString s("try");
+    DebugHelper::showScreenMessage(s);
+
+    return manager != nullptr && manager->contains(x, y);
+}
+
 layoutCreator::roomBounds* layoutCreator::testRoom(int x, int y){
-    layoutCreator::roomBounds *s = new layoutCreator::roomBounds(x, y, number++);
-    return s;
+
+    if(canCreate(x,y)){
+        layoutCreator::roomBounds *s = new layoutCreator::roomBounds(x, y, number++);
+        return s;
+    }
+    return nullptr;
+
+    //layoutCreator::roomBounds *s = new layoutCreator::roomBounds(x, y, number++);
+    //return s;
+}
+
+
+
+
+
+/// @brief will connect all rooms within the created list if aligned in the map
+void layoutCreator::connectNeighbors(){
+    //alle created durchgehen und die positionen abgreifen, dann in die map, 
+    //dann x - 1 und y - 1 jeweils und verbinden 
+
+    if(created.size() > 0){
+        for (int i = 0; i < created.size(); i++){
+            layoutCreator::roomBounds *room = created.at(i);
+            int x = room->xpos();
+            int y = room->ypos();
+
+            int xEdge = x + room->xscale();
+            int yEgde = y + room->yscale();
+
+            int lowerNeighbor = y - 1;
+            int leftNeighbor = x - 1;
+
+            //get and connect
+            if(map->isValidIndex(x, lowerNeighbor)){
+                layoutCreator::roomBounds *lower = map->tryGetPosition(x, lowerNeighbor);
+                if(lower != nullptr){
+                    
+                    int lowerxpos = lower->xpos(); //x pos lower
+                    int lowerxscale = lower->xscale(); //x scale lower
+                    int lowerxOuterEdge = lower->xOuteredge(); //x outer edge lower
+
+                    //find overlapping position / range
+                    int xstarting = (lowerxpos > x ? lowerxpos : x); //larger xpos along axis
+                    int xending = (lowerxOuterEdge < xEdge ? lowerxOuterEdge : xEdge); // smaller xpos alogn axis
+
+                    //calculate middle
+                    int xmiddle = (int)((xstarting + xending) / 2);
+
+                    //set door for both? (might have extra class naming gap or door)
+                    lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
+                    room->addDoorPosition(xmiddle, y); //y = 0, x kante
+                }
+            }
+
+            if(map->isValidIndex(leftNeighbor, y)){
+                layoutCreator::roomBounds *left = map->tryGetPosition(leftNeighbor, y);
+                if(left != nullptr){
+
+                    //calculate door position
+                    int leftypos = left->ypos(); //y pos lower
+                    int leftyscale = left->yscale();
+                    int leftyOuterEdge = left->yOuteredge(); //x outer edge lower
+                
+                    int ystarting = (leftypos > y ? leftypos : y); //larger ypos along axis
+                    int yending = (leftyOuterEdge < yEgde ? leftyOuterEdge : yEgde); // smaller xpos alogn axis
+
+                    //calculate middle
+                    int ymiddle = (int)((ystarting + yending) / 2);
+                    
+                    //set door for both? (might have extra class naming gap or door)
+                    left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
+                    room->addDoorPosition(x, ymiddle); //x = 0, y kante
+                }
+            }
+        }
+    }
+
 }
