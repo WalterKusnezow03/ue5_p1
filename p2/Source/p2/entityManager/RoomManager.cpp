@@ -138,10 +138,11 @@ void RoomManager::createALayout(UWorld* world, int x, int y){
             int xpos = convertScaleToMeter(xposInGrid);
             int ypos = convertScaleToMeter(yposInGrid);
 
-            //create rooms- 
-            
-            
-            
+            FVector position(xpos, ypos, 50);
+
+            //create rooms
+            AActor *actor = e->spawnAactor(world, uclass, position);
+
             //and doors / added later or on constructor. Think about it needed.
             std::vector<FVector> &doorPositions = roomToCreate->readDoorPositions();
 

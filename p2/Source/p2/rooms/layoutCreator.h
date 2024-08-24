@@ -79,9 +79,8 @@ private:
 			/// @brief stores the grid data, will have duplicate pointers
 			/// will show if an point and area is used or not
 			TArray<TArray<layoutCreator::roomBounds *>> data;
+
 	};
-
-
 
 	//room manager reference to ask for valid map sizes
 	class RoomManager *manager;

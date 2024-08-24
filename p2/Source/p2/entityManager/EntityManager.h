@@ -46,6 +46,12 @@ public:
 
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
 
+	/// @brief spawns aactor in the world
+	/// @param world world to spawn in, cannot be nullptr!
+	/// @param toSpawn class / bp to spawn
+	/// @param Location location to spawn at 
+	/// @return pointer to AActor
+	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector &Location);
 
 	//Set bp methods
 
@@ -154,12 +160,7 @@ private:
 
 	EntityManagerGeneric<AthrowableItem> *getThrowableManagerFor(throwableEnum type);
 
-	/// @brief spawns aactor in the world
-	/// @param world world to spawn in, cannot be nullptr!
-	/// @param toSpawn class / bp to spawn
-	/// @param Location location to spawn at 
-	/// @return 
-	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector &Location);
+	
 
 
 

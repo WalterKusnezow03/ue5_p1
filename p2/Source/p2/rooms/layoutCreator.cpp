@@ -85,6 +85,9 @@ layoutCreator::grid::grid(int x, int y){
         }
         data.Add(ar);
     }
+
+    latestX = 0;
+    latestY = 0;
 }
 layoutCreator::grid::~grid(){
 
@@ -264,7 +267,7 @@ std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
 /// @brief will fill the map
 void layoutCreator::fillLayout(){
 
-    int rooms = 10;
+    int rooms = 50;
 
     for(int i = 0; i < rooms; i++){
         createRoomStartingFromSize(4, 4);
@@ -291,7 +294,7 @@ void layoutCreator::createRoomStartingFromSize(int x, int y){
     layoutCreator::roomBounds *room = testRoom(x, y);
 
     int a = 0;
-    int maxAttempts = 100;
+    int maxAttempts = 1000;
     bool ok = false;
     while(!ok){
 
