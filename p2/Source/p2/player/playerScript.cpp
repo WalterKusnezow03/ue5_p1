@@ -10,6 +10,7 @@
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
+
 #include "p2/rooms/layoutCreator.h"
 
 // Sets default values
@@ -214,14 +215,19 @@ void AplayerScript::Jump(){
     if (CanJump())
     {
         ACharacter::Jump(); // Calls the base class jump function
+
+        layoutCreator c;
+        c.createRooms(GetWorld(), GetActorLocation());
+        /*
+        layoutCreator *c = new layoutCreator();
+        c->createRooms(GetWorld(), GetActorLocation());
+        delete c;
+        c = nullptr;*/
     }
 
-
-    //TESTING, works as expected
-    /*
-    layoutCreator c;
-    std::vector<std::vector<int>> s = c.generateLayout(10,10);
-    */
+    //TESTING of layout creator, works as expected
+    
+    
 }
 
 void AplayerScript::sprint(){

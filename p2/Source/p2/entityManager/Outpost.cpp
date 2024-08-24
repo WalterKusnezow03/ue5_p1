@@ -22,7 +22,7 @@ AOutpost::AOutpost()
 void AOutpost::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	createEntity(5);
 }
 
 // Called every frame
@@ -110,7 +110,7 @@ void AOutpost::createEntity(){
 	if(EntityManager *e = EntityManager::instance()){
 		FVector pos = GetActorLocation();
 		pos.Z += 100;
-		pos += randomOffset(200);
+		pos += randomOffset(400);
 		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
 		if(human != nullptr){
 			subscribe(human);
@@ -126,6 +126,8 @@ FVector AOutpost::randomOffset(int range){
 	return FVector(x, y, 0);
 }
 
+/// @brief creates entities with a count
+/// @param count 
 void AOutpost::createEntity(int count){
 	for (int i = 0; i < count; i++){
 		createEntity();

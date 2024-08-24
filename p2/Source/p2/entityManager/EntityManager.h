@@ -12,6 +12,7 @@
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/rooms/room.h"
+#include "p2/entityManager/RoomManager.h"
 
 
 /**
@@ -70,7 +71,8 @@ public:
 
 
 	//rooms
-	Aroom *createRoom(UWorld *worldIn, FVector &location);
+	void setRoomuClassBp(UWorld *world, UClass *uclass);
+	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale);
 
 private:
 	static class EntityManager *instancePointer;
@@ -121,6 +123,8 @@ private:
 	//room section
 	UPROPERTY()
 	class UClass *room1 = nullptr;
+	class RoomManager roomType1Manager;
+
 
 
 

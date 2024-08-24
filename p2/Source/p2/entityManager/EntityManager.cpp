@@ -539,17 +539,25 @@ UClass *EntityManager::getParticleBp(particleEnum type){
  * 
 */
 
+
+
+void EntityManager::setRoomuClassBp(UWorld *world, UClass *uclass){
+    if(uclass != nullptr && world != nullptr){
+        roomType1Manager.add(world, uclass);
+    }
+}
+
+
+
+
 /// @brief will create a room based on the given type if possible
 /// @return 
-Aroom *EntityManager::createRoom(UWorld *world, FVector &location){
+Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, int yScale){
     if(world != nullptr){
 
         //get proper room later
-        UClass *r = room1;
-
-        //code to get the room based on the type...
-
-
+        UClass *r = roomType1Manager.getBpFor(xScale, yScale);
+        
         if(r != nullptr){
             AActor *a = spawnAactor(world, r, location);
             if(a != nullptr){

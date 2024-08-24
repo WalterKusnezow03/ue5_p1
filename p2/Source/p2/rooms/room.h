@@ -28,6 +28,5 @@ public:
 private:
 	void findDoors();
 
-
-
+	std::vector<FVector> doorPositions;
 };

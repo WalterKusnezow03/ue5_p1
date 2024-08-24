@@ -1,224 +1,251 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "p2/rooms/room.h"
 #include "p2/rooms/layoutCreator.h"
+#include <list>
 
 layoutCreator::layoutCreator()
 {
+    map = nullptr;
+    number = 0;
 }
 
 layoutCreator::~layoutCreator()
 {
-}
-
-layoutCreator::roomBounds::roomBounds(int xIn, int yIn){
-    x = xIn;
-    y = yIn;
-}
-layoutCreator::roomBounds::~roomBounds(){
-    
-}
-
-int layoutCreator::roomBounds::xValue(){
-    return x;
-}
-int layoutCreator::roomBounds::yValue(){
-    return y;
-}
-
-
-void layoutCreator::createRooms(FVector location){
-    int sizeX = 10;
-    int sizeY = 10;
-
-    //change here to return type vector of inner class room size
-    std::vector<std::vector<int>> map = generateLayout(sizeX, sizeY);
-
-
-    //man muss sich halt überlegen wie man das mit den layouts umsetzt
-    //basierend auf den layouts und den räumen die es dann gibt muss es dann auch befüllt udn instanziiert werden
-    //bevor die layouts erstellt werden müssen alle möglichen räume quasi in das "system"
-    //eingegeben werden und dann das layout angefordert und alle räume die auch lgoischer weise
-    //auf dem aactor basieren z.b. vom entity manager instanziiert werden
-    //wenn du dich restirktiv daran hälst dass der entity manager alle uclass bps hält
-    //musst du sie auch dort haben (auch wenn das erstmal seltsam wirkt ist das vielleicht besser so)
-    //dann gibt es eine instanz mit den ganzen daten was grundsätzlich vielleicht nicht so schlecht
-    //ist. Die raum typen solltest du dann auch mit einem enum identifizieren wie bei den waffen und throwables
-
-    //sobald alle räume erstellt wurden musst du halt die türen alle "einsetzen" und die wände austauschen
-
-
-
-
-    //ausserdem muss man basierend auf der raum grösse dann ein statndard maß festlegen und dann mit modulo die koor
-    //-dinaten bestimmen bzw anhand des vector indexes
-
-
-
-
-    //die map erstellt nur das layout aber statt integer bzw für jeden raum sollte man die maße
-    //einspeichern und eine seperate liste ertsellen und nicht in dem 2d map dings, doof , lieber gleich einfügen
-
-    //for (int i = 0; i < ) //---> itertate over created room list and request from entity manaegr
-}
-
-std::vector<std::vector<int>> layoutCreator::generateLayout(int sizeX, int sizeY){
-    sizeX = (sizeX > 1 ? sizeX : 1);
-    sizeY = (sizeY > 1 ? sizeY : 1);
-
-    std::vector<std::vector<int>> map;
-    //create
-    for (int x = 0; x < sizeX; x++){
-        std::vector<int> inner;
-        for (int y = 0; y < sizeY; y++){
-            inner.push_back(0);
+    for (int i = 0; i < created.size(); i++){
+        if(created.at(i) != nullptr){
+            delete created.at(i);
+            created.at(i) = nullptr;
         }
-        map.push_back(inner);
     }
-
-    std::vector<layoutCreator::roomBounds *> created; //by value um es danach weiter zu verarbeiten
-
-
-    // fill
-    int roomCount = 10;
-    int xstart = 0;
-    int ystart = 0;
-    for (int i = 0; i < roomCount; i++)
+    created.clear();
+    
+    if (map != nullptr)
     {
-        addRoom(map, xstart, ystart, i, created);
+        delete map;
     }
-
-    //debug show
-
-    FString s = TEXT("map \n");
-    for (int i = 0; i < map.size(); i++){
-        FString a = TEXT("");
-        for (int j = 0; j < map.at(i).size(); j++)
-        {
-            a.Append(FString::Printf(TEXT(". %d"), map.at(i).at(j)));
-        }
-        s.Append(a);
-        s.Append("\n");
-    }
-    DebugHelper::showScreenMessage(s);
-
-    return map;
+    worldPointer = nullptr;
 }
 
-void layoutCreator::addRoom(
-    std::vector<std::vector<int>> &map,
-    int &nextX,
-    int &nextY,
-    int roomNum,
-    std::vector<layoutCreator::roomBounds *> &created
-){
+// ---- room methods ----
 
-    //find next free place
-    while (nextX < map.size() && nextY < map.at(0).size() && !isFree(map.at(nextX).at(nextY))) {
-        
+layoutCreator::roomBounds::roomBounds(int xIn, int yIn, int num){
+    xScale = xIn;
+    yScale = yIn;
+    number = num;
+}
 
-        nextX += 1;
-        if (nextX >= map.size() - 1) {
-            nextX = 0;
-            nextY += 1;
+layoutCreator::roomBounds::~roomBounds(){
+    //neighbors.clear();
+}
+
+int layoutCreator::roomBounds::xscale(){
+    return xScale;
+}
+int layoutCreator::roomBounds::yscale(){
+    return yScale;
+}
+
+// ---- grid methods ----
+
+layoutCreator::grid::grid(int x, int y){
+    for (int i = 0; i < x; i++){
+        TArray<layoutCreator::roomBounds *> ar;
+        for (int j = 0; j < y; j++){
+            ar.Add(nullptr);
+        }
+        data.Add(ar);
+    }
+}
+layoutCreator::grid::~grid(){
+
+    //clean the map and pointers, but dont delete, DOUBLE DELETION COULD HAPPEN ON LARGER TILES
+    //DOuBLE DELETiON LEADS TO UNDEFINED BEHAIVIOUR!
+    for(int i = 0; i < data.Num(); i++){
+        for (int j = 0; j < data[i].Num(); j++){
+            data[i][j] = nullptr;
+        }
+        data[i].Empty();
+    }
+    data.Empty();
+}
+
+/// @brief will fill an area without questioning from x to x from y to y if indices are valid
+/// @param fromX 
+/// @param fromY 
+/// @param toX 
+/// @param toY 
+/// @param p to fill
+void layoutCreator::grid::fill(int fromX, int fromY, int toX, int toY, layoutCreator::roomBounds *p){
+    if(isValidIndex(fromX, fromY) && isValidIndex(toX, toY)){
+        for (int i = fromX; i < toX; i++){
+            for (int j = fromY; j < toY; j++){
+                add(i, j, p);
+            }
         }
     }
+}
 
-    if (nextX >= map.size() && nextY >= map.at(0).size()) {
-        return; // No free space left
+void layoutCreator::grid::add(int x, int y, layoutCreator::roomBounds *p){
+    if(isValidIndex(x,y)){
+        data[x][y] = p;
+    }
+}
+bool layoutCreator::grid::isFree(int x, int y){
+    if(isValidIndex(x,y)){
+        return data[x][y] == nullptr;
+    }
+    return false;
+}
+bool layoutCreator::grid::isValidIndex(int x, int y){
+    if(x >= 0 && y >= 0 && x < data.Num() && y < data[x].Num()){
+        return true;
+    }
+    return false;
+}
+
+bool layoutCreator::grid::isAreaFree(int x, int y, int x1, int y1){
+    if(isValidIndex(x,y) && isValidIndex(x1, y1)){
+        for(int i = x; i < x1; i++){
+            for(int j = y; j < y1; j++){
+                if(!isFree(i,j)){
+                    return false;
+                }
+            }
+        }
+        return true; //area is all free
+    }
+    return false;
+}
+
+/// @brief will try to find a position and add the room, returns true on success, false on failure
+/// @param x 
+/// @param y 
+/// @param p 
+/// @return 
+bool layoutCreator::grid::findAndAdd(layoutCreator::roomBounds *p){
+    if(p != nullptr){
+        int xSize = p->xscale();
+        int ySize = p->yscale();
+
+        for (int i = 0; i < data.Num(); i++){
+            for (int j = 0; j < data[i].Num(); j++){
+                if(isAreaFree(i,j, i + xSize, j + ySize)){
+                    fill(i, j, i + xSize, j + ySize, p);
+                    return true; //found and filled
+                }
+            }
+        }
+        return false;
+    }
+    return false;
+}
+FString layoutCreator::grid::toString(){
+    FString a = TEXT("");
+    for (int i = 0; i < data.Num(); i++){
+        FString s = TEXT("");
+        for (int j = 0; j < data[i].Num(); j++){
+            if(data[i][j] != nullptr){
+                FString b = FString::Printf(TEXT("%d"), data[i][j]->number);
+                s.Append(b);
+            }else{
+                FString b = FString::Printf(TEXT("-"));
+                s.Append(b);
+            }
+        }
+        a.Append(s);
+        a.Append(TEXT("\n"));
+    }
+    return a;
+}
+
+// ---- layout creator methods ----
+
+
+
+void layoutCreator::createRooms(UWorld *worldIn, FVector location){
+
+    //clean up
+    //clean();
+
+    map = new layoutCreator::grid(10, 10);
+    fillLayout();
+}
+
+void layoutCreator::clean(){
+    created.clear();
+    if(map != nullptr){
+        delete map;
+        map = nullptr;
+    }
+}
+
+
+std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
+    std::vector<layoutCreator::roomBounds> copy;
+    if(created.size() > 0){
+        for(roomBounds *r : created){
+            if(r != nullptr){
+                copy.push_back(*r);
+            }
+        }
+    }
+    return copy;
+}
+
+/// @brief will fill the map
+void layoutCreator::fillLayout(){
+
+    int rooms = 10;
+
+    for(int i = 0; i < rooms; i++){
+        createRoomStartingFromSize(4, 4);
     }
 
+    debugPrintMap();
+}
+
+void layoutCreator::debugPrintMap(){
+    if(map != nullptr){
+        FString s = map->toString();
+        DebugHelper::showScreenMessage(s);
+    }
     
-    //x and y must be found previously where a room is not blocked / added
-    //or goes out of bounds targeted
+}
+
+void layoutCreator::createRoomStartingFromSize(int x, int y){
 
     
-    int upperX = 4;
-    int upperY = 4;
-    upperX = (nextX + upperX < map.size() ? upperX : map.size() - nextX);
-    upperY = (nextY + upperX < map.at(0).size() ? upperY : map.size() - nextY);
+    layoutCreator::roomBounds *room = testRoom(x, y);
 
+    int a = 0;
     int maxAttempts = 100;
-    int attempts = 0;
+    bool ok = false;
+    while(!ok){
 
-    while(true){
-        attempts++;
-        if(attempts > maxAttempts){
+        ok = map->findAndAdd(room);
+        if(ok){
+            created.push_back(room);
             return;
+        }else{
+            //not okay
+            delete room;
+            room = nullptr;
+            x--;
+            y--;
+            room = testRoom(x,y);
         }
 
-        // invalid size, shouldnt be the case at any time
-        if(upperX <= 0 || upperY <= 0){
+        //attempts limit
+        a++;
+        if(a > maxAttempts){
             return;
-        }
-
-        layoutCreator::roomBounds *s = pickRoom(upperX,upperY); //mus be made by choosing random from rooms which exist somewhere else, DO LATER!
-
-        int outerX = nextX + s->xValue();
-        int outerY = nextY + s->yValue();
-
-        if (
-            outerX < map.size() && outerY < map.at(0).size()
-        ){
-            bool xBlocked = !isFree(map.at(outerX).at(nextY)); //beide verlängern, ja.
-            bool yBlocked = !isFree(map.at(nextX).at(outerY));
-
-            if(xBlocked){
-                upperX--;
-            }
-            if(yBlocked){
-                upperY--;
-            }
-
-            //valid area
-            if(!xBlocked && !yBlocked){
-                //block area, valid area found
-                blockArea(map, nextX, nextY, outerX, outerY, roomNum);
-
-                //update next index
-                /* //happens at the top automatically
-                if(outerX == map.size()){
-                    nextY = nextY + 1; // outerY;
-                    nextX = 0;
-                }else{
-                    nextX = outerX; //x update only
-                }*/
-
-                //add created room
-                created.push_back(s); //adresse reingeben
-
-                return;
-            }
         }
     }
 }
 
-bool layoutCreator::isFree(int a){
-    return a == 0;
-}
-
-
-void layoutCreator::blockArea(
-    std::vector<std::vector<int>> &map, 
-    int x, 
-    int y, 
-    int xSize, 
-    int ySize,
-    int roomNum
-){
-    for(int i = x; i < xSize; i++){
-        for(int j = y; j < ySize; j++){
-            if(i < map.size() && j < map.at(i).size()){
-                map.at(i).at(j) = roomNum;
-            }
-        }
-    }
-}
-
-
-
-layoutCreator::roomBounds* layoutCreator::pickRoom(int xMax, int yMax){
-    //mus be made by choosing random from rooms which exist somewhere else, DO LATER!
-    layoutCreator::roomBounds *s = new roomBounds(xMax, yMax);
+layoutCreator::roomBounds* layoutCreator::testRoom(int x, int y){
+    layoutCreator::roomBounds *s = new layoutCreator::roomBounds(x, y, number++);
     return s;
 }

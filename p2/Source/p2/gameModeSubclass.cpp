@@ -22,6 +22,18 @@ AgameModeSubclass::AgameModeSubclass()
     //load the entity manager
     EntityManager *entityManager = EntityManager::instance();
 
+    loadEntities(entityManager);
+    loadWeapons(entityManager);
+    loadThrower(entityManager);
+    loadParticles(entityManager);
+
+    loadRooms(entityManager);
+    
+}
+
+/// @brief load all entities 
+/// @param entityManager entity manager to create
+void AgameModeSubclass::loadEntities(EntityManager *entityManager){
     static ConstructorHelpers::FObjectFinder<UClass> EntityBPClass(
         TEXT("Blueprint'/Game/Prefabs/player/entityPrefab.entityPrefab_C'")
     );
@@ -44,21 +56,20 @@ AgameModeSubclass::AgameModeSubclass()
         }
     }
 
+}
 
-    //DEFAULT WEAPON STICK
-    /*
-    static ConstructorHelpers::FObjectFinder<UClass> weaponBpClass(
-        TEXT("Blueprint'/Game/Prefabs/Weapons/weaponBP.weaponBP_C'")
-    );
-    if (weaponBpClass.Succeeded())
-    {
-        UClass *bp = weaponBpClass.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setWeaponUClassBP(bp);
-        }
-    }*/
 
-    //REAL WEARPONS
+
+
+
+
+
+
+
+
+/// @brief loads all weapons to the entity manager
+/// @param entityManager entity manager instance
+void AgameModeSubclass::loadWeapons(EntityManager *entityManager){
 
     //pistol
     static ConstructorHelpers::FObjectFinder<UClass> pistolBpClass(
@@ -83,16 +94,12 @@ AgameModeSubclass::AgameModeSubclass()
             entityManager->setWeaponUClassBP(bp, weaponEnum::assaultRifle);
         }
     }
+}
 
 
-
-    //---- RIFLE END ----
-
-
-
-
-
-
+/// @brief load thrower and throwables
+/// @param entityManager entity manager
+void AgameModeSubclass::loadThrower(EntityManager* entityManager){
     //thrower default
     static ConstructorHelpers::FObjectFinder<UClass> throwerDefault(
         TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'")
@@ -117,11 +124,13 @@ AgameModeSubclass::AgameModeSubclass()
             entityManager->setThrowableUClassBp(bp, throwableEnum::greneade_enum);
         }
     }
+}
 
-    //---- THROWABLES END ----
-    
-    //---- PARTICLES ----
-    //particles
+
+
+/// @brief load particles for the entitymanager
+/// @param entityManager to set in
+void AgameModeSubclass::loadParticles(EntityManager *entityManager){
     static ConstructorHelpers::FObjectFinder<UClass> smokeParticle(
         TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'")
     );
@@ -144,15 +153,20 @@ AgameModeSubclass::AgameModeSubclass()
             entityManager->setparticleBp(bp, particleEnum::fire_enum);
         }
     }
-
-
-
-
-
-    //---- PARTICLES END ----
-
-   
 }
+
+
+void AgameModeSubclass::loadRooms(EntityManager *entityManager){
+
+}
+
+
+
+
+
+
+
+
 
 // METHOD HAS ISSUES AND DOESNT WORK PROPERLY!!
 /// @brief method to load blue print class from a path
@@ -171,6 +185,11 @@ UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
     }
     return nullptr;
 }
+
+
+
+
+
 
 
 

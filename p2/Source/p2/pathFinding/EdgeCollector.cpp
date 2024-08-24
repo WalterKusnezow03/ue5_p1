@@ -229,8 +229,8 @@ void EdgeCollector::getEdgesFromSingleMesh(
                     edgeData &prev = currentEdges.back(); //reference the back
                     FVector lower = A.Z < B.Z ? A : B;
                     FVector higher = A.Z > B.Z ? A : B;
-                    if (FVector::Dist(prev.top, lower) <= 10) // 10cm
-                    { 
+                    if (FVector::Dist(prev.top, lower) <= 10)
+                    { // 10cm
                         prev.top = higher;
                         extended = true;
                     }

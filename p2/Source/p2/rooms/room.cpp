@@ -37,7 +37,9 @@ void Aroom::findDoors(){
 
 
 				if(name.Contains("door")){
-					DebugHelper::showScreenMessage("door FOUND", FColor::Red);	
+					DebugHelper::showScreenMessage("door FOUND", FColor::Red);
+
+					//doorPositions.push_back(childs[i]->GetActorLocation());
 				}
 			}
 		}
@@ -61,6 +63,14 @@ void Aroom::alignRoom(Aroom * other){
 
 
 	//man könnte echt gruselige strukturen bauen, alien pyramieden und sowas.
+
+
+
+
+
+	//find 2 doors where distance = 0 bzw x == x1 oder y == y1 und dann distance
+
+
 
 
 }

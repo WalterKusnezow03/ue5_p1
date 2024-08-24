@@ -14,7 +14,7 @@ EntityManagerGeneric<T>::~EntityManagerGeneric(){
     if(hasActorsLeft()){
         while(hasActorsLeft()){
             //erase elements but dont call destructor. Not the owner of the entites!
-            actorVector.erase(actorVector.begin() + 0); 
+            actorVector.erase(actorVector.end() + 0); 
         }
     }
 
@@ -42,8 +42,8 @@ void EntityManagerGeneric<T>::add(T *actor){
 template <typename T>
 T * EntityManagerGeneric<T>::getFirstActor(){
     if(hasActorsLeft()){
-        T *actor = actorVector.front();
-        actorVector.erase(actorVector.begin());
+        T *actor = actorVector.back(); //get last elements, first would do shifting elements(bad)
+        actorVector.pop_back();
         return actor;
     }
     return nullptr;

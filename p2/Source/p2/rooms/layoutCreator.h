@@ -3,6 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/rooms/room.h"
+#include <list>
+
+class Aroom;
 
 /**
  * 
@@ -13,44 +17,76 @@ public:
 	layoutCreator();
 	~layoutCreator();
 
-	void createRooms(FVector location);
-
-	std::vector<std::vector<int>> generateLayout(int sizeX, int sizeY);
+	void createRooms(UWorld *worldIn, FVector location);
 
 private:
+	
+
 	class roomBounds{
 		public:
+			void updateData(int xPos, int yPos, int xSize, int ySize);
 
-			//create room type too!
-			
-			roomBounds(int xIn, int yIn);
+			//create room type too!, and door positions
+			int number;
+			roomBounds(int xIn, int yIn, int num);
 			~roomBounds();
-			int xValue();
-			int yValue();
+			int xpos();
+			int ypos();
+
+			int xscale();
+			int yscale();
+
+			void addNeighbor(roomBounds *n);
+			void addDoorPosition(FVector &pos);
+
+			void createDoorTo(roomBounds *n);
 
 		private:
-			int x;
-			int y;
+			int xScale;
+			int yScale;
+			int xPos;
+			int yPos;
+
+			std::vector<FVector> doorPositions;
+
+			std::vector<roomBounds *> neighbors;
 	};
 
-	void addRoom(std::vector<std::vector<int>> &map, int &nextX, int &nextY, int roomNum, 
-		std::vector<layoutCreator::roomBounds *> &created
-	);
+	//inner grid class to save the map
+	class grid{
+		public:
+			grid(int x, int y);
+			~grid();
+			void fill(int fromX, int fromY, int toX, int toY, layoutCreator::roomBounds *p);
+			void add(int x, int y, roomBounds *p);
+			bool isFree(int x, int y);
+			bool isAreaFree(int x, int y, int x1, int y1);
+			bool findAndAdd(layoutCreator::roomBounds *p);
+
+			FString toString();
+
+		private:
+			bool isValidIndex(int x, int y);
+			TArray<TArray<layoutCreator::roomBounds *>> data;
+	};
+
+	//IV
+	std::vector<layoutCreator::roomBounds *> created;
+	class grid *map = nullptr;
+
+	class UWorld *worldPointer = nullptr;
+
+	int number;
+
+	//IM
+	void clean();
+	void fillLayout();
+	void debugPrintMap();
+
+	void createRoomStartingFromSize(int x, int y);
+	roomBounds* testRoom(int x, int y);
 
 
-	bool isFree(int a);
-	void blockArea(
-		std::vector<std::vector<int>> &map, 
-		int x, 
-		int y, 
-		int xSize, 
-		int ySize, 
-		int roomNum
-		//already created rooms, append to list.
-	);
-
-	roomBounds *pickRoom(int xMax, int yMax);
-
-
-
+	
+	std::vector<roomBounds> copyData();
 };
