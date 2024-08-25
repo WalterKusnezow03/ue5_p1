@@ -23,6 +23,8 @@
 //set static ref to nullptr
 EntityManager *EntityManager::instancePointer = nullptr;
 
+/// @brief if you receive this pointer you are NOT ALLOWED to delete this instance!
+/// @return entityManager instance pointer 
 EntityManager* EntityManager::instance(){
     if(EntityManager::instancePointer == nullptr){
         instancePointer = new EntityManager();
@@ -582,7 +584,7 @@ Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, i
 void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale, int yscale){
     
     DebugHelper::showScreenMessage("TRY CREATE ROOMS", FColor::Red);
-    
+
     //must be selected a room type too
     roomType1Manager.createALayout(worldIn, xscale, yscale);
 

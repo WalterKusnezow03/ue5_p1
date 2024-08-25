@@ -37,9 +37,8 @@ private:
 
 	int convertMeterToIndex(int a);
 	int convertScaleToMeter(int a);
-	void showKeys(); //debug
-
-
+	void convertScaleToMeterFVector(FVector &vector);
+	void showKeys(); // debug
 
 	FString logResult;
 	void addLog(FString s);

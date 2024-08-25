@@ -43,7 +43,7 @@ public:
 
 			void createDoorTo(roomBounds *n);
 
-			std::vector<FVector> &readDoorPositions();
+			std::vector<FVector> &readRelativeDoorPositions();
 
 		private:
 			int xScale;
@@ -51,6 +51,7 @@ public:
 			int xPos;
 			int yPos;
 
+			/// @brief relative door positions for the room
 			std::vector<FVector> doorPositions;
 
 			//std::vector<roomBounds *> neighbors;

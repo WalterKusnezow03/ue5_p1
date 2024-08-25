@@ -65,13 +65,17 @@ void layoutCreator::roomBounds::updatePosition(int x, int y){
     yPos = y;
 }
 /// @brief adds a door position 
-/// @param x x pos
-/// @param y y pos
+/// @param x x pos relative to left bottom corner
+/// @param y y pos relative to left bottom corner
 void layoutCreator::roomBounds::addDoorPosition(int x, int y){
     doorPositions.push_back(FVector(x, y, 0));
 }
 
-std::vector<FVector> &layoutCreator::roomBounds::readDoorPositions(){
+/// @brief will return the relative door INDEX positions, relative to the left bottom corner
+/// the index scale must be scaled up to meters (*100) and calculated to the bottom left corner
+/// of the room to get the correct door position
+/// @return vector<FVector> &reference
+std::vector<FVector> &layoutCreator::roomBounds::readRelativeDoorPositions(){
     return doorPositions;
 }
 
@@ -222,7 +226,7 @@ void layoutCreator::createRooms(int x, int y){
     //clean up
     clean();
 
-    map = new layoutCreator::grid(10, 10);
+    map = new layoutCreator::grid(25, 25); //MAP SIZE HERE
     fillLayout();
     connectNeighbors();
 }
@@ -246,7 +250,7 @@ void layoutCreator::clean(){
     }
 }
 
-/// @brief copy the created rooms
+/// @brief copy the created rooms, their index position and index scale
 /// @return vector of roomBounds
 std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
     std::vector<layoutCreator::roomBounds> copy;
@@ -263,10 +267,10 @@ std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
 /// @brief will fill the map
 void layoutCreator::fillLayout(){
 
-    int rooms = 50;
+    int rooms = 70;
 
     for(int i = 0; i < rooms; i++){
-        createRoomStartingFromSize(4, 4);
+        createRoomStartingFromSize(10, 10);
     }
 
     debugPrintMap();
@@ -328,7 +332,7 @@ void layoutCreator::createRoomStartingFromSize(int x, int y){
 /// @return 
 bool layoutCreator::canCreate(int x, int y){
     FString s("try");
-    DebugHelper::showScreenMessage(s);
+    //DebugHelper::showScreenMessage(s);
 
     return manager != nullptr && manager->contains(x, y);
 }

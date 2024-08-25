@@ -184,6 +184,28 @@ void AgameModeSubclass::loadRooms(EntityManager *entityManager){
             entityManager->setRoomuClassBp(world, bp);
         }
     }
+
+    static ConstructorHelpers::FObjectFinder<UClass> room3(
+        TEXT("Blueprint'/Game/Prefabs/rooms/room3.room3_C'")
+    );
+    if (room3.Succeeded())
+    {
+        UClass *bp = room3.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setRoomuClassBp(world, bp);
+        }
+    }
+
+    static ConstructorHelpers::FObjectFinder<UClass> room4(
+        TEXT("Blueprint'/Game/Prefabs/rooms/room4.room4_C'")
+    );
+    if (room4.Succeeded())
+    {
+        UClass *bp = room4.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setRoomuClassBp(world, bp);
+        }
+    }
 }
 
 

@@ -23,10 +23,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void alignRoom(Aroom *other);
+	void processDoorPositionVectors(std::vector<FVector> &toPositionVector);
 
 private:
+	void debugShowOutline();
 	void findDoors();
+	void calculateActorBounds();
+	FVector bottomLeftCorner();
+	std::vector<FVector> debugAllCorners();
 
 	std::vector<FVector> doorPositions;
+
+	FVector boxOrigin;
+	FVector boxExtent;
+	int boxXScale;
+	int boxYScale;
+	int boxZScale;
 };

@@ -226,7 +226,7 @@ void AplayerScript::Jump(){
 
         if(EntityManager *e = EntityManager::instance()){
             FVector location = GetActorLocation();
-            e->createALayout(GetWorld(), location, 10, 10);
+            e->createALayout(GetWorld(), location, 20, 20);
         }
     }
 

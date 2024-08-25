@@ -16,6 +16,7 @@ void Aroom::BeginPlay()
 {
 	Super::BeginPlay();
 	findDoors();
+	calculateActorBounds();
 }
 
 // Called every frame
@@ -24,6 +25,52 @@ void Aroom::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/// @brief will calculate and set room bounds, is ideally called on begin play!
+void Aroom::calculateActorBounds(){
+	/**
+    * from doc:
+    *  AActor::GetActorBounds(...){} 
+    	
+		virtual void GetActorBounds  
+        &40;  
+            bool bOnlyCollidingComponents,  
+            FVector & Origin,  
+            FVector & BoxExtent,  
+            bool bIncludeFromChildActors  
+        &41; const  
+
+     */
+	FVector Origin;
+    FVector Extent;
+    this->GetActorBounds(true, Origin, Extent); //leg mir das da rein prinzip
+
+
+    int xScale = (int)(Extent.X * 2);
+    int yScale = (int)(Extent.Y * 2);
+	int zScale = (int)(Extent.Z * 2);
+
+
+	//set iv for this room
+	boxExtent = Extent;
+	boxOrigin = Origin;
+	boxXScale = xScale;
+	boxYScale = yScale;
+	boxZScale = zScale;
+	
+}
+
+/// @brief calculates the bottom left corner based on box extent, calculateActorBounds() must be called any time before!
+/// @return bottom left corner of this room
+FVector Aroom::bottomLeftCorner(){
+	FVector pos = boxOrigin;
+	pos.X -= boxXScale / 2;
+	pos.Y -= boxYScale / 2;
+	//pos.Z -= boxZScale / 2;
+	return pos;
+}
+
+
 
 
 
@@ -47,30 +94,51 @@ void Aroom::findDoors(){
 }
 
 
-void Aroom::alignRoom(Aroom * other){
-	//hier muss dann der andere raum angeschmiegt werden 
 
-	//ACHTUNG
-	//vielleicht kann ich die räume ja erstmal mit einem layout verbinden
-	//---> und im ANSCHLUSS werden türen gebildet sodass alle räume mit einander verbunden sind
-	//---> dabei sollte zum beispiel ein raum immer nur 1-3 türen haben (z.b.)
+/// @brief will process all door positions of a room
+/// @param positions 
+void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector){
+
+	//enable disable doors based on bottom left + offset
+	FVector bottomLeft = bottomLeftCorner();
+
+	for (int i = 0; i < toPositionVector.size(); i++){
+		FVector relativeDoorPos = bottomLeft + toPositionVector.at(i); //A + (B - A) //positions
+
+		FVector debugUp = relativeDoorPos + FVector(0, 0, 200);
+		//DebugHelper::showLineBetween(GetWorld(), relativeDoorPos, debugUp, FColor::Green);
+	}
+
+	debugShowOutline();
+}
+
+void Aroom::debugShowOutline(){
+	std::vector<FVector> corners = debugAllCorners();
+	for (int i = 0; i < corners.size(); i++){
+		int prevIndex = i - 1;
+		if(prevIndex < 0){
+			prevIndex = corners.size() - 1;
+		}
+		FVector pos = corners.at(i); // A + (B - A) //positions
+		FVector prev = corners.at(prevIndex);
+		DebugHelper::showLineBetween(GetWorld(), pos, prev, FColor::Green);
+	}	
+
+}
+
+std::vector<FVector> Aroom::debugAllCorners(){
+
+	std::vector<FVector> returned;
+	FVector bl = bottomLeftCorner() + FVector(0,0,100);
+	FVector tl = bl + FVector(0, boxYScale, 0);
+	FVector br = bl + FVector(boxXScale, 0, 0);
+	FVector tr = bl + FVector(boxXScale, boxYScale, 0);
+
+	returned.push_back(bl);
+	returned.push_back(tl);
+	returned.push_back(tr);
+	returned.push_back(br);
 
 
-	//man könnte erstmal in einem 2d array ein layout fest legen und dann die türen einbauen
-	//bzw ein 3d array und dann werden halt positionen blockiert
-	//wenn es zum beispiel eine raum station ist kann man schon darauf achten dass es eher einer längliche struktur ist zb
-	//oder ob sachen durch eine art aussen fassade verdeckt werden
-
-
-	//man könnte echt gruselige strukturen bauen, alien pyramieden und sowas.
-
-
-
-
-
-	//find 2 doors where distance = 0 bzw x == x1 oder y == y1 und dann distance
-
-
-
-
+	return returned;
 }

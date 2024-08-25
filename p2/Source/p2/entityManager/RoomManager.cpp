@@ -61,7 +61,7 @@ void RoomManager::add(UWorld *world, UClass *uclass){
                 
                 FString s(UTF8_TO_TCHAR(key.c_str()));
                 s.Append(FString::Printf(TEXT("added ")));
-                DebugHelper::showScreenMessage(s);
+                //DebugHelper::showScreenMessage(s);
 
                 addLog(s);
             }
@@ -118,7 +118,7 @@ void RoomManager::createALayout(UWorld* world, int x, int y){
     //showKeys(); //debug
     showLog(); //shows previous log
 
-    layoutCreator l(this);
+    layoutCreator l(this); //all the data will be destroyed when it goes out of scope, remember.
     l.createRooms(x, y);
 
     //copy data
@@ -138,16 +138,31 @@ void RoomManager::createALayout(UWorld* world, int x, int y){
             int xpos = convertScaleToMeter(xposInGrid);
             int ypos = convertScaleToMeter(yposInGrid);
 
-            FVector position(xpos, ypos, 50);
+            FVector position(xpos, ypos, 50); //z position must be aligned too some how
 
             //create rooms
             AActor *actor = e->spawnAactor(world, uclass, position);
 
-            //and doors / added later or on constructor. Think about it needed.
-            std::vector<FVector> &doorPositions = roomToCreate->readDoorPositions();
+            Aroom *aroom = Cast<Aroom>(actor);
+            if(aroom != nullptr){
+                //and doors / added later or on constructor. Think about it needed.
 
+                //relative door positions (relative to bottom left corner of a room)
+                std::vector<FVector> &doorPositions = roomToCreate->readRelativeDoorPositions();
 
+                std::vector<FVector> doorPositionsConverted;
 
+                for (int j = 0; j < doorPositions.size(); j++){
+                    //convert
+                    FVector adjusted = doorPositions.at(j);
+                    convertScaleToMeterFVector(adjusted);
+
+                    doorPositionsConverted.push_back(adjusted);
+                }
+
+                //the room will process the postions and enable walls and doors accordingly
+                aroom->processDoorPositionVectors(doorPositionsConverted);
+            }
         }
     }
 
@@ -167,6 +182,12 @@ int RoomManager::convertMeterToIndex(int a){
 int RoomManager::convertScaleToMeter(int a){
     return a * ONE_METER;
 }
+void RoomManager::convertScaleToMeterFVector(FVector &vector){
+    vector.X = convertScaleToMeter(vector.X);
+    vector.Y = convertScaleToMeter(vector.Y);
+    vector.Z = convertScaleToMeter(vector.Z);
+}
+
 
 void RoomManager::showKeys(){
 
