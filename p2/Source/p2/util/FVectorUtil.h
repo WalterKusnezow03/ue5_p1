@@ -19,6 +19,11 @@ public:
 
 	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
 
+
+	/// @brief returns std::infinity
+	/// @return infinity
+	static float infinity();
+
 private:
 	FVectorUtil();
 	~FVectorUtil();

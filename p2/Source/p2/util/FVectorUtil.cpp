@@ -13,6 +13,9 @@ FVectorUtil::~FVectorUtil()
 {
 }
 
+float FVectorUtil::infinity(){
+    return std::numeric_limits<float>::max();
+}
 
 FVector FVectorUtil::randomOffset(int range){
 

@@ -89,7 +89,7 @@ void EdgeCollector::findAllOfType(AActor &a , std::list<T*> & items)
     a.template GetComponents<UChildActorComponent>(actors);
     if(actors.Num() > 0){
         for (int i = 0; i < actors.Num(); i++){
-            AActor *a1 = actors[i]->GetChildActor();
+            AActor *a1 = actors[i]->GetChildActor(); //gets the aactor of an child actor
             if (a1)
             {
                 findAllOfType<T>(*a1, items);

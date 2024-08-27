@@ -33,7 +33,8 @@ private:
 	std::vector<FVector> debugAllCorners();
 
 	std::vector<FVector> doorPositions;
-	TArray<AActor *> walls;
+	TArray<AActor *> wallActors;
+	TArray<UChildActorComponent *> walls;
 
 	void findWalls();
 	void disableWall(FVector &location);

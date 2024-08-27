@@ -11,7 +11,8 @@ DebugHelper::~DebugHelper()
 {
 }
 
-
+/// @brief shows a scnreen message in green color
+/// @param s string to show
 void DebugHelper::showScreenMessage(FString s){
     if (GEngine)
 	{
@@ -19,12 +20,28 @@ void DebugHelper::showScreenMessage(FString s){
 	}
 }
 
+/// @brief showsa screen message and a color
+/// @param s 
+/// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
     if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, color, s);
 	}
 }
+
+/// @brief shows a screen message and a number of choice
+/// @param s string
+/// @param argument number to concatenate 
+void DebugHelper::showScreenMessage(FString s, int argument){
+	FString res = s;
+	res.Append(FString::Printf(TEXT("%d"), argument));
+	showScreenMessage(res, FColor::Green);
+}
+
+
+
+
 
 
 

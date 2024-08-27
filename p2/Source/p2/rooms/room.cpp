@@ -102,29 +102,54 @@ void Aroom::findWalls(){
 	TArray<UChildActorComponent *> container;
 	FString name = FString::Printf(TEXT("wall"));
 	AActorUtil::findDirectChildsByName(*this, name, container);
-	//walls = container;
-
+	
 	//cast walls to aactor
-	for (int i = 0; i < container.Num(); i++){
+	int added = 0;
+
+	for (int i = 0; i < container.Num(); i++)
+	{
 		if(container[i] != nullptr){
+			walls.Add(container[i]);
+			/*
 			AActor *a = Cast<AActor>(container[i]);
 			if(a != nullptr){
 				walls.Add(a);
-			}
+				added++;
+			}else{
+				DebugHelper::showScreenMessage("cast failed", FColor::Red);
+			}*/
 		}
 	}
+
+	//get child actors
+	for(UChildActorComponent *comp : container){ //UChildActor component is the Child actor visble in the actor tree
+		if(comp != nullptr){
+			AActor *actor = comp->GetChildActor(); //Acess it as Actor: call this method for the UChildActorComponent
+			if(actor != nullptr){
+				wallActors.Add(actor);
+				added++;
+			}
+		}
+		
+	}
+
+	if(added > 0){
+		DebugHelper::showScreenMessage("collected walls final ", added);
+	}
 }
+
 
 /// @brief disables the closest wall to a point
 /// @param location 
 void Aroom::disableWall(FVector &location){
 
-	if(walls.Num() > 0){
-		//find closest wall and disable it
-		AActor *closest = walls[0];
-		float closestDist = 0;
+	if(wallActors.Num() > 0){
 
-		for(AActor *a : walls){
+		//find closest wall and disable it
+		AActor *closest = wallActors[0];
+		float closestDist = std::numeric_limits<float>::max();
+
+		for(AActor *a : wallActors){
 			if(a != nullptr){
 				FVector current = a->GetActorLocation();
 				float distTmp = FVector::Dist(location, current);
@@ -136,10 +161,12 @@ void Aroom::disableWall(FVector &location){
 		}
 
 
-		if(closestDist <= 75 && closest != nullptr){ //75cm als thresehold weil 1m bzw 100cm eig standard
+		if(closestDist <= 100 && closest != nullptr){ //75cm als thresehold weil 1m bzw 100cm eig standard
 			closest->SetActorHiddenInGame(true);
 			closest->SetActorEnableCollision(false);
+			DebugHelper::showScreenMessage("disabled a wall");
 		}
+		
 	}
 	
 

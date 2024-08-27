@@ -278,9 +278,10 @@ void layoutCreator::fillLayout(){
         createRoomStartingFromSize(num, num); // max size of a room to downscale / step down from
     }
 
-    debugPrintMap();
+    //debugPrintMap();
 }
 
+/// @brief will print the map to the screen
 void layoutCreator::debugPrintMap(){
     if(map != nullptr){
         FString s = map->toString();
@@ -336,7 +337,7 @@ void layoutCreator::createRoomStartingFromSize(int x, int y){
 /// @param y 
 /// @return 
 bool layoutCreator::canCreate(int x, int y){
-    FString s("try");
+    //FString s("try");
     //DebugHelper::showScreenMessage(s);
 
     return manager != nullptr && manager->contains(x, y);
