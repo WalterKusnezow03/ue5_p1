@@ -519,7 +519,7 @@ float Aweapon::recoilValue(){
 
 
 
-/// @brief finds all the attachments in blueprint for the weapon
+/// @brief finds all the attachments in blueprint for the weapon being DIRECT CHILD ACTOR in the weapon
 void Aweapon::findAttachmentChildActors(){
 	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
 	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method

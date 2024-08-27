@@ -33,6 +33,10 @@ private:
 	std::vector<FVector> debugAllCorners();
 
 	std::vector<FVector> doorPositions;
+	TArray<AActor *> walls;
+
+	void findWalls();
+	void disableWall(FVector &location);
 
 	FVector boxOrigin;
 	FVector boxExtent;

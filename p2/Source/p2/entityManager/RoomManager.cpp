@@ -142,6 +142,7 @@ void RoomManager::createALayout(UWorld* world, int x, int y){
 
             //create rooms
             AActor *actor = e->spawnAactor(world, uclass, position);
+            actor->SetActorLocation(position);
 
             Aroom *aroom = Cast<Aroom>(actor);
             if(aroom != nullptr){
@@ -185,7 +186,7 @@ int RoomManager::convertScaleToMeter(int a){
 void RoomManager::convertScaleToMeterFVector(FVector &vector){
     vector.X = convertScaleToMeter(vector.X);
     vector.Y = convertScaleToMeter(vector.Y);
-    vector.Z = convertScaleToMeter(vector.Z);
+    //vector.Z = convertScaleToMeter(vector.Z);
 }
 
 

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "p2/util/AActorUtil.h"
 #include "room.h"
 
 // Sets default values
@@ -16,6 +17,7 @@ void Aroom::BeginPlay()
 {
 	Super::BeginPlay();
 	findDoors();
+	findWalls();
 	calculateActorBounds();
 }
 
@@ -57,13 +59,16 @@ void Aroom::calculateActorBounds(){
 	boxXScale = xScale;
 	boxYScale = yScale;
 	boxZScale = zScale;
-	
+
+	//FVector newLocation = GetActorLocation() + (GetActorLocation() - bottomLeftCorner());
+	//SetActorLocation(newLocation);
 }
 
 /// @brief calculates the bottom left corner based on box extent, calculateActorBounds() must be called any time before!
 /// @return bottom left corner of this room
 FVector Aroom::bottomLeftCorner(){
 	FVector pos = boxOrigin;
+	//FVector pos = GetActorLocation();
 	pos.X -= boxXScale / 2;
 	pos.Y -= boxYScale / 2;
 	//pos.Z -= boxZScale / 2;
@@ -93,6 +98,55 @@ void Aroom::findDoors(){
 	}
 }
 
+void Aroom::findWalls(){
+	TArray<UChildActorComponent *> container;
+	FString name = FString::Printf(TEXT("wall"));
+	AActorUtil::findDirectChildsByName(*this, name, container);
+	//walls = container;
+
+	//cast walls to aactor
+	for (int i = 0; i < container.Num(); i++){
+		if(container[i] != nullptr){
+			AActor *a = Cast<AActor>(container[i]);
+			if(a != nullptr){
+				walls.Add(a);
+			}
+		}
+	}
+}
+
+/// @brief disables the closest wall to a point
+/// @param location 
+void Aroom::disableWall(FVector &location){
+
+	if(walls.Num() > 0){
+		//find closest wall and disable it
+		AActor *closest = walls[0];
+		float closestDist = 0;
+
+		for(AActor *a : walls){
+			if(a != nullptr){
+				FVector current = a->GetActorLocation();
+				float distTmp = FVector::Dist(location, current);
+				if(distTmp < closestDist){
+					closestDist = distTmp;
+					closest = a;
+				}
+			}
+		}
+
+
+		if(closestDist <= 75 && closest != nullptr){ //75cm als thresehold weil 1m bzw 100cm eig standard
+			closest->SetActorHiddenInGame(true);
+			closest->SetActorEnableCollision(false);
+		}
+	}
+	
+
+
+}
+
+
 
 
 /// @brief will process all door positions of a room
@@ -105,13 +159,20 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector){
 	for (int i = 0; i < toPositionVector.size(); i++){
 		FVector relativeDoorPos = bottomLeft + toPositionVector.at(i); //A + (B - A) //positions
 
-		FVector debugUp = relativeDoorPos + FVector(0, 0, 200);
-		DebugHelper::showLineBetween(GetWorld(), relativeDoorPos, debugUp, FColor::Yellow);
+		FVector debugUp = relativeDoorPos + FVector(0, 0, 100);
+		FVector debugDown = relativeDoorPos + FVector(0, 0, -100);
+		DebugHelper::showLineBetween(GetWorld(), debugDown, debugUp, FColor::Red);
+		//DebugHelper::showLineBetween(GetWorld(), bottomLeft, debugUp, FColor::Green);
+
+		//find walls to disable
+		//50cm * 2 is the default width
+		disableWall(relativeDoorPos);
 	}
 
 	debugShowOutline();
 }
 
+/// @brief debug method to show rooms ouline
 void Aroom::debugShowOutline(){
 	std::vector<FVector> corners = debugAllCorners();
 	for (int i = 0; i < corners.size(); i++){
@@ -129,7 +190,7 @@ void Aroom::debugShowOutline(){
 std::vector<FVector> Aroom::debugAllCorners(){
 
 	std::vector<FVector> returned;
-	FVector bl = bottomLeftCorner() + FVector(0,0,100);
+	FVector bl = bottomLeftCorner() + FVector(0,0,10);
 	FVector tl = bl + FVector(0, boxYScale, 0);
 	FVector br = bl + FVector(boxXScale, 0, 0);
 	FVector tr = bl + FVector(boxXScale, boxYScale, 0);

@@ -68,6 +68,10 @@ void layoutCreator::roomBounds::updatePosition(int x, int y){
 /// @param x x pos relative to left bottom corner
 /// @param y y pos relative to left bottom corner
 void layoutCreator::roomBounds::addDoorPosition(int x, int y){
+    //make relative: to left corner!
+    x -= xPos;
+    y -= yPos;
+
     doorPositions.push_back(FVector(x, y, 0));
 }
 
@@ -270,7 +274,8 @@ void layoutCreator::fillLayout(){
     int rooms = 70;
 
     for(int i = 0; i < rooms; i++){
-        createRoomStartingFromSize(10, 10); //max size of a room to downscale / step down from 
+        int num = FVectorUtil::randomNumber(1, 10);
+        createRoomStartingFromSize(num, num); // max size of a room to downscale / step down from
     }
 
     debugPrintMap();
@@ -383,12 +388,15 @@ void layoutCreator::connectNeighbors(){
                     int xstarting = (lowerxpos > x ? lowerxpos : x); //larger xpos along axis
                     int xending = (lowerxOuterEdge < xEdge ? lowerxOuterEdge : xEdge); // smaller xpos alogn axis
 
-                    //calculate middle
-                    int xmiddle = (int)((xstarting + xending) / 2);
+                    if(xstarting < xending){
+                        //calculate middle in all map scale
+                        int xmiddle = (int)((xstarting + xending) / 2.0f);
 
-                    //set door for both? (might have extra class naming gap or door)
-                    lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
-                    room->addDoorPosition(xmiddle, y); //y = 0, x kante
+                        //set door for both? (might have extra class naming gap or door)
+                        lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
+                        room->addDoorPosition(xmiddle, y); //y = 0, x kante
+                    }
+                    
                 }
             }
 
@@ -404,12 +412,15 @@ void layoutCreator::connectNeighbors(){
                     int ystarting = (leftypos > y ? leftypos : y); //larger ypos along axis
                     int yending = (leftyOuterEdge < yEgde ? leftyOuterEdge : yEgde); // smaller xpos alogn axis
 
-                    //calculate middle
-                    int ymiddle = (int)((ystarting + yending) / 2);
+                    if(ystarting < yending){
+                        //calculate middle in MAP SCALE MUST BE DOWNSCALED
+                        int ymiddle = (int)((ystarting + yending) / 2.0f);
+
+                        //set door for both? (might have extra class naming gap or door)
+                        left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
+                        room->addDoorPosition(x, ymiddle); //x = 0, y kante
+                    }
                     
-                    //set door for both? (might have extra class naming gap or door)
-                    left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
-                    room->addDoorPosition(x, ymiddle); //x = 0, y kante
                 }
             }
         }
