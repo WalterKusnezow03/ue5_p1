@@ -106,7 +106,7 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector){
 		FVector relativeDoorPos = bottomLeft + toPositionVector.at(i); //A + (B - A) //positions
 
 		FVector debugUp = relativeDoorPos + FVector(0, 0, 200);
-		//DebugHelper::showLineBetween(GetWorld(), relativeDoorPos, debugUp, FColor::Green);
+		DebugHelper::showLineBetween(GetWorld(), relativeDoorPos, debugUp, FColor::Yellow);
 	}
 
 	debugShowOutline();

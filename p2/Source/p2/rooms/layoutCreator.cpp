@@ -270,7 +270,7 @@ void layoutCreator::fillLayout(){
     int rooms = 70;
 
     for(int i = 0; i < rooms; i++){
-        createRoomStartingFromSize(10, 10);
+        createRoomStartingFromSize(10, 10); //max size of a room to downscale / step down from 
     }
 
     debugPrintMap();

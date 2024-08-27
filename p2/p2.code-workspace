@@ -91,7 +91,8 @@
 			"type_traits": "cpp",
 			"iterator": "cpp",
 			"scoped_allocator": "cpp",
-			"alignedvector3": "cpp"
+			"alignedvector3": "cpp",
+			"__memory": "cpp"
 		}
 	},
 	"extensions": {

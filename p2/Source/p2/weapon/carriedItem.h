@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include <list>
 #include "carriedItem.generated.h"
 
 UCLASS()
@@ -55,6 +56,13 @@ protected:
 	void showScreenMessage(FString s);
 
 	void renderOnTop(bool enable);
+
+
+	//template <typename T>
+	//void findAllOfType(T &t, std::list<T *> &items);
+
+	template <typename T>
+	void findAllOfType(AActor &a, std::list<T *> &items);
 
 public:	
 	// Called every frame

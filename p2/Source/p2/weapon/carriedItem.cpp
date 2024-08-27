@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "p2/entities/EntityScript.h"
+#include <list>
 
 // Sets default values
 AcarriedItem::AcarriedItem()
@@ -132,7 +133,7 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 		enableCollider(false);
 
 		showItem(true);
-		// renderOnTop(true);
+		renderOnTop(true);
 	}
 }
 
@@ -187,22 +188,88 @@ void AcarriedItem::drop(){
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showItem(true);
+	renderOnTop(false); //testing needed
 }
 
 void AcarriedItem::renderOnTop(bool enable){
-	/*
-	// Enable custom depth for the weapon
-	WeaponMesh->SetRenderCustomDepth(enable);
 
-	// Set a custom stencil value for more advanced control (e.g., 1 for the player's weapon)
+	DebugHelper::showScreenMessage("changed priority");
+
+   /**
+	* general hierachy
+	* UObject
+		UActorComponent
+			USceneComponent
+				UPrimitiveComponent
+					UStaticMeshComponent
+					USkeletalMeshComponent
+	*
+	* Change render priority:
+	*
+	* TranslucencySortPriority = Priority; //is a public Iv of every UPrimtiveComponent
+    */
+
+	/*
+	//not needed because only custom depth is used by now on its own
+    int stencilValue = 0;
 	if(enable){
-		WeaponMesh->CustomDepthStencilValue = 1;
-	}else{
-		WeaponMesh->CustomDepthStencilValue = 0;
+		stencilValue = 1;
 	}
 	
-	*/
+	
+	//this approach works but the weapons look bad.
+	
+	std::list<USkeletalMeshComponent *> list;
+	this->findAllOfType(*this, list);
+
+	int counted = list.size();
+	DebugHelper::showScreenMessage(FString::Printf(TEXT("COLLECTED SKELETONS %d"), counted), FColor::Yellow);
+	
+
+	for (USkeletalMeshComponent *s : list){
+		if(s != nullptr){
+			s->SetRenderCustomDepth(enable); //just true always, only change layer
+			//s->SetCustomDepthStencilValue(stencilValue); // Higher value can render in front
+		}
+	}*/
 }
+
+template <typename T>
+void AcarriedItem::findAllOfType(AActor &a , std::list<T*> & items)
+{
+	//upper type bound must be set inside here if the class is not generic!
+	static_assert(std::is_base_of<UActorComponent, T>::value, "must be UActorComponent component");
+
+	TArray<T *> array;
+	a.template GetComponents<T>(array); //only provided by aactor
+	if(array.Num() > 0){
+		for (int i = 0; i < array.Num(); i++){
+			items.push_back(array[i]);
+
+			//try find other aactors
+			AActor *a1 = Cast<AActor>(array[i]);
+			if(a1 != nullptr){
+				findAllOfType(*a1, items);
+			}
+
+			//findAllOfType(*array[i], items);
+		}
+	}
+
+
+
+	/**
+	 * UObject
+		UActorComponent
+			USceneComponent
+				UPrimitiveComponent
+					UStaticMeshComponent
+					USkeletalMeshComponent
+	 */
+}
+
+
+
 
 
 
