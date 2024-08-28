@@ -18,45 +18,39 @@ public:
 	void createterrain(UWorld *world, int meters);
 
 private:
+	class UWorld *worldPointer;
+	
+
 	class chunk{
 		public:
-			chunk();
+			chunk(int xPos, int yPos);
 			~chunk();
-		
+
+			void applyHeight(
+				int xValue,
+				int ylowerIndex,
+				int ytopIndex,
+				int yBottomValue,
+				int yTopValue
+			);
+
 		private:
 			std::vector<std::vector<FVector>> innerMap;
+			int x;
+			int y;
 	};
 
 	std::vector<std::vector<terrainCreator::chunk>> map;
 
 	std::vector<FVector2D> createSamplePoints();
-
-	int predictFinalCurveElementCount(std::vector<FVector2D> &anchors);
-
-	void createContinuityCurve(std::vector<FVector2D> &anchors);
-
-	void processAllPoints(std::vector<FVector2D> &points, std::vector<FVector2D> &output);
-	void process4Points(std::vector<FVector2D> &points, int offset, std::vector<FVector2D> &output);
-
-	float yOffsetFourAnchorBezier(
-		FVector2D &a,
-		FVector2D &b,
-		FVector2D &c,
-		FVector2D &d,
-		float skalar
-	);
-
-	FVector2D FVector2DFourAnchorBezier(
-		FVector2D &a,
-		FVector2D &b,
-		FVector2D &c,
-		FVector2D &d,
-		float skalar
-	);
-
 	void debugDrawCurve(UWorld *world, std::vector<FVector2D> &vec, FColor color);
 
-	class UWorld *worldPointer;
-	void fillGaps(std::vector<FVector2D> &vec);
-	void linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVector2D> &container);
+	
+	
+
+	void applyCurveToMap(std::vector<FVector2D> &vec);
+	int validateX(int a);
+	int validateY(int a);
+	bool isXTouple(FVector2D &a, FVector2D &b);
+	void processTouple(FVector2D &a, FVector2D &b);
 };
