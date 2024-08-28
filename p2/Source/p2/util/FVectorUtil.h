@@ -19,6 +19,7 @@ public:
 
 	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
 
+	static float Dist(FVector2D &a, FVector2D &b);
 
 	/// @brief returns std::infinity
 	/// @return infinity

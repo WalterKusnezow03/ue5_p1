@@ -34,9 +34,13 @@ void DebugHelper::showScreenMessage(FString s, FColor color){
 /// @param s string
 /// @param argument number to concatenate 
 void DebugHelper::showScreenMessage(FString s, int argument){
+	showScreenMessage(s, argument, FColor::Green);
+}
+
+void DebugHelper::showScreenMessage(FString s, int argument, FColor color){
 	FString res = s;
 	res.Append(FString::Printf(TEXT("%d"), argument));
-	showScreenMessage(res, FColor::Green);
+	showScreenMessage(res, color);
 }
 
 
@@ -51,6 +55,28 @@ void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End, FCo
 	}
 }
 
+/// @brief draws a line between 2 given points
+/// @param world world to draw in
+/// @param Start start point
+/// @param End end point
 void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End){
 	showLineBetween(world, Start, End, FColor::Blue);
+}
+
+
+
+
+void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec){
+	showLine(world, vec, FColor::Green);
+}
+
+/// @brief draw line for a complete set of points
+/// @param world world to draw in
+/// @param vec all points to connect in order
+void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec, FColor color){
+	if(world != nullptr){
+		for(int i = 1; i < vec.size(); i++){
+			showLineBetween(world, vec.at(i - 1), vec.at(i), color);
+		}
+	}
 }

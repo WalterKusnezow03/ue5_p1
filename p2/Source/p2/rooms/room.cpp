@@ -161,7 +161,7 @@ void Aroom::disableWall(FVector &location){
 		}
 
 
-		if(closestDist <= 100 && closest != nullptr){ //75cm als thresehold weil 1m bzw 100cm eig standard
+		if(closestDist <= 100 && closest != nullptr){ //100cm als thresehold
 			closest->SetActorHiddenInGame(true);
 			closest->SetActorEnableCollision(false);
 			DebugHelper::showScreenMessage("disabled a wall");

@@ -92,7 +92,8 @@
 			"iterator": "cpp",
 			"scoped_allocator": "cpp",
 			"alignedvector3": "cpp",
-			"__memory": "cpp"
+			"__memory": "cpp",
+			"*.cs": "cpp"
 		}
 	},
 	"extensions": {

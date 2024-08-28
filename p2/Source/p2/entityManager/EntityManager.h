@@ -79,9 +79,11 @@ public:
 	//rooms
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
 	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale);
-
-	//testing
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
+
+	//terrain
+	void createTerrain(UWorld *world, int chunks);
+	
 
 private:
 	static class EntityManager *instancePointer;

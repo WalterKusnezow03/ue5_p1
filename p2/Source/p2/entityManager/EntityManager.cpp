@@ -5,7 +5,7 @@
 #include "EntityManagerGeneric.h"
 #include "p2/particleSystem/particle.h"
 #include "p2/particleSystem/particleEnum.h"
-
+#include "p2/meshgen/terrainCreator.h"
 
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
@@ -589,4 +589,21 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
     roomType1Manager.createALayout(worldIn, xscale, yscale);
 
     
+}
+
+
+
+
+
+
+/**
+ * ---- section for terrain ----
+ * 
+ */
+
+void EntityManager::createTerrain(UWorld *world, int chunks){
+    if(world != nullptr){
+        terrainCreator c;
+        c.createterrain(world, chunks);
+    }
 }

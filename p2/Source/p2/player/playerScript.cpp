@@ -216,18 +216,20 @@ void AplayerScript::Jump(){
     {
         ACharacter::Jump(); // Calls the base class jump function
 
-        //layoutCreator c;
-        //c.createRooms(GetWorld(), GetActorLocation());
-        /*
-        layoutCreator *c = new layoutCreator();
-        c->createRooms(GetWorld(), GetActorLocation());
-        delete c;
-        c = nullptr;*/
+
 
         if(EntityManager *e = EntityManager::instance()){
             FVector location = GetActorLocation();
-            e->createALayout(GetWorld(), location, 20, 20);
+            //e->createALayout(GetWorld(), location, 20, 20);
+
+
+            e->createTerrain(GetWorld(), 10);
         }
+
+        //new testing
+        
+
+
     }
 
     //TESTING of layout creator, works as expected

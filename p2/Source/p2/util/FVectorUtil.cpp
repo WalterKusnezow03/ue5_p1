@@ -97,3 +97,11 @@ FVector FVectorUtil::randomScale(int lowerRange, int higherRange, bool symetric)
     int z = randomNumber(lowerRange, higherRange);
     return FVector(x, y, z);
 }
+
+
+
+
+float FVectorUtil::Dist(FVector2D &a, FVector2D &b){
+    FVector2D connect = b - a;
+    return connect.Size();
+}
