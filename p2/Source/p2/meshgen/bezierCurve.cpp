@@ -55,10 +55,10 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
     //data will be copied later
     std::vector<FVector2D> curve;
 
-    float beta = 0.5; //0.5 //to large positiive: schleife hickup issue
-    float close = 0.5f; // 0.1 , to large values, more than 1/2 lead to abrupt changes
+    float beta = 1.5f; //to large positiive: schleife hickup issue, can be fixed by cutting off curve earlier
+    float close = 0.5f; //0.5 half, which makes 1.5 * 0.5 a 0.75 (which is actually not wanted but works fine
+    //when cutting the curve)
 
-    beta = 1.5f;
 
     //this code creates the curve and should generally create the curve as wanted
 
@@ -233,8 +233,12 @@ void bezierCurve::fillGaps(std::vector<FVector2D> &vec){
 
 }
 
+/// @brief linear interpolate from a to b
+/// @param a start
+/// @param b end
+/// @param container container to save in  
 void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVector2D> &container){
-    if(std::abs(a.X - b.X) > 1){ //one meter by default
+    if(std::abs(a.X - b.X) > 1){ //one (centi)meter by default
 
         float dist = FVectorUtil::Dist(a, b);
         if(dist > 1){

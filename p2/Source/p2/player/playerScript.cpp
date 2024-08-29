@@ -222,8 +222,8 @@ void AplayerScript::Jump(){
             FVector location = GetActorLocation();
             //e->createALayout(GetWorld(), location, 20, 20);
 
-
-            e->createTerrain(GetWorld(), 10);
+            int meters = 100;
+            e->createTerrain(GetWorld(), meters);
         }
 
         //new testing
