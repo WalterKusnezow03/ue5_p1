@@ -14,9 +14,11 @@ public:
 	~bezierCurve();
 
 	void calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output);
+	void calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output, float farctionOfOne);
 
 private:
 	constexpr static const float STEP_SIZE = 0.01f;
+	float STEP_SIZE_SET;
 
 	int predictFinalCurveElementCount(std::vector<FVector2D> &anchors);
 	void createContinuityCurve(std::vector<FVector2D> &anchors);
@@ -35,6 +37,5 @@ private:
 		float skalar
 	);
 
-
-
+	float validatePercentage(float val);
 };

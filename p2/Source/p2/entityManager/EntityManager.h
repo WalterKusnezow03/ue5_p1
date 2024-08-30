@@ -82,8 +82,8 @@ public:
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
 	//terrain
+	void setEmptyMeshUClassBp(UClass *uclassIn);
 	void createTerrain(UWorld *world, int chunks);
-	
 
 private:
 	static class EntityManager *instancePointer;
@@ -136,10 +136,9 @@ private:
 	class UClass *room1 = nullptr;
 	class RoomManager roomType1Manager;
 
-
-
-
-
+	//empty mesh actor
+	UPROPERTY()
+	class UClass *emptyCustomMeshActorBp = nullptr;
 
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso

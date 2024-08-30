@@ -6,6 +6,8 @@
 #include "p2/particleSystem/particle.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/meshgen/terrainCreator.h"
+#include "p2/meshgen/customMeshActor.h"
+
 
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
@@ -581,12 +583,23 @@ Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, i
 }
 
 
+
+
+/// @brief creates a room layout and spawns all rooms for it
+/// different room types will be added later
+/// @param worldIn world to spawn in
+/// @param location 
+/// @param xscale 
+/// @param yscale 
 void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale, int yscale){
     
     DebugHelper::showScreenMessage("TRY CREATE ROOMS", FColor::Red);
 
-    //must be selected a room type too
-    roomType1Manager.createALayout(worldIn, xscale, yscale);
+    if(worldIn != nullptr){
+        //must be selected a room type too
+        roomType1Manager.createALayout(worldIn, xscale, yscale);
+    }
+    
 
     
 }
@@ -600,10 +613,44 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
  * ---- section for terrain ----
  * 
  */
+void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
+    if(uclassIn != nullptr){
+        emptyCustomMeshActorBp = uclassIn;
+    }
+}
 
-void EntityManager::createTerrain(UWorld *world, int chunks){
-    if(world != nullptr){
+
+void EntityManager::createTerrain(UWorld *worldIn, int chunks){
+    if(worldIn != nullptr){
         terrainCreator c;
-        c.createterrain(world, chunks);
+        c.createterrain(worldIn, chunks);
+
+        //return; //debugging
+
+        //created chunks in rerquested size, let terrain creator process and populate them
+        int requestedCount = c.chunkNum();
+        std::vector<AcustomMeshActor *> requestedActors;
+
+        //for each chunk data: spawn new chunk
+        if(emptyCustomMeshActorBp != nullptr){
+            for (int i = 0; i < requestedCount; i++){
+                //read location from chunk data
+                FVector location(0, 0, 0);
+
+                AActor *actor = spawnAactor(worldIn, emptyCustomMeshActorBp, location);
+                if(actor != nullptr){
+                    AcustomMeshActor *casted = Cast<AcustomMeshActor>(actor);
+                    if(casted != nullptr){
+                        
+                        //apply mesh data for the chunk
+                        requestedActors.push_back(casted);
+                    }
+                }
+            }
+        }
+
+        c.applyTerrainDataToMeshActors(requestedActors);
+        requestedActors.clear();
+
     }
 }

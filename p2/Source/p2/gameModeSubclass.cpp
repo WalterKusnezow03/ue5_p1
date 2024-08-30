@@ -28,7 +28,8 @@ AgameModeSubclass::AgameModeSubclass()
     loadParticles(entityManager);
 
     loadRooms(entityManager);
-    
+
+    loadTerrain(entityManager);
 }
 
 /// @brief load all entities 
@@ -209,7 +210,18 @@ void AgameModeSubclass::loadRooms(EntityManager *entityManager){
 }
 
 
-
+void AgameModeSubclass::loadTerrain(EntityManager *entityManager){
+    static ConstructorHelpers::FObjectFinder<UClass> emptyMeshActor(
+        TEXT("Blueprint'/Game/Prefabs/terrain/emptyCustomMeshActor.emptyCustomMeshActor_C'")
+    );
+    if (emptyMeshActor.Succeeded())
+    {
+        UClass *bp = emptyMeshActor.Object;
+        if(entityManager != nullptr && bp != nullptr){
+            entityManager->setEmptyMeshUClassBp(bp);
+        }
+    }
+}
 
 
 

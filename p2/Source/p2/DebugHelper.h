@@ -24,6 +24,7 @@ public:
 	static void showLineBetween(UWorld *world, FVector Start, FVector End, FColor color);
 	static void showLine(UWorld *world, std::vector<FVector> &vec);
 	static void showLine(UWorld *world, std::vector<FVector> &vec, FColor color);
-
+	static void showLine(UWorld *world, TArray<FVector> &vec);
+	static void showLine(UWorld *world, TArray<FVector> &vec, FColor color);
 	
 };

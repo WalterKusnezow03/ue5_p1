@@ -87,13 +87,7 @@
 			"vector": "cpp",
 			"algorithm": "cpp",
 			"hash_map": "cpp",
-			"*.ipp": "cpp",
-			"type_traits": "cpp",
-			"iterator": "cpp",
-			"scoped_allocator": "cpp",
-			"alignedvector3": "cpp",
-			"__memory": "cpp",
-			"*.cs": "cpp"
+			"*.ipp": "cpp"
 		}
 	},
 	"extensions": {

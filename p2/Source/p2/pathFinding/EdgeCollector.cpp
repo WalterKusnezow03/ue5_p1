@@ -351,7 +351,6 @@ void EdgeCollector::getEdgesFromSingleMesh(
         }
     }
 
-    //pass by reference
     ComputeConvexHull(currentEdges);
 
 
@@ -561,6 +560,7 @@ void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
             //to prevent false edges
             float completeDistance = FVector::Dist(Start, edge.top);
             float hitDistanceFromTop = FVector::Dist(Start, HitResult.ImpactPoint);
+            //20% from top müssen kleiner sein damit der punkt darunter liegt
             if(completeDistance * 0.2f < hitDistanceFromTop){
                 //min 20% distance to remove false hits
 

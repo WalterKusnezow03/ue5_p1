@@ -80,3 +80,19 @@ void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec, FColor colo
 		}
 	}
 }
+
+
+
+
+void DebugHelper::showLine(UWorld *world, TArray<FVector> &array){
+	showLine(world, array, FColor::Green);
+}
+
+
+void DebugHelper::showLine(UWorld *world, TArray<FVector> &array, FColor color){
+	if(world != nullptr){
+		for(int i = 1; i < array.Num(); i++){
+			showLineBetween(world, array[i-1], array[i], color);
+		}
+	}
+}

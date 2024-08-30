@@ -5,19 +5,44 @@
 
 bezierCurve::bezierCurve()
 {
+    STEP_SIZE_SET = STEP_SIZE;
 }
 
 bezierCurve::~bezierCurve()
 {
 }
 
+/// @brief 
+/// @param ref 
+/// @param output 
+/// @param percentage detail set from 0.00... to 1
+void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output){
+    calculatecurve(ref, output, STEP_SIZE);
+}
+
+float bezierCurve::validatePercentage(float val){
+    if(val == STEP_SIZE || val == 0){
+        return STEP_SIZE;
+    }
+    if (val < 0){
+        val *= -1;
+    }
+    if(val > 1){
+        val = 1;
+    }
+    return val;
+}
+
 /// @brief creates the bezier curve and writes all the data inside the given std vector
 /// the vectors will not be sorted other than just as the curve goes its path
 /// @param ref points to proess, WILL BE WRITTEN IN, CAUTION!
 /// @param output points to save result in
-void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output){
+void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output, float farctionOfOne){
+    STEP_SIZE_SET = validatePercentage(farctionOfOne);
+
     int reserveSize = predictFinalCurveElementCount(ref);
-    int scaledUpToInterpolated = reserveSize * (1 / bezierCurve::STEP_SIZE);
+    //custom count for the interpolated values, usually much higher than anchors and contnouty anchors
+    int scaledUpToInterpolated = reserveSize * (1 / STEP_SIZE_SET); // bezierCurve::STEP_SIZE);
 
     //reserve space
     ref.reserve(reserveSize);
@@ -72,10 +97,10 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
 
             FVector2D direction = (p3 - p0);
 
-            FVector2D p1 = p0 + direction * close;
+            FVector2D p1 = p0 + direction * close * 2;
             FVector2D p2 = p3 - direction * close; // symetrical to first control point
 
-            FVector2D p4 = p3 + (p3 - p2) * beta; //next anchor
+            FVector2D p4 = p3 + (p3 - p2) * beta; //next anchor, next p1
 
             curve.push_back(p0);
             curve.push_back(p1);
@@ -103,8 +128,12 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             //p0 and p1 already in list
             curve.push_back(p2);
             curve.push_back(p3);
-            curve.push_back(p4);
 
+            //only push if not last last anchor, weil wozu interpolieren wenn nicht mehr dort.
+            if(i != anchors.size() - 1){
+                curve.push_back(p4);
+            }
+            
             i++;
         }
 
@@ -174,7 +203,8 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
     //temporary output for clean up
     std::vector<FVector2D> tmp;
     float stepSize = 0.01f; //0.01 //makes same detail in every spot, 60 points in worst case
-    stepSize = bezierCurve::STEP_SIZE;
+    //stepSize = bezierCurve::STEP_SIZE;
+    stepSize = STEP_SIZE_SET;
 
     float limit = 0.6f;  //fixing weird overlap on curves by cutting them off 
 
@@ -216,7 +246,7 @@ void bezierCurve::fillGaps(std::vector<FVector2D> &vec){
         FVector2D prev = vec.at(i - 1);
         FVector2D current = vec.at(i);
 
-        if(std::abs(prev.X - current.X) > 1){
+        if(std::abs(prev.X - current.X) > 1){ //must be converted to average distance!!
             std::vector<FVector2D> fill;
             linearInterpolate(prev, current, fill);
 
