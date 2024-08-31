@@ -43,11 +43,16 @@ private:
 				int xIn,
 				int yIn,
 				int newHeight,
-				bool override,
-				UWorld *world
+				bool override
 			);
 
 			std::vector<std::vector<FVector>> &readMap();
+
+			std::vector<std::vector<FVector>> readAndMerge(
+				chunk *top,
+				chunk *right,
+				chunk *topRight
+			);
 
 		private:
 			std::vector<std::vector<FVector>> innerMap;
@@ -69,6 +74,10 @@ private:
 
 			int xPositionInCm();
 			int yPositionInCm();
+
+			std::vector<FVector> readFirstXColumn();
+			std::vector<FVector> readFirstYRow();
+			FVector readBottomLeftCorner();
 	};
 
 	class UWorld *worldPointer;

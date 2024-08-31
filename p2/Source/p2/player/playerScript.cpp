@@ -89,7 +89,8 @@ void AplayerScript::BeginPlay()
     
     Aweapon *w = nullptr;
     if(e != nullptr){
-        w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
+        //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
+        w = e->spawnAweapon(GetWorld(), weaponEnum::pistol);
         if(w != nullptr){
             w->pickup(CameraComponent);
             playerInventory.addWeapon(w);
@@ -222,8 +223,8 @@ void AplayerScript::Jump(){
             FVector location = GetActorLocation();
             //e->createALayout(GetWorld(), location, 20, 20);
 
-            int meters = 50;
-            e->createTerrain(GetWorld(), meters);
+            //int meters = 50;
+            //e->createTerrain(GetWorld(), meters);
         }
 
         //new testing

@@ -57,11 +57,19 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){
              */
             bool copy = (x != 0); //prev 0 and 1 indices will be copied
 
-            FVector vzero = map.at(x).at(y);
-            FVector vone = map.at(x).at(y + 1);
-            FVector vtwo = map.at(x + 1).at(y + 1);
-            FVector vthree = map.at(x + 1).at(y);
-            buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
+
+            if(x + 1 < map.size() && y + 1 < map.at(x + 1).size()){
+                try{
+                    FVector vzero = map.at(x).at(y);
+                    FVector vone = map.at(x).at(y + 1);
+                    FVector vtwo = map.at(x + 1).at(y + 1);
+                    FVector vthree = map.at(x + 1).at(y);
+                    buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
+                }catch(const std::exception& e){
+                    DebugHelper::showScreenMessage("mesh actor exception!", FColor::Red);
+                }
+            }
+            
         }
     }
 
@@ -98,27 +106,11 @@ void AcustomMeshActor::buildQuad(
     TArray<int32> &trianglesOutput
 ){
 
+    //must be individual triangles:
+    //quads: buggy + the engine is converting it to triangles back again anyway
     buildTriangle(a, b, c, output, trianglesOutput);
     buildTriangle(a, c, d, output, trianglesOutput);
     return;
-
-    //add vertecies
-    output.Add(a);
-    output.Add(b);
-    output.Add(c);
-    output.Add(d);
-
-    //add triangles
-
-    int32 offset = trianglesOutput.Num();
-
-    trianglesOutput.Add(0 + offset); // 0th vertex in the first triangle
-    trianglesOutput.Add(1 + offset); // 1st vertex in the first triangle
-    trianglesOutput.Add(2 + offset); // 2nd vertex in the first triangle
-    
-    trianglesOutput.Add(0 + offset); // 0th vertex in the second triangle
-    trianglesOutput.Add(2 + offset); // 2nd vertex in the second triangle
-    trianglesOutput.Add(3 + offset); // 3rd vertex in the second triangle
 
     /*
                 1--2

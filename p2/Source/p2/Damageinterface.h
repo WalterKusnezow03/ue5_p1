@@ -22,6 +22,10 @@ class P2_API IDamageinterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	//team constants are in reference manager
+	//static const int TEAM_NEUTRAL = 0;
+	//static const int TEAM_ENEMY = 1;
+	//static const int TEAM_PLAYER = 2;
 
 	//methods
 	virtual void takedamage(int d) = 0; //= 0 schreiben damit sie pure virtual sind
