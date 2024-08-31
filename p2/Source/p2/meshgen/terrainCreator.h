@@ -97,6 +97,7 @@ private:
 
 	void smooth3dMap();
 	void cleanValues(std::vector<FVector2D> &vec);
+	void fillGaps(std::vector<FVector2D> &vec);
 
 	void applyXColumnToMap(int index, std::vector<FVector2D> &column);
 	void applyYRowToMap(int index, std::vector<FVector2D> &row);

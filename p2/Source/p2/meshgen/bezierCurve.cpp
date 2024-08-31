@@ -6,52 +6,37 @@
 bezierCurve::bezierCurve()
 {
     STEP_SIZE_SET = STEP_SIZE;
+    EinheitsValue = 100;
+    stepsToMakePerEinheitsValue = 1;
 }
 
 bezierCurve::~bezierCurve()
 {
 }
 
-/// @brief 
-/// @param ref 
-/// @param output 
-/// @param percentage detail set from 0.00... to 1
-void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output){
-    calculatecurve(ref, output, STEP_SIZE);
-}
 
-float bezierCurve::validatePercentage(float val){
-    if(val == STEP_SIZE || val == 0){
-        return STEP_SIZE;
+void bezierCurve::calculatecurve(
+    std::vector<FVector2D> &ref, 
+    std::vector<FVector2D> &output,
+    float _einheitsValue,
+    float _stepsPerEinheitsValue
+){
+    EinheitsValue = std::abs(_einheitsValue);
+    stepsToMakePerEinheitsValue = std::abs(_stepsPerEinheitsValue);
+    if(stepsToMakePerEinheitsValue == 0 || EinheitsValue == 0){
+        //ISSUE NOT ALLOWED DIVISION BY ZERO
+        return;
     }
-    if (val < 0){
-        val *= -1;
-    }
-    if(val > 1){
-        val = 1;
-    }
-    return val;
-}
-
-/// @brief creates the bezier curve and writes all the data inside the given std vector
-/// the vectors will not be sorted other than just as the curve goes its path
-/// @param ref points to proess, WILL BE WRITTEN IN, CAUTION!
-/// @param output points to save result in
-void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVector2D> &output, float farctionOfOne){
-    STEP_SIZE_SET = validatePercentage(farctionOfOne);
 
     int reserveSize = predictFinalCurveElementCount(ref);
-    //custom count for the interpolated values, usually much higher than anchors and contnouty anchors
-    int scaledUpToInterpolated = reserveSize * (1 / STEP_SIZE_SET); // bezierCurve::STEP_SIZE);
-
+    int scaledSize = reserveSize * stepsToMakePerEinheitsValue;
     //reserve space
     ref.reserve(reserveSize);
     createContinuityCurve(ref);
 
     //create the whole curve
-    output.reserve(scaledUpToInterpolated); //reserve size before processing and adding for safety
+    output.reserve(scaledSize); //reserve size before processing and adding for safety
     processAllPoints(ref, output); //what if you do it more than once
-    fillGaps(output);
 
 }
 
@@ -61,7 +46,7 @@ void bezierCurve::calculatecurve(std::vector<FVector2D> &ref, std::vector<FVecto
 int bezierCurve::predictFinalCurveElementCount(std::vector<FVector2D> &anchors){
     int sum = 0;
     for (int i = 1; i < anchors.size(); i++){
-        sum += (int)FVectorUtil::Dist(anchors.at(i - 1), anchors.at(i));
+        sum += ((int)FVectorUtil::Dist(anchors.at(i - 1), anchors.at(i)) / EinheitsValue);
     }
 
     return (int)(sum * 1.2f); //120% for safety
@@ -200,26 +185,33 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
 
     
 
+    //Note here: as the step size is a constant value and not dynamic
+    //based on distance: the interpolated point count stays the same
+    //but the rate the points are created at NOT
+    //this might be fixed later, or not.
+    float distance = FVectorUtil::Dist(p0, p3);
+    float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
+    step = 1 / step; //to percentage frac of 1
+
     //temporary output for clean up
     std::vector<FVector2D> tmp;
-    float stepSize = 0.01f; //0.01 //makes same detail in every spot, 60 points in worst case
+    
+    //float stepSize = 0.01f; //0.01 //makes same detail in every spot, 60 points in worst case
     //stepSize = bezierCurve::STEP_SIZE;
-    stepSize = STEP_SIZE_SET;
+    //stepSize = STEP_SIZE_SET;
 
     float limit = 0.6f;  //fixing weird overlap on curves by cutting them off 
 
-    //stepSize = 0.0005f; // Define a suitable step size //0.001
-    for (float i = 0; i <= limit; i += stepSize) {
+    
+    for (float i = 0; i <= limit; i += step) {
         FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
         tmp.push_back(newPos);
-
-
-        //debugging
-        //output.push_back(newPos);
     }
 
-    //clean up output for consistent X values and copy ---> consider y clean up too
-    
+
+
+
+    //clean up output for consistent X values and copy (might be removed: the rounding!)
     for (int i = 0; i < tmp.size(); i++){
         FVector2D current = tmp.at(i);
         current.X = round(current.X);

@@ -510,7 +510,8 @@ void terrainCreator::createterrain(UWorld *world, int meters){
 
     std::vector<FVector2D> outputData;
     bezierCurve b;
-    b.calculatecurve(anchors, outputData, detailStep);
+    //b.calculatecurve(anchors, outputData, detailStep);
+    b.calculatecurve(anchors, outputData, 100, 1);
     processTopViewBezierCurve(outputData);
 
 
@@ -518,7 +519,8 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
     upScalePoints(anchors1, 3);
     std::vector<FVector2D> outputData1;
-    b.calculatecurve(anchors1, outputData1, detailStep);
+    //b.calculatecurve(anchors1, outputData1, detailStep);
+    b.calculatecurve(anchors1, outputData1, 100, 1);
     processTopViewBezierCurve(outputData1);
 
     //works
@@ -687,10 +689,27 @@ void terrainCreator::processTouple(FVector2D &a, FVector2D &b){
 
 /// @brief clamps x and y to map size!
 /// will clamp x and y values and clean the map to One meter gaps
+/// call BEFORE any sorting, the curve must be in order of drawing when calling this method, one continous line
 /// @param vec vector to clean
 void terrainCreator::cleanValues(std::vector<FVector2D> &vec){
-    //hot fix weird jump issue, make first like second
-    if(vec.size() > 0){
+    
+    //cast all values to clear meters
+    for (int i = 0; i < vec.size(); i++){
+        int xcopy = vec.at(i).X;
+        xcopy = ((int)(vec.at(i).X / terrainCreator::ONEMETER)) * terrainCreator::ONEMETER;
+
+        vec.at(i).X = xcopy;
+        // cmToChunkIndex(xcopy) + cmToInnerChunkIndex(xcopy);
+    }
+
+    fillGaps(vec);
+
+    //consider lineary filling all gaps which were made up (for reasons, but upfilling is needed)
+
+
+    // hot fix weird jump issue, make first like second
+    if (vec.size() > 0)
+    {
         vec.at(0).Y = vec.at(1).Y;
     }
 
@@ -700,16 +719,8 @@ void terrainCreator::cleanValues(std::vector<FVector2D> &vec){
     while(i < size){
         
         if(i > 0){
-            int xClampedPrev = (int)(vec.at(i - 1).X / terrainCreator::ONEMETER);
-            
-
-            int xClamped = (int)(vec.at(i).X / terrainCreator::ONEMETER);
-            
-            if(xClampedPrev == xClamped){
-
-                //override x value to clamp
-                vec.at(i - 1).X = xClamped * terrainCreator::ONEMETER; //wieder hoch skalieren
-
+            //duplicate, remove
+            if(vec.at(i - 1).X == vec.at(i).X){
                 //erase
                 vec.erase(vec.begin() + i);
                 size = vec.size();
@@ -720,6 +731,28 @@ void terrainCreator::cleanValues(std::vector<FVector2D> &vec){
     }
 }
 
+void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
+
+    int size = vec.size();
+    int i = 1;
+    while(i < size){
+        FVector2D prev = vec.at(i - 1);
+        FVector2D current = vec.at(i);
+        int distance = std::abs(prev.X - current.X);
+
+        if(distance > terrainCreator::ONEMETER){
+            FVector2D connect = (current - prev).GetSafeNormal();
+            for (int j = 0; j < distance; j += terrainCreator::ONEMETER)
+            {
+                FVector2D newPos = prev + j * connect;
+                vec.insert(vec.begin() + i, newPos);
+                i++; //go to next to insert infront of inserted (view of current pos)
+            }
+        }
+        i++;
+        size = vec.size();
+    }
+}
 
 
 
@@ -732,7 +765,7 @@ void terrainCreator::cleanValues(std::vector<FVector2D> &vec){
 
 void terrainCreator::smooth3dMap(){
 
-    float interpolateFrac = 0.05f;
+    //float interpolateFrac = 0.05f;
 
     //get all x and y axis and smooth them. 
 
@@ -759,7 +792,8 @@ void terrainCreator::smooth3dMap(){
 
             //proces data in bezier, to output
             std::vector<FVector2D> output;
-            curve.calculatecurve(column, output, interpolateFrac);                
+            //curve.calculatecurve(column, output, interpolateFrac);    
+            curve.calculatecurve(column, output, 100, 1);
             cleanValues(output);
 
             //trying writing immidately
@@ -772,7 +806,7 @@ void terrainCreator::smooth3dMap(){
 
 
 
-    /*
+    
     int ycount = 0;
     for (int cY = 0; cY < map.size(); cY++){
         for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
@@ -785,7 +819,8 @@ void terrainCreator::smooth3dMap(){
             }
 
             std::vector<FVector2D> output;
-            curve.calculatecurve(row, output, interpolateFrac);
+            curve.calculatecurve(row, output, 100, 1);
+            //curve.calculatecurve(row, output, interpolateFrac);
             cleanValues(output);
 
             applyYRowToMap(ycount, output);
@@ -793,7 +828,7 @@ void terrainCreator::smooth3dMap(){
             ycount++;
         }
     }
-    */
+    
 
 }
 
