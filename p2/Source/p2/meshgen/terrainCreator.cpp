@@ -510,8 +510,7 @@ void terrainCreator::createterrain(UWorld *world, int meters){
 
     std::vector<FVector2D> outputData;
     bezierCurve b;
-    //b.calculatecurve(anchors, outputData, detailStep);
-    b.calculatecurve(anchors, outputData, 100, 1);
+    b.calculatecurve(anchors, outputData, terrainCreator::ONEMETER, 1);
     processTopViewBezierCurve(outputData);
 
 
@@ -519,8 +518,7 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
     upScalePoints(anchors1, 3);
     std::vector<FVector2D> outputData1;
-    //b.calculatecurve(anchors1, outputData1, detailStep);
-    b.calculatecurve(anchors1, outputData1, 100, 1);
+    b.calculatecurve(anchors1, outputData1, terrainCreator::ONEMETER, 1);
     processTopViewBezierCurve(outputData1);
 
     //works
@@ -534,6 +532,7 @@ void terrainCreator::createterrain(UWorld *world, int meters){
 void terrainCreator::processTopViewBezierCurve(std::vector<FVector2D> &bezier){
     //works as expected
     cleanValues(bezier);
+    debugDrawCurve(worldPointer, bezier, FColor::Red);
 
     //sort by x coordinates, later by y
     std::sort(bezier.begin(), bezier.end(), [](const FVector2D& A, const FVector2D& B) {
@@ -792,8 +791,7 @@ void terrainCreator::smooth3dMap(){
 
             //proces data in bezier, to output
             std::vector<FVector2D> output;
-            //curve.calculatecurve(column, output, interpolateFrac);    
-            curve.calculatecurve(column, output, 100, 1);
+            curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
             cleanValues(output);
 
             //trying writing immidately
@@ -819,8 +817,7 @@ void terrainCreator::smooth3dMap(){
             }
 
             std::vector<FVector2D> output;
-            curve.calculatecurve(row, output, 100, 1);
-            //curve.calculatecurve(row, output, interpolateFrac);
+            curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
             cleanValues(output);
 
             applyYRowToMap(ycount, output);

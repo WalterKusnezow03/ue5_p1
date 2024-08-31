@@ -196,9 +196,6 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
     //temporary output for clean up
     std::vector<FVector2D> tmp;
     
-    //float stepSize = 0.01f; //0.01 //makes same detail in every spot, 60 points in worst case
-    //stepSize = bezierCurve::STEP_SIZE;
-    //stepSize = STEP_SIZE_SET;
 
     float limit = 0.6f;  //fixing weird overlap on curves by cutting them off 
 
@@ -208,8 +205,7 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
         tmp.push_back(newPos);
     }
 
-
-
+    fillGaps(tmp);
 
     //clean up output for consistent X values and copy (might be removed: the rounding!)
     for (int i = 0; i < tmp.size(); i++){
@@ -238,7 +234,7 @@ void bezierCurve::fillGaps(std::vector<FVector2D> &vec){
         FVector2D prev = vec.at(i - 1);
         FVector2D current = vec.at(i);
 
-        if(std::abs(prev.X - current.X) > 1){ //must be converted to average distance!!
+        if(std::abs(prev.X - current.X) > (EinheitsValue / stepsToMakePerEinheitsValue)){ //must be converted to average distance!!
             std::vector<FVector2D> fill;
             linearInterpolate(prev, current, fill);
 
@@ -260,8 +256,19 @@ void bezierCurve::fillGaps(std::vector<FVector2D> &vec){
 /// @param b end
 /// @param container container to save in  
 void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVector2D> &container){
-    if(std::abs(a.X - b.X) > 1){ //one (centi)meter by default
+    float dist = std::abs(a.X - b.X);
+    float step = (EinheitsValue / stepsToMakePerEinheitsValue);
+    if (dist > step)
+    { // one (centi)meter by default
 
+        float euklidDist = FVectorUtil::Dist(a, b);
+        FVector2D dir = (b - a) / euklidDist; // normalized dir
+        for (float i = 0; i < dist; i += step){
+            FVector2D newPos = a + dir * i;
+            container.push_back(newPos);
+        }
+
+        /*
         float dist = FVectorUtil::Dist(a, b);
         if(dist > 1){
             FVector2D dir = (b - a) / dist; //normalized dir
@@ -273,8 +280,7 @@ void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVec
                 FVector2D newPos = a + i * dir;
                 container.push_back(newPos);
             }
-        }
-        
+        }*/
     }
 }
 
