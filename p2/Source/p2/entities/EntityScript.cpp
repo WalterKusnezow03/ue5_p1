@@ -325,7 +325,7 @@ void AEntityScript::followpath(float deltaTime){
 }
 
 void AEntityScript::resetpath(){
-
+	this->path.clear();
 }
 
 /// @brief will return if any nodes are left in the path
@@ -438,8 +438,9 @@ void AEntityScript::enableCollider(bool enable){
 
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
-
-	if(EntityManager *e = EntityManager::instance()){
+	resetpath();
+	if (EntityManager *e = EntityManager::instance())
+	{
 		e->add(this);
 	}
 }

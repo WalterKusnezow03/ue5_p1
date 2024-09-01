@@ -141,10 +141,11 @@ bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
-    if(weaponPointer != nullptr){
+    Super::resetpath();
+    if (weaponPointer != nullptr)
+    {
         weaponPointer->drop();
 
-        //TESTING (Completed, weapon in queue testing)
         if(EntityManager *e = EntityManager::instance()){
             e->add(weaponPointer);
         }

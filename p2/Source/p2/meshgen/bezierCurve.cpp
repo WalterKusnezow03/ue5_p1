@@ -5,7 +5,6 @@
 
 bezierCurve::bezierCurve()
 {
-    STEP_SIZE_SET = STEP_SIZE;
     EinheitsValue = 100;
     stepsToMakePerEinheitsValue = 1;
 }
@@ -184,11 +183,6 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
     FVector2D p3 = points.at(offset + 3);
 
     
-
-    //Note here: as the step size is a constant value and not dynamic
-    //based on distance: the interpolated point count stays the same
-    //but the rate the points are created at NOT
-    //this might be fixed later, or not.
     float distance = FVectorUtil::Dist(p0, p3);
     float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
     step = 1 / step; //to percentage frac of 1
@@ -267,20 +261,6 @@ void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVec
             FVector2D newPos = a + dir * i;
             container.push_back(newPos);
         }
-
-        /*
-        float dist = FVectorUtil::Dist(a, b);
-        if(dist > 1){
-            FVector2D dir = (b - a) / dist; //normalized dir
-            float step = 1.0f / dist;
-
-
-            for (float i = 0; i < 1.0f; i += step)
-            {
-                FVector2D newPos = a + i * dir;
-                container.push_back(newPos);
-            }
-        }*/
     }
 }
 

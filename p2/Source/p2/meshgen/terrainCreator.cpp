@@ -179,7 +179,7 @@ int terrainCreator::chunk::jumpHeight(){
     return terrainCreator::ONEMETER;
 }
 bool terrainCreator::chunk::jumpOfInterest(FVector &a, FVector &b){
-    int height = jumpHeight();
+    int height = std::abs(jumpHeight());
     return std::abs(a.Z - b.Z) >= height;
 }
 
@@ -258,10 +258,8 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
 /// @return 
 std::vector<FVector2D> terrainCreator::chunk::getYRowAnchors(int xColumn){
     
-    int meter = terrainCreator::ONEMETER;
-    int chunksize = terrainCreator::CHUNKSIZE;
-    int chunkIncm = meter * chunksize;
-    int chunkInCmY = chunkIncm * x;//y;
+    //int chunkInCmY = chunkIncm * x;//y;
+    int chunkInCmY = xPositionInCm(); //flipped for x
 
     //saves the position in chunk world of this chunk
 
@@ -323,7 +321,9 @@ std::vector<FVector2D> terrainCreator::chunk::getYRowAnchors(int xColumn){
 
 
 
-
+/// @brief enheights the terrain between vertical positions
+/// @param aIn lower or upper pos in whole map, in cm
+/// @param bIn lower or upper pos in whole map, in cm
 void terrainCreator::chunk::applyHeightBeetwennVerticalPositions(
     FVector2D aIn,
     FVector2D bIn
@@ -430,30 +430,32 @@ bool terrainCreator::chunk::isInBounds(FVector &a){
 // --- chunk plotting functions ---
 
 
-void terrainCreator::chunk::plot(UWorld *world, FColor color){
-    int a = round(terrainCreator::ONEMETER * 0.25f);
-    a = 10; //10cm
-    this->plot(world, color, a);
-}
 
-void terrainCreator::chunk::plot(UWorld *world, FColor color, int zOffset){
+void terrainCreator::chunk::plot(UWorld *world){
 
     FVector offset(
         x * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE, 
         y * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE, 
-        zOffset
+        120 //10cm
     );
+    //defferentiate heights
+    std::vector<FColor> colors;
+    colors.push_back(FColor::Red);
+    colors.push_back(FColor::Blue);
+    colors.push_back(FColor::Green);
+
     if(world != nullptr){
         for (int i = 1; i < innerMap.size(); i++){
             for (int j = 1; j < innerMap.at(i).size(); j++){
 
-               
                 FVector prevLeft = innerMap.at(i - 1).at(j) + offset;
                 FVector prevDown = innerMap.at(i).at(j-1) + offset;
                 FVector current = innerMap.at(i).at(j) + offset;
 
-                DebugHelper::showLineBetween(world, prevLeft, current, color);
-                DebugHelper::showLineBetween(world, prevDown, current, color);
+                int toIndex = (int) std::abs(current.Z / terrainCreator::ONEMETER);
+                FColor currentColor = colors.at(toIndex % colors.size());
+                DebugHelper::showLineBetween(world, prevLeft, current, currentColor);
+                DebugHelper::showLineBetween(world, prevDown, current, currentColor);
             }
         }
     }
@@ -502,11 +504,10 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     }
 
 
-    //detail 10 %, fraction of one
-    float detailStep = 0.05f; 
-
     //get anchors...
-    std::vector<FVector2D> anchors = createSamplePoints(); //= getAnchors() to be implemented
+    std::vector<FVector2D> anchors;
+    // = createSamplePoints(); //= getAnchors() to be implemented
+    shapeCreator::createShape(anchors);
 
     std::vector<FVector2D> outputData;
     bezierCurve b;
@@ -515,16 +516,17 @@ void terrainCreator::createterrain(UWorld *world, int meters){
 
 
     //another
-    std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
-    upScalePoints(anchors1, 3);
+    //std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
+    shapeCreator::createShape(anchors);
+    upScalePoints(anchors, 3);
     std::vector<FVector2D> outputData1;
-    b.calculatecurve(anchors1, outputData1, terrainCreator::ONEMETER, 1);
+    b.calculatecurve(anchors, outputData1, terrainCreator::ONEMETER, 1);
     processTopViewBezierCurve(outputData1);
 
     //works
     smooth3dMap();
     //works
-    plotAllChunks(world, FColor::Cyan);
+    plotAllChunks(world);
 }
 
 /// @brief process a created bezier
@@ -584,7 +586,7 @@ std::vector<FVector2D> terrainCreator::createSamplePoints(){
 /// @param vec Fvectors to show
 /// @param color color to draw
 void terrainCreator::debugDrawCurve(UWorld* world, std::vector<FVector2D> &vec, FColor color){
-    if(world != nullptr){
+    if(world != nullptr && terrainCreator::PLOTTING_ENABLED){
 
         int upscale = 1;
         FVector offset(0, 0, 50);
@@ -1008,12 +1010,12 @@ bool terrainCreator::veriyIndex(int a){
 
 
 
-void terrainCreator::plotAllChunks(UWorld * world, FColor color){
+void terrainCreator::plotAllChunks(UWorld * world){
     if(world != nullptr && terrainCreator::PLOTTING_ENABLED){
 
         for (int i = 0; i < map.size(); i++){
             for (int j = 0; j < map.at(i).size(); j++){
-                map.at(i).at(j).plot(world, color);
+                map.at(i).at(j).plot(world);
             }
         }
     }
@@ -1068,7 +1070,7 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             
 
             //debug
-            currentChunk->plotCorners(worldPointer);
+            //currentChunk->plotCorners(worldPointer);
 
             // get position
             // apply position

@@ -25,9 +25,6 @@ private:
 	float EinheitsValue;
 	float stepsToMakePerEinheitsValue;
 
-	//old vars
-	constexpr static const float STEP_SIZE = 0.01f;
-	float STEP_SIZE_SET;
 
 	
 

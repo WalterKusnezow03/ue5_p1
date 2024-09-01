@@ -13,7 +13,7 @@ public:
 	terrainCreator();
 	~terrainCreator();
 
-	static const bool PLOTTING_ENABLED = false;
+	static const bool PLOTTING_ENABLED = true; // false;
 	static const int CHUNKSIZE = 10;
 	static const int ONEMETER = 100;
 	int chunkNum();
@@ -35,8 +35,7 @@ private:
 			std::vector<FVector2D> getXColumAnchors(int xColumn);
 			std::vector<FVector2D> getYRowAnchors(int yRow);
 
-			void plot(UWorld *world, FColor color);
-			void plot(UWorld *world, FColor color, int zOffset);
+			void plot(UWorld *world);
 			void plotCorners(UWorld * world);
 
 			void applyIndivualVertexIndexBased(
@@ -87,7 +86,7 @@ private:
 	std::vector<FVector2D> createSamplePoints();
 	void debugDrawCurve(UWorld *world, std::vector<FVector2D> &vec, FColor color);
 
-	void plotAllChunks(UWorld *world, FColor color);
+	void plotAllChunks(UWorld *world);
 
 	void processTopViewBezierCurve(std::vector<FVector2D> &bezier);
 	void applyTopViewCurveToMap(std::vector<FVector2D> &vec);
