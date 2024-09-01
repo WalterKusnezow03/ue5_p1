@@ -11,8 +11,10 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/particleSystem/particleEnum.h"
+#include "p2/particleSystem/particle.h"
 #include "p2/rooms/room.h"
 #include "p2/entityManager/RoomManager.h"
+#include "p2/entityManager/EntityManagerGenericMap.h"
 
 
 /**
@@ -34,6 +36,7 @@ public:
 	void add(AHumanEntityScript *humanEntity);
 	void add(Aweapon *weaponIn);
 	void add(AthrowableItem *throwableItem);
+	void add(Aparticle *particleIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location);
@@ -152,6 +155,8 @@ private:
 
 	EntityManagerGeneric<Aweapon> *getWeaponManagerFor(weaponEnum type);
 
+	//refacturing to type map manager map thing
+	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
 
 	//throwables
 	class EntityManagerGeneric<AthrowableItem> grenadeList;
@@ -161,10 +166,7 @@ private:
 
 	EntityManagerGeneric<AthrowableItem> *getThrowableManagerFor(throwableEnum type);
 
-	
-
-
-
+	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
 
 	//Particles 
 
@@ -176,5 +178,9 @@ private:
 
 	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
 
+	//class EntityManagerGeneric<Aparticle> particleSmokeList;
+	//class EntityManagerGeneric<Aparticle> particleFireList;
+
+	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
 
 };

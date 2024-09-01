@@ -91,11 +91,15 @@ void EntityManager::add(Aweapon *weaponIn){
         FVector hiddenLocation = FVector(0, 0, -1000);
         weaponIn->SetActorLocation(hiddenLocation);
 
+        //new map manager
+        weaponMap.add(type, weaponIn);
+
+        /*
         EntityManagerGeneric<Aweapon> *m = getWeaponManagerFor(type);
         if(m != nullptr){
             
             m->add(weaponIn);
-        }
+        }*/
 
         /*
         //push in correct vector
@@ -123,6 +127,18 @@ void EntityManager::add(AthrowableItem *throwableItem){
 
 
 
+void EntityManager::add(Aparticle *particleIn){
+    if(particleIn != nullptr){
+        particleEnum type = particleIn->getType();
+        particleMap.add(type, particleIn);
+    }
+}
+
+
+
+/**
+ * SPAWN SECTION HERE
+ */
 
 
 /// @brief spawns an entity in the world
@@ -172,6 +188,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     AActor *actor = spawnAactor(world, humanEntityBpClass, Location);
     AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
     if(casted != nullptr){
+        casted->init();
         DebugHelper::showScreenMessage("try spawn human");
         return casted;
     }
@@ -217,6 +234,19 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
     
     FVector Location = FVector(0, 0, 0);
 
+    //weapon map testing
+    if(weaponMap.hasActorsLeft(typeToSpawn)){
+        Aweapon *fromManager = weaponMap.getFirstActor(typeToSpawn);
+        if(fromManager != nullptr){
+            fromManager->showItem(true);
+
+            //testing as default sight
+            fromManager->applySight(weaponSightEnum::enum_ironsight);
+            return fromManager;
+        }
+    }
+
+    /*
     //try get from list ----> Testing complete
     EntityManagerGeneric<Aweapon> *a = getWeaponManagerFor(typeToSpawn);
     if(a != nullptr){
@@ -232,7 +262,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
                 return fromManager;
             }
         }
-    }
+    }*/
 
 
 
@@ -423,10 +453,21 @@ void EntityManager::createParticle(
         UClass *bp = getParticleBp(enumtype);
 
         if(bp != nullptr){
-            AActor *a = spawnAactor(world, bp, location);
+
+            AActor *a = nullptr;
+            if(particleMap.hasActorsLeft(enumtype)){
+                a = particleMap.getFirstActor(enumtype);
+            }else{
+                a = spawnAactor(world, bp, location);
+            }
+
+            //spawn aactor if none was found
+            //AActor *a = spawnAactor(world, bp, location);
             if(a != nullptr){
+                a->SetActorLocation(location);
                 Aparticle *created = Cast<Aparticle>(a);
                 if(created != nullptr){
+                    created->setParticleType(enumtype); //set the partcle type on start
                     created->applyImpulse(dir, speed, lifeTime);
                 }
             }
@@ -434,7 +475,6 @@ void EntityManager::createParticle(
     }
     
 }
-
 
 
 

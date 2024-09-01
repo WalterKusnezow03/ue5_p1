@@ -45,6 +45,10 @@ void AEntityScript::init(){
 	setupRaycastIgnoreParams();
 
 
+    spottedPlayer = false;
+    canSeePlayer = false;
+
+
 	//set team
 	setTeam(referenceManager::TEAM_NEUTRAL);
 

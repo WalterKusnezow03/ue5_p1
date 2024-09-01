@@ -2,6 +2,7 @@
 
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/referenceManager.h"
+#include "p2/entities/HumanEntityScript.h"
 #include "p2/util/debugEntity.h"
 
 // Sets default values
@@ -46,5 +47,14 @@ void AdebugEntity::debugFunction(){
 
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);
+
+		for (int i = 0; i < 1; i++){
+			FVector location = GetActorLocation();
+			location += FVectorUtil::randomOffset(700);
+			AHumanEntityScript *a = e->spawnHumanEntity(GetWorld(), location);
+			if(a != nullptr){
+				a->init();
+			}
+		}
 	}
 }

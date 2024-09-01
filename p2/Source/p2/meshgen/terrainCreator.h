@@ -64,8 +64,7 @@ private:
 			bool yIsValid(int a);
 			int jumpHeight(); // add up to terrain heigh when needed
 			bool jumpOfInterest(FVector &a, FVector &b);
-
-
+			bool jumpOfInterestAndNoGap(FVector &a, FVector &b, FVector &c);
 
 			int convertToInnerIndex(int value);
 			int clampOuterYIndex(FVector2D &a);

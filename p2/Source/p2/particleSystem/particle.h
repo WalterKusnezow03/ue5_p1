@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "p2/util/timer.h"
+#include "particleEnum.h"
 #include "particle.generated.h"
 
 UCLASS()
@@ -15,11 +16,14 @@ class P2_API Aparticle : public AActor
 public:	
 	// Sets default values for this actor's properties
 	Aparticle();
+	void setParticleType(particleEnum typeIn);
+	particleEnum getType();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void disablePhysics();
+	void disableCollider();
 	void move(float DeltaTime);
 
 public:	
@@ -33,6 +37,8 @@ private:
 	float speed;
 	float decrease = -9.81f;
 	class timer timer;
+
+	enum class particleEnum type;
 
 	bool enabledForTick;
 

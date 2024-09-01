@@ -2,6 +2,7 @@
 
 #include "p2/entityManager/EntityManager.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/particleSystem/particleEnum.h"
 #include "particle.h"
 
 // Sets default values
@@ -9,7 +10,7 @@ Aparticle::Aparticle()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	type = particleEnum::smoke_enum; //default
 }
 
 // Called when the game starts or when spawned
@@ -77,7 +78,7 @@ void Aparticle::applyImpulse(FVector directionIn, float velocity, float lifeTime
 	enabledForTick = true;
 	show(true);
 	disablePhysics();
-
+	disableCollider();
 
 	//apply random look rotation
 	SetActorRotation(FVectorUtil::randomRotation(GetActorLocation()));
@@ -98,6 +99,10 @@ void Aparticle::disablePhysics(){
 	}
 }
 
+void Aparticle::disableCollider(){
+	SetActorEnableCollision(false);
+}
+
 
 /// @brief shows or hides the particle automatically
 /// @param show 
@@ -112,5 +117,17 @@ void Aparticle::release(){
 	if(EntityManager *e = EntityManager::instance())
 	{
 		//to implement: release to entity manager for particles
+		e->add(this);
 	}
+}
+
+/// @brief sets the particle type the entity manager should take back once released
+/// @param typeIn type the particle to be on paper
+void Aparticle::setParticleType(particleEnum typeIn){
+	this->type = typeIn;
+}
+
+
+particleEnum Aparticle::getType(){
+	return type;
 }

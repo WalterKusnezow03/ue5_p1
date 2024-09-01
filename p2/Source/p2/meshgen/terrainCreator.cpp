@@ -183,10 +183,20 @@ bool terrainCreator::chunk::jumpOfInterest(FVector &a, FVector &b){
     return std::abs(a.Z - b.Z) >= height;
 }
 
+bool terrainCreator::chunk::jumpOfInterestAndNoGap(FVector &a, FVector &b, FVector &c){
+    if(a.Z == c.Z){
+        return false;
+    }
+    if(a.Z != c.Z){
+        return true;
+    }
+    return false;
+}
+
 
 /// @brief 
 /// @param xColumn inner index for columns {0...terrainCreator::CHUNKSIZE}
-/// @return 
+/// @return x anchors for creating a spline
 std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
     
     int chunkInCmY = yPositionInCm();
@@ -220,7 +230,7 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
         FVector2D prev = first;
 
         //alle
-        for (int _y = 1; _y < innerMap.size(); _y++){
+        for (int _y = 2; _y < innerMap.size(); _y++){ // _y = 1
 
             //alle vektoren bauen aus 
             //xcolumn locked
@@ -236,10 +246,16 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
             next += baseAnchorAlongAxis;
 
             if(
-                jumpOfInterest(innerMap.at(xColumn).at(_y), innerMap.at(xColumn).at(_y-1)) ||
-                _y == innerMap.size() - 2 //prev last
+                jumpOfInterestAndNoGap(
+                    innerMap.at(xColumn).at(_y-2),
+                    innerMap.at(xColumn).at(_y-1),
+                    innerMap.at(xColumn).at(_y)
+                )
+                //jumpOfInterest(innerMap.at(xColumn).at(_y), innerMap.at(xColumn).at(_y-1)) ||
+                || _y == innerMap.size() - 2
             ){
                 anchors.push_back(next);
+                _y += 1; //ensure no double anchors are ncluded but skipped (testing)
             }
 
             prev = next;
@@ -290,7 +306,7 @@ std::vector<FVector2D> terrainCreator::chunk::getYRowAnchors(int xColumn){
         FVector2D prev = first;
 
         //alle
-        for (int _y = 1; _y < innerMap.size(); _y++){
+        for (int _y = 2; _y < innerMap.size(); _y++){
 
             //alle vektoren bauen aus 
             //xcolumn locked
@@ -305,7 +321,17 @@ std::vector<FVector2D> terrainCreator::chunk::getYRowAnchors(int xColumn){
             );
             next += baseAnchorAlongAxis;
 
-            if(jumpOfInterest(innerMap.at(_y).at(xColumn), innerMap.at(_y-1).at(xColumn))){
+            if(
+                
+                jumpOfInterestAndNoGap(
+                    innerMap.at(_y-2).at(xColumn), 
+                    innerMap.at(_y-1).at(xColumn), 
+                    innerMap.at(_y).at(xColumn)
+                )
+                
+                //jumpOfInterest(innerMap.at(_y).at(xColumn), innerMap.at(_y-1).at(xColumn))
+                || (_y == innerMap.size() - 2)
+            ){
                 anchors.push_back(next);
             }
 
@@ -444,6 +470,8 @@ void terrainCreator::chunk::plot(UWorld *world){
     colors.push_back(FColor::Blue);
     colors.push_back(FColor::Green);
 
+    float oneThird = terrainCreator::ONEMETER / 2;
+
     if(world != nullptr){
         for (int i = 1; i < innerMap.size(); i++){
             for (int j = 1; j < innerMap.at(i).size(); j++){
@@ -452,7 +480,7 @@ void terrainCreator::chunk::plot(UWorld *world){
                 FVector prevDown = innerMap.at(i).at(j-1) + offset;
                 FVector current = innerMap.at(i).at(j) + offset;
 
-                int toIndex = (int) std::abs(current.Z / terrainCreator::ONEMETER);
+                int toIndex = (int) std::abs(current.Z / oneThird);
                 FColor currentColor = colors.at(toIndex % colors.size());
                 DebugHelper::showLineBetween(world, prevLeft, current, currentColor);
                 DebugHelper::showLineBetween(world, prevDown, current, currentColor);
@@ -518,7 +546,7 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     //another
     //std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
     shapeCreator::createShape(anchors);
-    upScalePoints(anchors, 3);
+    upScalePoints(anchors, 5);
     std::vector<FVector2D> outputData1;
     b.calculatecurve(anchors, outputData1, terrainCreator::ONEMETER, 1);
     processTopViewBezierCurve(outputData1);
@@ -546,38 +574,6 @@ void terrainCreator::processTopViewBezierCurve(std::vector<FVector2D> &bezier){
 }
 
 
-
-/// @brief creates a set of sample points
-/// @return as vector of FVector2D
-std::vector<FVector2D> terrainCreator::createSamplePoints(){
-    std::vector<FVector2D> output;
-
-    //One meter. Dont Change.
-    int scale = terrainCreator::ONEMETER; //upscale to meters 
-
-    //testing simple line shape
-    int xstep = 2;
-    int x = 0;
-    int nums[] = {2, 1, 4, 5, 2, 3, 1, 1, 2};
-    int size =  sizeof(nums) / sizeof(nums[0]);
-    bool flipped = false;
-
-    for (int i : nums){
-        FVector2D a(x, i);
-        if(x / 2 < size / 2 && !flipped){
-            x += xstep;
-        }else{
-            flipped = true;
-            x -= xstep;
-        }
-       
-        a *= scale; //upscale
-        output.push_back(a);
-    }
-
-    
-    return output;
-}
 
 
 /// @brief draws the vector in the world for debugging pruposes, scales up coords slightly.
@@ -621,6 +617,12 @@ void terrainCreator::applyTopViewCurveToMap(std::vector<FVector2D> &vec){
         {
             processTouple(a, b);
             i++; // go to next (making i += 2)
+
+            //debug draw touple
+            if(terrainCreator::PLOTTING_ENABLED){
+                DebugHelper::showLineBetween(worldPointer, a,b, terrainCreator::ONEMETER * 2);
+            }
+            
         }
     }
 }
@@ -629,7 +631,7 @@ bool terrainCreator::isXTouple(FVector2D &a, FVector2D &b){
     if(a.X == b.X){
         return true;
     }
-    if(std::abs(a.X - b.X) <= terrainCreator::ONEMETER){
+    if(std::abs(a.X - b.X) < terrainCreator::ONEMETER){ //if(std::abs(a.X - b.X) <= terrainCreator::ONEMETER){
         return true;
     }
 
@@ -747,7 +749,7 @@ void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
             {
                 FVector2D newPos = prev + j * connect;
                 vec.insert(vec.begin() + i, newPos);
-                i++; //go to next to insert infront of inserted (view of current pos)
+                i++; //go to next to insert infront of inserted (view of current pos) to insert the next interpolated
             }
         }
         i++;
@@ -1110,4 +1112,45 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
         }
     }
 
+}
+
+
+
+
+
+
+
+//deprecated and not needed
+
+
+/// @brief creates a set of sample points
+/// @return as vector of FVector2D
+std::vector<FVector2D> terrainCreator::createSamplePoints(){
+    std::vector<FVector2D> output;
+
+    //One meter. Dont Change.
+    int scale = terrainCreator::ONEMETER; //upscale to meters 
+
+    //testing simple line shape
+    int xstep = 2;
+    int x = 0;
+    int nums[] = {2, 1, 4, 5, 2, 3, 1, 1, 2};
+    int size =  sizeof(nums) / sizeof(nums[0]);
+    bool flipped = false;
+
+    for (int i : nums){
+        FVector2D a(x, i);
+        if(x / 2 < size / 2 && !flipped){
+            x += xstep;
+        }else{
+            flipped = true;
+            x -= xstep;
+        }
+       
+        a *= scale; //upscale
+        output.push_back(a);
+    }
+
+    
+    return output;
 }

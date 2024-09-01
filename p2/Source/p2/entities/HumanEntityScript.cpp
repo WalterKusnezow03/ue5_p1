@@ -65,6 +65,12 @@ void AHumanEntityScript::init(){
 
     }
 
+    spottedPlayer = false;
+    canSeePlayer = false;
+
+    defaultSpottingTime = 5;
+	setSpottingTime(defaultSpottingTime);
+
     //outpost
     outpost = nullptr;
 

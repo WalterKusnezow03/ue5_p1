@@ -96,3 +96,22 @@ void DebugHelper::showLine(UWorld *world, TArray<FVector> &array, FColor color){
 		}
 	}
 }
+
+
+
+
+void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End){
+	showLineBetween(world, Start, End, 100);
+}
+
+void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End, int zOffset){
+	FVector sA(
+		Start.X,
+		Start.Y,
+		zOffset);
+	FVector eB(
+		End.X,
+		End.Y,
+		zOffset);
+	showLineBetween(world, sA, eB, FColor::Blue);
+}
