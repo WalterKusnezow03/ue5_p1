@@ -58,4 +58,6 @@ void AgrenadeItem::detonate(){
 
     //hide after detonate
     show(false);
+
+    Super::release(); //release to entity manager
 }

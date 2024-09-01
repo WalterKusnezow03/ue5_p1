@@ -94,34 +94,14 @@ void EntityManager::add(Aweapon *weaponIn){
         //new map manager
         weaponMap.add(type, weaponIn);
 
-        /*
-        EntityManagerGeneric<Aweapon> *m = getWeaponManagerFor(type);
-        if(m != nullptr){
-            
-            m->add(weaponIn);
-        }*/
-
-        /*
-        //push in correct vector
-        std::map<weaponEnum, EntityManagerGeneric<Aweapon> *> map;
-        map[weaponEnum::assaultRifle] = &assault_weaponList;
-        map[weaponEnum::pistol] = &pistol_weaponList;
-
-        EntityManagerGeneric<Aweapon> *m = map[type];
-        if(m != nullptr){
-            m->add(weaponIn);
-        }*/
     }
 }
 
 void EntityManager::add(AthrowableItem *throwableItem){
     if(throwableItem != nullptr){
         throwableEnum type = throwableItem->getType();
+        throwableMap.add(type, throwableItem);
 
-        EntityManagerGeneric<AthrowableItem> *m = getThrowableManagerFor(type);
-        if(m != nullptr){
-            m->add(throwableItem);
-        }
     }
 }
 
@@ -246,25 +226,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
         }
     }
 
-    /*
-    //try get from list ----> Testing complete
-    EntityManagerGeneric<Aweapon> *a = getWeaponManagerFor(typeToSpawn);
-    if(a != nullptr){
-        if(a->hasActorsLeft()){
-            Aweapon *fromManager = a->getFirstActor();
-            if (fromManager != nullptr)
-            {
-                fromManager->showItem(true);
-
-                //testing as default sight
-                fromManager->applySight(weaponSightEnum::enum_ironsight);
-
-                return fromManager;
-            }
-        }
-    }*/
-
-
 
     //default spawn if needed
     UClass *selectedBp = weaponBpClass; //to created, default is stick gun
@@ -321,9 +282,15 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
 
     if(world != nullptr){
 
-        EntityManagerGeneric<AthrowableItem> *m = getThrowableManagerFor(type);
-        if(m != nullptr && m->hasActorsLeft()){
-            return m->getFirstActor();
+        DebugHelper::showScreenMessage("THROWABLE REQUETS TEST");
+        if (throwableMap.hasActorsLeft(type))
+        {
+            DebugHelper::showScreenMessage("THROWABLE REQUEST OK ", FColor::Green);
+            AthrowableItem *a = throwableMap.getFirstActor(type);
+            if(a != nullptr){
+                a->reset();
+                return a;
+            }
         }
 
 
@@ -379,38 +346,11 @@ void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
 
 
 
-/// @brief gets the correct generic manager for a type as pointer, DO NOT DELETE
-/// @param type 
-/// @return 
-EntityManagerGeneric<Aweapon> *EntityManager::getWeaponManagerFor(weaponEnum type){
-    std::map<weaponEnum, EntityManagerGeneric<Aweapon> *> map;
-    map[weaponEnum::assaultRifle] = &assault_weaponList; //referenz der value iv eingeben für den pointer
-    map[weaponEnum::pistol] = &pistol_weaponList;
-
-    EntityManagerGeneric<Aweapon> *list = map[type];
-    if(list != nullptr){
-        return list;
-    }
-    return nullptr;
-}
-
-EntityManagerGeneric<AthrowableItem> *EntityManager::getThrowableManagerFor(throwableEnum type){
-    std::map<throwableEnum, EntityManagerGeneric<AthrowableItem> *> map;
-    map[throwableEnum::greneade_enum] = &grenadeList; //referenz der value iv eingeben für den pointer
-    map[throwableEnum::rocket_enum] = &rocketList;
-    map[throwableEnum::molotov_enum] = &molotovList;
-
-    EntityManagerGeneric<AthrowableItem> *list = map[type];
-    if(list != nullptr){
-        return list;
-    }
-    return nullptr;
-}
 
 
-
-
-
+/// @brief creates an explosion at a given location
+/// @param world 
+/// @param location 
 void EntityManager::createExplosion(UWorld *world, FVector &location){
     if(world != nullptr){
         int amount = 20;
@@ -639,9 +579,7 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
         //must be selected a room type too
         roomType1Manager.createALayout(worldIn, xscale, yscale);
     }
-    
-
-    
+       
 }
 
 

@@ -29,14 +29,13 @@ public:
 	throwableEnum throwableType;
 
 	throwableEnum getType();
+	void reset();
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	bool isThrown;
-
-	void reset();
-
 	void release();
 
 public:	

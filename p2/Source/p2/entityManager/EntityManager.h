@@ -90,11 +90,8 @@ public:
 
 private:
 	static class EntityManager *instancePointer;
-
-	//deprecated
-	Aweapon *spawnPistol(UWorld *world);
-
 	EntityManager();
+
 
 	//bp classes USE "UPROPERTY()" TO SAFELY USE UCLASS POINTER!
 	UPROPERTY()
@@ -149,24 +146,11 @@ private:
 	class EntityManagerGeneric<AEntityScript> entityList; 
 	class EntityManagerGeneric<AHumanEntityScript> humanEntityList;
 
-	//weapons (each type has an own manager)
-	class EntityManagerGeneric<Aweapon> assault_weaponList;
-	class EntityManagerGeneric<Aweapon> pistol_weaponList;
 
-	EntityManagerGeneric<Aweapon> *getWeaponManagerFor(weaponEnum type);
-
-	//refacturing to type map manager map thing
+	//GENERIC ENUM MAPS OF GENERIC MANAGERS
 	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
-
-	//throwables
-	class EntityManagerGeneric<AthrowableItem> grenadeList;
-	class EntityManagerGeneric<AthrowableItem> rocketList;
-	class EntityManagerGeneric<AthrowableItem> molotovList;
-	class EntityManagerGeneric<AthrowableItem> rockList;
-
-	EntityManagerGeneric<AthrowableItem> *getThrowableManagerFor(throwableEnum type);
-
 	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
+	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
 
 	//Particles 
 
@@ -181,6 +165,6 @@ private:
 	//class EntityManagerGeneric<Aparticle> particleSmokeList;
 	//class EntityManagerGeneric<Aparticle> particleFireList;
 
-	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
+	
 
 };

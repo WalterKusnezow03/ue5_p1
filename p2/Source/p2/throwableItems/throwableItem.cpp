@@ -88,12 +88,12 @@ void AthrowableItem::enablePhysics(bool enable){
 }
 
 
-
+/// @brief resets thrown status, etc
 void AthrowableItem::reset(){
 	isThrown = false;
 	enablePhysics(false);
+	show(true);
 }
-
 
 /// @brief shows or hides the item
 /// @param show bool as described
@@ -106,6 +106,6 @@ void AthrowableItem::release(){
 	show(false);
 	enablePhysics(false);
 	if(EntityManager *e = EntityManager::instance()){
-		
+		e->add(this);
 	}
 }
