@@ -88,7 +88,7 @@ void AthrowableItem::enablePhysics(bool enable){
 }
 
 
-/// @brief resets thrown status, etc
+/// @brief resets thrown status, physics and visibilty to true 
 void AthrowableItem::reset(){
 	isThrown = false;
 	enablePhysics(false);
@@ -101,7 +101,7 @@ void AthrowableItem::show(bool show){
 	SetActorHiddenInGame(!show);
 }
 
-
+/// @brief will release the item to the entity manager
 void AthrowableItem::release(){
 	show(false);
 	enablePhysics(false);

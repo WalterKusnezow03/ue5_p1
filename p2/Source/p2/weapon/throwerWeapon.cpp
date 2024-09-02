@@ -8,7 +8,7 @@
 
 AthrowerWeapon::AthrowerWeapon(){
     //constructor
-
+    Type = weaponEnum::thrower; //a thrower by default
     throwableTypeToThrow = throwableEnum::greneade_enum;
     requestNewThrowable();
 }

@@ -324,6 +324,27 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
 
+    //new code not tested
+    //get from manager or spawn
+    AthrowerWeapon *weapon = nullptr;
+    if (weaponMap.hasActorsLeft(weaponEnum::thrower))
+    {
+        Aweapon *fromMap = weaponMap.getFirstActor(weaponEnum::thrower);
+        weapon = Cast<AthrowerWeapon>(fromMap);
+    }
+    else
+    {
+        AActor *spawned = spawnAactor(world, defaultThrower, Location);
+        weapon = Cast<AthrowerWeapon>(spawned);
+    }
+
+    if(weapon != nullptr){
+        weapon->setThrowableType(typeToSpawn);
+        return weapon;
+    }
+    return nullptr;
+    /*
+    //old
     if(defaultThrower != nullptr){
         
         AActor *spawned = spawnAactor(world, defaultThrower, Location);
@@ -334,6 +355,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
         }
     }
     return nullptr;
+    */
 }
 
 //default "thrower / werfer"
@@ -579,7 +601,7 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
         //must be selected a room type too
         roomType1Manager.createALayout(worldIn, xscale, yscale);
     }
-       
+
 }
 
 

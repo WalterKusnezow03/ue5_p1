@@ -11,5 +11,6 @@ UENUM()
 enum class weaponEnum
 {
 	assaultRifle,
-	pistol
+	pistol,
+	thrower
 };

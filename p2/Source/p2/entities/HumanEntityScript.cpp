@@ -39,7 +39,7 @@ void AHumanEntityScript::BeginPlay(){
 void AHumanEntityScript::init(){
     Super::init();
 
-    DebugHelper::showScreenMessage("human init");
+    //DebugHelper::showScreenMessage("human init");
     
     //weapon
     EntityManager *e = EntityManager::instance();
@@ -51,9 +51,9 @@ void AHumanEntityScript::init(){
         setuphelper->setSightAttachment(weaponSightEnum::enum_reddot);
 
         Aweapon *w = e->spawnAweapon(GetWorld(), setuphelper);
-		showScreenMessage("begin weapon");
+		//showScreenMessage("begin weapon");
 		if (w != nullptr){
-			showScreenMessage("human pickup weapon");
+			//showScreenMessage("human pickup weapon");
 			w->pickupBot(this);
 
             //save pointer

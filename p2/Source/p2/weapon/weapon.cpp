@@ -49,10 +49,10 @@ Aweapon::Aweapon()
 
 
 /// @brief finds the sight component of the weapon if existent
+/// UNCLEAR IF NEEDED ANYMORE
 void Aweapon::setupSight(){
 
 	TArray<AActor*> ChildActors;
-    FString s;
     GetAllChildActors(ChildActors, true);
     for (AActor* Child : ChildActors)
     {
@@ -60,11 +60,6 @@ void Aweapon::setupSight(){
         {
             //FString ChildName = Child->GetName();
             FString ChildType = Child->GetClass()->GetName();
-
-            /*s.Append(ChildName);
-            s.Append(TEXT(" - "));
-            s.Append(ChildType);
-            s.Append(TEXT("\n"));*/
 
             // Check if the child is of type AsightScript
             AsightScript* SightChild = Cast<AsightScript>(Child);
@@ -74,8 +69,6 @@ void Aweapon::setupSight(){
         }
     }
 
-    // Log the string to the console
-	//showScreenMessage(s);
 }
 
 /**
@@ -568,25 +561,6 @@ void Aweapon::applySight(weaponSightEnum sight){
     }
 
 
-
-	/*
-	//load all attachments and enum values in symetrical arrays to enable / disable correct attachments
-	std::vector<UChildActorComponent *> sightChilds;
-	sightChilds.push_back(reddotSightChildActor); //red,
-	sightChilds.push_back(ironSightChildActor); //iron
-
-	std::vector<weaponSightEnum> enumValues;
-	enumValues.push_back(weaponSightEnum::enum_reddot); //red
-	enumValues.push_back(weaponSightEnum::enum_ironsight); //iron
-
-	//enable correct one
-	for (int i = 0; i < enumValues.size(); i++){
-		if(enumValues.at(i) == sight){
-			Super::showChildActor(sightChilds.at(i), true);
-		}else{
-			Super::showChildActor(sightChilds.at(i), false);
-		}
-	}*/
 
 }
 

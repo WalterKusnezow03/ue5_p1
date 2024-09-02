@@ -37,5 +37,12 @@ private:
 	void loadRooms(EntityManager *entityManager);
 	void loadTerrain(EntityManager *e);
 
-	
+
+
+
+
+	//new testing
+	void loadPaths();
+	void loadUClassFromAssetPath(FString s);
+
 };
