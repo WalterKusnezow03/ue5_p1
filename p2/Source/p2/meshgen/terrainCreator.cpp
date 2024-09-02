@@ -255,7 +255,8 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
                 || _y == innerMap.size() - 2
             ){
                 anchors.push_back(next);
-                _y += 1; //ensure no double anchors are ncluded but skipped (testing)
+                _y += 2; //ensure no double anchors are ncluded but skipped (testing)
+                //+= 1 vorher, testing
             }
 
             prev = next;
@@ -551,7 +552,18 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     b.calculatecurve(anchors, outputData1, terrainCreator::ONEMETER, 1);
     processTopViewBezierCurve(outputData1);
 
-    //works
+    //test upscaling the existing curve or down scaling
+    for (int i = 1; i < 4; i++){
+        shapeCreator::createShape(anchors);
+        upScalePoints(anchors, 2 * i);
+        std::vector<FVector2D> data;
+        b.calculatecurve(anchors, data, terrainCreator::ONEMETER, 1);
+        processTopViewBezierCurve(data);
+    }
+
+    // works
+    smooth3dMap();
+    smooth3dMap(); //what if twice or more, makes it certainly better!
     smooth3dMap();
     //works
     plotAllChunks(world);
@@ -1030,10 +1042,21 @@ void terrainCreator::plotAllChunks(UWorld * world){
 /// @brief scales the list with a constant factor
 /// @param points points to scale
 /// @param factor factor to apply
-void terrainCreator::upScalePoints(std::vector<FVector2D> &points, int factor){
-    for (int i = 0; i < points.size(); i++){
-        FVector2D &referenced = points.at(i);
-        referenced *= factor;
+void terrainCreator::upScalePoints(std::vector<FVector2D> &points, float factor){
+    if(factor != 0){
+        for (int i = 0; i < points.size(); i++){
+            FVector2D &referenced = points.at(i);
+            referenced *= factor;
+        }
+    }
+}
+
+/// @brief apply an offset to every point of the vector
+/// @param vec vector
+/// @param offset offset to apply
+void terrainCreator::offsetPoints(std::vector<FVector2D> &vec, FVector2D offset){
+    for (int i = 0; i < vec.size(); i++){
+        vec.at(i) += offset;
     }
 }
 

@@ -13,7 +13,11 @@ bezierCurve::~bezierCurve()
 {
 }
 
-
+/// @brief will calculate the spline for you
+/// @param ref reference anchor points (p0s and p3s)
+/// @param output output vector to save in, MUST BE CLEAR
+/// @param _einheitsValue einheits value between vectors, for example 100cm unreal engine scale
+/// @param _stepsPerEinheitsValue steps to have per einheits value: for example 2, each 50cm
 void bezierCurve::calculatecurve(
     std::vector<FVector2D> &ref, 
     std::vector<FVector2D> &output,

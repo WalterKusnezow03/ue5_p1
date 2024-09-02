@@ -28,6 +28,7 @@ public:
 
 
 private:
+	/// @brief saves one entity manager for each enum value
 	std::map<E, EntityManagerGeneric<T> *> map;
 
 

@@ -113,10 +113,13 @@ bool RoomManager::contains(std::string &key){
 }
 
 
-
+/// @brief creates a layout based on a size inout of indices of meters
+/// @param world world to spawn in
+/// @param x in meters
+/// @param y in meters
 void RoomManager::createALayout(UWorld* world, int x, int y){
     //showKeys(); //debug
-    showLog(); //shows previous log
+    //showLog(); //shows previous log
 
     layoutCreator l(this); //all the data will be destroyed when it goes out of scope, remember.
     l.createRooms(x, y);
@@ -189,6 +192,9 @@ void RoomManager::convertScaleToMeterFVector(FVector &vector){
     //vector.Z = convertScaleToMeter(vector.Z);
 }
 
+
+
+//debug logging
 
 void RoomManager::showKeys(){
 

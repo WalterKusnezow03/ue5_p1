@@ -29,6 +29,7 @@ public:
 private:
 	static const int ONE_METER = 100;
 
+	//saves the uclass rooms based on size (created with the key)
 	std::map<std::string, UClass *> map;
 
 	std::string createKey(int xSize, int ySize);

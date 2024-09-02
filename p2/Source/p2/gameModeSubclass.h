@@ -19,13 +19,11 @@ public:
 	void BeginPlay();
 
 private:
+	//loads a uclass from a specific path
 	UClass* loadUClassBluePrint(FString path);
+	UMaterial *loadMaterial(FString path);
 
 	void createPathFinder();
-	void showEdges(std::vector<FVector> &edges);
-	void showPath(std::vector<FVector> &path);
-	void showPos(FVector &v, FColor color);
-
 
 
 

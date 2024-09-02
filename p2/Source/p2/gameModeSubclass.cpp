@@ -32,10 +32,10 @@ AgameModeSubclass::AgameModeSubclass()
     //load the entity manager
     EntityManager *entityManager = EntityManager::instance();
 
-    loadPaths();
+
+
     loadEntities(entityManager);
     loadWeapons(entityManager);
-    
     
     loadThrower(entityManager);
     loadParticles(entityManager);
@@ -54,29 +54,6 @@ void AgameModeSubclass::loadEntities(EntityManager *entityManager){
         entityManager->setEntityUClassBp(loadUClassBluePrint(entityString));
         FString humanString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'"));
         entityManager->setHumanEntityUClassBp(loadUClassBluePrint(humanString));
-    }
-    return;
-
-    static ConstructorHelpers::FObjectFinder<UClass> EntityBPClass(
-        TEXT("Blueprint'/Game/Prefabs/player/entityPrefab.entityPrefab_C'")
-    );
-    if (EntityBPClass.Succeeded())
-    {
-        UClass *bp = EntityBPClass.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setEntityUClassBp(bp);
-        }
-    }
-
-    static ConstructorHelpers::FObjectFinder<UClass> humanBpClass(
-        TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'")
-    );
-    if (humanBpClass.Succeeded())
-    {
-        UClass *bp = humanBpClass.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setHumanEntityUClassBp(bp);
-        }
     }
 
 }
@@ -101,6 +78,18 @@ void AgameModeSubclass::loadWeapons(EntityManager *entityManager){
         entityManager->setWeaponUClassBP(bp, weaponEnum::pistol);
     }
 
+    
+    //assault rifle
+    FString rifleString = FString::Printf(
+        TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
+    );
+    UClass *riflebp = loadUClassBluePrint(rifleString);
+    if(entityManager != nullptr && riflebp != nullptr){
+        entityManager->setWeaponUClassBP(riflebp, weaponEnum::assaultRifle);
+    }
+
+
+
     /*
     static ConstructorHelpers::FObjectFinder<UClass>
         pistolBpClass(
@@ -112,15 +101,6 @@ void AgameModeSubclass::loadWeapons(EntityManager *entityManager){
             entityManager->setWeaponUClassBP(bp, weaponEnum::pistol);
         }
     }*/
-
-    //assault rifle
-    FString rifleString = FString::Printf(
-        TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
-    );
-    UClass *riflebp = loadUClassBluePrint(rifleString);
-    if(entityManager != nullptr && riflebp != nullptr){
-        entityManager->setWeaponUClassBP(riflebp, weaponEnum::assaultRifle);
-    }
     /*
     static ConstructorHelpers::FObjectFinder<UClass> rifleBpClass(
         TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
@@ -138,6 +118,21 @@ void AgameModeSubclass::loadWeapons(EntityManager *entityManager){
 /// @brief load thrower and throwables
 /// @param entityManager entity manager
 void AgameModeSubclass::loadThrower(EntityManager* entityManager){
+    
+    if(entityManager){
+        entityManager->setDefaultThrowerClassBp(
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'"))
+        );
+
+        entityManager->setThrowableUClassBp(
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'")),
+            throwableEnum::greneade_enum
+        );
+    }
+    
+    
+    
+    /*
     //thrower default
     static ConstructorHelpers::FObjectFinder<UClass> throwerDefault(
         TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'")
@@ -150,7 +145,6 @@ void AgameModeSubclass::loadThrower(EntityManager* entityManager){
         }
     }
 
-
     //throwables
     static ConstructorHelpers::FObjectFinder<UClass> grenadeBpClass(
         TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'")
@@ -161,7 +155,7 @@ void AgameModeSubclass::loadThrower(EntityManager* entityManager){
         if(entityManager != nullptr && bp != nullptr){
             entityManager->setThrowableUClassBp(bp, throwableEnum::greneade_enum);
         }
-    }
+    }*/
 }
 
 
@@ -201,9 +195,28 @@ void AgameModeSubclass::loadRooms(EntityManager *entityManager){
     //needs uworld for rooms
     UWorld *world = GetWorld();
 
+    //rooms are named with room0, room1 etc, integer counting up
+    //FString pathFront = FStringPrintf(TEXT("Blueprint'/Game/Prefabs/rooms/room1.room1_C'")); //sample
+    FString pathFront = FString::Printf(TEXT("Blueprint'/Game/Prefabs/rooms/"));
+    FString room = FString::Printf(TEXT("room"));
+    FString dot = FString::Printf(TEXT("."));
+    FString _C_end = FString::Printf(TEXT("_C'"));
+    for (int i = 1; i < 5; i++){
+        FString connect = pathFront;
+        connect.Append(room);
+        connect.Append(TEXT("%d"),i);
+        connect.Append(dot);
+        connect.Append(room);
+        connect.Append(TEXT("%d"),i);
+        connect.Append(_C_end);
+        if(entityManager){
+            entityManager->setRoomuClassBp(world, loadUClassBluePrint(connect));
+        }
+    }
+
+    /*
     static ConstructorHelpers::FObjectFinder<UClass> room1(
-        TEXT("Blueprint'/Game/Prefabs/rooms/room1.room1_C'")
-    );
+            TEXT("Blueprint'/Game/Prefabs/rooms/room1.room1_C'"));
     if (room1.Succeeded())
     {
         UClass *bp = room1.Object;
@@ -244,22 +257,50 @@ void AgameModeSubclass::loadRooms(EntityManager *entityManager){
             entityManager->setRoomuClassBp(world, bp);
         }
     }
+    */
 }
 
 
 void AgameModeSubclass::loadTerrain(EntityManager *entityManager){
-    static ConstructorHelpers::FObjectFinder<UClass> emptyMeshActor(
-        TEXT("Blueprint'/Game/Prefabs/terrain/emptyCustomMeshActor.emptyCustomMeshActor_C'")
-    );
-    if (emptyMeshActor.Succeeded())
-    {
-        UClass *bp = emptyMeshActor.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setEmptyMeshUClassBp(bp);
-        }
+   
+    FString path = FString::Printf(TEXT("Blueprint'/Game/Prefabs/terrain/emptyCustomMeshActor.emptyCustomMeshActor_C'"));
+    if(entityManager != nullptr){
+        entityManager->setEmptyMeshUClassBp(loadUClassBluePrint(path));
     }
 }
 
+
+
+
+
+
+/// @brief Method to load a Blueprint class from a path.
+/// @param path The path to the Blueprint class.
+/// @return The loaded UClass, or nullptr if it fails.
+/// works as expected
+UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
+    // Load the class object dynamically
+    UClass* bpClass = StaticLoadClass(UObject::StaticClass(), nullptr, *path);
+    
+    // Check if the class was loaded successfully
+    if (bpClass != nullptr)
+    {
+        return bpClass;
+    }
+    return nullptr;
+}
+
+UMaterial *AgameModeSubclass::loadMaterial(FString path){
+    // Load the class object dynamically
+    UMaterial* bpObject = LoadObject<UMaterial>(nullptr, *path);
+    
+    // Check if the class was loaded successfully
+    if (bpObject != nullptr)
+    {
+        return bpObject;
+    }
+    return nullptr;
+}
 
 
 
@@ -283,28 +324,6 @@ UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
     return nullptr;
 }*/
 
-/// @brief Method to load a Blueprint class from a path.
-/// @param path The path to the Blueprint class.
-/// @return The loaded UClass, or nullptr if it fails.
-UClass* AgameModeSubclass::loadUClassBluePrint(FString path){
-    // Load the class object dynamically
-    UClass* bpClass = StaticLoadClass(UObject::StaticClass(), nullptr, *path);
-    
-    // Check if the class was loaded successfully
-    if (bpClass != nullptr)
-    {
-        return bpClass;
-    }
-    return nullptr;
-}
-
-
-
-
-
-
-
-
 
 // ----- DEFAULT METHODS -----
 //will create edge collector and path finder instance on start!
@@ -315,6 +334,7 @@ void AgameModeSubclass::BeginPlay()
     Super::BeginPlay();
 
     // Perform actions that depend on the world being ready
+    //loads all edegs and creates the path finder on start
     createPathFinder();
 }
 
@@ -341,145 +361,6 @@ void AgameModeSubclass::createPathFinder(){
         PathFinder *p = PathFinder::instance(World);
         if(p != nullptr){
             p->addNewNodeVector(edges);
-
-
-
-
-            //test path finding needed!
-            FVector a = FVector(0, 0, 0);
-            FVector b = FVector(-2100, -1020, 80);
-
-            //showPos(a, FColor::Red);
-            //showPos(b, FColor::Blue);
-
-            std::vector<FVector> path = p->getPath(a, b);
-
-            showPath(path);
-        }
-    }
-}
-
-
-//shows the edges for debugging
-void AgameModeSubclass::showEdges(std::vector<FVector> &edges){
-    for (int i = 0; i < edges.size(); i++){
-        FVector Start = edges.at(i);
-        FVector End = edges.at(i) + FVector(0, 0, 1000);
-        if (GetWorld())
-        {
-            DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 100.0f, 0, 1.0f);
-        }
-        
-        if (GEngine)
-        {
-            FString string = FString::Printf(TEXT("%d"), Start.X);
-            //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, string);
-        }
-    }
-}
-
-
-
-void AgameModeSubclass::showPath(std::vector<FVector> &path){
-    if (GEngine)
-    {
-        FString string = FString::Printf(TEXT("nodes to dest: %d"), path.size());
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, string);
-    }
-    if(path.size() > 1){
-        for (int i = 1; i < path.size(); i++){
-            FVector Start = path.at(i);
-            FVector End = path.at(i - 1);
-            if (GetWorld())
-            {
-                DrawDebugLine(GetWorld(), Start, End, FColor::Yellow, false, 100.0f, 0, 1.0f);
-            }
-        }
-    }
-    
-}
-
-
-void AgameModeSubclass::showPos(FVector &v, FColor color){
-
-    FVector Start = v;
-    FVector End = v + FVector(0, 0, 2000);
-    if (GetWorld())
-    {
-        DrawDebugLine(GetWorld(), Start, End, color, false, 100.0f, 0, 1.0f);
-    }
-    
-}
-
-
-
-
-
-
-//new simpler way
-void AgameModeSubclass::loadPaths(){
-    // Get the Asset Registry Module
-    FAssetRegistryModule& AssetRegistryModule = FModuleManager::GetModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-    
-    FARFilter Filter;
-    // Filter for UClass
-    //Filter.ClassNames.Add(UClass::StaticClass()->GetFName());
-    //Filter.bRecursiveClasses = true;
-
-    // Get all assets that match the filter
-    TArray<FAssetData> AssetDataArray;
-    AssetRegistry.GetAssets(Filter, AssetDataArray);
-
-    //output.reserve(AssetDataArray.Num()); //reserve size
-
-    FString outstr = "";
-
-    for (const FAssetData& AssetData : AssetDataArray)
-    {
-        FString AssetPath = AssetData.GetObjectPathString();
-        //loadUClassFromAssetPath(AssetPath);
-        outstr.Append(AssetPath);
-        outstr.Append("\n");
-    }
-    DebugHelper::showScreenMessage(outstr);
-}
-
-void AgameModeSubclass::loadUClassFromAssetPath(FString path){
-    static ConstructorHelpers::FObjectFinder<UClass> bpUClass(
-        *path // Convert FString to const TCHAR*
-    );
-    if (bpUClass.Succeeded())
-    {
-        UClass *uclass = bpUClass.Object;
-        if(uclass != nullptr){
-            if(EntityManager *e = EntityManager::instance()){
-                if(path.Contains("humanEntityPrefab") && uclass->IsChildOf(AHumanEntityScript::StaticClass())){
-                    DebugHelper::showScreenMessage("human found", FColor::Blue);
-                    e->setHumanEntityUClassBp(uclass);
-                    return;
-                }
-                if(path.Contains("entityPrefab") && uclass->IsChildOf(AEntityScript::StaticClass())){
-                    DebugHelper::showScreenMessage("entity found", FColor::Blue);
-                    e->setEntityUClassBp(uclass);
-                    return;
-                }
-
-                if(uclass->IsChildOf(Aweapon::StaticClass())){
-                    if(path.Contains("pistolNew")){
-                        DebugHelper::showScreenMessage("pistol found", FColor::Blue);
-                        e->setWeaponUClassBP(uclass, weaponEnum::pistol);
-                        return;
-                    }
-                    if(path.Contains("rifleBp")){
-                        DebugHelper::showScreenMessage("rifle found", FColor::Blue);
-                        e->setWeaponUClassBP(uclass, weaponEnum::assaultRifle);
-                        return;
-                    }
-                }
-                
-            }
         }
     }
 }
