@@ -76,6 +76,9 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){
 
     //process created data
     updateMesh(output, newtriangles);
+    if(EntityManager *e = EntityManager::instance()){
+        ApplyMaterial(Mesh, e->getMaterial(materialEnum::grassMaterial));
+    }
 }
 
 void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> newtriangles){
@@ -95,8 +98,18 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
     FVector offset = GetActorLocation();
     offset.Z += 100;
     SetActorLocation(offset);
+
+
+    //new: set material
 }
 
+/// @brief build a quad out of two triangles! Important otherwise unfixable issues are in the mesh
+/// @param a 
+/// @param b 
+/// @param c 
+/// @param d 
+/// @param output 
+/// @param trianglesOutput 
 void AcustomMeshActor::buildQuad(
     FVector a, 
     FVector b, 
@@ -122,7 +135,12 @@ void AcustomMeshActor::buildQuad(
 
 
 
-
+/// @brief all quads MUST BE BUILD out of TRIANGLES, OTHERWISE MANY BUGS OCCUR!
+/// @param a corner 0
+/// @param b corner 1
+/// @param c corner 2
+/// @param output output to append in
+/// @param trianglesOutput triangle int32 as nums saved in here, also appended
 void AcustomMeshActor::buildTriangle(
     FVector a, 
     FVector b, 
@@ -143,6 +161,15 @@ void AcustomMeshActor::buildTriangle(
     trianglesOutput.Add(1 + offset); // 1st vertex in the first triangle
     trianglesOutput.Add(2 + offset); // 2nd vertex in the first triangle
     
+}
+
+
+
+void AcustomMeshActor::ApplyMaterial(UProceduralMeshComponent* ProceduralMeshComponent, UMaterial* Material) {
+	if (ProceduralMeshComponent && Material) {
+		// Apply the material to the first material slot (index 0) of the procedural mesh
+		ProceduralMeshComponent->SetMaterial(0, Material);
+	}
 }
 
 

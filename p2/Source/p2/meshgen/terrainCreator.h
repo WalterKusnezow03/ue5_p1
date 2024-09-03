@@ -13,7 +13,7 @@ public:
 	terrainCreator();
 	~terrainCreator();
 
-	static const bool PLOTTING_ENABLED = true; // false;
+	static const bool PLOTTING_ENABLED = false; // false;
 	static const int CHUNKSIZE = 10;
 	static const int ONEMETER = 100;
 	int chunkNum();

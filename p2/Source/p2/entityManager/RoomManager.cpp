@@ -117,7 +117,7 @@ bool RoomManager::contains(std::string &key){
 /// @param world world to spawn in
 /// @param x in meters
 /// @param y in meters
-void RoomManager::createALayout(UWorld* world, int x, int y){
+void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     //showKeys(); //debug
     //showLog(); //shows previous log
 
@@ -142,6 +142,7 @@ void RoomManager::createALayout(UWorld* world, int x, int y){
             int ypos = convertScaleToMeter(yposInGrid);
 
             FVector position(xpos, ypos, 50); //z position must be aligned too some how
+            position += location;
 
             //create rooms
             AActor *actor = e->spawnAactor(world, uclass, position);

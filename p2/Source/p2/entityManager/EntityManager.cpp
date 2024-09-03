@@ -599,7 +599,7 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
 
     if(worldIn != nullptr){
         //must be selected a room type too
-        roomType1Manager.createALayout(worldIn, xscale, yscale);
+        roomType1Manager.createALayout(worldIn, location, xscale, yscale);
     }
 
 }
@@ -653,4 +653,28 @@ void EntityManager::createTerrain(UWorld *worldIn, int chunks){
         requestedActors.clear();
 
     }
+}
+
+
+/**
+ * section for materials
+ */
+
+/// @brief add a material to be used on any mesh by material enum type
+/// @param type 
+/// @param material 
+void EntityManager::addMaterial(materialEnum type, UMaterial *material){
+    if(material != nullptr){
+        materialMap[type] = material;
+    }
+}
+
+/// @brief get any material by enum type
+/// @param type type to find
+/// @return material or nullptr if none found
+UMaterial *EntityManager::getMaterial(materialEnum type){
+    if(materialMap.find(type) != materialMap.end()){
+        return materialMap[type];
+    }
+    return nullptr;
 }

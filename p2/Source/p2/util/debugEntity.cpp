@@ -42,8 +42,8 @@ int AdebugEntity::getTeam(){
 
 void AdebugEntity::debugFunction(){
 	if(EntityManager *e = EntityManager::instance()){
-		//FVector location(0, 0, 0);
-		// e->createALayout(GetWorld(), location, 20, 20);
+		FVector location1 = GetActorLocation();
+		e->createALayout(GetWorld(), location1, 20, 20);
 
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);

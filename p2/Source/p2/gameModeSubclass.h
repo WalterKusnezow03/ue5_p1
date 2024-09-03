@@ -19,28 +19,8 @@ public:
 	void BeginPlay();
 
 private:
-	//loads a uclass from a specific path
-	UClass* loadUClassBluePrint(FString path);
-	UMaterial *loadMaterial(FString path);
-
+	
 	void createPathFinder();
 
-
-
-
-	void loadWeapons(EntityManager *entityManager);
-	void loadEntities(EntityManager *entityManager);
-	void loadThrower(EntityManager *entityManager);
-	void loadParticles(EntityManager *entityManager);
-	void loadRooms(EntityManager *entityManager);
-	void loadTerrain(EntityManager *e);
-
-
-
-
-
-	//new testing
-	void loadPaths();
-	void loadUClassFromAssetPath(FString s);
 
 };

@@ -8,7 +8,8 @@
 
 
 /**
- * 
+ * the room manager holds the specific uclasses for the rooms and
+ * creates room layouts on request
  */
 
 
@@ -22,7 +23,7 @@ public:
 
 	void add(UWorld *world, UClass *uclass);
 
-	void createALayout(UWorld *world, int x, int y);
+	void createALayout(UWorld *world, FVector &location, int x, int y);
 
 	bool contains(int x, int y);
 

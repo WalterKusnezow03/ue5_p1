@@ -15,6 +15,7 @@
 #include "p2/rooms/room.h"
 #include "p2/entityManager/RoomManager.h"
 #include "p2/entityManager/EntityManagerGenericMap.h"
+#include "p2/meshgen/materialEnum.h"
 
 
 /**
@@ -76,8 +77,7 @@ public:
 	void setparticleBp(UClass *uIn, particleEnum typeIn);
 
 	void createExplosion(UWorld *world, FVector &location);
-
-
+	void createFire(UWorld *world, FVector &location);
 
 	//rooms
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
@@ -162,9 +162,14 @@ private:
 
 	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
 
-	//class EntityManagerGeneric<Aparticle> particleSmokeList;
-	//class EntityManagerGeneric<Aparticle> particleFireList;
-
 	
 
+
+	//for now materials will be saved here
+public:
+	void addMaterial(materialEnum type, UMaterial *material);
+	UMaterial *getMaterial(materialEnum type);
+
+private:
+	std::map<materialEnum, UMaterial *> materialMap;
 };

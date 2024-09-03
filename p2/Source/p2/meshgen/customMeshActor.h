@@ -59,4 +59,6 @@ private:
 		TArray<FVector> &output,
 		TArray<int32> &trianglesOutput
 	);
+
+	void ApplyMaterial(UProceduralMeshComponent *ProceduralMeshComponent, UMaterial *Material);
 };
