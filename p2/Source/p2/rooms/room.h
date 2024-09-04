@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "roomtypeEnum.h"
 #include "room.generated.h"
 
 UCLASS()
@@ -15,7 +16,13 @@ public:
 	// Sets default values for this actor's properties
 	Aroom();
 
+	roomtypeEnum readType();
+
 protected:
+	//blue print var for defining the type of the room properly
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="room type")
+	roomtypeEnum type;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -26,6 +33,9 @@ public:
 	void processDoorPositionVectors(std::vector<FVector> &toPositionVector, UClass *doorBp);
 
 private:
+	
+
+
 	void debugShowOutline();
 	void findDoors();
 	void calculateActorBounds();

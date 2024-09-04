@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/rooms/room.h"
-#include "p2/entityManager/RoomManager.h"
+#include "p2/rooms/RoomManager.h"
 #include <list>
 
 class Aroom;
@@ -17,18 +17,18 @@ class P2_API layoutCreator
 public:
 	layoutCreator(RoomManager *manager);
 	~layoutCreator();
-
-	void createRooms(int x, int y);
-	
-
+	//saves the room data to spawn a room appropiatly
 	class roomBounds{
 		public:
 			void updatePosition(int xPos, int yPos);
 
 			//create room type too!, and door positions
 			int number;
-			roomBounds(int xIn, int yIn, int num);
+			roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn);
 			~roomBounds();
+
+			roomtypeEnum readType();
+
 			int xpos();
 			int ypos();
 
@@ -41,7 +41,7 @@ public:
 			void addNeighbor(roomBounds *n);
 			void addDoorPosition(int x, int y);
 
-			void createDoorTo(roomBounds *n);
+			//void createDoorTo(roomBounds *n);
 
 			std::vector<FVector> &readRelativeDoorPositions();
 
@@ -54,11 +54,17 @@ public:
 			/// @brief relative door positions for the room
 			std::vector<FVector> doorPositions;
 
+			roomtypeEnum type;
+
 			//std::vector<roomBounds *> neighbors;
 	};
 
+	void createRooms(int x, int y, int staircases);
+	void createRooms(int x, int y, std::vector<layoutCreator::roomBounds> staircases);
+
 	//public method to copy to room data, might be switched to be by reference
-	std::vector<roomBounds> copyData();
+	std::vector<layoutCreator::roomBounds> copyData();
+	std::vector<layoutCreator::roomBounds> copyStaircaseData();
 
 private:
 	//inner grid class to save the map
@@ -71,6 +77,8 @@ private:
 			bool isFree(int x, int y);
 			bool isAreaFree(int x, int y, int x1, int y1);
 			bool findAndAdd(layoutCreator::roomBounds *p);
+			void forceAdd(layoutCreator::roomBounds *p);
+
 			bool isValidIndex(int x, int y);
 			layoutCreator::roomBounds *tryGetPosition(int x, int y);
 
@@ -83,6 +91,9 @@ private:
 
 	};
 
+	//saves the staircases to create
+	int staircasesLeft;
+
 	//room manager reference to ask for valid map sizes
 	class RoomManager *manager;
 
@@ -90,6 +101,7 @@ private:
 
 	//IV
 	std::vector<layoutCreator::roomBounds *> created;
+	std::vector<layoutCreator::roomBounds *> createdStaircases;
 	class grid *map = nullptr;
 
 	class UWorld *worldPointer = nullptr;
@@ -103,7 +115,7 @@ private:
 
 	void createRoomStartingFromSize(int x, int y);
 
-	bool canCreate(int x, int y);
+	bool canCreate(int x, int y, roomtypeEnum typeIn);
 	roomBounds *testRoom(int x, int y);
 
 	void connectNeighbors();

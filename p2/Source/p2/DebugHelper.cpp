@@ -21,7 +21,7 @@ void DebugHelper::showScreenMessage(FString s){
 /// @param s 
 /// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
-    if(!s.Contains("door")){
+    if(!s.Contains("strairkey")){
 		return; //TESTING 
 	}
 

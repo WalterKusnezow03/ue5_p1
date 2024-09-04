@@ -13,9 +13,10 @@
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/particleSystem/particle.h"
 #include "p2/rooms/room.h"
-#include "p2/entityManager/RoomManager.h"
+#include "p2/rooms/RoomManager.h"
 #include "p2/entityManager/EntityManagerGenericMap.h"
 #include "p2/meshgen/materialEnum.h"
+#include "p2/rooms/roomtypeEnum.h"
 
 
 /**
@@ -81,7 +82,7 @@ public:
 
 	//rooms
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
-	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale);
+	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale, roomtypeEnum type);
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
 	void setDooruClassBp(UClass *uclassIn);

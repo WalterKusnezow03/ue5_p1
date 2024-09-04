@@ -29,6 +29,12 @@ void Aroom::Tick(float DeltaTime)
 
 }
 
+/// @brief returns the room type for this room
+/// @return room type from enum
+roomtypeEnum Aroom::readType(){
+	return type;
+}
+
 /// @brief will calculate and set room bounds, is ideally called on begin play!
 void Aroom::calculateActorBounds(){
 	/**

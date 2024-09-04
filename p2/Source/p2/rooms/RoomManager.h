@@ -19,24 +19,23 @@ public:
 	RoomManager();
 	~RoomManager();
 
-	UClass *getBpFor(int xSize, int ySize);
+	UClass *getBpFor(int xSize, int ySize, roomtypeEnum type);
 
 	void add(UWorld *world, UClass *uclass);
 	void addDoor(UClass *uclass);
 
 	void createALayout(UWorld *world, FVector &location, int x, int y);
 
-	bool contains(int x, int y);
+	bool contains(int x, int y, roomtypeEnum type);
 
 private:
 	static const int ONE_METER = 100;
 
 	//saves the uclass rooms based on size (created with the key)
 	std::map<std::string, UClass *> map;
-
-	std::string createKey(int xSize, int ySize);
-
+	std::string createKey(int xSize, int ySize, roomtypeEnum type);
 	bool contains(std::string &key);
+
 
 	int convertMeterToIndex(int a);
 	int convertScaleToMeter(int a);

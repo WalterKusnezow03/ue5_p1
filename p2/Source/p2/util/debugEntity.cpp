@@ -47,7 +47,7 @@ void AdebugEntity::debugFunction(){
 		location1.Z = 20;
 		e->createALayout(GetWorld(), location1, 50, 50);
 
-		//return;
+		return;
 
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);

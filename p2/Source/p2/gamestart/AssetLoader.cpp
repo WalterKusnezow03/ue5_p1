@@ -227,7 +227,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
     //refacture
     FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/"));
     FString bpNamePart = FString::Printf(TEXT("room"));
-    for (int i = 1; i <= 5; i++){
+    for (int i = 1; i <= 6; i++){
         FString bpNamePart2 = FString::Printf(TEXT("%d"), i);
         FString connected = bpNamePart + bpNamePart2;
         FString finalPath = buildPath(path, connected);
@@ -247,6 +247,10 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
 }
 
 
+// ---- LOAD TERRAIN ----
+
+/// @brief loads the terrain data
+/// @param entityManager 
 void AssetLoader::loadTerrain(EntityManager *entityManager){
    
     FString path = FString::Printf(TEXT("Blueprint'/Game/Prefabs/terrain/emptyCustomMeshActor.emptyCustomMeshActor_C'"));
@@ -254,6 +258,8 @@ void AssetLoader::loadTerrain(EntityManager *entityManager){
         entityManager->setEmptyMeshUClassBp(loadUClassBluePrint(path));
     }
 }
+
+// ---- LOAD MATERIALS ----
 
 /// @brief loads all materials needed
 /// @param entityManager 

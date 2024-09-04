@@ -578,11 +578,11 @@ void EntityManager::setDooruClassBp(UClass *uclassIn){
 
 /// @brief will create a room based on the given type if possible
 /// @return Aroom
-Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, int yScale){
+Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, int yScale, roomtypeEnum type){
     if(world != nullptr){
 
         //get proper room later
-        UClass *r = roomType1Manager.getBpFor(xScale, yScale); //room manager saves the room data
+        UClass *r = roomType1Manager.getBpFor(xScale, yScale, type); //room manager saves the room data
         
         if(r != nullptr){
             AActor *a = spawnAactor(world, r, location);

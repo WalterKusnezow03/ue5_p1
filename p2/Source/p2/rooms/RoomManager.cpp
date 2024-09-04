@@ -4,7 +4,8 @@
 #include <string>
 #include <map>
 #include "p2/rooms/layoutCreator.h"
-#include "p2/entityManager/RoomManager.h"
+#include "p2/rooms/room.h"
+#include "RoomManager.h"
 
 
 
@@ -54,14 +55,23 @@ void RoomManager::add(UWorld *world, UClass *uclass){
             int yScale = (int)(Extent.Y * 2) / ONE_METER;
             int zScale = (int)(Extent.Z * 2) / ONE_METER;
 
-            std::string key = createKey(xScale, yScale);
+            //create the key
+            std::string key;
+            Aroom *room = Cast<Aroom>(TempActor);
+            if(room != nullptr){
+                roomtypeEnum type = room->readType();
+                key = createKey(xScale, yScale, type);
+
+            }
+
+            //add the key to the map
             if(!contains(key)){
                 map[key] = uclass;
 
                 
                 FString s(UTF8_TO_TCHAR(key.c_str()));
-                s.Append(FString::Printf(TEXT("added ")));
-                //DebugHelper::showScreenMessage(s);
+                s.Append(FString::Printf(TEXT(" room added ")));
+                DebugHelper::showScreenMessage(s);
 
                 addLog(s);
             }
@@ -88,35 +98,62 @@ void RoomManager::addDoor(UClass *uclass){
 /// @param x 
 /// @param y 
 /// @return uclass to instantiate
-UClass *RoomManager::getBpFor(int x, int y){
+UClass *RoomManager::getBpFor(int x, int y, roomtypeEnum type){
 
-    std::string key = createKey(x, y);
-    UClass *fromMap = map[key];
-    if(fromMap != nullptr){
-        return fromMap;
+    std::string key = createKey(x, y, type);
+    if(contains(key)){
+        UClass *fromMap = map[key];
+        if(fromMap != nullptr){
+            return fromMap;
+        }
     }
+    
     return nullptr;
 }
+
 
 
 /// @brief creates a key from 2 values
 /// @param x int first
 /// @param y int second
 /// @return key from x and y
-std::string RoomManager::createKey(int x, int y){
-    return (std::to_string(x) + "-" + std::to_string(y));
+std::string RoomManager::createKey(int x, int y, roomtypeEnum type){
+    std::string front = std::to_string(x) + "-" + std::to_string(y);
+    switch(type){
+        case roomtypeEnum::room:
+            front += "roomkey";
+            return front;
+        case roomtypeEnum::staircase:
+            front += "strairkey";
+            return front;
+        }
+    return front;
 }
 
 
-bool RoomManager::contains(int x, int y){
-    std::string key = createKey(x, y);
+
+
+bool RoomManager::contains(int x, int y, roomtypeEnum type){
+    if(type == roomtypeEnum::staircase){
+        DebugHelper::showScreenMessage("ask for strairkey", FColor::Purple);
+    }
+    std::string key = createKey(x, y, type);
     return contains(key); //man darf keine rückgabe typen 
 }
 
+/// @brief returns whether they key is in the map or not
+/// @param key key to find
+/// @return found or not
 bool RoomManager::contains(std::string &key){
-    UClass *read = map[key];
-    return read != nullptr;
+    if(map.find(key) != map.end()){
+        return true;
+    }
+    return false;
+    //UClass *read = map[key];
+    //return read != nullptr;
 }
+
+
 
 
 /// @brief creates a layout based on a size inout of indices of meters
@@ -127,8 +164,12 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     //showKeys(); //debug
     //showLog(); //shows previous log
 
-    layoutCreator l(this); //all the data will be destroyed when it goes out of scope, remember.
-    l.createRooms(x, y);
+    int staircasesPerLayer = 2;
+    layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
+    l.createRooms(x, y, staircasesPerLayer);
+
+
+
 
     //copy data
     std::vector<layoutCreator::roomBounds> copy = l.copyData();
@@ -138,7 +179,7 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
         for (int i = 0; i < copy.size(); i++){
 
             layoutCreator::roomBounds *roomToCreate = &copy.at(i);
-            UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale());
+            UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale(), roomToCreate->readType());
 
             int xposInGrid = roomToCreate->xpos(); //must be converted
             int yposInGrid = roomToCreate->ypos();
@@ -212,11 +253,12 @@ void RoomManager::showKeys(){
     FString result = FString(TEXT("keys: "));
     FString n = FString(TEXT("\n"));
 
-    for (auto& pair : map) {
-        FString s = FString(pair.first.c_str());
-        result += s;
-        result += n;
-    }
+    for (auto& pair : map)
+            {
+                FString s = FString(pair.first.c_str());
+                result += s;
+                result += n;
+            }
     DebugHelper::showScreenMessage(result);
 }
 
