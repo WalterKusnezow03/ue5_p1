@@ -15,7 +15,9 @@ public:
 
 	static const bool PLOTTING_ENABLED = false; // false;
 	static const int CHUNKSIZE = 10;
-	static const int ONEMETER = 100;
+	static const int ONEMETER = 200; //test
+	static const int fractureHeightStep = 3;
+
 	int chunkNum();
 	void createterrain(UWorld *world, int meters);
 
@@ -110,6 +112,9 @@ private:
 
 	void upScalePoints(std::vector<FVector2D> &points, float factor);
 	void offsetPoints(std::vector<FVector2D> &vec, FVector2D offset);
+	
 
 
+	//testing needed
+	void TwoDimensionSplineOnly();
 };

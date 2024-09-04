@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "p2/util/FVectorTouple.h"
 #include "ProceduralMeshComponent.h"
 #include "customMeshActor.generated.h"
 
@@ -32,6 +33,7 @@ private:
 	//saving data too, will be overriden when updateMesh is called
 	TArray<FVector> vertecies;
 	TArray<int32> triangles;
+	TArray<FVector> normals;
 
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent *Mesh;
@@ -61,4 +63,6 @@ private:
 	);
 
 	void ApplyMaterial(UProceduralMeshComponent *ProceduralMeshComponent, UMaterial *Material);
+
+	void createFoliage(TArray<FVectorTouple> &touples);
 };

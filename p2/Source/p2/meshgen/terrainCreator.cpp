@@ -179,7 +179,7 @@ int terrainCreator::chunk::jumpHeight(){
     return terrainCreator::ONEMETER;
 }
 int terrainCreator::chunk::heightAdd(){
-    return jumpHeight();
+    return jumpHeight() / terrainCreator::fractureHeightStep; //test
 }
 
 bool terrainCreator::chunk::jumpOfInterest(FVector &a, FVector &b){
@@ -210,19 +210,21 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
         float x_yInCmFirst = innerMap.at(xColumn).at(0).Y; //is in cm by default, without offset
         float y_heightFirst = innerMap.at(xColumn).at(0).Z;
         // build
+        
         FVector2D first(
             x_yInCmFirst, //nach oben richtung x, achse
             y_heightFirst
         );
         first += baseAnchorAlongAxis;
         anchors.push_back(first);
-
+        
 
 
         FVector2D prev = first;
+        FVector prevPushed = innerMap.at(xColumn).at(0);
 
         //alle
-        for (int _y = 1; _y < innerMap.size(); _y++){ // _y = 1 //_y = 2
+        for (int _y = 2; _y < innerMap.size(); _y++){ // _y = 1 //_y = 2
 
             //alle vektoren bauen aus 
             //xcolumn locked
@@ -237,16 +239,20 @@ std::vector<FVector2D> terrainCreator::chunk::getXColumAnchors(int xColumn){
             );
             next += baseAnchorAlongAxis;
 
-
-            
-            if(jumpOfInterest(innerMap.at(xColumn).at(_y), innerMap.at(xColumn).at(_y-1))){
+            //testing
+            if(_y %3 == 0){
                 anchors.push_back(next);
-                
-                _y += 2; 
-
-
-
             }
+
+            /*
+            if (jumpOfInterest(innerMap.at(xColumn).at(_y), prevPushed))
+            {
+                // if(jumpOfInterest(innerMap.at(xColumn).at(_y), innerMap.at(xColumn).at(_y-1))){
+                anchors.push_back(next);
+                prevPushed = innerMap.at(xColumn).at(_y);
+
+                _y += 2;
+            }*/
 
             prev = next;
             // einfügen
@@ -413,6 +419,10 @@ void terrainCreator::chunk::applyIndivualVertexIndexBased(
     bool override
 ){
     if(!xIsValid(xIn) || !yIsValid(yIn)){
+        FString s = TEXT("");
+        s.Append(TEXT("x %d"), xIn);
+        s.Append(TEXT("y %d"), yIn);
+        DebugHelper::showScreenMessage(s);
         return;
     }
 
@@ -517,7 +527,11 @@ void terrainCreator::createterrain(UWorld *world, int meters){
         }
         map.push_back(vec);
     }
+    //TwoDimensionSplineOnly();
+    //plotAllChunks(world);
+    //return;
 
+    //old
 
     //get anchors...
     std::vector<FVector2D> anchors;
@@ -530,16 +544,18 @@ void terrainCreator::createterrain(UWorld *world, int meters){
     processTopViewBezierCurve(outputData);
 
 
-    //another
-    //std::vector<FVector2D> anchors1 = createSamplePoints(); //= getAnchors() to be implemented
-    shapeCreator::createShape(anchors);
-    upScalePoints(anchors, 6);
-    std::vector<FVector2D> outputData1;
-    b.calculatecurve(anchors, outputData1, terrainCreator::ONEMETER, 1);
-    processTopViewBezierCurve(outputData1);
 
-    
+    int smallestMeters = 10;
+    int shapes = 10;
+    for (int i = 0; i < shapes; i++){
+        shapeCreator::randomEnclosedShape(anchors, 50);
+        upScalePoints(anchors, FVectorUtil::randomNumber(1,4));
+        offsetPoints(anchors, FVectorUtil::randomOffset2D(20 * terrainCreator::ONEMETER));
 
+        std::vector<FVector2D> outputData1;
+        b.calculatecurve(anchors, outputData1, terrainCreator::ONEMETER, 1);
+        processTopViewBezierCurve(outputData1);
+    }
 
     // works
     smooth3dMap();
@@ -786,7 +802,7 @@ void terrainCreator::smooth3dMap(){
             //proces data in bezier, to output
             std::vector<FVector2D> output;
             curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
-            cleanValues(output);
+            cleanValues(output); //can! be the case
 
             //trying writing immidately
             applyXColumnToMap(xcount, output);
@@ -794,9 +810,9 @@ void terrainCreator::smooth3dMap(){
            
         }
     }
-    // return;
+    //return;
 
-    
+
     int ycount = 0;
     for (int cY = 0; cY < map.size(); cY++){
         for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
@@ -872,7 +888,19 @@ void terrainCreator::applyXColumnToMap(int index, std::vector<FVector2D> &column
 
             if(c->xIsValid(xInnerIndex) && c->yIsValid(yInnerIndex)){
                 if(i < column.size() -1){
-                    DebugHelper::showLineBetween(worldPointer, k, prev, FColor::Yellow);
+
+                    if (terrainCreator::PLOTTING_ENABLED){
+                        if (std::abs(k.Y - prev.Y) <= terrainCreator::ONEMETER * 1.1f)
+                        {
+                            DebugHelper::showLineBetween(worldPointer, k, prev, FColor::Yellow);
+                        }
+                        else
+                        {
+                            DebugHelper::showLineBetween(worldPointer, k, prev, FColor::Red);
+                        }
+                    }
+                        
+                    
                 }
             }
 
@@ -880,7 +908,7 @@ void terrainCreator::applyXColumnToMap(int index, std::vector<FVector2D> &column
                 xInnerIndex,
                 yInnerIndex,
                 newHeight,
-                true
+                false
             );
 
             prev = k;
@@ -1156,4 +1184,47 @@ std::vector<FVector2D> terrainCreator::createSamplePoints(){
 
     
     return output;
+}
+
+
+
+
+
+
+void terrainCreator::TwoDimensionSplineOnly(){
+
+    //hier soll getestet werden wie nur 2d beziers über einander lappend gut aussehen oder nicht
+
+    //es sollen erst ALLE X columns sofort applied werden und dann mit einer
+    //y column jeweils vermischt
+    //dazu gibt es dann nur eine bezier kurve für die jeweiligen achsen
+
+    int meterScale = 50;
+
+    //calculate curve
+    bezierCurve curve;
+    std::vector<FVector2D> outputA;
+    std::vector<FVector2D> outputB;
+    shapeCreator::createLineShape(outputA, meterScale);
+    curve.calculatecurve(outputA, outputB, terrainCreator::ONEMETER, 1);
+    cleanValues(outputB); //can! be the case
+
+    //apply to all columns the same curve
+    int totalAxis = map.size() * terrainCreator::CHUNKSIZE;
+
+    for (int i = 0; i < totalAxis; i++){
+        applyXColumnToMap(i, outputB);
+    }
+
+
+    std::vector<FVector2D> outputA1;
+    std::vector<FVector2D> outputB1;
+    shapeCreator::createLineShape(outputA1, meterScale);//50m testing
+    curve.calculatecurve(outputA1, outputB1, terrainCreator::ONEMETER, 1);
+    cleanValues(outputB1); //can! be the case
+
+    for (int i = 0; i < totalAxis; i++){
+        applyYRowToMap(i, outputB1);
+    }
+
 }

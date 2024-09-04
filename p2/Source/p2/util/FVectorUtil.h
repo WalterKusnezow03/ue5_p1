@@ -11,13 +11,24 @@ class P2_API FVectorUtil
 {
 public:
 	static FVector randomOffset(int range);
-	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
+	static FVector calculateNormal(FVector &a, FVector &b, FVector &c);
+	static FVector calculateCenter(FVector &a, FVector &b, FVector &c);
+	static FVector calculateCenter(FVector &a, FVector &b, FVector &c, FVector &d);
+	static FVector calculateCenter(std::vector<FVector> &vec);
+	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
+
+	static FVector2D randomOffset2D(int range);
+
+	static bool edgeIsVertical(FVector &A, FVector &B);
+	static bool directionIsVertical(FVector &A);
+
 	static int randomNumber(int range);
 	static int randomNumber(int lower, int higher);
+	static void fillWithRandomNumbers(std::vector<int> &nums, int count, int lower, int higher);
 
 	static FRotator randomRotation(FVector ownLocation);
-
-	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
+	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
+	
 
 	static float Dist(FVector2D &a, FVector2D &b);
 
