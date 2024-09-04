@@ -230,7 +230,7 @@ void layoutCreator::createRooms(int x, int y){
     //clean up
     clean();
 
-    map = new layoutCreator::grid(25, 25); //MAP SIZE HERE
+    map = new layoutCreator::grid(x, y); //MAP SIZE HERE
     fillLayout();
     connectNeighbors();
 }

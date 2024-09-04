@@ -52,11 +52,38 @@ FString AssetLoader::buildPath(FString path, FString bluePrintName){
     connect.Append(dot);
     connect.Append(bluePrintName);
     connect.Append(_C_end);
+
+    cleanUpPath(connect);
+
     return connect;
 }
 
 
+void AssetLoader::cleanUpPath(FString &s){
+    FString out;
+    out.Reserve(s.Len());
+    TCHAR slash = TEXT('/');
+    TArray<TCHAR> asArray = s.GetCharArray();
 
+    bool found = false;
+    int i = 0;
+    while(i  < asArray.Num()){
+        if(asArray[i] != slash){
+            out.AppendChar(asArray[i]);
+            found = false;
+        }
+        else
+        {
+            if(!found){ //skip any else
+                out.AppendChar(slash);
+            }
+            found = true;
+        }
+        i++;
+    }
+    s = out;
+    //return out;
+}
 
 /// @brief load all entities 
 /// @param entityManager entity manager to create
@@ -85,10 +112,11 @@ UClass* AssetLoader::loadUClassBluePrint(FString path){
     // Load the class object dynamically
     UClass* bpClass = StaticLoadClass(UObject::StaticClass(), nullptr, *path);
     
+    
     // Check if the class was loaded successfully
     if (bpClass != nullptr)
     {
-        return bpClass;
+        return bpClass; //issues can still occur here when a non blueprint is found but treated like one!
     }
     return nullptr;
 }
@@ -199,46 +227,23 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
     //refacture
     FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/"));
     FString bpNamePart = FString::Printf(TEXT("room"));
-    for (int i = 1; i < 5; i++){
+    for (int i = 1; i <= 5; i++){
         FString bpNamePart2 = FString::Printf(TEXT("%d"), i);
         FString connected = bpNamePart + bpNamePart2;
         FString finalPath = buildPath(path, connected);
         entityManager->setRoomuClassBp(world, loadUClassBluePrint(finalPath));
     }
     
-    /*
-    // rooms are named with room0, room1 etc, integer counting up
-    // FString pathFront = FStringPrintf(TEXT("Blueprint'/Game/Prefabs/rooms/room1.room1_C'")); //sample
-    FString pathFront = FString::Printf(TEXT("Blueprint'/Game/Prefabs/rooms/"));
-    FString room = FString::Printf(TEXT("room"));
-    FString dot = FString::Printf(TEXT("."));
-    FString _C_end = FString::Printf(TEXT("_C'"));
-    for (int i = 1; i < 5; i++){
-        FString connect = pathFront;
-        connect.Append(room);
-        connect.Append(TEXT("%d"),i);
-        connect.Append(dot);
-        connect.Append(room);
-        connect.Append(TEXT("%d"),i);
-        connect.Append(_C_end);
-        if(entityManager){
-            entityManager->setRoomuClassBp(world, loadUClassBluePrint(connect));
-        }
-    }
 
     //load rooms
-    pathFront = FString::Printf(TEXT("Blueprint'/Game/Prefabs/rooms/walls/doors/"));
-    FString door = FString::Printf(TEXT("door"));
+    path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/doors/"));
+    FString door = FString::Printf(TEXT("doorBp"));
     for (int i = 1; i < 2; i++){
-        FString connect = pathFront;
-        connect.Append(room);
-        connect.Append(TEXT("%d"),i);
-        connect.Append(dot);
-        connect.Append(room);
-        connect.Append(TEXT("%d"),i);
-        connect.Append(_C_end);
-    }*/
-
+        FString num = FString::Printf(TEXT("%d"), i);
+        FString connect = door + num;
+        FString builded = buildPath(path, connect);
+        entityManager->setDooruClassBp(loadUClassBluePrint(builded));
+    }
 }
 
 

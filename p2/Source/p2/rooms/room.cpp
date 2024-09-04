@@ -2,6 +2,7 @@
 
 
 #include "p2/util/AActorUtil.h"
+#include "p2/entityManager/EntityManager.h"
 #include "room.h"
 
 // Sets default values
@@ -134,14 +135,18 @@ void Aroom::findWalls(){
 	}
 
 	if(added > 0){
-		DebugHelper::showScreenMessage("collected walls final ", added);
+		//DebugHelper::showScreenMessage("collected walls final ", added);
 	}
 }
 
 
+void Aroom::disableWall(FVector &location){
+	disableWall(location, nullptr);
+}
+
 /// @brief disables the closest wall to a point
 /// @param location 
-void Aroom::disableWall(FVector &location){
+void Aroom::disableWall(FVector &location, UClass *doorBp){
 
 	if(wallActors.Num() > 0){
 
@@ -164,9 +169,22 @@ void Aroom::disableWall(FVector &location){
 		if(closestDist <= 100 && closest != nullptr){ //100cm als thresehold
 			closest->SetActorHiddenInGame(true);
 			closest->SetActorEnableCollision(false);
-			DebugHelper::showScreenMessage("disabled a wall");
+			//DebugHelper::showScreenMessage("disabled a wall");
+
+			//spawn a door
+			if(EntityManager *e = EntityManager::instance()){
+				if(doorBp != nullptr){
+					FVector locationCopy = closest->GetActorLocation();
+					FRotator rotationCopy = closest->GetActorRotation();
+					AActor *spawnedDoor = e->spawnAactor(GetWorld(), doorBp, locationCopy);
+					if(spawnedDoor != nullptr){
+						spawnedDoor->SetActorLocation(locationCopy);
+						spawnedDoor->SetActorRotation(rotationCopy);
+					}
+				}
+			}
+			
 		}
-		
 	}
 	
 
@@ -178,7 +196,7 @@ void Aroom::disableWall(FVector &location){
 
 /// @brief will process all door positions of a room
 /// @param positions 
-void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector){
+void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, UClass *doorBp){
 
 	//enable disable doors based on bottom left + offset
 	FVector bottomLeft = bottomLeftCorner();
@@ -193,7 +211,7 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector){
 
 		//find walls to disable
 		//50cm * 2 is the default width
-		disableWall(relativeDoorPos);
+		disableWall(relativeDoorPos, doorBp);
 	}
 
 	debugShowOutline();

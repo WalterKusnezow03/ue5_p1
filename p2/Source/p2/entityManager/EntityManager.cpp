@@ -169,7 +169,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
     if(casted != nullptr){
         casted->init();
-        DebugHelper::showScreenMessage("try spawn human");
+        //DebugHelper::showScreenMessage("try spawn human");
         return casted;
     }
     return nullptr;
@@ -185,15 +185,20 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 /// @return spawned actor pointer
 AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector &Location){
     if(world != nullptr && toSpawn != nullptr){
+        
+        //check if the type to spawn is even aactor and the casting is valid
+        //other wise things get messed up and different points created
+        if(toSpawn->IsChildOf(AActor::StaticClass())){ 
+            //Initialize SpawnParams if needed
+            FActorSpawnParameters SpawnParams;
 
-        // Initialize SpawnParams if needed
-        FActorSpawnParameters SpawnParams;
-
-        // Spawn the actor
-        AActor *spawned = world->SpawnActor<AActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams);
-        if(spawned != nullptr){
-            return spawned;
+            // Spawn the actor
+            AActor *spawned = world->SpawnActor<AActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams);
+            if(spawned != nullptr){
+                return spawned;
+            }
         }
+       
             
     }
     return nullptr;
@@ -282,10 +287,10 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
 
     if(world != nullptr){
 
-        DebugHelper::showScreenMessage("THROWABLE REQUETS TEST");
+        //DebugHelper::showScreenMessage("THROWABLE REQUETS TEST");
         if (throwableMap.hasActorsLeft(type))
         {
-            DebugHelper::showScreenMessage("THROWABLE REQUEST OK ", FColor::Green);
+            //DebugHelper::showScreenMessage("THROWABLE REQUEST OK ", FColor::Green);
             AthrowableItem *a = throwableMap.getFirstActor(type);
             if(a != nullptr){
                 a->reset();
@@ -556,16 +561,28 @@ void EntityManager::setRoomuClassBp(UWorld *world, UClass *uclass){
     }
 }
 
+/// @brief adds a door to the appropiate room manager, types must be made up later!
+/// @param uclassIn 
+void EntityManager::setDooruClassBp(UClass *uclassIn){
+    if(uclassIn != nullptr){
+        roomType1Manager.addDoor(uclassIn);
+    }else{
+        DebugHelper::showScreenMessage("door uclass was nullptr! - entity manager", FColor::Red);
+    }
+}
+
+
+
 
 
 
 /// @brief will create a room based on the given type if possible
-/// @return 
+/// @return Aroom
 Aroom *EntityManager::createRoom(UWorld *world, FVector &location, int xScale, int yScale){
     if(world != nullptr){
 
         //get proper room later
-        UClass *r = roomType1Manager.getBpFor(xScale, yScale);
+        UClass *r = roomType1Manager.getBpFor(xScale, yScale); //room manager saves the room data
         
         if(r != nullptr){
             AActor *a = spawnAactor(world, r, location);

@@ -22,6 +22,7 @@ public:
 	UClass *getBpFor(int xSize, int ySize);
 
 	void add(UWorld *world, UClass *uclass);
+	void addDoor(UClass *uclass);
 
 	void createALayout(UWorld *world, FVector &location, int x, int y);
 
@@ -46,7 +47,6 @@ private:
 	void addLog(FString s);
 	void showLog();
 
-
-	
-
+	/// @brief place holder variable 
+	class UClass *door1;
 };

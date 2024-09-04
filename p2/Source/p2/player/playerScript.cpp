@@ -23,7 +23,7 @@ AplayerScript::AplayerScript()
     aiming = false;
 
     // Set capsule size
-    GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+    GetCapsuleComponent()->InitCapsuleSize(55.f, 90.0f);
 
     // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));

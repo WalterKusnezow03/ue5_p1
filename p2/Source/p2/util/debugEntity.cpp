@@ -18,6 +18,7 @@ void AdebugEntity::BeginPlay()
 {
 	Super::BeginPlay();
 	clicked = false;
+	takedamage(0);
 }
 
 // Called every frame
@@ -43,7 +44,10 @@ int AdebugEntity::getTeam(){
 void AdebugEntity::debugFunction(){
 	if(EntityManager *e = EntityManager::instance()){
 		FVector location1 = GetActorLocation();
-		e->createALayout(GetWorld(), location1, 20, 20);
+		location1.Z = 20;
+		e->createALayout(GetWorld(), location1, 50, 50);
+
+		//return;
 
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);

@@ -76,6 +76,12 @@ void RoomManager::add(UWorld *world, UClass *uclass){
     }
 }
 
+void RoomManager::addDoor(UClass *uclass){
+    if(uclass != nullptr){
+        door1 = uclass;
+    }
+}
+
 
 
 /// @brief returns a blueprint or nullptr for a given size targeted
@@ -165,8 +171,12 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
                     doorPositionsConverted.push_back(adjusted);
                 }
 
+                if(door1 == nullptr){
+                    //DebugHelper::showScreenMessage("door was nullptr! - room manager");
+                }
+
                 //the room will process the postions and enable walls and doors accordingly
-                aroom->processDoorPositionVectors(doorPositionsConverted);
+                aroom->processDoorPositionVectors(doorPositionsConverted, door1);
             }
         }
     }

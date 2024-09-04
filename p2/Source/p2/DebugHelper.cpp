@@ -14,17 +14,18 @@ DebugHelper::~DebugHelper()
 /// @brief shows a scnreen message in green color
 /// @param s string to show
 void DebugHelper::showScreenMessage(FString s){
-    if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
-	}
+	showScreenMessage(s, FColor::Green);
 }
 
 /// @brief showsa screen message and a color
 /// @param s 
 /// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
-    if (GEngine)
+    if(!s.Contains("door")){
+		return; //TESTING 
+	}
+
+	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, color, s);
 	}

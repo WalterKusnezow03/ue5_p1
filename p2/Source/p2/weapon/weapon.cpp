@@ -521,11 +521,11 @@ void Aweapon::findAttachmentChildActors(){
 			if(childs[i] != nullptr){
 				FString name = childs[i]->GetName();
 				if(name.Contains("reddot")){
-					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
+					//DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
 					reddotSightChildActor = childs[i];
 				}
 				if(name.Contains("ironSight")){
-					DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
+					//DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
 					ironSightChildActor = childs[i];
 				}
 			}

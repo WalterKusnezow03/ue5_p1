@@ -84,6 +84,9 @@ public:
 	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale);
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
+	void setDooruClassBp(UClass *uclassIn);
+
+
 	//terrain
 	void setEmptyMeshUClassBp(UClass *uclassIn);
 	void createTerrain(UWorld *world, int chunks);
@@ -135,6 +138,7 @@ private:
 	UPROPERTY()
 	class UClass *room1 = nullptr;
 	class RoomManager roomType1Manager;
+	
 
 	//empty mesh actor
 	UPROPERTY()

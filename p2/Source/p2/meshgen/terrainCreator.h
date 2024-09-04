@@ -41,7 +41,7 @@ private:
 			void applyIndivualVertexIndexBased(
 				int xIn,
 				int yIn,
-				int newHeight,
+				float newHeight,
 				bool override
 			);
 
@@ -52,6 +52,8 @@ private:
 				chunk *right,
 				chunk *topRight
 			);
+			bool xIsValid(int a);
+			bool yIsValid(int a);
 
 		private:
 			std::vector<std::vector<FVector>> innerMap;
@@ -60,11 +62,10 @@ private:
 
 			int clampInnerIndex(int a);
 			
-			bool xIsValid(int a);
-			bool yIsValid(int a);
+			
 			int jumpHeight(); // add up to terrain heigh when needed
+			int heightAdd();
 			bool jumpOfInterest(FVector &a, FVector &b);
-			bool jumpOfInterestAndNoGap(FVector &a, FVector &b, FVector &c);
 
 			int convertToInnerIndex(int value);
 			int clampOuterYIndex(FVector2D &a);
@@ -109,4 +110,6 @@ private:
 
 	void upScalePoints(std::vector<FVector2D> &points, float factor);
 	void offsetPoints(std::vector<FVector2D> &vec, FVector2D offset);
+
+
 };
