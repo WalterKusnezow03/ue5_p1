@@ -2,7 +2,8 @@
 
 
 #include "p2/rooms/room.h"
-#include "p2/rooms/layoutCreator.h"
+#include "layoutCreator.h"
+#include "roomBounds.h"
 #include "p2/rooms/RoomManager.h"
 #include "p2/rooms/roomtypeEnum.h"
 #include <list>
@@ -38,66 +39,12 @@ layoutCreator::~layoutCreator()
     worldPointer = nullptr;
 }
 
-// ---- room methods ----
-
-layoutCreator::roomBounds::roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn){
-    xScale = xIn;
-    yScale = yIn;
-    number = num;
-    type = typeIn;
-}
-
-layoutCreator::roomBounds::~roomBounds(){
-    //neighbors.clear();
-}
-
-roomtypeEnum layoutCreator::roomBounds::readType(){
-    return type;
-}
-
-int layoutCreator::roomBounds::xscale(){
-    return xScale;
-}
-int layoutCreator::roomBounds::yscale(){
-    return yScale;
-}
-int layoutCreator::roomBounds::xpos() { return xPos; }
-int layoutCreator::roomBounds::ypos() { return yPos; }
-int layoutCreator::roomBounds::xOuteredge(){
-    return xPos + xScale;
-}
-int layoutCreator::roomBounds::yOuteredge(){
-    return yPos + yScale;
-}
-
-void layoutCreator::roomBounds::updatePosition(int x, int y){
-    xPos = x;
-    yPos = y;
-}
-/// @brief adds a door position 
-/// @param x x pos relative to left bottom corner
-/// @param y y pos relative to left bottom corner
-void layoutCreator::roomBounds::addDoorPosition(int x, int y){
-    //make relative: to left corner!
-    x -= xPos;
-    y -= yPos;
-
-    doorPositions.push_back(FVector(x, y, 0));
-}
-
-/// @brief will return the relative door INDEX positions, relative to the left bottom corner
-/// the index scale must be scaled up to meters (*100) and calculated to the bottom left corner
-/// of the room to get the correct door position
-/// @return vector<FVector> &reference
-std::vector<FVector> &layoutCreator::roomBounds::readRelativeDoorPositions(){
-    return doorPositions;
-}
 
 // ---- grid methods ----
 
 layoutCreator::grid::grid(int x, int y){
     for (int i = 0; i < x; i++){
-        TArray<layoutCreator::roomBounds *> ar;
+        TArray<roomBounds *> ar;
         for (int j = 0; j < y; j++){
             ar.Add(nullptr);
         }
@@ -123,7 +70,7 @@ layoutCreator::grid::~grid(){
 /// @param toX 
 /// @param toY 
 /// @param p to fill
-void layoutCreator::grid::fill(int fromX, int fromY, int toX, int toY, layoutCreator::roomBounds *p){
+void layoutCreator::grid::fill(int fromX, int fromY, int toX, int toY, roomBounds *p){
     if(isValidIndex(fromX, fromY) && isValidIndex(toX, toY)){
         for (int i = fromX; i < toX; i++){
             for (int j = fromY; j < toY; j++){
@@ -137,7 +84,7 @@ void layoutCreator::grid::fill(int fromX, int fromY, int toX, int toY, layoutCre
 /// @param x x pos index
 /// @param y y pos index
 /// @param p room
-void layoutCreator::grid::add(int x, int y, layoutCreator::roomBounds *p){
+void layoutCreator::grid::add(int x, int y, roomBounds *p){
     if(isValidIndex(x,y)){
         data[x][y] = p;
     }
@@ -177,7 +124,7 @@ bool layoutCreator::grid::isAreaFree(int x, int y, int x1, int y1){
 /// @brief will try to find a position and add the room, returns true on success, false on failure
 /// @param p room bounds to add with size
 /// @return added or not
-bool layoutCreator::grid::findAndAdd(layoutCreator::roomBounds *p){
+bool layoutCreator::grid::findAndAdd(roomBounds *p){
     if(p != nullptr){
         int xSize = p->xscale();
         int ySize = p->yscale();
@@ -198,16 +145,35 @@ bool layoutCreator::grid::findAndAdd(layoutCreator::roomBounds *p){
     return false;
 }
 
+/// @brief will try to find a free area in the desired size and output the indices to outX and outY by ref
+/// @param xSize desired x size
+/// @param ySize desired y size
+/// @param outX out x pos will be saved here if true is returned
+/// @param outY out y pos will be saved here if true is returned
+/// @return will return true or false if area was found, out x and out y will be set if true
+bool layoutCreator::grid::findFreeArea(int xSize, int ySize, int &outX, int &outY){
+    for (int i = 0; i < data.Num(); i++){
+        for (int j = 0; j < data[i].Num(); j++){
+            if(isAreaFree(i,j, i + xSize, j + ySize)){
+                outX = i;
+                outY = j;
+                return true; // found and filled
+            }
+        }
+    }
+    return false;
+}
+
 /// @brief force adds a room - designed for extending staircases
 /// @param p staircase
-void layoutCreator::grid::forceAdd(layoutCreator::roomBounds *p){
+void layoutCreator::grid::forceAdd(roomBounds *p){
     if(p != nullptr){
         int i = p->xpos();
         int j = p->ypos();
         int xSize = p->xscale();
         int ySize = p->yscale();
         fill(i, j, i + xSize, j + ySize, p); //fill map
-        p->updatePosition(i, j); // update position in grid
+        //p->updatePosition(i, j); // update position in grid
     }
 }
 
@@ -234,7 +200,7 @@ FString layoutCreator::grid::toString(){
 /// @param x 
 /// @param y 
 /// @return 
-layoutCreator::roomBounds *layoutCreator::grid::tryGetPosition(int x, int y){
+roomBounds *layoutCreator::grid::tryGetPosition(int x, int y){
     if(isValidIndex(x,y)){
         return data[x][y];
     }
@@ -261,7 +227,9 @@ void layoutCreator::createRooms(int x, int y, int staircases){
     staircasesLeft = staircases;
 
     map = new layoutCreator::grid(x, y); //MAP SIZE HERE
-    fillLayout();
+    
+
+    tryCreateRooms(); //NEW 
     connectNeighbors();
 }
 
@@ -270,7 +238,7 @@ void layoutCreator::createRooms(int x, int y, int staircases){
 /// @param x x grid size
 /// @param y y grid size
 /// @param staircases 
-void layoutCreator::createRooms(int x, int y, std::vector<layoutCreator::roomBounds> staircases){
+void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases){
     if(x < 2){
         x = 2;
     }
@@ -285,14 +253,12 @@ void layoutCreator::createRooms(int x, int y, std::vector<layoutCreator::roomBou
     for (int i = 0; i < staircases.size(); i++){
         if(map != nullptr){
             //must create a whole copy of the room
-            //ggf muss das aber nicht passieren da das layout eh gecleart wird 
-            //wenn man die staircase daten von aussen als referenz hergibt
-            layoutCreator::roomBounds current = staircases.at(i);
-            layoutCreator::roomBounds *copy = new layoutCreator::roomBounds(
+            roomBounds current = staircases.at(i);
+            roomBounds *copy = new roomBounds(
                 current.xscale(),
                 current.yscale(),
                 current.number,
-                current.readType()
+                current.readBp() //copy blueprint over
             );
             copy->updatePosition(current.xpos(), current.ypos());
             map->forceAdd(copy);
@@ -301,8 +267,7 @@ void layoutCreator::createRooms(int x, int y, std::vector<layoutCreator::roomBou
         }
     }
 
-    //procecced with default layouting
-    fillLayout();
+    tryCreateRooms(); //NEW 
     connectNeighbors();
 }
 
@@ -328,8 +293,8 @@ void layoutCreator::clean(){
 
 /// @brief deep copy the created rooms, their index position and index scale
 /// @return vector of roomBounds
-std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
-    std::vector<layoutCreator::roomBounds> copy;
+std::vector<roomBounds> layoutCreator::copyData(){
+    std::vector<roomBounds> copy;
     if(created.size() > 0){
         for(roomBounds *r : created){
             if(r != nullptr){
@@ -340,8 +305,8 @@ std::vector<layoutCreator::roomBounds> layoutCreator::copyData(){
     return copy;
 }
 
-std::vector<layoutCreator::roomBounds> layoutCreator::copyStaircaseData(){
-    std::vector<layoutCreator::roomBounds> copy;
+std::vector<roomBounds> layoutCreator::copyStaircaseData(){
+    std::vector<roomBounds> copy;
     if(createdStaircases.size() > 0){
         for(roomBounds *r : createdStaircases){
             if(r != nullptr){
@@ -357,19 +322,6 @@ std::vector<layoutCreator::roomBounds> layoutCreator::copyStaircaseData(){
 
 
 
-/// @brief will fill the map
-void layoutCreator::fillLayout(){
-
-    int rooms = 70;
-
-    for(int i = 0; i < rooms; i++){
-        int num = FVectorUtil::randomNumber(1, 10);
-        createRoomStartingFromSize(num, num); // max size of a room to downscale / step down from
-    }
-
-    //debugPrintMap();
-}
-
 /// @brief will print the map to the screen
 void layoutCreator::debugPrintMap(){
     if(map != nullptr){
@@ -379,118 +331,70 @@ void layoutCreator::debugPrintMap(){
     
 }
 
-/// @brief tries to create a room from a starting size
-/// will only work if the Room manager can privide the targeted size
-/// @param x 
-/// @param y 
-void layoutCreator::createRoomStartingFromSize(int x, int y){
-    
-    //staircase adding
-    if(staircasesLeft > 0){
-        //if(2 < 3){
-        if(FVectorUtil::randomNumber(1,10) % 2 == 0){ //50% wahrscheinlichkeit ca
-            //ignore x,y
-            //create staircase instead
-            //debug:
-            x = 4;
-            y = 1;
 
-            if(manager != nullptr){
-                bool found = false;
-                while (!found && x > 0 && y > 0)
-                {
-                    found = canCreate(x, y, roomtypeEnum::staircase);
-                    if(found){
 
-                        layoutCreator::roomBounds *stairs = new layoutCreator::roomBounds(
-                            x, 
-                            y, 
-                            number++,
-                            roomtypeEnum::staircase
-                        );
-                        if(map->findAndAdd(stairs)){
-                            created.push_back(stairs);
-                            createdStaircases.push_back(stairs);
-                            staircasesLeft--;
-                        }else{
-                            delete stairs;
-                        }
+// ---- new methods ----
 
-                        
-                        return;
-                    }
-                    x--;
-                    y--;
+void layoutCreator::tryCreateRooms(){
+
+    int maxCount = 100;
+    for (int i = 0; i < maxCount; i++)
+    {
+        if(staircasesLeft > 0){
+        
+            if(FVectorUtil::randomNumber(1,21) % 2 == 0){ //50% wahrscheinlichkeit ca
+                bool success = createRoom(roomtypeEnum::staircase);
+                if(success){
+                    staircasesLeft--;
                 }
             }
-        }
-    }
-
-
-    //default room adding
-    layoutCreator::roomBounds *room = testRoom(x, y);
-
-    int a = 0;
-    int maxAttempts = 1000;
-    bool ok = false;
-    while(!ok){
-
-        ok = map->findAndAdd(room); //will look for a free spot and add the room
-        if(ok){
-            created.push_back(room);
-            return;
         }else{
-            //not okay
-            delete room;
-            room = nullptr;
-            x--;
-            y--;
+            bool success = createRoom(roomtypeEnum::room); //nothing, ignore bool
+        }
+    }
+}
 
-            //to small
-            if(x <= 0 || y <= 0){
-                return;
+/// @brief will try to create a room of a certain type
+/// @param type type to create for example room, staircase ...
+/// @return will return if the room was created or not / and to react if not, if wanted
+bool layoutCreator::createRoom(roomtypeEnum type){
+
+    if(manager != nullptr && map != nullptr){
+        RoomManager::sizeData *someSize = manager->getAny(type);
+        if(someSize != nullptr){
+            int xsizeWanted = someSize->xSize();
+            int ysizeWanted = someSize->ySize();
+            UClass *bp = someSize->getBp();
+
+            int outX = -1;
+            int outY = -1;
+
+            bool found = map->findFreeArea(xsizeWanted, ysizeWanted, outX, outY); //find free area and add later
+            if (found && outX != -1 && outY != -1){
+
+                roomBounds *s = new roomBounds(
+                    xsizeWanted, 
+                    ysizeWanted, 
+                    number++, 
+                    bp
+                );
+                
+                
+                s->updatePosition(outX, outY);
+                map->forceAdd(s);
+                created.push_back(s);
+                if(type == roomtypeEnum::staircase){
+                    createdStaircases.push_back(s);
+                }
+
+                DebugHelper::showScreenMessage("created room! ", FColor::Blue);
+                return true;
             }
-
-            //try new room
-            room = testRoom(x,y);
-        }
-
-        //attempts limit
-        a++;
-        if(a > maxAttempts){
-            return;
         }
     }
+    return false;
 }
-
-/// @brief will return whether a size can be created or not, may be refactured to have type too
-/// @param x size meters
-/// @param y size meters
-/// @param typeIn room type to check
-/// @return 
-bool layoutCreator::canCreate(int x, int y, roomtypeEnum typeIn){
-    //FString s("try");
-    //DebugHelper::showScreenMessage(s);
-
-    return manager != nullptr && manager->contains(x, y, typeIn);
-}
-
-/// @brief creates a new room to be checked to be created
-/// @param x 
-/// @param y 
-/// @return 
-layoutCreator::roomBounds* layoutCreator::testRoom(int x, int y){
-
-    if(canCreate(x,y, roomtypeEnum::room)){
-        layoutCreator::roomBounds *s = new layoutCreator::roomBounds(x, y, number++, roomtypeEnum::room);
-        return s;
-    }
-    return nullptr;
-
-}
-
-
-
+// ---- new methods end ----
 
 
 /// @brief will connect all rooms within the created list if aligned in the map
@@ -500,7 +404,7 @@ void layoutCreator::connectNeighbors(){
 
     if(created.size() > 0){
         for (int i = 0; i < created.size(); i++){
-            layoutCreator::roomBounds *room = created.at(i);
+            roomBounds *room = created.at(i);
             int x = room->xpos();
             int y = room->ypos();
 
@@ -512,7 +416,7 @@ void layoutCreator::connectNeighbors(){
 
             //get and connect
             if(map->isValidIndex(x, lowerNeighbor)){
-                layoutCreator::roomBounds *lower = map->tryGetPosition(x, lowerNeighbor);
+                roomBounds *lower = map->tryGetPosition(x, lowerNeighbor);
                 if(lower != nullptr){
                     
                     int lowerxpos = lower->xpos(); //x pos lower
@@ -536,7 +440,7 @@ void layoutCreator::connectNeighbors(){
             }
 
             if(map->isValidIndex(leftNeighbor, y)){
-                layoutCreator::roomBounds *left = map->tryGetPosition(leftNeighbor, y);
+                roomBounds *left = map->tryGetPosition(leftNeighbor, y);
                 if(left != nullptr){
 
                     //calculate door position

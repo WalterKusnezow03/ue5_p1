@@ -3,7 +3,8 @@
 
 #include <string>
 #include <map>
-#include "p2/rooms/layoutCreator.h"
+#include "p2/rooms/layoutCreator/layoutCreator.h"
+#include "p2/rooms/layoutCreator/roomBounds.h"
 #include "p2/rooms/room.h"
 #include "RoomManager.h"
 
@@ -12,6 +13,7 @@
 
 RoomManager::RoomManager()
 {
+    //fill vectormap
 }
 
 RoomManager::~RoomManager()
@@ -57,11 +59,29 @@ void RoomManager::add(UWorld *world, UClass *uclass){
 
             //create the key
             std::string key;
+            roomtypeEnum readType = roomtypeEnum::room; //default value
+
             Aroom *room = Cast<Aroom>(TempActor);
             if(room != nullptr){
-                roomtypeEnum type = room->readType();
-                key = createKey(xScale, yScale, type);
+                readType = room->readType();
+                key = createKey(xScale, yScale, readType);
 
+            }
+
+            //new map
+            sizeData scaleDataNew(
+                xScale,
+                yScale,
+                readType,
+                uclass
+            );
+            if(vectorMap.find(readType) != vectorMap.end()){
+                std::vector<RoomManager::sizeData> &ref = vectorMap[readType];
+                ref.push_back(scaleDataNew);
+            }else{
+                std::vector<RoomManager::sizeData> newVec;
+                newVec.push_back(scaleDataNew);
+                vectorMap[readType] = newVec;
             }
 
             //add the key to the map
@@ -168,18 +188,45 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
     l.createRooms(x, y, staircasesPerLayer);
 
-
-
-
     //copy data
-    std::vector<layoutCreator::roomBounds> copy = l.copyData();
+    std::vector<roomBounds> copy = l.copyData();
+    std::vector<roomBounds> copyStairs = l.copyStaircaseData();
 
+    //next layer
+    l.createRooms(x, y, copyStairs); //sollte in ordnung sein da deepcopy und clean methode
+    std::vector<roomBounds> copy1 = l.copyData();
+
+    std::vector<std::vector<roomBounds> *> allLayers;
+    allLayers.push_back(&copy);
+    allLayers.push_back(&copy1);
+
+    int height = 200;
+
+    for (int i = 0; i < allLayers.size(); i++)
+    {
+        FVector offset(0, 0, i * height);
+        offset += location; //apply location properly
+
+        std::vector<roomBounds> &vec = *allLayers.at(i);
+        processLayer(world, vec, offset);
+    }
+}
+
+/// @brief will process a vector of rooms and apply an offset to them
+/// @param world world to spawn in
+/// @param vec vector of rooms
+/// @param offset offset to apply as total for the layout from origin (0,0,0)
+void RoomManager::processLayer(UWorld* world, std::vector<roomBounds> &vec, FVector offset){
     //continue with instantiating objects
     if(EntityManager *e = EntityManager::instance()){
-        for (int i = 0; i < copy.size(); i++){
+        for (int i = 0; i < vec.size(); i++){ //itertae all rooms to create
 
-            layoutCreator::roomBounds *roomToCreate = &copy.at(i);
-            UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale(), roomToCreate->readType());
+            roomBounds *roomToCreate = &vec.at(i);
+            //UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale(), roomToCreate->readType());
+            UClass *uclass = roomToCreate->readBp();
+            if(uclass == nullptr){
+                continue;
+            }
 
             int xposInGrid = roomToCreate->xpos(); //must be converted
             int yposInGrid = roomToCreate->ypos();
@@ -189,7 +236,8 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
             int ypos = convertScaleToMeter(yposInGrid);
 
             FVector position(xpos, ypos, 50); //z position must be aligned too some how
-            position += location;
+            //position += location;
+            position += offset;
 
             //create rooms
             AActor *actor = e->spawnAactor(world, uclass, position);
@@ -221,9 +269,14 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
             }
         }
     }
-
-
 }
+
+
+
+
+
+
+
 
 /// @brief converts a unreal engine scale (cm) to m as int. Will introduce conversion loss!
 /// @param a cm
@@ -273,3 +326,45 @@ void RoomManager::addLog(FString s){
 void RoomManager::showLog(){
     DebugHelper::showScreenMessage(logResult);
 }
+
+
+
+
+RoomManager::sizeData* RoomManager::getAny(roomtypeEnum type){
+    if (vectorMap.find(type) != vectorMap.end())
+    {
+        std::vector<RoomManager::sizeData> &ref = vectorMap[type];
+        if(ref.size() > 0){
+            int random = FVectorUtil::randomNumber(0, ref.size());
+            random %= ref.size();
+            RoomManager::sizeData *point = &ref.at(random);
+            return point;
+        }
+        
+    }
+    return nullptr;
+}
+
+// ---- size data ----
+RoomManager::sizeData::sizeData(int x, int y, roomtypeEnum typeIn, UClass *uclassIn){
+    xsize = x;
+    ysize = y;
+    type = typeIn;
+    uclassBp = uclassIn;
+}
+
+RoomManager::sizeData::~sizeData(){
+    uclassBp = nullptr;
+}
+
+int RoomManager::sizeData::xSize(){
+    return xsize;
+}
+int RoomManager::sizeData::ySize(){
+    return ysize;
+}
+
+UClass *RoomManager::sizeData::getBp(){
+    return uclassBp;
+}
+

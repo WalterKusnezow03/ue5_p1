@@ -89,7 +89,8 @@
 			"hash_map": "cpp",
 			"*.ipp": "cpp",
 			"*.cs": "cpp",
-			"alignedvector3": "cpp"
+			"alignedvector3": "cpp",
+			"type_traits": "cpp"
 		}
 	},
 	"extensions": {

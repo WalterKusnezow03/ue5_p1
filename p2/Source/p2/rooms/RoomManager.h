@@ -4,15 +4,13 @@
 
 
 #include "CoreMinimal.h"
+#include "p2/rooms/layoutCreator/roomBounds.h"
 #include <map>
-
 
 /**
  * the room manager holds the specific uclasses for the rooms and
  * creates room layouts on request
  */
-
-
 class P2_API RoomManager
 {
 public:
@@ -28,6 +26,29 @@ public:
 
 	bool contains(int x, int y, roomtypeEnum type);
 
+
+	class sizeData{
+		public:
+			sizeData(int x, int y, roomtypeEnum typeIn, UClass *uclassIn);
+			~sizeData();
+			int xSize();
+			int ySize();
+			std::string createKey();
+			UClass *getBp();
+
+		private:
+			roomtypeEnum type;
+			int xsize;
+			int ysize;
+			class UClass *uclassBp;
+	};
+
+private:
+	std::map<roomtypeEnum, std::vector<RoomManager::sizeData>> vectorMap;
+
+public:
+	sizeData *getAny(roomtypeEnum type);
+
 private:
 	static const int ONE_METER = 100;
 
@@ -35,7 +56,6 @@ private:
 	std::map<std::string, UClass *> map;
 	std::string createKey(int xSize, int ySize, roomtypeEnum type);
 	bool contains(std::string &key);
-
 
 	int convertMeterToIndex(int a);
 	int convertScaleToMeter(int a);
@@ -48,4 +68,6 @@ private:
 
 	/// @brief place holder variable 
 	class UClass *door1;
+
+	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset);
 };

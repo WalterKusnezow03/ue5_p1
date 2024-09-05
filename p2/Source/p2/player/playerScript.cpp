@@ -11,7 +11,6 @@
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
-#include "p2/rooms/layoutCreator.h"
 
 // Sets default values
 AplayerScript::AplayerScript()
