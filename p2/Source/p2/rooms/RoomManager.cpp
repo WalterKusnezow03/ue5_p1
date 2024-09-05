@@ -109,7 +109,7 @@ void RoomManager::addDoor(UClass *uclass){
 void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     //showKeys(); //debug
     //showLog(); //shows previous log
-
+    /*
     int staircasesPerLayer = 2;
     layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
     l.createRooms(x, y, staircasesPerLayer);
@@ -125,8 +125,8 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     std::vector<std::vector<roomBounds> *> allLayers;
     allLayers.push_back(&copy);
     allLayers.push_back(&copy1);
-
     int height = 200;
+
 
     for (int i = 0; i < allLayers.size(); i++)
     {
@@ -135,6 +135,25 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 
         std::vector<roomBounds> &vec = *allLayers.at(i);
         processLayer(world, vec, offset);
+    }*/
+
+    int height = 200;
+    int staircasesPerLayer = 2;
+    std::vector<roomBounds> copyStairs;
+    for (int i = 0; i < 2; i++)
+    {
+        layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
+        if(copyStairs.size() > 0){
+            l.createRooms(x, y, copyStairs, true);
+        }else{
+            l.createRooms(x, y, staircasesPerLayer);
+        }
+        std::vector<roomBounds> copy = l.copyData();
+        copyStairs = l.copyStaircaseData();
+        FVector offset(0, 0, i * height);
+        offset += location; //apply location properly
+
+        processLayer(world, copy, offset);
     }
 }
 
