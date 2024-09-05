@@ -15,6 +15,7 @@ public:
 
 	static void findDirectChildsByName(AActor &actor, FString namerfac, TArray<UChildActorComponent *> &container);
 
+	static void findAllChildsByName(AActor &actor, FString namepart, TArray<UChildActorComponent *> &container);
 
 	//show and hide
 	static void showActor(AActor &actor, bool show);

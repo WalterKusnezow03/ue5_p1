@@ -238,7 +238,8 @@ void layoutCreator::createRooms(int x, int y, int staircases){
 /// @param x x grid size
 /// @param y y grid size
 /// @param staircases 
-void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases){
+/// @param leaveGap tells if stairs should be created or a empty gap leaved.
+void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases, bool leaveGap){
     if(x < 2){
         x = 2;
     }
@@ -254,12 +255,22 @@ void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases
         if(map != nullptr){
             //must create a whole copy of the room
             roomBounds current = staircases.at(i);
+
+            //stairs or gap
+            UClass *bp = current.readBp();
+            if(leaveGap){
+                bp = nullptr;
+            }
+
+            //create new room
             roomBounds *copy = new roomBounds(
                 current.xscale(),
                 current.yscale(),
                 current.number,
-                current.readBp() //copy blueprint over
+                bp
             );
+            
+
             copy->updatePosition(current.xpos(), current.ypos());
             map->forceAdd(copy);
             created.push_back(copy); //added to both vectors!
@@ -428,7 +439,8 @@ void layoutCreator::connectNeighbors(){
 
                     if(xstarting < xending){
                         //calculate middle in all map scale
-                        int xmiddle = (int)((xstarting + xending) / 2.0f);
+                        //int xmiddle = (int)((xstarting + xending) / 2.0f);
+                        int xmiddle = xstarting + 1;
 
                         //set door for both? (might have extra class naming gap or door)
                         lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
@@ -453,6 +465,7 @@ void layoutCreator::connectNeighbors(){
                     if(ystarting < yending){
                         //calculate middle in MAP SCALE MUST BE DOWNSCALED
                         int ymiddle = (int)((ystarting + yending) / 2.0f);
+                        ymiddle = ystarting + 1;
 
                         //set door for both? (might have extra class naming gap or door)
                         left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante

@@ -104,3 +104,32 @@ void AActorUtil::findDirectChildsByName(AActor &actor, FString namepart, TArray<
     
     }
 }
+
+
+/// @brief not tested!
+/// @param actor 
+/// @param namepart 
+/// @param container 
+void AActorUtil::findAllChildsByName(AActor &actor, FString namepart, TArray<UChildActorComponent*> &container){
+    
+    
+    //check all child for being actos
+    TArray<UChildActorComponent *> childs;
+    actor.GetComponents<UChildActorComponent>(childs);
+    for (int i = 0; i < childs.Num(); i++){
+        if(childs[i] != nullptr){
+            
+            FString currName = childs[i]->GetName();
+            if(currName.Contains(namepart)){
+                container.Add(childs[i]);
+            }
+
+            AActor *actorFromChild = childs[i]->GetChildActor();
+            if(actorFromChild != nullptr){
+                findAllChildsByName(*actorFromChild, namepart, container);
+            }
+        }
+    }
+
+    
+}

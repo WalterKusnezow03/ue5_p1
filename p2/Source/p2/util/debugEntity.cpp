@@ -46,7 +46,7 @@ void AdebugEntity::debugFunction(){
 		FVector location1 = GetActorLocation();
 		location1.Z = 20;
 
-		int metersLayout = 20;
+		int metersLayout = 15;
 		e->createALayout(GetWorld(), location1, metersLayout, metersLayout);
 
 		return;

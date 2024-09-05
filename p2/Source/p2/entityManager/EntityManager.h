@@ -82,7 +82,6 @@ public:
 
 	//rooms
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
-	Aroom *createRoom(UWorld *worldIn, FVector &location, int xScale, int yScale, roomtypeEnum type);
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
 	void setDooruClassBp(UClass *uclassIn);

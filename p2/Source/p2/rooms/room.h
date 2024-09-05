@@ -13,7 +13,7 @@ class P2_API Aroom : public AActor
 	GENERATED_BODY()
 	
 public:
-	static const bool DEBUG_DRAW = false;
+	static const bool DEBUG_DRAW = true;
 
 	// Sets default values for this actor's properties
 	Aroom();
@@ -46,7 +46,6 @@ private:
 
 	std::vector<FVector> doorPositions;
 	TArray<AActor *> wallActors;
-	TArray<UChildActorComponent *> walls;
 
 	void findWalls();
 	void disableWall(FVector &location);

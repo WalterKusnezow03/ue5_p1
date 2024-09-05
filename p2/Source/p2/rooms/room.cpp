@@ -18,7 +18,7 @@ void Aroom::BeginPlay()
 {
 	Super::BeginPlay();
 	findDoors();
-	findWalls();
+	//findWalls();
 	calculateActorBounds();
 }
 
@@ -96,7 +96,7 @@ void Aroom::findDoors(){
 
 
 				if(name.Contains("door")){
-					DebugHelper::showScreenMessage("door FOUND", FColor::Red);
+					//DebugHelper::showScreenMessage("door FOUND", FColor::Red);
 
 					//doorPositions.push_back(childs[i]->GetActorLocation());
 				}
@@ -108,25 +108,12 @@ void Aroom::findDoors(){
 void Aroom::findWalls(){
 	TArray<UChildActorComponent *> container;
 	FString name = FString::Printf(TEXT("wall"));
-	AActorUtil::findDirectChildsByName(*this, name, container);
-	
+	//AActorUtil::findDirectChildsByName(*this, name, container); //seems to also find childs in childs... interesting
+	AActorUtil::findAllChildsByName(*this, name, container); //seems to also find childs in childs... interesting
+
 	//cast walls to aactor
 	int added = 0;
 
-	for (int i = 0; i < container.Num(); i++)
-	{
-		if(container[i] != nullptr){
-			walls.Add(container[i]);
-			/*
-			AActor *a = Cast<AActor>(container[i]);
-			if(a != nullptr){
-				walls.Add(a);
-				added++;
-			}else{
-				DebugHelper::showScreenMessage("cast failed", FColor::Red);
-			}*/
-		}
-	}
 
 	//get child actors
 	for(UChildActorComponent *comp : container){ //UChildActor component is the Child actor visble in the actor tree
@@ -171,8 +158,9 @@ void Aroom::disableWall(FVector &location, UClass *doorBp){
 			}
 		}
 
-
-		if(closestDist <= 100 && closest != nullptr){ //100cm als thresehold
+		int EPSILON = 200;
+		if (closestDist <= EPSILON && closest != nullptr)
+		{ // 100cm als thresehold
 			closest->SetActorHiddenInGame(true);
 			closest->SetActorEnableCollision(false);
 			//DebugHelper::showScreenMessage("disabled a wall");
@@ -189,12 +177,10 @@ void Aroom::disableWall(FVector &location, UClass *doorBp){
 					}
 				}
 			}
-			
 		}
+	}else{
+		//DebugHelper::showScreenMessage("debugroom: issues, no wall found! ", FColor::Purple);
 	}
-	
-
-
 }
 
 
@@ -204,6 +190,8 @@ void Aroom::disableWall(FVector &location, UClass *doorBp){
 /// @param positions 
 void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, UClass *doorBp){
 
+	findWalls();
+
 	//enable disable doors based on bottom left + offset
 	FVector bottomLeft = bottomLeftCorner();
 
@@ -211,12 +199,13 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, U
 		FVector relativeDoorPos = bottomLeft + toPositionVector.at(i); //A + (B - A) //positions
 
 		FVector debugUp = relativeDoorPos + FVector(0, 0, 100);
-		FVector debugDown = relativeDoorPos + FVector(0, 0, -100);
+		FVector debugDown = relativeDoorPos;
+		//+FVector(0, 0, -100);
 		if(Aroom::DEBUG_DRAW){
 			DebugHelper::showLineBetween(GetWorld(), debugDown, debugUp, FColor::Red);
 		}
 
-		
+
 		disableWall(relativeDoorPos, doorBp);
 	}
 
@@ -236,7 +225,7 @@ void Aroom::debugShowOutline(){
 		}
 		FVector pos = corners.at(i); // A + (B - A) //positions
 		FVector prev = corners.at(prevIndex);
-		DebugHelper::showLineBetween(GetWorld(), pos, prev, FColor::Green);
+		//DebugHelper::showLineBetween(GetWorld(), pos, prev, FColor::Green);
 	}	
 
 }

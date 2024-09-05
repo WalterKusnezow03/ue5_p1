@@ -52,19 +52,10 @@ public:
 private:
 	static const int ONE_METER = 100;
 
-	//saves the uclass rooms based on size (created with the key)
-	std::map<std::string, UClass *> map;
-	std::string createKey(int xSize, int ySize, roomtypeEnum type);
-	bool contains(std::string &key);
-
 	int convertMeterToIndex(int a);
 	int convertScaleToMeter(int a);
 	void convertScaleToMeterFVector(FVector &vector);
-	void showKeys(); // debug
-
-	FString logResult;
-	void addLog(FString s);
-	void showLog();
+	
 
 	/// @brief place holder variable 
 	class UClass *door1;

@@ -20,7 +20,7 @@ public:
 	~layoutCreator();
 
 	void createRooms(int x, int y, int staircases);
-	void createRooms(int x, int y, std::vector<roomBounds> staircases);
+	void createRooms(int x, int y, std::vector<roomBounds> staircases, bool leaveGap);
 
 	//public method to copy to room data, might be switched to be by reference
 	std::vector<roomBounds> copyData();
@@ -74,7 +74,7 @@ private:
 	void clean();
 	void debugPrintMap();
 	void connectNeighbors();
-	
+
 	void tryCreateRooms();
 	bool createRoom(roomtypeEnum type);
 };
