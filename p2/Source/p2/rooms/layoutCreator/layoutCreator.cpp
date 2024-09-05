@@ -387,7 +387,6 @@ bool layoutCreator::createRoom(roomtypeEnum type){
                     createdStaircases.push_back(s);
                 }
 
-                DebugHelper::showScreenMessage("created room! ", FColor::Blue);
                 return true;
             }
         }

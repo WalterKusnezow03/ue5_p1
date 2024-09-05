@@ -45,7 +45,9 @@ void AdebugEntity::debugFunction(){
 	if(EntityManager *e = EntityManager::instance()){
 		FVector location1 = GetActorLocation();
 		location1.Z = 20;
-		e->createALayout(GetWorld(), location1, 50, 50);
+
+		int metersLayout = 20;
+		e->createALayout(GetWorld(), location1, metersLayout, metersLayout);
 
 		return;
 

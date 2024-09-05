@@ -12,7 +12,9 @@ class P2_API Aroom : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	static const bool DEBUG_DRAW = false;
+
 	// Sets default values for this actor's properties
 	Aroom();
 

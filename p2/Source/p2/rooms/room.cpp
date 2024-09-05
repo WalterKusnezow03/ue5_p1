@@ -212,11 +212,11 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, U
 
 		FVector debugUp = relativeDoorPos + FVector(0, 0, 100);
 		FVector debugDown = relativeDoorPos + FVector(0, 0, -100);
-		DebugHelper::showLineBetween(GetWorld(), debugDown, debugUp, FColor::Red);
-		//DebugHelper::showLineBetween(GetWorld(), bottomLeft, debugUp, FColor::Green);
+		if(Aroom::DEBUG_DRAW){
+			DebugHelper::showLineBetween(GetWorld(), debugDown, debugUp, FColor::Red);
+		}
 
-		//find walls to disable
-		//50cm * 2 is the default width
+		
 		disableWall(relativeDoorPos, doorBp);
 	}
 
@@ -225,6 +225,9 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, U
 
 /// @brief debug method to show rooms ouline
 void Aroom::debugShowOutline(){
+	if(!Aroom::DEBUG_DRAW){
+		return;
+	}
 	std::vector<FVector> corners = debugAllCorners();
 	for (int i = 0; i < corners.size(); i++){
 		int prevIndex = i - 1;
