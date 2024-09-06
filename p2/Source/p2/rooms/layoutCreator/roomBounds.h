@@ -27,10 +27,12 @@ class P2_API roomBounds{
 
 			void addNeighbor(roomBounds *n);
 			void addDoorPosition(int x, int y);
+			void addWindowPosition(int x, int y);
 
 			//void createDoorTo(roomBounds *n);
 
 			std::vector<FVector> &readRelativeDoorPositions();
+			std::vector<FVector> &readRelativeWindowPositions();
 
 		private:
 			int xScale;
@@ -43,5 +45,5 @@ class P2_API roomBounds{
 
 			roomtypeEnum type;
 
-			//std::vector<roomBounds *> neighbors;
-	};
+			std::vector<FVector> windowPositions;
+};

@@ -5,7 +5,9 @@
 #include "layoutCreator.h"
 #include "roomBounds.h"
 #include "p2/rooms/RoomManager.h"
+#include "p2/util/TTouple.h"
 #include "p2/rooms/roomtypeEnum.h"
+#include "p2/util/TVector.h"
 #include <list>
 
 class RoomManager;
@@ -208,6 +210,124 @@ roomBounds *layoutCreator::grid::tryGetPosition(int x, int y){
 }
 
 
+/// @brief will find all edge rooms 
+/// @param roomToCheck room to get the edges for 
+/// @param output output vector, data will be overriden!
+/// @param size size it was filled up until, dont use output.size()!
+void layoutCreator::grid::getEdges(
+    roomBounds &roomToCheck, 
+    //std::vector<TTouple<int,int>> &output,
+    TVector<TTouple<int,int>> &output,
+    int &size
+){
+
+    output.clear(); //clear template vector first
+
+    int overrideIndex = 0;
+
+    //roomBounds *current = data[i][j];
+    int xstart = roomToCheck.xpos();
+    int ystart = roomToCheck.ypos();
+    int xend = roomToCheck.xOuteredge();
+    int yend = roomToCheck.yOuteredge();
+
+    //check if each of the axis is free (outline) BUT DOING +1, -1 etcs to have the real outline
+    
+    ystart -= 1;//unten
+
+    //first horizonal edge ---> need to check all edges just like this.
+    if(isAreaFree(xstart, ystart, xend, ystart)){
+        //need to create a factory method to create the touples for me
+        for (int ix = xstart; ix < xend; ix++)
+        {
+            TTouple<int, int> t1(ix, ystart); //fix offset
+            output.push_back(t1);
+            /*
+            if(overrideIndex >= output.size()){
+                output.push_back(t1);
+                overrideIndex++;
+            }else{
+                output.at(overrideIndex) = t1;
+                overrideIndex++;
+            }*/
+        }
+    }  
+
+
+    //top edge
+    yend += 1;
+
+    //second horizonal edge 
+    if(isAreaFree(xstart, yend, xend, yend)){
+        //need to create a factory method to create the touples for me
+        for (int ix = xstart; ix < xend; ix++)
+        {
+            TTouple<int, int> t1(ix, yend);
+            output.push_back(t1);
+            /*
+            if(overrideIndex >= output.size()){
+                output.push_back(t1);
+                overrideIndex++;
+            }else{
+                output.at(overrideIndex) = t1;
+                overrideIndex++;
+            }*/
+        }
+    }
+
+    //left edge
+    xstart -= 1;
+    ystart += 1; //set size properly
+    yend -= 1;
+
+    //first vertical edge
+    if(isAreaFree(xstart, ystart, xstart, yend)){
+        for (int iy = ystart; iy < yend; iy++)
+        {
+            TTouple<int, int> t1(xstart, iy);
+            output.push_back(t1);
+            /*
+            if(overrideIndex >= output.size()){
+                output.push_back(t1);
+                overrideIndex++;
+            }else{
+                output.at(overrideIndex) = t1;
+                overrideIndex++;
+            }*/
+        }
+    }
+
+    //left edge
+    xend += 1;
+
+    //second vertical edge
+    if(isAreaFree(xend, ystart, xend, yend)){
+        for (int iy = ystart; iy < yend; iy++)
+        {
+            TTouple<int, int> t1(xend, iy);
+            output.push_back(t1);
+            /*
+            if(overrideIndex >= output.size()){
+                output.push_back(t1);
+                overrideIndex++;
+            }else{
+                output.at(overrideIndex) = t1;
+                overrideIndex++;
+            }*/
+        }
+    }
+
+    if(overrideIndex < output.size()){
+        size = overrideIndex;
+    }else{
+        size = output.size();
+    }
+}
+
+
+
+
+
 
 // ---- layout creator main methods ----
 
@@ -231,6 +351,7 @@ void layoutCreator::createRooms(int x, int y, int staircases){
 
     tryCreateRooms(); //NEW 
     connectNeighbors();
+    createWindows();
 }
 
 /// @brief main method. Creates rooms in a specified size and force adds all staircases
@@ -280,9 +401,8 @@ void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases
 
     tryCreateRooms(); //NEW 
     connectNeighbors();
+    createWindows();
 }
-
-
 
 /// @brief aquivalent to destructor, will clean up the map and created list (delete all room bounds)
 void layoutCreator::clean(){
@@ -477,4 +597,40 @@ void layoutCreator::connectNeighbors(){
         }
     }
 
+}
+
+
+
+
+void layoutCreator::createWindows(){
+    //am rand lang gehen und fenster hinzufügen, oder an null angrenzend
+
+    //nur soviele hinzufügen wie max windows erlaubt?
+    //am rand
+    if(map){
+
+        TVector<TTouple<int, int>> output;
+
+        //std::vector<TTouple<int, int>> output;
+        int size = 0;
+        for (int i = 0; i < created.size(); i++)
+        {
+            //alle räume, alle einsammeln, hinzufügen
+            roomBounds *current = created.at(i);
+            if(current != nullptr){
+                map->getEdges(*current, output, size); //size will be overriden correctly
+
+                DebugHelper::showScreenMessage("room debug counted windows ", output.size(), FColor::Red);
+
+                int filledSize = size;
+                for (int j = 0; j < filledSize; j++)
+                {
+                    TTouple<int, int> &cTupel = output.at(j);
+                    current->addWindowPosition(cTupel.first(), cTupel.last());
+                }
+            }
+
+            
+        }
+    }
 }

@@ -120,7 +120,7 @@ void AEntityScript::Tick(float DeltaTime)
 //allows the entity to take damage
 void AEntityScript::takedamage(int d){
 
-	showScreenMessage("enemy entity damage");
+	//showScreenMessage("enemy entity damage");
 	health -= d;
 	if(health <= 0){
 		d = 0;
@@ -149,7 +149,6 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 
 		//mindestens orthogonal oder näher an der 1
 		if(skalarprodukt >= 0){
-			//showScreenMessage("angle ok");
 			return true;
 		}
 	}
@@ -224,7 +223,7 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		// If the raycast hit something, log the hit actor's name
 		if (bHit)
 		{
-			//showScreenMessage("hit raycast");
+			
 			AActor *actor = HitResult.GetActor();
 			if(actor == playerPointer){
 				return true;
@@ -303,7 +302,6 @@ void AEntityScript::followpath(float deltaTime){
 		float speed = 300.0f; //3m/s
 
 		
-		// showScreenMessage("moving");
 
 		FVector currentLocation = GetActorLocation();
 		FVector nextPos = path.front();
@@ -313,7 +311,6 @@ void AEntityScript::followpath(float deltaTime){
 			return;
 		}
 
-		//showScreenMessage(FString::Printf(TEXT("pos %d, %d"), currentLocation.X, currentLocation.Y));
 
 		// Direction vector from current location to target location
 		FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector

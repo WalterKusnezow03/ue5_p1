@@ -71,3 +71,17 @@ void roomBounds::addDoorPosition(int x, int y){
 std::vector<FVector> &roomBounds::readRelativeDoorPositions(){
     return doorPositions;
 }
+
+
+
+std::vector<FVector> &roomBounds::readRelativeWindowPositions(){
+    return windowPositions;
+}
+
+void roomBounds::addWindowPosition(int x, int y){
+    //make relative: to left corner!
+    x -= xPos;
+    y -= yPos;
+
+    windowPositions.push_back(FVector(x, y, 0));
+}

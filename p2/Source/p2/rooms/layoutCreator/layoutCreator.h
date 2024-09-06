@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "p2/rooms/room.h"
 #include "roomBounds.h"
+#include "p2/util/TTouple.h"
+#include "p2/util/TVector.h"
 #include "p2/rooms/RoomManager.h"
 
 class Aroom;
@@ -46,6 +48,9 @@ private:
 
 			FString toString();
 
+			//void getEdges(roomBounds &roomToCheck, std::vector<TTouple<int,int>> &output, int &size);
+			void getEdges(roomBounds &roomToCheck, TVector<TTouple<int,int>> &output, int &size);
+
 		private:
 			/// @brief stores the grid data, will have duplicate pointers
 			/// will show if an point and area is used or not
@@ -74,6 +79,7 @@ private:
 	void clean();
 	void debugPrintMap();
 	void connectNeighbors();
+	void createWindows();
 
 	void tryCreateRooms();
 	bool createRoom(roomtypeEnum type);
