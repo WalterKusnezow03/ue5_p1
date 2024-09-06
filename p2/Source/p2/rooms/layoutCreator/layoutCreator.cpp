@@ -240,11 +240,11 @@ void layoutCreator::createRooms(int x, int y, int staircases){
 /// @param staircases 
 /// @param leaveGap tells if stairs should be created or a empty gap leaved.
 void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases, bool leaveGap){
-    if(x < 2){
-        x = 2;
+    if(x < 5){
+        x = 5;
     }
-    if(y < 2){
-        y = 2;
+    if(y < 5){
+        y = 5;
     }
     clean();
     staircasesLeft = 0;

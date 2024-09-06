@@ -231,6 +231,8 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         FString bpNamePart2 = FString::Printf(TEXT("%d"), i);
         FString connected = bpNamePart + bpNamePart2;
         FString finalPath = buildPath(path, connected);
+
+        
         entityManager->setRoomuClassBp(world, loadUClassBluePrint(finalPath));
     }
     
