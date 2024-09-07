@@ -32,7 +32,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void processDoorPositionVectors(std::vector<FVector> &toPositionVector, UClass *doorBp);
+	void processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp);
 
 private:
 	
@@ -49,7 +49,7 @@ private:
 
 	void findWalls();
 	void disableWall(FVector &location);
-	void disableWall(FVector &location, UClass *doorToSpawn);
+	void disableWall(FVector &location, UClass *bpToSpawn);
 
 	FVector boxOrigin;
 	FVector boxExtent;

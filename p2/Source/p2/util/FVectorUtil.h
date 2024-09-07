@@ -31,10 +31,12 @@ public:
 	
 
 	static float Dist(FVector2D &a, FVector2D &b);
+	static int quadraticDist(FVector &a, FVector &b);
 
 	/// @brief returns std::infinity
 	/// @return infinity
 	static float infinity();
+	static int intInfinity();
 
 private:
 	FVectorUtil();

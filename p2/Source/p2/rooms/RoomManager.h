@@ -21,6 +21,7 @@ public:
 
 	void add(UWorld *world, UClass *uclass);
 	void addDoor(UClass *uclass);
+	void addWindow(UClass *uclass);
 
 	void createALayout(UWorld *world, FVector &location, int x, int y);
 
@@ -57,8 +58,12 @@ private:
 	void convertScaleToMeterFVector(FVector &vector);
 	
 
-	/// @brief place holder variable 
+	/// @brief place holder variable  ---> will be replaced with enum map very likely
+	/// like a map which plots all assets for a room type (like walls, doors and windows)
 	class UClass *door1;
+	class UClass *window1;
+
+
 
 	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset);
 };

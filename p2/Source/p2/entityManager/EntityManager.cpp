@@ -121,7 +121,7 @@ void EntityManager::add(Aparticle *particleIn){
 
 
 /**
- * SPAWN SECTION HERE
+ * ---- SPAWN SECTION HERE ----
  */
 
 
@@ -162,6 +162,12 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 
             human->init();
             human->SetActorLocation(Location);
+
+            //team will be just enemies for now
+            teamEnum t = teamEnum::enemyTeam;
+            human->setTeam(t);
+            ALIVE_HumanEntitiesMap.add(t, human);
+
             return human;
         }
     }
@@ -376,7 +382,9 @@ void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
 
 
 
-
+/** 
+* ---- PARTICLE / EXPLOSION SECTION ----
+*/
 
 
 /// @brief creates an explosion at a given location
@@ -455,7 +463,7 @@ void EntityManager::createParticle(
 /**
  * 
  * 
- * REFERENCE SETTINGS / SET U CLASS SECTION
+ * ---- REFERENCE SETTINGS / SET U CLASS SECTION ----
  * 
  * 
  */
@@ -575,6 +583,12 @@ void EntityManager::setDooruClassBp(UClass *uclassIn){
     }
 }
 
+void EntityManager::setWindowuClassBp(UClass *uclassIn){
+    if(uclassIn != nullptr){
+        roomType1Manager.addWindow(uclassIn);
+    }
+}
+
 
 
 
@@ -604,7 +618,7 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
 
 
 /**
- * ---- section for terrain ----
+ * ---- SECTION FOR TERRAIN ----
  * 
  */
 void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
@@ -651,7 +665,7 @@ void EntityManager::createTerrain(UWorld *worldIn, int chunks){
 
 
 /**
- * section for materials
+ * ---- section for materials -----
  */
 
 /// @brief add a material to be used on any mesh by material enum type
@@ -669,6 +683,49 @@ void EntityManager::addMaterial(materialEnum type, UMaterial *material){
 UMaterial *EntityManager::getMaterial(materialEnum type){
     if(materialMap.find(type) != materialMap.end()){
         return materialMap[type];
+    }
+    return nullptr;
+}
+
+
+
+
+/**
+ * ---- SECTION FOR TARGET GETTING ----
+ */
+
+/// @brief WILL NOT BE USED YET! UNCLEAR IF USED AT ALL! -- would be called on each frame
+/// or in some other intervall like each second for example
+/// @param ownActor 
+/// @param ownTeam 
+/// @return 
+AHumanEntityScript *EntityManager::getNearestTarget(AHumanEntityScript *ownActor, teamEnum ownTeam){
+    if(ownActor != nullptr){
+        if(ALIVE_MAP.find(ownTeam) != ALIVE_MAP.end()){
+            std::vector<AHumanEntityScript *> &ref = ALIVE_MAP[ownTeam];
+
+            FVector a = ownActor->GetActorLocation();
+
+            //find closest by quadratic distance
+            int quadDistance = FVectorUtil::intInfinity();
+            AHumanEntityScript *close = nullptr;
+            for (int i = 0; i < ref.size(); i++)
+            {
+                AHumanEntityScript *h = ref.at(i);
+                if (h != nullptr)
+                {
+                    if(h->isActivatedForUpdate()){
+                        FVector b = h->GetActorLocation();
+                        int newdist = FVectorUtil::quadraticDist(a, b);
+                        if(newdist < quadDistance){
+                            quadDistance = newdist;
+                            close = h;
+                        }
+                    }
+                }
+            }
+            return close;
+        }
     }
     return nullptr;
 }

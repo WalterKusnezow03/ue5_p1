@@ -97,6 +97,12 @@ void RoomManager::addDoor(UClass *uclass){
     }
 }
 
+void RoomManager::addWindow(UClass *uclass){
+    if(uclass != nullptr){
+        window1 = uclass;
+    }
+}
+
 
 
 
@@ -197,23 +203,35 @@ void RoomManager::processLayer(UWorld* world, std::vector<roomBounds> &vec, FVec
 
                 //relative door positions (relative to bottom left corner of a room)
                 std::vector<FVector> &doorPositions = roomToCreate->readRelativeDoorPositions();
+                std::vector<FVector> &windowPositions = roomToCreate->readRelativeWindowPositions();
 
                 std::vector<FVector> doorPositionsConverted;
+                std::vector<FVector> windowPositionsConverted;
 
                 for (int j = 0; j < doorPositions.size(); j++){
-                    //convert
+                    //convert door
                     FVector adjusted = doorPositions.at(j);
                     convertScaleToMeterFVector(adjusted);
-
                     doorPositionsConverted.push_back(adjusted);
                 }
+
+                for (int j = 0; j < windowPositions.size(); j++){
+                    //convert window
+                    FVector adjusted = windowPositions.at(j);
+                    convertScaleToMeterFVector(adjusted);
+                    windowPositionsConverted.push_back(adjusted);
+                }
+
+
 
                 if(door1 == nullptr){
                     //DebugHelper::showScreenMessage("door was nullptr! - room manager");
                 }
 
                 //the room will process the postions and enable walls and doors accordingly
-                aroom->processDoorPositionVectors(doorPositionsConverted, door1);
+                aroom->processPositionVectorsAndReplaceWall(doorPositionsConverted, door1);
+                //process windows too
+                aroom->processPositionVectorsAndReplaceWall(windowPositionsConverted, window1);
             }
         }
     }

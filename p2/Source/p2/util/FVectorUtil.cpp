@@ -17,6 +17,10 @@ float FVectorUtil::infinity(){
     return std::numeric_limits<float>::max();
 }
 
+int FVectorUtil::intInfinity(){
+    return (int)infinity();
+}
+
 /// @brief calculates the normal for a pane Ex: A + r(B-A) + s(C-A)
 /// attention, b and c must be positions not directions!
 /// @param a ortvektor
@@ -170,13 +174,23 @@ FVector FVectorUtil::randomScale(int lowerRange, int higherRange, bool symetric)
 }
 
 
-
+/**
+ * DISTANCE SECTION
+ */
 
 float FVectorUtil::Dist(FVector2D &a, FVector2D &b){
     FVector2D connect = b - a;
     return connect.Size();
 }
 
+int FVectorUtil::quadraticDist(FVector &a, FVector &b){
+    FVector connect = b - a;
+    return (connect.X * connect.X) + (connect.Y * connect.Y) + (connect.Z * connect.Z);
+}
+
+/**
+ * DIRECTION SECTION
+ */
 
 /// @brief determines whether a vector between a and b is vertical (points upwards)
 /// @param a a in 
@@ -200,3 +214,5 @@ bool FVectorUtil::directionIsVertical(FVector &A){
     float skalarProduktUp = std::abs(aNormalized.Z); //Up component
     return skalarProduktUp > 0.7f;  //edge of interest wenn er weit genug nach oben zeigt.
 }
+
+

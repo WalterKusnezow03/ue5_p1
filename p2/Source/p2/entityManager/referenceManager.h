@@ -13,9 +13,12 @@
 class P2_API referenceManager
 {
 public:
+	//DEPRECATED
 	static const int TEAM_NEUTRAL = 0;
 	static const int TEAM_ENEMY = 1;
 	static const int TEAM_PLAYER = 2;
+	static int verifyTeam(int teamIn);
+	//DEPRECATED
 
 	~referenceManager();
 
@@ -24,7 +27,6 @@ public:
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
-	static int verifyTeam(int teamIn);
 
 private:
 	// private constructor for singleton

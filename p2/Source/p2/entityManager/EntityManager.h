@@ -85,7 +85,7 @@ public:
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
 	void setDooruClassBp(UClass *uclassIn);
-
+	void setWindowuClassBp(UClass *uclassIn);
 
 	//terrain
 	void setEmptyMeshUClassBp(UClass *uclassIn);
@@ -153,8 +153,7 @@ private:
 
 	//ALIVE ENTITY SECTION
 	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> ALIVE_HumanEntitiesMap;
-
-
+	std::map<teamEnum, std::vector<AHumanEntityScript*>> ALIVE_MAP;
 
 	//GENERIC ENUM MAPS OF GENERIC MANAGERS
 	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
@@ -178,6 +177,8 @@ private:
 public:
 	void addMaterial(materialEnum type, UMaterial *material);
 	UMaterial *getMaterial(materialEnum type);
+
+	AHumanEntityScript *getNearestTarget(AHumanEntityScript *ownActor, teamEnum ownTeam);
 
 private:
 	std::map<materialEnum, UMaterial *> materialMap;

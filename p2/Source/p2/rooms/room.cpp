@@ -138,8 +138,9 @@ void Aroom::disableWall(FVector &location){
 }
 
 /// @brief disables the closest wall to a point
-/// @param location 
-void Aroom::disableWall(FVector &location, UClass *doorBp){
+/// @param location lcoation to replace a wall
+/// @param bp to spawn (door or window) 
+void Aroom::disableWall(FVector &location, UClass *bp){
 
 	if(wallActors.Num() > 0){
 
@@ -167,13 +168,13 @@ void Aroom::disableWall(FVector &location, UClass *doorBp){
 
 			//spawn a door
 			if(EntityManager *e = EntityManager::instance()){
-				if(doorBp != nullptr){
+				if(bp != nullptr){
 					FVector locationCopy = closest->GetActorLocation();
 					FRotator rotationCopy = closest->GetActorRotation();
-					AActor *spawnedDoor = e->spawnAactor(GetWorld(), doorBp, locationCopy);
-					if(spawnedDoor != nullptr){
-						spawnedDoor->SetActorLocation(locationCopy);
-						spawnedDoor->SetActorRotation(rotationCopy);
+					AActor *spawned = e->spawnAactor(GetWorld(), bp, locationCopy);
+					if(spawned != nullptr){
+						spawned->SetActorLocation(locationCopy);
+						spawned->SetActorRotation(rotationCopy);
 					}
 				}
 			}
@@ -187,8 +188,9 @@ void Aroom::disableWall(FVector &location, UClass *doorBp){
 
 
 /// @brief will process all door positions of a room
-/// @param positions 
-void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, UClass *doorBp){
+/// @param positions to check and all walls will be replaced with a uclass which is spawned
+/// thats why the uclass should be a door or a window, etc.
+void Aroom::processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp){
 
 	findWalls();
 
@@ -206,7 +208,7 @@ void Aroom::processDoorPositionVectors(std::vector<FVector> &toPositionVector, U
 		}
 
 
-		disableWall(relativeDoorPos, doorBp);
+		disableWall(relativeDoorPos, bp);
 	}
 
 	debugShowOutline();

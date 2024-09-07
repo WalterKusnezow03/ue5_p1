@@ -224,7 +224,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         return;
     }
 
-    //refacture
+    //load rooms
     FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/"));
     FString bpNamePart = FString::Printf(TEXT("room"));
     for (int i = 1; i <= 6; i++){
@@ -245,6 +245,16 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         FString connect = door + num;
         FString builded = buildPath(path, connect);
         entityManager->setDooruClassBp(loadUClassBluePrint(builded));
+    }
+
+    //load windows
+    path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/windows/"));
+    FString window = FString::Printf(TEXT("windowBp"));
+    for (int i = 1; i < 2; i++){
+        FString num = FString::Printf(TEXT("%d"), i);
+        FString connect = window + num;
+        FString builded = buildPath(path, connect);
+        entityManager->setWindowuClassBp(loadUClassBluePrint(builded));
     }
 }
 

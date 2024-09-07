@@ -23,6 +23,8 @@ public:
 	//inherited from interface
 	virtual void takedamage(int d) override;
 
+	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -100,7 +102,7 @@ public:
 protected:
 	virtual void die();
 	bool activated;
-	bool isActivatedForUpdate();
+	
 	void enableCollider(bool enable);
 public:
 	//must be public
