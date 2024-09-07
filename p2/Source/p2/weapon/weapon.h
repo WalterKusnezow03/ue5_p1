@@ -11,6 +11,7 @@
 #include "weaponEnum.h"
 #include "ammunitionEnum.h"
 #include "attachmentEnums/weaponSightEnum.h"
+#include "p2/player/teamEnum.h"
 
 #include "weapon.generated.h"
 
@@ -73,7 +74,7 @@ protected:
 	//bool isVisible;
 
 	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
-	virtual void shootProtected(FVector from, FVector to, int ownTeam);
+	virtual void shootProtected(FVector from, FVector to, teamEnum ownTeam);
 
 	bool singleFireModeOn;
 	bool singleFireMode();

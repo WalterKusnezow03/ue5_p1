@@ -41,7 +41,7 @@ void AthrowerWeapon::Tick(float deltaTime){
     }
 }
 
-void AthrowerWeapon::shootProtected(FVector from, FVector to, int ownTeam){
+void AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){ //team enum is ignored here
     //throw an item here instead
 
     if(Super::canShoot() && throwableActorPointer != nullptr){

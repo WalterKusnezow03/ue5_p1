@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/interfaces/Damageinterface.h"
-#include "p2/player/teamEnum.h"
-#include "debugEntity.generated.h"
+#include "p2/interfaces/Interactinterface.h"
+#include "p2/rooms/roomParts/jumpableActor.h"
+#include "window.generated.h"
 
 UCLASS()
-class P2_API AdebugEntity : public AActor, public IDamageinterface
+class P2_API Awindow : public AjumpableActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AdebugEntity();
+	Awindow();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,11 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void takedamage(int damage) override;
-	virtual void setTeam(teamEnum team) override;
-	virtual teamEnum getTeam() override;
 
 private:
-	bool clicked;
-	void debugFunction();
+
 };

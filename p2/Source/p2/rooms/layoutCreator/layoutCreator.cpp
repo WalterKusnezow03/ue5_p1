@@ -212,18 +212,16 @@ roomBounds *layoutCreator::grid::tryGetPosition(int x, int y){
 
 /// @brief will find all edge rooms 
 /// @param roomToCheck room to get the edges for 
-/// @param output output vector, data will be overriden!
-/// @param size size it was filled up until, dont use output.size()!
+/// @param output output TVector, data will be overriden!
 void layoutCreator::grid::getEdges(
     roomBounds &roomToCheck, 
     //std::vector<TTouple<int,int>> &output,
-    TVector<TTouple<int,int>> &output,
-    int &size
+    TVector<TTouple<int,int>> &output
 ){
 
     output.clear(); //clear template vector first
 
-    int overrideIndex = 0;
+    //int overrideIndex = 0;
 
     //roomBounds *current = data[i][j];
     int xstart = roomToCheck.xpos();
@@ -242,14 +240,6 @@ void layoutCreator::grid::getEdges(
         {
             TTouple<int, int> t1(ix, ystart); //fix offset
             output.push_back(t1);
-            /*
-            if(overrideIndex >= output.size()){
-                output.push_back(t1);
-                overrideIndex++;
-            }else{
-                output.at(overrideIndex) = t1;
-                overrideIndex++;
-            }*/
         }
     }  
 
@@ -264,14 +254,6 @@ void layoutCreator::grid::getEdges(
         {
             TTouple<int, int> t1(ix, yend);
             output.push_back(t1);
-            /*
-            if(overrideIndex >= output.size()){
-                output.push_back(t1);
-                overrideIndex++;
-            }else{
-                output.at(overrideIndex) = t1;
-                overrideIndex++;
-            }*/
         }
     }
 
@@ -286,14 +268,6 @@ void layoutCreator::grid::getEdges(
         {
             TTouple<int, int> t1(xstart, iy);
             output.push_back(t1);
-            /*
-            if(overrideIndex >= output.size()){
-                output.push_back(t1);
-                overrideIndex++;
-            }else{
-                output.at(overrideIndex) = t1;
-                overrideIndex++;
-            }*/
         }
     }
 
@@ -306,22 +280,10 @@ void layoutCreator::grid::getEdges(
         {
             TTouple<int, int> t1(xend, iy);
             output.push_back(t1);
-            /*
-            if(overrideIndex >= output.size()){
-                output.push_back(t1);
-                overrideIndex++;
-            }else{
-                output.at(overrideIndex) = t1;
-                overrideIndex++;
-            }*/
         }
     }
 
-    if(overrideIndex < output.size()){
-        size = overrideIndex;
-    }else{
-        size = output.size();
-    }
+    
 }
 
 
@@ -618,12 +580,15 @@ void layoutCreator::createWindows(){
             //alle räume, alle einsammeln, hinzufügen
             roomBounds *current = created.at(i);
             if(current != nullptr){
-                map->getEdges(*current, output, size); //size will be overriden correctly
+                output.clear();
+                map->getEdges(*current, output); // size will be overriden correctly
 
+                
+                int percentToKeep = 60; //percent of edges to keep
+                removeRandomElements(output, percentToKeep);
                 DebugHelper::showScreenMessage("room debug counted windows ", output.size(), FColor::Red);
 
-                int filledSize = size;
-                for (int j = 0; j < filledSize; j++)
+                for (int j = 0; j < output.size(); j++)
                 {
                     TTouple<int, int> &cTupel = output.at(j);
                     current->addWindowPosition(cTupel.first(), cTupel.last());
@@ -632,5 +597,34 @@ void layoutCreator::createWindows(){
 
             
         }
+    }
+}
+
+/// @brief will remove random elements from the tvector
+/// @tparam T type
+/// @param t tvector to clear
+/// @param percentToKeep percentage to keep, for example 60% to have in the end left
+/// percent <= 0 will be ignored, > 100 clamped to 100
+template <typename T>
+void layoutCreator::removeRandomElements(TVector<T> &t, int percentToKeep)
+{
+    if(percentToKeep <= 0){
+        return;
+    }
+    if(percentToKeep >= 100){
+        return;
+    }
+    if(t.size() < 2){
+        return;
+    }
+
+    int full = t.size();
+    int percentToElements = (full * percentToKeep) / 100; //(full / 100) * percentToKeep;
+    while(t.size() > percentToElements){
+        int random = FVectorUtil::randomNumber(0, t.size() - 1);
+        if(t.empty()){
+            return;
+        }
+        t.erase(random);
     }
 }

@@ -78,6 +78,10 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
     if(humanEntity != nullptr){
         humanEntity->enableActiveStatus(false);
         humanEntityList.add(humanEntity);
+
+        //add team checkup here, remove from all alive map
+        teamEnum type = humanEntity->getTeam();
+        ALIVE_HumanEntitiesMap.erase(type, humanEntity);//erase entity if found
     }
 }
 

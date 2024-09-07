@@ -4,7 +4,7 @@
 #include "AlertManager.h"
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
-#include "p2/Damageinterface.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 

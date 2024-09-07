@@ -19,6 +19,8 @@ public:
 	
 	void add(T *actor);
 
+	void erase(T *actor);
+
 	T *getFirstActor();
 
 	bool hasActorsLeft();

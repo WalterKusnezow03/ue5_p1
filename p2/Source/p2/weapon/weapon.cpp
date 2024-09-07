@@ -2,7 +2,7 @@
 
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-#include "p2/Damageinterface.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
 #include "weaponEnum.h"
 #include "carriedItem.h"
@@ -11,6 +11,7 @@
 #include "attachmentEnums/weaponSightEnum.h"
 #include "ammunitionEnum.h"
 #include <map>
+#include "p2/player/teamEnum.h"
 #include "carriedItem.h"
 
 
@@ -193,8 +194,8 @@ void Aweapon::shoot(){
 		FVector End = Start + (ForwardVector * 50000.0f); //50000 units in front of the camera, must be changed later
 
 
-		int NONE = -1;
-		shootProtected(Start, End , NONE);//shoot from a start to an endpoint
+	
+		shootProtected(Start, End, teamEnum::none);//shoot from a start to an endpoint
 	}
 }
 
@@ -207,8 +208,8 @@ void Aweapon::shootBot(FVector target){
 		FVector connect = (target - start).GetSafeNormal();
 		start += connect * 100;
 
-		int NONE = -1;
-		shootProtected(start, target, NONE); // protected weapon shoot call
+		
+		shootProtected(start, target, teamEnum::none); // protected weapon shoot call
 	}
 }
 
@@ -218,7 +219,7 @@ void Aweapon::shootBot(FVector target){
 /// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
 /// @param Start pos
 /// @param End pos target
-void Aweapon::shootProtected(FVector Start, FVector End, int ownTeam){
+void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
@@ -251,7 +252,7 @@ void Aweapon::shootProtected(FVector Start, FVector End, int ownTeam){
 				if (entity)
 				{
 					//damage entity if some other team
-					int entityTeam = entity->getTeam();
+					teamEnum entityTeam = entity->getTeam();
 					if(entityTeam != ownTeam){
 						DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 						entity->takedamage(20); //must be changed later

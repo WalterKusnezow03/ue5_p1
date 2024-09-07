@@ -26,6 +26,7 @@ public:
 	T *getFirstActor(E type);
 	bool hasActorsLeft(E type);
 
+	void erase(E type, T *actor);
 
 private:
 	/// @brief saves one entity manager for each enum value

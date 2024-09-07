@@ -237,7 +237,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
     }
     
 
-    //load rooms
+    //load doors
     path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/doors/"));
     FString door = FString::Printf(TEXT("doorBp"));
     for (int i = 1; i < 2; i++){

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "p2/player/teamEnum.h"
 #include "Damageinterface.generated.h"
 
 // This class does not need to be modified.
@@ -30,6 +31,8 @@ public:
 	//methods
 	virtual void takedamage(int d) = 0; //= 0 schreiben damit sie pure virtual sind
 
-	virtual void setTeam(int teamIn) = 0;
-	virtual int getTeam() = 0;
+	//virtual void setTeam(int teamIn) = 0;
+	//virtual int getTeam() = 0;
+	virtual void setTeam(teamEnum t) = 0;
+	virtual teamEnum getTeam() = 0;
 };

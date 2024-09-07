@@ -6,7 +6,7 @@
 #include "Engine/StaticMesh.h"
 #include "StaticMeshResources.h" 
 #include "GameFramework/Actor.h"
-#include "p2/Damageinterface.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "Engine/StaticMeshActor.h"
 #include "MeshDescription.h"
 #include "Kismet/GameplayStatics.h"

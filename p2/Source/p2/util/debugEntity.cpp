@@ -34,11 +34,16 @@ void AdebugEntity::takedamage(int d){
 		debugFunction();
 	}
 }
-void AdebugEntity::setTeam(int team){
 
+/// @brief sets the team, is empyt here, will not be set
+/// @param team 
+void AdebugEntity::setTeam(teamEnum team){
 }
-int AdebugEntity::getTeam(){
-	return referenceManager::TEAM_NEUTRAL;
+
+/// @brief will always return neutralTeam
+/// @return 
+teamEnum AdebugEntity::getTeam(){
+	return teamEnum::neutralTeam;
 }
 
 void AdebugEntity::debugFunction(){

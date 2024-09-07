@@ -8,7 +8,7 @@
 #include "p2/player/playerScript.h"
 
 /**
- * 
+ * stores team constants and the player reference which is needed for all the entites
  */
 class P2_API referenceManager
 {
@@ -32,6 +32,6 @@ private:
 
 	static class referenceManager *instancePointer;
 
-	class AplayerScript *playerPointer;
+	class AplayerScript *playerPointer = nullptr;
 
 };

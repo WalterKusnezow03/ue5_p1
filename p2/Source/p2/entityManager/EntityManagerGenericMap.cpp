@@ -80,3 +80,19 @@ bool EntityManagerGenericMap<E,T>::hasActorsLeft(E type){
     }
     return false;
 }
+
+
+
+/// @brief tries to remove an item from the entity manager
+/// @tparam E type to erase
+/// @tparam T type of actors
+/// @param actor element to find erase
+template <typename E, typename T>
+void EntityManagerGenericMap<E,T>::erase(E type, T * actor){
+    if(map.find(type) != map.end() && actor != nullptr){
+        EntityManagerGeneric<T> *pointer = map[type];
+        if(pointer != nullptr){
+            pointer->erase(actor);
+        }
+    }
+}

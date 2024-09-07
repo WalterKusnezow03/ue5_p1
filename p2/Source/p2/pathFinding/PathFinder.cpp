@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/Damageinterface.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "DrawDebugHelpers.h"
 #include <cmath>
 #include <algorithm>

@@ -6,6 +6,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
+#include "p2/player/teamEnum.h"
 #include "EntityScript.h"
 
 // Sets default values
@@ -50,8 +51,8 @@ void AEntityScript::init(){
 
 
 	//set team
-	setTeam(referenceManager::TEAM_NEUTRAL);
-
+	//setTeam(referenceManager::TEAM_NEUTRAL);
+	setTeam(teamEnum::neutralTeam);
 }
 
 // Called every frame
@@ -480,10 +481,11 @@ void AEntityScript::alarm(){
 	}
 }
 
-void AEntityScript::setTeam(int teamIn){
-    this->team = referenceManager::verifyTeam(teamIn);
+void AEntityScript::setTeam(teamEnum teamIn){
+	this->team = teamIn;
+	// referenceManager::verifyTeam(teamIn);
 }
 
-int AEntityScript::getTeam(){
+teamEnum AEntityScript::getTeam(){
     return team;
 }

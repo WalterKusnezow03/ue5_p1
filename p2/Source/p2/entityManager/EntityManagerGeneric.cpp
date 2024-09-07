@@ -33,7 +33,17 @@ bool EntityManagerGeneric<T>::hasActorsLeft(){
 /// @param actor actor to be added
 template <typename T>
 void EntityManagerGeneric<T>::add(T *actor){
-    actorVector.push_back(actor);
+    //will not support duplicates
+    if(actor != nullptr){
+        for (int i = 0; i < actorVector.size(); i++){
+            if(actorVector.at(i) == actor){
+                return; //duplicate found
+            }
+        }
+        actorVector.push_back(actor);
+    }
+
+    //actorVector.push_back(actor);
 }
 
 /// @brief returns an actor from the list if possible
@@ -47,4 +57,21 @@ T * EntityManagerGeneric<T>::getFirstActor(){
         return actor;
     }
     return nullptr;
+}
+
+
+/// @brief tries to remove an item from the entity manager
+/// @tparam T type
+/// @param actor element to find erase
+template <typename T>
+void EntityManagerGeneric<T>::erase(T * actor){
+    if(actor != nullptr){
+        for (int i = 0; i < actorVector.size(); i++){
+            if(actorVector.at(i) == actor){
+                actorVector.erase(actorVector.begin() + i);
+                return;
+            }
+        }
+    }
+    
 }

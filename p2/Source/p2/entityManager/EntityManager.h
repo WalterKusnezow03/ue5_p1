@@ -148,7 +148,12 @@ private:
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java
 	class EntityManagerGeneric<AEntityScript> entityList; 
-	class EntityManagerGeneric<AHumanEntityScript> humanEntityList;
+	class EntityManagerGeneric<AHumanEntityScript> humanEntityList; //hier werden ALLE toten humans ausbewahrt
+	//team unabhängig
+
+	//ALIVE ENTITY SECTION
+	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> ALIVE_HumanEntitiesMap;
+
 
 
 	//GENERIC ENUM MAPS OF GENERIC MANAGERS

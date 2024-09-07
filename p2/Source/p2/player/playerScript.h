@@ -9,8 +9,8 @@
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
-
-#include "p2/Damageinterface.h"
+#include "teamEnum.h"
+#include "p2/interfaces/Damageinterface.h"
 
 #include "playerScript.generated.h"
 
@@ -23,8 +23,8 @@ public:
 	// Sets default values for this character's properties
 	AplayerScript();
 	virtual void takedamage(int d) override;
-	virtual void setTeam(int teamIn) override;
-	virtual int getTeam() override;
+	virtual void setTeam(teamEnum teamIn) override;
+	virtual teamEnum getTeam() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,7 +47,8 @@ public:
     class UAnimInstance* AnimInstance;
 
 private:
-	int team = 0;
+	//int team = 0;
+	teamEnum team;
 
 	class playerInventory playerInventory;
 

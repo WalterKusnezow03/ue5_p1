@@ -49,7 +49,7 @@ private:
 			FString toString();
 
 			//void getEdges(roomBounds &roomToCheck, std::vector<TTouple<int,int>> &output, int &size);
-			void getEdges(roomBounds &roomToCheck, TVector<TTouple<int,int>> &output, int &size);
+			void getEdges(roomBounds &roomToCheck, TVector<TTouple<int,int>> &output);
 
 		private:
 			/// @brief stores the grid data, will have duplicate pointers
@@ -83,4 +83,7 @@ private:
 
 	void tryCreateRooms();
 	bool createRoom(roomtypeEnum type);
+
+	template <typename T>
+	void removeRandomElements(TVector<T> &t, int percentToKeep);
 };

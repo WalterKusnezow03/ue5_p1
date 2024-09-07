@@ -75,7 +75,8 @@ void AHumanEntityScript::init(){
     outpost = nullptr;
 
     //team
-    setTeam(referenceManager::TEAM_ENEMY);
+    //setTeam(referenceManager::TEAM_ENEMY);
+    setTeam(teamEnum::enemyTeam);
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){

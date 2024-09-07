@@ -20,6 +20,17 @@ TVector<T>::~TVector(){
     //vec.clear();
 }
 
+
+template <typename T>
+T & TVector<T>::operator[](int index){
+    if(index >= 0 && index < size() && index < vec.size()){
+        return vec.at(index);
+    }
+    throw std::out_of_range("Index out of range");
+}
+
+
+
 template <typename T>
 int TVector<T>::size(){
     return sizeIndex;
@@ -38,14 +49,20 @@ void TVector<T>::clear(){
 template <typename T>
 void TVector<T>::erase(int index){
     if(index >= 0 && index < sizeIndex && vec.size() > 0){
-        vec.erase(index);
+        vec.erase(vec.begin() + index);
+        sizeIndex--;
+        if(sizeIndex < 0){
+            sizeIndex = 0;
+        }
         return;
     }
     throw std::out_of_range("Index out of range");
 }
 
 
-
+/// @brief pushes one element in the vector
+/// @tparam T type of the vector
+/// @param t item to push
 template <typename T>
 void TVector<T>::push_back(const T &t){ //its passing a reference to what ever t is, even a pointer or a value, no matter
     if(sizeIndex >= 0 && sizeIndex < vec.size()){
@@ -56,6 +73,17 @@ void TVector<T>::push_back(const T &t){ //its passing a reference to what ever t
         sizeIndex = vec.size();
     }
 }
+
+/// @brief push back another TVectors data into this vector
+/// @tparam T 
+/// @param t 
+template <typename T>
+void TVector<T>::push_back(const TVector<T> &t){
+    for (int i = 0; i < t.size(); i++){
+        push_back(t.at(i));
+    }
+}
+
 
 template <typename T>
 T& TVector<T>::front(){
@@ -90,7 +118,7 @@ void TVector<T>::pop_back(){
 
 template <typename T>
 T &TVector<T>::at(int index){
-    if(index >= 0 && index < size() && vec.size()){
+    if(index >= 0 && index < size() && index < vec.size()){
         return vec.at(index);
     }
     throw std::out_of_range("Index out of range");

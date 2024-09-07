@@ -8,6 +8,7 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/DebugHelper.h"
 #include "Animation/AnimSequence.h"
+#include "teamEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
@@ -79,10 +80,8 @@ void AplayerScript::BeginPlay()
     }
 
 
-    setTeam(referenceManager::TEAM_PLAYER);
-
-
-
+    //setTeam(referenceManager::TEAM_PLAYER);
+    setTeam(teamEnum::playerTeam);
 
     //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
     
@@ -385,10 +384,11 @@ bool AplayerScript::animationisPlaying(){
 
 
 
-void AplayerScript::setTeam(int teamIn){
-    this->team = referenceManager::verifyTeam(teamIn);
+void AplayerScript::setTeam(teamEnum teamIn){
+    this->team = teamIn;
+    // referenceManager::verifyTeam(teamIn);
 }
 
-int AplayerScript::getTeam(){
+teamEnum AplayerScript::getTeam(){
     return team;
 }

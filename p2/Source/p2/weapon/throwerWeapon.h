@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/weapon/weapon.h"
 #include "p2/throwableItems/throwableItem.h"
+#include "p2/player/teamEnum.h"
 #include "throwerWeapon.generated.h"
 
 /**
@@ -29,7 +30,7 @@ public:
 	throwableEnum throwableTypeToThrow; //type to throw / instantiate
 
 protected:
-	virtual void shootProtected(FVector from, FVector to, int ownTeam) override;
+	virtual void shootProtected(FVector from, FVector to, teamEnum ownTeam) override;
 	virtual void reload(int amount) override;
 
 	bool showThrowableItem;

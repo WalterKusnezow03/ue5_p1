@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/Damageinterface.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "p2/player/playerScript.h"
+#include "p2/player/teamEnum.h"
 
 #include "EntityScript.generated.h"
 
@@ -27,14 +28,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void init();
 
-	virtual void setTeam(int teamIn) override;
-	virtual int getTeam() override;
+	//virtual void setTeam(int teamIn) override;
+	//virtual int getTeam() override;
+	
+	virtual void setTeam(teamEnum teamIn) override;
+	virtual teamEnum getTeam() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	int team;
+	//int team;
+	teamEnum team;
 
 	// performs the raycast to a target
 	bool performRaycast(AActor *target);
