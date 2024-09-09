@@ -359,8 +359,7 @@ void AEntityScript::LookAt(AActor *target){
 }
 
 
-//hier ist zum beispiel apss by value weil referenz einfach kein sinn macht
-//für so einen kurzen block
+
 /// @brief look at a location
 /// @param TargetLocation target to look at
 void AEntityScript::LookAt(FVector TargetLocation) 

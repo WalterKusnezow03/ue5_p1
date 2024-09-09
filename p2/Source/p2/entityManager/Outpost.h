@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
+#include "p2/player/teamEnum.h"
 #include "Outpost.generated.h"
 
 //forward declaration
@@ -36,10 +36,19 @@ public:
 
 private:
 
+	//will save for each team the entites. Needed for dynamic targets
+	std::map<teamEnum, std::vector<AHumanEntityScript *>> teamMap;
+	void removeFromMap(AHumanEntityScript *human);
+	void addToMap(AHumanEntityScript *human);
+	void removeFromVec(AHumanEntityScript *human, std::vector<AHumanEntityScript *> &vec);
+	std::vector<AHumanEntityScript *>& getVectorReferenceFor(teamEnum team);
+
+
+
 	//entities
 	std::vector<AHumanEntityScript *> myEntities;
-	void createEntity();
-	void createEntity(int count);
+	void createEntity(teamEnum t);
+	void createEntity(int count, teamEnum t);
 
 	//distance
 	static const int MAXDISTANCE = 70000; //70m
@@ -51,7 +60,7 @@ private:
 
 	//liberate
 	bool isLiberated;
-	void liberate();
+	void tryliberate();
 
 	//despawn all
 	void releaseAll();

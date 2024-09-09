@@ -133,3 +133,47 @@ void AActorUtil::findAllChildsByName(AActor &actor, FString namepart, TArray<UCh
 
     
 }
+
+
+
+/// @brief will calculate the x y and z scale of the aactor
+/// @param actor actor to check, must not be nullptr
+/// @param x x scale out
+/// @param y y scale out
+/// @param z z scale out
+void AActorUtil::calculateActorBounds(AActor *actor, int &x, int &y, int &z){
+    if(actor != nullptr){
+        FVector Origin;
+        FVector Extent;
+        actor->GetActorBounds(true, Origin, Extent); //leg mir das da rein prinzip
+
+
+        int xScale = (int)(Extent.X * 2);
+        int yScale = (int)(Extent.Y * 2);
+        int zScale = (int)(Extent.Z * 2);
+
+        x = xScale;
+        y = yScale;
+        z = zScale;
+    }
+}
+
+
+/// @brief will calculate the x y and z scale of the uclass
+/// @param uclass uclass -> actor to check, must not be nullptr
+/// @param x x scale out
+/// @param y y scale out
+/// @param z z scale out
+void AActorUtil::calculateActorBounds(UWorld *world, UClass *uclassIn, int &x, int &y, int &z){
+    if(uclassIn != nullptr){
+        if(EntityManager *e = EntityManager::instance()){
+
+            FVector debugLocation(0, 0, -1000);
+            AActor *tmp = e->spawnAactor(world, uclassIn, debugLocation);
+            if(tmp != nullptr){
+                calculateActorBounds(tmp, x, y, z);
+                tmp->Destroy();
+            }
+        }
+    }
+}

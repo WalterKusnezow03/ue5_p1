@@ -1,24 +1,50 @@
 
 #include "roomBounds.h"
+#include "p2/util/TTouple.h"
 #include "CoreMinimal.h"
 
 
 
 // ---- room methods ----
 
-roomBounds::roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn){
-    xScale = xIn;
-    yScale = yIn;
-    number = num;
-    type = typeIn;
-    uclass = nullptr;
-}
+/// @brief default constructor of room
+/// @param xIn xscale
+/// @param yIn yscale
+/// @param num number
+/// @param uclassIn uclass prefab
 roomBounds::roomBounds(int xIn, int yIn, int num, UClass *uclassIn){
     xScale = xIn;
     yScale = yIn;
     number = num;
     type = roomtypeEnum::room;
     uclass = uclassIn;
+    floor = 0;
+}
+
+roomBounds::roomBounds(
+    int xIn, 
+    int yIn, 
+    int num, 
+    UClass *uclassIn, 
+    int floorIn,
+    roomtypeEnum typeIn
+){
+    xScale = xIn;
+    yScale = yIn;
+    number = num;
+    uclass = uclassIn;
+
+    //new
+    type = typeIn;
+    floor = floorIn;
+    floor = std::clamp(floorIn, 0, 1);
+    if (floor < 0)
+    {
+        floor = 0;
+    }
+    if(floor > 0){
+        floor = 1;
+    }
 }
 
 roomBounds::~roomBounds(){
@@ -53,9 +79,9 @@ void roomBounds::updatePosition(int x, int y){
     xPos = x;
     yPos = y;
 }
-/// @brief adds a door position 
-/// @param x x pos relative to left bottom corner
-/// @param y y pos relative to left bottom corner
+/// @brief adds a door position and makes it relative
+/// @param x x pos in grid all
+/// @param y y pos in grid all
 void roomBounds::addDoorPosition(int x, int y){
     //make relative: to left corner!
     x -= xPos;
@@ -78,10 +104,49 @@ std::vector<FVector> &roomBounds::readRelativeWindowPositions(){
     return windowPositions;
 }
 
+/// @brief adds a window position and makes it relative
+/// @param x x pos in grid all
+/// @param y y pos in grid all
 void roomBounds::addWindowPosition(int x, int y){
     //make relative: to left corner!
     x -= xPos;
     y -= yPos;
 
+    //check all door positions for overlap, dont add if found
+    for (int i = 0; i < doorPositions.size(); i++){
+        FVector &ref = doorPositions.at(i);
+        if(ref.X == x && ref.Y == y){
+            return;
+        }
+    }
+
     windowPositions.push_back(FVector(x, y, 0));
+}
+
+
+
+// die überlegung ist dass die staircases
+// die position selber übergeben
+// es muss gepeichert werden ob oben oder unten
+
+bool roomBounds::isStaircase(){
+    return type == roomtypeEnum::staircase;
+}
+
+//floor for staircase door positions
+//as staircases will always be just in one dir down to up for now
+//this will work out
+TTouple<int,int> roomBounds::getmanualDoorPos(){
+    if(isStaircase()){
+        if(floor == 0){
+            TTouple<int, int> t(xPos + 0, yPos + 0); //bottom part
+            return t;
+        }
+        if(floor == 1){
+            TTouple<int, int> t(xPos + xScale, yPos + yScale); //top part
+            return t;
+        }
+    }
+    TTouple<int, int> none(-1, -1);
+    return none;
 }

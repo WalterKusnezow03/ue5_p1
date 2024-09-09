@@ -55,7 +55,13 @@ void RoomManager::add(UWorld *world, UClass *uclass){
 
             int xScale = (int)(Extent.X * 2) / ONE_METER;
             int yScale = (int)(Extent.Y * 2) / ONE_METER;
+            int zScaleRaw = (int)(Extent.Z * 2);
             int zScale = (int)(Extent.Z * 2) / ONE_METER;
+
+            //setting the largest zscale found for now
+            if(zScaleRaw > zWallHeight){
+                zWallHeight = zScaleRaw;
+            }
 
             //create the key
             roomtypeEnum readType = roomtypeEnum::room; //default value
@@ -91,19 +97,6 @@ void RoomManager::add(UWorld *world, UClass *uclass){
     }
 }
 
-void RoomManager::addDoor(UClass *uclass){
-    if(uclass != nullptr){
-        door1 = uclass;
-    }
-}
-
-void RoomManager::addWindow(UClass *uclass){
-    if(uclass != nullptr){
-        window1 = uclass;
-    }
-}
-
-
 
 
 
@@ -113,52 +106,33 @@ void RoomManager::addWindow(UClass *uclass){
 /// @param x in meters
 /// @param y in meters
 void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
-    //showKeys(); //debug
-    //showLog(); //shows previous log
-    /*
-    int staircasesPerLayer = 2;
-    layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
-    l.createRooms(x, y, staircasesPerLayer);
+    
 
-    //copy data
-    std::vector<roomBounds> copy = l.copyData();
-    std::vector<roomBounds> copyStairs = l.copyStaircaseData();
+    //default method part
+    int height = 200; // 200;
+    //height = zWallHeight; //new
 
-    //next layer
-    l.createRooms(x, y, copyStairs, true); //sollte in ordnung sein da deepcopy und clean methode
-    std::vector<roomBounds> copy1 = l.copyData();
-
-    std::vector<std::vector<roomBounds> *> allLayers;
-    allLayers.push_back(&copy);
-    allLayers.push_back(&copy1);
-    int height = 200;
-
-
-    for (int i = 0; i < allLayers.size(); i++)
-    {
-        FVector offset(0, 0, i * height);
-        offset += location; //apply location properly
-
-        std::vector<roomBounds> &vec = *allLayers.at(i);
-        processLayer(world, vec, offset);
-    }*/
-
-    int height = 200;
     int staircasesPerLayer = 2;
     std::vector<roomBounds> copyStairs;
+    std::vector<TTouple<int, int>> reverseBlock;
+    // std::vector<roomBounds> copy;
     for (int i = 0; i < 2; i++)
     {
         layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
         if(copyStairs.size() > 0){
-            l.createRooms(x, y, copyStairs, true);
+            l.createRooms(x, y, copyStairs, true, reverseBlock);
         }else{
             l.createRooms(x, y, staircasesPerLayer);
+            reverseBlock = l.getInverseBlockList();
+
         }
+
         std::vector<roomBounds> copy = l.copyData();
         copyStairs = l.copyStaircaseData();
-        FVector offset(0, 0, i * height);
+        FVector offset(0, 0, height * i);
         offset += location; //apply location properly
 
+        //process layer and add up new height from the just created layer
         processLayer(world, copy, offset);
     }
 }
@@ -170,8 +144,12 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 /// @param world world to spawn in
 /// @param vec vector of rooms
 /// @param offset offset to apply as total for the layout from origin (0,0,0)
-void RoomManager::processLayer(UWorld* world, std::vector<roomBounds> &vec, FVector offset){
-    //continue with instantiating objects
+void RoomManager::processLayer(
+    UWorld* world, 
+    std::vector<roomBounds> &vec, 
+    FVector offset
+){
+    
     if(EntityManager *e = EntityManager::instance()){
         for (int i = 0; i < vec.size(); i++){ //itertae all rooms to create
 
@@ -189,7 +167,7 @@ void RoomManager::processLayer(UWorld* world, std::vector<roomBounds> &vec, FVec
             int xpos = convertScaleToMeter(xposInGrid);
             int ypos = convertScaleToMeter(yposInGrid);
 
-            FVector position(xpos, ypos, 50); //z position must be aligned too some how
+            FVector position(xpos, ypos, 50); //z position must be aligned too some how (later in terrain integrate)
             //position += location;
             position += offset;
 
@@ -222,16 +200,25 @@ void RoomManager::processLayer(UWorld* world, std::vector<roomBounds> &vec, FVec
                     windowPositionsConverted.push_back(adjusted);
                 }
 
+                //create the walls first!
+                if(assetManager *a = assetManager::instance()){
+                    //spawn all walls
+                    aroom->spawnWalls(a->findBp(roomAssetEnum::wallEnum));
 
-
-                if(door1 == nullptr){
-                    //DebugHelper::showScreenMessage("door was nullptr! - room manager");
+                    //the room will process the postions and enable walls and doors accordingly
+                    aroom->processPositionVectorsAndReplaceWall(
+                        doorPositionsConverted, 
+                        a->findBp(roomAssetEnum::doorEnum)
+                    );
+                    //process windows too but after doors
+                    aroom->processPositionVectorsAndReplaceWall(
+                        windowPositionsConverted, 
+                        a->findBp(roomAssetEnum::windowEnum)
+                    );
                 }
+                
 
-                //the room will process the postions and enable walls and doors accordingly
-                aroom->processPositionVectorsAndReplaceWall(doorPositionsConverted, door1);
-                //process windows too
-                aroom->processPositionVectorsAndReplaceWall(windowPositionsConverted, window1);
+
             }
         }
     }

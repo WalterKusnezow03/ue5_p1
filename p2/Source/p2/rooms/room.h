@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "p2/util/TTouple.h"
 #include "roomtypeEnum.h"
 #include "room.generated.h"
 
@@ -32,24 +33,42 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//spawn walls on start
+	void spawnWalls(UClass *bp);
+
+	//replace walls with doors and windows etc
 	void processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp);
+
+	int getXScale();
+	int getYScale();
+	int getZScale();
 
 private:
 	
 
 
 	void debugShowOutline();
-	void findDoors();
+	
 	void calculateActorBounds();
 	FVector bottomLeftCorner();
 	std::vector<FVector> debugAllCorners();
+	std::vector<FVector> allCorners();
 
 	std::vector<FVector> doorPositions;
 	TArray<AActor *> wallActors;
+	TArray<AActor *> disabledWallActors;
 
-	void findWalls();
+
 	void disableWall(FVector &location);
 	void disableWall(FVector &location, UClass *bpToSpawn);
+
+	//new
+	void sortIn(
+		std::vector<TTouple<float, AActor *>> &vec, // by reference, nicht vergessen!
+		AActor *actor,
+		float distance,
+		int sizetargeted
+	);
 
 	FVector boxOrigin;
 	FVector boxExtent;

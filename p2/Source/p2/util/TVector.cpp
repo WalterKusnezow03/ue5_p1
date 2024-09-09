@@ -48,10 +48,11 @@ void TVector<T>::clear(){
 
 template <typename T>
 void TVector<T>::erase(int index){
-    if(index >= 0 && index < sizeIndex && vec.size() > 0){
+    if(index >= 0 && index < sizeIndex && vec.size() > 0 && sizeIndex > 0){
         vec.erase(vec.begin() + index);
         sizeIndex--;
-        if(sizeIndex < 0){
+        if (sizeIndex < 0)
+        {
             sizeIndex = 0;
         }
         return;
@@ -96,7 +97,11 @@ T& TVector<T>::front(){
 template <typename T>
 T& TVector<T>::back(){
     if(vec.size() > 0){
-        return vec.back();
+        if(sizeIndex == vec.size()){
+            return vec.back();
+        }else{
+            return vec.at(sizeIndex - 1);
+        }
     }
     throw std::out_of_range("Index out of range");
 }
@@ -118,7 +123,7 @@ void TVector<T>::pop_back(){
 
 template <typename T>
 T &TVector<T>::at(int index){
-    if(index >= 0 && index < size() && index < vec.size()){
+    if(index >= 0 && index < sizeIndex && index < vec.size()){
         return vec.at(index);
     }
     throw std::out_of_range("Index out of range");

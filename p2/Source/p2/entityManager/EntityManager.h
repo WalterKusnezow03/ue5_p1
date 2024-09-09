@@ -84,8 +84,6 @@ public:
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
 	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
 
-	void setDooruClassBp(UClass *uclassIn);
-	void setWindowuClassBp(UClass *uclassIn);
 
 	//terrain
 	void setEmptyMeshUClassBp(UClass *uclassIn);
@@ -135,8 +133,6 @@ private:
 
 
 	//room section
-	UPROPERTY()
-	class UClass *room1 = nullptr;
 	class RoomManager roomType1Manager;
 	
 
@@ -151,9 +147,7 @@ private:
 	class EntityManagerGeneric<AHumanEntityScript> humanEntityList; //hier werden ALLE toten humans ausbewahrt
 	//team unabhängig
 
-	//ALIVE ENTITY SECTION
-	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> ALIVE_HumanEntitiesMap;
-	std::map<teamEnum, std::vector<AHumanEntityScript*>> ALIVE_MAP;
+
 
 	//GENERIC ENUM MAPS OF GENERIC MANAGERS
 	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
@@ -178,7 +172,6 @@ public:
 	void addMaterial(materialEnum type, UMaterial *material);
 	UMaterial *getMaterial(materialEnum type);
 
-	AHumanEntityScript *getNearestTarget(AHumanEntityScript *ownActor, teamEnum ownTeam);
 
 private:
 	std::map<materialEnum, UMaterial *> materialMap;

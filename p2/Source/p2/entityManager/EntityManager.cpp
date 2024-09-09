@@ -79,9 +79,6 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
         humanEntity->enableActiveStatus(false);
         humanEntityList.add(humanEntity);
 
-        //add team checkup here, remove from all alive map
-        teamEnum type = humanEntity->getTeam();
-        ALIVE_HumanEntitiesMap.erase(type, humanEntity);//erase entity if found
     }
 }
 
@@ -162,11 +159,6 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 
             human->init();
             human->SetActorLocation(Location);
-
-            //team will be just enemies for now
-            teamEnum t = teamEnum::enemyTeam;
-            human->setTeam(t);
-            ALIVE_HumanEntitiesMap.add(t, human);
 
             return human;
         }
@@ -573,22 +565,6 @@ void EntityManager::setRoomuClassBp(UWorld *world, UClass *uclass){
     }
 }
 
-/// @brief adds a door to the appropiate room manager, types must be made up later!
-/// @param uclassIn 
-void EntityManager::setDooruClassBp(UClass *uclassIn){
-    if(uclassIn != nullptr){
-        roomType1Manager.addDoor(uclassIn);
-    }else{
-        DebugHelper::showScreenMessage("door uclass was nullptr! - entity manager", FColor::Red);
-    }
-}
-
-void EntityManager::setWindowuClassBp(UClass *uclassIn){
-    if(uclassIn != nullptr){
-        roomType1Manager.addWindow(uclassIn);
-    }
-}
-
 
 
 
@@ -665,7 +641,7 @@ void EntityManager::createTerrain(UWorld *worldIn, int chunks){
 
 
 /**
- * ---- section for materials -----
+ * ---- SECTION FOR MATERIALS -----
  */
 
 /// @brief add a material to be used on any mesh by material enum type
@@ -689,43 +665,3 @@ UMaterial *EntityManager::getMaterial(materialEnum type){
 
 
 
-
-/**
- * ---- SECTION FOR TARGET GETTING ----
- */
-
-/// @brief WILL NOT BE USED YET! UNCLEAR IF USED AT ALL! -- would be called on each frame
-/// or in some other intervall like each second for example
-/// @param ownActor 
-/// @param ownTeam 
-/// @return 
-AHumanEntityScript *EntityManager::getNearestTarget(AHumanEntityScript *ownActor, teamEnum ownTeam){
-    if(ownActor != nullptr){
-        if(ALIVE_MAP.find(ownTeam) != ALIVE_MAP.end()){
-            std::vector<AHumanEntityScript *> &ref = ALIVE_MAP[ownTeam];
-
-            FVector a = ownActor->GetActorLocation();
-
-            //find closest by quadratic distance
-            int quadDistance = FVectorUtil::intInfinity();
-            AHumanEntityScript *close = nullptr;
-            for (int i = 0; i < ref.size(); i++)
-            {
-                AHumanEntityScript *h = ref.at(i);
-                if (h != nullptr)
-                {
-                    if(h->isActivatedForUpdate()){
-                        FVector b = h->GetActorLocation();
-                        int newdist = FVectorUtil::quadraticDist(a, b);
-                        if(newdist < quadDistance){
-                            quadDistance = newdist;
-                            close = h;
-                        }
-                    }
-                }
-            }
-            return close;
-        }
-    }
-    return nullptr;
-}

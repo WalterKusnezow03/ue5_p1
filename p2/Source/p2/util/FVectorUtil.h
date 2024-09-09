@@ -10,12 +10,17 @@
 class P2_API FVectorUtil
 {
 public:
+	//very important!
+	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
+
+
 	static FVector randomOffset(int range);
 	static FVector calculateNormal(FVector &a, FVector &b, FVector &c);
 	static FVector calculateCenter(FVector &a, FVector &b, FVector &c);
 	static FVector calculateCenter(FVector &a, FVector &b, FVector &c, FVector &d);
 	static FVector calculateCenter(std::vector<FVector> &vec);
 	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
+	static FRotator randomRotation(FVector ownLocation);
 
 	static FVector2D randomOffset2D(int range);
 
@@ -26,8 +31,7 @@ public:
 	static int randomNumber(int lower, int higher);
 	static void fillWithRandomNumbers(std::vector<int> &nums, int count, int lower, int higher);
 
-	static FRotator randomRotation(FVector ownLocation);
-	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
+	
 	
 
 	static float Dist(FVector2D &a, FVector2D &b);

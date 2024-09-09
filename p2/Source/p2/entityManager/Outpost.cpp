@@ -5,6 +5,7 @@
 #include "Outpost.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
+#include "p2/player/teamEnum.h"
 #include <cstdlib>
 
 
@@ -22,7 +23,7 @@ AOutpost::AOutpost()
 void AOutpost::BeginPlay()
 {
 	Super::BeginPlay();
-	createEntity(5);
+	createEntity(5, teamEnum::enemyTeam);
 }
 
 // Called every frame
@@ -74,21 +75,20 @@ bool AOutpost::isInRange(FVector &vec){
 /// @param entity 
 void AOutpost::releaseEntity(AHumanEntityScript *entity){
 	if(entity != nullptr){
-		for (int i = 0; i < myEntities.size(); i++){
-			if(myEntities.at(i) == entity){
-				myEntities.erase(myEntities.begin() + i);
-				break;
-			}
-		}
+
+		//new team based
+		removeFromMap(entity);
+		//teamEnum team = entity->getTeam();
+		//removeFromVec(entity, getVectorFor(team));
+
 
 		if(EntityManager *e = EntityManager::instance()){
 			e->add(entity);
 		}
 		
-		//liberate if all dead
-		if(myEntities.size() <= 0){
-			liberate();
-		}
+		//liberate if all dead --> must be refactured to enemy team
+		tryliberate();
+		
 	}
 }
 
@@ -97,7 +97,12 @@ void AOutpost::releaseEntity(AHumanEntityScript *entity){
 /// @return outpost
 void AOutpost::subscribe(AHumanEntityScript *entity){
 	if(entity != nullptr){
-		myEntities.push_back(entity); //weil instanz variable mit .punkt
+
+		teamEnum team = entity->getTeam();
+		std::vector<AHumanEntityScript *> &vector = getVectorReferenceFor(team);
+		vector.push_back(entity);
+
+		//myEntities.push_back(entity); //weil instanz variable mit .punkt
 		entity->setOutpost(this);
 
 		DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
@@ -106,13 +111,15 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 
 
 /// @brief creates an human entity and subscribes it
-void AOutpost::createEntity(){
+/// @param team team of the entity to set
+void AOutpost::createEntity(teamEnum team){
 	if(EntityManager *e = EntityManager::instance()){
 		FVector pos = GetActorLocation();
 		pos.Z += 100;
 		pos += randomOffset(400);
 		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
 		if(human != nullptr){
+			human->setTeam(team);
 			subscribe(human);
 		}
 	}
@@ -127,19 +134,22 @@ FVector AOutpost::randomOffset(int range){
 }
 
 /// @brief creates entities with a count
-/// @param count 
-void AOutpost::createEntity(int count){
+/// @param count number of enteties
+/// @param team team of the enties
+void AOutpost::createEntity(int count, teamEnum team){
 	for (int i = 0; i < count; i++){
-		createEntity();
+		createEntity(team);
 	}
 }
 
 /// @brief will init entities if none are in the array 
 /// AND is not liberated!
 void AOutpost::initEntitiesIfNeeded(){
-	if(myEntities.size() <= 0 && !isLiberated){
-		createEntity(5);
+	
+	if(getVectorReferenceFor(teamEnum::enemyTeam).size() <= 0){
+		createEntity(5, teamEnum::enemyTeam);
 	}
+	
 }
 
 
@@ -150,13 +160,22 @@ void AOutpost::alertAll(){
 	if (!alertEnabled)
 	{
 		alertEnabled = true;
-		for (int i = 0; i < myEntities.size(); i++)
-		{
-			AHumanEntityScript *h = myEntities.at(i);
-			if(h != nullptr){
-				h->alert();
+
+		//alert all enteties, independant of team
+		for(auto &pair : teamMap){
+
+			std::vector<AHumanEntityScript *> &vec = pair.second;
+			for (int i = 0; i < vec.size(); i++)
+			{
+				AHumanEntityScript *h = vec.at(i);
+				if(h != nullptr){
+					h->alert();
+				}
 			}
 		}
+
+
+		
 	}
 }
 
@@ -166,13 +185,19 @@ void AOutpost::alarmAll(){
 
 	if(!alarmEnabled){
 		alarmEnabled = true;
-		for (int i = 0; i < myEntities.size(); i++)
-		{
-			AHumanEntityScript *h = myEntities.at(i);
-			if(h != nullptr){
-				h->alarm();
+
+		//enable alarm for all
+		for(auto &pair : teamMap){
+			std::vector<AHumanEntityScript *> &vec = pair.second;
+			for (int i = 0; i < vec.size(); i++)
+			{
+				AHumanEntityScript *h = vec.at(i);
+				if(h != nullptr){
+					h->alarm();
+				}
 			}
 		}
+		
 	}
 }
 
@@ -180,16 +205,13 @@ void AOutpost::alarmAll(){
 
 
 /// @brief liberate the outpost if no entities are left (dead or despawned, no difference)
-void AOutpost::liberate(){
-	if(myEntities.size() <= 0){
+void AOutpost::tryliberate(){
+	if(getVectorReferenceFor(teamEnum::enemyTeam).size() <= 0){ //a oder w = w
 		alarmEnabled = false;
 		alertEnabled = false;
 		isLiberated = true; 
 
-		//testing recreation --> testing completed, works as expected with generic entity manager
-		//isLiberated = false;
-		//initEntitiesIfNeeded();
-
+		
 		DebugHelper::showScreenMessage("liberated outpost", FColor::Yellow);
 	}
 }
@@ -198,13 +220,75 @@ void AOutpost::liberate(){
 
 /// @brief will despawn all entities of the outpost
 void AOutpost::releaseAll(){
-	if(myEntities.size() > 0){
-		
-		while(myEntities.size() > 0){
-			AHumanEntityScript *human = myEntities.front();
+	
+	for(auto &pair : teamMap){
+
+		std::vector<AHumanEntityScript *> &vec = pair.second;
+		while(vec.size() > 0){
+			AHumanEntityScript *human = vec.back();
+			vec.pop_back();
 			human->despawn();
 			// releaseEntity(human); //will find and release the targeted entity
 		}
 	}
+	
 }
 
+
+
+
+
+
+/**
+ * 
+ * TEAM MAP / VECTOR METHODS
+ * 
+ * 
+ */
+
+/// @brief removes a human from the map from the correct vector
+/// @param human 
+void AOutpost::removeFromMap(AHumanEntityScript *human){
+	if(human != nullptr){
+		teamEnum team = human->getTeam();
+		removeFromVec(human, getVectorReferenceFor(team));
+	}
+}
+
+void AOutpost::addToMap(AHumanEntityScript *human){
+	if(human != nullptr){
+		teamEnum team = human->getTeam();
+		//removeFromVec(human, getVectorFor(team));
+		std::vector<AHumanEntityScript *> &vecReference = getVectorReferenceFor(team);
+		vecReference.push_back(human);
+	}
+}
+
+
+/// @brief theres no need to worry about thread safety because this method will be only called from
+/// game thread and no issues should arise
+/// @param human human to remove
+/// @param vec vector to remove from
+void AOutpost::removeFromVec(AHumanEntityScript *human, std::vector<AHumanEntityScript*> &vec){
+	if(human != nullptr){
+		for (int i = 0; i < vec.size(); i++){
+			if(vec.at(i) == human){
+				vec.erase(vec.begin() + i);
+				return;
+			}
+		}
+	}
+}
+
+/// @brief returns the correct vector for a team for this outpost
+/// @param team team to get
+/// @return vector of the alive entites for the team requested
+std::vector<AHumanEntityScript *>& AOutpost::getVectorReferenceFor(teamEnum team){
+	if(teamMap.find(team) == teamMap.end()){
+		std::vector<AHumanEntityScript *> vec; 
+		teamMap[team] = vec;
+	}
+
+	std::vector<AHumanEntityScript *> &ref = teamMap[team];
+	return ref;
+}

@@ -17,9 +17,9 @@ Aroom::Aroom()
 void Aroom::BeginPlay()
 {
 	Super::BeginPlay();
-	findDoors();
-	//findWalls();
+	
 	calculateActorBounds();
+	
 }
 
 // Called every frame
@@ -33,6 +33,16 @@ void Aroom::Tick(float DeltaTime)
 /// @return room type from enum
 roomtypeEnum Aroom::readType(){
 	return type;
+}
+
+int Aroom::getXScale(){
+	return boxXScale;
+}
+int Aroom::getYScale(){
+	return boxYScale;
+}
+int Aroom::getZScale(){
+	return boxZScale;
 }
 
 /// @brief will calculate and set room bounds, is ideally called on begin play!
@@ -57,7 +67,7 @@ void Aroom::calculateActorBounds(){
 
     int xScale = (int)(Extent.X * 2);
     int yScale = (int)(Extent.Y * 2);
-	int zScale = (int)(Extent.Z * 2);
+	int zScale = (int)(Extent.Z * 2); //doesnt work for some reason
 
 
 	//set iv for this room
@@ -66,6 +76,8 @@ void Aroom::calculateActorBounds(){
 	boxXScale = xScale;
 	boxYScale = yScale;
 	boxZScale = zScale;
+
+	DebugHelper::showScreenMessage("DEBUG ROOM Z SCALE ", boxZScale, FColor::Yellow);
 
 	//FVector newLocation = GetActorLocation() + (GetActorLocation() - bottomLeftCorner());
 	//SetActorLocation(newLocation);
@@ -78,63 +90,53 @@ FVector Aroom::bottomLeftCorner(){
 	//FVector pos = GetActorLocation();
 	pos.X -= boxXScale / 2;
 	pos.Y -= boxYScale / 2;
-	//pos.Z -= boxZScale / 2;
+	pos.Z -= boxZScale / 2;
 	return pos;
 }
 
 
 
 
-
-void Aroom::findDoors(){
-	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
-	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method
-	if(childs.Num() > 0){
-		for (int i = 0; i < childs.Num(); i++){
-			if(childs[i] != nullptr){
-				FString name = childs[i]->GetName();
-
-
-				if(name.Contains("door")){
-					//DebugHelper::showScreenMessage("door FOUND", FColor::Red);
-
-					//doorPositions.push_back(childs[i]->GetActorLocation());
-				}
-			}
-		}
-	}
-}
-
-void Aroom::findWalls(){
-	TArray<UChildActorComponent *> container;
-	FString name = FString::Printf(TEXT("wall"));
-	//AActorUtil::findDirectChildsByName(*this, name, container); //seems to also find childs in childs... interesting
-	AActorUtil::findAllChildsByName(*this, name, container); //seems to also find childs in childs... interesting
-
-	//cast walls to aactor
-	int added = 0;
-
-
-	//get child actors
-	for(UChildActorComponent *comp : container){ //UChildActor component is the Child actor visble in the actor tree
-		if(comp != nullptr){
-			AActor *actor = comp->GetChildActor(); //Acess it as Actor: call this method for the UChildActorComponent
-			if(actor != nullptr){
-				wallActors.Add(actor);
-				added++;
-			}
-		}
-		
-	}
-
-	if(added > 0){
-		//DebugHelper::showScreenMessage("collected walls final ", added);
-	}
-}
-
-
 void Aroom::disableWall(FVector &location){
 	disableWall(location, nullptr);
+}
+
+/// @brief sort into the vector, find correct spot if based on int distance
+/// vector wilöl be sorted with smallest float at the end
+/// @param vec vector to check
+/// @param actor new Actor to push
+/// @param distance distance measured
+void Aroom::sortIn(
+	std::vector<TTouple<float, AActor *>> &vec, // by reference, nicht vergessen!
+	AActor *actor,
+	float distance,
+	int sizetargeted
+){
+	if(actor != nullptr){
+		if(vec.size() == 0){
+			vec.push_back(TTouple<float, AActor *>(distance, actor));
+		}else{
+
+			//normal sortiert einfügen
+			for (int i = vec.size() - 1; i >= 0; i--){
+
+				float compare = vec.at(i).first();
+				//smaller than prev
+				if (distance <= compare) {
+                    vec.insert(vec.begin() + i + 1, TTouple<float, AActor*>(distance, actor));
+                    return;
+                }else{
+					//limit reached, bad pos
+					if(i == vec.size() - sizetargeted - 1){
+						return;
+					}
+				}
+			}
+			//very front reached
+			vec.insert(vec.begin() + 0, TTouple<float, AActor*>(distance, actor));
+			
+		}
+	}
 }
 
 /// @brief disables the closest wall to a point
@@ -142,42 +144,117 @@ void Aroom::disableWall(FVector &location){
 /// @param bp to spawn (door or window) 
 void Aroom::disableWall(FVector &location, UClass *bp){
 
+	//refined version will:
+	//check the x width of the blueprint
+	//n = devide by 100 for meters
+	//create a vector of count n
+	//found n most closest elements
+	//disable them all
+	//spawn the bp at the center of those n elements
+	if(wallActors.Num() > 0){
+		int xcopy = 0; //real scale
+		int ycopy = 0;
+		int zcopy = 0;
+		AActorUtil::calculateActorBounds(GetWorld(), bp, xcopy, ycopy, zcopy);
+
+		//scale to index
+		int limit = xcopy / 100; //x is the width in the blueprints
+		if(true){
+			DebugHelper::showScreenMessage("ROOM LIMIT ", xcopy, FColor::Cyan);
+		}
+		
+
+		std::vector<TTouple<float, AActor *>> vec;
+
+		for(AActor *a : wallActors){
+			if (a != nullptr)
+			{
+				FVector current = a->GetActorLocation();
+				float distTmp = FVector::Dist(location, current);
+				sortIn(vec, a, distTmp, limit);
+			}
+		}
+
+		int startIndex = vec.size() - limit ; // -1 ?? no ; //-1 because 0 based //closest will be in closest spots
+		FVector center(0, 0, 0);
+		FRotator orient;
+		if (startIndex >= 0)
+		{
+			orient = vec.at(startIndex).last()->GetActorRotation();
+			for (int i = startIndex; i < vec.size(); i++)
+			{
+				AActor *pointer = vec.at(i).last();
+				center += pointer->GetActorLocation();
+
+				//disable the wall
+				pointer->SetActorHiddenInGame(true);
+				pointer->SetActorEnableCollision(false);
+			}
+		}
+		center /= limit;
+
+		if(EntityManager *e = EntityManager::instance()){
+			AActor *spawned = e->spawnAactor(GetWorld(), bp, center);
+			if(spawned != nullptr){
+				spawned->SetActorLocation(center);
+				spawned->SetActorRotation(orient);
+			}
+		}
+	}
+	return;
+
+	//old
 	if(wallActors.Num() > 0){
 
 		//find closest wall and disable it
 		AActor *closest = wallActors[0];
 		float closestDist = std::numeric_limits<float>::max();
+		int index = -1;
 
-		for(AActor *a : wallActors){
-			if(a != nullptr){
+		//for(AActor *a : wallActors){
+		for (int i = 0; i < wallActors.Num(); i++){
+			AActor *a = wallActors[i];
+			if (a != nullptr)
+			{
 				FVector current = a->GetActorLocation();
 				float distTmp = FVector::Dist(location, current);
 				if(distTmp < closestDist){
 					closestDist = distTmp;
 					closest = a;
+					index = i;
 				}
 			}
 		}
 
-		int EPSILON = 200;
+		int EPSILON = 150; // 200;
 		if (closestDist <= EPSILON && closest != nullptr)
 		{ // 100cm als thresehold
 			closest->SetActorHiddenInGame(true);
 			closest->SetActorEnableCollision(false);
 			//DebugHelper::showScreenMessage("disabled a wall");
 
-			//spawn a door
+			//spawn a door / window / the replacement
 			if(EntityManager *e = EntityManager::instance()){
 				if(bp != nullptr){
 					FVector locationCopy = closest->GetActorLocation();
 					FRotator rotationCopy = closest->GetActorRotation();
+					
 					AActor *spawned = e->spawnAactor(GetWorld(), bp, locationCopy);
 					if(spawned != nullptr){
 						spawned->SetActorLocation(locationCopy);
 						spawned->SetActorRotation(rotationCopy);
+						
 					}
 				}
 			}
+
+		}
+
+		//remove wall from list and MAYBE despawn it entierly, to not spawn multiple doors or windows
+		if(closest != nullptr){
+			wallActors.RemoveAt(index);
+			//closest->Destroy();
+			disabledWallActors.Add(closest); //keep instead, maybe need it?
 		}
 	}else{
 		//DebugHelper::showScreenMessage("debugroom: issues, no wall found! ", FColor::Purple);
@@ -190,15 +267,17 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 /// @brief will process all door positions of a room
 /// @param positions to check and all walls will be replaced with a uclass which is spawned
 /// thats why the uclass should be a door or a window, etc.
+/// all positions are Z irrelevant, the room will take care of applying world space to the relative coordinates
 void Aroom::processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp){
 
-	findWalls();
+	//findWalls();
 
 	//enable disable doors based on bottom left + offset
 	FVector bottomLeft = bottomLeftCorner();
 
 	for (int i = 0; i < toPositionVector.size(); i++){
 		FVector relativeDoorPos = bottomLeft + toPositionVector.at(i); //A + (B - A) //positions
+		relativeDoorPos.Z = bottomLeft.Z;
 
 		FVector debugUp = relativeDoorPos + FVector(0, 0, 100);
 		FVector debugDown = relativeDoorPos;
@@ -247,4 +326,78 @@ std::vector<FVector> Aroom::debugAllCorners(){
 
 
 	return returned;
+}
+
+
+
+
+std::vector<FVector> Aroom::allCorners(){
+
+	std::vector<FVector> returned;
+	FVector bl = bottomLeftCorner() + FVector(0,0,0);
+	FVector tl = bl + FVector(0, boxYScale, 0);
+	FVector br = bl + FVector(boxXScale, 0, 0);
+	FVector tr = bl + FVector(boxXScale, boxYScale, 0);
+
+	returned.push_back(bl);
+	returned.push_back(tl);
+	returned.push_back(tr);
+	returned.push_back(br);
+
+
+	return returned;
+}
+
+
+void Aroom::spawnWalls(UClass *bp){
+
+	//skip staircase for debugging
+	if(type == roomtypeEnum::staircase){
+		return;
+	}
+
+	int OFFSET_FIX = 50; //50cm offset fix because the center of the bp is the center and not start
+	//(while the bp being still 100cm wide)
+
+	EntityManager *e = EntityManager::instance();
+	if(e != nullptr && bp != nullptr){
+		std::vector<FVector> corners = allCorners();
+		corners.push_back(corners.front()); //create circle for simplicity
+
+		//go along corners, rotate 90 degree each flip
+		//spawn walls
+		//always +100 cm
+		for (int i = 1; i < corners.size(); i++){
+			FVector from = corners.at(i - 1);
+			FVector to = corners.at(i);
+
+			FVector connectNormalized = (to - from).GetSafeNormal();
+			connectNormalized.Z = 0; //prevent high issues just to make sure
+
+			FVector lookDir = connectNormalized; //keep like this, is rotated correctly in blue print!, look in moving dir
+			//to be rotated correctly.
+
+			int distance = FVector::Dist(from, to);
+			int one_meter = 100;
+
+			for (int cm = 0; cm < distance; cm += one_meter){
+				//scale along the normal in 100cm steps and initial offset fix of half width (50cm)
+				FVector spos = from + connectNormalized * (cm + OFFSET_FIX);
+
+				//CAUTION! IS EXACTLY TOO MUCH, BUT WHY! NO ROTATION CORRECT, REASON: UNKNOWN!
+				FRotator lookRotation = FVectorUtil::lookAt(spos, spos + lookDir); 
+
+				//spawn actor, set location and rotation
+				AActor *actor = e->spawnAactor(GetWorld(), bp, spos);
+				if(actor != nullptr){
+					actor->SetActorRotation(lookRotation);
+					actor->SetActorLocation(spos);
+
+					wallActors.Add(actor);
+				}
+			}
+		}
+	}
+
+	
 }

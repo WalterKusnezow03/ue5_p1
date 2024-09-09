@@ -114,8 +114,10 @@ int FVectorUtil::randomNumber(int range){
 }
 
 int FVectorUtil::randomNumber(int lower, int higher){
-    int a = randomNumber(higher);
-    if(a < lower){
+    int a = std::rand();
+    a %= higher;
+    if (a < lower)
+    {
         return lower;
     }
     return a;

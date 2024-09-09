@@ -19,9 +19,10 @@ public:
 
 	UClass *getBpFor(int xSize, int ySize, roomtypeEnum type);
 
+	//room blueprints
 	void add(UWorld *world, UClass *uclass);
-	void addDoor(UClass *uclass);
-	void addWindow(UClass *uclass);
+
+
 
 	void createALayout(UWorld *world, FVector &location, int x, int y);
 
@@ -52,16 +53,13 @@ public:
 
 private:
 	static const int ONE_METER = 100;
+	int zWallHeight = 0;
 
 	int convertMeterToIndex(int a);
 	int convertScaleToMeter(int a);
 	void convertScaleToMeterFVector(FVector &vector);
 	
 
-	/// @brief place holder variable  ---> will be replaced with enum map very likely
-	/// like a map which plots all assets for a room type (like walls, doors and windows)
-	class UClass *door1;
-	class UClass *window1;
 
 
 

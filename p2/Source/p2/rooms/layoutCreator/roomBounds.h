@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/util/TTouple.h"
 
 class P2_API roomBounds{
 		public:
@@ -8,8 +9,9 @@ class P2_API roomBounds{
 
 			//create room type too!, and door positions
 			int number;
-			roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn);
+			//roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn);
 			roomBounds(int xIn, int yIn, int num, UClass *uclassIn);
+			roomBounds(int xIn, int yIn, int num, UClass *uclassIn, int floorIn, roomtypeEnum typeIn);
 			~roomBounds();
 
 			roomtypeEnum readType();
@@ -34,6 +36,10 @@ class P2_API roomBounds{
 			std::vector<FVector> &readRelativeDoorPositions();
 			std::vector<FVector> &readRelativeWindowPositions();
 
+			//staircase custom doors testing
+			bool isStaircase();
+			TTouple<int, int> getmanualDoorPos();
+
 		private:
 			int xScale;
 			int yScale;
@@ -46,4 +52,13 @@ class P2_API roomBounds{
 			roomtypeEnum type;
 
 			std::vector<FVector> windowPositions;
+
+
+			// ----  TESTING AREA ----
+			//floor for staircase door positions
+			//as staircases will always be just in one dir down to up for now
+			//this will work out
+
+			//just floor for now
+			int floor;
 };

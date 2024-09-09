@@ -90,7 +90,8 @@
 			"*.ipp": "cpp",
 			"*.cs": "cpp",
 			"alignedvector3": "cpp",
-			"type_traits": "cpp"
+			"type_traits": "cpp",
+			"mprealsupport": "cpp"
 		}
 	},
 	"extensions": {

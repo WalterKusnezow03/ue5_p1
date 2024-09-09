@@ -12,12 +12,14 @@
 
 class RoomManager;
 
+roomBounds* layoutCreator::dummy = new roomBounds(1, 1, 1, nullptr);
+
 layoutCreator::layoutCreator(RoomManager *m)
 {
     map = nullptr;
     number = 0;
-
     manager = m;
+
 }
 
 layoutCreator::~layoutCreator()
@@ -109,6 +111,12 @@ bool layoutCreator::grid::isValidIndex(int x, int y){
     return false;
 }
 
+/// @brief will check if an area is free - params must be ordered correctly:
+/// @param x bottom left x
+/// @param y bottom left y
+/// @param x1 top right x
+/// @param y1 top right y
+/// @return is free or not, whole enclosed quad
 bool layoutCreator::grid::isAreaFree(int x, int y, int x1, int y1){
     if(isValidIndex(x,y) && isValidIndex(x1, y1)){
         for(int i = x; i < x1; i++){
@@ -123,6 +131,68 @@ bool layoutCreator::grid::isAreaFree(int x, int y, int x1, int y1){
     return false;
 }
 
+/// @brief will tell if an area from 2 positions (enclosing a quad) has at least one neighbor
+/// @param x bottom left x
+/// @param y bottom left y
+/// @param x1 top right x
+/// @param y1 top right y
+/// @return any neighbor found
+bool layoutCreator::grid::areaHasAtLeastOneNeighbor(int x, int y, int x1, int y1){
+    //first corner: return true, otherwise: issues
+    //but outer must be valid too
+    if(x == 0 && y == 0 && isValidIndex(x1, y1)){
+        return true;
+    }
+
+    //all outer indices valid
+    if(isValidIndex(x, y) && isValidIndex(x1, y1)){
+        if(isValidIndex(x-1, y-1)){
+            //vertical left
+            for (int i = y; i < y1; i++){
+                if(data[x-1][i] != nullptr){
+                    return true;
+                }
+            }
+            //horizontal bottom
+            for (int i = x; i < x1; i++){
+                if(data[i][y-1] != nullptr){
+                    return true;
+                }
+            }
+        }
+
+        if(isValidIndex(x1 +1, y1 + 1)){
+            //vertical right
+            for (int i = y; i < y1; i++){
+                if(data[x+1][i] != nullptr){
+                    return true;
+                }
+            }
+            //horizontal top
+            for (int i = x; i < x1; i++){
+                if(data[i][y+1] != nullptr){
+                    return true;
+                }
+            }
+        }
+    
+    
+    }
+
+    return false;
+}
+/// @brief will determine if the area is free and has at elast one neighbor
+/// xy, x1y1 must be ordered correctly
+/// @param x bottom left x
+/// @param y bottom left y
+/// @param x1 top right x
+/// @param y1 top right y
+/// @return return valid or not
+bool layoutCreator::grid::areaIsValid(int x, int y, int x1, int y1){
+    return isAreaFree(x, y, x1, y1) && areaHasAtLeastOneNeighbor(x, y, x1, y1);
+}
+
+// -- NOT USED --
 /// @brief will try to find a position and add the room, returns true on success, false on failure
 /// @param p room bounds to add with size
 /// @return added or not
@@ -148,6 +218,7 @@ bool layoutCreator::grid::findAndAdd(roomBounds *p){
 }
 
 /// @brief will try to find a free area in the desired size and output the indices to outX and outY by ref
+/// ---- MAIN USED METHOD FOR ROOM CREATION ----
 /// @param xSize desired x size
 /// @param ySize desired y size
 /// @param outX out x pos will be saved here if true is returned
@@ -156,7 +227,8 @@ bool layoutCreator::grid::findAndAdd(roomBounds *p){
 bool layoutCreator::grid::findFreeArea(int xSize, int ySize, int &outX, int &outY){
     for (int i = 0; i < data.Num(); i++){
         for (int j = 0; j < data[i].Num(); j++){
-            if(isAreaFree(i,j, i + xSize, j + ySize)){
+            //if(isAreaFree(i,j, i + xSize, j + ySize)){
+            if(areaIsValid(i,j, i + xSize, j + ySize)){
                 outX = i;
                 outY = j;
                 return true; // found and filled
@@ -178,6 +250,18 @@ void layoutCreator::grid::forceAdd(roomBounds *p){
         //p->updatePosition(i, j); // update position in grid
     }
 }
+
+/// @brief shorthand force add, additional pos params
+/// @param p 
+/// @param x 
+/// @param y 
+void layoutCreator::grid::forceAdd(roomBounds *p, int x, int y){
+    if(p != nullptr){
+        fill(x, y, x + p->xscale(), y + p->yscale(), p);
+    }
+}
+
+
 
 FString layoutCreator::grid::toString(){
     FString a = TEXT("");
@@ -225,73 +309,103 @@ void layoutCreator::grid::getEdges(
 
     //roomBounds *current = data[i][j];
     int xstart = roomToCheck.xpos();
-    int ystart = roomToCheck.ypos();
+    int ystart = roomToCheck.ypos() - 1;
     int xend = roomToCheck.xOuteredge();
     int yend = roomToCheck.yOuteredge();
 
-    //check if each of the axis is free (outline) BUT DOING +1, -1 etcs to have the real outline
-    
-    ystart -= 1;//unten
 
-    //first horizonal edge ---> need to check all edges just like this.
-    if(isAreaFree(xstart, ystart, xend, ystart)){
-        //need to create a factory method to create the touples for me
-        for (int ix = xstart; ix < xend; ix++)
-        {
-            TTouple<int, int> t1(ix, ystart); //fix offset
-            output.push_back(t1);
+    getValidWindowPositions(xstart, ystart - 1, xend, ystart - 1, output); //horizontal bottom
+    getValidWindowPositions(xstart, yend + 1, xend, yend + 1, output); //horizontal top
+    getValidWindowPositions(xstart - 1, ystart, xstart - 1, yend, output); //vertical left
+    getValidWindowPositions(xend + 1, ystart, xend + 1, yend, output); //vertical right
+
+}
+
+/// @brief creates valid window positions
+/// @param x1 x of a pos (already adjusted away from original index)
+/// @param y1 y of a pos
+/// @param x2 x of b pos
+/// @param y2 y of b pos
+/// @param output output to save in
+void layoutCreator::grid::getValidWindowPositions(
+    int x1, int y1, int x2, int y2, //offset must be applied as wanted
+    TVector<TTouple<int,int>> &output
+){
+    //entweder x oder y bleiben gleich
+    if(x1 == x2){
+        //vertical
+        if(x1 <= 0){
+            //all valid to left
+            for (int i = y1; i <= y2; i++){
+                TTouple<int, int> a(x1 + 1, i);
+                output.push_back(a);
+            }
+            return;
         }
-    }  
+        if(x1 >= data.Num() - 1){
+            //all valid to right
+            for (int i = y1; i <= y2; i++){
+                TTouple<int, int> a(x1 - 1, i);
+                output.push_back(a);
+            }
 
-
-    //top edge
-    yend += 1;
-
-    //second horizonal edge 
-    if(isAreaFree(xstart, yend, xend, yend)){
-        //need to create a factory method to create the touples for me
-        for (int ix = xstart; ix < xend; ix++)
-        {
-            TTouple<int, int> t1(ix, yend);
-            output.push_back(t1);
-        }
-    }
-
-    //left edge
-    xstart -= 1;
-    ystart += 1; //set size properly
-    yend -= 1;
-
-    //first vertical edge
-    if(isAreaFree(xstart, ystart, xstart, yend)){
-        for (int iy = ystart; iy < yend; iy++)
-        {
-            TTouple<int, int> t1(xstart, iy);
-            output.push_back(t1);
+            return;
         }
     }
 
-    //left edge
-    xend += 1;
+    if(y1 == y2){
+        //horizontal
+        if(y1 <= 0){
+            //all valid to bottom
+            for (int i = x1; i <= x2; i++){
+                TTouple<int, int> a(i, y1);
+                output.push_back(a);
+            }
 
-    //second vertical edge
-    if(isAreaFree(xend, ystart, xend, yend)){
-        for (int iy = ystart; iy < yend; iy++)
-        {
-            TTouple<int, int> t1(xend, iy);
-            output.push_back(t1);
+            return;
+        }
+        if(y1 >= data[0].Num() - 1){
+            //all valid to top
+            for (int i = x1; i <= x2; i++){
+                TTouple<int, int> a(i, y1);
+                output.push_back(a);
+            }
+
+            return;
+        }
+    }
+    return; //return here for safety
+
+    //ISSUES WINODWS ON INSIDE FOR WHATEVER REASON!
+    //default adding / real check in map 
+    if(isAreaFree(x1,y1,x2,y2)){
+        for (int i = x1; i <= x2; i++){
+            for (int j = y1; j <= y2; j++){
+                TTouple<int, int> a(i, j);
+                output.push_back(a);
+            }
         }
     }
 
-    
+
+}
+
+/// @brief read the inverse area of the grid
+/// @param output ttouples stores here of x y indices
+void layoutCreator::grid::fillInverseBlock(std::vector<TTouple<int, int>> &output){
+    for (int i = 0; i < data.Num(); i++){
+        for (int j = 0; j < data[i].Num(); j++){
+            if(data[i][j] == nullptr){
+                output.push_back(TTouple<int, int>(i, j));
+            }
+        }
+    }
 }
 
 
 
 
-
-
-// ---- layout creator main methods ----
+// ---- LAYOUT CREATOR MAIN METHODS ----
 
 /// @brief main method. Creates rooms in a specified size
 /// @param x x grid size
@@ -323,6 +437,17 @@ void layoutCreator::createRooms(int x, int y, int staircases){
 /// @param staircases 
 /// @param leaveGap tells if stairs should be created or a empty gap leaved.
 void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases, bool leaveGap){
+    std::vector<TTouple<int, int>> empty;
+    createRooms(x, y, staircases, leaveGap, empty);
+}
+
+void layoutCreator::createRooms(
+    int x, 
+    int y, 
+    std::vector<roomBounds> staircases, 
+    bool leaveGap, 
+    std::vector<TTouple<int,int>> &block
+){
     if(x < 5){
         x = 5;
     }
@@ -330,8 +455,20 @@ void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases
         y = 5;
     }
     clean();
-    staircasesLeft = 0;
+    //staircases will be always 0 here because the old ones are extended instead
+    //and build on top of!
+    staircasesLeft = 0; 
+
     map = new layoutCreator::grid(x, y); //MAP SIZE HERE
+
+    //fill inverse blockdata 
+    for (int i = 0; i < block.size(); i++)
+    {
+        TTouple<int, int> &current = block.at(i);
+        int xcopy = current.first(); //copy position
+        int ycopy = current.last();
+        map->forceAdd(layoutCreator::dummy, xcopy, ycopy);
+    }
 
     // manually block staircases / force add
     for (int i = 0; i < staircases.size(); i++){
@@ -350,7 +487,9 @@ void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases
                 current.xscale(),
                 current.yscale(),
                 current.number,
-                bp
+                bp,
+                1, //passed staircase, floor not 0, but 1 or any larger
+                roomtypeEnum::staircase
             );
             
 
@@ -364,7 +503,16 @@ void layoutCreator::createRooms(int x, int y, std::vector<roomBounds> staircases
     tryCreateRooms(); //NEW 
     connectNeighbors();
     createWindows();
+    
+    
+
 }
+
+
+
+
+
+
 
 /// @brief aquivalent to destructor, will clean up the map and created list (delete all room bounds)
 void layoutCreator::clean(){
@@ -433,18 +581,23 @@ void layoutCreator::tryCreateRooms(){
     int maxCount = 100;
     for (int i = 0; i < maxCount; i++)
     {
-        if(staircasesLeft > 0){
-        
-            if(FVectorUtil::randomNumber(1,21) % 2 == 0){ //50% wahrscheinlichkeit ca
+        if(staircasesLeft > 0 && i > 0){ //debug testing where first room never is a staircase
+
+            int random = FVectorUtil::randomNumber(0,100);
+            if(random <= 25){
                 bool success = createRoom(roomtypeEnum::staircase);
                 if(success){
                     staircasesLeft--;
                 }
             }
+
         }else{
             bool success = createRoom(roomtypeEnum::room); //nothing, ignore bool
         }
     }
+
+    //fill empty single gaps
+
 }
 
 /// @brief will try to create a room of a certain type
@@ -464,13 +617,39 @@ bool layoutCreator::createRoom(roomtypeEnum type){
 
             bool found = map->findFreeArea(xsizeWanted, ysizeWanted, outX, outY); //find free area and add later
             if (found && outX != -1 && outY != -1){
+                
+                //new refactured
+                roomBounds *s = nullptr;
+                if (type == roomtypeEnum::staircase)
+                {
+                    s = new roomBounds(
+                        xsizeWanted, 
+                        ysizeWanted, 
+                        number++, 
+                        bp,
+                        0, //floor 0 because only called here when not using passed stairs
+                        roomtypeEnum::staircase
+                    );
+                }
+                else
+                {
+                    //other rooms
+                    s = new roomBounds(
+                        xsizeWanted, 
+                        ysizeWanted, 
+                        number++, 
+                        bp
+                    );
+                }
 
+                /*
+                //old
                 roomBounds *s = new roomBounds(
                     xsizeWanted, 
                     ysizeWanted, 
                     number++, 
                     bp
-                );
+                );*/
                 
                 
                 s->updatePosition(outX, outY);
@@ -509,24 +688,34 @@ void layoutCreator::connectNeighbors(){
             //get and connect
             if(map->isValidIndex(x, lowerNeighbor)){
                 roomBounds *lower = map->tryGetPosition(x, lowerNeighbor);
-                if(lower != nullptr){
+                if(lower != nullptr && lower != layoutCreator::dummy){ //dummy room avoided for reverse blocking 
                     
-                    int lowerxpos = lower->xpos(); //x pos lower
-                    int lowerxscale = lower->xscale(); //x scale lower
-                    int lowerxOuterEdge = lower->xOuteredge(); //x outer edge lower
+                    if(lower->isStaircase()){
 
-                    //find overlapping position / range
-                    int xstarting = (lowerxpos > x ? lowerxpos : x); //larger xpos along axis
-                    int xending = (lowerxOuterEdge < xEdge ? lowerxOuterEdge : xEdge); // smaller xpos alogn axis
+                        TTouple<int, int> doorTup = lower->getmanualDoorPos();
+                        int xCopy = doorTup.first();
+                        int yCopy = doorTup.last();
+                        lower->addDoorPosition(xCopy, yCopy); 
+                        room->addDoorPosition(xCopy, yCopy + 1);
 
-                    if(xstarting < xending){
-                        //calculate middle in all map scale
-                        //int xmiddle = (int)((xstarting + xending) / 2.0f);
-                        int xmiddle = xstarting + 1;
+                    }else{
+                        int lowerxpos = lower->xpos(); //x pos lower
+                        int lowerxscale = lower->xscale(); //x scale lower
+                        int lowerxOuterEdge = lower->xOuteredge(); //x outer edge lower
 
-                        //set door for both? (might have extra class naming gap or door)
-                        lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
-                        room->addDoorPosition(xmiddle, y); //y = 0, x kante
+                        //find overlapping position / range
+                        int xstarting = (lowerxpos > x ? lowerxpos : x); //larger xpos along axis
+                        int xending = (lowerxOuterEdge < xEdge ? lowerxOuterEdge : xEdge); // smaller xpos alogn axis
+
+                        if(xstarting < xending){
+                            //calculate middle in all map scale
+                            //int xmiddle = (int)((xstarting + xending) / 2.0f);
+                            int xmiddle = xstarting + 1;
+
+                            //set door for both? (might have extra class naming gap or door)
+                            lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
+                            room->addDoorPosition(xmiddle, y); //y = 0, x kante
+                        }
                     }
                     
                 }
@@ -534,24 +723,34 @@ void layoutCreator::connectNeighbors(){
 
             if(map->isValidIndex(leftNeighbor, y)){
                 roomBounds *left = map->tryGetPosition(leftNeighbor, y);
-                if(left != nullptr){
+                if(left != nullptr && left != layoutCreator::dummy){
 
-                    //calculate door position
-                    int leftypos = left->ypos(); //y pos lower
-                    int leftyscale = left->yscale();
-                    int leftyOuterEdge = left->yOuteredge(); //x outer edge lower
-                
-                    int ystarting = (leftypos > y ? leftypos : y); //larger ypos along axis
-                    int yending = (leftyOuterEdge < yEgde ? leftyOuterEdge : yEgde); // smaller xpos alogn axis
+                    if(left->isStaircase()){
 
-                    if(ystarting < yending){
-                        //calculate middle in MAP SCALE MUST BE DOWNSCALED
-                        int ymiddle = (int)((ystarting + yending) / 2.0f);
-                        ymiddle = ystarting + 1;
+                        TTouple<int, int> doorTup = left->getmanualDoorPos();
+                        int xCopy = doorTup.first();
+                        int yCopy = doorTup.last();
+                        left->addDoorPosition(xCopy, yCopy); 
+                        room->addDoorPosition(xCopy+1, yCopy);
 
-                        //set door for both? (might have extra class naming gap or door)
-                        left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
-                        room->addDoorPosition(x, ymiddle); //x = 0, y kante
+                    }else{
+                        //calculate door position
+                        int leftypos = left->ypos(); //y pos lower
+                        int leftyscale = left->yscale();
+                        int leftyOuterEdge = left->yOuteredge(); //x outer edge lower
+                    
+                        int ystarting = (leftypos > y ? leftypos : y); //larger ypos along axis
+                        int yending = (leftyOuterEdge < yEgde ? leftyOuterEdge : yEgde); // smaller xpos alogn axis
+
+                        if(ystarting < yending){
+                            //calculate middle in MAP SCALE MUST BE DOWNSCALED
+                            int ymiddle = (int)((ystarting + yending) / 2.0f);
+                            ymiddle = ystarting + 1;
+
+                            //set door for both? (might have extra class naming gap or door)
+                            left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
+                            room->addDoorPosition(x, ymiddle); //x = 0, y kante
+                        }
                     }
                     
                 }
@@ -584,8 +783,7 @@ void layoutCreator::createWindows(){
                 map->getEdges(*current, output); // size will be overriden correctly
 
                 
-                int percentToKeep = 60; //percent of edges to keep
-                removeRandomElements(output, percentToKeep);
+                removeRandomElements(output, 0.5f);
                 DebugHelper::showScreenMessage("room debug counted windows ", output.size(), FColor::Red);
 
                 for (int j = 0; j < output.size(); j++)
@@ -606,12 +804,12 @@ void layoutCreator::createWindows(){
 /// @param percentToKeep percentage to keep, for example 60% to have in the end left
 /// percent <= 0 will be ignored, > 100 clamped to 100
 template <typename T>
-void layoutCreator::removeRandomElements(TVector<T> &t, int percentToKeep)
+void layoutCreator::removeRandomElements(TVector<T> &t, float fractionToKeep)
 {
-    if(percentToKeep <= 0){
+    if(fractionToKeep <= 0){
         return;
     }
-    if(percentToKeep >= 100){
+    if(fractionToKeep >= 1){
         return;
     }
     if(t.size() < 2){
@@ -619,7 +817,12 @@ void layoutCreator::removeRandomElements(TVector<T> &t, int percentToKeep)
     }
 
     int full = t.size();
-    int percentToElements = (full * percentToKeep) / 100; //(full / 100) * percentToKeep;
+    int percentToElements = fractionToKeep * full;
+    if (percentToElements == 0)
+    {
+        return;
+    }
+
     while(t.size() > percentToElements){
         int random = FVectorUtil::randomNumber(0, t.size() - 1);
         if(t.empty()){
@@ -627,4 +830,16 @@ void layoutCreator::removeRandomElements(TVector<T> &t, int percentToKeep)
         }
         t.erase(random);
     }
+}
+
+/// @brief gets a deep copy of the inverse blocked area, (to use for the next layer to be the same layout or less)
+/// see overloaded create rooms method
+/// @return reverse block area
+std::vector<TTouple<int,int>> layoutCreator::getInverseBlockList(){
+    std::vector<TTouple<int, int>> out;
+    if(map){
+        map->fillInverseBlock(out);
+    }
+    
+    return out;
 }

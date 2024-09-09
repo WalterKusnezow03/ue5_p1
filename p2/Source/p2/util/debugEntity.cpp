@@ -51,10 +51,11 @@ void AdebugEntity::debugFunction(){
 		FVector location1 = GetActorLocation();
 		location1.Z = 20;
 
-		int metersLayout = 15;
-		e->createALayout(GetWorld(), location1, metersLayout, metersLayout);
+		int metersLayoutX = 10;
+		int metersLayoutY = 15;
+		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
 
-		return;
+		return; //debug only testing rooms now
 
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);
