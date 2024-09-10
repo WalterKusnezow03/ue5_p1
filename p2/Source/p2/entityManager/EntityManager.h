@@ -89,6 +89,9 @@ public:
 	void setEmptyMeshUClassBp(UClass *uclassIn);
 	void createTerrain(UWorld *world, int chunks);
 
+	//meshes in general
+	void createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies);
+
 private:
 	static class EntityManager *instancePointer;
 	EntityManager();

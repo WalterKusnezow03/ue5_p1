@@ -11,5 +11,6 @@ UENUM()
 enum class roomtypeEnum
 {
     room,
-    staircase
+    staircase,
+    staircaseTopper
 };

@@ -229,7 +229,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
     //load rooms
     FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/"));
     FString bpNamePart = FString::Printf(TEXT("room"));
-    for (int i = 1; i <= 8; i++){
+    for (int i = 1; i <= 9; i++){
         FString bpNamePart2 = FString::Printf(TEXT("%d"), i);
         FString connected = bpNamePart + bpNamePart2;
         FString finalPath = buildPath(path, connected);

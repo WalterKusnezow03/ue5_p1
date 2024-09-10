@@ -48,6 +48,8 @@ public:
 private:
 	std::map<roomtypeEnum, std::vector<RoomManager::sizeData>> vectorMap;
 
+	UClass *singleTileBp;
+
 public:
 	sizeData *getAny(roomtypeEnum type);
 
@@ -63,5 +65,5 @@ private:
 
 
 
-	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset);
+	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset, bool createWalls);
 };

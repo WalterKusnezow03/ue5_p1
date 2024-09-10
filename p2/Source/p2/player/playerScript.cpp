@@ -23,7 +23,9 @@ AplayerScript::AplayerScript()
     aiming = false;
 
     // Set capsule size
-    GetCapsuleComponent()->InitCapsuleSize(55.f, 90.0f);
+    float radius = 55.0f;
+    float halfHeight = 80.0f; // 90f
+    GetCapsuleComponent()->InitCapsuleSize(radius, halfHeight);
 
     // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));

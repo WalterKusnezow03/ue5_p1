@@ -15,8 +15,11 @@ class P2_API roomBounds{
 			~roomBounds();
 
 			roomtypeEnum readType();
-			UClass *uclass;
+		private:
+			UClass *uclass; //bp to spawn
+		public:
 			UClass *readBp();
+			void updateBp(UClass *ucl);
 
 			int xpos();
 			int ypos();

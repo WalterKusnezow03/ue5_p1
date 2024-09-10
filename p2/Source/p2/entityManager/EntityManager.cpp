@@ -597,13 +597,18 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
  * ---- SECTION FOR TERRAIN ----
  * 
  */
+
+/// @brief sets the emoty mesh actor to spawn an process meshes, nesecarry for terrain and other meshes
+/// @param uclassIn uclass to spawn
 void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
     if(uclassIn != nullptr){
         emptyCustomMeshActorBp = uclassIn;
     }
 }
 
-
+/// @brief creates an terrain from chunk size (10meters each)
+/// @param worldIn world to spawn in 
+/// @param chunks chunks (in both x and y direction to create)
 void EntityManager::createTerrain(UWorld *worldIn, int chunks){
     if(worldIn != nullptr){
         terrainCreator c;
@@ -639,6 +644,20 @@ void EntityManager::createTerrain(UWorld *worldIn, int chunks){
     }
 }
 
+/// @brief creates a mesh from the given vertecies
+/// @param world world to spawn in
+/// @param vertecies vertecies
+void EntityManager::createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies){
+    FVector location(0, 0, 0);
+    AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
+    if(actor != nullptr){
+
+        AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
+        if(customMesh != nullptr){
+            customMesh->process2DMap(vertecies);
+        }
+    }
+}
 
 /**
  * ---- SECTION FOR MATERIALS -----

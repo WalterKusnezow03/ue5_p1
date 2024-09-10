@@ -29,6 +29,7 @@ public:
 	std::vector<roomBounds> copyData();
 	std::vector<roomBounds> copyStaircaseData();
 	std::vector<TTouple<int,int>> getInverseBlockList();
+	std::vector<roomBounds> getRoofToCreate(UClass *singleTile);
 
 private:
 	//inner grid class to save the map
@@ -62,6 +63,7 @@ private:
 			);
 
 			void fillInverseBlock(std::vector<TTouple<int, int>> &output);
+			void fillEmptyGapsRoof(std::vector<TTouple<int, int>> &output);
 
 		private:
 			/// @brief stores the grid data, will have duplicate pointers

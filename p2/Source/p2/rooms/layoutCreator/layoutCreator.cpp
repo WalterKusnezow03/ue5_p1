@@ -152,7 +152,7 @@ bool layoutCreator::grid::areaHasAtLeastOneNeighbor(int x, int y, int x1, int y1
         if(isValidIndex(x-1, y-1)){
             //vertical left
             for (int i = y; i < y1; i++){
-                if(data[x-1][i] != nullptr){
+                if(data[x-1][i] != nullptr && data[x-1][i] != dummy){ //not null AND NOT DUMMY TOO!
                     count++;
                     if(count >= least){
                         return true;
@@ -161,7 +161,7 @@ bool layoutCreator::grid::areaHasAtLeastOneNeighbor(int x, int y, int x1, int y1
             }
             //horizontal bottom
             for (int i = x; i < x1; i++){
-                if(data[i][y-1] != nullptr){
+                if(data[i][y-1] != nullptr && data[i][y-1] != dummy){
                     count++;
                     if(count >= least){
                         return true;
@@ -381,12 +381,28 @@ void layoutCreator::grid::getValidWindowPositions(
 
 }
 
-/// @brief read the inverse area of the grid
+/// @brief read the inverse area of the grid, includes null and dummy data
 /// @param output ttouples stores here of x y indices
 void layoutCreator::grid::fillInverseBlock(std::vector<TTouple<int, int>> &output){
     for (int i = 0; i < data.Num(); i++){
         for (int j = 0; j < data[i].Num(); j++){
-            if(data[i][j] == nullptr){
+            if(data[i][j] == nullptr || data[i][j] == layoutCreator::dummy){
+                output.push_back(TTouple<int, int>(i, j));
+            }
+        }
+    }
+}
+
+/// @brief will find the area which is filled and not dummy data and not staircase
+/// @param output output to save in
+void layoutCreator::grid::fillEmptyGapsRoof(std::vector<TTouple<int, int>> &output){
+    for (int i = 0; i < data.Num(); i++){
+        for (int j = 0; j < data[i].Num(); j++){
+            if(
+                data[i][j] != nullptr && 
+                data[i][j] != layoutCreator::dummy &&
+                data[i][j]->readType() != roomtypeEnum::staircase
+            ){
                 output.push_back(TTouple<int, int>(i, j));
             }
         }
@@ -437,7 +453,7 @@ void layoutCreator::createRooms(
     int y, 
     std::vector<roomBounds> staircases, 
     bool leaveGap, 
-    std::vector<TTouple<int,int>> &block
+    std::vector<TTouple<int,int>> &block //inverse block area
 ){
     if(x < 5){
         x = 5;
@@ -829,4 +845,23 @@ std::vector<TTouple<int,int>> layoutCreator::getInverseBlockList(){
     }
     
     return out;
+}
+
+
+
+//need to get the empty roof data some how
+std::vector<roomBounds> layoutCreator::getRoofToCreate(UClass *singleTile){
+    std::vector<roomBounds> output;
+    if(map != nullptr && singleTile != nullptr){
+        std::vector<TTouple<int,int>> touples;
+        map->fillEmptyGapsRoof(touples);
+
+        for (int i = 0; i < touples.size(); i++){
+            TTouple<int, int> &t = touples.at(i);
+            roomBounds r(1,1, 0, singleTile);
+            r.updatePosition(t.first(), t.last());
+            output.push_back(r);
+        }
+    }
+    return output;
 }

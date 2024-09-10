@@ -21,6 +21,13 @@ roomBounds::roomBounds(int xIn, int yIn, int num, UClass *uclassIn){
     floor = 0;
 }
 
+/// @brief default constructor of room
+/// @param xIn xscale
+/// @param yIn yscale
+/// @param num number
+/// @param uclassIn uclass prefab
+/// @param floorIn floor (0 or 1 for lower or upper floor)
+/// @param typeIn to differentiate between rooms and staircases, very important for different door alignment!
 roomBounds::roomBounds(
     int xIn, 
     int yIn, 
@@ -52,8 +59,18 @@ roomBounds::~roomBounds(){
     uclass = nullptr;
 }
 
+/// @brief returns the blueprint for this room
+/// @return blueprint
 UClass *roomBounds::readBp(){
     return uclass;
+}
+
+/// @brief update the blueprint if needed at later point than constructor
+/// @param ucl 
+void roomBounds::updateBp(UClass* ucl){
+    if(ucl != nullptr){
+        uclass = ucl;
+    }
 }
 
 roomtypeEnum roomBounds::readType(){

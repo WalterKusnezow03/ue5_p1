@@ -24,76 +24,70 @@ RoomManager::~RoomManager()
 
 void RoomManager::add(UWorld *world, UClass *uclass){
     if(uclass != nullptr && world != nullptr){
-        //get bounding box for size?
 
-        //UClass* MyBlueprintClass = ...; // Your UClass reference
-        AActor* TempActor = world->SpawnActor<AActor>(uclass);
+        int xScaleRaw = 0;
+        int yScaleRaw = 0;
+        int zScaleRaw = 0;
 
-        if (TempActor)
+        AActor *TempActor = nullptr;
+        if(EntityManager *e = EntityManager::instance()){
+            FVector l(0, 0, 0);
+            TempActor = e->spawnAactor(world, uclass, l);
+        }
+        if(TempActor == nullptr){
+            return;
+        }
+
+        AActorUtil::calculateActorBounds(TempActor, xScaleRaw, yScaleRaw, zScaleRaw);
+
+        int xScale = (int) xScaleRaw / ONE_METER;
+        int yScale = (int) yScaleRaw / ONE_METER;
+        int zScale = (int) zScaleRaw/ ONE_METER;
+
+        // single tile is saved seperatly
+        if (xScale == 1 && yScale == 1)
         {
-            /**
-             * from doc:
-             *  AActor::GetActorBounds(...){}
-             * 
-                virtual void GetActorBounds  
-                &40;  
-                    bool bOnlyCollidingComponents,  
-                    FVector & Origin,  
-                    FVector & BoxExtent,  
-                    bool bIncludeFromChildActors  
-                &41; const  
+            singleTileBp = uclass;
+            TempActor->Destroy(); //löschen nicht vergessen
+            TempActor = nullptr;
+            return;
+        }
 
-             */
-            FVector Origin;
-            FVector Extent;
-            TempActor->GetActorBounds(true, Origin, Extent); //leg mir das da rein prinzip
+        //DEFAULT ADDING
 
-            /*
-            FBox BoundingBox = TempActor->GetComponentsBoundingBox(true);
-            FVector Origin = BoundingBox.GetCenter();
-            FVector Extent = BoundingBox.GetExtent();*/
+        //setting the largest zscale found for now
+        if(zScaleRaw > zWallHeight){
+            zWallHeight = zScaleRaw;
+        }
 
-            int xScale = (int)(Extent.X * 2) / ONE_METER;
-            int yScale = (int)(Extent.Y * 2) / ONE_METER;
-            int zScaleRaw = (int)(Extent.Z * 2);
-            int zScale = (int)(Extent.Z * 2) / ONE_METER;
+        //create the key
+        roomtypeEnum readType = roomtypeEnum::room; //default value
 
-            //setting the largest zscale found for now
-            if(zScaleRaw > zWallHeight){
-                zWallHeight = zScaleRaw;
-            }
+        Aroom *room = Cast<Aroom>(TempActor);
+        if(room != nullptr){
+            readType = room->readType();
+        }
 
-            //create the key
-            roomtypeEnum readType = roomtypeEnum::room; //default value
-
-            Aroom *room = Cast<Aroom>(TempActor);
-            if(room != nullptr){
-                readType = room->readType();
-            }
-
-            //new map
-            sizeData scaleDataNew(
-                xScale,
-                yScale,
-                readType,
-                uclass
-            );
-            if(vectorMap.find(readType) != vectorMap.end()){
-                std::vector<RoomManager::sizeData> &ref = vectorMap[readType];
-                ref.push_back(scaleDataNew);
-            }else{
-                std::vector<RoomManager::sizeData> newVec;
-                newVec.push_back(scaleDataNew);
-                vectorMap[readType] = newVec;
-            }
-
-
-            //delete again
-            TempActor->Destroy();
+        //new map
+        sizeData scaleDataNew(
+            xScale,
+            yScale,
+            readType,
+            uclass
+        );
+        if(vectorMap.find(readType) != vectorMap.end()){
+            std::vector<RoomManager::sizeData> &ref = vectorMap[readType];
+            ref.push_back(scaleDataNew);
+        }else{
+            std::vector<RoomManager::sizeData> newVec;
+            newVec.push_back(scaleDataNew);
+            vectorMap[readType] = newVec;
         }
 
 
-
+        //finally destroy
+        TempActor->Destroy();
+        TempActor = nullptr;
     }
 }
 
@@ -115,13 +109,33 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     int staircasesPerLayer = 1;
     std::vector<roomBounds> copyStairs;
     std::vector<TTouple<int, int>> reverseBlock;
-    // std::vector<roomBounds> copy;
-    for (int i = 0; i < 2; i++)
+    int layers = 2;
+
+    for (int i = 0; i < layers; i++)
     {
         layoutCreator l(this); // all the data will be destroyed when it goes out of scope, remember.
         if(copyStairs.size() > 0){
-            l.createRooms(x, y, copyStairs, true, reverseBlock);
+            //if last layer: update bp for staircase topper
+            if(i == layers -1){
+                //read all stair sizes and get the proper stair topper
+                for (int s = 0; s < copyStairs.size(); s++)
+                {
+                    //the staircase topper mus have the same bounds as the staircase it self on xy pane
+                    UClass *stairtopper = getBpFor(
+                        copyStairs.at(s).xscale(),
+                        copyStairs.at(s).yscale(),
+                        roomtypeEnum::staircaseTopper
+                    );
+                    if(stairtopper != nullptr){
+                        copyStairs.at(s).updateBp(stairtopper);
+                    }
+                }
+            }
+
+            bool leaveGap = false;
+            l.createRooms(x, y, copyStairs, leaveGap, reverseBlock);
         }else{
+            //default layer
             l.createRooms(x, y, staircasesPerLayer);
             reverseBlock = l.getInverseBlockList();
 
@@ -132,8 +146,34 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
         FVector offset(0, 0, height * i);
         offset += location; //apply location properly
 
-        //process layer and add up new height from the just created layer
-        processLayer(world, copy, offset);
+        
+        // process layer and add up new height from the just created layer
+        processLayer(world, copy, offset, true);
+
+
+        //spawn the additional roofs needed
+        if(true || i > 0 && singleTileBp != nullptr){ //A oder w = w
+        
+            offset = FVector(0, 0, height * (i + 1)); //push offset up
+
+            offset += location; //apply location properly
+            //std::vector<roomBounds> roofs = l.getRoofToCreate(singleTileBp);
+            //processLayer(world, roofs, offset, false);
+
+            //new test: copy all created but not stairs
+            int j = 0;
+            int size = copy.size();
+            while(j < size){
+                if(copy.at(j).readType() == roomtypeEnum::staircase){
+                    copy.erase(copy.begin() + j);
+                    size = copy.size();
+                }else{
+                    j++;
+                }
+            }
+
+            processLayer(world, copy, offset, false);
+        }
     }
 }
 
@@ -144,10 +184,12 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 /// @param world world to spawn in
 /// @param vec vector of rooms
 /// @param offset offset to apply as total for the layout from origin (0,0,0)
+/// @param createWalls spawn nesecarry walls, doors and windows or not
 void RoomManager::processLayer(
     UWorld* world, 
     std::vector<roomBounds> &vec, 
-    FVector offset
+    FVector offset,
+    bool createWalls
 ){
     
     if(EntityManager *e = EntityManager::instance()){
@@ -175,9 +217,9 @@ void RoomManager::processLayer(
             AActor *actor = e->spawnAactor(world, uclass, position);
             actor->SetActorLocation(position);
 
+            //create walls, doors and windows. Or not.
             Aroom *aroom = Cast<Aroom>(actor);
-            if(aroom != nullptr){
-                //and doors / added later or on constructor. Think about it needed.
+            if(aroom != nullptr && createWalls){
 
                 //relative door positions (relative to bottom left corner of a room)
                 std::vector<FVector> &doorPositions = roomToCreate->readRelativeDoorPositions();
@@ -215,6 +257,8 @@ void RoomManager::processLayer(
                         windowPositionsConverted, 
                         a->findBp(roomAssetEnum::windowEnum)
                     );
+
+                    
                 }
                 
 
@@ -252,7 +296,24 @@ void RoomManager::convertScaleToMeterFVector(FVector &vector){
 
 
 
-
+//gets the proper blueprint from size data and type
+UClass *RoomManager::getBpFor(int xSizeIn, int ySizeIn, roomtypeEnum type){
+    if (vectorMap.find(type) != vectorMap.end())
+    {
+        std::vector<RoomManager::sizeData> &ref = vectorMap[type];
+        if(ref.size() > 0){
+            for (int i = 0; i < ref.size(); i++){
+                RoomManager::sizeData *pointer = &ref.at(i);
+                int xcopy = pointer->xSize();
+                int ycopy = pointer->ySize();
+                if(xcopy == xSizeIn && ycopy == ySizeIn){
+                    return pointer->getBp();
+                }
+            }
+        }
+    }
+    return nullptr;
+}
 
 RoomManager::sizeData* RoomManager::getAny(roomtypeEnum type){
     if (vectorMap.find(type) != vectorMap.end())
