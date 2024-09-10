@@ -112,7 +112,7 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     int height = 200; // 200;
     //height = zWallHeight; //new
 
-    int staircasesPerLayer = 2;
+    int staircasesPerLayer = 1;
     std::vector<roomBounds> copyStairs;
     std::vector<TTouple<int, int>> reverseBlock;
     // std::vector<roomBounds> copy;

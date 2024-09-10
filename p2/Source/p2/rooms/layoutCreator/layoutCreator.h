@@ -44,7 +44,7 @@ private:
 			bool areaIsValid(int x, int y, int x1, int y1);
 			bool findFreeArea(int xSize, int ySize, int &outX, int &outY);
 
-			bool findAndAdd(roomBounds *p);
+			
 			void forceAdd(roomBounds *p);
 			void forceAdd(roomBounds *p, int x, int y);
 

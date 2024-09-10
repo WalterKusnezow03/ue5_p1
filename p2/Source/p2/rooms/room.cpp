@@ -107,14 +107,14 @@ void Aroom::disableWall(FVector &location){
 /// @param actor new Actor to push
 /// @param distance distance measured
 void Aroom::sortIn(
-	std::vector<TTouple<float, AActor *>> &vec, // by reference, nicht vergessen!
-	AActor *actor,
+	std::vector<TTouple<float, AActor*>> &vec, // by reference, nicht vergessen!
+	AActor* actor,
 	float distance,
 	int sizetargeted
 ){
 	if(actor != nullptr){
 		if(vec.size() == 0){
-			vec.push_back(TTouple<float, AActor *>(distance, actor));
+			vec.push_back(TTouple<float, AActor*>(distance, actor));
 		}else{
 
 			//normal sortiert einfügen
@@ -164,9 +164,11 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 		}
 		
 
-		std::vector<TTouple<float, AActor *>> vec;
+		std::vector<TTouple<float, AActor*>> vec;
 
-		for(AActor *a : wallActors){
+		for (int i = 0; i < wallActors.Num(); i++)
+		{
+			AActor *a = wallActors[i];
 			if (a != nullptr)
 			{
 				FVector current = a->GetActorLocation();
@@ -181,15 +183,25 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 		if (startIndex >= 0)
 		{
 			orient = vec.at(startIndex).last()->GetActorRotation();
-			for (int i = startIndex; i < vec.size(); i++)
-			{
+
+			
+			for (int i = startIndex; i < vec.size(); i++){
 				AActor *pointer = vec.at(i).last();
 				center += pointer->GetActorLocation();
-
+				
 				//disable the wall
 				pointer->SetActorHiddenInGame(true);
 				pointer->SetActorEnableCollision(false);
+
+				//find an remove from walls
+				for (int j = 0; j < wallActors.Num(); j++){
+					if(wallActors[j] == pointer){
+						wallActors.RemoveAt(j);
+						j = wallActors.Num();
+					}
+				}
 			}
+
 		}
 		center /= limit;
 
@@ -201,64 +213,7 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 			}
 		}
 	}
-	return;
 
-	//old
-	if(wallActors.Num() > 0){
-
-		//find closest wall and disable it
-		AActor *closest = wallActors[0];
-		float closestDist = std::numeric_limits<float>::max();
-		int index = -1;
-
-		//for(AActor *a : wallActors){
-		for (int i = 0; i < wallActors.Num(); i++){
-			AActor *a = wallActors[i];
-			if (a != nullptr)
-			{
-				FVector current = a->GetActorLocation();
-				float distTmp = FVector::Dist(location, current);
-				if(distTmp < closestDist){
-					closestDist = distTmp;
-					closest = a;
-					index = i;
-				}
-			}
-		}
-
-		int EPSILON = 150; // 200;
-		if (closestDist <= EPSILON && closest != nullptr)
-		{ // 100cm als thresehold
-			closest->SetActorHiddenInGame(true);
-			closest->SetActorEnableCollision(false);
-			//DebugHelper::showScreenMessage("disabled a wall");
-
-			//spawn a door / window / the replacement
-			if(EntityManager *e = EntityManager::instance()){
-				if(bp != nullptr){
-					FVector locationCopy = closest->GetActorLocation();
-					FRotator rotationCopy = closest->GetActorRotation();
-					
-					AActor *spawned = e->spawnAactor(GetWorld(), bp, locationCopy);
-					if(spawned != nullptr){
-						spawned->SetActorLocation(locationCopy);
-						spawned->SetActorRotation(rotationCopy);
-						
-					}
-				}
-			}
-
-		}
-
-		//remove wall from list and MAYBE despawn it entierly, to not spawn multiple doors or windows
-		if(closest != nullptr){
-			wallActors.RemoveAt(index);
-			//closest->Destroy();
-			disabledWallActors.Add(closest); //keep instead, maybe need it?
-		}
-	}else{
-		//DebugHelper::showScreenMessage("debugroom: issues, no wall found! ", FColor::Purple);
-	}
 }
 
 

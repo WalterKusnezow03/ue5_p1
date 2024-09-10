@@ -52,7 +52,7 @@ void AdebugEntity::debugFunction(){
 		location1.Z = 20;
 
 		int metersLayoutX = 10;
-		int metersLayoutY = 15;
+		int metersLayoutY = 20;
 		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
 
 		return; //debug only testing rooms now

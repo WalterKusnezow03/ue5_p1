@@ -64,8 +64,8 @@ private:
 
 	//new
 	void sortIn(
-		std::vector<TTouple<float, AActor *>> &vec, // by reference, nicht vergessen!
-		AActor *actor,
+		std::vector<TTouple<float, AActor*>> &vec, // by reference, nicht vergessen!
+		AActor* a,
 		float distance,
 		int sizetargeted
 	);

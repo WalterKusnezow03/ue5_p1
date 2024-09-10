@@ -133,20 +133,159 @@ bool roomBounds::isStaircase(){
     return type == roomtypeEnum::staircase;
 }
 
-//floor for staircase door positions
-//as staircases will always be just in one dir down to up for now
-//this will work out
+/// @brief will get the staircase positions
+/// @return if return is -1,-1 an issue occured
 TTouple<int,int> roomBounds::getmanualDoorPos(){
     if(isStaircase()){
         if(floor == 0){
-            TTouple<int, int> t(xPos + 0, yPos + 0); //bottom part
+            //bottom right pos (asked from right)
+            TTouple<int, int> t(xPos + xScale, yPos); //bottom part
             return t;
         }
         if(floor == 1){
+            //top right pos, asked from right
             TTouple<int, int> t(xPos + xScale, yPos + yScale); //top part
             return t;
         }
+
+
+        //new side aligned positions
+        if(floor == 0){
+            if(xScale < yScale){
+                //oriented upwards
+                /**
+                 * | |
+                 * | |
+                 * | |
+                 */
+                TTouple<int, int> t(xPos + xScale, yPos);
+                return t;
+            }else{
+                /**
+                 * -----
+                 * -----
+                 */
+                TTouple<int, int> t(xPos + xScale, yPos);
+                return t;
+
+            }
+        }
+
+
     }
     TTouple<int, int> none(-1, -1);
     return none;
 }
+
+
+
+
+
+
+
+/// @brief 
+/// @return 
+TTouple<int,int> roomBounds::getmanualDoorPosFromRight(){
+    if(isStaircase()){
+
+        if(floor == 0){
+            if(xScale < yScale){
+                //oriented upwards
+                /**
+                 * | |
+                 * | |
+                 * | |.-> YES bottom here
+                 */
+                /**
+                * -----
+                * -----.-> NO top here
+                */
+                TTouple<int, int> t(xPos + xScale, yPos + 2); //corrected little offset
+                return t;
+            }
+        }
+        if(floor == 1){
+                
+            //top right both
+            /**
+            * | |.-> YES top here
+            * | |
+            * | |
+            */
+                    
+            /**
+             * -----.-> YES top here
+             * -----
+            */
+            TTouple<int, int> t(xPos + xScale, yPos + yScale - 1);
+            return t;
+
+        }
+
+
+    }
+    TTouple<int, int> none(-1, -1);
+    return none;
+}
+
+
+
+
+
+
+/// @brief 
+/// @return 
+TTouple<int,int> roomBounds::getmanualDoorPosFromTop(){
+    if(isStaircase()){
+        
+        if(floor == 0){
+            if(xScale > yScale){
+                //oriented upwards
+                /**
+                 * ^ NO top here
+                 * .
+                 * | |
+                 * | |
+                 * | |
+                */
+
+                /**
+                 * ^ yes
+                 * -----
+                 * -----
+                */
+                TTouple<int, int> t(xPos + 1, yPos + yScale);
+                return t;
+            }
+        }
+        if(floor == 1){
+                
+            if(xScale < yScale){
+                //oriented upwards
+                /**
+                 * ^ YES top here
+                 * .
+                 * | |
+                 * | |
+                 * | |
+                 */
+                TTouple<int, int> t(xPos + xScale, yPos);
+                return t;
+            }else{
+                /**
+                 *     ^ yes top here
+                 * -----
+                 * -----
+                */
+                TTouple<int, int> t(xPos + xScale - 1, yPos + yScale);
+                return t;
+            }
+                
+        }
+
+    }
+    TTouple<int, int> none(-1, -1);
+    return none;
+}
+
+

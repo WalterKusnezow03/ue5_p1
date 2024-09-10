@@ -39,6 +39,8 @@ class P2_API roomBounds{
 			//staircase custom doors testing
 			bool isStaircase();
 			TTouple<int, int> getmanualDoorPos();
+			TTouple<int, int> getmanualDoorPosFromRight();
+			TTouple<int, int> getmanualDoorPosFromTop();
 
 		private:
 			int xScale;

@@ -144,19 +144,28 @@ bool layoutCreator::grid::areaHasAtLeastOneNeighbor(int x, int y, int x1, int y1
         return true;
     }
 
-    //all outer indices valid
+    int count = 0;
+    int least = 2; //new for checking more that those neigbors
+
+    // all outer indices valid
     if(isValidIndex(x, y) && isValidIndex(x1, y1)){
         if(isValidIndex(x-1, y-1)){
             //vertical left
             for (int i = y; i < y1; i++){
                 if(data[x-1][i] != nullptr){
-                    return true;
+                    count++;
+                    if(count >= least){
+                        return true;
+                    }
                 }
             }
             //horizontal bottom
             for (int i = x; i < x1; i++){
                 if(data[i][y-1] != nullptr){
-                    return true;
+                    count++;
+                    if(count >= least){
+                        return true;
+                    }
                 }
             }
         }
@@ -165,13 +174,19 @@ bool layoutCreator::grid::areaHasAtLeastOneNeighbor(int x, int y, int x1, int y1
             //vertical right
             for (int i = y; i < y1; i++){
                 if(data[x+1][i] != nullptr){
-                    return true;
+                    count++;
+                    if(count >= least){
+                        return true;
+                    }
                 }
             }
             //horizontal top
             for (int i = x; i < x1; i++){
                 if(data[i][y+1] != nullptr){
-                    return true;
+                    count++;
+                    if(count >= least){
+                        return true;
+                    }
                 }
             }
         }
@@ -192,30 +207,6 @@ bool layoutCreator::grid::areaIsValid(int x, int y, int x1, int y1){
     return isAreaFree(x, y, x1, y1) && areaHasAtLeastOneNeighbor(x, y, x1, y1);
 }
 
-// -- NOT USED --
-/// @brief will try to find a position and add the room, returns true on success, false on failure
-/// @param p room bounds to add with size
-/// @return added or not
-bool layoutCreator::grid::findAndAdd(roomBounds *p){
-    if(p != nullptr){
-        int xSize = p->xscale();
-        int ySize = p->yscale();
-
-        for (int i = 0; i < data.Num(); i++){
-            for (int j = 0; j < data[i].Num(); j++){
-                if(isAreaFree(i,j, i + xSize, j + ySize)){
-                    fill(i, j, i + xSize, j + ySize, p); //fill map
-
-                    p->updatePosition(i, j); // update position in grid
-
-                    return true; //found and filled
-                }
-            }
-        }
-        return false;
-    }
-    return false;
-}
 
 /// @brief will try to find a free area in the desired size and output the indices to outX and outY by ref
 /// ---- MAIN USED METHOD FOR ROOM CREATION ----
@@ -641,16 +632,6 @@ bool layoutCreator::createRoom(roomtypeEnum type){
                         bp
                     );
                 }
-
-                /*
-                //old
-                roomBounds *s = new roomBounds(
-                    xsizeWanted, 
-                    ysizeWanted, 
-                    number++, 
-                    bp
-                );*/
-                
                 
                 s->updatePosition(outX, outY);
                 map->forceAdd(s);
@@ -692,11 +673,15 @@ void layoutCreator::connectNeighbors(){
                     
                     if(lower->isStaircase()){
 
-                        TTouple<int, int> doorTup = lower->getmanualDoorPos();
+                        //TTouple<int, int> doorTup = lower->getmanualDoorPos();
+                        TTouple<int, int> doorTup = lower->getmanualDoorPosFromTop();
                         int xCopy = doorTup.first();
                         int yCopy = doorTup.last();
-                        lower->addDoorPosition(xCopy, yCopy); 
-                        room->addDoorPosition(xCopy, yCopy + 1);
+                        if(xCopy != -1 && yCopy != -1){//error code -1 cant align
+                            lower->addDoorPosition(xCopy, yCopy); 
+                            room->addDoorPosition(xCopy, yCopy + 1);
+                        }
+                        
 
                     }else{
                         int lowerxpos = lower->xpos(); //x pos lower
@@ -710,7 +695,7 @@ void layoutCreator::connectNeighbors(){
                         if(xstarting < xending){
                             //calculate middle in all map scale
                             //int xmiddle = (int)((xstarting + xending) / 2.0f);
-                            int xmiddle = xstarting + 1;
+                            int xmiddle = xstarting + 1; //testing +1 
 
                             //set door for both? (might have extra class naming gap or door)
                             lower->addDoorPosition(xmiddle, lower->yOuteredge()); //y max, x kante
@@ -727,12 +712,14 @@ void layoutCreator::connectNeighbors(){
 
                     if(left->isStaircase()){
 
-                        TTouple<int, int> doorTup = left->getmanualDoorPos();
+                        //TTouple<int, int> doorTup = left->getmanualDoorPos();
+                        TTouple<int, int> doorTup = left->getmanualDoorPosFromRight();
                         int xCopy = doorTup.first();
                         int yCopy = doorTup.last();
-                        left->addDoorPosition(xCopy, yCopy); 
-                        room->addDoorPosition(xCopy+1, yCopy);
-
+                        if(xCopy != -1 && yCopy != -1){//error code -1 cant align
+                            left->addDoorPosition(xCopy, yCopy); 
+                            room->addDoorPosition(xCopy+1, yCopy);
+                        }
                     }else{
                         //calculate door position
                         int leftypos = left->ypos(); //y pos lower
@@ -745,7 +732,7 @@ void layoutCreator::connectNeighbors(){
                         if(ystarting < yending){
                             //calculate middle in MAP SCALE MUST BE DOWNSCALED
                             int ymiddle = (int)((ystarting + yending) / 2.0f);
-                            ymiddle = ystarting + 1;
+                            ymiddle = ystarting + 1; //testing +1 
 
                             //set door for both? (might have extra class naming gap or door)
                             left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
