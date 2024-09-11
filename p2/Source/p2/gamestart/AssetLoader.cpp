@@ -3,6 +3,7 @@
 
 #include "AssetLoader.h"
 #include "p2/gamestart/assetManager.h"
+#include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/gamestart/assetEnums/rooms/roomAssetEnum.h"
 
 AssetLoader::AssetLoader(UWorld *worldIn)
@@ -31,9 +32,10 @@ void AssetLoader::loadAssets()
     
     loadThrower(entityManager);
     loadParticles(entityManager);
+
+    loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
     loadRooms(entityManager);
-    loadTerrain(entityManager);
-    loadMaterials(entityManager);
+    loadMaterials();
 
 }
 
@@ -302,17 +304,22 @@ void AssetLoader::loadTerrain(EntityManager *entityManager){
 // ---- LOAD MATERIALS ----
 
 /// @brief loads all materials needed
-/// @param entityManager 
-void AssetLoader::loadMaterials(EntityManager *entityManager){
-    if(entityManager != nullptr){
-
-        entityManager->addMaterial(
-            materialEnum::grassMaterial, 
+void AssetLoader::loadMaterials(){
+    
+    if(assetManager *a = assetManager::instance()){
+        //grass material
+        a->addMaterial(
+            materialEnum::grassMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/grassMaterial.grassMaterial'"))
         );
 
-
+        //wall material
+        a->addMaterial(
+            materialEnum::wallMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/rooms/materials/wallMaterial.wallMaterial'"))
+        );
     }
+
 }
 
 

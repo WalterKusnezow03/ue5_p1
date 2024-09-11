@@ -54,9 +54,13 @@ void AdebugEntity::debugFunction(){
 		int metersLayoutX = 10;
 		int metersLayoutY = 20;
 		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
+		
+		//testing with meshes
+		e->createSomeMesh(GetWorld());
 
 		return; //debug only testing rooms now
 
+		//terrain
 		int meters = 50;
         e->createTerrain(GetWorld(), meters);
 

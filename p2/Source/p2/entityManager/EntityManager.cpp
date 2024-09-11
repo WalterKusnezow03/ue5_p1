@@ -7,7 +7,7 @@
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/meshgen/terrainCreator.h"
 #include "p2/meshgen/customMeshActor.h"
-
+#include "p2/gamestart/assetManager.h"
 
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
@@ -326,7 +326,10 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
 
 
 
-//testing thrower weapons (works for grenades)
+/// @brief spawns a thrower weapon witht the desired throwable if possible
+/// @param world 
+/// @param typeToSpawn 
+/// @return 
 Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
@@ -350,27 +353,29 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
         return weapon;
     }
     return nullptr;
-    /*
-    //old
-    if(defaultThrower != nullptr){
-        
-        AActor *spawned = spawnAactor(world, defaultThrower, Location);
-        AthrowerWeapon *w = Cast<AthrowerWeapon>(spawned);
-        if(w != nullptr){
-            w->setThrowableType(typeToSpawn);
-            return w;
+}
+
+/// @brief spawns a custom mesh actor at a given location without any mesh.
+/// @param world world to spawn in
+/// @param location lcoation to spawn at
+/// @return custom mesh actor on success, or nullptr if not
+AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &location){
+    if(world != nullptr){
+        if(emptyCustomMeshActorBp != nullptr){
+            AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
+            if(actor != nullptr){
+
+                AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
+                if(customMesh != nullptr){
+                    return customMesh;
+                }
+            }
         }
     }
     return nullptr;
-    */
 }
 
-//default "thrower / werfer"
-void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
-    if(defaultThrower == nullptr){
-        defaultThrower = uIn;
-    }
-}
+
 
 
 
@@ -493,6 +498,16 @@ void EntityManager::setWeaponUClassBP(UClass *weaponIn, weaponEnum typeIn){
     }
     
 }
+
+
+//default "thrower / werfer"
+void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
+    if(defaultThrower == nullptr){
+        defaultThrower = uIn;
+    }
+}
+
+
 
 
 /// @brief sets the throwable item for all throwables if possible
@@ -659,27 +674,48 @@ void EntityManager::createAMesh(UWorld *world, std::vector<std::vector<FVector>>
     }
 }
 
-/**
- * ---- SECTION FOR MATERIALS -----
- */
 
-/// @brief add a material to be used on any mesh by material enum type
-/// @param type 
-/// @param material 
-void EntityManager::addMaterial(materialEnum type, UMaterial *material){
-    if(material != nullptr){
-        materialMap[type] = material;
+/// @brief a debug function
+/// @param world 
+void EntityManager::createSomeMesh(UWorld *world){
+
+    FVector location(0, 0, 0);
+
+    AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
+    if(actor != nullptr){
+
+        AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
+        if(customMesh != nullptr){
+
+            FVector a(0, 0, 100);
+            FVector b(0, 200, 100);
+            FVector c(200, 200, 100); // some offset to see both sides
+            FVector d(200, 0, 100);
+            FVector e(0, 0, 1);
+
+            customMesh->createCube(a,b,c,d,e,100);
+        }
     }
 }
 
-/// @brief get any material by enum type
-/// @param type type to find
-/// @return material or nullptr if none found
-UMaterial *EntityManager::getMaterial(materialEnum type){
-    if(materialMap.find(type) != materialMap.end()){
-        return materialMap[type];
+void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d){
+    //implementation needs to be tested!
+
+    if(assetManager *am = assetManager::instance()){
+        FVector location(0, 0, 0);
+
+        AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
+        if(actor != nullptr){
+
+            AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
+            if(customMesh != nullptr){
+
+                customMesh->createTwoSidedQuad(
+                    a, b, c, d, am->findMaterial(materialEnum::wallMaterial)
+                );
+            }
+        }
     }
-    return nullptr;
 }
 
 

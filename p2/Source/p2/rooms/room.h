@@ -35,6 +35,7 @@ public:
 
 	//spawn walls on start
 	void spawnWalls(UClass *bp);
+	void spawnRoof();
 
 	//replace walls with doors and windows etc
 	void processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp);

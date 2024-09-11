@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/util/FVectorTouple.h"
+#include "p2/util/AActorUtil.h"
 #include "customMeshActor.h"
 
 // Sets default values
@@ -91,8 +92,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     //process created data
     updateMesh(output, newtriangles);
-    if(EntityManager *e = EntityManager::instance()){
-        ApplyMaterial(Mesh, e->getMaterial(materialEnum::grassMaterial));
+    if(assetManager *e = assetManager::instance()){
+        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial));
     }
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -127,6 +128,123 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
     //new: set material
 }
 
+
+/// @brief creates a cube from 4 vertecies and a material
+/// expecting the vertecies to be already ordered correctly in clockwise order from a to d!
+/// expecting a to d to be the bottom side and the direction to be positive!
+/// @param a a0
+/// @param b b1
+/// @param c c2
+/// @param d d3
+/// @param dir direction to extend
+/// @param cmheight height of the shape / direction length
+void AcustomMeshActor::createCube(
+    FVector &a, 
+    FVector &b,
+    FVector &c,
+    FVector &d,
+    FVector &dir,
+    int cmheight
+){
+
+    TArray<FVector> output;
+    TArray<int32> newtriangles;
+
+    dir = dir.GetSafeNormal() * cmheight;
+
+
+    FVector a1 = a + dir;
+    FVector b1 = b + dir;
+    FVector c1 = c + dir;
+    FVector d1 = d + dir;
+
+    createCube(a, b, c, d, a1, b1, c1, d1);
+}
+
+/// @brief expect a -d to be clockwise bottom quad and a1-d1 to be clockwise top quad
+/// @param a 
+/// @param b 
+/// @param c 
+/// @param d 
+/// @param a1 
+/// @param b1 
+/// @param c1 
+/// @param d1 
+void AcustomMeshActor::createCube(
+    FVector &a, 
+    FVector &b,
+    FVector &c,
+    FVector &d,
+    FVector &a1, 
+    FVector &b1,
+    FVector &c1,
+    FVector &d1
+){
+
+    TArray<FVector> output;
+    TArray<int32> newtriangles;
+    //bottom
+    //flipped 180 degree?
+    buildQuad(a, d, c, b, output, newtriangles);
+
+    //top
+    //a b c und d sollten richtig herum gedreht sein wenn man abc und d bildet
+    buildQuad(a1, b1, c1, d1, output, newtriangles);
+
+    //sides
+    //must be reverse winding order (ccl)
+    //instead of 0123 -> 3210 to be flipped correctly!
+    buildQuad(b, b1, a1, a, output, newtriangles); //correct, must be reverse winding order (ccl)
+    buildQuad(c, c1, b1, b, output, newtriangles); 
+    buildQuad(d, d1, c1, c, output, newtriangles);
+    buildQuad(a, a1, d1, d, output, newtriangles);
+    
+
+    updateMesh(output, newtriangles);
+    if(assetManager *e = assetManager::instance()){
+        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial));
+    }
+}
+
+
+
+
+
+/// @brief creates a two sided quad from 4 vertecies and a material
+/// expecting the vertecies to be already ordered correctly in clockwise order from a to d!
+/// @param a a0
+/// @param b b1
+/// @param c c2
+/// @param d d3
+/// @param material material to be applied, must not be nullptr
+void AcustomMeshActor::createTwoSidedQuad(
+    FVector &a, 
+    FVector &b,
+    FVector &c,
+    FVector &d,
+    UMaterial *material
+){
+    if(material != nullptr){
+        TArray<FVector> output;
+        TArray<int32> newtriangles;
+
+        //a b c und d sollten richtig herum gedreht sein wenn man abc und d bildet
+        buildQuad(a, b, c, d, output, newtriangles);
+
+        //flipped 180 degree?
+        buildQuad(a, d, c, b, output, newtriangles);
+
+
+        updateMesh(output, newtriangles);
+        ApplyMaterial(Mesh, material);
+    }
+}
+
+
+
+
+
+
 /// @brief build a quad out of two triangles! Important otherwise unfixable issues are in the mesh
 /// @param a 
 /// @param b 
@@ -135,10 +253,10 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
 /// @param output 
 /// @param trianglesOutput 
 void AcustomMeshActor::buildQuad(
-    FVector a, 
-    FVector b, 
-    FVector c, 
-    FVector d, 
+    FVector &a, 
+    FVector &b, 
+    FVector &c, 
+    FVector &d, 
     TArray<FVector> &output,
     TArray<int32> &trianglesOutput
 ){
@@ -153,6 +271,10 @@ void AcustomMeshActor::buildQuad(
                 1--2
                 |  |
                 0<-3
+
+                b--c
+                |  |
+                a<-d
     */
 
 }
@@ -166,9 +288,9 @@ void AcustomMeshActor::buildQuad(
 /// @param output output to append in
 /// @param trianglesOutput triangle int32 as nums saved in here, also appended
 void AcustomMeshActor::buildTriangle(
-    FVector a, 
-    FVector b, 
-    FVector c,
+    FVector &a, 
+    FVector &b, 
+    FVector &c,
     TArray<FVector> &output,
     TArray<int32> &trianglesOutput
 ){
@@ -240,3 +362,91 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
 
 
+
+
+
+
+
+/// @brief will replace the actor and split it (int terms of bounds) and apply an material
+/// will not use original mesh, just the bounds
+/// @param actor actor to replace with splitted mesh
+/// @param bottomCenter bottom center of the actor, very important, do not ignore
+/// @param cmTile each tile to be cm wide and high
+void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int cmTile)
+{
+    if(actor != nullptr){
+
+        int xBound = 0;
+        int yBound = 0;
+        int zBound = 0;
+        AActorUtil::calculateActorBounds(actor, xBound, yBound, zBound);
+
+        FRotator rotationCopy = actor->GetActorRotation();
+
+        //create a mesh where the pieces are almost a similar side viewed from the larger side
+        //like consitent quads
+
+        EntityManager *eM = EntityManager::instance();
+        if(eM != nullptr){
+            //bottom left corner
+            FVector anchor = bottomCenter;
+            anchor.X -= xBound / 2; //bottom left now (bounds adjusted half way obviosuly)
+            anchor.Y -= yBound / 2;
+
+            FVector up(0, 0, cmTile); //always in up direction for now
+            FVector side = (xBound > yBound) ? FVector(cmTile, 0, 0) : FVector(0, cmTile, 0); //iterate along longer
+            FVector extension = (xBound > yBound) ? FVector(0, yBound, 0) : FVector(xBound, 0, 0);  //90 degree to longer
+            
+
+            
+            float tilesXAxis = (xBound > yBound) ? xBound / cmTile : yBound / cmTile;
+            float tilesZAxis = zBound / cmTile;
+            if(tilesXAxis < 1){
+                side *= tilesXAxis; //scale accordinly down!
+                tilesXAxis = 1; // set to one to still iterate once
+            }
+            if(tilesZAxis < 1){
+                up *= tilesZAxis; //scale accordinly down!
+                tilesZAxis = 1; // set to one to still iterate once
+            }
+            
+
+
+            for (int i = 0; i < tilesXAxis; i++){
+                for (int j = 0; j < tilesZAxis; j++){
+                    
+                    FVector innerAnchor = i * side + j * up;
+                    FVector vert0(0,0,0);
+                    FVector vert1 = vert0 + up;
+                    FVector vert2 = vert0 + up + side;
+                    FVector vert3 = vert0 + side;
+
+                    FVector center = anchor + innerAnchor; 
+
+                    //create mesh / cube
+                    AcustomMeshActor *newActor = eM->spawnAcustomMeshActor(actor->GetWorld(), center);
+                    if(newActor != nullptr){
+                        
+                        DebugHelper::showLineBetween(actor->GetWorld(), anchor, FVector(0,0,0), FColor::Green);
+
+                        FVector vert0a = vert0 + extension;
+                        FVector vert1a = vert1 + extension;
+                        FVector vert2a = vert2 + extension;
+                        FVector vert3a = vert3 + extension;
+
+                        //is correct like this, do not touch
+                        newActor->createCube(
+                            vert0, vert1, vert2, vert3, //bottom quad clw
+                            vert0a, vert1a, vert2a, vert3a //top quad clw
+                        );
+
+                    }
+
+            
+                }
+            }
+        }
+
+        
+    }
+}

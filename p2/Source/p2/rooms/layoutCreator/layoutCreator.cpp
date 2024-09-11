@@ -393,16 +393,13 @@ void layoutCreator::grid::fillInverseBlock(std::vector<TTouple<int, int>> &outpu
     }
 }
 
+//NOT USED
 /// @brief will find the area which is filled and not dummy data and not staircase
 /// @param output output to save in
 void layoutCreator::grid::fillEmptyGapsRoof(std::vector<TTouple<int, int>> &output){
     for (int i = 0; i < data.Num(); i++){
         for (int j = 0; j < data[i].Num(); j++){
-            if(
-                data[i][j] != nullptr && 
-                data[i][j] != layoutCreator::dummy &&
-                data[i][j]->readType() != roomtypeEnum::staircase
-            ){
+            if(data[i][j] == nullptr){
                 output.push_back(TTouple<int, int>(i, j));
             }
         }

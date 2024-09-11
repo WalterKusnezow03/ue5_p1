@@ -77,10 +77,6 @@ void Aroom::calculateActorBounds(){
 	boxYScale = yScale;
 	boxZScale = zScale;
 
-	DebugHelper::showScreenMessage("DEBUG ROOM Z SCALE ", boxZScale, FColor::Yellow);
-
-	//FVector newLocation = GetActorLocation() + (GetActorLocation() - bottomLeftCorner());
-	//SetActorLocation(newLocation);
 }
 
 /// @brief calculates the bottom left corner based on box extent, calculateActorBounds() must be called any time before!
@@ -158,10 +154,7 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 		AActorUtil::calculateActorBounds(GetWorld(), bp, xcopy, ycopy, zcopy);
 
 		//scale to index
-		int limit = xcopy / 100; //x is the width in the blueprints
-		if(true){
-			DebugHelper::showScreenMessage("ROOM LIMIT ", xcopy, FColor::Cyan);
-		}
+		int limit = xcopy / 100; //x is the width in the blueprint
 		
 
 		std::vector<TTouple<float, AActor*>> vec;
@@ -354,5 +347,39 @@ void Aroom::spawnWalls(UClass *bp){
 		}
 	}
 
+
+
+	//testing
+	if(wallActors.Num() > 0){
+		DebugHelper::showScreenMessage("splitmesh MSG SPLIT NOW! ", FColor::Yellow);
+
+		FVector bottom = wallActors[0]->GetActorLocation();
+		AcustomMeshActor::splitAndreplace(wallActors[0], bottom, 100);
+	}
+}
+
+
+void Aroom::spawnRoof(){
+	if(wallActors.Num() > 0){
+		if(EntityManager *e = EntityManager::instance()){
+
+			std::vector<FVector> corners = allCorners();
+			int zOff = 0;
+			int x = 0;
+			int y = 0;
+			AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff);
+			for (int i = 0; i < corners.size(); i++){
+				corners.at(i).Z += zOff + 1; //1cm offset fix
+			}
+
+			e->createTwoSidedQuad(
+				GetWorld(), 
+				corners.at(0), 
+				corners.at(1), 
+				corners.at(2), 
+				corners.at(3)
+			);
+		}
+	}
 	
 }

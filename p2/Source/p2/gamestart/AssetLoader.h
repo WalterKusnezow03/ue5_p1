@@ -37,7 +37,7 @@ private:
 	void loadParticles(EntityManager *entityManager);
 	void loadRooms(EntityManager *entityManager);
 	void loadTerrain(EntityManager *e);
-	void loadMaterials(EntityManager *entityManager);
+	void loadMaterials();
 
 	//new testing
 	void loadPaths();

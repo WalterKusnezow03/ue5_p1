@@ -15,7 +15,7 @@
 #include "p2/rooms/room.h"
 #include "p2/rooms/RoomManager.h"
 #include "p2/entityManager/EntityManagerGenericMap.h"
-#include "p2/meshgen/materialEnum.h"
+#include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/rooms/roomtypeEnum.h"
 
 
@@ -50,6 +50,8 @@ public:
 	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
 
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
+
+	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!
@@ -91,6 +93,8 @@ public:
 
 	//meshes in general
 	void createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies);
+	void createSomeMesh(UWorld *world); //debug
+	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:
 	static class EntityManager *instancePointer;
@@ -167,15 +171,5 @@ private:
 
 	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
 
-	
 
-
-	//for now materials will be saved here
-public:
-	void addMaterial(materialEnum type, UMaterial *material);
-	UMaterial *getMaterial(materialEnum type);
-
-
-private:
-	std::map<materialEnum, UMaterial *> materialMap;
 };

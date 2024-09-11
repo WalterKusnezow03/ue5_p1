@@ -134,6 +134,7 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 
             bool leaveGap = false;
             l.createRooms(x, y, copyStairs, leaveGap, reverseBlock);
+            reverseBlock = l.getInverseBlockList();
         }else{
             //default layer
             l.createRooms(x, y, staircasesPerLayer);
@@ -150,30 +151,19 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
         // process layer and add up new height from the just created layer
         processLayer(world, copy, offset, true);
 
-
+        //disabled because room crreates roof on its own now.
+        /*
         //spawn the additional roofs needed
-        if(true || i > 0 && singleTileBp != nullptr){ //A oder w = w
-        
-            offset = FVector(0, 0, height * (i + 1)); //push offset up
-
-            offset += location; //apply location properly
-            //std::vector<roomBounds> roofs = l.getRoofToCreate(singleTileBp);
-            //processLayer(world, roofs, offset, false);
-
-            //new test: copy all created but not stairs
-            int j = 0;
-            int size = copy.size();
-            while(j < size){
-                if(copy.at(j).readType() == roomtypeEnum::staircase){
-                    copy.erase(copy.begin() + j);
-                    size = copy.size();
-                }else{
-                    j++;
-                }
-            }
-
-            processLayer(world, copy, offset, false);
+        if(i > 0 && singleTileBp != nullptr){
+            std::vector<roomBounds> roofs = l.getRoofToCreate(singleTileBp);
+            processLayer(world, roofs, offset, false); //no walls
         }
+
+        //spawn the very top layer again of top roof reached
+        if(i == layers - 1){
+            offset.Z += height;
+            processLayer(world, copy, offset, false); //no walls
+        }*/
     }
 }
 
@@ -260,9 +250,9 @@ void RoomManager::processLayer(
 
                     
                 }
-                
 
-
+                //lastly spawn the roof
+                aroom->spawnRoof();
             }
         }
     }

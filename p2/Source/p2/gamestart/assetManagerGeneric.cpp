@@ -22,6 +22,11 @@ void assetManagerGeneric<E,T>::addBp(E e, T *t){
     }
 }
 
+/// @brief will try to find the type from the map
+/// @tparam E key
+/// @tparam T 
+/// @param e enum type
+/// @return returned value pointer
 template<typename E, typename T>
 T* assetManagerGeneric<E,T>::getBp(E e){
     if(map.find(e) != map.end()){

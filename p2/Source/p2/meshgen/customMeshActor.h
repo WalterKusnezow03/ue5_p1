@@ -25,9 +25,31 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
+	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile);
 
 	void process2DMap(std::vector<std::vector<FVector>> &map);
+
+	void createCube(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		FVector &dir,
+		int cmheight
+	);
+	
+	void createCube(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		FVector &a1,
+		FVector &b1,
+		FVector &c1,
+		FVector &d1
+	);
+
+	void createTwoSidedQuad(FVector &a, FVector &b, FVector &c, FVector &d, UMaterial *material);
 
 private:
 	//saving data too, will be overriden when updateMesh is called
@@ -46,18 +68,18 @@ private:
 
 
 	void buildQuad(
-		FVector a,
-		FVector b,
-		FVector c,
-		FVector d,
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
 		TArray<FVector> &output,
 		TArray<int32> &trianglesOutput
 	);
 
 	void buildTriangle(
-		FVector a,
-		FVector b,
-		FVector c,
+		FVector &a,
+		FVector &b,
+		FVector &c,
 		TArray<FVector> &output,
 		TArray<int32> &trianglesOutput
 	);

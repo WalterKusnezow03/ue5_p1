@@ -42,3 +42,16 @@ void assetManager::addBp(roomAssetEnum type, UClass *uclass){
 
 
 // --- other assets will follow here... ---
+
+
+// --- material assets ---
+UMaterial *assetManager::findMaterial(materialEnum type){
+    UMaterial* material = materialAssets.getBp(type);
+    return material;
+}
+
+void assetManager::addMaterial(materialEnum type, UMaterial *material){
+    if(material != nullptr){
+        materialAssets.addBp(type, material);
+    }
+}

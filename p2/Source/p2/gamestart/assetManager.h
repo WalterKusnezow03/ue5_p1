@@ -19,6 +19,9 @@ public:
 	UClass *findBp(roomAssetEnum type);
 	void addBp(roomAssetEnum type, UClass *asset);
 
+	UMaterial *findMaterial(materialEnum type);
+	void addMaterial(materialEnum type, UMaterial *material);
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
@@ -26,4 +29,5 @@ private:
 
 	//all asset maps
 	class assetManagerGeneric<roomAssetEnum, UClass> roomAssets;
+	class assetManagerGeneric<materialEnum, UMaterial> materialAssets;
 };

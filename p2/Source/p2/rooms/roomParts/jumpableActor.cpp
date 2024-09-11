@@ -61,7 +61,7 @@ void AjumpableActor::Tick(float DeltaTime)
 				move(DeltaTime, a, target);
 				i++; //only increment here
 			}else{
-				moving.erase(moving.begin() + i);
+				moving.erase(moving.begin() + i); //erase from list once reached
 			}
 		}
 
@@ -77,6 +77,10 @@ void AjumpableActor::Tick(float DeltaTime)
 	}
 }
 
+/// @brief moves aactor to the target with a speed
+/// @param DeltaTime delta time (from tick)
+/// @param a actor to move
+/// @param target target
 void AjumpableActor::move(float DeltaTime, AActor *a, FVector &target){
 
 	//x(t) = x0 + v0 t + 1/2 at^2
@@ -101,6 +105,8 @@ bool AjumpableActor::hasReached(FVector &a, FVector &b){
 	return (FVector::Dist(a, b) <= epsilon);
 }
 
+/// @brief interact method to start the jumof for any entity
+/// @param actor actor to jump
 void AjumpableActor::jumpOver(AActor *actor){
 	if(actor != nullptr){
 

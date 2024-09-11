@@ -22,7 +22,7 @@ void DebugHelper::showScreenMessage(FString s){
 /// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
     
-	if(!s.Contains("room") && !s.Contains("debugroom")){
+	if(!s.Contains("room") && !s.Contains("debugroom") && !s.Contains("splitmesh")){
 		return; //TESTING 
 	}
 

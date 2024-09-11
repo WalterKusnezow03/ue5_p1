@@ -91,7 +91,9 @@
 			"*.cs": "cpp",
 			"alignedvector3": "cpp",
 			"type_traits": "cpp",
-			"mprealsupport": "cpp"
+			"mprealsupport": "cpp",
+			"iterator": "cpp",
+			"scoped_allocator": "cpp"
 		}
 	},
 	"extensions": {
