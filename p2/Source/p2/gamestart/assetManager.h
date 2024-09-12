@@ -19,6 +19,20 @@ public:
 	UClass *findBp(roomAssetEnum type);
 	void addBp(roomAssetEnum type, UClass *asset);
 
+	//weapon
+	UClass *findBp(weaponEnum type);
+	void addBp(weaponEnum type, UClass *asset);
+
+	//throwables
+	UClass *findBp(throwableEnum type);
+	void addBp(throwableEnum type, UClass *asset);
+
+	//particles
+	UClass *findBp(particleEnum type);
+	void addBp(particleEnum type, UClass *asset);
+
+
+	//all materials
 	UMaterial *findMaterial(materialEnum type);
 	void addMaterial(materialEnum type, UMaterial *material);
 
@@ -29,5 +43,9 @@ private:
 
 	//all asset maps
 	class assetManagerGeneric<roomAssetEnum, UClass> roomAssets;
+	class assetManagerGeneric<weaponEnum, UClass> weaponAssets;
+	class assetManagerGeneric<throwableEnum, UClass> throwableAssets;
+	class assetManagerGeneric<particleEnum, UClass> particleAssets;
+
 	class assetManagerGeneric<materialEnum, UMaterial> materialAssets;
 };

@@ -21,8 +21,7 @@ AcustomMeshActor::AcustomMeshActor()
 void AcustomMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-
+    setTeam(teamEnum::none);
 }
 
 // Called every frame
@@ -33,7 +32,46 @@ void AcustomMeshActor::Tick(float DeltaTime)
 }
 
 
+// --- derived methods from damageinferface ---
 
+/// @brief will allow custom emsh actors such as destructables and terrain react to damage
+/// @param d 
+void AcustomMeshActor::takedamage(int d){
+
+    DebugHelper::showScreenMessage("debug mesh damage");
+    // handle terrain or other type here
+    if(d > 100){
+
+        //some sort of impulse if greater than a 100 for example
+        //or another method just for explosive damage
+        //unklar!
+        //mehr damage wäre evt einfacher aber dadurch ist die richtung auch unklar
+        //das interface muss wohl erweitert werden. 
+
+    }
+}
+
+void AcustomMeshActor::takedamage(int d, FVector &from){
+    takedamage(d);
+
+    //react to impulse here ----> testing needed!
+    if(Mesh != nullptr){
+        // Enable physics simulation
+        Mesh->SetSimulatePhysics(true);
+        FVector Impulse = 1000 * (GetActorLocation() - from).GetSafeNormal(); //AB = B - A
+        Mesh->AddImpulse(Impulse);
+    }
+
+}
+
+void AcustomMeshActor::setTeam(teamEnum t){
+    this->team = t;
+}
+teamEnum AcustomMeshActor::getTeam(){
+    return team;
+}
+
+// --- mesh actor methods ---
 
 
 /// @brief process a 2D map of local coordinates
@@ -82,6 +120,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                 }
                 catch (const std::exception &e)
                 {
+                    //this try catch block was just added when debugging can certainly be
+                    //kept for safety 
                     DebugHelper::showScreenMessage("mesh actor exception!", FColor::Red);
                 }
             }
@@ -144,21 +184,20 @@ void AcustomMeshActor::createCube(
     FVector &c,
     FVector &d,
     FVector &dir,
-    int cmheight
+    int cmheight,
+    UMaterial *material
 ){
+    if(material != nullptr){
 
-    TArray<FVector> output;
-    TArray<int32> newtriangles;
+        dir = dir.GetSafeNormal() * cmheight;
 
-    dir = dir.GetSafeNormal() * cmheight;
+        FVector a1 = a + dir;
+        FVector b1 = b + dir;
+        FVector c1 = c + dir;
+        FVector d1 = d + dir;
 
-
-    FVector a1 = a + dir;
-    FVector b1 = b + dir;
-    FVector c1 = c + dir;
-    FVector d1 = d + dir;
-
-    createCube(a, b, c, d, a1, b1, c1, d1);
+        createCube(a, b, c, d, a1, b1, c1, d1, material);
+    }
 }
 
 /// @brief expect a -d to be clockwise bottom quad and a1-d1 to be clockwise top quad
@@ -178,7 +217,8 @@ void AcustomMeshActor::createCube(
     FVector &a1, 
     FVector &b1,
     FVector &c1,
-    FVector &d1
+    FVector &d1,
+    UMaterial *material
 ){
 
     TArray<FVector> output;
@@ -201,8 +241,12 @@ void AcustomMeshActor::createCube(
     
 
     updateMesh(output, newtriangles);
-    if(assetManager *e = assetManager::instance()){
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial));
+    if(material != nullptr){
+        ApplyMaterial(Mesh, material);
+    }else{
+        if(assetManager *e = assetManager::instance()){
+            ApplyMaterial(Mesh, e->findMaterial(materialEnum::wallMaterial));
+        }
     }
 }
 
@@ -313,7 +357,7 @@ void AcustomMeshActor::buildTriangle(
 /// @param ProceduralMeshComponent 
 /// @param Material 
 void AcustomMeshActor::ApplyMaterial(UProceduralMeshComponent* ProceduralMeshComponent, UMaterial* Material) {
-	if (ProceduralMeshComponent && Material) {
+	if (ProceduralMeshComponent != nullptr && Material != nullptr) {
 		// Apply the material to the first material slot (index 0) of the procedural mesh
 		ProceduralMeshComponent->SetMaterial(0, Material);
 	}
@@ -372,9 +416,10 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 /// @param actor actor to replace with splitted mesh
 /// @param bottomCenter bottom center of the actor, very important, do not ignore
 /// @param cmTile each tile to be cm wide and high
-void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int cmTile)
+/// @param material material to set for the mesh
+void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int cmTile, UMaterial *material)
 {
-    if(actor != nullptr){
+    if(actor != nullptr && material != nullptr){
 
         int xBound = 0;
         int yBound = 0;
@@ -423,8 +468,9 @@ void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int
 
                     FVector center = anchor + innerAnchor; 
 
-                    //create mesh / cube
+                    //create new mesh / cube
                     AcustomMeshActor *newActor = eM->spawnAcustomMeshActor(actor->GetWorld(), center);
+
                     if(newActor != nullptr){
                         
                         DebugHelper::showLineBetween(actor->GetWorld(), anchor, FVector(0,0,0), FColor::Green);
@@ -434,10 +480,12 @@ void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int
                         FVector vert2a = vert2 + extension;
                         FVector vert3a = vert3 + extension;
 
+                        //apply mesh
                         //is correct like this, do not touch
                         newActor->createCube(
                             vert0, vert1, vert2, vert3, //bottom quad clw
-                            vert0a, vert1a, vert2a, vert3a //top quad clw
+                            vert0a, vert1a, vert2a, vert3a, //top quad clw
+                            material
                         );
 
                     }

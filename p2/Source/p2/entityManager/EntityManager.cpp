@@ -38,27 +38,13 @@ EntityManager::EntityManager()
 {
     entityBpClass = nullptr;
 	humanEntityBpClass = nullptr;
-	weaponBpClass = nullptr;
-    pistolBpClass = nullptr;
-
-    
-    grenadeBpClass = nullptr;
-    rocketBpClass = nullptr;
-    molotovBpClass = nullptr;
-    defaultThrower = nullptr; //immer am anfang setzen, sonst crash potenziell!
+	
 }
 
 EntityManager::~EntityManager()
 {
     entityBpClass = nullptr;
 	humanEntityBpClass = nullptr;
-	weaponBpClass = nullptr;
-    pistolBpClass = nullptr;
-
-    grenadeBpClass = nullptr;
-    rocketBpClass = nullptr;
-    molotovBpClass = nullptr;
-    defaultThrower = nullptr;
 }
 
 /// @brief add an entity to the manager
@@ -233,7 +219,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
         }
     }
 
-
+    /*
     //default spawn if needed
     UClass *selectedBp = weaponBpClass; //to created, default is stick gun
 
@@ -242,6 +228,12 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
     map[weaponEnum::pistol] = pistolBpClass;
 
     selectedBp = map[typeToSpawn];
+    */
+    UClass *selectedBp = nullptr;
+    if(assetManager *a = assetManager::instance()){
+        selectedBp = a->findBp(typeToSpawn);
+    }
+
     if(selectedBp != nullptr){
         AActor *spawned = spawnAactor(world, selectedBp, Location);
         Aweapon *w = Cast<Aweapon>(spawned);
@@ -301,15 +293,11 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
         }
 
 
+        UClass *fromMap = nullptr;
+        if(assetManager *a = assetManager::instance()){
+            fromMap = a->findBp(type);
+        }
 
-        std::map<throwableEnum, UClass *> typeMap;
-
-        typeMap[throwableEnum::rock_enum] = nullptr;
-        typeMap[throwableEnum::greneade_enum] = grenadeBpClass;
-        typeMap[throwableEnum::rocket_enum] = rocketBpClass;
-        typeMap[throwableEnum::molotov_enum] = molotovBpClass;
-
-        UClass *fromMap = typeMap[type];
         if(fromMap != nullptr){
 
             AActor * spawned = spawnAactor(world, fromMap, location);
@@ -344,7 +332,11 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     }
     else
     {
-        AActor *spawned = spawnAactor(world, defaultThrower, Location);
+        UClass *selectedBp = nullptr;
+        if(assetManager *a = assetManager::instance()){
+            selectedBp = a->findBp(weaponEnum::thrower);
+        }
+        AActor *spawned = spawnAactor(world, selectedBp, Location);
         weapon = Cast<AthrowerWeapon>(spawned);
     }
 
@@ -384,7 +376,7 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 */
 
 
-/// @brief creates an explosion at a given location
+/// @brief creates an visual explosion at a given location
 /// @param world 
 /// @param location 
 void EntityManager::createExplosion(UWorld *world, FVector &location){
@@ -426,7 +418,11 @@ void EntityManager::createParticle(
 ){
     
     if(world != nullptr){
-        UClass *bp = getParticleBp(enumtype);
+        UClass *bp = nullptr; // getParticleBp(enumtype);
+
+        if(assetManager *am = assetManager::instance()){
+            bp = am->findBp(enumtype);
+        }
 
         if(bp != nullptr){
 
@@ -481,82 +477,6 @@ void EntityManager::setHumanEntityUClassBp(UClass *humanIn){
         humanEntityBpClass = humanIn;
     }
 }
-
-
-
-/// @brief sets the weapon blue print of a specific type
-/// @param weaponIn 
-/// @param typeIn 
-void EntityManager::setWeaponUClassBP(UClass *weaponIn, weaponEnum typeIn){
-    if(weaponIn != nullptr){
-        switch(typeIn){
-        case weaponEnum::assaultRifle: assaultRifleBpClass = weaponIn;
-            break;
-        case weaponEnum::pistol: pistolBpClass = weaponIn;
-            break;
-        }
-    }
-    
-}
-
-
-//default "thrower / werfer"
-void EntityManager::setDefaultThrowerClassBp(UClass *uIn){
-    if(defaultThrower == nullptr){
-        defaultThrower = uIn;
-    }
-}
-
-
-
-
-/// @brief sets the throwable item for all throwables if possible
-/// @param throwableIn u class derived of throwableItems/throwableItem
-/// @param typeIn type of the throwable
-void EntityManager::setThrowableUClassBp(UClass *throwableIn, throwableEnum typeIn){
-    if(throwableIn != nullptr){
-        switch(typeIn){
-        case throwableEnum::rocket_enum: rocketBpClass = throwableIn;
-            break;
-        case throwableEnum::greneade_enum: grenadeBpClass = throwableIn;
-            break;
-        case throwableEnum::molotov_enum: molotovBpClass = throwableIn;
-            break;
-        }
-    }
-}
-
-
-/// @brief sets all particle blueprints
-/// @param uIn 
-/// @param type 
-void EntityManager::setparticleBp(UClass *uIn, particleEnum type){
-
-    if(uIn != nullptr){
-        switch(type){
-        case particleEnum::smoke_enum:
-            smokeParticleBp = uIn;
-            break;
-        case particleEnum::fire_enum:
-            fireParticleBp = uIn;
-            break;
-        }
-    }
-
-}
-
-UClass *EntityManager::getParticleBp(particleEnum type){
-    switch(type){
-    case particleEnum::smoke_enum:
-        return smokeParticleBp;
-    case particleEnum::fire_enum:
-        return fireParticleBp;
-    }
-    return nullptr;
-}
-
-
-
 
 
 
@@ -675,28 +595,6 @@ void EntityManager::createAMesh(UWorld *world, std::vector<std::vector<FVector>>
 }
 
 
-/// @brief a debug function
-/// @param world 
-void EntityManager::createSomeMesh(UWorld *world){
-
-    FVector location(0, 0, 0);
-
-    AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
-    if(actor != nullptr){
-
-        AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
-        if(customMesh != nullptr){
-
-            FVector a(0, 0, 100);
-            FVector b(0, 200, 100);
-            FVector c(200, 200, 100); // some offset to see both sides
-            FVector d(200, 0, 100);
-            FVector e(0, 0, 1);
-
-            customMesh->createCube(a,b,c,d,e,100);
-        }
-    }
-}
 
 void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d){
     //implementation needs to be tested!

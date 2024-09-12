@@ -128,9 +128,12 @@ void AEntityScript::takedamage(int d){
 		die();
 	}
 }
-
-
-
+/// @brief grenade damage is not specified here directly, will only damage as default
+/// @param d 
+/// @param from 
+void AEntityScript::takedamage(int d, FVector &from){
+	takedamage(d);
+}
 
 /// @brief checks if an actor is within 180 degree range to own forward vector
 /// @param target 

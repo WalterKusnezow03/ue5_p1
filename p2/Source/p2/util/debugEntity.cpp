@@ -34,6 +34,9 @@ void AdebugEntity::takedamage(int d){
 		debugFunction();
 	}
 }
+void AdebugEntity::takedamage(int d, FVector &from){
+	takedamage(d);
+}
 
 /// @brief sets the team, is empyt here, will not be set
 /// @param team 
@@ -54,9 +57,6 @@ void AdebugEntity::debugFunction(){
 		int metersLayoutX = 10;
 		int metersLayoutY = 20;
 		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
-		
-		//testing with meshes
-		e->createSomeMesh(GetWorld());
 
 		return; //debug only testing rooms now
 

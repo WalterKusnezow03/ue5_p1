@@ -78,8 +78,10 @@ void AlertManager::damageAndAlertInArea(
                 
                 float distance = FVector::Dist(Actor->GetActorLocation(), location);
                 if(distance <= damageRadius){
-                    DebugHelper::showScreenMessage("damageable found", FColor::Red);
-                    damagable->takedamage(damage);
+                    //old
+                    //damagable->takedamage(damage);
+                    //new
+                    damagable->takedamage(damage, location);
                 }
 
 

@@ -349,16 +349,20 @@ void Aroom::spawnWalls(UClass *bp){
 
 
 
-	//testing
+	//debug testing
 	if(wallActors.Num() > 0){
-		DebugHelper::showScreenMessage("splitmesh MSG SPLIT NOW! ", FColor::Yellow);
-
-		FVector bottom = wallActors[0]->GetActorLocation();
-		AcustomMeshActor::splitAndreplace(wallActors[0], bottom, 100);
+		assetManager *a = assetManager::instance();
+		if(a != nullptr){
+			FVector bottom = wallActors[0]->GetActorLocation(); //already algined properly in bp.
+			AcustomMeshActor::splitAndreplace(wallActors[0], bottom, 100, a->findMaterial(materialEnum::wallMaterial));
+			wallActors[0]->Destroy();
+			wallActors.RemoveAt(0);
+		}
 	}
+
 }
 
-
+/// @brief spawns the roof, should be called after walls have been created!
 void Aroom::spawnRoof(){
 	if(wallActors.Num() > 0){
 		if(EntityManager *e = EntityManager::instance()){
@@ -367,7 +371,7 @@ void Aroom::spawnRoof(){
 			int zOff = 0;
 			int x = 0;
 			int y = 0;
-			AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff);
+			AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff); //get height from the walls
 			for (int i = 0; i < corners.size(); i++){
 				corners.at(i).Z += zOff + 1; //1cm offset fix
 			}

@@ -22,6 +22,7 @@ public:
 	AEntityScript();
 	//inherited from interface
 	virtual void takedamage(int d) override;
+	virtual void takedamage(int d, FVector &from) override;
 
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 

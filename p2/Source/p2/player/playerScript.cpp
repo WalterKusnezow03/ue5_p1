@@ -160,6 +160,10 @@ void AplayerScript::takedamage(int d)
 	}
 }
 
+void AplayerScript::takedamage(int d, FVector &from){
+    takedamage(d);
+}
+
 //Movement
 /**
  * moves the player forward

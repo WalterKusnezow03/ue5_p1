@@ -65,19 +65,8 @@ public:
 	void setEntityUClassBp(UClass *entityIn);
 	void setHumanEntityUClassBp(UClass *humanIn);
 
-	/// @brief sets the blueprint for all weapons
-	/// @param weaponIn 
-	/// @param type 
-	void setWeaponUClassBP(UClass *weaponIn, weaponEnum type);
-
-	//throwable setting
-	void setThrowableUClassBp(UClass *throwableIn, throwableEnum type);
-
-	//thrower default (type is set upon instantiating request)
-	void setDefaultThrowerClassBp(UClass *uIn);
-
-	//particles
-	void setparticleBp(UClass *uIn, particleEnum typeIn);
+	
+	
 
 	void createExplosion(UWorld *world, FVector &location);
 	void createFire(UWorld *world, FVector &location);
@@ -93,7 +82,6 @@ public:
 
 	//meshes in general
 	void createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies);
-	void createSomeMesh(UWorld *world); //debug
 	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:
@@ -108,35 +96,7 @@ private:
 	UPROPERTY()
 	class UClass *humanEntityBpClass = nullptr;
 
-	UPROPERTY()
-	class UClass *weaponBpClass = nullptr;
 
-	UPROPERTY()
-	class UClass *pistolBpClass = nullptr;
-
-	UPROPERTY()
-	class UClass *assaultRifleBpClass = nullptr;
-
-
-	//throwables section
-	UPROPERTY()
-	class UClass *grenadeBpClass = nullptr;
-	UPROPERTY()
-	class UClass *molotovBpClass = nullptr;
-	UPROPERTY()
-	class UClass *rocketBpClass = nullptr;
-
-	//thrower
-	UPROPERTY()
-	class UClass *defaultThrower = nullptr;
-	
-
-	//particle section
-	UPROPERTY()
-	class UClass *smokeParticleBp = nullptr;
-
-	UPROPERTY()
-	class UClass *fireParticleBp = nullptr;
 
 
 	//room section
@@ -156,7 +116,7 @@ private:
 
 
 
-	//GENERIC ENUM MAPS OF GENERIC MANAGERS
+	//GENERIC ENUM MAPS OF GENERIC MANAGERS / BACKUP ON DEATH 
 	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
 	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
 	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;

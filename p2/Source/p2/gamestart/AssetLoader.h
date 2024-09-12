@@ -31,9 +31,9 @@ private:
 
 
 
-	void loadWeapons(EntityManager *entityManager);
+	void loadWeapons();
 	void loadEntities(EntityManager *entityManager);
-	void loadThrower(EntityManager *entityManager);
+	void loadThrower();
 	void loadParticles(EntityManager *entityManager);
 	void loadRooms(EntityManager *entityManager);
 	void loadTerrain(EntityManager *e);

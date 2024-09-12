@@ -26,6 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void takedamage(int damage) override;
+	virtual void takedamage(int damage, FVector &from) override;
 	virtual void setTeam(teamEnum team) override;
 	virtual teamEnum getTeam() override;
 

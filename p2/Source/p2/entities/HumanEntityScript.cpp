@@ -173,6 +173,7 @@ void AHumanEntityScript::die(){
             e->add(this); //cant call entity super method because super method would add entity instead of human entity
         }
     }
+
 }
 
 /// @brief despawns the entity 

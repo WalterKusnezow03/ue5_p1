@@ -28,9 +28,9 @@ void AssetLoader::loadAssets()
 
 
     loadEntities(entityManager);
-    loadWeapons(entityManager);
+    loadWeapons();
     
-    loadThrower(entityManager);
+    loadThrower();
     loadParticles(entityManager);
 
     loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
@@ -146,24 +146,27 @@ UMaterial *AssetLoader::loadMaterial(FString path){
 
 
 /// @brief loads all weapons to the entity manager
-/// @param entityManager entity manager instance
-void AssetLoader::loadWeapons(EntityManager *entityManager){
+void AssetLoader::loadWeapons(){
 
-    //pistol
-    FString pistolString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/Weapons/pistol/pistolNew/pistolNew.pistolNew_C'"));
-    UClass *bp = loadUClassBluePrint(pistolString);
-    if(entityManager != nullptr && bp != nullptr){
-        entityManager->setWeaponUClassBP(bp, weaponEnum::pistol);
-    }
+    if(assetManager *a = assetManager::instance()){
+        
+        //pistol
+        FString pistolString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/Weapons/pistol/pistolNew/pistolNew.pistolNew_C'"));
+        UClass *bp = loadUClassBluePrint(pistolString);
+        a->addBp(weaponEnum::pistol, bp);
 
-    
-    //assault rifle
-    FString rifleString = FString::Printf(
-        TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
-    );
-    UClass *riflebp = loadUClassBluePrint(rifleString);
-    if(entityManager != nullptr && riflebp != nullptr){
-        entityManager->setWeaponUClassBP(riflebp, weaponEnum::assaultRifle);
+        
+        //ar
+        FString rifleString = FString::Printf(
+            TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
+        );
+        UClass *riflebp = loadUClassBluePrint(rifleString);
+        a->addBp(weaponEnum::assaultRifle, riflebp);
+
+        //thrower
+        UClass *throwerBp = loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'"));
+        a->addBp(weaponEnum::thrower, throwerBp);
+
     }
 
 
@@ -173,19 +176,16 @@ void AssetLoader::loadWeapons(EntityManager *entityManager){
 
 /// @brief load thrower and throwables
 /// @param entityManager entity manager
-void AssetLoader::loadThrower(EntityManager* entityManager){
+void AssetLoader::loadThrower(){
     
-    if(entityManager){
-        entityManager->setDefaultThrowerClassBp(
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'"))
-        );
+    
+    if(assetManager *a = assetManager::instance()){
 
-        entityManager->setThrowableUClassBp(
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'")),
-            throwableEnum::greneade_enum
+        a->addBp(
+            throwableEnum::greneade_enum,
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'"))
         );
     }
-    
     
 }
 
@@ -194,6 +194,7 @@ void AssetLoader::loadThrower(EntityManager* entityManager){
 /// @brief load particles for the entitymanager
 /// @param entityManager to set in
 void AssetLoader::loadParticles(EntityManager *entityManager){
+    /*
     static ConstructorHelpers::FObjectFinder<UClass> smokeParticle(
         TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'")
     );
@@ -215,7 +216,23 @@ void AssetLoader::loadParticles(EntityManager *entityManager){
         if(entityManager != nullptr && bp != nullptr){
             entityManager->setparticleBp(bp, particleEnum::fire_enum);
         }
+    }*/
+
+
+    if(assetManager *am = assetManager::instance()){
+
+        am->addBp(
+            particleEnum::smoke_enum, 
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'"))
+        );
+
+        am->addBp(
+            particleEnum::fire_enum, 
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleFire.particleFire_C'"))
+        );
     }
+
+
 }
 
 
@@ -251,13 +268,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         a->addBp(roomAssetEnum::doorEnum, loadUClassBluePrint(_builded));
     }
 
-    /*
-    for (int i = 1; i < 2; i++){
-        FString num = FString::Printf(TEXT("%d"), i);
-        FString connect = door + num;
-        FString builded = buildPath(path, connect);
-        entityManager->setDooruClassBp(loadUClassBluePrint(builded));
-    }*/
+    
 
     //load wall
     path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/walls2/"));
@@ -279,13 +290,7 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
     if(assetManager *a = assetManager::instance()){
         a->addBp(roomAssetEnum::windowEnum, loadUClassBluePrint(_builded));
     }
-    //entityManager->setWindowuClassBp(loadUClassBluePrint(builded));
-    /*for (int i = 1; i < 2; i++){
-        FString num = FString::Printf(TEXT("%d"), i);
-        FString connect = window + num;
-        FString builded = buildPath(path, connect);
-        entityManager->setWindowuClassBp(loadUClassBluePrint(builded));
-    }*/
+    
 }
 
 

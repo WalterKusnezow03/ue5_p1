@@ -349,7 +349,10 @@ std::vector<FVector> PathFinder::findPath(
                     //bool wasClosed = n->closedFlag;
                     if(!n->isClosed()){
                         
-                        //kante aufstellen wenn sichtverbindung besteht. Dynamischer a stern / modifiziert
+                        //create edge at runtime: 
+                        //all edges are rechecked during runtime 
+                        //because otherwise it could not operate on subgraphs
+                        //but is nesecarry to eliminate many nodes at once
                         if(canSee(current, n)){
                             
 

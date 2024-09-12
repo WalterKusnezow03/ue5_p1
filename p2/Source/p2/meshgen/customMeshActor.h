@@ -6,10 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "p2/util/FVectorTouple.h"
 #include "ProceduralMeshComponent.h"
+#include "p2/interfaces/Damageinterface.h"
+#include "p2/player/teamEnum.h"
 #include "customMeshActor.generated.h"
 
 UCLASS()
-class P2_API AcustomMeshActor : public AActor
+class P2_API AcustomMeshActor : public AActor, public IDamageinterface
 {
 	GENERATED_BODY()
 	
@@ -25,7 +27,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile);
+	//derived methods
+	//methods
+	virtual void takedamage(int d) override;
+	virtual void takedamage(int d, FVector &from) override;
+	virtual void setTeam(teamEnum t) override;
+	virtual teamEnum getTeam() override;
+
+	//custom mesh actor methods
+
+	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile, UMaterial *material);
 
 	void process2DMap(std::vector<std::vector<FVector>> &map);
 
@@ -35,9 +46,10 @@ public:
 		FVector &c,
 		FVector &d,
 		FVector &dir,
-		int cmheight
+		int cmheight,
+		UMaterial *material
 	);
-	
+
 	void createCube(
 		FVector &a,
 		FVector &b,
@@ -46,12 +58,15 @@ public:
 		FVector &a1,
 		FVector &b1,
 		FVector &c1,
-		FVector &d1
+		FVector &d1,
+		UMaterial *material
 	);
 
 	void createTwoSidedQuad(FVector &a, FVector &b, FVector &c, FVector &d, UMaterial *material);
 
 private:
+	teamEnum team;
+
 	//saving data too, will be overriden when updateMesh is called
 	TArray<FVector> vertecies;
 	TArray<int32> triangles;
@@ -87,4 +102,6 @@ private:
 	void ApplyMaterial(UProceduralMeshComponent *ProceduralMeshComponent, UMaterial *Material);
 
 	void createFoliage(TArray<FVectorTouple> &touples);
+
+
 };
