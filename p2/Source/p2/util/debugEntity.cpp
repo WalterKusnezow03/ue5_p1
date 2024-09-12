@@ -58,10 +58,10 @@ void AdebugEntity::debugFunction(){
 		int metersLayoutY = 20;
 		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
 
-		return; //debug only testing rooms now
+		//return; //debug only testing rooms now
 
 		//terrain
-		int meters = 50;
+		int meters = 100;
         e->createTerrain(GetWorld(), meters);
 
 		for (int i = 0; i < 1; i++){

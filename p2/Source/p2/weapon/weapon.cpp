@@ -350,9 +350,7 @@ int Aweapon::getBulletsInMag(){
 }
 
 void Aweapon::showWeapon(bool show){
-	isVisible = show;
-
-	SetActorHiddenInGame(!show);  // Hides the actor if 'show' is false
+	Super::showItem(show);
 }
 
 weaponEnum Aweapon::readType(){

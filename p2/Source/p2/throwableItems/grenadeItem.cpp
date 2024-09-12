@@ -47,7 +47,7 @@ void AgrenadeItem::detonate(){
 
     FVector location = GetActorLocation();
 
-    AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE, EXPLOSION_RADIUS / 10);
+    AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
     isDetonated = true;
     DebugHelper::showScreenMessage("grenade detonate"); //works as expected
 

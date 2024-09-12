@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "p2/util/FVectorTouple.h"
 #include "p2/util/AActorUtil.h"
+#include "p2/pathFinding/PathFinder.h"
 #include "customMeshActor.h"
 
 // Sets default values
@@ -21,7 +22,7 @@ AcustomMeshActor::AcustomMeshActor()
 void AcustomMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
-    setTeam(teamEnum::none);
+    setTeam(teamEnum::neutralTeam); //nesecarry for being shot of everyone
 }
 
 // Called every frame
@@ -38,7 +39,7 @@ void AcustomMeshActor::Tick(float DeltaTime)
 /// @param d 
 void AcustomMeshActor::takedamage(int d){
 
-    DebugHelper::showScreenMessage("debug mesh damage");
+    DebugHelper::showScreenMessage("debug mesh damage", FColor::Green);
     // handle terrain or other type here
     if(d > 100){
 
@@ -54,12 +55,13 @@ void AcustomMeshActor::takedamage(int d){
 void AcustomMeshActor::takedamage(int d, FVector &from){
     takedamage(d);
 
-    //react to impulse here ----> testing needed!
+    DebugHelper::showScreenMessage("mesh actor oevrload damage", FColor::Green);
+    // react to impulse here ----> testing needed!
     if(Mesh != nullptr){
         // Enable physics simulation
-        Mesh->SetSimulatePhysics(true);
-        FVector Impulse = 1000 * (GetActorLocation() - from).GetSafeNormal(); //AB = B - A
-        Mesh->AddImpulse(Impulse);
+        //Mesh->SetSimulatePhysics(true);
+        //FVector Impulse = 1000 * (GetActorLocation() - from).GetSafeNormal(); //AB = B - A
+        //Mesh->AddImpulse(Impulse);
     }
 
 }
@@ -91,6 +93,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     TArray<FVectorTouple> touples; //first arg: center, second: normal
 
+    std::vector<FVector> navMeshAdd;
+
     for (int x = 0; x < map.size() - 1; x++){
         for (int y = 0; y < map.at(x).size() - 1; y++){
             /*
@@ -117,6 +121,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     // create and add touple to list
                     FVectorTouple t(center, normal); // first center, then normal
                     touples.Add(t);
+
+                    navMeshAdd.push_back(center);
                 }
                 catch (const std::exception &e)
                 {
@@ -138,6 +144,14 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
     createFoliage(touples);
+
+
+
+
+    //add all normal centers to navmesh
+    if(PathFinder *f = PathFinder::instance(GetWorld())){
+        f->addNewNodeVector(navMeshAdd);
+    }
 }
 
 /// @brief updates the mesh for the actor
@@ -156,16 +170,15 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
     // Create the mesh section
 
     int sectionIndex = 0; //auch bei den materials, hier das erste argument, merken
-    Mesh->CreateMeshSection(0, this->vertecies, this->triangles, Normals, UV0, VertexColors, Tangents, true);
+    if(Mesh != nullptr){
+        Mesh->CreateMeshSection(0, this->vertecies, this->triangles, Normals, UV0, VertexColors, Tangents, true);
     
+        //set for spehere overlap
+        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+        Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    }
 
-    //debug offset
-    //FVector offset = GetActorLocation();
-    //offset.Z += 100;
-    //SetActorLocation(offset);
-
-
-    //new: set material
 }
 
 
@@ -381,7 +394,7 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
         bool facingUpwards = FVectorUtil::directionIsVertical(normal);
         if(facingUpwards){
             //some debug drawing 
-            DebugHelper::showLineBetween(GetWorld(), location, location + normal * 200, FColor::Purple);
+            //DebugHelper::showLineBetween(GetWorld(), location, location + normal * 200, FColor::Purple);
 
             //pane is flat
             //spawn something at a location

@@ -82,10 +82,9 @@ void AlertManager::damageAndAlertInArea(
                     //damagable->takedamage(damage);
                     //new
                     damagable->takedamage(damage, location);
+
+                    DebugHelper::showScreenMessage("damagable found, damage ", FColor::Red);
                 }
-
-
-                
             }
         }
     }

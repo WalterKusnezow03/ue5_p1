@@ -25,17 +25,16 @@ void AssetLoader::loadAssets()
     //load the entity manager
     EntityManager *entityManager = EntityManager::instance();
 
-
+    loadMaterials(); //materials need to be loaded first to not have any issues
 
     loadEntities(entityManager);
+
     loadWeapons();
-    
     loadThrower();
     loadParticles(entityManager);
 
     loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
     loadRooms(entityManager);
-    loadMaterials();
 
 }
 

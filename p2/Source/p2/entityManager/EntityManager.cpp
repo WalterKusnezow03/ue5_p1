@@ -71,12 +71,12 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
 void EntityManager::add(Aweapon *weaponIn){
     
     if(weaponIn != nullptr){
-        weaponIn->showWeapon(false);
-
-        weaponEnum type = weaponIn->readType();
-
         FVector hiddenLocation = FVector(0, 0, -1000);
         weaponIn->SetActorLocation(hiddenLocation);
+
+        
+        weaponIn->showWeapon(false);
+        weaponEnum type = weaponIn->readType();
 
         //new map manager
         weaponMap.add(type, weaponIn);

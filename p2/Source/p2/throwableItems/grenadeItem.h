@@ -30,7 +30,8 @@ protected:
 	class timer timer;
 
 	static const int EXPLOSION_RADIUS = 10000; //20 000 --> (20 * 100 = 20m)
-	static const int DAMAGE = 60;
+	static const int DAMAGE = 40;
+	static const int DAMAGE_RADIUS = 5000;
 
 	bool isDetonated;
 };

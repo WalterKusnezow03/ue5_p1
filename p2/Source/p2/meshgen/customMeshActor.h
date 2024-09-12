@@ -72,6 +72,7 @@ private:
 	TArray<int32> triangles;
 	TArray<FVector> normals;
 
+
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent *Mesh;
 

@@ -188,7 +188,7 @@ void AcarriedItem::drop(){
 
 void AcarriedItem::renderOnTop(bool enable){
 
-	DebugHelper::showScreenMessage("changed priority");
+	//DebugHelper::showScreenMessage("changed priority");
 
    /**
 	* general hierachy
