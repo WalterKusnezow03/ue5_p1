@@ -15,7 +15,7 @@ public:
 
 	static const bool PLOTTING_ENABLED = false; // false;
 	static const int CHUNKSIZE = 10;
-	static const int ONEMETER = 200; //test
+	static const int ONEMETER = 100; //test
 	static const int fractureHeightStep = 3;
 
 	int chunkNum();
@@ -30,9 +30,12 @@ private:
 			chunk(int xPos, int yPos);
 			~chunk();
 
+			void fixGaps();
+
 			FVector position();
 
 			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
+			void addheightForAll(int value);
 
 			std::vector<FVector2D> getXColumAnchors(int xColumn);
 			std::vector<FVector2D> getYRowAnchors(int yRow);
@@ -103,7 +106,7 @@ private:
 	void applyXColumnToMap(int index, std::vector<FVector2D> &column);
 	void applyYRowToMap(int index, std::vector<FVector2D> &row);
 
-	bool veriyIndex(int a);
+	bool verifyIndex(int a);
 	int cmToChunkIndex(int a);
 
 	int cmToMeter(int a);

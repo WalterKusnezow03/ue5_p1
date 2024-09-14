@@ -103,8 +103,8 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
     
 
     //default method part
-    int height = 200; // 200;
-    //height = zWallHeight; //new
+    int height = 200; // 200; //---> height must be get from created room!!!
+    
 
     int staircasesPerLayer = 1;
     std::vector<roomBounds> copyStairs;
@@ -151,19 +151,6 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
         // process layer and add up new height from the just created layer
         processLayer(world, copy, offset, true);
 
-        //disabled because room crreates roof on its own now.
-        /*
-        //spawn the additional roofs needed
-        if(i > 0 && singleTileBp != nullptr){
-            std::vector<roomBounds> roofs = l.getRoofToCreate(singleTileBp);
-            processLayer(world, roofs, offset, false); //no walls
-        }
-
-        //spawn the very top layer again of top roof reached
-        if(i == layers - 1){
-            offset.Z += height;
-            processLayer(world, copy, offset, false); //no walls
-        }*/
     }
 }
 

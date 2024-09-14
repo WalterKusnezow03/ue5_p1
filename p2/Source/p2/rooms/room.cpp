@@ -47,36 +47,7 @@ int Aroom::getZScale(){
 
 /// @brief will calculate and set room bounds, is ideally called on begin play!
 void Aroom::calculateActorBounds(){
-	/**
-    * from doc:
-    *  AActor::GetActorBounds(...){} 
-    	
-		virtual void GetActorBounds  
-        &40;  
-            bool bOnlyCollidingComponents,  
-            FVector & Origin,  
-            FVector & BoxExtent,  
-            bool bIncludeFromChildActors  
-        &41; const  
-
-     */
-	FVector Origin;
-    FVector Extent;
-    this->GetActorBounds(true, Origin, Extent); //leg mir das da rein prinzip
-
-
-    int xScale = (int)(Extent.X * 2);
-    int yScale = (int)(Extent.Y * 2);
-	int zScale = (int)(Extent.Z * 2); //doesnt work for some reason
-
-
-	//set iv for this room
-	boxExtent = Extent;
-	boxOrigin = Origin;
-	boxXScale = xScale;
-	boxYScale = yScale;
-	boxZScale = zScale;
-
+	AActorUtil::calculateActorBounds(this, boxXScale, boxYScale, boxZScale, boxOrigin, boxExtent);
 }
 
 /// @brief calculates the bottom left corner based on box extent, calculateActorBounds() must be called any time before!
@@ -92,7 +63,8 @@ FVector Aroom::bottomLeftCorner(){
 
 
 
-
+/// @brief tries to disable a wall in a certain location
+/// @param location 
 void Aroom::disableWall(FVector &location){
 	disableWall(location, nullptr);
 }
@@ -190,6 +162,7 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 				for (int j = 0; j < wallActors.Num(); j++){
 					if(wallActors[j] == pointer){
 						wallActors.RemoveAt(j);
+						disabledWallActors.Add(pointer);
 						j = wallActors.Num();
 					}
 				}
@@ -296,7 +269,8 @@ std::vector<FVector> Aroom::allCorners(){
 	return returned;
 }
 
-
+/// @brief spawns walls around the outline of the room / floor
+/// @param bp blueprint to spawn as wall, (of the default size 50cm x, ...)
 void Aroom::spawnWalls(UClass *bp){
 
 	//skip staircase for debugging
@@ -347,19 +321,8 @@ void Aroom::spawnWalls(UClass *bp){
 		}
 	}
 
-
-
-	//debug testing
-	if(wallActors.Num() > 0){
-		assetManager *a = assetManager::instance();
-		if(a != nullptr){
-			FVector bottom = wallActors[0]->GetActorLocation(); //already algined properly in bp.
-			AcustomMeshActor::splitAndreplace(wallActors[0], bottom, 100, a->findMaterial(materialEnum::wallMaterial));
-			wallActors[0]->Destroy();
-			wallActors.RemoveAt(0);
-		}
-	}
-
+	//recalculate bounds
+	calculateActorBounds();
 }
 
 /// @brief spawns the roof, should be called after walls have been created!

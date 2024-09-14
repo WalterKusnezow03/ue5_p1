@@ -64,7 +64,10 @@ void assetManager::addBp(throwableEnum type, UClass *uclass){
 // --- particles ---
 UClass *assetManager::findBp(particleEnum type){
     UClass *found = particleAssets.getBp(type);
-    return found;
+    if(found != nullptr){
+        return found;
+    }
+    return nullptr;
 }
 
 void assetManager::addBp(particleEnum type, UClass *uclass){

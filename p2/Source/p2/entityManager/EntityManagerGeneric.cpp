@@ -46,7 +46,7 @@ void EntityManagerGeneric<T>::add(T *actor){
     //actorVector.push_back(actor);
 }
 
-/// @brief returns an actor from the list if possible
+/// @brief returns an actor from the list if possible and removes it!
 /// @tparam T type
 /// @return actor or nullptr returned
 template <typename T>

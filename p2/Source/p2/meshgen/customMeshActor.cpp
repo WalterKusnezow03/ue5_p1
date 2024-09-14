@@ -4,6 +4,7 @@
 #include "p2/util/FVectorTouple.h"
 #include "p2/util/AActorUtil.h"
 #include "p2/pathFinding/PathFinder.h"
+#include "Components/BoxComponent.h"
 #include "customMeshActor.h"
 
 // Sets default values
@@ -16,6 +17,7 @@ AcustomMeshActor::AcustomMeshActor()
     Mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
     RootComponent = Mesh;
 
+
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +25,7 @@ void AcustomMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
     setTeam(teamEnum::neutralTeam); //nesecarry for being shot of everyone
+    materialtypeSet = materialEnum::wallMaterial;
 }
 
 // Called every frame
@@ -32,6 +35,17 @@ void AcustomMeshActor::Tick(float DeltaTime)
 
 }
 
+//init helper
+void AcustomMeshActor::init(materialEnum materialtype){
+    //set this var for debree creation
+    materialtypeSet = materialtype;
+
+    if(materialtypeSet == materialEnum::glassMaterial){
+        setHealth(1);
+    }else{
+        setHealth(100);
+    }
+}
 
 // --- derived methods from damageinferface ---
 
@@ -39,30 +53,47 @@ void AcustomMeshActor::Tick(float DeltaTime)
 /// @param d 
 void AcustomMeshActor::takedamage(int d){
 
-    DebugHelper::showScreenMessage("debug mesh damage", FColor::Green);
-    // handle terrain or other type here
-    if(d > 100){
+    EntityManager *entityManager = EntityManager::instance();
 
-        //some sort of impulse if greater than a 100 for example
-        //or another method just for explosive damage
-        //unklar!
-        //mehr damage wäre evt einfacher aber dadurch ist die richtung auch unklar
-        //das interface muss wohl erweitert werden. 
+    
+    if(entityManager != nullptr){
+        //in any case create debree?
 
+        FVector originPoint = GetActorLocation();
+        entityManager->createDebree(GetWorld(), originPoint, materialtypeSet);
+
+        // destroy if possible
+        if (isDestructable())
+        {
+            health -= d;
+            if(health <= 0){
+                health = 100;
+            
+                SetActorLocation(FVector(0, 0, -10000));
+
+                //not really despawn for now
+                AActorUtil::showActor(*this, false);
+                AActorUtil::enableColliderOnActor(*this, false);
+            
+                if(entityManager != nullptr){
+                    entityManager->add(this);
+                }
+            }
+        }
     }
+
+    
+
+
 }
 
+/// @brief allows tha ctor to react to damage from a origin
+/// @param d 
+/// @param from 
 void AcustomMeshActor::takedamage(int d, FVector &from){
     takedamage(d);
 
-    DebugHelper::showScreenMessage("mesh actor oevrload damage", FColor::Green);
-    // react to impulse here ----> testing needed!
-    if(Mesh != nullptr){
-        // Enable physics simulation
-        //Mesh->SetSimulatePhysics(true);
-        //FVector Impulse = 1000 * (GetActorLocation() - from).GetSafeNormal(); //AB = B - A
-        //Mesh->AddImpulse(Impulse);
-    }
+    //angle of debree might be calculated from angle to normal for example
 
 }
 
@@ -73,15 +104,28 @@ teamEnum AcustomMeshActor::getTeam(){
     return team;
 }
 
+void AcustomMeshActor::setHealth(int d){
+    if(d <= 0){
+        health = 1;
+        return;
+    }
+    health = d;
+}
+
 // --- mesh actor methods ---
 
+/// @brief will check if the mesh is fully destructable by type
+/// @return true false
+bool AcustomMeshActor::isDestructable(){
+
+    return materialtypeSet == materialEnum::glassMaterial ||
+           materialtypeSet == materialEnum::wallMaterial;
+}
 
 /// @brief process a 2D map of local coordinates
 /// correct position of the chunk must be set before!
 /// @param map 2D vector of LOCAL coordinates!
 void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //nach dem entity manager stirbt die refenz hier!
-
-    //of course it will copy thisis fine
 
     //die vertecies müssen dann so durchlaufen werden dass man sie immer nachbarn weise in dreiecken anordnet
     //am besten man iteriert jeweils bis 
@@ -94,6 +138,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     TArray<FVectorTouple> touples; //first arg: center, second: normal
 
     std::vector<FVector> navMeshAdd;
+
+    FVector originVec(0, 0, 0);
 
     for (int x = 0; x < map.size() - 1; x++){
         for (int y = 0; y < map.at(x).size() - 1; y++){
@@ -122,7 +168,12 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     FVectorTouple t(center, normal); // first center, then normal
                     touples.Add(t);
 
-                    navMeshAdd.push_back(center);
+                    //--- add to navmesh added vector --- ! very important
+                    //only add the normal if the surface is flat
+                    if(FVectorUtil::edgeIsVertical(originVec, normal)){
+                        navMeshAdd.push_back(center);
+                    }
+
                 }
                 catch (const std::exception &e)
                 {
@@ -139,7 +190,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     //process created data
     updateMesh(output, newtriangles);
     if(assetManager *e = assetManager::instance()){
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial));
+        materialtypeSet = materialEnum::grassMaterial;
+        ApplyMaterial(Mesh, e->findMaterial(materialtypeSet));
     }
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -148,9 +200,10 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
 
 
-    //add all normal centers to navmesh
+    //add all normal centers to navmesh to allow the bots to move over the terrain
     if(PathFinder *f = PathFinder::instance(GetWorld())){
-        f->addNewNodeVector(navMeshAdd);
+        FVector offset(0, 0, 70);
+        f->addNewNodeVector(navMeshAdd, offset);
     }
 }
 
@@ -179,6 +232,11 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
         Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
     }
 
+
+
+    //enable if was disabled!
+    AActorUtil::showActor(*this, true);
+    AActorUtil::enableColliderOnActor(*this, true);
 }
 
 
@@ -210,6 +268,8 @@ void AcustomMeshActor::createCube(
         FVector d1 = d + dir;
 
         createCube(a, b, c, d, a1, b1, c1, d1, material);
+
+
     }
 }
 
@@ -257,11 +317,15 @@ void AcustomMeshActor::createCube(
     if(material != nullptr){
         ApplyMaterial(Mesh, material);
     }else{
+        //find wall material if none was provided / nullptr
         if(assetManager *e = assetManager::instance()){
             ApplyMaterial(Mesh, e->findMaterial(materialEnum::wallMaterial));
         }
     }
 }
+
+
+
 
 
 
@@ -430,8 +494,20 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 /// @param bottomCenter bottom center of the actor, very important, do not ignore
 /// @param cmTile each tile to be cm wide and high
 /// @param material material to set for the mesh
-void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int cmTile, UMaterial *material)
+void AcustomMeshActor::splitAndreplace(
+    AActor *actor,
+    FVector &bottomCenter,
+    int cmTile,
+    materialEnum materialType
+)
 {
+    
+    UMaterial *material = nullptr;
+    assetManager *am = assetManager::instance();
+    if(am != nullptr){
+        material = am->findMaterial(materialType);
+    }
+
     if(actor != nullptr && material != nullptr){
 
         int xBound = 0;
@@ -485,13 +561,15 @@ void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int
                     AcustomMeshActor *newActor = eM->spawnAcustomMeshActor(actor->GetWorld(), center);
 
                     if(newActor != nullptr){
-                        
-                        DebugHelper::showLineBetween(actor->GetWorld(), anchor, FVector(0,0,0), FColor::Green);
 
                         FVector vert0a = vert0 + extension;
                         FVector vert1a = vert1 + extension;
                         FVector vert2a = vert2 + extension;
                         FVector vert3a = vert3 + extension;
+
+
+                        //init on begin!
+                        newActor->init(materialType);
 
                         //apply mesh
                         //is correct like this, do not touch
@@ -501,6 +579,7 @@ void AcustomMeshActor::splitAndreplace(AActor *actor, FVector &bottomCenter, int
                             material
                         );
 
+                    
                     }
 
             

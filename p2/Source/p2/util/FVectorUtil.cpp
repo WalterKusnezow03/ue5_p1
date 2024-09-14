@@ -130,6 +130,22 @@ void FVectorUtil::fillWithRandomNumbers(std::vector<int> &nums, int count, int l
     }
 }
 
+/// @brief flips all cordinates to the absolute value
+/// @param input input vector
+/// @return absolute vector
+FVector FVectorUtil::abs(FVector &input){
+    FVector a(
+        std::abs(input.X),
+        std::abs(input.Y),
+        std::abs(input.Z)
+    );
+    return a;
+}
+
+/**
+ * ROTATION SECTION
+ */
+
 /// @brief finds a look rotation from own location to target
 /// @param ownlocation own location
 /// @param TargetLocation target to look at

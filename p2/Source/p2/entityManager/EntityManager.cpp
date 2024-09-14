@@ -68,13 +68,15 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
     }
 }
 
+/// @brief adds a weapon to the entity manager
+/// @param weaponIn 
 void EntityManager::add(Aweapon *weaponIn){
     
     if(weaponIn != nullptr){
         FVector hiddenLocation = FVector(0, 0, -1000);
         weaponIn->SetActorLocation(hiddenLocation);
 
-        
+
         weaponIn->showWeapon(false);
         weaponEnum type = weaponIn->readType();
 
@@ -84,20 +86,30 @@ void EntityManager::add(Aweapon *weaponIn){
     }
 }
 
+/// @brief adds a throwable to the entity manager
+/// @param throwableItem 
 void EntityManager::add(AthrowableItem *throwableItem){
     if(throwableItem != nullptr){
         throwableEnum type = throwableItem->getType();
         throwableMap.add(type, throwableItem);
-
     }
 }
 
 
-
+/// @brief adds a partile to the entity manager
+/// @param particleIn 
 void EntityManager::add(Aparticle *particleIn){
     if(particleIn != nullptr){
         particleEnum type = particleIn->getType();
         particleMap.add(type, particleIn);
+    }
+}
+
+/// @brief adds a mesh actor the entity manager
+/// @param meshActorIn 
+void EntityManager::add(AcustomMeshActor *meshActorIn){
+    if(meshActorIn != nullptr){
+        meshActorList.add(meshActorIn);
     }
 }
 
@@ -353,6 +365,19 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
 /// @return custom mesh actor on success, or nullptr if not
 AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &location){
     if(world != nullptr){
+
+        if(meshActorList.hasActorsLeft()){
+            AcustomMeshActor *pointer = meshActorList.getFirstActor();
+            if(pointer != nullptr){
+                //debug, need to remove later
+                DebugHelper::showScreenMessage("POPPED MESH FROM BACKUP", FColor::Green);
+                pointer->SetActorLocation(location);
+                return pointer;
+            }
+        }
+
+
+
         if(emptyCustomMeshActorBp != nullptr){
             AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
             if(actor != nullptr){
@@ -402,6 +427,22 @@ void EntityManager::createExplosion(UWorld *world, FVector &location){
     }
 }
 
+
+void EntityManager::createDebree(UWorld *world, FVector &location, materialEnum materialType){
+
+    assetManager *am = assetManager::instance();
+    if(am != nullptr){
+        UMaterial *material = am->findMaterial(materialType);
+        if(material != nullptr){
+            FVector dir = FVectorUtil::randomOffset(100);
+            float speed = 3000.0f;
+            int lifetime = 2;
+            createParticle(world, material, location, dir, speed, lifetime);
+        }
+    }
+}
+
+
 /// @brief creates an indivudual particle from an enum type
 /// @param world to spawn in
 /// @param enumtype type of particle
@@ -447,6 +488,57 @@ void EntityManager::createParticle(
     }
     
 }
+
+
+/// @brief creates an indivudual particle from an enum type
+/// @param world to spawn in
+/// @param UMaterial material to apply
+/// @param location to spawn at
+/// @param dir direction of impulse
+/// @param speed speed to apply
+void EntityManager::createParticle(
+    UWorld *world, 
+    UMaterial *materialToApply,
+    FVector &location, 
+    FVector &dir, 
+    float speed, 
+    float lifeTime
+){
+    
+    if(world != nullptr){
+        UClass *bp = nullptr; // getParticleBp(enumtype);
+
+        if(assetManager *am = assetManager::instance()){
+            bp = am->findBp(particleEnum::particleNone_enum); //none here.
+        }
+
+        if(bp != nullptr){
+
+            AActor *a = nullptr;
+            if(particleMap.hasActorsLeft(particleEnum::particleNone_enum)){
+                a = particleMap.getFirstActor(particleEnum::particleNone_enum);
+            }else{
+                a = spawnAactor(world, bp, location);
+            }
+
+            //spawn aactor if none was found
+            //AActor *a = spawnAactor(world, bp, location);
+            if(a != nullptr){
+                a->SetActorLocation(location);
+                Aparticle *created = Cast<Aparticle>(a);
+                if(created != nullptr){
+                    created->setParticleType(particleEnum::particleNone_enum); //set the partcle type on start
+
+                    FVector scale(0.5f, 0.5f, 0.5f);
+                    created->applyImpulse(dir, speed, lifeTime, materialToApply, scale);
+                }
+            }
+        }
+    }
+    
+}
+
+
 
 
 

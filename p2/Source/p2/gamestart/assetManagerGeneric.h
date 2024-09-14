@@ -17,8 +17,8 @@
 template <typename E, typename T>
 class P2_API assetManagerGeneric
 {
-	//static_assert(std::is_enum<E>::value, "must be an enum");
-	//static_assert(std::is_base_of<UClass, T>::value, "must be an uclass");
+	static_assert(std::is_enum<E>::value, "must be an enum");
+	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
 public:
 	assetManagerGeneric();
@@ -28,7 +28,8 @@ public:
 	T *getBp(E e);
 
 private:
-	std::map<E, T*> map;
+	//std::map<E, T*> map;
 
-
+	UPROPERTY()
+	TMap<E, T *> map;
 };

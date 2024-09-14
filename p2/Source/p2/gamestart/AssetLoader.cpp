@@ -193,31 +193,7 @@ void AssetLoader::loadThrower(){
 /// @brief load particles for the entitymanager
 /// @param entityManager to set in
 void AssetLoader::loadParticles(EntityManager *entityManager){
-    /*
-    static ConstructorHelpers::FObjectFinder<UClass> smokeParticle(
-        TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'")
-    );
-    if (smokeParticle.Succeeded())
-    {
-        UClass *bp = smokeParticle.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setparticleBp(bp, particleEnum::smoke_enum);
-        }
-    }
-
-
-    static ConstructorHelpers::FObjectFinder<UClass> fireParticle(
-        TEXT("Blueprint'/Game/Prefabs/particle/particleFire.particleFire_C'")
-    );
-    if (fireParticle.Succeeded())
-    {
-        UClass *bp = fireParticle.Object;
-        if(entityManager != nullptr && bp != nullptr){
-            entityManager->setparticleBp(bp, particleEnum::fire_enum);
-        }
-    }*/
-
-
+    
     if(assetManager *am = assetManager::instance()){
 
         am->addBp(
@@ -228,6 +204,11 @@ void AssetLoader::loadParticles(EntityManager *entityManager){
         am->addBp(
             particleEnum::fire_enum, 
             loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleFire.particleFire_C'"))
+        );
+
+        am->addBp(
+            particleEnum::particleNone_enum, 
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleNone.particleNone_C'"))
         );
     }
 
@@ -321,6 +302,12 @@ void AssetLoader::loadMaterials(){
         a->addMaterial(
             materialEnum::wallMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/rooms/materials/wallMaterial.wallMaterial'"))
+        );
+
+        //glass material
+        a->addMaterial(
+            materialEnum::glassMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/rooms/materials/glassMaterial.glassMaterial'"))
         );
     }
 

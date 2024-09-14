@@ -30,7 +30,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void applyImpulse(FVector directionIn, float speedIn, float lifeTime);
+	void applyImpulse(FVector &directionIn, float speedIn, float lifeTime);
+	void applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterial *material);
+	void applyImpulse(
+		FVector &directionIn,
+		float velocity,
+		float lifeTime,
+		FVector &scale
+	);
+
+	void applyImpulse(
+		FVector &directionIn,
+		float velocity,
+		float lifeTime,
+		UMaterial *material,
+		FVector &scale
+	);
 
 private:
 	FVector direction;
@@ -44,4 +59,7 @@ private:
 
 	void release();
 	void show(bool show);
+
+	void findStaticMesh();
+	UStaticMeshComponent *staticMeshComponent = nullptr;
 };

@@ -118,7 +118,9 @@ PathFinder* PathFinder::instance(UWorld *worldIn){
 
 //debug drawing
 void PathFinder::showPos(FVector e){
-    showPos(e, FColor::Green);
+    if(debugDrawNodes){
+        showPos(e, FColor::Green);
+    }
 }
 
 void PathFinder::showPos(FVector e, FColor c){
@@ -129,9 +131,20 @@ void PathFinder::showPos(FVector e, FColor c){
 }
 
 
+/// @brief adds a new node vector (of locations) to the graph and applies an offset to each node
+/// if wanted
+/// @param vec vector to add to graph 
+/// @param offset offset to apply to each node
+void PathFinder::addNewNodeVector(std::vector<FVector> &vec, FVector &offset){
+    for (int i = 0; i < vec.size(); i++){
+        addNewNode(vec.at(i) + offset);
+    }
+}
+
+
 
 /// @brief add nodes to the graph
-/// @param vec 
+/// @param vec vector to push completly
 void PathFinder::addNewNodeVector(std::vector<FVector>& vec){
     for (int i = 0; i < vec.size(); i++){
         addNewNode(vec.at(i));
@@ -141,7 +154,7 @@ void PathFinder::addNewNodeVector(std::vector<FVector>& vec){
 }
 
 /// @brief adds a single node to the graph
-/// @param a 
+/// @param a node to add
 void PathFinder::addNewNode(FVector a){
     PathFinder::Quadrant *q = askforQuadrant(a.X, a.Y);
     if(q != nullptr){
@@ -149,12 +162,12 @@ void PathFinder::addNewNode(FVector a){
         
         
         //debug testing for checking if nodes were added, works properly
-        /*
+        
         PathFinder::Node *tryFind = findNode(a);
         if(tryFind != nullptr){
             showPos(tryFind->pos, FColor::Purple);
         }
-        */
+        
     }
 }
 
@@ -253,13 +266,15 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
 
     if(start != nullptr && end != nullptr){
 
-        //showPos(start->pos, FColor::Red);
-        //showPos(end->pos, FColor::Red);
 
         std::vector<PathFinder::Node *> graph = getSubGraph(a, b);
-        showPos(start->pos, FColor::Blue);
-        showPos(end->pos, FColor::Red);
-        DebugHelper::showLineBetween(worldPointer, start->pos, end->pos, FColor::Yellow);
+        
+        if(debugDrawNodes){
+            showPos(start->pos, FColor::Blue);
+            showPos(end->pos, FColor::Red);
+            DebugHelper::showLineBetween(worldPointer, start->pos, end->pos, FColor::Yellow);
+        }
+        
 
         return findPath(start, end, graph);
     }
@@ -413,6 +428,14 @@ void PathFinder::screenMessage(FString s) {
 /// @return can see without interrupt
 bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
     if(worldPointer && A && B){
+
+        // if edge is too vertical and to high: ignore, cant climb walls.
+        // AB = B - A;
+        if(isCloseAndTooVertical(A, B)){
+            return false;
+        }
+
+        //vision checking
         FVector Start = A->pos;
         FVector End = B->pos;
         //testing with more raycasts to ensure realibilty
@@ -470,14 +493,14 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
             return true; //no hit: can see true
         }
     }
-    return false;
+    return false; //issue: can see false.
 }
 
 /// @brief checks with a simple raycasts if nodes can see each other
 /// @param Start 
 /// @param End 
 /// @return 
-bool PathFinder::canSee(FVector Start, FVector End){
+bool PathFinder::canSee(FVector &Start, FVector &End){
     if(worldPointer){
         FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -507,12 +530,35 @@ std::vector<FVector> PathFinder::constructPath(PathFinder::Node *end){
     return list;
 }
 
+/// @brief if edge is too vertical and to high: ignore, cant climb walls.
+/// @param a node a 
+/// @param b node b
+/// @return too close and vertical true or false
+bool PathFinder::isCloseAndTooVertical(Node *a, Node *b){
 
+    if(a != nullptr && b != nullptr){
+        // AB = B - A;
+        FVector AB = b->pos - a->pos;
+        float upZ = std::abs(AB.GetSafeNormal().Z);
+        float scale = std::abs(AB.Z);
+        if (upZ > 0.8f)
+        {
+            // skalarproduct up is near one / paralell to z axis
+            if (AB.Z > ONE_METER)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+/***
+ * ---- QUADRANT METHODS ----
+ */
 
-
-//QUADRANT METHODS
-
+/// @brief adds a node to the quadrant
+/// @param n position to add
 void PathFinder::Quadrant::add(FVector n){
     //std::abs for flipping negatives obviosuly
     int x = std::abs(n.X / CHUNKSIZE); //create new chunks?

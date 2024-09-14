@@ -12,13 +12,17 @@
 class P2_API PathFinder
 {
 public:
-	static const bool debugDrawNodes = true; //false
+	static const bool debugDrawNodes = false; //false
 
 	~PathFinder();
 
 	static PathFinder *instance(UWorld *worldIn);
+
+	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
 	void addNewNodeVector(std::vector<FVector> &vec);
 	void addNewNode(FVector a);
+
+	
 
 	std::vector<FVector> getPath(FVector a, FVector b);
 
@@ -114,5 +118,7 @@ private:
 	);
 
 	bool canSee(PathFinder::Node *A, PathFinder::Node *B);
-	bool canSee(FVector a, FVector b);
+	bool canSee(FVector &a, FVector &b);
+
+	bool isCloseAndTooVertical(Node *a, Node *b);
 };

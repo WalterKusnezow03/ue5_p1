@@ -254,11 +254,16 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 					//damage entity if some other team
 					teamEnum entityTeam = entity->getTeam();
 					if(entityTeam != ownTeam){
-						DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+						if(DEBUG_DRAW){
+							DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+						}
+						
 						entity->takedamage(20); //must be changed later
 					}else{
-						//own team hit
-						DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
+						//own team hit / any other
+						if(DEBUG_DRAW){
+							DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
+						}
 					}
 
 					

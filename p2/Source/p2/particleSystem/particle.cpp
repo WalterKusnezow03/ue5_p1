@@ -10,14 +10,14 @@ Aparticle::Aparticle()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	type = particleEnum::smoke_enum; //default
+	type = particleEnum::particleNone_enum; //default
 }
 
 // Called when the game starts or when spawned
 void Aparticle::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	findStaticMesh();
 }
 
 // Called every frame
@@ -38,6 +38,8 @@ void Aparticle::Tick(float DeltaTime)
 	
 }
 
+/// @brief will move the particle from tick
+/// @param DeltaTime 
 void Aparticle::move(float DeltaTime){
 	//x0
 	FVector x_O = GetActorLocation();
@@ -59,16 +61,59 @@ void Aparticle::move(float DeltaTime){
 	//--> x(t) = x0 + v0t * vdir.normalasiert + 1/2at^2
 	//FVector gravity = FVector(0, 0, (1 / 2 * decrease)) * (DeltaTime * DeltaTime);
 	
+}
 
-	FVector scaled = x_O + (speed * DeltaTime) * direction;  // gx = A + r*(B - A)
-	//scaled += gravity;
-	SetActorLocation(scaled);
+
+/// @brief apply an impulse to the particle, constant speed, no decelerate
+/// @param directionIn direction, will be normalized
+/// @param velocity constant velocity to apply 
+/// @param lifeTime lifetime in seconds before releasing again
+/// @param material material to set if possible
+void Aparticle::applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterial *material){
+	//apply random scale
+	FVector newScale = FVectorUtil::randomScale(1, 3, true);
+	applyImpulse(directionIn, velocity, lifeTime, material, newScale);
 }
 
 /// @brief apply an impulse to the particle, constant speed, no decelerate
 /// @param directionIn direction, will be normalized
 /// @param velocity constant velocity to apply 
-void Aparticle::applyImpulse(FVector directionIn, float velocity, float lifeTime){
+/// @param lifeTime lifetime in seconds before releasing again
+void Aparticle::applyImpulse(FVector &directionIn, float velocity, float lifeTime){
+	//apply random scale
+	FVector newScale = FVectorUtil::randomScale(1, 3, true);
+	applyImpulse(directionIn, velocity, lifeTime, nullptr, newScale);
+}
+
+
+
+void Aparticle::applyImpulse(
+	FVector &directionIn, 
+	float velocity, 
+	float lifeTime,
+	FVector &scale
+){
+	applyImpulse(directionIn, velocity, lifeTime, nullptr, scale);
+}
+
+
+
+
+void Aparticle::applyImpulse(
+	FVector &directionIn, 
+	float velocity, 
+	float lifeTime, 
+	UMaterial *material,
+	FVector &scale
+){
+	if(material != nullptr){
+		findStaticMesh();
+		if(staticMeshComponent != nullptr){
+			staticMeshComponent->SetMaterial(0, material); //index 0
+		}
+	}
+
+
 	direction = directionIn.GetSafeNormal();
 	speed = velocity;
 
@@ -84,8 +129,16 @@ void Aparticle::applyImpulse(FVector directionIn, float velocity, float lifeTime
 	SetActorRotation(FVectorUtil::randomRotation(GetActorLocation()));
 
 	//apply random scale
-	SetActorScale3D(FVectorUtil::randomScale(1, 3, true));
+	scale = FVectorUtil::abs(scale);
+	SetActorScale3D(scale);
 }
+
+
+
+
+
+
+
 
 /// @brief disables physics entirely
 void Aparticle::disablePhysics(){
@@ -130,4 +183,21 @@ void Aparticle::setParticleType(particleEnum typeIn){
 
 particleEnum Aparticle::getType(){
 	return type;
+}
+
+
+/// @brief finds the static mesh component from aactor (if not found yet)
+void Aparticle::findStaticMesh(){
+	if(staticMeshComponent == nullptr){
+		std::vector<UStaticMeshComponent*> out;
+		AActorUtil::findAllComponentsByType(*this, out);
+
+		for (int i = 0; i < out.size(); i++){
+			UStaticMeshComponent *s = out.at(i);
+			if(s != nullptr){
+				staticMeshComponent = s;
+				return;
+			}
+		}
+	}
 }

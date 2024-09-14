@@ -8,6 +8,8 @@
 #include "ProceduralMeshComponent.h"
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/player/teamEnum.h"
+#include "Components/BoxComponent.h"
+#include "p2/gamestart/assetEnums/materialEnum.h"
 #include "customMeshActor.generated.h"
 
 UCLASS()
@@ -36,7 +38,7 @@ public:
 
 	//custom mesh actor methods
 
-	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile, UMaterial *material);
+	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile, materialEnum materialType);
 
 	void process2DMap(std::vector<std::vector<FVector>> &map);
 
@@ -64,7 +66,14 @@ public:
 
 	void createTwoSidedQuad(FVector &a, FVector &b, FVector &c, FVector &d, UMaterial *material);
 
+	void init(materialEnum materialtype);
+
 private:
+	
+	int health = 100;
+	bool isDestructable();
+	void setHealth(int d);
+
 	teamEnum team;
 
 	//saving data too, will be overriden when updateMesh is called
@@ -105,4 +114,7 @@ private:
 	void createFoliage(TArray<FVectorTouple> &touples);
 
 
+
+
+	materialEnum materialtypeSet;
 };

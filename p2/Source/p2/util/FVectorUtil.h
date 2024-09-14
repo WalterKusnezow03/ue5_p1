@@ -20,6 +20,7 @@ public:
 	static FVector calculateCenter(FVector &a, FVector &b, FVector &c, FVector &d);
 	static FVector calculateCenter(std::vector<FVector> &vec);
 	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
+	static FVector abs(FVector &input);
 	static FRotator randomRotation(FVector ownLocation);
 
 	static FVector2D randomOffset2D(int range);

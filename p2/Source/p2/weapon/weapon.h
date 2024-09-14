@@ -32,6 +32,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	weaponEnum Type;
 
+	bool DEBUG_DRAW = false;
+
 public:
 	weaponEnum readType();
 

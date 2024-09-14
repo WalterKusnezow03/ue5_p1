@@ -47,6 +47,39 @@ void DebugHelper::showScreenMessage(FString s, int argument, FColor color){
 
 
 
+void DebugHelper::showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color){
+	FString sOut = s;
+	FString xPart = connect(a.X, b.X);
+	FString yPart = connect(a.Y, b.Y);
+
+	sOut = sOut + TEXT("\n") +
+				   xPart + TEXT("\n") +
+				   yPart + TEXT("\n");
+
+	showScreenMessage(sOut, color);
+}
+
+void DebugHelper::showScreenMessage(FString s, FVector a, FVector b, FColor color){
+
+	FString sOut = s;
+	FString xPart = connect(a.X, b.X);
+	FString yPart = connect(a.Y, b.Y);
+	FString zPart = connect(a.Z, b.Z);
+
+	sOut = sOut + TEXT("\n") +
+				   xPart + TEXT("\n") +
+				   yPart + TEXT("\n") +
+				   zPart + TEXT("\n");
+
+	showScreenMessage(sOut, color);
+}
+
+FString DebugHelper::connect(int a, int b){
+	FString out = FString::Printf(TEXT("%d"), a);
+	out += TEXT(" ");
+	out += FString::Printf(TEXT("%d"), b);
+	return out;
+}
 
 
 
@@ -107,6 +140,10 @@ void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End)
 }
 
 void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End, int zOffset){
+	showLineBetween(world, Start, End, zOffset, FColor::Blue);
+}
+
+void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End, int zOffset, FColor color){
 	FVector sA(
 		Start.X,
 		Start.Y,
@@ -115,5 +152,5 @@ void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End,
 		End.X,
 		End.Y,
 		zOffset);
-	showLineBetween(world, sA, eB, FColor::Blue);
+	showLineBetween(world, sA, eB, color);
 }

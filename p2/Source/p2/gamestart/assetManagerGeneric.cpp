@@ -16,9 +16,14 @@ assetManagerGeneric<E,T>::~assetManagerGeneric()
 template <typename E, typename T>
 void assetManagerGeneric<E,T>::addBp(E e, T *t){
     if(t != nullptr){
-        if(map.find(e) == map.end()){
-            map[e] = t;
+        //Find returns a pointer to the value (which is a pointer -> making a pointer to a pointer)
+        T **found = map.Find(e);
+        if(found == nullptr){
+            map.Add(e, t);
         }
+        /*if(map.find(e) == map.end()){
+            map[e] = t;
+        }*/
     }
 }
 
@@ -29,11 +34,19 @@ void assetManagerGeneric<E,T>::addBp(E e, T *t){
 /// @return returned value pointer
 template<typename E, typename T>
 T* assetManagerGeneric<E,T>::getBp(E e){
+    T **found = map.Find(e); //Find returns a pointer to the value (which is a pointer -> making a pointer to a pointer)
+    if(found != nullptr){
+        T *pt = *found;
+        if(pt != nullptr){
+            return pt;
+        }
+    }
+    /*
     if(map.find(e) != map.end()){
         T *pointer = map[e];
         if(pointer != nullptr){
             return pointer;
         }
-    }
+    }*/
     return nullptr;
 }

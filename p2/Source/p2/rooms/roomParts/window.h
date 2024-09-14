@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "p2/interfaces/Interactinterface.h"
 #include "p2/rooms/roomParts/jumpableActor.h"
+#include "p2/interfaces/Damageinterface.h"
 #include "window.generated.h"
 
 UCLASS()
@@ -26,6 +27,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
+
 private:
+
+	
 
 };

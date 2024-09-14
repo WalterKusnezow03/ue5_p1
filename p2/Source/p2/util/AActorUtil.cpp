@@ -24,7 +24,6 @@ void AActorUtil::showActor(AActor & actor, bool show){
 	actor.SetActorHiddenInGame(!show);  // Hides the actor if 'show' is false
 }
 
-
 /// @brief shows or hides a child actor if not nullptr
 /// @param component child actor to hide
 /// @param show show true false
@@ -32,7 +31,9 @@ void AActorUtil::showChildActorComponent(UChildActorComponent &component, bool s
 	component.SetHiddenInGame(!show);  // Hides the actor if 'show' is false
 }
 
-
+void AActorUtil::enableColliderOnActor(AActor &actor, bool enable){
+	actor.SetActorEnableCollision(enable);
+}
 
 
 
@@ -60,7 +61,7 @@ void AActorUtil::findAllComponentsByType(AActor &actor, std::vector<T *> &contai
 
     //check childs
     TArray<UChildActorComponent *> childActors;
-    actor.GetComponents<T>(childActors);
+    actor.GetComponents<UChildActorComponent>(childActors);
     for (int i = 0; i < childActors.Num(); i++){
         if(UChildActorComponent *c = childActors[i]){
 
@@ -68,7 +69,7 @@ void AActorUtil::findAllComponentsByType(AActor &actor, std::vector<T *> &contai
             AActor *fromChild = c->GetChildActor();
             if (fromChild != nullptr)
             {
-                findAllComponentsByType<T>(fromChild, container);
+                findAllComponentsByType<T>(*fromChild, container);
             }
         }
     }
@@ -157,6 +158,27 @@ void AActorUtil::calculateActorBounds(AActor *actor, int &x, int &y, int &z){
         z = zScale;
     }
 }
+
+/// @brief will calculate the x y and z scale of the aactor
+/// @param actor actor to check, must not be nullptr
+/// @param x x scale out
+/// @param y y scale out
+/// @param z z scale out
+void AActorUtil::calculateActorBounds(AActor *actor, int &x, int &y, int &z, FVector &origin, FVector &extent){
+    if(actor != nullptr){
+       
+        actor->GetActorBounds(true, origin, extent); //leg mir das da rein prinzip
+
+        int xScale = (int)(extent.X * 2);
+        int yScale = (int)(extent.Y * 2);
+        int zScale = (int)(extent.Z * 2);
+
+        x = xScale;
+        y = yScale;
+        z = zScale;
+    }
+}
+
 
 
 /// @brief will calculate the x y and z scale of the uclass

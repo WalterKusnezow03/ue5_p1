@@ -39,6 +39,7 @@ public:
 	void add(Aweapon *weaponIn);
 	void add(AthrowableItem *throwableItem);
 	void add(Aparticle *particleIn);
+	void add(AcustomMeshActor *meshActorIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location);
@@ -67,9 +68,10 @@ public:
 
 	
 	
-
+	//particles
 	void createExplosion(UWorld *world, FVector &location);
 	void createFire(UWorld *world, FVector &location);
+	void createDebree(UWorld *world, FVector &location, materialEnum materialType);
 
 	//rooms
 	void setRoomuClassBp(UWorld *world, UClass *uclass);
@@ -109,10 +111,11 @@ private:
 
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
-	//weil hier so nicht gewollt, wie in java
+	//weil hier so nicht gewollt, wie in java den generic type
+	//team unabhängig speichern
 	class EntityManagerGeneric<AEntityScript> entityList; 
 	class EntityManagerGeneric<AHumanEntityScript> humanEntityList; //hier werden ALLE toten humans ausbewahrt
-	//team unabhängig
+	class EntityManagerGeneric<AcustomMeshActor> meshActorList;
 
 
 
@@ -130,6 +133,11 @@ private:
 	UClass *getParticleBp(particleEnum type);
 
 	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
-
-
+	void createParticle(
+		UWorld *world,
+		UMaterial *materialToApply, 
+		FVector &location,
+		FVector &dir,
+		float speed,
+		float lifeTime);
 };

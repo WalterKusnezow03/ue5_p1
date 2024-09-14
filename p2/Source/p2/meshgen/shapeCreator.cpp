@@ -133,21 +133,24 @@ void shapeCreator::createLineShape(std::vector<FVector2D> &output, int anchorsCo
 }
 
 
-/// @brief attention, outüut will be cleared
+/// @brief attention, output will be cleared
 /// @param output output to save in, will be cleared
-/// @param anchorsCount anchors to have 
+/// @param anchorsCount anchors to have and shape to be "long" -> if you pass 50 anchors, the shape will be
+/// the size of 50meters or (50 * 100cm) if you dont upscale the shape later for example
 void shapeCreator::randomEnclosedShape(std::vector<FVector2D> &output, int anchorsCount){
     int scale = terrainCreator::ONEMETER; //upscale to meters
 
     output.clear();
 
-    //testing simple line shape
+    
     int xstep = 2;
     int x = 0;
     int scaledmeterToStep = anchorsCount / xstep; //halfed to close from half back
 
+    int lower = 0;
+    int higher = 4;
     std::vector<int> nums;
-    FVectorUtil::fillWithRandomNumbers(nums, scaledmeterToStep, 0, 6);
+    FVectorUtil::fillWithRandomNumbers(nums, scaledmeterToStep, lower, higher);
 
     int size = nums.size();
     bool flipped = false;

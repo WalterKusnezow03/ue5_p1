@@ -7,6 +7,7 @@ enum class materialEnum
 {
     grassMaterial,
     wallMaterial,
+    glassMaterial,
     stoneMaterial,
     sandMaterial
 };
