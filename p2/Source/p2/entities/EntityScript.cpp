@@ -4,6 +4,7 @@
 #include "p2/pathFinding/PathFinder.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
 #include "p2/player/teamEnum.h"
@@ -149,7 +150,6 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 
 		float skalarprodukt = FVector::DotProduct(forward, ab);
 
-		
 
 		//mindestens orthogonal oder näher an der 1
 		if(skalarprodukt >= 0){
@@ -443,7 +443,7 @@ void AEntityScript::enableCollider(bool enable){
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
 	resetpath();
-	if (EntityManager *e = EntityManager::instance())
+	if (EntityManager *e = worldLevel::entityManager())
 	{
 		e->add(this);
 	}

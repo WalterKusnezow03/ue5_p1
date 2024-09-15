@@ -29,8 +29,10 @@
 class P2_API EntityManager
 {
 public:
-	static EntityManager *instance();
+	//static EntityManager *instance();
+	//static void deleteInstance();
 
+	EntityManager();
 	~EntityManager();
 
 	//add entity section
@@ -61,12 +63,6 @@ public:
 	/// @return pointer to AActor
 	AActor *spawnAactor(UWorld *world, UClass *toSpawn, FVector &Location);
 
-	//Set bp methods
-
-	void setEntityUClassBp(UClass *entityIn);
-	void setHumanEntityUClassBp(UClass *humanIn);
-
-	
 	
 	//particles
 	void createExplosion(UWorld *world, FVector &location);
@@ -81,24 +77,14 @@ public:
 	//terrain
 	void setEmptyMeshUClassBp(UClass *uclassIn);
 	void createTerrain(UWorld *world, int chunks);
+	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
 
 	//meshes in general
 	void createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies);
 	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:
-	static class EntityManager *instancePointer;
-	EntityManager();
-
-
-	//bp classes USE "UPROPERTY()" TO SAFELY USE UCLASS POINTER!
-	UPROPERTY()
-	class UClass *entityBpClass = nullptr;
-
-	UPROPERTY()
-	class UClass *humanEntityBpClass = nullptr;
-
-
+	//static class EntityManager *instancePointer;
 
 
 	//room section
@@ -139,5 +125,6 @@ private:
 		FVector &location,
 		FVector &dir,
 		float speed,
-		float lifeTime);
+		float lifeTime
+	);
 };

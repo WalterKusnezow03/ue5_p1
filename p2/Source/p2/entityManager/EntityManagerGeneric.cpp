@@ -41,6 +41,8 @@ void EntityManagerGeneric<T>::add(T *actor){
             }
         }
         actorVector.push_back(actor);
+
+        DebugHelper::showScreenMessage("released an entity! ", FColor::Yellow);
     }
 
     //actorVector.push_back(actor);

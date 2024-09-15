@@ -188,7 +188,7 @@ void AActorUtil::calculateActorBounds(AActor *actor, int &x, int &y, int &z, FVe
 /// @param z z scale out
 void AActorUtil::calculateActorBounds(UWorld *world, UClass *uclassIn, int &x, int &y, int &z){
     if(uclassIn != nullptr){
-        if(EntityManager *e = EntityManager::instance()){
+        if(EntityManager *e = worldLevel::entityManager()){
 
             FVector debugLocation(0, 0, -1000);
             AActor *tmp = e->spawnAactor(world, uclassIn, debugLocation);
@@ -199,3 +199,5 @@ void AActorUtil::calculateActorBounds(UWorld *world, UClass *uclassIn, int &x, i
         }
     }
 }
+
+

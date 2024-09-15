@@ -3,6 +3,7 @@
 
 #include "p2/throwableItems/throwableItem.h"
 #include "throwableEnum.h"
+#include "p2/_world/worldLevel.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
@@ -105,7 +106,7 @@ void AthrowableItem::show(bool show){
 void AthrowableItem::release(){
 	show(false);
 	enablePhysics(false);
-	if(EntityManager *e = EntityManager::instance()){
+	if(EntityManager *e = worldLevel::entityManager()){
 		e->add(this);
 	}
 }

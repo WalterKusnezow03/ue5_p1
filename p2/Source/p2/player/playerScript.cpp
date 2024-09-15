@@ -5,6 +5,7 @@
 #include "p2/weapon/weapon.h"
 #include "playerInventory.h"
 #include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/DebugHelper.h"
 #include "Animation/AnimSequence.h"
@@ -73,14 +74,14 @@ void AplayerScript::BeginPlay()
 	}
     
     //testing
-    EntityManager *e = EntityManager::instance();
-    if(e != nullptr){
+    EntityManager *e = worldLevel::entityManager();
+    if (e != nullptr)
+    {
         FVector spawnLocation = GetActorLocation();
         spawnLocation.Y += 300;
         spawnLocation.X += 300;
         e->spawnHumanEntity(GetWorld(), spawnLocation);
     }
-
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
@@ -223,7 +224,7 @@ void AplayerScript::Jump(){
 
 
 
-        if(EntityManager *e = EntityManager::instance()){
+        if (EntityManager *e = worldLevel::entityManager()){
             FVector location = GetActorLocation();
             //e->createALayout(GetWorld(), location, 20, 20);
 

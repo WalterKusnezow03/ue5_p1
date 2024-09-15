@@ -4,6 +4,7 @@
 #include "AssetLoader.h"
 #include "p2/gamestart/assetManager.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
+#include "p2/_world/worldLevel.h"
 #include "p2/gamestart/assetEnums/rooms/roomAssetEnum.h"
 
 AssetLoader::AssetLoader(UWorld *worldIn)
@@ -23,15 +24,15 @@ void AssetLoader::loadAssets()
 {
    
     //load the entity manager
-    EntityManager *entityManager = EntityManager::instance();
+    EntityManager *entityManager = worldLevel::entityManager();
 
     loadMaterials(); //materials need to be loaded first to not have any issues
 
-    loadEntities(entityManager);
+    loadEntities();
 
     loadWeapons();
     loadThrower();
-    loadParticles(entityManager);
+    loadParticles();
 
     loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
     loadRooms(entityManager);
@@ -90,8 +91,21 @@ void AssetLoader::cleanUpPath(FString &s){
 
 /// @brief load all entities 
 /// @param entityManager entity manager to create
-void AssetLoader::loadEntities(EntityManager *entityManager){
+void AssetLoader::loadEntities(){
 
+    if(assetManager *am = assetManager::instance()){
+        FString path = FString::Printf(TEXT("/Game/Prefabs/player/"));
+        FString entityString = buildPath(path, "entityPrefab");
+        am->addBp(entityEnum::entity_enum, loadUClassBluePrint(entityString));
+
+
+        FString humanString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'"));
+        am->addBp(entityEnum::human_enum, loadUClassBluePrint(humanString));
+    
+    }
+
+
+    /*
     if(entityManager){
         FString path = FString::Printf(TEXT("/Game/Prefabs/player/"));
         FString entityString = buildPath(path, "entityPrefab");
@@ -101,7 +115,7 @@ void AssetLoader::loadEntities(EntityManager *entityManager){
         //entityManager->setEntityUClassBp(loadUClassBluePrint(entityString));
         FString humanString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'"));
         entityManager->setHumanEntityUClassBp(loadUClassBluePrint(humanString));
-    }
+    }*/
 
 }
 
@@ -192,7 +206,7 @@ void AssetLoader::loadThrower(){
 
 /// @brief load particles for the entitymanager
 /// @param entityManager to set in
-void AssetLoader::loadParticles(EntityManager *entityManager){
+void AssetLoader::loadParticles(){
     
     if(assetManager *am = assetManager::instance()){
 

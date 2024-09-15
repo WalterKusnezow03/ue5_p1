@@ -6,6 +6,7 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/player/teamEnum.h"
+#include "p2/_world/worldLevel.h"
 #include <cstdlib>
 
 
@@ -56,7 +57,16 @@ void AOutpost::Tick(float DeltaTime)
 			}
 		}
 	}
-	
+
+
+	//show 50 meter outline
+	FVector outlineAdd(0, MAXDISTANCE_RADIUS, 0);
+	FVector outlineUp(0, 0, MAXDISTANCE_RADIUS);
+	FVector corner = GetActorLocation();
+	FVector draw = corner + outlineAdd;
+	FVector drawEnd = draw + outlineUp;
+	DebugHelper::showLineBetween(GetWorld(), corner, draw, FColor::Red);
+	DebugHelper::showLineBetween(GetWorld(), draw, drawEnd, FColor::Red);
 }
 
 /// @brief returns if a vector is in the max range of the outpost
@@ -67,7 +77,7 @@ bool AOutpost::isInRange(FVector &vec){
 
 	//return ((FVector::Dist(vec, ownLocation) / 100) <= MAXDISTANCE_METERS);
 
-	return (FVector::Dist(vec, ownLocation) <= MAXDISTANCE);
+	return (FVector::Dist(vec, ownLocation) <= MAXDISTANCE_RADIUS);
 }
 
 
@@ -82,7 +92,7 @@ void AOutpost::releaseEntity(AHumanEntityScript *entity){
 		//removeFromVec(entity, getVectorFor(team));
 
 
-		if(EntityManager *e = EntityManager::instance()){
+		if(EntityManager *e = worldLevel::entityManager()){
 			e->add(entity);
 		}
 		
@@ -105,7 +115,7 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 		//myEntities.push_back(entity); //weil instanz variable mit .punkt
 		entity->setOutpost(this);
 
-		//DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
+		DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
 	}
 }
 
@@ -113,7 +123,7 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 /// @brief creates an human entity and subscribes it
 /// @param team team of the entity to set
 void AOutpost::createEntity(teamEnum team){
-	if(EntityManager *e = EntityManager::instance()){
+	if(EntityManager *e = worldLevel::entityManager()){
 		FVector pos = GetActorLocation();
 		pos.Z += 100;
 		pos += randomOffset(400);
@@ -231,13 +241,11 @@ void AOutpost::releaseAll(){
 			// releaseEntity(human); //will find and release the targeted entity
 		}
 	}
-	
+	//hot fix here, testing needed
+	alarmEnabled = false;
+	alertEnabled = false;
+	isLiberated = false; //DO NOT LIBERATE WHEN DESPAWN ALL
 }
-
-
-
-
-
 
 /**
  * 

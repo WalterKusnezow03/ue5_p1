@@ -13,6 +13,7 @@ public:
     TVector();
     TVector(int size);
     ~TVector();
+    TVector(TVector<T> &other);
 
     int size();
     bool empty();
@@ -20,6 +21,10 @@ public:
     //void push_back(T t);
     void push_back(const T &t);
     void push_back(const TVector<T> &t);
+
+    void insert(int index, TVector<T> &other);
+    void insert(int index, const T &element);
+
     void erase(int index);
     T& front();
     T& back();
@@ -27,13 +32,7 @@ public:
     void pop_back();
 
     T &operator[](int index);
-    /*
-    T & operator[](int index){
-        if(index >= 0 && index < size() && vec.size()){
-            return vec.at(index);
-        }
-        throw std::out_of_range("Index out of range");
-    }*/
+    TVector<T> &operator=(TVector<T> &ref);
 
 private:
     std::vector<T> vec;

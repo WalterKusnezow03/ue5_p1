@@ -14,6 +14,7 @@ class P2_API OutpostManager
 {
 public:
 	static OutpostManager *instance();
+	OutpostManager();
 	~OutpostManager();
 
 	AOutpost *requestOutpost(UWorld *world, FVector &ownLocation);
@@ -21,9 +22,8 @@ public:
 
 private:
 	static class OutpostManager *instancePointer;
-	OutpostManager();
 
-	std::vector<AOutpost *> outposts;
+	std::vector<AOutpost *> outposts; //will be cleared by unreal engine
 
 	AOutpost *createOutpost(UWorld *world, FVector &Location);
 	AOutpost *nearestOutpostTo(FVector location); //passed by value because of fVector::dist

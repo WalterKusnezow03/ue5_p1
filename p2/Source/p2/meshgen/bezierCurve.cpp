@@ -20,27 +20,43 @@ bezierCurve::~bezierCurve()
 /// @param _stepsPerEinheitsValue steps to have per einheits value: for example 2, each 50cm
 void bezierCurve::calculatecurve(
     std::vector<FVector2D> &ref, 
-    std::vector<FVector2D> &output,
+    TVector<FVector2D> &output,
+    //std::vector<FVector2D> &output,
     float _einheitsValue,
     float _stepsPerEinheitsValue
 ){
-    EinheitsValue = std::abs(_einheitsValue);
+    /**
+     * error handeling
+     */
+    if(ref.size() < 3){ //if points are for example 1: the code wont be createable, weird issues occur
+        return;
+    }
+
+    /**
+     * curve code here
+     */
+    EinheitsValue = std::abs(_einheitsValue); //positive values only
     stepsToMakePerEinheitsValue = std::abs(_stepsPerEinheitsValue);
     if(stepsToMakePerEinheitsValue == 0 || EinheitsValue == 0){
         //ISSUE NOT ALLOWED DIVISION BY ZERO
         return;
     }
 
-    int reserveSize = predictFinalCurveElementCount(ref);
-    int scaledSize = reserveSize * stepsToMakePerEinheitsValue;
+    //int reserveSize = predictFinalCurveElementCount(ref) * stepsToMakePerEinheitsValue;
+    DebugHelper::showScreenMessage("debug point 1 reached", FColor::Purple);
+    //return; // debug
+
     //reserve space
-    ref.reserve(reserveSize);
+    //ref.reserve(reserveSize);
     createContinuityCurve(ref);
+    DebugHelper::showScreenMessage("curve count", ref.size(), FColor::Purple);
+    //return; // debug
 
     //create the whole curve
-    output.reserve(scaledSize); //reserve size before processing and adding for safety
+    //output.reserve(reserveSize); //reserve size before processing and adding for safety
     processAllPoints(ref, output); //what if you do it more than once
-
+    DebugHelper::showScreenMessage("final interpolated curve count", output.size(), FColor::Purple);
+    return; // debug
 }
 
 /// @brief predicts the element count for the finally interpolated bezier curve 
@@ -154,7 +170,8 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
 /// @param reserve space to be resevered (which was also reserved for points vector)
 void bezierCurve::processAllPoints(
     std::vector<FVector2D> &points,
-    std::vector<FVector2D> &output
+    //std::vector<FVector2D> &output
+    TVector<FVector2D> &output
 ){
 
     //the curves overlap like this
@@ -164,7 +181,8 @@ void bezierCurve::processAllPoints(
     //                               [5], [6]
 
     int next = 3;
-    for (int i = 0; i < points.size() - 3; i += next)
+    int size = points.size() - 3;
+    for (int i = 0; i < size; i += next)
     {
         process4Points(points, i, output);
     }
@@ -174,7 +192,11 @@ void bezierCurve::processAllPoints(
 /// @param points points to process from
 /// @param offset offset, index must be p0
 /// @param output output to save in
-void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std::vector<FVector2D> &output){
+void bezierCurve::process4Points(
+    std::vector<FVector2D> &points, 
+    int offset, 
+    TVector<FVector2D> &output
+){
     if(offset + 3 >= points.size()){
         return;
     }
@@ -189,10 +211,13 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
     
     float distance = FVectorUtil::Dist(p0, p3);
     float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
+    if(step == 0){
+        return;
+    }
     step = 1 / step; //to percentage frac of 1
 
     //temporary output for clean up
-    std::vector<FVector2D> tmp;
+    //std::vector<FVector2D> tmp;
     
 
     float limit = 0.6f;  //fixing weird overlap on curves by cutting them off 
@@ -200,17 +225,37 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
     
     for (float i = 0; i <= limit; i += step) {
         FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
-        tmp.push_back(newPos);
+        newPos.X = round(newPos.X);
+        //new code
+        if(output.size() > 0){
+            FVector2D prev = output.back();
+            if(prev.X != newPos.X){
+                output.push_back(newPos);
+            }
+        }else{
+            output.push_back(newPos);
+        }
+
+        //old
+        //tmp.push_back(newPos);
+
+        //debug block:
+        DEBUG_COUNT++;
+        if(DEBUG_COUNT >= DEBUG_LIMIT){
+            DebugHelper::showScreenMessage("DEBUG LIMIT REACHED", FColor::Red);
+            //return;
+        }
     }
 
-    fillGaps(tmp);
+    fillGaps(output);
 
     //clean up output for consistent X values and copy (might be removed: the rounding!)
+    /*
     for (int i = 0; i < tmp.size(); i++){
         FVector2D current = tmp.at(i);
         current.X = round(current.X);
 
-        if(i > 0){
+        if(i > 0 && output.size() > 0){
             FVector2D prev = output.back();
             if(prev.X != current.X){
                 output.push_back(current);
@@ -218,55 +263,9 @@ void bezierCurve::process4Points(std::vector<FVector2D> &points, int offset, std
         }else{
             output.push_back(current);
         }
-    }
+    }*/
 }
 
-/// @brief fills gaps larger than one
-/// @param vec 
-void bezierCurve::fillGaps(std::vector<FVector2D> &vec){
-
-    int i = 1;
-    int size = vec.size();
-    while (i < size){
-
-        FVector2D prev = vec.at(i - 1);
-        FVector2D current = vec.at(i);
-
-        if(std::abs(prev.X - current.X) > (EinheitsValue / stepsToMakePerEinheitsValue)){ //must be converted to average distance!!
-            std::vector<FVector2D> fill;
-            linearInterpolate(prev, current, fill);
-
-            // insert
-            // v.insert(startpoint, other.begin(), other.end());
-            vec.insert(vec.begin() + i, fill.begin(), fill.end());
-            i += fill.size(); //+ 1; //to next
-        }
-        i++; //to next default
-
-        size = vec.size();
-    }
-
-
-}
-
-/// @brief linear interpolate from a to b
-/// @param a start
-/// @param b end
-/// @param container container to save in  
-void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVector2D> &container){
-    float dist = std::abs(a.X - b.X);
-    float step = (EinheitsValue / stepsToMakePerEinheitsValue);
-    if (dist > step)
-    { // one (centi)meter by default
-
-        float euklidDist = FVectorUtil::Dist(a, b);
-        FVector2D dir = (b - a) / euklidDist; // normalized dir
-        for (float i = 0; i < dist; i += step){
-            FVector2D newPos = a + dir * i;
-            container.push_back(newPos);
-        }
-    }
-}
 
 
 
@@ -285,4 +284,69 @@ FVector2D bezierCurve::FVector2DFourAnchorBezier(
     FVector2D bccd = cd + skalar * (cd - bc); //das ding dazwischen
     FVector2D abbcbccd = abbc + skalar * (bccd - abbc); //das ding dazwischen
     return abbcbccd;
+}
+
+
+
+
+
+
+
+
+/**
+ * 
+ * FILL GAPS
+ * 
+ */
+
+/// @brief fills gaps larger than one
+/// @param vec 
+void bezierCurve::fillGaps(TVector<FVector2D> &vec){
+
+    int i = 1;
+    int size = vec.size();
+    while (i < size){
+
+        FVector2D prev = vec.at(i - 1);
+        FVector2D current = vec.at(i);
+
+        if(std::abs(prev.X - current.X) > (EinheitsValue / stepsToMakePerEinheitsValue)){ //must be converted to average distance!!
+            //std::vector<FVector2D> fill;
+            TVector<FVector2D> fill;
+            linearInterpolate(prev, current, fill);
+
+            // insert
+            // v.insert(startpoint, other.begin(), other.end());
+            //vec.insert(vec.begin() + i, fill.begin(), fill.end());
+            vec.insert(i, fill);
+            i += fill.size(); //to next
+        }
+        i++; //to next default
+
+        size = vec.size();
+    }
+
+
+}
+
+/// @brief linear interpolate from a to b
+/// @param a start
+/// @param b end
+/// @param container container to save in  
+void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, TVector<FVector2D> &container){
+    if(stepsToMakePerEinheitsValue != 0){
+        float dist = std::abs(a.X - b.X);
+        float step = (EinheitsValue / stepsToMakePerEinheitsValue);
+        if (dist > step)
+        { // one (centi)meter by default
+
+            float euklidDist = FVectorUtil::Dist(a, b);
+            FVector2D dir = (b - a) / euklidDist; // normalized dir
+            for (float i = 0; i < dist; i += step){
+                FVector2D newPos = a + dir * i;
+                container.push_back(newPos);
+            }
+        }
+    }
+    
 }

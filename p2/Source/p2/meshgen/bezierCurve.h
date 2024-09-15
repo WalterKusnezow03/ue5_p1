@@ -15,7 +15,8 @@ public:
 
 	void calculatecurve(
 		std::vector<FVector2D> &ref,
-		std::vector<FVector2D> &output,
+		//std::vector<FVector2D> &output,
+		TVector<FVector2D> &output,
 		float _einheitsValue,
 		float _stepsPerEinheitsValue
 	);
@@ -25,17 +26,17 @@ private:
 	float EinheitsValue;
 	float stepsToMakePerEinheitsValue;
 
-
-	
+	int DEBUG_COUNT = 0;
+	int DEBUG_LIMIT = 1000000; // 1.000.000
 
 	int predictFinalCurveElementCount(std::vector<FVector2D> &anchors);
 	void createContinuityCurve(std::vector<FVector2D> &anchors);
 
-	void processAllPoints(std::vector<FVector2D> &points, std::vector<FVector2D> &output);
-	void process4Points(std::vector<FVector2D> &points, int offset, std::vector<FVector2D> &output);
-	void fillGaps(std::vector<FVector2D> &vec);
+	void processAllPoints(std::vector<FVector2D> &points, TVector<FVector2D> &output);
+	void process4Points(std::vector<FVector2D> &points, int offset, TVector<FVector2D> &output);
+	void fillGaps(TVector<FVector2D> &vec);
 
-	void linearInterpolate(FVector2D &a, FVector2D &b, std::vector<FVector2D> &container);
+	void linearInterpolate(FVector2D &a, FVector2D &b, TVector<FVector2D>  &container);
 
 	FVector2D FVector2DFourAnchorBezier(
 		FVector2D &a,

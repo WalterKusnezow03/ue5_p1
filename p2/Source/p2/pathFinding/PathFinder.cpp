@@ -51,6 +51,7 @@ PathFinder::Node::Node(FVector posIn){
 }
 
 PathFinder::Node::~Node(){
+    camefrom = nullptr;
 }
 
 PathFinder::Quadrant::Quadrant(int xSampleIn, int ySampleIn){
@@ -113,6 +114,12 @@ PathFinder* PathFinder::instance(UWorld *worldIn){
     return pathFinderInstance;
 }
 
+void PathFinder::deleteInstance(){
+    if(pathFinderInstance != nullptr){
+        delete pathFinderInstance;
+        pathFinderInstance = nullptr;
+    }
+}
 
 
 
@@ -651,10 +658,18 @@ std::vector<PathFinder::Node*> PathFinder::Quadrant::askForArea(FVector a, FVect
     float lowerY = 0;
     float higherX = 0;
     float higherY = 0;
-    lowerX = std::min(a.X, b.X) - CHUNKSIZE; //+ extension
-    lowerY = std::min(a.Y, b.Y) - CHUNKSIZE;
-    higherX = std::max(a.X, b.X) + CHUNKSIZE;
-    higherY = std::max(a.Y, b.Y) + CHUNKSIZE;
+    lowerX = std::min(a.X, b.X); //-CHUNKSIZE; //+ extension
+    lowerY = std::min(a.Y, b.Y); //- CHUNKSIZE;
+    higherX = std::max(a.X, b.X); //+ CHUNKSIZE;
+    higherY = std::max(a.Y, b.Y); //+ CHUNKSIZE;
+
+    bool extendBounds = false;
+    if(extendBounds){
+        lowerX += - CHUNKSIZE; //+ extension
+        lowerY += - CHUNKSIZE;
+        higherX += CHUNKSIZE;
+        higherY += CHUNKSIZE;
+    }
 
     float inf = std::numeric_limits<float>::infinity();
 

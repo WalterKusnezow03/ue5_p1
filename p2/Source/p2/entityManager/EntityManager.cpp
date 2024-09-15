@@ -22,9 +22,7 @@
 #include <map>
 
 
-//set static ref to nullptr
-EntityManager *EntityManager::instancePointer = nullptr;
-
+/*
 /// @brief if you receive this pointer you are NOT ALLOWED to delete this instance!
 /// @return entityManager instance pointer 
 EntityManager* EntityManager::instance(){
@@ -34,17 +32,22 @@ EntityManager* EntityManager::instance(){
     return instancePointer;
 }
 
+void EntityManager::deleteInstance(){
+    if(EntityManager::instancePointer != nullptr){
+        delete EntityManager::instancePointer;
+        EntityManager::instancePointer = nullptr; //nicht vergessen auf nullptr zu setzen
+    }
+}
+*/
+
 EntityManager::EntityManager()
 {
-    entityBpClass = nullptr;
-	humanEntityBpClass = nullptr;
-	
+
 }
 
 EntityManager::~EntityManager()
 {
-    entityBpClass = nullptr;
-	humanEntityBpClass = nullptr;
+    
 }
 
 /// @brief add an entity to the manager
@@ -136,11 +139,25 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
     }
 
     //else: create
+    if(assetManager *a = assetManager::instance()){
+        UClass *bp = a->findBp(entityEnum::entity_enum);
+        if(bp != nullptr){
+            AActor *actor = spawnAactor(world, bp, Location);
+            if(actor != nullptr){
+                AEntityScript *casted = Cast<AEntityScript>(actor);
+                if(casted != nullptr){
+                    return casted;
+                }
+            }
+        }
+    }
+
+    /*
     AActor *actor = spawnAactor(world, entityBpClass, Location);
     AEntityScript *casted = Cast<AEntityScript>(actor);
     if(casted != nullptr){
         return casted;
-    }
+    }*/
     return nullptr;
 }
 
@@ -163,7 +180,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     }
 
     
-
+    /*
     //else create new one
     AActor *actor = spawnAactor(world, humanEntityBpClass, Location);
     AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
@@ -171,6 +188,18 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
         casted->init();
         //DebugHelper::showScreenMessage("try spawn human");
         return casted;
+    }*/
+   if(assetManager *a = assetManager::instance()){
+        UClass *bp = a->findBp(entityEnum::human_enum);
+        if(bp != nullptr){
+            AActor *actor = spawnAactor(world, bp, Location);
+            if(actor != nullptr){
+                AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
+                if(casted != nullptr){
+                    return casted;
+                }
+            }
+        }
     }
     return nullptr;
 }
@@ -545,36 +574,6 @@ void EntityManager::createParticle(
 
 
 
-/**
- * 
- * 
- * ---- REFERENCE SETTINGS / SET U CLASS SECTION ----
- * 
- * 
- */
-
-
-/// @brief set the uclass reference for spawning enteties
-/// @param entityIn 
-void EntityManager::setEntityUClassBp(UClass *entityIn){
-    if(entityIn != nullptr){
-        entityBpClass = entityIn;
-    }
-}
-
-/// @brief sets the human entity bp reference
-/// @param humanIn 
-void EntityManager::setHumanEntityUClassBp(UClass *humanIn){
-    if(humanIn != nullptr){
-        humanEntityBpClass = humanIn;
-    }
-}
-
-
-
-
-
-
 /** 
  * 
  * ----- SECTION FOR ROOM CREATION -----
@@ -633,13 +632,19 @@ void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
     }
 }
 
+
+
+/**
+ * MARKED FOR REMOVAL
+ * 
+ */
 /// @brief creates an terrain from chunk size (10meters each)
 /// @param worldIn world to spawn in 
-/// @param chunks chunks (in both x and y direction to create)
-void EntityManager::createTerrain(UWorld *worldIn, int chunks){
+/// @param meters meters (in both x and y direction to create)
+void EntityManager::createTerrain(UWorld *worldIn, int meters){
     if(worldIn != nullptr){
         terrainCreator c;
-        c.createterrain(worldIn, chunks);
+        c.createTerrain(worldIn, meters);
 
         //return; //debugging
 
@@ -669,6 +674,33 @@ void EntityManager::createTerrain(UWorld *worldIn, int chunks){
         requestedActors.clear();
 
     }
+}
+
+/// @brief returns a vector by value of meshactor pointers
+/// @param world world to spawn in
+/// @param requestCount request count how many you need
+/// @return vector of actors
+std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, int requestCount){
+    std::vector<AcustomMeshActor *> output;
+    if (
+        world != nullptr &&
+        emptyCustomMeshActorBp != nullptr // to be moved to asset manager!
+    )
+    {
+        output.reserve(requestCount);
+        FVector location(0, 0, 0);
+
+        //fill the vector with actors.
+        while (output.size() < requestCount)
+        {
+            AcustomMeshActor *pointer = spawnAcustomMeshActor(world, location);
+            if(pointer != nullptr){
+                output.push_back(pointer);
+            }
+        }
+    }
+
+    return output;
 }
 
 /// @brief creates a mesh from the given vertecies

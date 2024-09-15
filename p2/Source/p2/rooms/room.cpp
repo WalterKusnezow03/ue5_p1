@@ -47,6 +47,7 @@ int Aroom::getZScale(){
 
 /// @brief will calculate and set room bounds, is ideally called on begin play!
 void Aroom::calculateActorBounds(){
+	//create a new method to calculate in total
 	AActorUtil::calculateActorBounds(this, boxXScale, boxYScale, boxZScale, boxOrigin, boxExtent);
 }
 
@@ -171,7 +172,7 @@ void Aroom::disableWall(FVector &location, UClass *bp){
 		}
 		center /= limit;
 
-		if(EntityManager *e = EntityManager::instance()){
+		if (EntityManager *e = worldLevel::entityManager()){
 			AActor *spawned = e->spawnAactor(GetWorld(), bp, center);
 			if(spawned != nullptr){
 				spawned->SetActorLocation(center);
@@ -281,8 +282,9 @@ void Aroom::spawnWalls(UClass *bp){
 	int OFFSET_FIX = 50; //50cm offset fix because the center of the bp is the center and not start
 	//(while the bp being still 100cm wide)
 
-	EntityManager *e = EntityManager::instance();
-	if(e != nullptr && bp != nullptr){
+	EntityManager *e = worldLevel::entityManager();
+	if (e != nullptr && bp != nullptr)
+	{
 		std::vector<FVector> corners = allCorners();
 		corners.push_back(corners.front()); //create circle for simplicity
 
@@ -316,28 +318,38 @@ void Aroom::spawnWalls(UClass *bp){
 					actor->SetActorLocation(spos);
 
 					wallActors.Add(actor);
+
+					// Attach the child actor to the parent actor, keep world transform
+					//actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
 				}
 			}
 		}
 	}
 
 	//recalculate bounds
-	calculateActorBounds();
+	//calculateActorBounds();
 }
 
 /// @brief spawns the roof, should be called after walls have been created!
 void Aroom::spawnRoof(){
 	if(wallActors.Num() > 0){
-		if(EntityManager *e = EntityManager::instance()){
+		if (EntityManager *e = worldLevel::entityManager()){
 
+			
 			std::vector<FVector> corners = allCorners();
 			int zOff = 0;
 			int x = 0;
 			int y = 0;
 			AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff); //get height from the walls
-			for (int i = 0; i < corners.size(); i++){
+
+			for (int i = 0; i < corners.size(); i++)
+			{
 				corners.at(i).Z += zOff + 1; //1cm offset fix
 			}
+
+			//add z value to this bounds
+			boxZScale += zOff; //TEMPORARY FIX! //to be removed!
 
 			e->createTwoSidedQuad(
 				GetWorld(), 

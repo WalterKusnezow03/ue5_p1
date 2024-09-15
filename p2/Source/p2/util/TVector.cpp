@@ -20,6 +20,28 @@ TVector<T>::~TVector(){
     //vec.clear();
 }
 
+template <typename T>
+TVector<T>::TVector(TVector<T> &other){
+    *this = other; //assign to other, overload the "=" operator
+}
+
+template <typename T>
+TVector<T>& TVector<T>::operator=(TVector<T> &other){
+    //dont do self assigment
+    if(*this == other){
+        return this;
+    }
+
+    this->sizeIndex = other.sizeIndex;
+    this->vec.reserve(sizeIndex);
+
+    //only copy to the wanted index
+    for (int i = 0; i < other.size(); i++){
+        this->vec.push_back(other[i]); //manuell jedes element kopieren
+    }
+
+    return *this;
+}
 
 template <typename T>
 T & TVector<T>::operator[](int index){
@@ -127,4 +149,62 @@ T &TVector<T>::at(int index){
         return vec.at(index);
     }
     throw std::out_of_range("Index out of range");
+}
+
+/// @brief any out of bounce will be handled automatically by push_back or insert infront
+/// @param index 
+/// @param element 
+template <typename T>
+void TVector<T>::insert(int index, const T &element){
+    //no out of bounce
+    if(index >= vec.size() || index >= sizeIndex){
+        index = sizeIndex;
+    }
+    if(index < 0){
+        index = 0;
+    }
+
+    //real end, need to push back
+    if(sizeIndex >= vec.size()){
+        push_back(element);
+        sizeIndex = vec.size();
+        return;
+    }
+
+    //inbetween 0 and fake size (means just inserting and increasing count)
+    if(index < sizeIndex){
+        vec.insert(vec.begin() + index, element);
+        sizeIndex++; //increment obviously
+        return;
+    }
+
+    //fake size to end (means in the puffer zone of size index to end insertion, right at the edge overriden)
+    if(index >= sizeIndex && index < vec.size() && sizeIndex < vec.size()){
+        index = sizeIndex;
+        vec.at(index) = element; //override end
+        sizeIndex++;
+        return;
+    }
+
+
+
+
+    //end
+
+}
+
+
+
+template <typename T>
+void TVector<T>::insert(int index, TVector<T> &other){
+    if(index < sizeIndex){
+        for (int i = 0; i < other.size(); i++){
+            insert(index + i, other.at(i));
+        }
+    }else{
+        //just "append" them all
+        for (int i = 0; i < other.size(); i++){
+            insert(sizeIndex, other.at(i));
+        }
+    }
 }

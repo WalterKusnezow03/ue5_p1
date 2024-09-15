@@ -35,6 +35,9 @@ public:
 
 
 private:
+	//distance
+	static const int MAXDISTANCE_RADIUS = 5000; //50 * 100 = 5000
+	static const int MAXDISTANCE_METERS = 50;
 
 	//will save for each team the entites. Needed for dynamic targets
 	std::map<teamEnum, std::vector<AHumanEntityScript *>> teamMap;
@@ -50,9 +53,7 @@ private:
 	void createEntity(teamEnum t);
 	void createEntity(int count, teamEnum t);
 
-	//distance
-	static const int MAXDISTANCE = 70000; //70m
-	static const int MAXDISTANCE_METERS = 70;
+	
 
 	//alarm
 	bool alertEnabled;

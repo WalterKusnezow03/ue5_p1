@@ -17,27 +17,41 @@
 #include "UObject/SoftObjectPath.h"
 #include "UObject/ConstructorHelpers.h"
 #include "p2/gameStart/AssetLoader.h"
+#include "p2/_world/worldLevel.h"
 
 
 
 //constructor
 AgameModeSubclass::AgameModeSubclass()
 {
+    /**
+     * SET PLAYER PAWN
+     */
     // Set default pawn class to your Blueprinted character
-    static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Prefabs/player/playerPrefab")); // Adjust path if necessary
+    // Adjust path if necessary
+    static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Prefabs/player/playerPrefab")); 
     DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-    // Set default pawn class
-    //DefaultPawnClass = AplayerScript::StaticClass();
 
-    //trying asset loader
+
+    /**
+     * ASSET LOADER
+     */
     AssetLoader a(GetWorld());
     a.loadAssets();
-    return;
+    
 
 
+
+    //remember at some point the level must be reset too: (maybe just before that is a good approach!)
+    //worldLevel::resetWorld();
+    /**
+     * CREATE WORLD LEVEL 
+     */
+    //worldLevel::initWorld(GetWorld());
+
+   
 }
-
 
 // ----- DEFAULT METHODS -----
 //will create edge collector and path finder instance on start!

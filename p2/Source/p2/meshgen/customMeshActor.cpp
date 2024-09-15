@@ -53,9 +53,8 @@ void AcustomMeshActor::init(materialEnum materialtype){
 /// @param d 
 void AcustomMeshActor::takedamage(int d){
 
-    EntityManager *entityManager = EntityManager::instance();
+    EntityManager *entityManager = worldLevel::entityManager();
 
-    
     if(entityManager != nullptr){
         //in any case create debree?
 
@@ -168,10 +167,22 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     FVectorTouple t(center, normal); // first center, then normal
                     touples.Add(t);
 
-                    //--- add to navmesh added vector --- ! very important
+
+
+                    /**
+                     * ADD NODES TO NAV MESH
+                     */
                     //only add the normal if the surface is flat
                     if(FVectorUtil::edgeIsVertical(originVec, normal)){
-                        navMeshAdd.push_back(center);
+                        if(navMeshAdd.size() == 0){
+                            navMeshAdd.push_back(center);
+                        }else{
+                            //only push nodes 3 meters away from each other -> reduce mesh count 
+                            FVector &prev = navMeshAdd.back();
+                            if(FVector::Dist(prev, center) >= 300){
+                                navMeshAdd.push_back(center);
+                            }
+                        }
                     }
 
                 }
@@ -520,8 +531,9 @@ void AcustomMeshActor::splitAndreplace(
         //create a mesh where the pieces are almost a similar side viewed from the larger side
         //like consitent quads
 
-        EntityManager *eM = EntityManager::instance();
-        if(eM != nullptr){
+        EntityManager *eM = worldLevel::entityManager();
+        if (eM != nullptr)
+        {
             //bottom left corner
             FVector anchor = bottomCenter;
             anchor.X -= xBound / 2; //bottom left now (bounds adjusted half way obviosuly)
@@ -586,7 +598,5 @@ void AcustomMeshActor::splitAndreplace(
                 }
             }
         }
-
-        
     }
 }

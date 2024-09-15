@@ -12,6 +12,7 @@
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/entityManager/Outpost.h"
 #include "p2/weapon/weaponEnum.h"
+#include "p2/_world/worldLevel.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
@@ -42,8 +43,9 @@ void AHumanEntityScript::init(){
     //DebugHelper::showScreenMessage("human init");
     
     //weapon
-    EntityManager *e = EntityManager::instance();
-    if(e != nullptr){
+    EntityManager *e = worldLevel::entityManager();
+    if (e != nullptr)
+    {
 
         //testing new helper (works as expected)
         weaponSetupHelper *setuphelper = new weaponSetupHelper();
@@ -62,7 +64,6 @@ void AHumanEntityScript::init(){
 
         delete setuphelper; //immer löschen nicht vergessen!
         setuphelper = nullptr;
-
     }
 
     spottedPlayer = false;
@@ -153,7 +154,7 @@ void AHumanEntityScript::die(){
     {
         weaponPointer->drop();
 
-        if(EntityManager *e = EntityManager::instance()){
+        if(EntityManager *e = worldLevel::entityManager()){
             e->add(weaponPointer);
         }
 
@@ -169,7 +170,7 @@ void AHumanEntityScript::die(){
     }else{
         //default entity manager death
         //Super::die();
-        if(EntityManager *e = EntityManager::instance()){
+        if (EntityManager *e = worldLevel::entityManager()){
             e->add(this); //cant call entity super method because super method would add entity instead of human entity
         }
     }
@@ -181,7 +182,7 @@ void AHumanEntityScript::despawn(){
     //despawn weapon manually to the entity manager too.
     if(weaponPointer != nullptr){
         weaponPointer->drop();
-        if(EntityManager *e = EntityManager::instance()){
+        if (EntityManager *e = worldLevel::entityManager()){
             e->add(weaponPointer);
         }
 
@@ -207,8 +208,8 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
 /// @brief finds an outpost nearby if needed and subscribes to it
 void AHumanEntityScript::findOutPostNearby(){
     if(outpost == nullptr){
-        //try find outpost nearby 
-        OutpostManager *instance = OutpostManager::instance();
+        //try find outpost nearby
+        OutpostManager *instance = worldLevel::outpostManager(); // OutpostManager::instance();
         if(instance != nullptr){
             instance->tryRequestOutpost(GetWorld(), this); //manager will subscribe the entity on success
         }

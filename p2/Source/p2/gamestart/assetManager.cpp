@@ -37,6 +37,19 @@ void assetManager::addBp(roomAssetEnum type, UClass *uclass){
     roomAssets.addBp(type, uclass);
 }
 
+// --- entity ---
+UClass *assetManager::findBp(entityEnum type){
+    UClass *found = entityAssets.getBp(type);
+    return found;
+}
+
+void assetManager::addBp(entityEnum type, UClass *uclass){
+    if(uclass != nullptr){
+        entityAssets.addBp(type, uclass);
+    }
+}
+
+
 // --- weapons ---
 UClass *assetManager::findBp(weaponEnum type){
     UClass *found = weaponAssets.getBp(type);
@@ -75,6 +88,9 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
         particleAssets.addBp(type, uclass);
     }
 }
+
+
+
 
 
 // --- room assets ---

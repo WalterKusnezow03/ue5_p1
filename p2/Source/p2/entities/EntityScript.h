@@ -26,6 +26,9 @@ public:
 
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 
+	//max distance to follow
+	static const int MAXDISTANCE = 5000; //50m --> 50 * 100 = 5000
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -94,8 +97,6 @@ protected:
 
 	void showScreenMessage(FString s);
 
-
-	static const int MAXDISTANCE = 70000; //70m
 public:
 	virtual bool isWithinMaxRange(FVector vec);
 

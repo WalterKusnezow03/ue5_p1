@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/util/debugEntity.h"
@@ -50,7 +51,7 @@ teamEnum AdebugEntity::getTeam(){
 }
 
 void AdebugEntity::debugFunction(){
-	if(EntityManager *e = EntityManager::instance()){
+	if(EntityManager *e = worldLevel::entityManager()){
 		FVector location1 = GetActorLocation();
 		location1.Z = 20;
 
@@ -60,9 +61,12 @@ void AdebugEntity::debugFunction(){
 
 		//return; //debug only testing rooms now
 
-		//terrain
+		//terrain -> moved to world class
 		int meters = 100;
-        e->createTerrain(GetWorld(), meters);
+        //e->createTerrain(GetWorld(), meters);
+		worldLevel::initWorld(GetWorld());
+		//terrainCreator *t = new terrainCreator();
+		//t->createTerrain(GetWorld(), meters);
 
 		for (int i = 0; i < 1; i++){
 			FVector location = GetActorLocation();

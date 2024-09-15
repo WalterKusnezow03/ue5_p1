@@ -7,6 +7,7 @@
 /**
  * will load all nesecarry assets, bots, weapons etc
  * must be called from gamemode class constructor
+ * MUST BE THE FIRST THING LOADED WHEN LAUNCHING THE GAME
  */
 class P2_API AssetLoader
 {
@@ -32,14 +33,11 @@ private:
 
 
 	void loadWeapons();
-	void loadEntities(EntityManager *entityManager);
+	void loadEntities();
 	void loadThrower();
-	void loadParticles(EntityManager *entityManager);
+	void loadParticles();
 	void loadRooms(EntityManager *entityManager);
 	void loadTerrain(EntityManager *e);
 	void loadMaterials();
 
-	//new testing
-	void loadPaths();
-	void loadUClassFromAssetPath(FString s);
 };

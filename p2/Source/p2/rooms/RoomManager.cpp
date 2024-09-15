@@ -30,7 +30,7 @@ void RoomManager::add(UWorld *world, UClass *uclass){
         int zScaleRaw = 0;
 
         AActor *TempActor = nullptr;
-        if(EntityManager *e = EntityManager::instance()){
+        if (EntityManager *e = worldLevel::entityManager()){
             FVector l(0, 0, 0);
             TempActor = e->spawnAactor(world, uclass, l);
         }
@@ -104,7 +104,7 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 
     //default method part
     int height = 200; // 200; //---> height must be get from created room!!!
-    
+    height = 0; //because offset is added later
 
     int staircasesPerLayer = 1;
     std::vector<roomBounds> copyStairs;
@@ -144,12 +144,13 @@ void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
 
         std::vector<roomBounds> copy = l.copyData();
         copyStairs = l.copyStaircaseData();
-        FVector offset(0, 0, height * i);
+        FVector offset(0, 0, height); //* i); //new i removed here because each room will addup itself
+
         offset += location; //apply location properly
 
         
         // process layer and add up new height from the just created layer
-        processLayer(world, copy, offset, true);
+        processLayer(world, copy, offset, true, height);
 
     }
 }
@@ -166,10 +167,11 @@ void RoomManager::processLayer(
     UWorld* world, 
     std::vector<roomBounds> &vec, 
     FVector offset,
-    bool createWalls
+    bool createWalls,
+    int &outHeightAdd
 ){
     
-    if(EntityManager *e = EntityManager::instance()){
+    if (EntityManager *e = worldLevel::entityManager()){
         for (int i = 0; i < vec.size(); i++){ //itertae all rooms to create
 
             roomBounds *roomToCreate = &vec.at(i);
@@ -196,50 +198,63 @@ void RoomManager::processLayer(
 
             //create walls, doors and windows. Or not.
             Aroom *aroom = Cast<Aroom>(actor);
-            if(aroom != nullptr && createWalls){
+            if(aroom != nullptr){
+                
 
-                //relative door positions (relative to bottom left corner of a room)
-                std::vector<FVector> &doorPositions = roomToCreate->readRelativeDoorPositions();
-                std::vector<FVector> &windowPositions = roomToCreate->readRelativeWindowPositions();
 
-                std::vector<FVector> doorPositionsConverted;
-                std::vector<FVector> windowPositionsConverted;
+                if(createWalls){
+                    //relative door positions (relative to bottom left corner of a room)
+                    std::vector<FVector> &doorPositions = roomToCreate->readRelativeDoorPositions();
+                    std::vector<FVector> &windowPositions = roomToCreate->readRelativeWindowPositions();
 
-                for (int j = 0; j < doorPositions.size(); j++){
-                    //convert door
-                    FVector adjusted = doorPositions.at(j);
-                    convertScaleToMeterFVector(adjusted);
-                    doorPositionsConverted.push_back(adjusted);
+                    std::vector<FVector> doorPositionsConverted;
+                    std::vector<FVector> windowPositionsConverted;
+
+                    for (int j = 0; j < doorPositions.size(); j++){
+                        //convert door
+                        FVector adjusted = doorPositions.at(j);
+                        convertScaleToMeterFVector(adjusted);
+                        doorPositionsConverted.push_back(adjusted);
+                    }
+
+                    for (int j = 0; j < windowPositions.size(); j++){
+                        //convert window
+                        FVector adjusted = windowPositions.at(j);
+                        convertScaleToMeterFVector(adjusted);
+                        windowPositionsConverted.push_back(adjusted);
+                    }
+
+                    //create the walls first!
+                    if(assetManager *a = assetManager::instance()){
+                        //spawn all walls
+                        aroom->spawnWalls(a->findBp(roomAssetEnum::wallEnum));
+
+                        //the room will process the postions and enable walls and doors accordingly
+                        aroom->processPositionVectorsAndReplaceWall(
+                            doorPositionsConverted, 
+                            a->findBp(roomAssetEnum::doorEnum)
+                        );
+                        //process windows too but after doors
+                        aroom->processPositionVectorsAndReplaceWall(
+                            windowPositionsConverted, 
+                            a->findBp(roomAssetEnum::windowEnum)
+                        );
+
+                        
+                    }
+
+                    //lastly spawn the roof
+                    aroom->spawnRoof();
                 }
+                
 
-                for (int j = 0; j < windowPositions.size(); j++){
-                    //convert window
-                    FVector adjusted = windowPositions.at(j);
-                    convertScaleToMeterFVector(adjusted);
-                    windowPositionsConverted.push_back(adjusted);
+
+                //update the height added
+                //JUST ONCE
+                if(i == 0){
+                    outHeightAdd += aroom->getZScale(); //add the out z scale for the next room
+                    outHeightAdd += 1;
                 }
-
-                //create the walls first!
-                if(assetManager *a = assetManager::instance()){
-                    //spawn all walls
-                    aroom->spawnWalls(a->findBp(roomAssetEnum::wallEnum));
-
-                    //the room will process the postions and enable walls and doors accordingly
-                    aroom->processPositionVectorsAndReplaceWall(
-                        doorPositionsConverted, 
-                        a->findBp(roomAssetEnum::doorEnum)
-                    );
-                    //process windows too but after doors
-                    aroom->processPositionVectorsAndReplaceWall(
-                        windowPositionsConverted, 
-                        a->findBp(roomAssetEnum::windowEnum)
-                    );
-
-                    
-                }
-
-                //lastly spawn the roof
-                aroom->spawnRoof();
             }
         }
     }

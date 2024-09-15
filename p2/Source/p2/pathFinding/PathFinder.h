@@ -17,6 +17,7 @@ public:
 	~PathFinder();
 
 	static PathFinder *instance(UWorld *worldIn);
+	static void deleteInstance();
 
 	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
 	void addNewNodeVector(std::vector<FVector> &vec);

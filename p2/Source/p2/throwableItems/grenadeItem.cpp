@@ -53,7 +53,7 @@ void AgrenadeItem::detonate(){
 
     //visual explosion
     float radius = 1000.0f; // 5 * 100 = 5m
-    if(EntityManager *e = EntityManager::instance()){
+    if(EntityManager *e = worldLevel::entityManager()){
         e->createExplosion(GetWorld(), location);
     }
 

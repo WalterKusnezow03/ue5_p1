@@ -65,5 +65,5 @@ private:
 
 
 
-	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset, bool createWalls);
+	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset, bool createWalls, int &outheight);
 };

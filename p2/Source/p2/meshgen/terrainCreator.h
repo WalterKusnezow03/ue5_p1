@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/util/TVector.h"
 
 /**
  * 
@@ -19,10 +20,15 @@ public:
 	static const int fractureHeightStep = 3;
 
 	int chunkNum();
-	void createterrain(UWorld *world, int meters);
+	void createTerrain(UWorld *world, int meters);
 
 	//apply terrain
 	void applyTerrainDataToMeshActors(std::vector<AcustomMeshActor *> &actors);
+
+	//raycast
+	int getHeightFor(FVector &position);
+
+	void plotAllChunks(UWorld *world);
 
 private:
 	class chunk{
@@ -32,11 +38,15 @@ private:
 
 			void fixGaps();
 
+			int getHeightFor(FVector &a);
+
 			FVector position();
 
 			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
 			void addheightForAll(int value);
 
+			FVector2D getFirstXColumnAnchor(int xColumn);
+			FVector2D getFirstYRowAnchor(int yRow);
 			std::vector<FVector2D> getXColumAnchors(int xColumn);
 			std::vector<FVector2D> getYRowAnchors(int yRow);
 
@@ -88,27 +98,27 @@ private:
 
 	std::vector<std::vector<terrainCreator::chunk>> map;
 
-	std::vector<FVector2D> createSamplePoints();
+	
 	void debugDrawCurve(UWorld *world, std::vector<FVector2D> &vec, FColor color);
 
-	void plotAllChunks(UWorld *world);
 
 	void processTopViewBezierCurve(std::vector<FVector2D> &bezier);
 	void applyTopViewCurveToMap(std::vector<FVector2D> &vec);
-	int validateIndex(int a);
 	bool isXTouple(FVector2D &a, FVector2D &b);
 	void processTouple(FVector2D &a, FVector2D &b);
 
 	void smooth3dMap();
-	void cleanValues(std::vector<FVector2D> &vec);
+	//void cleanValues(std::vector<FVector2D> &vec);
+	void cleanValues(TVector<FVector2D> &vec);
 	void fillGaps(std::vector<FVector2D> &vec);
+	void applyXColumnToMap(int index, TVector<FVector2D> &column);
+	void applyYRowToMap(int index, TVector<FVector2D> &row);
 
-	void applyXColumnToMap(int index, std::vector<FVector2D> &column);
-	void applyYRowToMap(int index, std::vector<FVector2D> &row);
 
 	bool verifyIndex(int a);
-	int cmToChunkIndex(int a);
+	int clampIndex(int a);
 
+	int cmToChunkIndex(int a);
 	int cmToMeter(int a);
 	int meterToInnerChunkIndex(int a);
 	int cmToInnerChunkIndex(int a);
@@ -118,6 +128,4 @@ private:
 	
 
 
-	//testing needed
-	void TwoDimensionSplineOnly();
 };

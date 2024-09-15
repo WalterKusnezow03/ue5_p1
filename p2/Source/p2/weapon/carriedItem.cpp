@@ -71,7 +71,7 @@ void AcarriedItem::followPlayer(){
         FRotator currentRotation = GetActorRotation();
 
 		//works a bit better than lerping, but still jitters sometimes sadly
-		SetActorLocation(targetPos); //testing disabled
+		SetActorLocation(targetPos); 
         
         //SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
@@ -89,8 +89,9 @@ void AcarriedItem::followPlayer(){
         // Smoothly interpolate position and rotation
         FVector currentPos = GetActorLocation();
         FRotator currentRotation = GetActorRotation();
-        
-        SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
+		SetActorLocation(targetPos);
+
+		//SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
 
 	}
@@ -129,6 +130,10 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 
 		showItem(true);
 		renderOnTop(true);
+
+		//attachment to actor / component
+		//this->AttachToActor(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+		this->AttachToComponent(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 	}
 }
 
@@ -141,6 +146,8 @@ void AcarriedItem::pickupBot(AActor *actorIn){
 		enableCollider(false);
 
 		showItem(true);
+
+		this->AttachToActor(botPointer, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 	}
 }
 
@@ -179,6 +186,18 @@ bool AcarriedItem::isActive(){
 
 /// @brief drops the item and 
 void AcarriedItem::drop(){
+
+	if(cameraPointer != nullptr){
+		//detach from camera
+		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	}
+	if(botPointer != nullptr){
+		//detach from bot
+		//ChildActor->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	}
+
+
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
