@@ -343,17 +343,18 @@ void AssetLoader::createPathFinder(UWorld *WorldIn){
     if (WorldIn)
     {
         EdgeCollector c = EdgeCollector();
-        std::vector<FVector> &edges = c.getAllEdges(WorldIn, 100.0f);
+        //std::vector<FVector> &edges =
+        c.getAllEdges(WorldIn);
 
         //showEdges(edges);
-
+        /*
         FString string = FString::Printf(TEXT("collected %d"), edges.size());
         DebugHelper::showScreenMessage(string);
 
         PathFinder *p = PathFinder::instance(WorldIn);
         if(p != nullptr){
             p->addNewNodeVector(edges);
-        }
+        }*/
     }
 }
 

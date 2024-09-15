@@ -75,10 +75,11 @@ void AgameModeSubclass::createPathFinder(){
     if (World)
     {
         EdgeCollector c = EdgeCollector();
-        std::vector<FVector> &edges = c.getAllEdges(World, 100.0f);
+        //std::vector<FVector> &edges = 
+        c.getAllEdges(World);
 
         return;
-
+        /*
         //showEdges(edges);
 
         FString string = FString::Printf(TEXT("collected %d"), edges.size());
@@ -91,7 +92,7 @@ void AgameModeSubclass::createPathFinder(){
         PathFinder *p = PathFinder::instance(World);
         if(p != nullptr){
             p->addNewNodeVector(edges);
-        }
+        }*/
     }
 }
 
