@@ -64,17 +64,9 @@ void AdebugEntity::debugFunction(){
 		//terrain -> moved to world class
 		int meters = 100;
         //e->createTerrain(GetWorld(), meters);
-		worldLevel::initWorld(GetWorld());
+		//worldLevel::initWorld(GetWorld());
 		//terrainCreator *t = new terrainCreator();
 		//t->createTerrain(GetWorld(), meters);
 
-		for (int i = 0; i < 1; i++){
-			FVector location = GetActorLocation();
-			location += FVectorUtil::randomOffset(700);
-			AHumanEntityScript *a = e->spawnHumanEntity(GetWorld(), location);
-			if(a != nullptr){
-				a->init();
-			}
-		}
 	}
 }

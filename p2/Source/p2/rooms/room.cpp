@@ -3,6 +3,7 @@
 
 #include "p2/util/AActorUtil.h"
 #include "p2/entityManager/EntityManager.h"
+#include "p2/pathFinding/PathFinder.h"
 #include "room.h"
 
 // Sets default values
@@ -48,7 +49,10 @@ int Aroom::getZScale(){
 /// @brief will calculate and set room bounds, is ideally called on begin play!
 void Aroom::calculateActorBounds(){
 	//create a new method to calculate in total
+
+	//calculate base bounds(the floor)
 	AActorUtil::calculateActorBounds(this, boxXScale, boxYScale, boxZScale, boxOrigin, boxExtent);
+
 }
 
 /// @brief calculates the bottom left corner based on box extent, calculateActorBounds() must be called any time before!
@@ -58,7 +62,7 @@ FVector Aroom::bottomLeftCorner(){
 	//FVector pos = GetActorLocation();
 	pos.X -= boxXScale / 2;
 	pos.Y -= boxYScale / 2;
-	pos.Z -= boxZScale / 2;
+	//pos.Z -= boxZScale / 2; //not z, will be changed by walls later
 	return pos;
 }
 
@@ -270,7 +274,7 @@ std::vector<FVector> Aroom::allCorners(){
 	return returned;
 }
 
-/// @brief spawns walls around the outline of the room / floor
+/// @brief spawns walls around the outline of the room / floor, and recalculate actor bounds based on bounds
 /// @param bp blueprint to spawn as wall, (of the default size 50cm x, ...)
 void Aroom::spawnWalls(UClass *bp){
 
@@ -319,6 +323,7 @@ void Aroom::spawnWalls(UClass *bp){
 
 					wallActors.Add(actor);
 
+					//walls are not attached, no grood reason for that
 					// Attach the child actor to the parent actor, keep world transform
 					//actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
@@ -327,29 +332,38 @@ void Aroom::spawnWalls(UClass *bp){
 		}
 	}
 
-	//recalculate bounds
-	//calculateActorBounds();
+	//recalculate the actor bounds in favour of the walls
+	//add walls
+	if(wallActors.Num() > 0){
+
+		//recalculate bounds / add wall height. VERY IMPORTANT, otherwise the roof will
+		//be stuck in the ground and not above the walls.
+		int zOff = 0;
+		int x = 0;
+		int y = 0;
+		AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff); //get height from the walls
+
+		//add z value to this bounds
+		boxZScale += zOff;
+	}
+
 }
 
 /// @brief spawns the roof, should be called after walls have been created!
+/// walls method will refresh the bounds of the extor, very important!
 void Aroom::spawnRoof(){
 	if(wallActors.Num() > 0){
 		if (EntityManager *e = worldLevel::entityManager()){
 
+
+			
 			
 			std::vector<FVector> corners = allCorners();
-			int zOff = 0;
-			int x = 0;
-			int y = 0;
-			AActorUtil::calculateActorBounds(wallActors[0], x, y, zOff); //get height from the walls
-
 			for (int i = 0; i < corners.size(); i++)
 			{
-				corners.at(i).Z += zOff + 1; //1cm offset fix
+				corners.at(i).Z += getZScale() + 1; //10cm offset fix
 			}
 
-			//add z value to this bounds
-			boxZScale += zOff; //TEMPORARY FIX! //to be removed!
 
 			e->createTwoSidedQuad(
 				GetWorld(), 
@@ -361,4 +375,57 @@ void Aroom::spawnRoof(){
 		}
 	}
 	
+}
+
+
+
+/// @brief will add all nesecarry nodes to the navmehs
+void Aroom::addNodesToNavMesh(){
+
+	FVector center = GetActorLocation();
+	int pushUpValue = 70; //push up along Z axis for nodes
+
+	//add corners
+	std::vector<FVector> allNodes = allCorners();
+
+	/*
+	//push corners outwards
+	for (int i = 0; i < allNodes.size(); i++){
+		FVector connect = (allNodes[i] - center).GetSafeNormal(); // AB = B - A; from center to corner
+		connect.Z = 0;
+		FVector out = allNodes.at(i) + connect * 100; //Scaled to one meter
+		out.Z += pushUpValue; //offset up
+		allNodes[i] = out;
+	}*/
+
+	// add doors
+	if (disabledWallActors.Num() > 0)
+	{
+		// iterate all positions
+		// push inwards towards room
+		//add to vec
+		for (int i = 0; i < disabledWallActors.Num(); i++){
+			if(disabledWallActors[i] != nullptr){
+				FVector location = disabledWallActors[i]->GetActorLocation();
+				FVector connect = (center - location).GetSafeNormal(); // AB = B - A; from location to center
+				connect.Z = 0;
+
+				FVector inward = location + connect * 100; //Scaled to 2*one meter
+				inward.Z += pushUpValue; //offset up
+				allNodes.push_back(inward);
+			}
+		}
+	}
+	
+
+	//other?...
+
+
+	//add
+	if(PathFinder *p = PathFinder::instance(GetWorld())){
+		p->addNewNodeVector(allNodes);
+	}
+
+	//debug draw
+	DebugHelper::showLine(GetWorld(), allNodes, FColor::Green);
 }

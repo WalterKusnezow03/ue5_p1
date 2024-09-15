@@ -28,9 +28,17 @@
  */
 class P2_API EntityManager
 {
+private:
+	FCollisionQueryParams collisionIgnoreParams;
+	void addActorToIgnoreRaycastParams(AActor *actor, teamEnum team);
+
+	std::map<teamEnum, FCollisionQueryParams> collisionMap;
+
 public:
 	//static EntityManager *instance();
 	//static void deleteInstance();
+	FCollisionQueryParams &getIgnoredRaycastParams();
+	FCollisionQueryParams &getIgnoredRaycastParams(teamEnum team);
 
 	EntityManager();
 	~EntityManager();
@@ -44,7 +52,7 @@ public:
 	void add(AcustomMeshActor *meshActorIn);
 
 	//spawn section
-	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location);
+	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);
 	AEntityScript *spawnEntity(UWorld *world, FVector &Location);
 
 	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //no attachments, only spawn by type
@@ -76,7 +84,6 @@ public:
 
 	//terrain
 	void setEmptyMeshUClassBp(UClass *uclassIn);
-	void createTerrain(UWorld *world, int chunks);
 	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
 
 	//meshes in general
@@ -100,7 +107,13 @@ private:
 	//weil hier so nicht gewollt, wie in java den generic type
 	//team unabhängig speichern
 	class EntityManagerGeneric<AEntityScript> entityList; 
-	class EntityManagerGeneric<AHumanEntityScript> humanEntityList; //hier werden ALLE toten humans ausbewahrt
+	//class EntityManagerGeneric<AHumanEntityScript> humanEntityList; 
+	
+	//hier werden ALLE toten humans ausbewahrt, basierend auf team
+	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> humanEntityMap;
+
+	
+	
 	class EntityManagerGeneric<AcustomMeshActor> meshActorList;
 
 

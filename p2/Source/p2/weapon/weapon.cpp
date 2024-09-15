@@ -208,8 +208,14 @@ void Aweapon::shootBot(FVector target){
 		FVector connect = (target - start).GetSafeNormal();
 		start += connect * 100;
 
-		
-		shootProtected(start, target, teamEnum::none); // protected weapon shoot call
+		teamEnum ownTeam = teamEnum::none;
+
+		AHumanEntityScript *h = Cast<AHumanEntityScript>(botPointer);
+		if(h != nullptr){
+			ownTeam = h->getTeam();
+		}
+
+		shootProtected(start, target, ownTeam); // protected weapon shoot call
 	}
 }
 

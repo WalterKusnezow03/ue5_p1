@@ -18,7 +18,7 @@ class P2_API worldLevel
 public:
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
-	static void resetWorld();
+	static void resetWorld(UWorld *world);
 
 	static void initWorld(UWorld *world);
 

@@ -1166,6 +1166,7 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             }
             std::vector<std::vector<FVector>> mapCopy = currentChunk->readAndMerge(top, right, topright);
             currentActor->process2DMap(mapCopy);
+            currentActor->init(materialEnum::grassMaterial);
 
             // apply data
             //currentActor->process2DMap(currentChunk->readMap());

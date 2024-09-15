@@ -17,6 +17,7 @@ public:
 
     int size();
     bool empty();
+    bool contains(T &element);
     void clear();
     //void push_back(T t);
     void push_back(const T &t);

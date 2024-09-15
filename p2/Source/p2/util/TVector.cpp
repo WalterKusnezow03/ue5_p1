@@ -28,8 +28,8 @@ TVector<T>::TVector(TVector<T> &other){
 template <typename T>
 TVector<T>& TVector<T>::operator=(TVector<T> &other){
     //dont do self assigment
-    if(*this == other){
-        return this;
+    if(this == &other){ //compare both ADRESSES
+        return *this;
     }
 
     this->sizeIndex = other.sizeIndex;
@@ -37,7 +37,7 @@ TVector<T>& TVector<T>::operator=(TVector<T> &other){
 
     //only copy to the wanted index
     for (int i = 0; i < other.size(); i++){
-        this->vec.push_back(other[i]); //manuell jedes element kopieren
+        this->vec.push_back(other[i]); //manuell jedes element kopieren, aber nur bis zur fake grösse
     }
 
     return *this;
@@ -107,7 +107,9 @@ void TVector<T>::push_back(const TVector<T> &t){
     }
 }
 
-
+/// @brief returns the first element of the vector
+/// @tparam T type
+/// @return element at first position if any available
 template <typename T>
 T& TVector<T>::front(){
     if(vec.size() > 0){
@@ -116,6 +118,9 @@ T& TVector<T>::front(){
     throw std::out_of_range("Index out of range");
 }
 
+/// @brief returns the last element of the vector
+/// @tparam T type
+/// @return returns the last element
 template <typename T>
 T& TVector<T>::back(){
     if(vec.size() > 0){
@@ -128,13 +133,15 @@ T& TVector<T>::back(){
     throw std::out_of_range("Index out of range");
 }
 
+/// @brief pops the very last element
+/// @tparam T type
 template <typename T>
 void TVector<T>::pop_back(){
     if(sizeIndex == vec.size() && vec.size() > 0){
         vec.pop_back();
         sizeIndex = vec.size();
     }else{
-        sizeIndex--;
+        sizeIndex--; //one back
         if(sizeIndex < 0){
             sizeIndex = 0;
         }
@@ -142,7 +149,10 @@ void TVector<T>::pop_back(){
     throw std::out_of_range("Index out of range");
 }
 
-
+/// @brief returns the element at an index if valid
+/// @tparam T type
+/// @param index index to get, must be in bounds 
+/// @return element at index by reference
 template <typename T>
 T &TVector<T>::at(int index){
     if(index >= 0 && index < sizeIndex && index < vec.size()){
@@ -151,7 +161,8 @@ T &TVector<T>::at(int index){
     throw std::out_of_range("Index out of range");
 }
 
-/// @brief any out of bounce will be handled automatically by push_back or insert infront
+/// @brief inserts an element infront of the index
+/// any out of bounce will be handled automatically by push_back or insert infront
 /// @param index 
 /// @param element 
 template <typename T>
@@ -194,7 +205,10 @@ void TVector<T>::insert(int index, const T &element){
 }
 
 
-
+/// @brief inserts all elements of other vector infront of the index
+/// @tparam T type param
+/// @param index index to insert infront
+/// @param other other vector 
 template <typename T>
 void TVector<T>::insert(int index, TVector<T> &other){
     if(index < sizeIndex){
@@ -207,4 +221,21 @@ void TVector<T>::insert(int index, TVector<T> &other){
             insert(sizeIndex, other.at(i));
         }
     }
+}
+
+
+/// @brief checks if a given element is contained in the vector
+/// @tparam T type
+/// @param element element to search 
+/// @return true if found
+template <typename T>
+bool TVector<T>::contains(T &element){
+    if(size() > 0){
+        for (int i = 0; i < size(); i++){
+            if(this->at(i) == element){
+                return true;
+            }
+        }
+    }
+    return false;
 }

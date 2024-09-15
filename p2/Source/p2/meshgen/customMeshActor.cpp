@@ -25,7 +25,7 @@ void AcustomMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
     setTeam(teamEnum::neutralTeam); //nesecarry for being shot of everyone
-    materialtypeSet = materialEnum::wallMaterial;
+    
 }
 
 // Called every frame
@@ -35,7 +35,8 @@ void AcustomMeshActor::Tick(float DeltaTime)
 
 }
 
-//init helper
+/// @brief init helper sets the material type for damage reaction
+/// @param materialtype 
 void AcustomMeshActor::init(materialEnum materialtype){
     //set this var for debree creation
     materialtypeSet = materialtype;
@@ -199,9 +200,10 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
 
     //process created data
+    materialtypeSet = materialEnum::grassMaterial;
     updateMesh(output, newtriangles);
     if(assetManager *e = assetManager::instance()){
-        materialtypeSet = materialEnum::grassMaterial;
+        
         ApplyMaterial(Mesh, e->findMaterial(materialtypeSet));
     }
 

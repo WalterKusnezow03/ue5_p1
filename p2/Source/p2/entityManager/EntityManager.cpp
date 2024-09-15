@@ -22,23 +22,6 @@
 #include <map>
 
 
-/*
-/// @brief if you receive this pointer you are NOT ALLOWED to delete this instance!
-/// @return entityManager instance pointer 
-EntityManager* EntityManager::instance(){
-    if(EntityManager::instancePointer == nullptr){
-        instancePointer = new EntityManager();
-    }
-    return instancePointer;
-}
-
-void EntityManager::deleteInstance(){
-    if(EntityManager::instancePointer != nullptr){
-        delete EntityManager::instancePointer;
-        EntityManager::instancePointer = nullptr; //nicht vergessen auf nullptr zu setzen
-    }
-}
-*/
 
 EntityManager::EntityManager()
 {
@@ -66,8 +49,9 @@ void EntityManager::add(AEntityScript *entity){
 void EntityManager::add(AHumanEntityScript *humanEntity){
     if(humanEntity != nullptr){
         humanEntity->enableActiveStatus(false);
-        humanEntityList.add(humanEntity);
 
+        //humanEntityList.add(humanEntity);
+        humanEntityMap.add(humanEntity->getTeam(), humanEntity);
     }
 }
 
@@ -117,6 +101,53 @@ void EntityManager::add(AcustomMeshActor *meshActorIn){
 }
 
 
+/**
+ * ----- RAYCAST PARAM SECTION -----
+ */
+
+FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(){
+    return collisionIgnoreParams;
+}
+
+
+FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(teamEnum team){
+    return collisionMap[team];
+    // return collisionIgnoreParams;
+}
+
+/// @brief adds a actor to the ignored params which are used by entiteies for raycasting and 
+/// partfinder
+/// improoves performance
+/// @param actor actor reference to be ignored
+void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
+    if(actor != nullptr){
+        //add to correct map
+        FCollisionQueryParams *ref = &collisionMap[team];
+        ref->AddIgnoredActor(actor);
+
+        //&collisionMap[team].AddIgnoredActor(actor); // add to team map
+
+        //add to player and enemy team if neutral to create a proper filter
+        if(team == teamEnum::neutralTeam || team == teamEnum::none){
+            ref = &collisionMap[teamEnum::playerTeam];
+            ref->AddIgnoredActor(actor);
+            ref = &collisionMap[teamEnum::enemyTeam];
+            ref->AddIgnoredActor(actor);
+        }
+
+        //add to all
+        collisionIgnoreParams.AddIgnoredActor(actor);
+    }
+   
+}
+
+
+
+
+
+
+
+
 
 /**
  * ---- SPAWN SECTION HERE ----
@@ -144,6 +175,7 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
         if(bp != nullptr){
             AActor *actor = spawnAactor(world, bp, Location);
             if(actor != nullptr){
+                addActorToIgnoreRaycastParams(actor, teamEnum::neutralTeam);
                 AEntityScript *casted = Cast<AEntityScript>(actor);
                 if(casted != nullptr){
                     return casted;
@@ -164,11 +196,14 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
 /// @brief spawns an human entity in the world
 /// @param world 
 /// @param Location 
-AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Location) {
+AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Location, teamEnum team) {
 
     //get from list if any left
-    if(humanEntityList.hasActorsLeft()){
-        AHumanEntityScript *human = humanEntityList.getFirstActor();
+    if(humanEntityMap.hasActorsLeft(team)){
+
+    //if(humanEntityList.hasActorsLeft()){
+    //    AHumanEntityScript *human = humanEntityList.getFirstActor();
+        AHumanEntityScript *human = humanEntityMap.getFirstActor(team);
         if(human != nullptr){
             //DebugHelper::showScreenMessage("human from list !", FColor::Yellow);
 
@@ -180,22 +215,16 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     }
 
     
-    /*
-    //else create new one
-    AActor *actor = spawnAactor(world, humanEntityBpClass, Location);
-    AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
-    if(casted != nullptr){
-        casted->init();
-        //DebugHelper::showScreenMessage("try spawn human");
-        return casted;
-    }*/
    if(assetManager *a = assetManager::instance()){
         UClass *bp = a->findBp(entityEnum::human_enum);
         if(bp != nullptr){
             AActor *actor = spawnAactor(world, bp, Location);
             if(actor != nullptr){
+                addActorToIgnoreRaycastParams(actor, team);
                 AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
                 if(casted != nullptr){
+                    casted->init();
+                    casted->setTeam(team);
                     return casted;
                 }
             }
@@ -277,6 +306,9 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
 
     if(selectedBp != nullptr){
         AActor *spawned = spawnAactor(world, selectedBp, Location);
+        if(spawned != nullptr){
+            addActorToIgnoreRaycastParams(spawned, teamEnum::neutralTeam);
+        }
         Aweapon *w = Cast<Aweapon>(spawned);
         if(w != nullptr){
             //show weapon
@@ -342,6 +374,9 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
         if(fromMap != nullptr){
 
             AActor * spawned = spawnAactor(world, fromMap, location);
+            if(spawned != nullptr){
+                addActorToIgnoreRaycastParams(spawned, teamEnum::neutralTeam);
+            }
 
             AthrowableItem *casted = Cast<AthrowableItem>(spawned);
             if(casted != nullptr){
@@ -634,47 +669,6 @@ void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
 
 
 
-/**
- * MARKED FOR REMOVAL
- * 
- */
-/// @brief creates an terrain from chunk size (10meters each)
-/// @param worldIn world to spawn in 
-/// @param meters meters (in both x and y direction to create)
-void EntityManager::createTerrain(UWorld *worldIn, int meters){
-    if(worldIn != nullptr){
-        terrainCreator c;
-        c.createTerrain(worldIn, meters);
-
-        //return; //debugging
-
-        //created chunks in rerquested size, let terrain creator process and populate them
-        int requestedCount = c.chunkNum();
-        std::vector<AcustomMeshActor *> requestedActors;
-
-        //for each chunk data: spawn new chunk
-        if(emptyCustomMeshActorBp != nullptr){
-            for (int i = 0; i < requestedCount; i++){
-                //read location from chunk data
-                FVector location(0, 0, 0);
-
-                AActor *actor = spawnAactor(worldIn, emptyCustomMeshActorBp, location);
-                if(actor != nullptr){
-                    AcustomMeshActor *casted = Cast<AcustomMeshActor>(actor);
-                    if(casted != nullptr){
-                        
-                        //apply mesh data for the chunk
-                        requestedActors.push_back(casted);
-                    }
-                }
-            }
-        }
-
-        c.applyTerrainDataToMeshActors(requestedActors);
-        requestedActors.clear();
-
-    }
-}
 
 /// @brief returns a vector by value of meshactor pointers
 /// @param world world to spawn in

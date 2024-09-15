@@ -21,7 +21,12 @@ EntityManager *worldLevel::entityManagerPointer = nullptr;
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
 
-void worldLevel::resetWorld(){
+/// @brief clears all pointers -> call only on very begin or very end of level!
+/// -> entity manager: holds all entities and room, terrain basic assets!
+/// -> outpostManager: holds all outposts and assigns them on request
+/// -> terrainPointer: creates the terrain once and holds the whole mesh for faster ground detection
+/// -> pathfinder singleton instance -> all nodes will be wiped
+void worldLevel::resetWorld(UWorld *world){
     if(entityManagerPointer != nullptr){
         delete entityManagerPointer;
         entityManagerPointer = nullptr;
@@ -34,6 +39,10 @@ void worldLevel::resetWorld(){
         delete terrainPointer;
         terrainPointer = nullptr;
         isTerrainInited = false;
+    }
+
+    if(PathFinder *p = PathFinder::instance(world)){
+        p->clear();
     }
 }
 

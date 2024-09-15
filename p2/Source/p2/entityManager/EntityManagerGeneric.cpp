@@ -56,6 +56,7 @@ T * EntityManagerGeneric<T>::getFirstActor(){
     if(hasActorsLeft()){
         T *actor = actorVector.back(); //get last elements, first would do shifting elements(bad)
         actorVector.pop_back();
+        DebugHelper::showScreenMessage("popped an entity! ", FColor::Yellow);
         return actor;
     }
     return nullptr;

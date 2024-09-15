@@ -73,6 +73,9 @@ void AEntityScript::Tick(float DeltaTime)
 			playerPointer = i->getPlayerPointer();
 		}
 	}
+	if(playerPointer == nullptr){
+		return;
+	}
 
 	//rest of update
 	canSeePlayer = false; //reset
@@ -197,7 +200,8 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		// Define the start and end vectors for the raycast
 		FVector Start = this->GetActorLocation();
 
-		//FVector dir = (End - Start);
+		FVector dir = (End - Start).GetSafeNormal();
+		Start += dir * 100; //50cm
 
 		//End = Start + dir * 1.1f; //safety reasons
 		
@@ -206,18 +210,10 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		FHitResult HitResult;
 
 
-		/*
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this); // Ignore the character itself
-		// Iterate and ignore all child actors
-		TArray<AActor*> ChildActors;
-		this->GetAttachedActors(ChildActors);
-
-		for (AActor* ChildActor : ChildActors)
-		{
-			Params.AddIgnoredActor(ChildActor);
-		}*/
-
+		if(EntityManager *e = worldLevel::entityManager()){
+			//ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
+			ignoreParams = e->getIgnoredRaycastParams(getTeam());
+		}
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
 		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
@@ -229,9 +225,10 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		{
 			
 			AActor *actor = HitResult.GetActor();
+			/*
 			if(actor == playerPointer){
 				return true;
-			}
+			}*/
 
 			if(actor == target){
 				return true;
@@ -270,7 +267,7 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 /// @param deltaTime to calculate the movement speed
 void AEntityScript::moveTowardsPlayer(float deltaTime){
 	if(spottedPlayer && !canSeePlayer){
-		if(!hasNodesInPathLeft()){
+		if(!hasNodesInPathLeft() && !pathDelayRunning()){
 			//ask for path
 			UWorld *world = GetWorld();
 			if(world != nullptr){
@@ -303,7 +300,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 /// @param deltaTime for calculating the movement speed
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
-		float speed = 300.0f; //3m/s
+		float speed = 350.0f; //3m/s
 
 		
 

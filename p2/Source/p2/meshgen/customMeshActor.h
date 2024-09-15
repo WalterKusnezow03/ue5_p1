@@ -116,5 +116,5 @@ private:
 
 
 
-	materialEnum materialtypeSet;
+	materialEnum materialtypeSet = materialEnum::grassMaterial;
 };

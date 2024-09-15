@@ -37,6 +37,8 @@ public:
 	void spawnWalls(UClass *bp);
 	void spawnRoof();
 
+	void addNodesToNavMesh();
+
 	//replace walls with doors and windows etc
 	void processPositionVectorsAndReplaceWall(std::vector<FVector> &toPositionVector, UClass *bp);
 
@@ -55,14 +57,14 @@ private:
 	std::vector<FVector> debugAllCorners();
 	std::vector<FVector> allCorners();
 
-	std::vector<FVector> doorPositions;
+	//std::vector<FVector> doorPositions;
 	TArray<AActor *> wallActors;
 	TArray<AActor *> disabledWallActors;
 
 	void disableWall(FVector &location);
 	void disableWall(FVector &location, UClass *bpToSpawn);
 
-	//new
+	
 	void sortIn(
 		std::vector<TTouple<float, AActor*>> &vec, // by reference, nicht vergessen!
 		AActor* a,

@@ -127,9 +127,9 @@ void AOutpost::createEntity(teamEnum team){
 		FVector pos = GetActorLocation();
 		pos.Z += 100;
 		pos += randomOffset(400);
-		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos);
+		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos, team);
 		if(human != nullptr){
-			human->setTeam(team);
+			//human->setTeam(team);
 			subscribe(human);
 		}
 	}

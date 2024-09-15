@@ -81,7 +81,7 @@ void AHumanEntityScript::init(){
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){
-    Super::Tick(DeltaTime); //entity tick (spotting)
+    Super::Tick(DeltaTime); //entity tick (spotting, path)
 
     //only tick if wanted
     if(Super::isActivatedForUpdate()){

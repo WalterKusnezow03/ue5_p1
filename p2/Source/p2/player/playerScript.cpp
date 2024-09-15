@@ -80,7 +80,7 @@ void AplayerScript::BeginPlay()
         FVector spawnLocation = GetActorLocation();
         spawnLocation.Y += 300;
         spawnLocation.X += 300;
-        e->spawnHumanEntity(GetWorld(), spawnLocation);
+        e->spawnHumanEntity(GetWorld(), spawnLocation, teamEnum::enemyTeam);
     }
 
     //setTeam(referenceManager::TEAM_PLAYER);

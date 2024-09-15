@@ -240,14 +240,14 @@ void RoomManager::processLayer(
                             a->findBp(roomAssetEnum::windowEnum)
                         );
 
-                        
                     }
 
                     //lastly spawn the roof
                     aroom->spawnRoof();
-                }
-                
 
+                    //add nodes to navmesh
+                    aroom->addNodesToNavMesh();
+                }
 
                 //update the height added
                 //JUST ONCE

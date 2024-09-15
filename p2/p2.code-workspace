@@ -93,7 +93,8 @@
 			"type_traits": "cpp",
 			"mprealsupport": "cpp",
 			"iterator": "cpp",
-			"scoped_allocator": "cpp"
+			"scoped_allocator": "cpp",
+			"fft": "cpp"
 		}
 	},
 	"extensions": {

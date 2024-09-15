@@ -48,6 +48,8 @@ PathFinder::Node::Node(FVector posIn){
     pos = posIn;
     camefrom = nullptr;
     closedFlag = true;
+    nA = nullptr;
+    nB = nullptr;
 }
 
 PathFinder::Node::~Node(){
@@ -80,17 +82,44 @@ PathFinder::Chunk::~Chunk(){
     }
 }
 
-
-
 //constructors end
 
+//clear functions
+
+/// @brief clears all nodes from the whole navmesh but doesnt delete the chunks
+void PathFinder::clear(){
+    TArray<PathFinder::Quadrant*> array = {TopLeft, BottomLeft, TopRight, BottomRight};
+    for (int i = 0; i < array.Num(); i++){
+        if(array[i] != nullptr){
+            array[i]->clear();
+        }
+    }
+}
+
+void PathFinder::Quadrant::clear(){
+    for (int i = 0; i < map.size(); i++){
+        for (int j = 0; j < map.at(i).size(); j++){
+            PathFinder::Chunk *c = map.at(i).at(j);
+            if(c != nullptr){
+                c->clear();
+            }
+        }
+    }
+}
+
+void PathFinder::Chunk::clear(){
+    for (int i = 0; i < nodes.size(); i++){
+        if(nodes.at(i) != nullptr){
+            delete (nodes.at(i));
+            nodes.at(i) = nullptr;
+        }
+    }
+    nodes.clear(); //finally clear the nodes
+}
 
 
 
-
-
-
-
+//clear functions end
 
 //PATH FINDER METHODS
 
@@ -114,12 +143,14 @@ PathFinder* PathFinder::instance(UWorld *worldIn){
     return pathFinderInstance;
 }
 
+//not recommended
+/*
 void PathFinder::deleteInstance(){
     if(pathFinderInstance != nullptr){
         delete pathFinderInstance;
         pathFinderInstance = nullptr;
     }
-}
+}*/
 
 
 
@@ -169,14 +200,27 @@ void PathFinder::addNewNode(FVector a){
         
         
         //debug testing for checking if nodes were added, works properly
-        
+        /*
         PathFinder::Node *tryFind = findNode(a);
         if(tryFind != nullptr){
             showPos(tryFind->pos, FColor::Purple);
-        }
+        }*/
         
     }
 }
+
+void PathFinder::addNode(Node * node){
+    if(node != nullptr){
+        FVector posCopy = node->pos;
+        PathFinder::Quadrant *q = askforQuadrant(posCopy.X, posCopy.Y);
+        if(q != nullptr){
+            q->add(node);
+        }
+    }
+}
+
+
+
 
 PathFinder::Quadrant* PathFinder::askforQuadrant(int xIndex, int yIndex){
     //top left
@@ -272,8 +316,22 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
     PathFinder::Node *end = findNode(b);
 
     if(start != nullptr && end != nullptr){
+        //check if is last path
+        if(prevPath.size() > 0){
+            FVector s = prevPath.front();
+            FVector e = prevPath.back();
+            if(
+                FVector::Dist(s, start->pos) <= 300 && 
+                FVector::Dist(e, end->pos) <= 300
+            )
+            //if (s == start->pos && e == end->pos)
+            {
+                return prevPath;
+            }
+        }
+    
 
-
+        //find path
         std::vector<PathFinder::Node *> graph = getSubGraph(a, b);
         
         if(debugDrawNodes){
@@ -355,7 +413,8 @@ std::vector<FVector> PathFinder::findPath(
 
         if (current != nullptr)
         {
-            if(current == end){ //|| canSee(current, end)){
+            if(reached(current, end)){
+            //if(current == end){ //|| canSee(current, end)){
                 //path found
                 screenMessage("found path");
                 return constructPath(end);
@@ -412,6 +471,26 @@ std::vector<FVector> PathFinder::findPath(
 }
 
 
+bool PathFinder::reached(Node *a, Node *b){
+    if(a == nullptr || b == nullptr){
+        return false;
+    }
+    if(a == b){
+        return true;
+    }
+    //neighbor
+
+    //distance
+    if(FVector::Dist(a->pos, b->pos) <= 200){
+        return true;
+    }
+
+    //can see
+    if (canSee(a->pos, b->pos)){
+        return true;
+    }
+    return false;
+}
 
 void PathFinder::screenMessage(int s){
     if (GEngine)
@@ -442,7 +521,12 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
             return false;
         }
 
-        //vision checking
+        //pass tangental check to check for raycast or not
+        if (passTangentailCheck(A,B) == false){
+            return false; //not tangential, do not check
+        }
+
+        // vision checking
         FVector Start = A->pos;
         FVector End = B->pos;
         //testing with more raycasts to ensure realibilty
@@ -451,21 +535,15 @@ bool PathFinder::canSee(PathFinder::Node *A, PathFinder::Node*B){
         }
 
         //adjustments if any entity might be in way
-        Start.Z += ONE_METER * 1.5f;
+        Start.Z += ONE_METER * 1.7f;
+        End.Z += ONE_METER * 1.7f;
         if (canSee(Start, End)){
             return true;
         }
 
-        End.Z += ONE_METER * 1.5f;
-        if (canSee(Start, End)){
-            return true;
-        }
+        
 
-
-        /*
-        FVector Start = A->pos;
-        FVector End = B->pos; // B->pos;
-        */
+        
         FVector dir = (B->pos - Start).GetSafeNormal();
         Start += dir * 20; //offset for entity raycast failure
 
@@ -534,6 +612,7 @@ std::vector<FVector> PathFinder::constructPath(PathFinder::Node *end){
 
         std::reverse(list.begin(), list.end());
     }
+    prevPath = list; //save copy
     return list;
 }
 
@@ -583,10 +662,41 @@ void PathFinder::Quadrant::add(FVector n){
     }
 
     // Add the node to the appropriate chunk
-    map[x][y]->add(n);
-
-            
+    map[x][y]->add(n);   
 }
+
+
+/// @brief adds a node to the quadrant (node node)
+/// @param n position to add
+void PathFinder::Quadrant::add(Node *n){
+    if(n != nullptr){
+        //std::abs for flipping negatives obviosuly
+        int x = std::abs(n->pos.X / CHUNKSIZE); //create new chunks?
+        int y = std::abs(n->pos.Y / CHUNKSIZE);
+
+        while(map.size() <= x) {
+            map.push_back(std::vector<PathFinder::Chunk * >());
+        }
+
+        // Ensure all lists up to map.Count have enough chunks
+        for (int i = 0; i < map.size(); i++) {
+            while (map[i].size() <= y) {
+                map[i].push_back(new PathFinder::Chunk());
+            }
+        }
+
+        // Add the node to the appropriate chunk
+        map[x][y]->add(n);
+    }   
+}
+
+
+
+
+
+
+
+
 
 //finds a node from a quadrant
 PathFinder::Node* PathFinder::Quadrant::findNode(FVector pos){
@@ -720,6 +830,27 @@ void PathFinder::Chunk::add(FVector vec){
     }
 }
 
+/// @brief adds a new node to the node with a position
+/// @param vec position of the node to be added
+void PathFinder::Chunk::add(Node *node){
+    if(node != nullptr){
+        /*
+        //find closest node near by
+        if(hasNode(node->pos) == false){
+            nodes.push_back(node);
+            PathFinder::countNodes += 1;
+        }
+        */
+        //will only check for duplicate nodes by adress
+        for (int i = 0; i < nodes.size(); i++){
+            if(nodes.at(i) == node){
+                return;
+            }
+        }
+        nodes.push_back(node);
+    }
+}
+
 
 
 
@@ -828,7 +959,66 @@ bool PathFinder::Node::isClosed(){
 }
 
 
+bool PathFinder::Node::hasNeighbors(){
+    return nA != nullptr && nB != nullptr;
+}
 
 
 
+/// @brief needs to pass the tangential check before being a node of interest
+/// @param a 
+/// @param b 
+/// @return 
+bool PathFinder::passTangentailCheck(Node *a, Node *b){
+    if(a != nullptr && b != nullptr)
+    {
+        //must be tangential no intersect on both sides to be an connection of intersect
+        if(a->hasNeighbors() && b->hasNeighbors())
+        {
+            bool dirAB_ok = false;
+            FVector v0 = b->pos - a->pos;
+            FVector vN(v0.Y, -v0.X, 0); // 90 grad drehen: - für eine var, xy tauschen, einen component negieren
 
+            FVector v1 = b->nA->pos - b->pos; // AB = B - A connect to first neighbor
+            FVector v2 = b->nB->pos - b->pos; //connect to second neighbor
+
+            //(vN dot v1) * (vN dot v2) > 0 damit beide vektoren auf der selben seite sind. tangentiale konvexe verbindung
+            float dotProduct1 = (vN.X * v1.X) + (vN.Y * v1.Y);
+            float dotProduct2 = (vN.X * v2.X) + (vN.Y * v2.Y);
+            if(dotProduct1 * dotProduct2 >= 0) // >=
+            {//vorzeichen gleich, >0 selbe seite
+                dirAB_ok = true;
+            }
+
+
+            bool dirBA_ok = false;
+            v0 = a->pos - b->pos;
+
+            v1 = (a->nA->pos - a->pos); // AB = B - A connect to first neighbor
+            v2 = (a->nB->pos - a->pos); //connect to second neighbor
+
+            //(vN dot v1) * (vN dot v2) > 0 damit beide vektoren auf der selben seite sind. tangentiale konvexe verbindung
+            dotProduct1 = (vN.X * v1.X) + (vN.Y * v1.Y);
+            dotProduct2 = (vN.X * v2.X) + (vN.Y * v2.Y);
+            if(dotProduct1 * dotProduct2 >= 0){//vorzeichen gleich, >0 selbe seite
+                dirBA_ok = true;
+            }
+
+
+
+            /*
+            if(dirAB_ok && dirBA_ok){
+                if(worldPointer){
+                    FVector up(0, 0, 100);
+                    DebugHelper::showLineBetween(worldPointer, a->pos, (a->pos + up), FColor::Red);
+                    DebugHelper::showLineBetween(worldPointer, b->pos, (b->pos + up), FColor::Red);
+                }
+            }*/
+
+            return dirAB_ok && dirBA_ok;
+        }
+        return true;
+    }
+
+    return true; //no neighbors, check raycasts
+}

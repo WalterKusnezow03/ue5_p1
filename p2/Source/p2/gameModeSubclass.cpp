@@ -32,7 +32,7 @@ AgameModeSubclass::AgameModeSubclass()
     static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Prefabs/player/playerPrefab")); 
     DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-
+    worldLevel::resetWorld(GetWorld());
 
     /**
      * ASSET LOADER
@@ -44,11 +44,11 @@ AgameModeSubclass::AgameModeSubclass()
 
 
     //remember at some point the level must be reset too: (maybe just before that is a good approach!)
-    //worldLevel::resetWorld();
+    
     /**
      * CREATE WORLD LEVEL 
      */
-    //worldLevel::initWorld(GetWorld());
+    worldLevel::initWorld(GetWorld());
 
    
 }
@@ -76,6 +76,8 @@ void AgameModeSubclass::createPathFinder(){
     {
         EdgeCollector c = EdgeCollector();
         std::vector<FVector> &edges = c.getAllEdges(World, 100.0f);
+
+        return;
 
         //showEdges(edges);
 
