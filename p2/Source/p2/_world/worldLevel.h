@@ -29,6 +29,9 @@ private:
 	worldLevel();
 	~worldLevel();
 
+	//pathfinder init edge collection
+	static void createPathFinder(UWorld *WorldIn);
+
 	//manager
 	static class EntityManager *entityManagerPointer;
 	static class OutpostManager *outpostManagerPointer;

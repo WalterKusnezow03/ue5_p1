@@ -681,8 +681,8 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
      */
 
     //new testing with random heights and smooth
-    int iterations = 3;
-    for (int it = 0; it < iterations; it++)
+    int iterations = 4;
+    for (int it = 1; it < iterations; it++) //from 1 to keep the first chunk walkable
     {
         //make i and j from it for debugging / walk on it from first chunk.
         for (int i = it; i < map.size(); i++){

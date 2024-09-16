@@ -27,8 +27,6 @@ private:
 	FString buildPath(FString path, FString bluePrintName);
 	void cleanUpPath(FString &s);
 
-	void createPathFinder(UWorld *WorldIn);
-
 
 
 

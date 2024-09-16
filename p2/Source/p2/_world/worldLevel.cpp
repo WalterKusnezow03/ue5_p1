@@ -52,7 +52,31 @@ void worldLevel::initWorld(UWorld *world){
     if(!isTerrainInited && world != nullptr){
         createTerrain(world, 100);
     }
+
+
+    //edge collector must be added here later
+    createPathFinder(world);
 }
+
+
+
+/**
+ * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start
+ * after all meshes have been created? Unclear right now.
+ */
+void worldLevel::createPathFinder(UWorld *WorldIn){
+    if(WorldIn == nullptr){
+        return;
+    }
+
+    if (WorldIn)
+    {
+        EdgeCollector c = EdgeCollector();
+        c.getAllEdges(WorldIn); //pushes them to the navmesh on its own
+    }
+}
+
+
 
 
 

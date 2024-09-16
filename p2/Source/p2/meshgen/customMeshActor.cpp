@@ -5,7 +5,9 @@
 #include "p2/util/AActorUtil.h"
 #include "p2/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
+#include "KismetProceduralMeshLibrary.h"
 #include "customMeshActor.h"
+
 
 // Sets default values
 AcustomMeshActor::AcustomMeshActor()
@@ -160,6 +162,12 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
 
                     FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo);
+                    //add a normal for each vertex
+                    for (int n = 0; n < 4; n++){
+                        normalsOutput.Add(normal.GetSafeNormal()); //lets keep it like this for now
+                    }
+
+
                     //calculate center
                     FVector center = FVectorUtil::calculateCenter(vzero, vone, vtwo);
                     center += GetActorLocation(); //correct offset
@@ -168,19 +176,24 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     FVectorTouple t(center, normal); // first center, then normal
                     touples.Add(t);
 
-
+                    
 
                     /**
                      * ADD NODES TO NAV MESH
                      */
-                    //only add the normal if the surface is flat
-                    if(FVectorUtil::edgeIsVertical(originVec, normal)){
-                        if(navMeshAdd.size() == 0){
+                    // only add the normal if the surface is flat
+                    if (FVectorUtil::edgeIsVertical(originVec, normal))
+                    {
+                        if (navMeshAdd.size() == 0)
+                        {
                             navMeshAdd.push_back(center);
-                        }else{
-                            //only push nodes 3 meters away from each other -> reduce mesh count 
+                        }
+                        else
+                        {
+                            // only push nodes 3 meters away from each other -> reduce mesh count
                             FVector &prev = navMeshAdd.back();
-                            if(FVector::Dist(prev, center) >= 300){
+                            if (FVector::Dist(prev, center) >= 300)
+                            {
                                 navMeshAdd.push_back(center);
                             }
                         }
@@ -201,7 +214,7 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     //process created data
     materialtypeSet = materialEnum::grassMaterial;
-    updateMesh(output, newtriangles);
+    updateMesh(output, newtriangles, normalsOutput);
     if(assetManager *e = assetManager::instance()){
         
         ApplyMaterial(Mesh, e->findMaterial(materialtypeSet));
@@ -223,21 +236,30 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 /// @brief updates the mesh for the actor
 /// @param newvertecies vertecies to set
 /// @param newtriangles triangles for the vertecies
-void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> newtriangles){
+void AcustomMeshActor::updateMesh(
+    TArray<FVector> &newvertecies,  
+    TArray<int32> &newtriangles, 
+    TArray<FVector> &newNormals
+)
+{
     triangles = newtriangles;
     vertecies = newvertecies;
-    
+    //normals = newNormals;
 
-    TArray<FVector> Normals;
+    
     TArray<FVector2D> UV0;
     TArray<FProcMeshTangent> Tangents;
     TArray<FColor> VertexColors;
+
+    // Automatically calculate normals and tangents using the engine function
+    UKismetProceduralMeshLibrary::CalculateTangentsForMesh(vertecies, triangles, UV0, normals, Tangents);
 
     // Create the mesh section
 
     int sectionIndex = 0; //auch bei den materials, hier das erste argument, merken
     if(Mesh != nullptr){
-        Mesh->CreateMeshSection(0, this->vertecies, this->triangles, Normals, UV0, VertexColors, Tangents, true);
+        //data gets copied internally, no need to worry about passing by reference here
+        Mesh->CreateMeshSection(0, this->vertecies, this->triangles, normals, UV0, VertexColors, Tangents, true);
     
         //set for spehere overlap
         Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -251,7 +273,6 @@ void AcustomMeshActor::updateMesh(TArray<FVector> newvertecies, TArray<int32> ne
     AActorUtil::showActor(*this, true);
     AActorUtil::enableColliderOnActor(*this, true);
 }
-
 
 /// @brief creates a cube from 4 vertecies and a material
 /// expecting the vertecies to be already ordered correctly in clockwise order from a to d!
@@ -309,8 +330,9 @@ void AcustomMeshActor::createCube(
 
     TArray<FVector> output;
     TArray<int32> newtriangles;
-    //bottom
-    //flipped 180 degree?
+    TArray<FVector> newNormals;
+    // bottom
+    // flipped 180 degree?
     buildQuad(a, d, c, b, output, newtriangles);
 
     //top
@@ -326,7 +348,7 @@ void AcustomMeshActor::createCube(
     buildQuad(a, a1, d1, d, output, newtriangles);
     
 
-    updateMesh(output, newtriangles);
+    updateMesh(output, newtriangles, newNormals);
     if(material != nullptr){
         ApplyMaterial(Mesh, material);
     }else{
@@ -361,6 +383,7 @@ void AcustomMeshActor::createTwoSidedQuad(
     if(material != nullptr){
         TArray<FVector> output;
         TArray<int32> newtriangles;
+        TArray<FVector> newNormals;
 
         //a b c und d sollten richtig herum gedreht sein wenn man abc und d bildet
         buildQuad(a, b, c, d, output, newtriangles);
@@ -369,7 +392,7 @@ void AcustomMeshActor::createTwoSidedQuad(
         buildQuad(a, d, c, b, output, newtriangles);
 
 
-        updateMesh(output, newtriangles);
+        updateMesh(output, newtriangles, newNormals);
         ApplyMaterial(Mesh, material);
     }
 }

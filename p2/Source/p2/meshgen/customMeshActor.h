@@ -87,8 +87,9 @@ private:
 
 
 	void updateMesh(
-		TArray<FVector> newvertecies, 
-		TArray<int32> newtriangles
+		TArray<FVector> &newvertecies, 
+		TArray<int32> &newtriangles,
+		TArray<FVector> &newNormals
 	);
 
 

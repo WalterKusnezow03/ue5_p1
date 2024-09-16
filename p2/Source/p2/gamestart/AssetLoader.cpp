@@ -329,32 +329,3 @@ void AssetLoader::loadMaterials(){
 
 
 
-
-
-/**
- * ATTENTION: This is still called from game mode subclass, unclear whether called here or not
- */
-
-void AssetLoader::createPathFinder(UWorld *WorldIn){
-    if(WorldIn == nullptr){
-        return;
-    }
-
-    if (WorldIn)
-    {
-        EdgeCollector c = EdgeCollector();
-        //std::vector<FVector> &edges =
-        c.getAllEdges(WorldIn);
-
-        //showEdges(edges);
-        /*
-        FString string = FString::Printf(TEXT("collected %d"), edges.size());
-        DebugHelper::showScreenMessage(string);
-
-        PathFinder *p = PathFinder::instance(WorldIn);
-        if(p != nullptr){
-            p->addNewNodeVector(edges);
-        }*/
-    }
-}
-
