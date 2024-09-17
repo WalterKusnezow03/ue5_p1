@@ -25,6 +25,9 @@ void DebugHelper::showScreenMessage(FString s, FColor color){
 	/*if(!s.Contains("room") && !s.Contains("debugroom") && !s.Contains("splitmesh")){
 		return; //DEBUG
 	}*/
+	if(s.Contains("curve debug") == false){
+		return;
+	}
 
 	if (GEngine)
 	{

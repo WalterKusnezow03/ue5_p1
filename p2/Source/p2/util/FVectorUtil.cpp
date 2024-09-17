@@ -26,7 +26,7 @@ int FVectorUtil::intInfinity(){
 /// @param a ortvektor
 /// @param b extend position 1
 /// @param c extend position 2
-/// @return normale
+/// @return normal of the pane, will be ALWAYS rotated upwards.
 FVector FVectorUtil::calculateNormal(FVector &a, FVector &b, FVector &c){
     //add normals
     //Ex: A + r(B-A) + s(C-A)

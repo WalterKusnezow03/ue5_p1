@@ -311,6 +311,12 @@ void AssetLoader::loadMaterials(){
             materialEnum::grassMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/grassMaterial.grassMaterial'"))
         );
+        
+        //stone material
+        a->addMaterial(
+            materialEnum::stoneMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/stoneMaterial.stoneMaterial'"))
+        );
 
         //wall material
         a->addMaterial(

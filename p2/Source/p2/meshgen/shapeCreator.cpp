@@ -135,22 +135,24 @@ void shapeCreator::createLineShape(std::vector<FVector2D> &output, int anchorsCo
 
 /// @brief attention, output will be cleared
 /// @param output output to save in, will be cleared
-/// @param anchorsCount anchors to have and shape to be "long" -> if you pass 50 anchors, the shape will be
-/// the size of 50meters or (50 * 100cm) if you dont upscale the shape later for example
-void shapeCreator::randomEnclosedShape(std::vector<FVector2D> &output, int anchorsCount){
-    int scale = terrainCreator::ONEMETER; //upscale to meters
+/// @param anchorsCount anchors to have and shape to be "long" (half way) -> if you pass 5 anchors, the shape will be
+/// the size of 50 to leave resonable gaps if upscaleFromOne = 10, 
+/// @param upscaleFromOne to upscale the shape from normalized vektor size and distance between anchors
+void shapeCreator::randomEnclosedShape(std::vector<FVector2D> &output, int anchorsCount, int upscaleFromOne){
+    int scale = upscaleFromOne;
+    // terrainCreator::ONEMETER; //upscale to meters
 
     output.clear();
 
-    
-    int xstep = 2;
+    int xstep = upscaleFromOne; //step distance to anchor
     int x = 0;
-    int scaledmeterToStep = anchorsCount / xstep; //halfed to close from half back
+    
 
     int lower = 0;
-    int higher = 4;
+    int higher = (anchorsCount * xstep / 2);
     std::vector<int> nums;
-    FVectorUtil::fillWithRandomNumbers(nums, scaledmeterToStep, lower, higher);
+    int anchorsTotal = anchorsCount * 2; //passed is only along x axis in theory, not both ways
+    FVectorUtil::fillWithRandomNumbers(nums, anchorsTotal, lower, higher);
 
     int size = nums.size();
     bool flipped = false;

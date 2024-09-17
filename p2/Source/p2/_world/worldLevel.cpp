@@ -50,7 +50,7 @@ void worldLevel::resetWorld(UWorld *world){
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
     if(!isTerrainInited && world != nullptr){
-        createTerrain(world, 100);
+        createTerrain(world, 150);
     }
 
 

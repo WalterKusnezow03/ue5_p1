@@ -129,13 +129,14 @@ bool AcustomMeshActor::isDestructable(){
 /// @param map 2D vector of LOCAL coordinates!
 void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //nach dem entity manager stirbt die refenz hier!
 
-    //die vertecies müssen dann so durchlaufen werden dass man sie immer nachbarn weise in dreiecken anordnet
-    //am besten man iteriert jeweils bis 
-    //map.size() - 1 damit man den offset ignorieren kann und es genau aufgeht.
+    
+    //grass
+    TArray<FVector> output_layer0;
+    TArray<int32> triangles_layer0;
 
-    TArray<FVector> output;
-    TArray<int32> newtriangles;
-    TArray<FVector> normalsOutput;
+    //stone
+    TArray<FVector> output_layer1;
+    TArray<int32> triangles_layer1;
 
     TArray<FVectorTouple> touples; //first arg: center, second: normal
 
@@ -143,6 +144,7 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     FVector originVec(0, 0, 0);
 
+    //iterate over the map and create all triangles by creating the quads from 4 given vertecies
     for (int x = 0; x < map.size() - 1; x++){
         for (int y = 0; y < map.at(x).size() - 1; y++){
             /*
@@ -155,16 +157,23 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
             if(x + 1 < map.size() && y + 1 < map.at(x + 1).size()){
                 try{
+                    //get the vertecies
                     FVector vzero = map.at(x).at(y);
                     FVector vone = map.at(x).at(y + 1);
                     FVector vtwo = map.at(x + 1).at(y + 1);
                     FVector vthree = map.at(x + 1).at(y);
-                    buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
 
-                    FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo);
-                    //add a normal for each vertex
-                    for (int n = 0; n < 4; n++){
-                        normalsOutput.Add(normal.GetSafeNormal()); //lets keep it like this for now
+                    //add to standard output
+                    //buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
+
+                    FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo); //direction obviously
+                    if(FVectorUtil::directionIsVertical(normal)){
+                        //add to standard output, if direction of normal is vertical, the pane is flat
+                        buildQuad(vzero, vone, vtwo, vthree, output_layer0, triangles_layer0);
+                    }else{
+                        //otherwise the quad should be added to the second
+                        //triangle / vertecy array for stone material, more vertical
+                        buildQuad(vzero, vone, vtwo, vthree, output_layer1, triangles_layer1);
                     }
 
 
@@ -212,12 +221,22 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     }
 
 
-    //process created data
-    materialtypeSet = materialEnum::grassMaterial;
-    updateMesh(output, newtriangles, normalsOutput);
+    //process created data and apply meshes and materials
+
+    materialtypeSet = materialEnum::grassMaterial; //might be changed later, left off for particles..
+
+    updateMesh(output_layer0, triangles_layer0, true, 0);
+    updateMesh(output_layer1, triangles_layer1, true, 1);
+    
     if(assetManager *e = assetManager::instance()){
-        
-        ApplyMaterial(Mesh, e->findMaterial(materialtypeSet));
+
+        //grass
+        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial), 0); //layer 0
+        //stone
+        ApplyMaterial(Mesh, e->findMaterial(materialEnum::stoneMaterial), 1); //layer 1
+    
+    
+    
     }
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -233,34 +252,86 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     }
 }
 
-/// @brief updates the mesh for the actor
-/// @param newvertecies vertecies to set
-/// @param newtriangles triangles for the vertecies
+
+
+
+
 void AcustomMeshActor::updateMesh(
-    TArray<FVector> &newvertecies,  
-    TArray<int32> &newtriangles, 
-    TArray<FVector> &newNormals
+    TArray<FVector> &newvertecies,
+    TArray<int32> &newtriangles,
+    bool createNormals //makes the texture appear flat if not enabled
+){
+    updateMesh(newvertecies, newtriangles, createNormals, 0);
+}
+
+
+
+/// @brief updates the mesh for the actor
+/// @param newvertecies vertecies to set -> OWNER SHIP WILL BE TAKEN
+/// @param newtriangles triangles for the vertecies -> OWNER SHIP WILL BE TAKEN
+/// @param createNormals to create normals or not
+void AcustomMeshActor::updateMesh(
+    TArray<FVector> &newvertecies,
+    TArray<int32> &newtriangles,
+    bool createNormals, //makes the texture appear flat if not enabled
+    int layer
 )
 {
-    triangles = newtriangles;
-    vertecies = newvertecies;
-    //normals = newNormals;
 
-    
-    TArray<FVector2D> UV0;
-    TArray<FProcMeshTangent> Tangents;
-    TArray<FColor> VertexColors;
+    //find from map
+    MeshData *data;
+    if (meshLayersMap.find(layer) != meshLayersMap.end()){
+        //find meshData from map by reference
+        data = &meshLayersMap[layer]; //hier mit eckigen klammern weil .find ein iterator ist
+    }else{
+        meshLayersMap[layer] = MeshData(); //add
+        data = &meshLayersMap[layer]; //assign the pointer as needed
+    }
 
-    // Automatically calculate normals and tangents using the engine function
-    UKismetProceduralMeshLibrary::CalculateTangentsForMesh(vertecies, triangles, UV0, normals, Tangents);
+    if(data == nullptr){
+        return; //an issue occured return
+    }
+
+    //CLEAR ALL FROM PREVIOUS DATA, EVERYTHING - to prevent any weird issues.
+    data->clearMesh();
+
+    //refresh data 
+    //use MoveTemp to make the r value reference (from left value to right value)
+    data->setVertecies(MoveTemp(newvertecies));
+    data->setTriangles(MoveTemp(newtriangles));
+    if(createNormals){
+        data->calculateNormals(); //calculate the normals to fix flat lighting issue
+    }else{
+        data->clearNormals();
+    }
 
     // Create the mesh section
-
-    int sectionIndex = 0; //auch bei den materials, hier das erste argument, merken
+    //int sectionIndex = 0; //auch bei den materials, hier das erste argument, merken
     if(Mesh != nullptr){
-        //data gets copied internally, no need to worry about passing by reference here
-        Mesh->CreateMeshSection(0, this->vertecies, this->triangles, normals, UV0, VertexColors, Tangents, true);
-    
+        /**
+         * example: 
+         * 
+        Mesh->CreateMeshSection(
+            layer, 
+            newvertecies, 
+            this->triangles, 
+            normals, 
+            UV0, 
+            VertexColors, 
+            Tangents, 
+            true
+        );*/
+        Mesh->CreateMeshSection(
+            layer, 
+            data->getVerteciesRef(),//newvertecies, 
+            data->getTrianglesRef(),//this->triangles, 
+            data->getNormalsRef(),//normals, 
+            data->getUV0Ref(),//UV0, 
+            data->getVertexColorsRef(),//VertexColors, 
+            data->getTangentsRef(),//Tangents, 
+            true
+        );
+
         //set for spehere overlap
         Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
         Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -268,11 +339,22 @@ void AcustomMeshActor::updateMesh(
     }
 
 
-
     //enable if was disabled!
     AActorUtil::showActor(*this, true);
     AActorUtil::enableColliderOnActor(*this, true);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /// @brief creates a cube from 4 vertecies and a material
 /// expecting the vertecies to be already ordered correctly in clockwise order from a to d!
@@ -348,7 +430,7 @@ void AcustomMeshActor::createCube(
     buildQuad(a, a1, d1, d, output, newtriangles);
     
 
-    updateMesh(output, newtriangles, newNormals);
+    updateMesh(output, newtriangles, false);
     if(material != nullptr){
         ApplyMaterial(Mesh, material);
     }else{
@@ -392,7 +474,7 @@ void AcustomMeshActor::createTwoSidedQuad(
         buildQuad(a, d, c, b, output, newtriangles);
 
 
-        updateMesh(output, newtriangles, newNormals);
+        updateMesh(output, newtriangles, false);
         ApplyMaterial(Mesh, material);
     }
 }
@@ -466,15 +548,34 @@ void AcustomMeshActor::buildTriangle(
 }
 
 
-/// @brief applys a material to the whole component (slot 0)
+/// @brief applys a material to the whole component (slot 0 by default)
 /// @param ProceduralMeshComponent 
 /// @param Material 
 void AcustomMeshActor::ApplyMaterial(UProceduralMeshComponent* ProceduralMeshComponent, UMaterial* Material) {
+    ApplyMaterial(ProceduralMeshComponent, Material, 0);
+}
+
+/// @brief applys a material to the whole component at passed index slot
+/// @param ProceduralMeshComponent mesh to apply for
+/// @param Material material to set
+/// @param layer layer to apply for / index
+void AcustomMeshActor::ApplyMaterial(
+    UProceduralMeshComponent* ProceduralMeshComponent, 
+    UMaterial* Material,
+    int layer
+) {
 	if (ProceduralMeshComponent != nullptr && Material != nullptr) {
 		// Apply the material to the first material slot (index 0) of the procedural mesh
-		ProceduralMeshComponent->SetMaterial(0, Material);
+		ProceduralMeshComponent->SetMaterial(layer, Material);
 	}
 }
+
+
+
+
+
+
+
 
 
 

@@ -211,7 +211,7 @@ void bezierCurve::process4Points(
     
     float distance = FVectorUtil::Dist(p0, p3);
     float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
-    if(step == 0){
+    if(step == 0 || step <= 0.01f){ //100max z.b.
         return;
     }
     step = 1 / step; //to percentage frac of 1

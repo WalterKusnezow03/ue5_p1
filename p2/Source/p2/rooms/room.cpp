@@ -361,15 +361,15 @@ void Aroom::spawnRoof(){
 			std::vector<FVector> corners = allCorners();
 			for (int i = 0; i < corners.size(); i++)
 			{
-				corners.at(i).Z += getZScale() + 1; //10cm offset fix
+				corners.at(i).Z += getZScale(); //10cm offset fix
 			}
 
 
 			e->createTwoSidedQuad(
 				GetWorld(), 
-				corners.at(0), 
-				corners.at(1), 
-				corners.at(2), 
+				corners.at(0),
+				corners.at(1),
+				corners.at(2),
 				corners.at(3)
 			);
 		}
@@ -427,5 +427,5 @@ void Aroom::addNodesToNavMesh(){
 	}
 
 	//debug draw
-	DebugHelper::showLine(GetWorld(), allNodes, FColor::Green);
+	//DebugHelper::showLine(GetWorld(), allNodes, FColor::Green);
 }

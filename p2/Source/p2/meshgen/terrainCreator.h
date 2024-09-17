@@ -19,6 +19,8 @@ public:
 	static const int ONEMETER = 100; //test
 	static const int fractureHeightStep = 3;
 
+	static const int MAXHEIGHT = 5000; //100 * 100
+
 	int chunkNum();
 	void createTerrain(UWorld *world, int meters);
 
@@ -44,6 +46,7 @@ private:
 
 			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
 			void addheightForAll(int value);
+			void scaleheightForAll(int value);
 
 			FVector2D getFirstXColumnAnchor(int xColumn);
 			FVector2D getFirstYRowAnchor(int yRow);
@@ -125,7 +128,9 @@ private:
 
 	void upScalePoints(std::vector<FVector2D> &points, float factor);
 	void offsetPoints(std::vector<FVector2D> &vec, FVector2D offset);
-	
 
 
+	//new chunk bezier curve
+	void createBezierChunkWide(int sizeInChunks, int offset);
+	void processToupleChunk(FVector2D &a, FVector2D &b);
 };

@@ -10,6 +10,8 @@
 #include "p2/player/teamEnum.h"
 #include "Components/BoxComponent.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
+#include "p2/meshgen/MeshData.h"
+#include <map>
 #include "customMeshActor.generated.h"
 
 UCLASS()
@@ -76,10 +78,8 @@ private:
 
 	teamEnum team;
 
-	//saving data too, will be overriden when updateMesh is called
-	TArray<FVector> vertecies;
-	TArray<int32> triangles;
-	TArray<FVector> normals;
+	/// @brief saves the mesh data in a map for each layer, keeps things organized
+	std::map<int, MeshData> meshLayersMap;
 
 
 	UPROPERTY(VisibleAnywhere)
@@ -89,7 +89,13 @@ private:
 	void updateMesh(
 		TArray<FVector> &newvertecies, 
 		TArray<int32> &newtriangles,
-		TArray<FVector> &newNormals
+		bool createNormals
+	);
+	void updateMesh(
+		TArray<FVector> &newvertecies, 
+		TArray<int32> &newtriangles,
+		bool createNormals,
+		int layer
 	);
 
 
@@ -111,6 +117,11 @@ private:
 	);
 
 	void ApplyMaterial(UProceduralMeshComponent *ProceduralMeshComponent, UMaterial *Material);
+	void ApplyMaterial(
+		UProceduralMeshComponent *ProceduralMeshComponent,
+		UMaterial *Material,
+		int layer
+	);
 
 	void createFoliage(TArray<FVectorTouple> &touples);
 
