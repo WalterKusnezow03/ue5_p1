@@ -49,11 +49,15 @@ void worldLevel::resetWorld(UWorld *world){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
-    if(!isTerrainInited && world != nullptr){
-        createTerrain(world, 150);
+
+    bool create = false;
+    //disabled for debugging
+    if(create){
+        if (!isTerrainInited && world != nullptr){
+            createTerrain(world, 300); // 150
+        }
     }
-
-
+    
     //edge collector must be added here later
     createPathFinder(world);
 }
@@ -74,6 +78,8 @@ void worldLevel::createPathFinder(UWorld *WorldIn){
         EdgeCollector c = EdgeCollector();
         c.getAllEdges(WorldIn); //pushes them to the navmesh on its own
     }
+
+
 }
 
 

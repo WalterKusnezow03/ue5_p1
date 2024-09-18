@@ -35,7 +35,6 @@ private:
 	void loadThrower();
 	void loadParticles();
 	void loadRooms(EntityManager *entityManager);
-	void loadTerrain(EntityManager *e);
 	void loadMaterials();
 
 };

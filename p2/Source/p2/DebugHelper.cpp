@@ -11,41 +11,54 @@ DebugHelper::~DebugHelper()
 {
 }
 
-/// @brief shows a scnreen message in green color
-/// @param s string to show
-void DebugHelper::showScreenMessage(FString s){
-	showScreenMessage(s, FColor::Green);
-}
+/**
+ * 
+ *  --- SCREEN MESSAGES ---
+ * 
+ */
 
 /// @brief showsa screen message and a color
 /// @param s 
 /// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
-    
-	/*if(!s.Contains("room") && !s.Contains("debugroom") && !s.Contains("splitmesh")){
-		return; //DEBUG
-	}*/
-	if(s.Contains("curve debug") == false){
-		return;
-	}
 
+	bool check = false;
+	if(check){
+		FString filterString = "filter string";
+		if(s.Contains(filterString) == false ){ 
+			return;
+		}
+	}
+	
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, color, s);
 	}
 }
 
-/// @brief shows a screen message and a number of choice
-/// @param s string
-/// @param argument number to concatenate 
-void DebugHelper::showScreenMessage(FString s, int argument){
-	showScreenMessage(s, argument, FColor::Green);
+
+
+
+/// @brief shows a scnreen message in green color
+/// @param s string to show
+void DebugHelper::showScreenMessage(FString s){
+	showScreenMessage(s, FColor::Green);
 }
+
+
 
 void DebugHelper::showScreenMessage(FString s, int argument, FColor color){
 	FString res = s;
 	res.Append(FString::Printf(TEXT("%d"), argument));
 	showScreenMessage(res, color);
+}
+
+
+/// @brief shows a screen message and a number of choice
+/// @param s string
+/// @param argument number to concatenate 
+void DebugHelper::showScreenMessage(FString s, int argument){
+	showScreenMessage(s, argument, FColor::Green);
 }
 
 
@@ -84,6 +97,13 @@ FString DebugHelper::connect(int a, int b){
 	return out;
 }
 
+
+
+/**
+ * 
+ *  --- DRAW LINES ---
+ *
+ */
 
 
 

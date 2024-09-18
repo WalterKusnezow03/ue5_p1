@@ -34,7 +34,7 @@ void AssetLoader::loadAssets()
     loadThrower();
     loadParticles();
 
-    loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
+    //loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
     loadRooms(entityManager);
 
 }
@@ -288,18 +288,6 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
 }
 
 
-// ---- LOAD TERRAIN ----
-
-/// @brief loads the terrain data
-/// @param entityManager 
-void AssetLoader::loadTerrain(EntityManager *entityManager){
-   
-    FString path = FString::Printf(TEXT("Blueprint'/Game/Prefabs/terrain/emptyCustomMeshActor.emptyCustomMeshActor_C'"));
-    if(entityManager != nullptr){
-        entityManager->setEmptyMeshUClassBp(loadUClassBluePrint(path));
-    }
-}
-
 // ---- LOAD MATERIALS ----
 
 /// @brief loads all materials needed
@@ -311,7 +299,7 @@ void AssetLoader::loadMaterials(){
             materialEnum::grassMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/grassMaterial.grassMaterial'"))
         );
-        
+
         //stone material
         a->addMaterial(
             materialEnum::stoneMaterial,

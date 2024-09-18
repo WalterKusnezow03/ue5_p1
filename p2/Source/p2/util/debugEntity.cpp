@@ -20,6 +20,8 @@ void AdebugEntity::BeginPlay()
 	Super::BeginPlay();
 	clicked = false;
 	takedamage(0);
+
+	
 }
 
 // Called every frame

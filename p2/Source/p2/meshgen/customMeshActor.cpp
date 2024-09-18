@@ -6,6 +6,7 @@
 #include "p2/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
 #include "KismetProceduralMeshLibrary.h"
+#include "bezierCurve.h"
 #include "customMeshActor.h"
 
 
@@ -207,7 +208,6 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                             }
                         }
                     }
-
                 }
                 catch (const std::exception &e)
                 {
@@ -253,6 +253,58 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 }
 
 
+
+
+/// @brief processes a 2D and writes the mesh data into the given output object
+/// @param map map to process
+/// @param outputData output to write
+void AcustomMeshActor::process2DMapSimple(
+    std::vector<std::vector<FVector>> &map,
+    MeshData &outputData
+){ 
+    //just one layer
+    TArray<FVector> output_layer;
+    TArray<int32> triangles_layer;
+
+    FVector originVec(0, 0, 0);
+
+    //iterate over the map and create all triangles by creating the quads from 4 given vertecies
+    for (int x = 0; x < map.size() - 1; x++){
+        for (int y = 0; y < map.at(x).size() - 1; y++){
+            /*
+                1--2
+                |  |
+                0<-3
+             */
+            bool copy = (x != 0); //prev 0 and 1 indices will be copied
+
+
+            if(x + 1 < map.size() && y + 1 < map.at(x + 1).size()){
+                try{
+                    //get the vertecies
+                    FVector vzero = map.at(x).at(y);
+                    FVector vone = map.at(x).at(y + 1);
+                    FVector vtwo = map.at(x + 1).at(y + 1);
+                    FVector vthree = map.at(x + 1).at(y);
+                    buildQuad(vzero, vone, vtwo, vthree, output_layer, triangles_layer);
+
+                }
+                catch (const std::exception &e)
+                {
+                    //this try catch block was just added when debugging can certainly be
+                    //kept for safety 
+                    DebugHelper::showScreenMessage("mesh actor exception!", FColor::Red);
+                }
+            }
+            
+        }
+    }
+
+    outputData.clearMesh();
+    outputData.setVertecies(MoveTemp(output_layer)); //r value reference must be moved
+    outputData.setTriangles(MoveTemp(triangles_layer));
+    outputData.calculateNormals();
+}
 
 
 
@@ -725,4 +777,71 @@ void AcustomMeshActor::splitAndreplace(
             }
         }
     }
+}
+
+
+
+
+
+
+
+MeshData AcustomMeshActor::createTree(int sizeMeters, float thicknessMeters){
+    MeshData outmeshData;
+    bezierCurve s;
+
+    //create anchors and curve
+    float step = sizeMeters / 2;
+    FVector2D a(0, 0);
+    FVector2D b(step, FVectorUtil::randomNumber(0, sizeMeters / 4)); //random num close to the stem
+    FVector2D c(step * 2, FVectorUtil::randomNumber(0, sizeMeters / 4));
+    std::vector<FVector2D> nodes = {a, b, c};
+    TVector<FVector2D> out;
+
+    int einheitsValue = 1;
+    int stepsPerEinheit = 1;
+    s.calculatecurve(nodes, out, einheitsValue, stepsPerEinheit);
+
+    //scale up
+    int meter = 100;
+    for (int i = 0; i < out.size(); i++){
+        out[i] = out[i] * meter;
+    }
+
+    //extrude from points
+    int t = (thicknessMeters * meter) / 2; //thickness
+    std::vector<FVector> extrudeDirs = {
+        FVector(-t, -t, 0),
+        FVector(-t, t, 0),
+        FVector(t, t, 0),
+        FVector(t, -t, 0)
+    };
+
+    //create 2d mesh instead which can be wrapped
+    std::vector<std::vector<FVector>> meshWrap;
+    for (int i = 0; i < out.size(); i++)
+    {
+        FVector2D &upper = out[i];
+        FVector UpperTo3D(
+            upper.X,
+            0,
+            upper.Y
+        );
+        FVector2D &lower = out[i-1];
+        FVector LowerTo3D(
+            lower.X,
+            0,
+            lower.Y
+        );
+
+        //extrude needed
+
+
+
+
+
+
+    }
+
+    process2DMapSimple(meshWrap, outmeshData);
+    return outmeshData;
 }

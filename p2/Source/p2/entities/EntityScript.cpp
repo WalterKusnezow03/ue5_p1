@@ -316,13 +316,13 @@ void AEntityScript::followpath(float deltaTime){
 		// Direction vector from current location to target location
 		FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector
 
-
 		//x(t) = x0 + v0t + 1/2 at^2
 		//x(t) = x0 + v * speed * deltaTime 
 		// Move from current location towards target location by stepDistance
-		FVector newLocation = currentLocation + dir * deltaTime * speed; 
-
+		FVector newLocation = currentLocation + dir * deltaTime * speed;
 		SetActorLocation(newLocation);
+
+
 	}
 }
 

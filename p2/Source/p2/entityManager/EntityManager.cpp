@@ -440,8 +440,19 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
             }
         }
 
+        // --- new testing spawn by static class ---
+        // Spawn the actor
+        FRotator rotation;
+        FActorSpawnParameters params;
+        AcustomMeshActor *SpawnedActor = world->SpawnActor<AcustomMeshActor>(
+            AcustomMeshActor::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        return SpawnedActor;
 
-
+        /*
         if(emptyCustomMeshActorBp != nullptr){
             AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
             if(actor != nullptr){
@@ -451,7 +462,7 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
                     return customMesh;
                 }
             }
-        }
+        }*/
     }
     return nullptr;
 }
@@ -659,14 +670,6 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
  * 
  */
 
-/// @brief sets the emoty mesh actor to spawn an process meshes, nesecarry for terrain and other meshes
-/// @param uclassIn uclass to spawn
-void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
-    if(uclassIn != nullptr){
-        emptyCustomMeshActorBp = uclassIn;
-    }
-}
-
 
 
 
@@ -677,8 +680,7 @@ void EntityManager::setEmptyMeshUClassBp(UClass *uclassIn){
 std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, int requestCount){
     std::vector<AcustomMeshActor *> output;
     if (
-        world != nullptr &&
-        emptyCustomMeshActorBp != nullptr // to be moved to asset manager!
+        world != nullptr
     )
     {
         output.reserve(requestCount);
@@ -702,13 +704,9 @@ std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, i
 /// @param vertecies vertecies
 void EntityManager::createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies){
     FVector location(0, 0, 0);
-    AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
-    if(actor != nullptr){
-
-        AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
-        if(customMesh != nullptr){
-            customMesh->process2DMap(vertecies);
-        }
+    AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
+    if(customMesh != nullptr){
+        customMesh->process2DMap(vertecies);
     }
 }
 
@@ -720,17 +718,14 @@ void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FV
     if(assetManager *am = assetManager::instance()){
         FVector location(0, 0, 0);
 
-        AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
-        if(actor != nullptr){
+        AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
+        if(customMesh != nullptr){
 
-            AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
-            if(customMesh != nullptr){
-
-                customMesh->createTwoSidedQuad(
-                    a, b, c, d, am->findMaterial(materialEnum::wallMaterial)
-                );
-            }
+            customMesh->createTwoSidedQuad(
+                a, b, c, d, am->findMaterial(materialEnum::wallMaterial)
+            );
         }
+
     }
 }
 

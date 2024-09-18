@@ -110,18 +110,25 @@ std::vector<std::vector<FVector>> terrainCreator::chunk::readAndMerge(
 }
 
 
-
+/**
+ * RAYCAST
+ */
 /// @brief get the height for an specific vertex
 /// @param a vertex
 /// @return 
 int terrainCreator::chunk::getHeightFor(FVector &a){
     if(isInBounds(a)){
+        //apply offset because mesh center is at center 
+        //int offsetCenter = terrainCreator::ONEMETER * (innerMap.size() / 2); //moved to chunk instantiation
         int xa = convertToInnerIndex(a.X);
         int ya = convertToInnerIndex(a.Y);
         return innerMap.at(xa).at(ya).Z;
     }
     return a.Z;
 }
+
+
+
 
 /// @brief adds a value to all vector of the chunk
 /// @param value adds a value to the z part of each vertex in this chunk
@@ -140,7 +147,7 @@ void terrainCreator::chunk::addheightForAll(int value){
 
 /// @brief multiplies the value to all vector of the chunk in z height
 /// @param value mulitplicator
-void terrainCreator::chunk::scaleheightForAll(int value){
+void terrainCreator::chunk::scaleheightForAll(float value){
     for (int i = 0; i < innerMap.size(); i++){
         for (int j = 0; j < innerMap.at(i).size(); j++){
             FVector &adjust = innerMap.at(i).at(j);
@@ -580,7 +587,7 @@ bool terrainCreator::chunk::isInBounds(FVector &a){
            selfY <= a.Y && a.Y <= selfYUpper;
 }
 
-
+/// @brief will remove all spikes and graps from the map, designed to be called with smooth map function
 void terrainCreator::chunk::fixGaps(){
     for (int i = 1; i < innerMap.size() - 1; i++){
         for (int j = 1; j < innerMap.at(i).size() - 1; j++){
@@ -588,8 +595,8 @@ void terrainCreator::chunk::fixGaps(){
 
             FVector &up = innerMap.at(i).at(j+1);
             FVector &down= innerMap.at(i).at(j-1);
-            FVector &left = innerMap.at(i+1).at(j);
-            FVector &right = innerMap.at(i-1).at(j);
+            FVector &right = innerMap.at(i+1).at(j);
+            FVector &left = innerMap.at(i-1).at(j);
 
             //spitzen
             float schnittGes = ((up.Z + down.Z) + (left.Z + right.Z)) / 4;
@@ -714,33 +721,70 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
 
     
     //new testing with random heights and smooth
-    int iterations = 20;
-    
-    int firstMax = 300; //going above 300 causes tooo high hills, remember that 300 * 20 iterations is a lot
-    int firstMin = 0;
+    int iterations = 0;
+
+    int firstMax = 500; //going above 300 causes tooo high hills, remember that 300 * 20 iterations is a lot
+    int firstMin = 100;
 
     for (int it = 1; it < iterations; it++) // from 1 to keep the first chunk walkable
     {
-        //testing apply height in larger blocks
-        int blockSize = FVectorUtil::randomNumber(1, chunks / 2);
+        // testing apply height in larger blocks
+        int blockSize = FVectorUtil::randomNumber(1, chunks / 4);
         int h = FVectorUtil::randomNumber(
             firstMin,
             firstMax
         );
 
-        int xStart = FVectorUtil::randomNumber(1, chunks - blockSize);
-        int yStart = FVectorUtil::randomNumber(1, chunks - blockSize);
+        int xStart = FVectorUtil::randomNumber(2, std::min(chunks - blockSize, chunks / 2));
+        int yStart = FVectorUtil::randomNumber(2, std::min(chunks - blockSize, chunks / 2));
         //apply in blocks, works good
         for (int i = xStart; i < map.size(); i++){
             for (int j = yStart; j < map.at(i).size(); j++){
                 map.at(i).at(j).addheightForAll(h);
             }
         }
-
         smooth3dMap();
     }
 
+    /*
+    //smaller fluctuations
+    int smallHeights = 5;
+    int smallAddLower = 0;
+    int smallAddHigher = 900;
+    int smallAddHigherSingle = 100;
+    for (int it = 0; it < smallHeights; it++)
+    {
+        int h = FVectorUtil::randomNumber(
+            smallAddLower,
+            smallAddHigher
+        );
+        
+        //single chunk heights for variety
+        for (int i = 3; i < map.size(); i+= 2){
+            for (int j = 3; j < map.at(i).size(); j+=2){
+                h = FVectorUtil::randomNumber(
+                    smallAddLower,
+                    smallAddHigherSingle
+                );
+                map.at(i-1).at(j).addheightForAll(h);
+                map.at(i).at(j-1).addheightForAll(h);
+                map.at(i-1).at(j-1).addheightForAll(h);
+                map.at(i).at(j).addheightForAll(h);
+            }
+        }
 
+        smooth3dMap();
+    }
+    */
+
+    int offset = 2;
+    int bezierCount = 40; //means 40m height in worse case
+    for (int j = 0; j < bezierCount; j++)
+    {
+        createBezierChunkWide(offset);
+    }
+
+    //extra smoothening
     int extraSmooth = 3;
     for (int i = 0; i < extraSmooth; i++){
         smooth3dMap();
@@ -749,7 +793,7 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
 
     //must be set on terrain type, more hills, flatter terrain like deserts... etc.
     //works good and as intended, multiply could be set to 0 < val < 1 values for deserts for example
-    int multiply = 2;
+    float multiply = 0.5f;
     for (int i = 0; i < map.size(); i++)
     {
         for (int j = 0; j < map.at(i).size(); j++){
@@ -922,7 +966,7 @@ void terrainCreator::smooth3dMap(){
     }
 
 
-    //fill gaps chunk
+    //fill gaps and spikes, very important chunk
     for(int i = 0; i < map.size(); i++){
         for(int j = 0; j < map.at(i).size(); j++){
             map.at(i).at(j).fixGaps();
@@ -1198,6 +1242,11 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             // get position
             // apply position
             FVector newPos = currentChunk->position();
+            //fix offset to be anchor and bottom left
+            float offsetCenter = terrainCreator::ONEMETER * (terrainCreator::CHUNKSIZE / 2);
+            newPos.X -= offsetCenter;
+            newPos.Y -= offsetCenter;
+
             currentActor->SetActorLocation(newPos); //some offset might be applied later addionally if wanted
 
             //apply data new testing
@@ -1249,8 +1298,9 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
 
 // --- top perpective section ---
 
-
-void terrainCreator::createBezierChunkWide(int sizeInChunks, int offset){
+/// @brief will create a bezier curve and add a 100cm height increase at each chunk enclosed.
+/// @param offset offset chunk index to take along x and y
+void terrainCreator::createBezierChunkWide(int offset){
 
     int distanceBetweenAnchors = 4;
     int anchors = 5;
@@ -1344,7 +1394,7 @@ void terrainCreator::processToupleChunk(FVector2D &a, FVector2D &b){
         for (int i = y1; i <= y2; i++){
             chunk *c = &map.at(xIndex).at(i);
             if(c != nullptr){
-                c->addheightForAll(50); //new all chunk appl
+                c->addheightForAll(100); //new all chunk appl
             }
         }
     }

@@ -61,9 +61,7 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Perform actions that depend on the world being ready
-    //loads all edegs and creates the path finder on start
-    //createPathFinder();
+   
 }
 
 void AgameModeSubclass::createPathFinder(){

@@ -44,6 +44,13 @@ public:
 
 	void process2DMap(std::vector<std::vector<FVector>> &map);
 
+	void process2DMapSimple(
+		std::vector<std::vector<FVector>> &map,
+		MeshData &outputData
+	);
+
+	MeshData createTree(int sizeMeters, float thicknessMeters);
+
 	void createCube(
 		FVector &a,
 		FVector &b,

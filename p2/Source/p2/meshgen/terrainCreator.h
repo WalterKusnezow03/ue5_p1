@@ -46,7 +46,7 @@ private:
 
 			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
 			void addheightForAll(int value);
-			void scaleheightForAll(int value);
+			void scaleheightForAll(float value);
 
 			FVector2D getFirstXColumnAnchor(int xColumn);
 			FVector2D getFirstYRowAnchor(int yRow);
@@ -131,6 +131,6 @@ private:
 
 
 	//new chunk bezier curve
-	void createBezierChunkWide(int sizeInChunks, int offset);
+	void createBezierChunkWide(int offset);
 	void processToupleChunk(FVector2D &a, FVector2D &b);
 };

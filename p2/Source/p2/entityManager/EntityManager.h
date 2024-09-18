@@ -83,7 +83,6 @@ public:
 
 
 	//terrain
-	void setEmptyMeshUClassBp(UClass *uclassIn);
 	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
 
 	//meshes in general
