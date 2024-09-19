@@ -15,8 +15,10 @@ public:
 	~terrainCreator();
 
 	static const bool PLOTTING_ENABLED = false; // false;
+	
+	/// @brief saves the number of vertecies in one chunk (m^2)
 	static const int CHUNKSIZE = 10;
-	static const int ONEMETER = 100; //test
+	static const int ONEMETER = 100; //one meter constant
 	static const int fractureHeightStep = 3;
 
 	static const int MAXHEIGHT = 5000; //100 * 100
@@ -113,7 +115,10 @@ private:
 	void processTouple(FVector2D &a, FVector2D &b);
 
 	void smooth3dMap();
-	//void cleanValues(std::vector<FVector2D> &vec);
+	void smooth3dMap(FVector &a, FVector &b);
+
+	
+	// void cleanValues(std::vector<FVector2D> &vec);
 	void cleanValues(TVector<FVector2D> &vec);
 	void fillGaps(std::vector<FVector2D> &vec);
 	void applyXColumnToMap(int index, TVector<FVector2D> &column);

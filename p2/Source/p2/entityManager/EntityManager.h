@@ -77,10 +77,6 @@ public:
 	void createFire(UWorld *world, FVector &location);
 	void createDebree(UWorld *world, FVector &location, materialEnum materialType);
 
-	//rooms
-	void setRoomuClassBp(UWorld *world, UClass *uclass);
-	void createALayout(UWorld *worldIn, FVector &location, int x, int y);
-
 
 	//terrain
 	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
@@ -90,11 +86,6 @@ public:
 	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:
-	//static class EntityManager *instancePointer;
-
-
-	//room section
-	class RoomManager roomType1Manager;
 	
 
 	//empty mesh actor

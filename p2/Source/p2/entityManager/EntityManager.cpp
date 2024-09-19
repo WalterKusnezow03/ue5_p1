@@ -619,52 +619,6 @@ void EntityManager::createParticle(
 
 
 
-
-/** 
- * 
- * ----- SECTION FOR ROOM CREATION -----
- * 
-*/
-
-
-/// @brief adds a room to the correct room manager
-/// room types must be added later
-/// @param world 
-/// @param uclass 
-void EntityManager::setRoomuClassBp(UWorld *world, UClass *uclass){
-    if(uclass != nullptr && world != nullptr){
-        roomType1Manager.add(world, uclass);
-    }
-}
-
-
-
-
-
-
-
-/// @brief creates a room layout and spawns all rooms for it
-/// different room types will be added later
-/// @param worldIn world to spawn in
-/// @param location 
-/// @param xscale 
-/// @param yscale 
-void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale, int yscale){
-    
-    DebugHelper::showScreenMessage("TRY CREATE ROOMS", FColor::Red);
-
-    if(worldIn != nullptr){
-        //must be selected a room type too
-        roomType1Manager.createABuilding(worldIn, location, xscale, yscale);
-    }
-
-}
-
-
-
-
-
-
 /**
  * ---- SECTION FOR TERRAIN ----
  * 

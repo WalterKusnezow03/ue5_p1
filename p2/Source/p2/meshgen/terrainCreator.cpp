@@ -921,20 +921,41 @@ void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
 
 /// @brief will smooth out all chunks rows and columns and merge them together to the map
 void terrainCreator::smooth3dMap(){
+    FVector a(0, 0, 0);
+    int max = map.size() * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE;
+    FVector b(max, max, 0);
+    smooth3dMap(a, b);
+}
 
-    //get all x and y axis and smooth them. 
+/// @brief will smooth out all chunks rows and columns and merge them together to the map
+void terrainCreator::smooth3dMap(FVector &a, FVector &b){
+
+    //calculate enclosed bounds, works as expected
+    int fromX = a.X < b.X ? a.X : b.X;
+    int fromY = a.Y < b.Y ? a.Y : b.Y;
+    int toX = a.X > b.X ? a.X : b.X;
+    int toY = a.Y > b.Y ? a.Y : b.Y;
+    fromX = clampIndex(cmToChunkIndex(fromX));
+    fromY = clampIndex(cmToChunkIndex(fromY));
+    toX = clampIndex(cmToChunkIndex(toX));
+    toY = clampIndex(cmToChunkIndex(toY));
+
+
+    // get all x and y axis and smooth them.
     bezierCurve curve;
 
     TVector<FVector2D> output; //use only one custom tvector for efficency
 
     //all x columns
     int xcount = 0;
-    for (int i = 0; i < map.size(); i++)
+    //for (int i = 0; i < map.size(); i++)
+    for (int i = fromX; i <= toX; i++)
     {
         for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
         {
             std::vector<FVector2D> column;
-            for (int j = 0; j < map.at(i).size(); j++)
+            //for (int j = 0; j < map.at(i).size(); j++)
+            for (int j = fromY; j < toY; j++)
             {
                 //get data and copy inside
                 //std::vector<FVector2D> copy = map.at(i).at(j).getXColumAnchors(innerX);
@@ -955,14 +976,18 @@ void terrainCreator::smooth3dMap(){
     }
     
 
+
+
     //then all y rows
     int ycount = 0;
-    for (int cY = 0; cY < map.size(); cY++){
+    for (int cY = fromY; cY < toY; cY++){
+    //for (int cY = 0; cY < map.size(); cY++){
         for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
         {
             std::vector<FVector2D> row;
             //über ganz x laufen und einsammeln
-            for (int cX = 0; cX < map.size(); cX++){
+            for (int cX = fromX; cX < toX; cX++){
+            //for (int cX = 0; cX < map.size(); cX++){
                 //std::vector<FVector2D> copy = map.at(cX).at(cY).getYRowAnchors(innerY);
                 //row.insert(row.end(), copy.begin(), copy.end());
 
@@ -1152,11 +1177,15 @@ TVector<FVector2D> &row
 /// @param sizeMetersX size in meters X
 /// @param sizeMetersY size in meters Y
 void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY){
+    //convert to meters ue5 world scale just as usual
+    sizeMetersX *= 100;
+    sizeMetersY *= 100;
 
-    int fromX = clampIndex(cmToChunkIndex(location.X));
-    int fromY = clampIndex(cmToChunkIndex(location.Y));
-    int toX = clampIndex(fromX + cmToChunkIndex(sizeMetersX));
-    int toY = clampIndex(fromY + cmToChunkIndex(sizeMetersY));
+    //get map bounds with little upscaling
+    int fromX = clampIndex(cmToChunkIndex(location.X) - 1);
+    int fromY = clampIndex(cmToChunkIndex(location.Y) - 1);
+    int toX = clampIndex(fromX + cmToChunkIndex(sizeMetersX) + 1);
+    int toY = clampIndex(fromY + cmToChunkIndex(sizeMetersY) + 1);
 
     int heightToSet = location.Z;
 
@@ -1168,7 +1197,7 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
     }
 
     //finally also smooth the map
-    smooth3dMap();
+    //smooth3dMap(); //disabled for debugging
 }
 
 /**

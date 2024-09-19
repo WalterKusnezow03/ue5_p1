@@ -156,22 +156,23 @@ void worldLevel::createTerrain(UWorld *world, int meters){
             //choose some size between 0 and meters for pos and some scale (lets say 15 - 30?) 
             //some how block the are which is filled?
             int terrainSizehalf = (meters * terrainCreator::ONEMETER) / 2;
-            int roomsize = 20;
+            int roomsizeMeter = 20;
+            int roomsizeWorldScale = 20 * 100;
             int spawnheight = 1000; //some value might be random
             FVector locationToSpawn(
-                FVectorUtil::randomNumber(0, terrainSizehalf - roomsize * 100),
-                FVectorUtil::randomNumber(0, terrainSizehalf - roomsize * 100),
+                FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
+                FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
                 spawnheight
             );
 
             //create room layouts to embed
 
             //flatten terrain / override height
-            terrainPointer->setFlatArea(locationToSpawn, roomsize, roomsize);
+            terrainPointer->setFlatArea(locationToSpawn, roomsizeMeter, roomsizeMeter);
 
             //create rooms
             if(RoomManager *r = roomManager()){
-                r->createABuilding(world, locationToSpawn, roomsize, roomsize);
+                r->createABuilding(world, locationToSpawn, roomsizeMeter, roomsizeMeter);
             }
 
             //request mesh actors and apply terrain
