@@ -23,6 +23,7 @@ public:
 
 	int chunkNum();
 	void createTerrain(UWorld *world, int meters);
+	void setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY);
 
 	//apply terrain
 	void applyTerrainDataToMeshActors(std::vector<AcustomMeshActor *> &actors);
@@ -47,6 +48,7 @@ private:
 			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
 			void addheightForAll(int value);
 			void scaleheightForAll(float value);
+			void setheightForAll(float value);
 
 			FVector2D getFirstXColumnAnchor(int xColumn);
 			FVector2D getFirstYRowAnchor(int yRow);

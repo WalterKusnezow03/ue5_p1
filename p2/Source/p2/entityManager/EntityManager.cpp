@@ -655,7 +655,7 @@ void EntityManager::createALayout(UWorld *worldIn, FVector &location, int xscale
 
     if(worldIn != nullptr){
         //must be selected a room type too
-        roomType1Manager.createALayout(worldIn, location, xscale, yscale);
+        roomType1Manager.createABuilding(worldIn, location, xscale, yscale);
     }
 
 }

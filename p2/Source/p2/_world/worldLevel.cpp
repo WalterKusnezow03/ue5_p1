@@ -4,6 +4,7 @@
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutpostManager.h"
+#include "p2/rooms/RoomManager.h"
 #include "p2/meshgen/terrainCreator.h"
 
 worldLevel::worldLevel()
@@ -16,10 +17,12 @@ worldLevel::~worldLevel()
     
 }
 
+//static vars init:
 bool worldLevel::isTerrainInited = false;
 EntityManager *worldLevel::entityManagerPointer = nullptr;
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
+RoomManager *worldLevel::roomManagerPointer = nullptr;
 
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
@@ -50,7 +53,7 @@ void worldLevel::resetWorld(UWorld *world){
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
 
-    bool create = false;
+    bool create = true;
     //disabled for debugging
     if(create){
         if (!isTerrainInited && world != nullptr){
@@ -66,7 +69,6 @@ void worldLevel::initWorld(UWorld *world){
 
 /**
  * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start
- * after all meshes have been created? Unclear right now.
  */
 void worldLevel::createPathFinder(UWorld *WorldIn){
     if(WorldIn == nullptr){
@@ -84,6 +86,11 @@ void worldLevel::createPathFinder(UWorld *WorldIn){
 
 
 
+/**
+ * 
+ * INSTANCE POINTERS
+ * 
+ */
 
 
 
@@ -106,6 +113,25 @@ OutpostManager * worldLevel::outpostManager(){
     return outpostManagerPointer;
 }
 
+/// @brief returns the pointer to the room manager, save assets inside the proiveded object by the pointer
+/// DO NOT DELETE
+/// @return returns the pointer to the room manager, use to save room prefabs and instantiate buildings
+RoomManager *worldLevel::roomManager(){
+    if(roomManagerPointer == nullptr){
+        roomManagerPointer = new RoomManager();
+    }
+    return roomManagerPointer;
+}
+
+/**
+ * 
+ * 
+ * TERRAIN
+ * 
+ * 
+ */
+
+
 
 /// @brief creates the terrain if not yet created
 /// @param world world to spawn in
@@ -127,6 +153,28 @@ void worldLevel::createTerrain(UWorld *world, int meters){
         if(e != nullptr){
             terrainPointer->createTerrain(world, meters);
 
+            //choose some size between 0 and meters for pos and some scale (lets say 15 - 30?) 
+            //some how block the are which is filled?
+            int terrainSizehalf = (meters * terrainCreator::ONEMETER) / 2;
+            int roomsize = 20;
+            int spawnheight = 1000; //some value might be random
+            FVector locationToSpawn(
+                FVectorUtil::randomNumber(0, terrainSizehalf - roomsize * 100),
+                FVectorUtil::randomNumber(0, terrainSizehalf - roomsize * 100),
+                spawnheight
+            );
+
+            //create room layouts to embed
+
+            //flatten terrain / override height
+            terrainPointer->setFlatArea(locationToSpawn, roomsize, roomsize);
+
+            //create rooms
+            if(RoomManager *r = roomManager()){
+                r->createABuilding(world, locationToSpawn, roomsize, roomsize);
+            }
+
+            //request mesh actors and apply terrain
             int numberCreated = terrainPointer->chunkNum();
             std::vector<AcustomMeshActor *> meshes = e->requestMeshActors(world, numberCreated);
 

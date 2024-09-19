@@ -130,7 +130,7 @@ int terrainCreator::chunk::getHeightFor(FVector &a){
 
 
 
-/// @brief adds a value to all vector of the chunk
+/// @brief adds a value to all positions of the chunk
 /// @param value adds a value to the z part of each vertex in this chunk
 void terrainCreator::chunk::addheightForAll(int value){
     for (int i = 0; i < innerMap.size(); i++){
@@ -145,7 +145,7 @@ void terrainCreator::chunk::addheightForAll(int value){
     }
 }
 
-/// @brief multiplies the value to all vector of the chunk in z height
+/// @brief multiplies the value to all positions of the chunk in z height
 /// @param value mulitplicator
 void terrainCreator::chunk::scaleheightForAll(float value){
     for (int i = 0; i < innerMap.size(); i++){
@@ -159,6 +159,20 @@ void terrainCreator::chunk::scaleheightForAll(float value){
         }
     }
 }
+
+/// @brief sets the height for all positions of the chunk to a given value, overrides
+/// @param value value to set
+void terrainCreator::chunk::setheightForAll(float value){
+    for (int i = 0; i < innerMap.size(); i++)
+    {
+        for (int j = 0; j < innerMap.at(i).size(); j++){
+            //du musst hier eine referenz erzeugen weil er sonst nicht reinschreibt?
+            FVector &ref = innerMap.at(i).at(j);
+            ref.Z = value;
+        }
+    }
+}
+
 
 
 
@@ -1126,10 +1140,41 @@ TVector<FVector2D> &row
 
 }
 
+/**
+ * 
+ * --- EMBED ROOMS ---
+ * 
+ */
 
+/// @brief will set the are to a certain height provided in the location vector, which should be 
+/// the bottom left corner of the rooms created, will smooth the terrain data afterwards
+/// @param location location and Z offset to set
+/// @param sizeMetersX size in meters X
+/// @param sizeMetersY size in meters Y
+void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY){
+
+    int fromX = clampIndex(cmToChunkIndex(location.X));
+    int fromY = clampIndex(cmToChunkIndex(location.Y));
+    int toX = clampIndex(fromX + cmToChunkIndex(sizeMetersX));
+    int toY = clampIndex(fromY + cmToChunkIndex(sizeMetersY));
+
+    int heightToSet = location.Z;
+
+    //iterate over map and smooth
+    for (int i = fromX; i <= toX; i++){
+        for (int j = fromY; j <= toY; j++){
+            map.at(i).at(j).setheightForAll(heightToSet);
+        }
+    }
+
+    //finally also smooth the map
+    smooth3dMap();
+}
 
 /**
+ * 
  * --- SCALE CONVERSION SECTION ---
+ * 
  */
 
 
@@ -1165,9 +1210,28 @@ bool terrainCreator::verifyIndex(int a){
 }
 
 
+/// @brief validates the index on either x or y axis
+/// @return clamped value valid to acces the 2D vector map
+int terrainCreator::clampIndex(int a){
+    if(a < 0){
+        a = 0;
+    }
+    if(a >= map.size()){
+        a = map.size() - 1;
+    }
+    return a;
+}
+
+
+
+
+
+
 
 /**
+ * 
  * plotting
+ *
  */
 
 
@@ -1186,6 +1250,7 @@ void terrainCreator::plotAllChunks(UWorld * world){
 
 /**
  * --- VIRTUAL RAYCAST ---
+ * DEBUG NEEDED, ENTETIES YEET IN THE AIR
  */
 
 /// @brief instead of raycasting the z height can be got from the generated mesh data
@@ -1363,17 +1428,6 @@ void terrainCreator::applyTopViewCurveToMap(std::vector<FVector2D> &vec){
 }
 
 
-/// @brief validates the index on either x or y axis
-/// @return clamped value
-int terrainCreator::clampIndex(int a){
-    if(a < 0){
-        a = 0;
-    }
-    if(a >= map.size()){
-        a = map.size() - 1;
-    }
-    return a;
-}
 
 
 

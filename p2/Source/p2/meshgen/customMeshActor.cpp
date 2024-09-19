@@ -192,7 +192,9 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                      * ADD NODES TO NAV MESH
                      */
                     // only add the normal if the surface is flat
-                    if (FVectorUtil::edgeIsVertical(originVec, normal))
+
+                    //testing only three per chunk, raycasting takes a lot of power
+                    if (navMeshAdd.size() <= 6 && FVectorUtil::edgeIsVertical(originVec, normal))
                     {
                         if (navMeshAdd.size() == 0)
                         {
@@ -208,8 +210,7 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                             }
                         }
                     }
-                }
-                catch (const std::exception &e)
+                }catch (const std::exception &e)
                 {
                     //this try catch block was just added when debugging can certainly be
                     //kept for safety 

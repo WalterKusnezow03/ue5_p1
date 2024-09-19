@@ -21,7 +21,10 @@ RoomManager::~RoomManager()
 }
 
 
-
+/// @brief add a blue print loaded uclass / room prefab here, room manager handels them without the
+/// asset manager!
+/// @param world world context to instantiate them to get their size
+/// @param uclass uclass to spawn 
 void RoomManager::add(UWorld *world, UClass *uclass){
     if(uclass != nullptr && world != nullptr){
 
@@ -93,13 +96,16 @@ void RoomManager::add(UWorld *world, UClass *uclass){
 
 
 
-
+/**
+ * MAIN FUNCTION TO CALL TO CREATE A BUILDING
+ */
 
 /// @brief creates a layout based on a size inout of indices of meters
 /// @param world world to spawn in
+/// @param location lcoation of the bottom left corner
 /// @param x in meters
 /// @param y in meters
-void RoomManager::createALayout(UWorld* world, FVector &location, int x, int y){
+void RoomManager::createABuilding(UWorld* world, FVector &location, int x, int y){
     
 
     //default method part
@@ -175,7 +181,6 @@ void RoomManager::processLayer(
         for (int i = 0; i < vec.size(); i++){ //itertae all rooms to create
 
             roomBounds *roomToCreate = &vec.at(i);
-            //UClass *uclass = getBpFor(roomToCreate->xscale(), roomToCreate->yscale(), roomToCreate->readType());
             UClass *uclass = roomToCreate->readBp();
             if(uclass == nullptr){ //skip any nullptr which indeed can be the case (for gaps on purpose)
                 continue;
@@ -189,7 +194,7 @@ void RoomManager::processLayer(
             int ypos = convertScaleToMeter(yposInGrid);
 
             FVector position(xpos, ypos, 50); //z position must be aligned too some how (later in terrain integrate)
-            //position += location;
+            
             position += offset;
 
             //create rooms
@@ -307,6 +312,11 @@ UClass *RoomManager::getBpFor(int xSizeIn, int ySizeIn, roomtypeEnum type){
     return nullptr;
 }
 
+/// @brief returns a size data including blue print for a room type, a random will be picked
+/// or none (nullptr) if none available
+/// DO NOT DELETE
+/// @param type room type to get
+/// @return a random of the given type or nullptr
 RoomManager::sizeData* RoomManager::getAny(roomtypeEnum type){
     if (vectorMap.find(type) != vectorMap.end())
     {
@@ -322,7 +332,18 @@ RoomManager::sizeData* RoomManager::getAny(roomtypeEnum type){
     return nullptr;
 }
 
-// ---- size data ----
+
+/**
+ * 
+ * ---- RoomManager SIZE DATA ----
+ *
+ */
+
+/// @brief construct the size data by passing in a
+/// @param x xsize of the room (in meters)
+/// @param y ysize of the room (in meters)
+/// @param typeIn type of the room
+/// @param uclassIn uclass to spawn
 RoomManager::sizeData::sizeData(int x, int y, roomtypeEnum typeIn, UClass *uclassIn){
     xsize = x;
     ysize = y;
@@ -341,6 +362,8 @@ int RoomManager::sizeData::ySize(){
     return ysize;
 }
 
+/// @brief returns the saved blue print uclass for the room
+/// @return uclass Bp which was set in the constructor
 UClass *RoomManager::sizeData::getBp(){
     return uclassBp;
 }

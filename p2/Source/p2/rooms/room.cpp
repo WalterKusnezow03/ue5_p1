@@ -278,6 +278,11 @@ std::vector<FVector> Aroom::allCorners(){
 /// @param bp blueprint to spawn as wall, (of the default size 50cm x, ...)
 void Aroom::spawnWalls(UClass *bp){
 
+	if(bp == nullptr){
+		DebugHelper::showScreenMessage("room - an issue occured spawning the walls", FColor::Red);
+		return;
+	}
+
 	//skip staircase for debugging
 	if(type == roomtypeEnum::staircase){
 		return;

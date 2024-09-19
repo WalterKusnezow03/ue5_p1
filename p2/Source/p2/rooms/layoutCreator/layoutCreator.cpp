@@ -762,7 +762,7 @@ void layoutCreator::connectNeighbors(){
 
 
 
-
+/// @brief will create windows at edges of room if no neighbor found and random windows removed / more natural
 void layoutCreator::createWindows(){
     //am rand lang gehen und fenster hinzufügen, oder an null angrenzend
 
@@ -784,7 +784,7 @@ void layoutCreator::createWindows(){
 
                 
                 removeRandomElements(output, 0.5f);
-                DebugHelper::showScreenMessage("room debug counted windows ", output.size(), FColor::Red);
+                //DebugHelper::showScreenMessage("room debug counted windows ", output.size(), FColor::Red);
 
                 for (int j = 0; j < output.size(); j++)
                 {

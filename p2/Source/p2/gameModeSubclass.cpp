@@ -45,10 +45,8 @@ AgameModeSubclass::AgameModeSubclass()
 
     //remember at some point the level must be reset too: (maybe just before that is a good approach!)
     
-    /**
-     * CREATE WORLD LEVEL 
-     */
-    worldLevel::initWorld(GetWorld());
+    
+    //worldLevel::initWorld(GetWorld());
 
    
 }
@@ -61,7 +59,12 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
 
-   
+    /**
+     * CREATE WORLD LEVEL 
+     * 
+     * must be moved to begin play to prevent bugs with asset spawning
+     */
+    worldLevel::initWorld(GetWorld());
 }
 
 void AgameModeSubclass::createPathFinder(){

@@ -248,7 +248,11 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         FString finalPath = buildPath(path, connected);
 
         
-        entityManager->setRoomuClassBp(world, loadUClassBluePrint(finalPath));
+        //entityManager->setRoomuClassBp(world, loadUClassBluePrint(finalPath));
+
+        if(RoomManager *r = worldLevel::roomManager()){
+            r->add(world, loadUClassBluePrint(finalPath));
+        }
     }
     
 

@@ -18,6 +18,7 @@ class P2_API worldLevel
 public:
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
+	static RoomManager *roomManager();
 	static void resetWorld(UWorld *world);
 
 	static void initWorld(UWorld *world);
@@ -35,6 +36,7 @@ private:
 	//manager
 	static class EntityManager *entityManagerPointer;
 	static class OutpostManager *outpostManagerPointer;
+	static class RoomManager *roomManagerPointer;
 
 	//terrain
 	static class terrainCreator *terrainPointer;

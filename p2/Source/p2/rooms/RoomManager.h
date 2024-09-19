@@ -24,7 +24,7 @@ public:
 
 
 
-	void createALayout(UWorld *world, FVector &location, int x, int y);
+	void createABuilding(UWorld *world, FVector &location, int x, int y);
 
 	bool contains(int x, int y, roomtypeEnum type);
 
@@ -33,6 +33,7 @@ public:
 		public:
 			sizeData(int x, int y, roomtypeEnum typeIn, UClass *uclassIn);
 			~sizeData();
+
 			int xSize();
 			int ySize();
 			std::string createKey();
@@ -42,10 +43,13 @@ public:
 			roomtypeEnum type;
 			int xsize;
 			int ysize;
-			class UClass *uclassBp;
+
+			UPROPERTY()
+			class UClass *uclassBp = nullptr;
 	};
 
 private:
+	//is not a tmap because sizeData will hold Blueprint as UPROPERTY() var anyway.
 	std::map<roomtypeEnum, std::vector<RoomManager::sizeData>> vectorMap;
 
 	UClass *singleTileBp;

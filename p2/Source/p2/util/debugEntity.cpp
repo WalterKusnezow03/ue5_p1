@@ -54,6 +54,7 @@ teamEnum AdebugEntity::getTeam(){
 
 void AdebugEntity::debugFunction(){
 	if(EntityManager *e = worldLevel::entityManager()){
+		/*
 		FVector location1 = GetActorLocation();
 		location1.Z = 20;
 
@@ -69,6 +70,6 @@ void AdebugEntity::debugFunction(){
 		//worldLevel::initWorld(GetWorld());
 		//terrainCreator *t = new terrainCreator();
 		//t->createTerrain(GetWorld(), meters);
-
+		*/
 	}
 }

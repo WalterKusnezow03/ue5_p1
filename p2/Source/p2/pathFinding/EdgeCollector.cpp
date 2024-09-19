@@ -272,10 +272,11 @@ void EdgeCollector::getEdgesFromSingleMesh(
 
                     edgeData &prev = currentEdges.back(); //reference the back
 
+                    //close enough to prev edge, 10cm 
                     FVector lower = A.Z < B.Z ? A : B;
                     FVector higher = A.Z > B.Z ? A : B;
                     if (FVector::Dist(prev.top, lower) <= 10)
-                    { // 10cm
+                    { 
                         prev.top = higher;
                         extended = true;
                     }
@@ -283,27 +284,33 @@ void EdgeCollector::getEdgesFromSingleMesh(
 
                 //if not extended vertically, just add
                 if(!extended){
-                    if(A.Z < B.Z){
-                        currentEdges.push_back(edgeData(A, B));
-                    }else{
-                        currentEdges.push_back(edgeData(B, A)); //hier ein punkt weil lokal ref
-                    }
+                    currentEdges.push_back(edgeData(A, B)); //constructor will sort autmatically top and bottom
                 }
                 
             }
         }
     }
 
+    //VERY IMPORTANT
     ComputeConvexHull(currentEdges);
-    CleanUpParalellEdges(currentEdges); //convex hull needed! -- this is not nesecarry because the hull is convex!
+
+    //causes issues currently
+    //CleanUpParalellEdges(currentEdges); //convex hull needed! -- this is not nesecarry because the hull is convex!
 
 
     //caluclate raycast hits and apply to all edges aligning them properly
     collectRaycasts(currentEdges, worldIn);
 
+    std::vector<FVector> toPosVec;
+    for (int i = 0; i < currentEdges.size(); i++){
+        toPosVec.push_back(currentEdges.at(i).bottom);
+    }
+    if(PathFinder *f = PathFinder::instance(worldIn)){
+        f->addConvexHull(toPosVec);
+    }
+    return;
 
-
-    
+    /*
     // since the hull of the nodes is convex, the 2 neighbors for each can be added
     std::vector<PathFinder::Node *> outNodes;
     for (int i = 0; i < currentEdges.size(); i++){
@@ -332,8 +339,10 @@ void EdgeCollector::getEdgesFromSingleMesh(
         }
 
         PathFinder::Node *current = outNodes.at(i);
-        current->nA = prev;
-        current->nB = next;
+        //current->nA = prev;
+        //current->nB = next;
+        current->setConvexNeighborA(prev);
+        current->setConvexNeighborB(next);
     }
 
     //alle sofort in graphen ballern
@@ -344,6 +353,7 @@ void EdgeCollector::getEdgesFromSingleMesh(
             }
         }
     }
+    */
 }
 
 
@@ -415,8 +425,11 @@ void EdgeCollector::ComputeConvexHull(std::vector<edgeData> &points) { //passed 
     //copy data to passed array
     int cSize = convexHull.size();
 
+    points = convexHull;
+    
+    /*
     //Overwrite elements
-    for (int i = 0; i < cSize; ++i) {
+    for (int i = 0; i < cSize; i++) {
         if (i < points.size()) {
             points[i] = convexHull[i];
         }
@@ -425,7 +438,7 @@ void EdgeCollector::ComputeConvexHull(std::vector<edgeData> &points) { //passed 
     //Remove the excess elements
     if (cSize < points.size()) {
         points.erase(points.begin() + cSize, points.end());
-    }
+    }*/
 
     return;
     //convexHull;
@@ -483,32 +496,49 @@ void EdgeCollector::showLine(FVector e, FVector g){
 /// @param world 
 void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world){
 
-    //calculate center pos for offset
-    FVector centerTop;
-    FVector centerBottom;
-    FVector center;
-    for (int i = 0; i < edges.size(); i++)
-    {
-        centerTop += edges.at(i).top;
-        centerBottom += edges.at(i).bottom;
-    }
-    centerTop /= (edges.size());
-    centerBottom /= (edges.size());
-    center = (centerTop + centerBottom) / 2;
 
-    //apply offset smallest //PUSHOUT EDGE TO NOT COLLIDE WITH ORIGINAL ACTOR
-    for (int i = 0; i < edges.size(); i++) {
-        FVector top = edges.at(i).top;
-        FVector bottom = edges.at(i).bottom;
+    std::vector<FVector> apply;
+    int pushAwaycm = 200;
+    // new approach: moving away from neighbors
+    for (int i = 0; i < edges.size(); i++){
 
-        //FVector dir = (top - center).GetSafeNormal();
-        FVector dir = (top - center).GetSafeNormal();
-        dir.Z = 0;
-        edges.at(i).top += dir * 150; //PUSHOUT 150! 
-        edges.at(i).bottom += dir * 150;
-        
+        edgeData *prev = &edges.at(i);
+        if(i == 0){
+            prev = &edges.back();
+        }
+        else
+        {
+            prev = &edges.at(i - 1);
+        }
+
+        edgeData *current = &edges.at(i);
+        edgeData *next = &edges.at(i);
+        if(i == edges.size() - 1){
+            next = &edges.front();
+        }
+        else
+        {
+            next = &edges.at(i + 1);
+        }
+
+        //calculate connect, add up, invert * -1, normalize, scale
+        FVector dirA = prev->top - current->top; // AB = B - A
+        FVector dirB = next->top - current->top;
+        dirA.Z = 0;
+        dirB.Z = 0;
+        FVector addInvertDir = (dirA + dirB).GetSafeNormal() * -1 * pushAwaycm;
+        apply.push_back(addInvertDir);
     }
-    
+
+    //override data after calculating to keep pushout consistent and not immidiatly maniupulating
+    for (int i = 0; i < apply.size(); i++){
+        if(i < edges.size()){
+            FVector applied = apply.at(i);
+            edges.at(i).top += applied;
+            edges.at(i).bottom += applied;
+        }
+    }
+
     // create raycasts
     for (int i = 0; i < edges.size(); i++)
     {
@@ -540,10 +570,16 @@ void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
             //distance from top must be greater than bottom from hitpoint
             //to make the hit point valid
             //(if you stick your meshes into the ground thats not my issue.)
-            float completeDistance = FVector::Dist(edge.bottom, edge.top);
-            float hitDistanceFromTop = FVector::Dist(edge.top, HitResult.ImpactPoint);
-            float hitDistanceFromBottom = FVector::Dist(edge.bottom, HitResult.ImpactPoint);
+            //float completeDistance = FVector::Dist(edge.bottom, edge.top);
+            //float hitDistanceFromTop = FVector::Dist(edge.top, HitResult.ImpactPoint);
+            //float hitDistanceFromBottom = FVector::Dist(edge.bottom, HitResult.ImpactPoint);
             
+            //refacturing for z distance
+            float completeDistance = std::abs(edge.bottom.Z - edge.top.Z);
+            float hitDistanceFromTop = std::abs(edge.top.Z - HitResult.ImpactPoint.Z);
+            float hitDistanceFromBottom = std::abs(edge.bottom.Z - HitResult.ImpactPoint.Z);
+
+
             //prevent nodes in ground and too far up
             if(hitDistanceFromTop > hitDistanceFromBottom * 1.5f){
 
@@ -551,10 +587,14 @@ void EdgeCollector::collectRaycast(edgeData &edge, UWorld *world){
                 hitPos.Z += GROUND_OFFSET; //offset fix above ground
                 //at any point use the hitpos
                 edge.bottom = hitPos;
+
+
+                //debug testing
+                if(EdgeCollector::DEBUG_DRAW_EDGES){
+                    DebugHelper::showLineBetween(world, edge.top, hitPos, FColor::Cyan);
+                }
+                
             }
-
-
-            
         }
     }
     //return nullptr;

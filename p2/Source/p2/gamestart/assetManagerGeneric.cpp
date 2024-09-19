@@ -21,9 +21,6 @@ void assetManagerGeneric<E,T>::addBp(E e, T *t){
         if(found == nullptr){
             map.Add(e, t);
         }
-        /*if(map.find(e) == map.end()){
-            map[e] = t;
-        }*/
     }
 }
 
@@ -41,12 +38,5 @@ T* assetManagerGeneric<E,T>::getBp(E e){
             return pt;
         }
     }
-    /*
-    if(map.find(e) != map.end()){
-        T *pointer = map[e];
-        if(pointer != nullptr){
-            return pointer;
-        }
-    }*/
     return nullptr;
 }
