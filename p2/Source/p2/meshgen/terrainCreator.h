@@ -21,7 +21,7 @@ public:
 	static const int ONEMETER = 100; //one meter constant
 	static const int fractureHeightStep = 3;
 
-	static const int MAXHEIGHT = 5000; //100 * 100
+	static const int MAXHEIGHT = 7000; //3000 is a good value, dont change
 
 	int chunkNum();
 	void createTerrain(UWorld *world, int meters);
@@ -116,10 +116,10 @@ private:
 
 	void smooth3dMap();
 	void smooth3dMap(FVector &a, FVector &b);
+	void smoothMap3dSimplified();
 
-	
 	// void cleanValues(std::vector<FVector2D> &vec);
-	void cleanValues(TVector<FVector2D> &vec);
+	void cleanValues(TVector<FVector2D> &vec, int scalingCut);
 	void fillGaps(std::vector<FVector2D> &vec);
 	void applyXColumnToMap(int index, TVector<FVector2D> &column);
 	void applyYRowToMap(int index, TVector<FVector2D> &row);
@@ -138,6 +138,6 @@ private:
 
 
 	//new chunk bezier curve
-	void createBezierChunkWide(int offset);
+	void createBezierChunkWide();
 	void processToupleChunk(FVector2D &a, FVector2D &b);
 };

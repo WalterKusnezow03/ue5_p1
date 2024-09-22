@@ -149,7 +149,7 @@ void shapeCreator::randomEnclosedShape(std::vector<FVector2D> &output, int ancho
     
 
     int lower = 0;
-    int higher = (anchorsCount * xstep / 2);
+    int higher = (anchorsCount * xstep);
     std::vector<int> nums;
     int anchorsTotal = anchorsCount * 2; //passed is only along x axis in theory, not both ways
     FVectorUtil::fillWithRandomNumbers(nums, anchorsTotal, lower, higher);
@@ -159,7 +159,7 @@ void shapeCreator::randomEnclosedShape(std::vector<FVector2D> &output, int ancho
 
     for (int i : nums){
         FVector2D a(x, i);
-        if(x / 2 < size / 2 && !flipped){
+        if(x < size / 2 && !flipped){
             x += xstep;
         }else{
             flipped = true;

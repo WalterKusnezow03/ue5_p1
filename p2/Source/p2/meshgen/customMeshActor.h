@@ -105,6 +105,7 @@ private:
 		int layer
 	);
 
+	void updateMesh(MeshData otherMesh, bool createNormals, int layer);
 
 	void buildQuad(
 		FVector &a,

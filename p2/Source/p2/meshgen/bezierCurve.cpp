@@ -246,11 +246,13 @@ void bezierCurve::process4Points(
             //return;
         }
     }
-
+    
+    
     fillGaps(output);
 
-    //clean up output for consistent X values and copy (might be removed: the rounding!)
     /*
+    //clean up output for consistent X values and copy (might be removed: the rounding!)
+    
     for (int i = 0; i < tmp.size(); i++){
         FVector2D current = tmp.at(i);
         current.X = round(current.X);

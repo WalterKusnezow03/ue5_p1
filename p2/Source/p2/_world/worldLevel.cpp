@@ -57,7 +57,7 @@ void worldLevel::initWorld(UWorld *world){
     //disabled for debugging
     if(create){
         if (!isTerrainInited && world != nullptr){
-            createTerrain(world, 300); // 150
+            createTerrain(world, 300); // 100
         }
     }
     
@@ -156,14 +156,15 @@ void worldLevel::createTerrain(UWorld *world, int meters){
             //choose some size between 0 and meters for pos and some scale (lets say 15 - 30?) 
             //some how block the are which is filled?
             int terrainSizehalf = (meters * terrainCreator::ONEMETER) / 2;
-            int roomsizeMeter = 20;
-            int roomsizeWorldScale = 20 * 100;
-            int spawnheight = 1000; //some value might be random
+            int roomsizeMeter = 15;
+            int roomsizeWorldScale = roomsizeMeter * 100;
             FVector locationToSpawn(
                 FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
                 FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
-                spawnheight
+                0
             );
+            int spawnheight = terrainPointer->getHeightFor(locationToSpawn);
+            locationToSpawn.Z = spawnheight;
 
             //create room layouts to embed
 

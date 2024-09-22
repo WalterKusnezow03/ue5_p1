@@ -734,86 +734,43 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
      */
 
     
-    //new testing with random heights and smooth
-    int iterations = 0;
 
-    int firstMax = 500; //going above 300 causes tooo high hills, remember that 300 * 20 iterations is a lot
-    int firstMin = 100;
 
-    for (int it = 1; it < iterations; it++) // from 1 to keep the first chunk walkable
+    int bezierCount = 5; //means 40m height in worse case
+    for (int j = 0; j < bezierCount; j++)
     {
-        // testing apply height in larger blocks
-        int blockSize = FVectorUtil::randomNumber(1, chunks / 4);
-        int h = FVectorUtil::randomNumber(
-            firstMin,
-            firstMax
-        );
+        createBezierChunkWide();
+    }
+    //return; //debug no smooth
 
-        int xStart = FVectorUtil::randomNumber(2, std::min(chunks - blockSize, chunks / 2));
-        int yStart = FVectorUtil::randomNumber(2, std::min(chunks - blockSize, chunks / 2));
-        //apply in blocks, works good
-        for (int i = xStart; i < map.size(); i++){
-            for (int j = yStart; j < map.at(i).size(); j++){
-                map.at(i).at(j).addheightForAll(h);
-            }
-        }
+    for (int i = 0; i < 3; i++){
         smooth3dMap();
     }
 
     /*
-    //smaller fluctuations
-    int smallHeights = 5;
-    int smallAddLower = 0;
-    int smallAddHigher = 900;
-    int smallAddHigherSingle = 100;
-    for (int it = 0; it < smallHeights; it++)
-    {
-        int h = FVectorUtil::randomNumber(
-            smallAddLower,
-            smallAddHigher
-        );
-        
-        //single chunk heights for variety
-        for (int i = 3; i < map.size(); i+= 2){
-            for (int j = 3; j < map.at(i).size(); j+=2){
-                h = FVectorUtil::randomNumber(
-                    smallAddLower,
-                    smallAddHigherSingle
-                );
-                map.at(i-1).at(j).addheightForAll(h);
-                map.at(i).at(j-1).addheightForAll(h);
-                map.at(i-1).at(j-1).addheightForAll(h);
-                map.at(i).at(j).addheightForAll(h);
-            }
+    int meterPart = 100 * terrainCreator::ONEMETER;// part to smooth each iteration, 100meter
+    int totalSize = map.size() * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER; //requires a squared map
+    for (int i = 0; i <= totalSize; i+= meterPart){
+        for (int j = 0; j <= totalSize; j += meterPart){
+            FVector bottomLeft(i - meterPart / 2, j - meterPart / 2, 0); //testing
+            FVector extend(i + meterPart, j + meterPart, 0);
+            smooth3dMap(bottomLeft, extend);
         }
-
-        smooth3dMap();
-    }
-    */
-
-    int offset = 2;
-    int bezierCount = 40; //means 40m height in worse case
-    for (int j = 0; j < bezierCount; j++)
-    {
-        createBezierChunkWide(offset);
-    }
-
-    //extra smoothening
-    int extraSmooth = 3;
-    for (int i = 0; i < extraSmooth; i++){
-        smooth3dMap();
-    }
+    }*/
 
 
-    //must be set on terrain type, more hills, flatter terrain like deserts... etc.
-    //works good and as intended, multiply could be set to 0 < val < 1 values for deserts for example
-    float multiply = 0.5f;
+
+    // must be set on terrain type, more hills, flatter terrain like deserts... etc.
+    // works good and as intended, multiply could be set to 0 < val < 1 values for deserts for example
+    /*
+    float multiply = 1.0f;
     for (int i = 0; i < map.size(); i++)
     {
         for (int j = 0; j < map.at(i).size(); j++){
             map.at(i).at(j).scaleheightForAll(multiply);
         }
-    }
+    }*/
+
 }
 
 
@@ -850,14 +807,12 @@ void terrainCreator::debugDrawCurve(UWorld* world, std::vector<FVector2D> &vec, 
 /// will clamp x values and clean the map to One meter gaps and will remove duplicates if 
 /// ordered by each other
 /// @param vec vector to clean
-void terrainCreator::cleanValues(TVector<FVector2D> &vec
-    //std::vector<FVector2D> &vec
-){
+void terrainCreator::cleanValues(TVector<FVector2D> &vec, int scalingCut){
     
     //cast all values to clear meters
     for (int i = 0; i < vec.size(); i++){
-        // Round to nearest multiple of ONEMETER
-        vec.at(i).X = (int)std::round(vec.at(i).X / ONEMETER) * ONEMETER; //only x because this function 
+        // Round to nearest multiple of ONEMETER (scalingCut)
+        vec.at(i).X = (int)std::round(vec.at(i).X / scalingCut) * scalingCut; //only x because this function 
         //is used by 3d too
     }
 
@@ -902,6 +857,7 @@ void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
                 vec.insert(vec.begin() + i, newPos);
                 i++; // Move to next insertion point
             }
+            
         }
         i++;
         size = vec.size();
@@ -955,7 +911,7 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
         {
             std::vector<FVector2D> column;
             //for (int j = 0; j < map.at(i).size(); j++)
-            for (int j = fromY; j < toY; j++)
+            for (int j = fromY; j <= toY; j++)
             {
                 //get data and copy inside
                 //std::vector<FVector2D> copy = map.at(i).at(j).getXColumAnchors(innerX);
@@ -966,7 +922,7 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
 
             output.clear();
             curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
-            cleanValues(output); //can! be the case
+            cleanValues(output, ONEMETER); //can! be the case
 
             //trying writing immidately
             applyXColumnToMap(xcount, output);
@@ -980,13 +936,13 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
 
     //then all y rows
     int ycount = 0;
-    for (int cY = fromY; cY < toY; cY++){
+    for (int cY = fromY; cY <= toY; cY++){
     //for (int cY = 0; cY < map.size(); cY++){
         for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
         {
             std::vector<FVector2D> row;
             //über ganz x laufen und einsammeln
-            for (int cX = fromX; cX < toX; cX++){
+            for (int cX = fromX; cX <= toX; cX++){
             //for (int cX = 0; cX < map.size(); cX++){
                 //std::vector<FVector2D> copy = map.at(cX).at(cY).getYRowAnchors(innerY);
                 //row.insert(row.end(), copy.begin(), copy.end());
@@ -996,7 +952,7 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
 
             output.clear();
             curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
-            cleanValues(output);
+            cleanValues(output, ONEMETER); 
 
             applyYRowToMap(ycount, output);
 
@@ -1012,6 +968,82 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
         }
     }
 }
+
+
+/// @brief simplified terrain smoothening more general chunk wide
+void terrainCreator::smoothMap3dSimplified(){
+    // get all x and y axis and smooth them.
+    bezierCurve curve;
+
+    TVector<FVector2D> output; //use only one custom tvector for efficency
+
+    //all x columns
+    int xcount = 0;
+    for (int i = 0; i < map.size(); i++)
+    {
+
+        //create column chunk wide and apply each
+        std::vector<FVector2D> column;
+        for (int j = 0; j < map.at(i).size(); j++)
+        {
+            column.push_back(map.at(i).at(j).getFirstXColumnAnchor(0)); //0 here!
+        }
+        output.clear();
+        curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
+        cleanValues(output, ONEMETER); 
+
+
+        for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
+        {
+            //trying writing immidately
+            applyXColumnToMap(xcount, output);
+            xcount++;
+        }
+    }
+    
+
+
+
+    //then all y rows
+    int ycount = 0;
+    for (int cY = 0; cY < map.size(); cY++){
+        
+        std::vector<FVector2D> row;
+        //über ganz x laufen und einsammeln
+        for (int cX = 0; cX < map.size(); cX++){
+            row.push_back(map.at(cX).at(cY).getFirstYRowAnchor(0)); //0 here
+        }
+
+        output.clear();
+        curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
+        cleanValues(output, ONEMETER); 
+        
+        for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
+        {
+            applyYRowToMap(ycount, output);
+            ycount++;
+        }
+    }
+
+
+    //fill gaps and spikes, very important chunk
+    for(int i = 0; i < map.size(); i++){
+        for(int j = 0; j < map.at(i).size(); j++){
+            map.at(i).at(j).fixGaps();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /// @brief applies the height from the inner vertecies to the map
@@ -1197,7 +1229,14 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
     }
 
     //finally also smooth the map
-    //smooth3dMap(); //disabled for debugging
+    FVector a = location;
+    FVector b(
+        sizeMetersX + terrainCreator::CHUNKSIZE, 
+        sizeMetersY + terrainCreator::CHUNKSIZE,
+        0
+    );
+    b += a;
+    smooth3dMap(a,b); // disabled for debugging
 }
 
 /**
@@ -1394,10 +1433,44 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
 
 /// @brief will create a bezier curve and add a 100cm height increase at each chunk enclosed.
 /// @param offset offset chunk index to take along x and y
-void terrainCreator::createBezierChunkWide(int offset){
+void terrainCreator::createBezierChunkWide(){
 
+    int scaleX = FVectorUtil::randomNumber(6, map.size());
+    int scaleY = FVectorUtil::randomNumber(6, scaleX);
+    int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
+    int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
+
+    int endX = clampIndex(startX + scaleX);
+    int endY = clampIndex(startY + scaleY);
+
+    int layerCount = 0;
+    while (
+        (endX - startX) >= 3 &&
+        (endY - startY) >= 3 &&
+        layerCount < 5
+    ){
+        for (int i = startX; i <= endX; i++)
+        {
+            for (int j = startY; j <= endY; j++)
+            {
+                map.at(i).at(j).addheightForAll(
+                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 5)
+                );
+            }
+        }
+        layerCount++;
+        startX = clampIndex(startX + 1);
+        startY = clampIndex(startX + 1);
+        endX = clampIndex(endX - 1);
+        endY = clampIndex(endY - 1);
+    }
+    return;
+
+    /*
+    // curve
     int distanceBetweenAnchors = 4;
     int anchors = 5;
+    int scaled_tmp = distanceBetweenAnchors * anchors;
     std::vector<FVector2D> shape;
     shapeCreator::randomEnclosedShape(shape, anchors, distanceBetweenAnchors);
 
@@ -1407,15 +1480,26 @@ void terrainCreator::createBezierChunkWide(int offset){
     bezierCurve b;
     b.calculatecurve(shape, output, distanceBetweenAnchors, distanceBetweenAnchors);
 
-    std::vector<FVector2D> outConv;
-    for (int i = 0; i < output.size(); i++){
-        FVector2D copy = output.at(i);
-        copy.X += offset;
-        copy.Y += offset;
+    int layers = 3;
+    for (int l = 0; l < layers; l++)
+    {
+        //scale down from here, clean
+        std::vector<FVector2D> outConv;
+        for (int i = 0; i < output.size(); i++){
+            FVector2D copy = output.at(i);
+            copy.X += offset;
+            copy.Y += offset;
 
-        outConv.push_back(copy);
-    }
-    processTopViewBezierCurve(outConv);
+            outConv.push_back(copy);
+
+            //down scale towards center
+            output.at(i) *= 0.7f;
+            //output.at(i) += FVector2D((1 / scaled_tmp), (1 / scaled_tmp)); //playing around
+        }
+        processTopViewBezierCurve(outConv);
+
+        cleanValues(output, 1); //clean up the scaled down values
+    }*/
 }
 
 /// Deprecated
@@ -1423,6 +1507,10 @@ void terrainCreator::createBezierChunkWide(int offset){
 /// @param bezier bezier to apply to map 2d
 void terrainCreator::processTopViewBezierCurve(std::vector<FVector2D> &bezier){
     
+    if(bezier.size() < 2){
+        return;
+    }
+
     //sort by x coordinates, later by y
     std::sort(bezier.begin(), bezier.end(), [](const FVector2D& A, const FVector2D& B) {
         return A.X < B.X;
@@ -1459,7 +1547,9 @@ void terrainCreator::applyTopViewCurveToMap(std::vector<FVector2D> &vec){
 
 
 
-
+/// @brief will always add one meter
+/// @param a between a and
+/// @param b b node
 void terrainCreator::processToupleChunk(FVector2D &a, FVector2D &b){
     //by refernce natürlich weil effizient
     int xIndex = a.X;
@@ -1472,12 +1562,12 @@ void terrainCreator::processToupleChunk(FVector2D &a, FVector2D &b){
         //clamp to make sure
         xIndex = clampIndex(xIndex);
         y1 = clampIndex(y1);
-        y2 = clampIndex(y2);
+        y2 = clampIndex(y2) - 1; //keep like this, last chunk is error prone 
 
         for (int i = y1; i <= y2; i++){
             chunk *c = &map.at(xIndex).at(i);
             if(c != nullptr){
-                c->addheightForAll(100); //new all chunk appl
+                c->addheightForAll(terrainCreator::ONEMETER); //new all chunk appl
             }
         }
     }

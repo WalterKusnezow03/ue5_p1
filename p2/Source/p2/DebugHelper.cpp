@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "p2/util/TVector.h"
 #include "DebugHelper.h"
 
 DebugHelper::DebugHelper()
@@ -154,6 +154,17 @@ void DebugHelper::showLine(UWorld *world, TArray<FVector> &array, FColor color){
 		}
 	}
 }
+
+
+void DebugHelper::showLine(UWorld *world, TVector<FVector> &vec, FColor color){
+	if(world != nullptr){
+		for(int i = 1; i < vec.size(); i++){
+			showLineBetween(world, vec[i-1], vec[i], color);
+		}
+	}
+}
+
+
 
 
 

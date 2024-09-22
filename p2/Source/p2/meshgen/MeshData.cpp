@@ -12,6 +12,41 @@ MeshData::~MeshData()
     clearMesh();
 }
 
+
+/// @brief copy constructor gets called if passing by value
+/// @param other 
+MeshData::MeshData(const MeshData &other){
+    *this = other;
+}
+
+/// @brief abusing the assign operator to create a deepcopy of the data
+/// @param other 
+/// @return 
+MeshData& MeshData::operator=(const MeshData &other){
+    if(&other != this){
+        for (int i = 0; i < other.vertecies.Num(); i++){
+            vertecies.Add(other.vertecies[i]);
+        }
+        for (int i = 0; i < other.triangles.Num(); i++){
+            triangles.Add(other.triangles[i]);
+        }
+        for (int i = 0; i < other.normals.Num(); i++){
+            normals.Add(other.normals[i]);
+        }
+        for (int i = 0; i < other.UV0.Num(); i++){
+            UV0.Add(other.UV0[i]);
+        }
+        for (int i = 0; i < other.Tangents.Num(); i++){
+            Tangents.Add(other.Tangents[i]);
+        }
+        for (int i = 0; i < other.VertexColors.Num(); i++){
+            VertexColors.Add(other.VertexColors[i]);
+        }
+    }
+    return *this;
+}
+
+
 /// @brief clean up data completely
 void MeshData::clearMesh(){
     vertecies.Empty();

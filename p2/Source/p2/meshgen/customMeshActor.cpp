@@ -241,7 +241,7 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     }
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
-    createFoliage(touples);
+    //createFoliage(touples);
 
 
 
@@ -374,6 +374,7 @@ void AcustomMeshActor::updateMesh(
             Tangents, 
             true
         );*/
+        Mesh->ClearMeshSection(layer);
         Mesh->CreateMeshSection(
             layer, 
             data->getVerteciesRef(),//newvertecies, 
@@ -395,6 +396,51 @@ void AcustomMeshActor::updateMesh(
     //enable if was disabled!
     AActorUtil::showActor(*this, true);
     AActorUtil::enableColliderOnActor(*this, true);
+}
+
+
+
+
+/// @brief updates a mesh layer given on a mesh data object (which will be deep copied)
+/// @param otherMesh 
+/// @param createNormals 
+/// @param layer 
+void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int layer){
+
+    meshLayersMap[layer] = otherMesh; //assign operator is overriden
+
+    MeshData *data = nullptr;
+    if (meshLayersMap.find(layer) != meshLayersMap.end()){
+        //find meshData from map by reference
+        data = &meshLayersMap[layer]; //hier mit eckigen klammern weil .find ein iterator ist
+    }
+
+    if(data != nullptr && Mesh != nullptr){
+        data->clearNormals();
+        data->calculateNormals();
+
+        Mesh->ClearMeshSection(layer);
+        Mesh->CreateMeshSection(
+            layer, 
+            data->getVerteciesRef(),//newvertecies, 
+            data->getTrianglesRef(),//this->triangles, 
+            data->getNormalsRef(),//normals, 
+            data->getUV0Ref(),//UV0, 
+            data->getVertexColorsRef(),//VertexColors, 
+            data->getTangentsRef(),//Tangents, 
+            true
+        );
+
+        //set for spehere overlap
+        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+        Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    }
+    //enable if was disabled!
+    AActorUtil::showActor(*this, true);
+    AActorUtil::enableColliderOnActor(*this, true);
+
+
 }
 
 
@@ -636,8 +682,10 @@ void AcustomMeshActor::ApplyMaterial(
 /// @param touples vector of touples with each: (first: center of pane with correct offset, second: normal of pane)
 void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
-    //iterate over touples
-    //determine normal angle and apply foliage, rocks, trees accordingly
+    // iterate over touples
+    // determine normal angle and apply foliage, rocks, trees accordingly
+
+    int created = 0;
 
     //if normal faces towards up: flat area
     for(FVectorTouple &t : touples){
@@ -650,21 +698,29 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
             //some debug drawing 
             //DebugHelper::showLineBetween(GetWorld(), location, location + normal * 200, FColor::Purple);
 
-            //pane is flat
-            //spawn something at a location
-            AActor *someActor = nullptr;
 
-            //make its top look towards the rotation
-            //or look towards (with own xy pane towards the orthogonal part in any direction (to flip a 2d vector)
-            //by 90 dregree, swap x and y component
-            if(someActor != nullptr){
-                someActor->SetActorLocation(location);
+            //new approach: request a mesh actor and apply the mesh to it
+            if (EntityManager *e = worldLevel::entityManager()){
+                AcustomMeshActor *meshActor = e->spawnAcustomMeshActor(GetWorld(), location);
+                if(meshActor != nullptr){
+                    meshActor->SetActorLocation(location);
 
-                FVector rotatedNormal(
-                    normal.X,
-                    normal.Z, // flipped Z and Y to tilt in any direction but 90 degree to pane / pralell
-                    normal.Y);
-                someActor->SetActorRotation(FVectorUtil::lookAt(location, rotatedNormal));
+                    MeshData mData = createTree(10, 1);
+                    meshActor->updateMesh(
+                        mData,
+                        false,
+                        0
+                    );
+                    if(assetManager *a = assetManager::instance()){
+                        meshActor->ApplyMaterial(meshActor->Mesh, a->findMaterial(materialEnum::grassMaterial));
+                    }
+                    
+
+                    created++;
+                    if(created > 2){
+                        return;
+                    }
+                }
             }
         }
     }
@@ -785,62 +841,67 @@ void AcustomMeshActor::splitAndreplace(
 
 
 
-
+/// @brief creates a random curve and an extruded bezier from there, will be symetrical
+/// @param sizeMeters 
+/// @param thicknessMeters 
+/// @return 
 MeshData AcustomMeshActor::createTree(int sizeMeters, float thicknessMeters){
     MeshData outmeshData;
     bezierCurve s;
 
     //create anchors and curve
-    float step = sizeMeters / 2;
-    FVector2D a(0, 0);
-    FVector2D b(step, FVectorUtil::randomNumber(0, sizeMeters / 4)); //random num close to the stem
-    FVector2D c(step * 2, FVectorUtil::randomNumber(0, sizeMeters / 4));
-    std::vector<FVector2D> nodes = {a, b, c};
-    TVector<FVector2D> out;
+    std::vector<FVector2D> nodes;
+    int nodesToMake = 5;
+    float step = sizeMeters / nodesToMake;
+    for (int i = 0; i < nodesToMake; i++){
+        FVector2D b(
+            step * i, 
+            FVectorUtil::randomNumber(0, sizeMeters / 4)
+        );
+        b *= 100;
+        nodes.push_back(b);
+    }
 
-    int einheitsValue = 1;
+    TVector<FVector2D> out;
+    int einheitsValue = 100; //scale to one meter
     int stepsPerEinheit = 1;
     s.calculatecurve(nodes, out, einheitsValue, stepsPerEinheit);
 
-    //scale up
-    int meter = 100;
-    for (int i = 0; i < out.size(); i++){
-        out[i] = out[i] * meter;
-    }
+    
 
     //extrude from points
-    int t = (thicknessMeters * meter) / 2; //thickness
+    int t = (thicknessMeters * einheitsValue) / 4; //thickness
     std::vector<FVector> extrudeDirs = {
         FVector(-t, -t, 0),
         FVector(-t, t, 0),
         FVector(t, t, 0),
-        FVector(t, -t, 0)
+        FVector(t, -t, 0),
+        FVector(-t, -t, 0) //create circle, reconnect to first! (?)
     };
 
-    //create 2d mesh instead which can be wrapped
+    //create 2d mesh instead which can be wrapped like a 2d mesh but vertically
+    
     std::vector<std::vector<FVector>> meshWrap;
     for (int i = 0; i < out.size(); i++)
     {
         FVector2D &upper = out[i];
         FVector UpperTo3D(
-            upper.X,
+            upper.Y,
             0,
-            upper.Y
+            upper.X
         );
-        FVector2D &lower = out[i-1];
-        FVector LowerTo3D(
-            lower.X,
-            0,
-            lower.Y
-        );
+        
 
-        //extrude needed
+        //extrude needed and order to create a 2d mesh properly, lower, upper, around the mesh
+        std::vector<FVector> higherRing;
+        for (int j = 0; j < extrudeDirs.size(); j++)
+        {
+            //upper, lower is prev upper, already added
+            FVector newUpper = UpperTo3D + extrudeDirs[j];
+            higherRing.push_back(newUpper);
+        }
 
-
-
-
-
-
+        meshWrap.push_back(higherRing);
     }
 
     process2DMapSimple(meshWrap, outmeshData);
