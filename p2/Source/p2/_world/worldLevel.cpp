@@ -44,6 +44,7 @@ void worldLevel::resetWorld(UWorld *world){
         isTerrainInited = false;
     }
 
+    //clears all nodes from graph
     if(PathFinder *p = PathFinder::instance(world)){
         p->clear();
     }

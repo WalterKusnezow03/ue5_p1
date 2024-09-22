@@ -179,11 +179,12 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
 
                     //calculate center
-                    FVector center = FVectorUtil::calculateCenter(vzero, vone, vtwo);
-                    center += GetActorLocation(); //correct offset
+                    FVector centerLocal = FVectorUtil::calculateCenter(vzero, vone, vtwo);
+                    FVector centerWorld = centerLocal + GetActorLocation();
+                   
 
                     // create and add touple to list
-                    FVectorTouple t(center, normal); // first center, then normal
+                    FVectorTouple t(centerLocal, normal); // first center, then normal
                     touples.Add(t);
 
                     
@@ -198,15 +199,15 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
                     {
                         if (navMeshAdd.size() == 0)
                         {
-                            navMeshAdd.push_back(center);
+                            navMeshAdd.push_back(centerWorld);
                         }
                         else
                         {
                             // only push nodes 3 meters away from each other -> reduce mesh count
                             FVector &prev = navMeshAdd.back();
-                            if (FVector::Dist(prev, center) >= 300)
+                            if (FVector::Dist(prev, centerWorld) >= 300)
                             {
-                                navMeshAdd.push_back(center);
+                                navMeshAdd.push_back(centerWorld);
                             }
                         }
                     }
@@ -226,22 +227,28 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
     materialtypeSet = materialEnum::grassMaterial; //might be changed later, left off for particles..
 
-    updateMesh(output_layer0, triangles_layer0, true, 0);
-    updateMesh(output_layer1, triangles_layer1, true, 1);
-    
+    updateMesh(output_layer0, triangles_layer0, true, 0); //layer 0 grass
+    updateMesh(output_layer1, triangles_layer1, true, 1); //layer 1 stone
+
+
+    //iterate over touples and add foliage based on height and if the pane is flat or vertical
+    MeshData mFoliage;
+    createFoliage(touples, mFoliage);
+    updateMesh(mFoliage, false, 2); //try no normals for trees, layer 2 trees
+
     if(assetManager *e = assetManager::instance()){
 
         //grass
         ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial), 0); //layer 0
         //stone
         ApplyMaterial(Mesh, e->findMaterial(materialEnum::stoneMaterial), 1); //layer 1
-    
+
+        //tree
+        ApplyMaterial(Mesh, e->findMaterial(materialEnum::treeMaterial), 2); //layer 2
     
     
     }
 
-    //iterate over touples and add foliage based on height and if the pane is flat or vertical
-    //createFoliage(touples);
 
 
 
@@ -250,6 +257,14 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     if(PathFinder *f = PathFinder::instance(GetWorld())){
         FVector offset(0, 0, 70);
         f->addNewNodeVector(navMeshAdd, offset);
+    }
+
+    //debug plot
+    for (int i = 0; i < navMeshAdd.size(); i++){
+        FVector a = navMeshAdd.at(i);
+        FVector b(0, 0, 10);
+        b += a;
+        DebugHelper::showLineBetween(GetWorld(), a, b, FColor::Red);
     }
 }
 
@@ -417,7 +432,10 @@ void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int la
 
     if(data != nullptr && Mesh != nullptr){
         data->clearNormals();
-        data->calculateNormals();
+        if(createNormals){
+            data->calculateNormals();
+        }
+        
 
         Mesh->ClearMeshSection(layer);
         Mesh->CreateMeshSection(
@@ -674,20 +692,20 @@ void AcustomMeshActor::ApplyMaterial(
 
 
 
-
-
-
-
-/// @brief process touples with
-/// @param touples vector of touples with each: (first: center of pane with correct offset, second: normal of pane)
-void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
-
+/// @brief create foliage and append it to the output mesh data, the output mesh data will
+/// get its position from the actor. The touples expected to be in local coordinate system
+/// @param touples lcoation and normal in a touple
+/// @param outputAppend for example a terrain mesh to create trees on
+void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples, MeshData &outputAppend){
     // iterate over touples
     // determine normal angle and apply foliage, rocks, trees accordingly
+    if(touples.Num() < 1){
+        return;
+    }
 
     int created = 0;
 
-    //if normal faces towards up: flat area
+    //if normal faces towards up: flat area, create something
     for(FVectorTouple &t : touples){
 
         FVector &location = t.first();
@@ -695,32 +713,20 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
         bool facingUpwards = FVectorUtil::directionIsVertical(normal);
         if(facingUpwards){
-            //some debug drawing 
-            //DebugHelper::showLineBetween(GetWorld(), location, location + normal * 200, FColor::Purple);
+            
+            MeshData mData = createTree(10, 1); //need to apply offset!
 
+            //apply offset
+            TArray<FVector> &vertecies = mData.getVerteciesRef();
+            for (int i = 0; i < vertecies.Num(); i++){
+                vertecies[i] += location;
+            }
 
-            //new approach: request a mesh actor and apply the mesh to it
-            if (EntityManager *e = worldLevel::entityManager()){
-                AcustomMeshActor *meshActor = e->spawnAcustomMeshActor(GetWorld(), location);
-                if(meshActor != nullptr){
-                    meshActor->SetActorLocation(location);
-
-                    MeshData mData = createTree(10, 1);
-                    meshActor->updateMesh(
-                        mData,
-                        false,
-                        0
-                    );
-                    if(assetManager *a = assetManager::instance()){
-                        meshActor->ApplyMaterial(meshActor->Mesh, a->findMaterial(materialEnum::grassMaterial));
-                    }
-                    
-
-                    created++;
-                    if(created > 2){
-                        return;
-                    }
-                }
+            outputAppend.append(mData);
+            
+            created++;
+            if(created > 2){
+                break;
             }
         }
     }
@@ -731,8 +737,44 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
 
 
+/// @brief process touples with
+/// @param touples vector of touples with each: (first: center of pane with correct offset, second: normal of pane)
+void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples)
+{
+
+    // iterate over touples
+    // determine normal angle and apply foliage, rocks, trees accordingly
+    if(touples.Num() < 1){
+        return;
+    }
+
+    int created = 0;
+
+    MeshData mDataAll;
+    createFoliage(touples, mDataAll);
+
+    FVector locationBase = GetActorLocation();
+
+    //Apply data
+    if (EntityManager *e = worldLevel::entityManager()){
+        AcustomMeshActor *meshActor = e->spawnAcustomMeshActor(GetWorld(), locationBase);
+        if(meshActor != nullptr){
+            meshActor->SetActorLocation(locationBase);
 
 
+            meshActor->updateMesh(
+                mDataAll,
+                false,
+                0
+            );
+            if(assetManager *a = assetManager::instance()){
+                meshActor->ApplyMaterial(meshActor->Mesh, a->findMaterial(materialEnum::wallMaterial));
+            }
+
+            //meshActor->AttachToActor(this);
+        }
+    }
+}
 
 /// @brief will replace the actor and split it (int terms of bounds) and apply an material
 /// will not use original mesh, just the bounds

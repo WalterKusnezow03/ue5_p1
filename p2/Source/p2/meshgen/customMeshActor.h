@@ -107,6 +107,8 @@ private:
 
 	void updateMesh(MeshData otherMesh, bool createNormals, int layer);
 
+
+
 	void buildQuad(
 		FVector &a,
 		FVector &b,
@@ -132,6 +134,7 @@ private:
 	);
 
 	void createFoliage(TArray<FVectorTouple> &touples);
+	void createFoliage(TArray<FVectorTouple> &touples, MeshData &outputAppend);
 
 
 

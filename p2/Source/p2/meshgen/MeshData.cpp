@@ -83,6 +83,28 @@ void MeshData::setTriangles(TArray<int32> &&trianglesIn){
     triangles = MoveTemp(trianglesIn);
 }
 
+//join another mesh, vertecies add, triangles added with offset added to index
+void MeshData::append(MeshData &other){
+    int triangleOffset = triangles.Num();
+
+    //copy triangles, apply offset
+    for (int i = 0; i < other.triangles.Num(); i++){
+        int32 copy = other.triangles[i];
+        copy += triangleOffset;
+        triangles.Add(copy);
+    }
+
+    //copy vertecies
+    for(int i = 0; i < other.vertecies.Num(); i++){
+        FVector &ref = other.vertecies[i];
+        vertecies.Add(ref);
+    }
+}
+
+
+
+
+
 /**
  * --- Data references ---
  */

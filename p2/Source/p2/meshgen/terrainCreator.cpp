@@ -736,13 +736,13 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
     
 
 
-    int bezierCount = 5; //means 40m height in worse case
-    for (int j = 0; j < bezierCount; j++)
+    int hillCount = 5; //means 40m height in worse case
+    for (int j = 0; j < hillCount; j++)
     {
         createBezierChunkWide();
     }
-    //return; //debug no smooth
-
+    
+    //whole map smoothening
     for (int i = 0; i < 3; i++){
         smooth3dMap();
     }
@@ -1375,15 +1375,17 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             // get position
             // apply position
             FVector newPos = currentChunk->position();
-            //fix offset to be anchor and bottom left
+
+            //fix offset to be anchor at bottom lefta dn not center of the mesh,
+            //so the coordinate in mesh (0,0) is (0,0) and not (chunksize /2, chunksize/2)
             float offsetCenter = terrainCreator::ONEMETER * (terrainCreator::CHUNKSIZE / 2);
             newPos.X -= offsetCenter;
             newPos.Y -= offsetCenter;
+            currentActor->SetActorLocation(newPos); 
 
-            currentActor->SetActorLocation(newPos); //some offset might be applied later addionally if wanted
 
-            //apply data new testing
-            //readAndMerge (connect to prev map)
+            //apply data
+            //readAndMerge (connect to next in map)
             terrainCreator::chunk *top = nullptr;
             terrainCreator::chunk *right = nullptr;
             terrainCreator::chunk *topright = nullptr;
@@ -1435,6 +1437,7 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
 /// @param offset offset chunk index to take along x and y
 void terrainCreator::createBezierChunkWide(){
 
+    //creates terrain better than a bezier curve imo.
     int scaleX = FVectorUtil::randomNumber(6, map.size());
     int scaleY = FVectorUtil::randomNumber(6, scaleX);
     int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
@@ -1447,14 +1450,14 @@ void terrainCreator::createBezierChunkWide(){
     while (
         (endX - startX) >= 3 &&
         (endY - startY) >= 3 &&
-        layerCount < 5
+        layerCount < 7
     ){
         for (int i = startX; i <= endX; i++)
         {
             for (int j = startY; j <= endY; j++)
             {
                 map.at(i).at(j).addheightForAll(
-                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 5)
+                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 4)
                 );
             }
         }

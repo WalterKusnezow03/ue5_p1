@@ -298,6 +298,8 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
 void AssetLoader::loadMaterials(){
     
     if(assetManager *a = assetManager::instance()){
+
+        //TERRAIN MATERIALS
         //grass material
         a->addMaterial(
             materialEnum::grassMaterial,
@@ -310,6 +312,15 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/stoneMaterial.stoneMaterial'"))
         );
 
+        //tree material
+        a->addMaterial(
+            materialEnum::treeMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/treeMaterial.treeMaterial'"))
+        );
+
+
+
+        //HOUSE MATERIALS
         //wall material
         a->addMaterial(
             materialEnum::wallMaterial,
@@ -321,6 +332,7 @@ void AssetLoader::loadMaterials(){
             materialEnum::glassMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/rooms/materials/glassMaterial.glassMaterial'"))
         );
+
     }
 
 }

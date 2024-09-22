@@ -40,9 +40,9 @@ teamEnum Adestructable::getTeam(){
 void Adestructable::takedamage(int d){
 	
 	FVector bottomCenter = GetActorLocation();
-	int cmPerTile = 25;
+	int cmPerTile = 50;
 	//material will be set somewhere else, no worries
-	AcustomMeshActor::splitAndreplace(this, bottomCenter, 25, materialType); 
+	AcustomMeshActor::splitAndreplace(this, bottomCenter, cmPerTile, materialType); 
 
 
 	//just disable actor for now, no remove	

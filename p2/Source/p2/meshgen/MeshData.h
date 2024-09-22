@@ -17,6 +17,8 @@ public:
 	MeshData(const MeshData &other);
 	MeshData& operator=(const MeshData & other);
 
+	void append(MeshData &other);
+
 	void clearMesh();
 	void clearNormals();
 	void setVertecies(TArray<FVector> &&verteciesIn);
