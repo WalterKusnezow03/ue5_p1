@@ -25,6 +25,7 @@ void bezierCurve::calculatecurve(
     float _einheitsValue,
     float _stepsPerEinheitsValue
 ){
+    DEBUG_COUNT = 0; 
     /**
      * error handeling
      */
@@ -42,21 +43,14 @@ void bezierCurve::calculatecurve(
         return;
     }
 
-    //int reserveSize = predictFinalCurveElementCount(ref) * stepsToMakePerEinheitsValue;
-    DebugHelper::showScreenMessage("debug point 1 reached", FColor::Purple);
-    //return; // debug
-
-    //reserve space
-    //ref.reserve(reserveSize);
+    
+    //create and add curve anchors
     createContinuityCurve(ref);
-    DebugHelper::showScreenMessage("curve count", ref.size(), FColor::Purple);
-    //return; // debug
 
-    //create the whole curve
-    //output.reserve(reserveSize); //reserve size before processing and adding for safety
+
+    //interpolate
     processAllPoints(ref, output); //what if you do it more than once
-    DebugHelper::showScreenMessage("final interpolated curve count", output.size(), FColor::Purple);
-    return; // debug
+   
 }
 
 /// @brief predicts the element count for the finally interpolated bezier curve 
@@ -71,6 +65,26 @@ int bezierCurve::predictFinalCurveElementCount(std::vector<FVector2D> &anchors){
     return (int)(sum * 1.2f); //120% for safety
 }
 
+/// @brief iterates over the anchors and moves them closer on y axis together based on their distance on x
+/// @param ref to smooth out
+void bezierCurve::smoothAnchors(std::vector<FVector2D> &ref){
+    float decreaseFrac = 0.1f; //percent
+    for (int i = 1; i < ref.size(); i++)
+    {
+        FVector2D &a = ref[i-1];
+        FVector2D &b = ref[i];
+        float distX = std::abs(a.X - b.X);
+        float distY = std::abs(a.Y - b.Y);
+        if(distX / 2 < distY){
+            if(a.Y < b.Y){
+                b.Y = std::max(b.Y - distY * decreaseFrac, a.Y); //max to not go too small
+            }
+            if(a.Y > b.Y){
+                b.Y = std::min(b.Y + distY * decreaseFrac, a.Y); //min to not go too big
+            }
+        }
+    }
+}
 
 /// @brief lets say the anchors array only has anchors on no continuity helpers
 /// @param anchors anchors to process
@@ -84,10 +98,10 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
     //data will be copied later
     std::vector<FVector2D> curve;
 
-    float beta = 1.5f; //to large positiive: schleife hickup issue, can be fixed by cutting off curve earlier
-    float close = 0.5f; //0.5 half, which makes 1.5 * 0.5 a 0.75 (which is actually not wanted but works fine
-    //when cutting the curve)
 
+    //percent distance / one fraction to place p4 and p2 respectivley as control points
+    //tangentially
+    float BETA = 0.5f;
 
     //this code creates the curve and should generally create the curve as wanted
 
@@ -101,10 +115,11 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
 
             FVector2D direction = (p3 - p0);
 
-            FVector2D p1 = p0 + direction * close * 2;
-            FVector2D p2 = p3 - direction * close; // symetrical to first control point
+            //is just linear at first
+            FVector2D p1 = p0 + direction * BETA;
+            FVector2D p2 = p3 - direction * BETA; // symetrical to first control point
 
-            FVector2D p4 = p3 + (p3 - p2) * beta; //next anchor, next p1
+            FVector2D p4 = p3 + (p3 - p2) * BETA; //next anchor, next p1, continuity
 
             curve.push_back(p0);
             curve.push_back(p1);
@@ -121,27 +136,41 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             FVector2D p1 = curve.at(index - 1);
 
             FVector2D p3 = anchors.at(i); //next point from this paralell list
-            FVector2D dir = (p3 - p0);
+            
 
-            FVector2D p2 = p3 - dir * close; //align to connection
+            //p1 kommt von vorher aber man sollte p4 so wählen es sich an den nächsten 
+            //anker punkt anschmiegen wenn möglich
+            if(i < anchors.size() - 1){
+                FVector2D p6 = anchors.at(i + 1);
+                FVector2D dirToNext = (p6 - p3);
+                FVector2D p4 = p3 + dirToNext * BETA; // AB = B - A //p1 für next
+                FVector2D p2 = p3 - dirToNext * BETA; //creating own anchor p2
+
+                curve.push_back(p2);
+                curve.push_back(p3);
+                curve.push_back(p4); //push last but only if not at end of curve
+
+            }else{
+
+                //last interpolation
+                FVector2D dir = (p3 - p0);
 
 
-            //next p1 point
-            FVector2D p4 = p3 + (p3 - p2) * beta;
+                FVector2D p2 = p3 - dir * BETA; //p2 is now very aligned to p1
 
-            //p0 and p1 already in list
-            curve.push_back(p2);
-            curve.push_back(p3);
 
-            //only push if not last last anchor, weil wozu interpolieren wenn nicht mehr dort.
-            if(i != anchors.size() - 1){
-                curve.push_back(p4);
+                //next p1 point
+                FVector2D p4 = p3 + (p3 - p2) * BETA; 
+
+                //p0 and p1 already in list
+                curve.push_back(p2);
+                curve.push_back(p3);
             }
+
             
             i++;
         }
 
-        //create p4 to insert
     }
 
 
@@ -170,7 +199,6 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
 /// @param reserve space to be resevered (which was also reserved for points vector)
 void bezierCurve::processAllPoints(
     std::vector<FVector2D> &points,
-    //std::vector<FVector2D> &output
     TVector<FVector2D> &output
 ){
 
@@ -203,10 +231,10 @@ void bezierCurve::process4Points(
 
     //std::vector<FVector2D> tmpListCurve;
 
-    FVector2D p0 = points.at(offset);
-    FVector2D p1 = points.at(offset + 1);
-    FVector2D p2 = points.at(offset + 2);
-    FVector2D p3 = points.at(offset + 3);
+    FVector2D &p0 = points[offset];
+    FVector2D &p1 = points[offset + 1];
+    FVector2D &p2 = points[offset + 2];
+    FVector2D &p3 = points[offset + 3];
 
     
     float distance = FVectorUtil::Dist(p0, p3);
@@ -214,19 +242,18 @@ void bezierCurve::process4Points(
     if(step == 0 || step <= 0.01f){ //100max z.b.
         return;
     }
-    step = 1 / step; //to percentage frac of 1
+    step = 1.0f / step; //to percentage frac of 1
 
-    //temporary output for clean up
-    //std::vector<FVector2D> tmp;
-    
 
-    float limit = 0.6f;  //fixing weird overlap on curves by cutting them off 
 
-    
+    float limit = 1.0f; //fixing weird overlap on curves by cutting them off, 0.6f
+    limit = 0.7f; //fix over interpolating
+
     for (float i = 0; i <= limit; i += step) {
         FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
-        newPos.X = round(newPos.X);
-        //new code
+        newPos.X = (int)(newPos.X);
+        
+        // new code
         if(output.size() > 0){
             FVector2D prev = output.back();
             if(prev.X != newPos.X){
@@ -236,36 +263,16 @@ void bezierCurve::process4Points(
             output.push_back(newPos);
         }
 
-        //old
-        //tmp.push_back(newPos);
-
         //debug block:
         DEBUG_COUNT++;
         if(DEBUG_COUNT >= DEBUG_LIMIT){
-            DebugHelper::showScreenMessage("DEBUG LIMIT REACHED", FColor::Red);
-            //return;
+            
         }
     }
     
     
-    fillGaps(output);
+    //fillGaps(output);
 
-    /*
-    //clean up output for consistent X values and copy (might be removed: the rounding!)
-    
-    for (int i = 0; i < tmp.size(); i++){
-        FVector2D current = tmp.at(i);
-        current.X = round(current.X);
-
-        if(i > 0 && output.size() > 0){
-            FVector2D prev = output.back();
-            if(prev.X != current.X){
-                output.push_back(current);
-            }
-        }else{
-            output.push_back(current);
-        }
-    }*/
 }
 
 

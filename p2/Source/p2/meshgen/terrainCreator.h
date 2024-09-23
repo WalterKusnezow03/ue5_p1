@@ -69,7 +69,7 @@ private:
 
 			std::vector<std::vector<FVector>> &readMap();
 
-			std::vector<std::vector<FVector>> readAndMerge(
+			std::vector<std::vector<FVector>> &readAndMerge(
 				chunk *top,
 				chunk *right,
 				chunk *topRight
@@ -115,7 +115,7 @@ private:
 	void processTouple(FVector2D &a, FVector2D &b);
 
 	void smooth3dMap();
-	void smooth3dMap(FVector &a, FVector &b);
+	void smooth3dMap(FVector &a, FVector &b, int iterations);
 	void smoothMap3dSimplified();
 
 	// void cleanValues(std::vector<FVector2D> &vec);
@@ -136,6 +136,7 @@ private:
 	void upScalePoints(std::vector<FVector2D> &points, float factor);
 	void offsetPoints(std::vector<FVector2D> &vec, FVector2D offset);
 
+	void scaleHeightForAll(float scale);
 
 	//new chunk bezier curve
 	void createBezierChunkWide();

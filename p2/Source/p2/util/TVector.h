@@ -23,6 +23,8 @@ public:
     void push_back(const T &t);
     void push_back(const TVector<T> &t);
 
+    void push_front(const T &t);
+
     void insert(int index, TVector<T> &other);
     void insert(int index, const T &element);
 

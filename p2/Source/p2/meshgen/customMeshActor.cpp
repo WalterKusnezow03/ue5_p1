@@ -298,10 +298,10 @@ void AcustomMeshActor::process2DMapSimple(
             if(x + 1 < map.size() && y + 1 < map.at(x + 1).size()){
                 try{
                     //get the vertecies
-                    FVector vzero = map.at(x).at(y);
-                    FVector vone = map.at(x).at(y + 1);
-                    FVector vtwo = map.at(x + 1).at(y + 1);
-                    FVector vthree = map.at(x + 1).at(y);
+                    FVector &vzero = map.at(x).at(y);
+                    FVector &vone = map.at(x).at(y + 1);
+                    FVector &vtwo = map.at(x + 1).at(y + 1);
+                    FVector &vthree = map.at(x + 1).at(y);
                     buildQuad(vzero, vone, vtwo, vthree, output_layer, triangles_layer);
 
                 }
@@ -893,26 +893,26 @@ MeshData AcustomMeshActor::createTree(int sizeMeters, float thicknessMeters){
 
     //create anchors and curve
     std::vector<FVector2D> nodes;
-    int nodesToMake = 5;
-    float step = sizeMeters / nodesToMake;
+    int nodesToMake = 3;
+    float step = 100;
     for (int i = 0; i < nodesToMake; i++){
         FVector2D b(
-            step * i, 
-            FVectorUtil::randomNumber(0, sizeMeters / 4)
+            (sizeMeters / nodesToMake) * i,//step along x axis 
+            FVectorUtil::randomNumber(0, sizeMeters / 3) //some random number
         );
         b *= 100;
         nodes.push_back(b);
     }
 
     TVector<FVector2D> out;
-    int einheitsValue = 100; //scale to one meter
+    int einheitsValue = 25; //scale to one meter
     int stepsPerEinheit = 1;
     s.calculatecurve(nodes, out, einheitsValue, stepsPerEinheit);
 
     
 
     //extrude from points
-    int t = (thicknessMeters * einheitsValue) / 4; //thickness
+    int t = (thicknessMeters * 100) / 4; //thickness
     std::vector<FVector> extrudeDirs = {
         FVector(-t, -t, 0),
         FVector(-t, t, 0),

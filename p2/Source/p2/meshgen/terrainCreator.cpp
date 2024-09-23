@@ -65,12 +65,12 @@ std::vector<std::vector<FVector>> &terrainCreator::chunk::readMap(){
 /// @param right right chunk
 /// @param topRight top right chunk
 /// @return slightly extended map - fixes a bug where each chunk had one meter gap
-std::vector<std::vector<FVector>> terrainCreator::chunk::readAndMerge(
+std::vector<std::vector<FVector>>& terrainCreator::chunk::readAndMerge(
     terrainCreator::chunk *top,
     terrainCreator::chunk *right,
     terrainCreator::chunk *topRight
 ){
-    std::vector<std::vector<FVector>> copy = innerMap;
+    //std::vector<std::vector<FVector>> copy = innerMap;
     float offset = terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER;
 
     if(right != nullptr){
@@ -79,7 +79,7 @@ std::vector<std::vector<FVector>> terrainCreator::chunk::readAndMerge(
         for (int i = 0; i < firstColFromNextRight.size(); i++){
             firstColFromNextRight.at(i).X += offset;
         }
-        copy.push_back(firstColFromNextRight);
+        innerMap.push_back(firstColFromNextRight);
     }
     
     //might be wrong!
@@ -87,10 +87,10 @@ std::vector<std::vector<FVector>> terrainCreator::chunk::readAndMerge(
         std::vector<FVector> firstRowFromNextTop = top->readFirstYRow();
         //add row
         for (int j = 0; j < firstRowFromNextTop.size(); j++){
-            if(j < copy.size()){
+            if(j < innerMap.size()){
                 FVector current = firstRowFromNextTop.at(j);
                 current.Y += offset;
-                copy.at(j).push_back(current);
+                innerMap.at(j).push_back(current);
             }
         }
     }
@@ -103,10 +103,10 @@ std::vector<std::vector<FVector>> terrainCreator::chunk::readAndMerge(
         topRightCorner.Y += offset;
 
         //add to last col
-        copy.at(copy.size() - 1).push_back(topRightCorner);
+        innerMap.at(innerMap.size() - 1).push_back(topRightCorner);
     }
     
-    return copy;
+    return innerMap;
 }
 
 
@@ -742,23 +742,9 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
         createBezierChunkWide();
     }
     
-    //whole map smoothening
-    for (int i = 0; i < 3; i++){
-        smooth3dMap();
-    }
-
-    /*
-    int meterPart = 100 * terrainCreator::ONEMETER;// part to smooth each iteration, 100meter
-    int totalSize = map.size() * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER; //requires a squared map
-    for (int i = 0; i <= totalSize; i+= meterPart){
-        for (int j = 0; j <= totalSize; j += meterPart){
-            FVector bottomLeft(i - meterPart / 2, j - meterPart / 2, 0); //testing
-            FVector extend(i + meterPart, j + meterPart, 0);
-            smooth3dMap(bottomLeft, extend);
-        }
-    }*/
-
-
+    //whole map smoothening (works good but takes long)
+    
+    smooth3dMap();
 
     // must be set on terrain type, more hills, flatter terrain like deserts... etc.
     // works good and as intended, multiply could be set to 0 < val < 1 values for deserts for example
@@ -864,8 +850,16 @@ void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
     }
 }
 
-
-
+/// @brief scales the height for all chunks (designed to upscale before bezier and downscale later)
+/// creates more detailed interpolation on Z axis (maybe)
+/// @param scale sclae to set
+void terrainCreator::scaleHeightForAll(float scale){
+    for (int i = 0; i < map.size(); i++){
+        for (int j = 0; j < map.at(i).size(); j++){
+            map.at(i).at(j).scaleheightForAll(scale);
+        }
+    }
+}
 
 
 
@@ -880,11 +874,17 @@ void terrainCreator::smooth3dMap(){
     FVector a(0, 0, 0);
     int max = map.size() * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE;
     FVector b(max, max, 0);
-    smooth3dMap(a, b);
+
+    int iterations = 1;
+    smooth3dMap(a, b, iterations);
 }
 
 /// @brief will smooth out all chunks rows and columns and merge them together to the map
-void terrainCreator::smooth3dMap(FVector &a, FVector &b){
+void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
+
+    //upscale
+    float scaleToSet = 10.0f;
+    scaleHeightForAll(scaleToSet); //scaling up and scaling down later does smooth out the curve a bit (seemengly)
 
     //calculate enclosed bounds, works as expected
     int fromX = a.X < b.X ? a.X : b.X;
@@ -899,74 +899,89 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b){
 
     // get all x and y axis and smooth them.
     bezierCurve curve;
+    //coxDeBoorSpline curve;
 
-    TVector<FVector2D> output; //use only one custom tvector for efficency
+    //define this vector out side loop for preventing unesecarry wiping from stack until complete
+    //TVector data gets overriden anyway / internal garbage collector
+    int scalePrediction = terrainCreator::CHUNKSIZE * map.size(); //one meter gaps obviously.
+    TVector<FVector2D> output(scalePrediction); // use only one custom tvector for efficency
 
-    //all x columns
-    int xcount = 0;
-    //for (int i = 0; i < map.size(); i++)
-    for (int i = fromX; i <= toX; i++)
-    {
-        for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
+    for (int it = 0; it < iterations; it++){
+
+        // all x columns
+        int xcount = 0;
+        //for (int i = 0; i < map.size(); i++)
+        for (int i = fromX; i <= toX; i++)
         {
-            std::vector<FVector2D> column;
-            //for (int j = 0; j < map.at(i).size(); j++)
-            for (int j = fromY; j <= toY; j++)
+            for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
             {
-                //get data and copy inside
-                //std::vector<FVector2D> copy = map.at(i).at(j).getXColumAnchors(innerX);
-                //column.insert(column.end(), copy.begin(), copy.end());
+                std::vector<FVector2D> column;
+                //for (int j = 0; j < map.at(i).size(); j++)
+                for (int j = fromY; j <= toY; j++)
+                {
+                    //get data and copy inside
+                    //std::vector<FVector2D> copy = map.at(i).at(j).getXColumAnchors(innerX);
+                    //column.insert(column.end(), copy.begin(), copy.end());
 
-                column.push_back(map.at(i).at(j).getFirstXColumnAnchor(innerX));
+                    column.push_back(map.at(i).at(j).getFirstXColumnAnchor(innerX));
+                }
+
+                output.clear();
+                curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
+
+                //int size = terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE * map.size();
+                //curve.calculatecurve(column, output, size,terrainCreator::ONEMETER);
+                //cleanValues(output, ONEMETER); //can! be the case
+
+                //trying writing immidately
+                applyXColumnToMap(xcount, output);
+                xcount++;
+            
             }
-
-            output.clear();
-            curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
-            cleanValues(output, ONEMETER); //can! be the case
-
-            //trying writing immidately
-            applyXColumnToMap(xcount, output);
-            xcount++;
-           
         }
-    }
-    
+        
 
 
 
-    //then all y rows
-    int ycount = 0;
-    for (int cY = fromY; cY <= toY; cY++){
-    //for (int cY = 0; cY < map.size(); cY++){
-        for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
-        {
-            std::vector<FVector2D> row;
-            //über ganz x laufen und einsammeln
-            for (int cX = fromX; cX <= toX; cX++){
-            //for (int cX = 0; cX < map.size(); cX++){
-                //std::vector<FVector2D> copy = map.at(cX).at(cY).getYRowAnchors(innerY);
-                //row.insert(row.end(), copy.begin(), copy.end());
+        //then all y rows
+        int ycount = 0;
+        for (int cY = fromY; cY <= toY; cY++){
+        //for (int cY = 0; cY < map.size(); cY++){
+            for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
+            {
+                std::vector<FVector2D> row;
+                //über ganz x laufen und einsammeln
+                for (int cX = fromX; cX <= toX; cX++){
+                //for (int cX = 0; cX < map.size(); cX++){
+                    //std::vector<FVector2D> copy = map.at(cX).at(cY).getYRowAnchors(innerY);
+                    //row.insert(row.end(), copy.begin(), copy.end());
 
-                row.push_back(map.at(cX).at(cY).getFirstYRowAnchor(innerY));
+                    row.push_back(map.at(cX).at(cY).getFirstYRowAnchor(innerY));
+                }
+
+                output.clear();
+                curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
+                //int size = terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE * map.size();
+                //curve.calculatecurve(row, output, size, terrainCreator::ONEMETER);
+                //cleanValues(output, ONEMETER); 
+
+                applyYRowToMap(ycount, output);
+
+                ycount++;
             }
+        }
 
-            output.clear();
-            curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
-            cleanValues(output, ONEMETER); 
 
-            applyYRowToMap(ycount, output);
-
-            ycount++;
+        //fill gaps and spikes, very important chunk
+        for(int i = 0; i < map.size(); i++){
+            for(int j = 0; j < map.at(i).size(); j++){
+                map.at(i).at(j).fixGaps();
+            }
         }
     }
 
-
-    //fill gaps and spikes, very important chunk
-    for(int i = 0; i < map.size(); i++){
-        for(int j = 0; j < map.at(i).size(); j++){
-            map.at(i).at(j).fixGaps();
-        }
-    }
+    //downscale
+    scaleHeightForAll(1 / scaleToSet);
 }
 
 
@@ -1051,7 +1066,6 @@ void terrainCreator::smoothMap3dSimplified(){
 /// @param column column data to override (int all chunks) (2D bezier)
 void terrainCreator::applyXColumnToMap(int index, 
 TVector<FVector2D> &column
-//std::vector<FVector2D> &column
 ){
     
     //copy new height
@@ -1089,6 +1103,7 @@ TVector<FVector2D> &column
             int yInnerIndex = cmToInnerChunkIndex(yInCm);
 
             //Debug plotting
+            /*
             if(c->xIsValid(xInnerIndex) && c->yIsValid(yInnerIndex)){
                 if(i < column.size() -1){
 
@@ -1112,7 +1127,7 @@ TVector<FVector2D> &column
                         
                     
                 }
-            }
+            }*/
 
             c->applyIndivualVertexIndexBased(
                 xInnerIndex,
@@ -1236,7 +1251,7 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
         0
     );
     b += a;
-    smooth3dMap(a,b); // disabled for debugging
+    smooth3dMap(a,b, 1); // disabled for debugging
 }
 
 /**
@@ -1398,8 +1413,8 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             if(x + 1 < xLimit && y + 1 < yLimit){
                 topright = &map.at(x+1).at(y+1);
             }
-            std::vector<std::vector<FVector>> mapCopy = currentChunk->readAndMerge(top, right, topright);
-            currentActor->process2DMap(mapCopy);
+            std::vector<std::vector<FVector>> &mapReference = currentChunk->readAndMerge(top, right, topright);
+            currentActor->process2DMap(mapReference);
             currentActor->init(materialEnum::grassMaterial);
 
             // apply data
@@ -1457,7 +1472,7 @@ void terrainCreator::createBezierChunkWide(){
             for (int j = startY; j <= endY; j++)
             {
                 map.at(i).at(j).addheightForAll(
-                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 4)
+                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 3)
                 );
             }
         }

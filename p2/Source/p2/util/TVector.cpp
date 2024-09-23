@@ -107,6 +107,14 @@ void TVector<T>::push_back(const TVector<T> &t){
     }
 }
 
+/// @brief pushes an element to the front of the vector
+/// @tparam T 
+/// @param t 
+template <typename T>
+void TVector<T>::push_front(const T &t){
+    insert(0, t);
+}
+
 /// @brief returns the first element of the vector
 /// @tparam T type
 /// @return element at first position if any available
@@ -192,7 +200,7 @@ void TVector<T>::insert(int index, const T &element){
     //fake size to end (means in the puffer zone of size index to end insertion, right at the edge overriden)
     if(index >= sizeIndex && index < vec.size() && sizeIndex < vec.size()){
         index = sizeIndex;
-        vec.at(index) = element; //override end
+        vec.at(index) = element; //override end, increase fake counter
         sizeIndex++;
         return;
     }
