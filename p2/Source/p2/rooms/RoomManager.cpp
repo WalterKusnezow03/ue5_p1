@@ -193,7 +193,7 @@ void RoomManager::processLayer(
             int xpos = convertScaleToMeter(xposInGrid);
             int ypos = convertScaleToMeter(yposInGrid);
 
-            FVector position(xpos, ypos, 50); //z position must be aligned too some how (later in terrain integrate)
+            FVector position(xpos, ypos, 0); //z position must be aligned too some how (later in terrain integrate)
             
             position += offset;
 
@@ -258,7 +258,7 @@ void RoomManager::processLayer(
                 //JUST ONCE
                 if(i == 0){
                     outHeightAdd += aroom->getZScale(); //add the out z scale for the next room
-                    outHeightAdd += 1;
+                    //outHeightAdd += 1;
                 }
             }
         }

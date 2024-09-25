@@ -116,7 +116,7 @@ private:
 
 	void smooth3dMap();
 	void smooth3dMap(FVector &a, FVector &b, int iterations);
-	void smoothMap3dSimplified();
+	
 
 	// void cleanValues(std::vector<FVector2D> &vec);
 	void cleanValues(TVector<FVector2D> &vec, int scalingCut);

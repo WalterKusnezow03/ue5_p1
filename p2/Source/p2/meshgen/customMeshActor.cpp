@@ -131,6 +131,8 @@ bool AcustomMeshActor::isDestructable(){
 void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //nach dem entity manager stirbt die refenz hier!
 
     
+   
+    
     //grass
     TArray<FVector> output_layer0;
     TArray<int32> triangles_layer0;
@@ -249,23 +251,27 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     
     }
 
-
-
-
-
+    
+    
+    double StartTime = FPlatformTime::Seconds();
     //add all normal centers to navmesh to allow the bots to move over the terrain
     if(PathFinder *f = PathFinder::instance(GetWorld())){
         FVector offset(0, 0, 70);
         f->addNewNodeVector(navMeshAdd, offset);
     }
+    double EndTime = FPlatformTime::Seconds();
+    double ElapsedTime = EndTime - StartTime;
+    DebugHelper::addTime(ElapsedTime);
 
+
+    /*
     //debug plot
     for (int i = 0; i < navMeshAdd.size(); i++){
         FVector a = navMeshAdd.at(i);
         FVector b(0, 0, 10);
         b += a;
         DebugHelper::showLineBetween(GetWorld(), a, b, FColor::Red);
-    }
+    }*/
 }
 
 
@@ -834,46 +840,113 @@ void AcustomMeshActor::splitAndreplace(
             }
             
 
+            //DEBUGGING NEEDED
 
-            for (int i = 0; i < tilesXAxis; i++){
-                for (int j = 0; j < tilesZAxis; j++){
-                    
+            //new: symetrical splitting, randomize offset, create meshes
+            std::vector<std::vector<FVector>> splitted;
+            for (int i = 0; i <= tilesXAxis; i++)
+            {
+                std::vector<FVector> positions;
+                for (int j = 0; j <= tilesZAxis; j++)
+                {
+                    //create the grid properly
+                    FVector pos = i * side + j * up;
+                    positions.push_back(pos);
+                }
+                splitted.push_back(positions);
+            }
+
+            //random offsets
+            for (int i = 1; i < splitted.size() - 1; i++)
+            {
+                for (int j = 1; j < splitted[i].size() - 1; j++){ //only inner vertecies to offset
+                    // scale from 0 to 1
+                    FVector offset = side * FVectorUtil::randomFloatNumber(-1.0f, 1.0f) * 0.5f;
+                    splitted[i][j] += offset;
+                }
+            }
+            //create cubes from touples like 2d map
+            for (int i = 0; i < splitted.size() - 1; i++)
+            {
+                for (int j = 0; j < splitted[i].size() - 1; j++){
+
+                    FVector center = anchor + splitted[i][j];
+                    AcustomMeshActor *newActor = eM->spawnAcustomMeshActor(actor->GetWorld(), center);
+                    if (newActor != nullptr){
+                        /*
+                        1  2
+
+                        0  3
+                        */
+                        FVector &t0_base = splitted[i][j];
+                        FVector t0(0, 0, 0);
+                        FVector t1 = splitted[i][j+1] - t0_base;
+                        FVector t2 = splitted[i+1][j+1] - t0_base;
+                        FVector t3 = splitted[i+1][j] -t0_base;
+
+                        FVector t0a = t0 + extension;
+                        FVector t1a = t1 + extension;
+                        FVector t2a = t2 + extension;
+                        FVector t3a = t3 + extension;
+
+                        DebugHelper::showLineBetween(actor->GetWorld(), center + t0, center + t1);
+                        DebugHelper::showLineBetween(actor->GetWorld(), center + t1, center + t2);
+                        DebugHelper::showLineBetween(actor->GetWorld(), center + t2, center + t3);
+                        DebugHelper::showLineBetween(actor->GetWorld(), center + t3, center + t0);
+
+                        // init on begin!
+                        newActor->init(materialType);
+
+                        // apply mesh
+                        // is correct like this, do not touch
+                        newActor->createCube(
+                            t0, t1, t2, t3,     //bottom quad clw
+                            t0a, t1a, t2a, t3a, //top quad clw
+                            material
+                        );
+                        
+                    }
+                }
+            }
+
+            /*
+            // old symetrical splitting
+            for (int i = 0; i < tilesXAxis; i++)
+            {
+                for (int j = 0; j < tilesZAxis; j++)
+                {
+
                     FVector innerAnchor = i * side + j * up;
-                    FVector vert0(0,0,0);
+                    FVector vert0(0, 0, 0);
                     FVector vert1 = vert0 + up;
                     FVector vert2 = vert0 + up + side;
                     FVector vert3 = vert0 + side;
 
-                    FVector center = anchor + innerAnchor; 
+                    FVector center = anchor + innerAnchor;
 
-                    //create new mesh / cube
+                    // create new mesh / cube
                     AcustomMeshActor *newActor = eM->spawnAcustomMeshActor(actor->GetWorld(), center);
 
-                    if(newActor != nullptr){
+                    if (newActor != nullptr)
+                    {
 
                         FVector vert0a = vert0 + extension;
                         FVector vert1a = vert1 + extension;
                         FVector vert2a = vert2 + extension;
                         FVector vert3a = vert3 + extension;
 
-
-                        //init on begin!
+                        // init on begin!
                         newActor->init(materialType);
 
-                        //apply mesh
-                        //is correct like this, do not touch
+                        // apply mesh
+                        // is correct like this, do not touch
                         newActor->createCube(
-                            vert0, vert1, vert2, vert3, //bottom quad clw
-                            vert0a, vert1a, vert2a, vert3a, //top quad clw
-                            material
-                        );
-
-                    
+                            vert0, vert1, vert2, vert3,     // bottom quad clw
+                            vert0a, vert1a, vert2a, vert3a, // top quad clw
+                            material);
                     }
-
-            
                 }
-            }
+            }*/
         }
     }
 }
@@ -892,21 +965,25 @@ MeshData AcustomMeshActor::createTree(int sizeMeters, float thicknessMeters){
     bezierCurve s;
 
     //create anchors and curve
-    std::vector<FVector2D> nodes;
     int nodesToMake = 3;
-    float step = 100;
-    for (int i = 0; i < nodesToMake; i++){
+    int einheitsValue = (sizeMeters / nodesToMake);
+    std::vector<FVector2D> nodes;
+    for (int i = 0; i < nodesToMake; i++)
+    {
         FVector2D b(
-            (sizeMeters / nodesToMake) * i,//step along x axis 
+            einheitsValue * i,//step along x axis 
             FVectorUtil::randomNumber(0, sizeMeters / 3) //some random number
         );
         b *= 100;
         nodes.push_back(b);
+        if(i == 0){
+            b.Y += 10;
+            nodes.push_back(b);
+        }
     }
 
     TVector<FVector2D> out;
-    int einheitsValue = 25; //scale to one meter
-    int stepsPerEinheit = 1;
+    int stepsPerEinheit = 4;
     s.calculatecurve(nodes, out, einheitsValue, stepsPerEinheit);
 
     

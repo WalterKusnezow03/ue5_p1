@@ -239,28 +239,29 @@ void PathFinder::addConvexHull(std::vector<FVector> &vec){
         if(prev != nullptr && current != nullptr && next != nullptr){
             //current->nA = prev;
             //current->nB = next;
-            current->setConvexNeighborA(prev);
+            current->setConvexNeighborA(prev); //es wird davon ausgegangen das sich nodes auf der hülle sehen
             current->setConvexNeighborB(next);
         }
 
     }
 
+    //NEW:
+    //new create polygons
+    //PathFinder::ConvexPolygon *polygon = new PathFinder::ConvexPolygon(outNodes);
+    //polygonstmp.push_back(polygon);
+
+
     //alle sofort in graphen ballern
     for (int i = 0; i < outNodes.size(); i++){
         if(outNodes.at(i) != nullptr){
             addNode(outNodes.at(i));
+
+            //NEW:
+            //convex hull index setzten für faster path on hull
+            //outNodes.at(i)->hullindex = i;
         }
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -291,6 +292,7 @@ void PathFinder::addNode(Node * node){
         }
     }
 }
+
 
 
 
@@ -634,7 +636,7 @@ bool PathFinder::canSeeTangential(PathFinder::Node *A, PathFinder::Node*B){
 
         
 
-        
+        /*
         FVector dir = (B->pos - Start).GetSafeNormal();
         Start += dir * 20; //offset for entity raycast failure
 
@@ -667,7 +669,7 @@ bool PathFinder::canSeeTangential(PathFinder::Node *A, PathFinder::Node*B){
             return false;
         }else{
             return true; //no hit: can see true
-        }
+        }*/
     }
     return false; //issue: can see false.
 }
@@ -687,7 +689,8 @@ bool PathFinder::canSee(FVector &Start, FVector &End){
         if(EntityManager *e = worldLevel::entityManager()){
             Params = e->getIgnoredRaycastParams();
         }
-
+    
+        //default casting
         bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
         if(bHit){
             return false;
@@ -1073,7 +1076,7 @@ void PathFinder::Node::reset(){
 void PathFinder::Node::updateCameFrom(float gxIn, float hxEnd, PathFinder::Node &came){
     this->camefrom = &came;
 
-    oldfx = fx; //copy
+    oldfx = fx; //copy for no reason
 
     gx = gxIn;
     fx = gxIn + hxEnd;
@@ -1112,7 +1115,7 @@ void PathFinder::Node::setConvexNeighborB(Node *n){
         addTangentialNeighbor(n);
     }
 }
-/// @brief adds a node to the tangential connected neighbors
+/// @brief adds a node to the tangential connected neighbors, will allow duplicate add. Just dont.
 /// @param n must not be nullptr
 void PathFinder::Node::addTangentialNeighbor(Node *n){
     if(n != nullptr){
@@ -1167,19 +1170,22 @@ void PathFinder::connect(Node *node){
                 // includes tangential check if possible!
                 if(PathFinder *p = PathFinder::instance()){
 
-                    if (p->canSee(node->pos, enclosedByMaxDistance.at(i)->pos)) 
-                    //if (p->canSeeTangential(node, enclosedByMaxDistance.at(i))) 
-                    {
-                        //node->visible_tangential_Neighbors.push_back(compare);
-                        //compare->visible_tangential_Neighbors.push_back(node);
-                        node->addTangentialNeighbor(compare);
-                        compare->addTangentialNeighbor(node);
+                    if(PathFinder::ASYNC_EDGE_PREBUILDING){
+                        asyncCanSee(node, enclosedByMaxDistance.at(i));
+                    }else{
+                        //if (p->canSee(node->pos, enclosedByMaxDistance.at(i)->pos)) 
+                        if (p->canSeeTangential(node, enclosedByMaxDistance.at(i))) 
+                        {
+                            node->addTangentialNeighbor(compare);
+                            compare->addTangentialNeighbor(node);
 
-                        //DebugHelper::showLineBetween(worldPointer, node->pos, compare->pos);
+                            //DebugHelper::showLineBetween(worldPointer, node->pos, compare->pos);
 
-                        //DebugHelper::showScreenMessage("connected!");
-                        
+                            //DebugHelper::showScreenMessage("connected!");
+                            
+                        }
                     }
+                    
                 }
             }
             
@@ -1189,6 +1195,77 @@ void PathFinder::connect(Node *node){
 
     }
 }
+
+/// @brief connects two nodes asynchronosly if those are tangential
+/// @param a node a
+/// @param b node b
+/// both nodes must not be nullptr,
+/// dont delete the nodes, they are passed into the lambda!
+void PathFinder::asyncCanSee(Node *a, Node *b){
+    if(a != nullptr && b != nullptr){
+
+        //needs still to pass the tangential check. Remember: if no convex hull, automaically passes the test
+        if(!passTangentailCheck(a,b)){
+            return;
+        }
+
+        if(worldPointer){
+            FHitResult HitResult;
+            FCollisionQueryParams Params;
+
+            //add params from entity manager (contains all bots for example, which can be ignored)
+            //part of a bigger context im working on, comment out or provide your own params
+            if(EntityManager *e = worldLevel::entityManager()){
+                Params = e->getIgnoredRaycastParams();
+            }
+            
+            //async cast if prebuild
+            if(PREBUILD_EDGES_ENABLED){
+
+                //bool result = false;
+                FVector start = a->pos;
+                FVector end = b->pos;
+
+                /**
+                 * EAsyncTraceType::Single: Use this for a single line trace (just one raycast).
+                 * EAsyncTraceType::Multi: Use this if you want to collect multiple hits along the ray
+                 */
+
+                FTraceDelegate MyTraceDelegate;
+                //remember: [capture clause] () {}
+                MyTraceDelegate.BindLambda([a, b](const FTraceHandle& TraceHandle, FTraceDatum& TraceData)
+                {
+                    // Lambda logic for handling the trace result
+                    bool bHit = TraceData.OutHits.Num() > 0;
+                    if(bHit){
+                        a->addTangentialNeighbor(b);
+                        b->addTangentialNeighbor(a);
+                    }
+                    
+                });
+
+                // Now pass the delegate by reference
+                worldPointer->AsyncLineTraceByChannel(
+                    EAsyncTraceType::Single,    // Or Multi, depending on what you need
+                    start,                      // Start point (FVector)
+                    end,                        // End point (FVector)
+                    ECC_Visibility,             // Collision channel
+                    Params,            // Collision query parameters
+                    FCollisionResponseParams(), // Response parameters
+                    &MyTraceDelegate
+                );
+                
+                
+            }
+        }
+    }
+}
+
+
+
+
+
+
 
 
 /// @brief custom path finding method for graph with prebuild edges
@@ -1321,9 +1398,10 @@ bool PathFinder::isInBounds(FVector &a, FVector &b, PathFinder::Node *check){
 /// @brief needs to pass the tangential check before being a node of interest
 /// requires both passed nodes to have their very next neighbors and both neighbors being
 /// part of the convex hull of the polygon the nodes / edges were collected from
+/// ---> if a or b dont have neighbors (not part of a convex hull, true is automatically returned, test passed.)
 /// @param a node a
 /// @param b node b
-/// @return is tangential no intersect or not
+/// @return is tangential: no intersection of polygons or not
 bool PathFinder::passTangentailCheck(Node *a, Node *b){
     if(a != nullptr && b != nullptr)
     {
@@ -1372,8 +1450,135 @@ bool PathFinder::passTangentailCheck(Node *a, Node *b){
 
             return dirAB_ok && dirBA_ok;
         }
-        return true;
+        return true; //if is not part of a convexx hull, true by default
     }
 
     return true; //no neighbors, check raycasts
 }
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * POLY GON CONVEX HULL SECTION
+ * 
+ * 
+ */
+/*
+bool PathFinder::Node::sameHull(Node *other){
+    if(this->polygon != nullptr && this->polygon == other->polygon){
+        return true;
+    }
+    return false;
+}
+
+/// @param nodesIn 
+PathFinder::ConvexPolygon(std::vector<PathFinder::Node *> nodesIn){
+    //nodes = nodesIn;
+    
+    //check which nodes can actually see each other?
+    //or plain adding? unclear.
+
+    nodes = nodesIn;
+}
+
+/// @brief testing needed
+/// @param a 
+/// @param b 
+/// @return 
+std::vector<FVector> PathFinder::ConvexPolygon::findFastPathOnHull(Node* a, Node *b){
+    if(a == nullptr || b == nullptr){
+        std::vector<FVector> none;
+        return none;
+    }
+
+    
+
+    int aIndex = a->hullindex; //always search from a
+    int bIndex = b->hullindex;
+
+    if(
+        aIndex != -1 && bIndex != -1 &&
+        aIndex < nodes.size() && bIndex < nodes.size()
+    ){
+
+        std::vector<Node *> dirA;
+        std::vector<Node *> dirB;
+        float sumA = 0;
+        float sumB = 0;
+
+
+        dirA.push_back(nodes[aIndex]);
+        dirB.push_back(nodes[aIndex]);
+
+        int currentSearch1 = aIndex;//will save the current position in both directions on hull
+        int currentSearch2 = aIndex;
+        int prevSearch1 = aIndex; //save the prev index
+        int prevSearch2 = aIndex;
+        bool search1Locked = false;
+        bool search2Locked = false;
+
+        while(currentSearch1 != bIndex && currentSearch2 != bIndex){ //look out for target
+
+
+            //resembles a modulo operation around hull
+            if(!search1Locked){
+                prevSearch1 = currentSearch1;
+                currentSearch1++;
+                if(currentSearch1 >= nodes.size()){
+                    currentSearch1 = 0; //to front
+                }
+                //add distance
+                Node *prev = nodes[prevSearch1];
+                Node *current = nodes[currentSearch1];
+                dirA.push_back(current);
+                sumA += PathFinder::distance(prev, current);
+
+                if(current == b){
+                    search1Locked = true;
+                }
+            }
+
+            if(!search2Locked){
+                prevSearch2 = currentSearch2;
+                currentSearch2--;
+                if(currentSearch2 < 0){
+                    currentSearch2 = nodes.size() - 1; //to back
+                }
+                //add distance
+                Node *prev = nodes[prevSearch2];
+                Node *current = nodes[currentSearch2];
+                dirB.push_back(current);
+                sumB += PathFinder::distance(prev, current);
+                //lock search and return in case of better sum
+                if(current == b){
+                    search2Locked = true;
+                }
+            }
+            
+            //if any of the searches reached the destination we need to choose the lower local gx path
+            //which is sumA and sumB for clw and cclw on convex hull
+            if(search1Locked){
+                if(sumA <= sumB){
+                    return dirA;
+                }
+            }
+            if(search2Locked){
+                if(sumB <= sumA){
+                    return dirB;
+                }
+            }
+
+        }
+    }
+
+
+}
+*/

@@ -21,6 +21,14 @@ public:
 	static void showScreenMessage(FString s, FVector a, FVector b, FColor color);
 	static void showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color);
 
+	//Log Messages
+	static void logMessage(FString s);
+
+	//time
+	static double timeSum;
+	static void addTime(double time);
+	static void logTime(FString message);
+
 	//FVector
 	static void showLineBetween(UWorld *world, FVector Start, FVector End);
 	static void showLineBetween(UWorld *world, FVector Start, FVector End, FColor color);

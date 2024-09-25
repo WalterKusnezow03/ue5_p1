@@ -116,11 +116,21 @@ int FVectorUtil::randomNumber(int range){
 int FVectorUtil::randomNumber(int lower, int higher){
     int a = std::rand();
     a %= higher;
-    if (a < lower)
+    if (a < lower) //clamp lower bound
     {
         return lower;
     }
     return a;
+}
+
+/// @brief generates a random float variable between 2 floats
+/// @param lower lower bound
+/// @param higher higher bound
+/// @return a random float number with 2 decimal points
+float FVectorUtil::randomFloatNumber(int lower, int higher){
+
+    int a = randomNumber(lower * 100, higher * 100);
+    return a / 100.0f;
 }
 
 void FVectorUtil::fillWithRandomNumbers(std::vector<int> &nums, int count, int lower, int higher){

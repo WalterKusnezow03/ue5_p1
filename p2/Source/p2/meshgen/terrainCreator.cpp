@@ -5,6 +5,7 @@
 #include "Algo/Sort.h"  // Include the necessary header
 #include "bezierCurve.h"
 #include "p2/util/TVector.h"
+#include "HAL/PlatformTime.h"
 #include "terrainCreator.h"
 
 terrainCreator::terrainCreator()
@@ -875,12 +876,14 @@ void terrainCreator::smooth3dMap(){
     int max = map.size() * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE;
     FVector b(max, max, 0);
 
-    int iterations = 1;
+    int iterations = 3;
     smooth3dMap(a, b, iterations);
 }
 
 /// @brief will smooth out all chunks rows and columns and merge them together to the map
 void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
+
+    double StartTime = FPlatformTime::Seconds();
 
     //upscale
     float scaleToSet = 10.0f;
@@ -912,25 +915,24 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
         int xcount = 0;
         //for (int i = 0; i < map.size(); i++)
         for (int i = fromX; i <= toX; i++)
-        {
+        {   
+            
             for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
             {
                 std::vector<FVector2D> column;
                 //for (int j = 0; j < map.at(i).size(); j++)
-                for (int j = fromY; j <= toY; j++)
-                {
-                    //get data and copy inside
-                    //std::vector<FVector2D> copy = map.at(i).at(j).getXColumAnchors(innerX);
-                    //column.insert(column.end(), copy.begin(), copy.end());
-
+                for (int j = fromY; j <= toY; j++){
                     column.push_back(map.at(i).at(j).getFirstXColumnAnchor(innerX));
                 }
-
                 output.clear();
                 curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
 
-                //int size = terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE * map.size();
-                //curve.calculatecurve(column, output, size,terrainCreator::ONEMETER);
+                //if first smooth, and first row, create curve, other wise: reuse
+                if(it == 0 && innerX == 0){
+                    
+                }
+                
+                
                 //cleanValues(output, ONEMETER); //can! be the case
 
                 //trying writing immidately
@@ -982,73 +984,12 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
 
     //downscale
     scaleHeightForAll(1 / scaleToSet);
+
+    //log
+    //double EndTime = FPlatformTime::Seconds();
+    //double ElapsedTime = EndTime - StartTime;
+    //UE_LOG(LogTemp, Log, TEXT("Elapsed time: %f seconds"), ElapsedTime);
 }
-
-
-/// @brief simplified terrain smoothening more general chunk wide
-void terrainCreator::smoothMap3dSimplified(){
-    // get all x and y axis and smooth them.
-    bezierCurve curve;
-
-    TVector<FVector2D> output; //use only one custom tvector for efficency
-
-    //all x columns
-    int xcount = 0;
-    for (int i = 0; i < map.size(); i++)
-    {
-
-        //create column chunk wide and apply each
-        std::vector<FVector2D> column;
-        for (int j = 0; j < map.at(i).size(); j++)
-        {
-            column.push_back(map.at(i).at(j).getFirstXColumnAnchor(0)); //0 here!
-        }
-        output.clear();
-        curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
-        cleanValues(output, ONEMETER); 
-
-
-        for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
-        {
-            //trying writing immidately
-            applyXColumnToMap(xcount, output);
-            xcount++;
-        }
-    }
-    
-
-
-
-    //then all y rows
-    int ycount = 0;
-    for (int cY = 0; cY < map.size(); cY++){
-        
-        std::vector<FVector2D> row;
-        //über ganz x laufen und einsammeln
-        for (int cX = 0; cX < map.size(); cX++){
-            row.push_back(map.at(cX).at(cY).getFirstYRowAnchor(0)); //0 here
-        }
-
-        output.clear();
-        curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
-        cleanValues(output, ONEMETER); 
-        
-        for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
-        {
-            applyYRowToMap(ycount, output);
-            ycount++;
-        }
-    }
-
-
-    //fill gaps and spikes, very important chunk
-    for(int i = 0; i < map.size(); i++){
-        for(int j = 0; j < map.at(i).size(); j++){
-            map.at(i).at(j).fixGaps();
-        }
-    }
-}
-
 
 
 
@@ -1371,6 +1312,7 @@ int terrainCreator::chunkNum(){
 /// where it can and doesnt go out of bounds
 void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*> &actors){
 
+
     int a = 0;
     int x = 0;
     int y = 0;
@@ -1433,11 +1375,12 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
         }
     }
 
+    DebugHelper::logTime("elapsed total raycast time"); //30 seconds.
+    PathFinder *p = PathFinder::instance();
+    if(p != nullptr){
+        p->debugCountNodes();
+    }
 }
-
-
-
-
 
 /**
  * 

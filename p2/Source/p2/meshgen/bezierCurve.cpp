@@ -91,9 +91,10 @@ void bezierCurve::smoothAnchors(std::vector<FVector2D> &ref){
 /// @param curve curve to save procesced anchors and continouity points in
 /// @param g2Continuity enable g2 continoutiy or use g1
 void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
-    if(anchors.size() < 3){
+    if(anchors.size() < 2){
         return;
     }
+
 
     //data will be copied later
     std::vector<FVector2D> curve;
@@ -101,7 +102,9 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
 
     //percent distance / one fraction to place p4 and p2 respectivley as control points
     //tangentially
-    float BETA = 0.5f;
+    float BETA = 0.6f; //from p0 to p1 scaling
+    float BETA_END = BETA / 2; //p2 to p3: keep second control point more to the end, 
+                               //allows less sharp edges in theory
 
     //this code creates the curve and should generally create the curve as wanted
 
@@ -116,8 +119,8 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             FVector2D direction = (p3 - p0);
 
             //is just linear at first
-            FVector2D p1 = p0 + direction * BETA;
-            FVector2D p2 = p3 - direction * BETA; // symetrical to first control point
+            FVector2D p1 = p0 + direction * BETA_END; //was BETA, was made beta end to make less agressivee in beginning
+            FVector2D p2 = p3 - direction * BETA_END; // symetrical to first control point
 
             FVector2D p4 = p3 + (p3 - p2) * BETA; //next anchor, next p1, continuity
 
@@ -144,7 +147,7 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
                 FVector2D p6 = anchors.at(i + 1);
                 FVector2D dirToNext = (p6 - p3);
                 FVector2D p4 = p3 + dirToNext * BETA; // AB = B - A //p1 für next
-                FVector2D p2 = p3 - dirToNext * BETA; //creating own anchor p2
+                FVector2D p2 = p3 - dirToNext * BETA_END; //creating own anchor p2
 
                 curve.push_back(p2);
                 curve.push_back(p3);
@@ -156,7 +159,7 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
                 FVector2D dir = (p3 - p0);
 
 
-                FVector2D p2 = p3 - dir * BETA; //p2 is now very aligned to p1
+                FVector2D p2 = p3 - dir * BETA_END; //p2 is now very aligned to p1
 
 
                 //next p1 point
@@ -248,29 +251,34 @@ void bezierCurve::process4Points(
 
     float limit = 1.0f; //fixing weird overlap on curves by cutting them off, 0.6f
     limit = 0.7f; //fix over interpolating
-
-    for (float i = 0; i <= limit; i += step) {
+    FVector2D prev(-100, 0); //first not in curve vector.
+    for (float i = 0; i <= limit; i += step)
+    {
         FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
         newPos.X = (int)(newPos.X);
         
         // new code
         if(output.size() > 0){
-            FVector2D prev = output.back();
+            
             if(prev.X != newPos.X){
                 output.push_back(newPos);
+                
             }
         }else{
             output.push_back(newPos);
         }
 
+        //copy for next
+        prev = newPos;
+
         //debug block:
         DEBUG_COUNT++;
         if(DEBUG_COUNT >= DEBUG_LIMIT){
-            
+            // debug return here
+            // return;
         }
     }
-    
-    
+
     //fillGaps(output);
 
 }

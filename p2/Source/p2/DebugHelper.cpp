@@ -97,7 +97,24 @@ FString DebugHelper::connect(int a, int b){
 	return out;
 }
 
+/**
+ * 
+ * -- log messages --
+ * 
+ */
+void DebugHelper::logMessage(FString printing){
+	UE_LOG(LogTemp, Log, TEXT("%s"), *printing); //for whatever reason the string must be dereferenced
+}
 
+double DebugHelper::timeSum = 0.0;
+void DebugHelper::addTime(double time)
+{
+	timeSum += time;
+}
+void DebugHelper::logTime(FString message){
+	UE_LOG(LogTemp, Log, TEXT("message: %s , %f seconds"), *message, timeSum);
+	timeSum = 0.0;
+}
 
 /**
  * 
