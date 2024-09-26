@@ -37,4 +37,5 @@ private:
 	void loadRooms(EntityManager *entityManager);
 	void loadMaterials();
 
+	void loadHumanoid();
 };

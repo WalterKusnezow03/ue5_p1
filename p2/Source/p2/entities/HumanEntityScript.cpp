@@ -13,6 +13,8 @@
 #include "p2/entityManager/Outpost.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/entities/skelletonController.h"
+#include "p2/gameStart/assetManager.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
@@ -35,6 +37,28 @@ AHumanEntityScript::AHumanEntityScript()
 void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
     this->init();
+
+    //create skelleton and attach to this.
+    if(assetManager *a = assetManager::instance()){
+        UClass *humanController = a->findBp(skelletonControllerEnum::human_skelleton);
+
+        if(humanController != nullptr){
+            if(EntityManager *e = worldLevel::entityManager()){
+                FVector location = GetActorLocation();
+                AActor *spawned = e->spawnAactor(GetWorld(), humanController, location);
+                if(spawned != nullptr){
+                    spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+
+                    //cast and save pointer
+                    AskelletonController *controller = Cast<AskelletonController>(spawned);
+                    if(controller != nullptr){
+                        skelletonControllerPointer = controller;
+                        DebugHelper::showScreenMessage("created controller!");
+                    }
+                }
+            }
+        }
+    }
 }
 
 void AHumanEntityScript::init(){
@@ -161,6 +185,12 @@ void AHumanEntityScript::die(){
 
         weaponPointer = nullptr;
     }
+
+    //hide skelleton
+    if(skelletonControllerPointer != nullptr){
+        
+    }
+
 
     //release over outpost, so the outpost ca remove the entity from its own list
     if(outpost != nullptr){

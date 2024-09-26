@@ -82,6 +82,11 @@ PathFinder::Node *priorityQueue::popLowestFx(){
             indexMap.erase(front);
         }
         downheap();
+
+        if(front != nullptr){
+            //DebugHelper::showScreenMessage("popped fx", front->fx);
+        }
+
         return front;
     }
     return nullptr;

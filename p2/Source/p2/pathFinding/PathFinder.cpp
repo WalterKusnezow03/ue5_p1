@@ -36,7 +36,9 @@ PathFinder::~PathFinder()
     delete (TopRight); 
     delete (BottomRight); 
     delete (BottomLeft); 
-    delete (TopLeft); 
+    delete (TopLeft);
+
+    clearDelegates();
 }
 
 PathFinder* PathFinder::pathFinderInstance = nullptr; //very imporntant, do not delete!
@@ -95,6 +97,7 @@ void PathFinder::clear(){
             array[i]->clear();
         }
     }
+    clearDelegates();
 }
 
 void PathFinder::Quadrant::clear(){
@@ -119,6 +122,19 @@ void PathFinder::Chunk::clear(){
 }
 
 
+void PathFinder::clearDelegates(){
+    //delete all delegates
+    for (int i = 0; i < released.size(); i++){
+        FTraceDelegate *delegate = released.at(i);
+        if (delegate != nullptr)
+        {
+            //DebugHelper::logMessage("debug deleted delegate");
+            delete delegate;
+            
+        }
+    }
+    released.clear();
+}
 
 //clear functions end
 
@@ -396,7 +412,7 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
     if(start != nullptr && end != nullptr){
         //DebugHelper::showScreenMessage("ask path print 2");
 
-        DebugHelper::showScreenMessage("try find path");
+        //DebugHelper::showScreenMessage("try find path");
 
         //check if is last path
         if(prevPath.size() > 0){
@@ -1116,9 +1132,11 @@ void PathFinder::Node::setConvexNeighborB(Node *n){
     }
 }
 /// @brief adds a node to the tangential connected neighbors, will allow duplicate add. Just dont.
+/// will add thread safely
 /// @param n must not be nullptr
 void PathFinder::Node::addTangentialNeighbor(Node *n){
     if(n != nullptr){
+        FScopeLock Lock(&CriticalSection); //lock because of async raycasting
         visible_tangential_Neighbors.push_back(n);
     }
 }
@@ -1230,37 +1248,95 @@ void PathFinder::asyncCanSee(Node *a, Node *b){
                  * EAsyncTraceType::Single: Use this for a single line trace (just one raycast).
                  * EAsyncTraceType::Multi: Use this if you want to collect multiple hits along the ray
                  */
-
+                
+                /*
+                //a delegate is in essence a call back function
                 FTraceDelegate MyTraceDelegate;
                 //remember: [capture clause] () {}
-                MyTraceDelegate.BindLambda([a, b](const FTraceHandle& TraceHandle, FTraceDatum& TraceData)
-                {
+                MyTraceDelegate.BindLambda([a, b](const FTraceHandle &TraceHandle, FTraceDatum &TraceData){
                     // Lambda logic for handling the trace result
                     bool bHit = TraceData.OutHits.Num() > 0;
-                    if(bHit){
+                    if(!bHit){
                         a->addTangentialNeighbor(b);
                         b->addTangentialNeighbor(a);
                     }
-                    
-                });
+                    DebugHelper::showScreenMessage("async trace made");
+                });*/
 
-                // Now pass the delegate by reference
-                worldPointer->AsyncLineTraceByChannel(
-                    EAsyncTraceType::Single,    // Or Multi, depending on what you need
-                    start,                      // Start point (FVector)
-                    end,                        // End point (FVector)
-                    ECC_Visibility,             // Collision channel
-                    Params,            // Collision query parameters
-                    FCollisionResponseParams(), // Response parameters
-                    &MyTraceDelegate
-                );
-                
+                FTraceDelegate *MyTraceDelegate = requestDelegate(a, b);
+                if(MyTraceDelegate != nullptr){
+                    // Now pass the delegate by reference
+                    worldPointer->AsyncLineTraceByChannel(
+                        EAsyncTraceType::Single,    // Or Multi, depending on what you need
+                        start,                      // Start point (FVector)
+                        end,                        // End point (FVector)
+                        ECC_Visibility,             // Collision channel
+                        Params,            // Collision query parameters
+                        FCollisionResponseParams(), // Response parameters
+                        //&MyTraceDelegate //call back 
+                        MyTraceDelegate //call back 
+                    );
+                }else{
+                    DebugHelper::showScreenMessage("issue with delegate occured");
+                }
+
                 
             }
         }
     }
 }
 
+
+
+/// @brief request trace delegate to connect nodes a and b on 
+/// @param a 
+/// @param b 
+/// @return 
+FTraceDelegate *PathFinder::requestDelegate(Node *a, Node *b){
+
+    if(a != nullptr && b != nullptr){
+        FScopeLock Lock(&delegate_CriticalSection_a);
+
+        FTraceDelegate *delegate  = nullptr;
+        if (released.size() > 0)
+        {
+            delegate = released.back();
+            released.pop_back();
+        }
+        if(delegate == nullptr){
+            delegate = new FTraceDelegate();
+        }
+        if(delegate != nullptr){
+            delegate->BindLambda([a, b, delegate](const FTraceHandle &TraceHandle, FTraceDatum &TraceData){
+                // Lambda logic for handling the trace result
+                bool bHit = TraceData.OutHits.Num() > 0;
+
+                //no hit, can see.
+                if(!bHit){
+                    a->addTangentialNeighbor(b);
+                    b->addTangentialNeighbor(a);
+                }
+                //DebugHelper::showScreenMessage("async trace made new", FColor::Yellow);
+
+                if(PathFinder *i = PathFinder::instance()){
+                    i->freeDelegate(delegate);
+                }        
+            });
+        }
+        
+        return delegate;
+    }
+    return nullptr;
+}
+
+/// @brief synchronously releases the ftrace delegate for re usal
+/// @param d ftracedelegate to realease
+void PathFinder::freeDelegate(FTraceDelegate *d){
+    if(d != nullptr){
+        FScopeLock Lock(&delegate_CriticalSection_a);
+        released.push_back(d);
+    }
+}
 
 
 
@@ -1300,9 +1376,9 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
     FVector lower(lowerX, lowerY, 0);
     FVector higher(higherX, higherY, 0);
 
-    float boundingBoxIncreaseFrac = 1.0f;
-    lower += (center - lower) * boundingBoxIncreaseFrac; // AB = B - A
-    higher += (center - higher) * boundingBoxIncreaseFrac; // AB = B - A
+    //int boundingBoxIncreaseFrac = 2;
+    //lower += (center - lower) * boundingBoxIncreaseFrac; // AB = B - A
+    //higher += (center - higher) * boundingBoxIncreaseFrac; // AB = B - A
 
 
 
@@ -1346,15 +1422,21 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
                         //add here tangential check later!
                         float gxNew = current->gx + distance(current->pos, neighbor->pos);
                         if(gxNew < neighbor->gx){
-                            //screenMessage(300);
+                            
                             float hxEnd = distance(neighbor->pos, end->pos);
                             neighbor->updateCameFrom(gxNew, hxEnd, *current);
                         }
                         //ADD TO OPEN LIST!! //if readded is bubbled up automatically!
                         open.add(neighbor);
+
+                        //even if a node wasnt the lowest it must be cleaned later!
+                        markedForCleanUp.push_back(neighbor);
                     }
                 }
             }
+        }else{
+            //issue
+            break;
         }
     }
 
@@ -1363,7 +1445,6 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
         Node *n = markedForCleanUp.at(i);
         if(n != nullptr){
             n->reset();
-            n->closedFlag = false;
         }
     }
 

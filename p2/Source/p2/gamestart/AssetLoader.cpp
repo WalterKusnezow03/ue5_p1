@@ -29,6 +29,7 @@ void AssetLoader::loadAssets()
     loadMaterials(); //materials need to be loaded first to not have any issues
 
     loadEntities();
+    loadHumanoid();
 
     loadWeapons();
     loadThrower();
@@ -38,7 +39,6 @@ void AssetLoader::loadAssets()
     loadRooms(entityManager);
 
 }
-
 
 /// @brief passin your path and prefab blueprint name
 /// @param path path like "/Game/Prefabs..."
@@ -339,3 +339,19 @@ void AssetLoader::loadMaterials(){
 
 
 
+
+
+
+void AssetLoader::loadHumanoid(){
+
+    if(assetManager *a = assetManager::instance()){
+
+        FString humanoidString = FString::Printf(
+            TEXT("Blueprint'/Game/Prefabs/testOwnHuman/humanTestBp.humanTestBp_C'")
+        );
+        UClass *bp = loadUClassBluePrint(humanoidString);
+        a->addBp(skelletonControllerEnum::human_skelleton, bp);
+    }
+
+
+}

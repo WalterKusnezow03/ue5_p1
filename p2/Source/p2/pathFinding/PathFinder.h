@@ -82,8 +82,8 @@ public:
 			int hullindex = -1;
 			bool sameHull(Node *other);
 
-		//private:
-			//class PathFinder::ConvexPolygon *polygon = nullptr;
+		private:
+			FCriticalSection CriticalSection;
 	};
 
 	void addNode(PathFinder::Node *node);
@@ -185,10 +185,7 @@ private:
 
 	bool isCloseAndTooVertical(Node *a, Node *b);
 
-
-
-
-
+	int traceCount;
 
 	static constexpr bool PREBUILD_EDGES_ENABLED = true; //enable disable!
 	static constexpr bool ASYNC_EDGE_PREBUILDING = true;
@@ -220,4 +217,16 @@ private:
 
 	std::vector<PathFinder::ConvexPolygon *> polygonstmp; //will store polygons here for now
 	*/
+
+
+
+	FCriticalSection delegate_CriticalSection_a;
+	
+	std::vector<FTraceDelegate *> released;
+	FTraceDelegate *requestDelegate(Node *a, Node *b);
+
+	void clearDelegates();
+
+public:
+	void freeDelegate(FTraceDelegate *d);
 };
