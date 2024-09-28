@@ -50,7 +50,7 @@ private:
 	virtual bool isWithinMaxRange(FVector vec) override;
 	
 	//pointer for the skelleton, for now is just in human, not entity
-	class AskelletonController *skelletonControllerPointer = nullptr;
+	//class AskelletonController *skelletonControllerPointer = nullptr;
 
 public:
 	void setOutpost(AOutpost *outpostIn);

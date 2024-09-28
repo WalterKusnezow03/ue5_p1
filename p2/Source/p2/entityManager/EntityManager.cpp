@@ -44,7 +44,7 @@ void EntityManager::add(AEntityScript *entity){
     }
 }
 
-/// @brief add an humanentity to the manager
+/// @brief add an humanentity to the manager and hides it
 /// @param humanEntity 
 void EntityManager::add(AHumanEntityScript *humanEntity){
     if(humanEntity != nullptr){
@@ -55,7 +55,7 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
     }
 }
 
-/// @brief adds a weapon to the entity manager
+/// @brief adds a weapon to the entity manager, and hides it
 /// @param weaponIn 
 void EntityManager::add(Aweapon *weaponIn){
     
@@ -87,6 +87,8 @@ void EntityManager::add(AthrowableItem *throwableItem){
 /// @param particleIn 
 void EntityManager::add(Aparticle *particleIn){
     if(particleIn != nullptr){
+        //particle will manage this it self
+        //AActorUtil::showActor(*particleIn, false);
         particleEnum type = particleIn->getType();
         particleMap.add(type, particleIn);
     }
@@ -99,6 +101,16 @@ void EntityManager::add(AcustomMeshActor *meshActorIn){
         meshActorList.add(meshActorIn);
     }
 }
+
+/// @brief adds a skelleton to the entity manager
+/// @param skelletonIn 
+void EntityManager::add(AskelletonController *skelletonIn){
+    if(skelletonIn != nullptr){
+        skelletonControllerEnum typeread = skelletonIn->getType();
+        skelletonMap.add(typeread, skelletonIn);
+    }
+}
+
 
 
 /**
@@ -469,7 +481,37 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 
 
 
+AskelletonController* EntityManager::spawnAskelletonController(
+    UWorld* worldIn, 
+    FVector &location, 
+    skelletonControllerEnum type
+){
+    if(worldIn != nullptr){
+        if(skelletonMap.hasActorsLeft(type)){
+            AskelletonController *controller = skelletonMap.getFirstActor(type);
+            if(controller != nullptr){
+                controller->SetActorLocation(location);
+                return controller;
+            }
+        }else{
+            
+            if(assetManager *a = assetManager::instance()){
+                UClass *bp = a->findBp(type);
+                if(bp != nullptr){
+                    AActor *spawned = spawnAactor(worldIn, bp, location);
+                    if(spawned != nullptr){
+                        AskelletonController *controllerCasted = Cast<AskelletonController>(spawned);
+                        if(controllerCasted != nullptr){
+                            return controllerCasted;
+                        }
+                    }
+                }
+            }
 
+        }
+    }
+    return nullptr;
+}
 
 /** 
 * ---- PARTICLE / EXPLOSION SECTION ----

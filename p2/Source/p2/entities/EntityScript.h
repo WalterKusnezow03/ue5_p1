@@ -106,6 +106,10 @@ protected:
 	bool activated;
 	
 	void enableCollider(bool enable);
+	
+	class AskelletonController *skelletonControllerPointer = nullptr;
+
+
 public:
 	//must be public
 	void enableActiveStatus(bool enable);

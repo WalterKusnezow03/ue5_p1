@@ -161,15 +161,9 @@ bool Aweapon::singleFireMode(){
 
 /// @brief Unbind from player or bot
 /// will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
+/// will enable the collider
 void Aweapon::drop(){
 	Super::drop();
-	/*
-	cameraPointer = nullptr;
-	botPointer = nullptr; //reset bot too, for both actors designed
-	enableCollider(true);
-	showWeapon(true);
-	*/
-	DebugHelper::showScreenMessage("drop weapon");
 }
 
 /// @brief releases the shot (mouse up)
@@ -453,6 +447,7 @@ void Aweapon::reloadAnimation(){
 }
 
 
+/*
 // DEPRECATED
 /// @brief plays an animatin for a skeleton from a path
 /// @param AnimationPath path to the animation
@@ -474,7 +469,7 @@ void Aweapon::playAnimation(
         //skeleton->SetPlayRate(60 * cooldownTime);
 		skeleton->SetPlayRate(playRate);
 	}
-}
+}*/
 
 
 

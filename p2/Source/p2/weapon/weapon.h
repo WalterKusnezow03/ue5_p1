@@ -117,7 +117,7 @@ protected:
 	void setupAnimations();
 
 	//plays any anim
-	void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
+	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
 	void playAnimation(UAnimSequence *AnimSequence, USkeletalMeshComponent *skeleton, float time);
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;

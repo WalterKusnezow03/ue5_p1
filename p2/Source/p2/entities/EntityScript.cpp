@@ -17,11 +17,6 @@ AEntityScript::AEntityScript()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	health = 100;
-	spottedPlayer = false;
-	playerPointer = nullptr;
-	defaultSpottingTime = 5;
-	setSpottingTime(defaultSpottingTime);
 }
 
 // Called when the game starts or when spawned

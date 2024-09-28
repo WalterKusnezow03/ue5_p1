@@ -50,6 +50,7 @@ public:
 	void add(AthrowableItem *throwableItem);
 	void add(Aparticle *particleIn);
 	void add(AcustomMeshActor *meshActorIn);
+	void add(AskelletonController *skelletonIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);
@@ -63,6 +64,11 @@ public:
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
 
 	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
+
+	AskelletonController *spawnAskelletonController(
+		UWorld *worldIn,
+		FVector &location,
+		skelletonControllerEnum type);
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!
@@ -97,21 +103,17 @@ private:
 	//weil hier so nicht gewollt, wie in java den generic type
 	//team unabhängig speichern
 	class EntityManagerGeneric<AEntityScript> entityList; 
-	//class EntityManagerGeneric<AHumanEntityScript> humanEntityList; 
 	
 	//hier werden ALLE toten humans ausbewahrt, basierend auf team
 	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> humanEntityMap;
-
-	
-	
 	class EntityManagerGeneric<AcustomMeshActor> meshActorList;
-
-
 
 	//GENERIC ENUM MAPS OF GENERIC MANAGERS / BACKUP ON DEATH 
 	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
 	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
 	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
+
+	class EntityManagerGenericMap<skelletonControllerEnum, AskelletonController> skelletonMap;
 
 	//Particles 
 

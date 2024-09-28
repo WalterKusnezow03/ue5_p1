@@ -20,6 +20,7 @@ public:
 	static void showScreenMessage(FString s, int argument, FColor color);
 	static void showScreenMessage(FString s, FVector a, FVector b, FColor color);
 	static void showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color);
+	static void showScreenMessage(FVector vec);
 
 	//Log Messages
 	static void logMessage(FString s);

@@ -184,17 +184,18 @@ bool AcarriedItem::isActive(){
 	return isVisible;
 }
 
-/// @brief drops the item and 
+/// @brief drops the item and enables the collider, removes all owners
 void AcarriedItem::drop(){
 
 	if(cameraPointer != nullptr){
 		//detach from camera
-		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false)); 
+		//false for detaching complete physcics? / designed to uncouple everything
 	}
 	if(botPointer != nullptr){
 		//detach from bot
 		//ChildActor->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 	}
 
 

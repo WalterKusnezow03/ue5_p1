@@ -215,7 +215,7 @@ void playerInventory::releaseShoot(){
     }
 }
 
-/// @brief will return if the current weapon index is valid,
+/// @brief will return if the current weapon index is valid and not nullptr,
 /// and if any items are in the list 
 /// @return 
 bool playerInventory::currentIndexIsValid(){

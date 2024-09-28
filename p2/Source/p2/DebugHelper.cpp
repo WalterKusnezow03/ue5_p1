@@ -97,6 +97,21 @@ FString DebugHelper::connect(int a, int b){
 	return out;
 }
 
+void DebugHelper::showScreenMessage(FVector vec){
+	FString sOut = TEXT("vector: ");
+	FString xPart = FString::Printf(TEXT("%d"), (int)vec.X);
+	FString yPart = FString::Printf(TEXT("%d"), (int)vec.Y);
+	FString zPart = FString::Printf(TEXT("%d"), (int)vec.Z);
+
+	sOut = sOut + TEXT("\n") +
+				   xPart + TEXT("\n") +
+				   yPart + TEXT("\n") +
+				   zPart + TEXT("\n");
+
+	showScreenMessage(sOut, FColor::Purple);
+}
+
+
 /**
  * 
  * -- log messages --

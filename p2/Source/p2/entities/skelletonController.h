@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "p2/gamestart/assetEnums/skelletonControllerEnum.h"
 #include "skelletonController.generated.h"
 
 UCLASS()
-class P2_API AskelletonController : public AActor
+class P2_API AskelletonController : public AActor, public IDamageinterface
 {
 	GENERATED_BODY()
 	
@@ -23,16 +24,39 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//damage interface methods
+	virtual void takedamage(int d) override; //= 0 schreiben damit sie pure virtual sind
+	virtual void takedamage(int d, FVector &from) override;
+	virtual void setTeam(teamEnum t) override;
+	virtual teamEnum getTeam() override;
+
+	void setOwner(IDamageinterface *owner);
+	void enableActiveStatus(bool enable);
+
+private:
+	class IDamageinterface *owningEntity = nullptr; //must be reset on death
+
+public:
+	//release
+	void die();
+
 
 	//skelleton
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skelletal Mesh To Control")
+	class USkeletalMeshComponent *skelletonComponentPointer = nullptr;
+
+	//skelleton uproperty enum val
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skelletal Mesh To Control")
-	USkeletalMeshComponent *skelletonComponentPointer;
-	
+	skelletonControllerEnum type;
+
+	skelletonControllerEnum getType();
 
 	//attach somehow
 	void attachLeftArm(AActor *other);
 	void attachRightArm(AActor *other);
 	void detach(AActor *other);
+
+	
 
 private:
 	void findSkeletonOnStart();

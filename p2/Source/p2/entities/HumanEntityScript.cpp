@@ -26,11 +26,6 @@ AHumanEntityScript::AHumanEntityScript()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	health = 100;
-	spottedPlayer = false;
-	playerPointer = nullptr;
-	defaultSpottingTime = 5;
-	setSpottingTime(defaultSpottingTime);
 }
 
 
@@ -38,27 +33,7 @@ void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
     this->init();
 
-    //create skelleton and attach to this.
-    if(assetManager *a = assetManager::instance()){
-        UClass *humanController = a->findBp(skelletonControllerEnum::human_skelleton);
-
-        if(humanController != nullptr){
-            if(EntityManager *e = worldLevel::entityManager()){
-                FVector location = GetActorLocation();
-                AActor *spawned = e->spawnAactor(GetWorld(), humanController, location);
-                if(spawned != nullptr){
-                    spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
-
-                    //cast and save pointer
-                    AskelletonController *controller = Cast<AskelletonController>(spawned);
-                    if(controller != nullptr){
-                        skelletonControllerPointer = controller;
-                        DebugHelper::showScreenMessage("created controller!");
-                    }
-                }
-            }
-        }
-    }
+    
 }
 
 void AHumanEntityScript::init(){
@@ -102,6 +77,41 @@ void AHumanEntityScript::init(){
     //team
     //setTeam(referenceManager::TEAM_ENEMY);
     setTeam(teamEnum::enemyTeam);
+
+
+
+
+
+    //create skelleton and attach to this.
+    if(skelletonControllerPointer == nullptr){
+        if(assetManager *a = assetManager::instance()){
+            UClass *humanController = a->findBp(skelletonControllerEnum::human_skelleton);
+
+            if(humanController != nullptr){
+                if(e != nullptr){ //entity manager
+                    FVector location = GetActorLocation();
+
+                    //cast and save pointer
+                    AskelletonController *controller = e->spawnAskelletonController(
+                        GetWorld(),
+                        location,
+                        skelletonControllerEnum::human_skelleton
+                    );
+                    if (controller != nullptr)
+                    {
+                        controller->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+                        skelletonControllerPointer = controller;
+                        skelletonControllerPointer->setOwner(this);
+                        
+                        DebugHelper::showScreenMessage("created human controller!");
+                    }
+                }
+            }
+        }
+    }
+    
+
+
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){
@@ -174,23 +184,35 @@ bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
     Super::resetpath();
+
+    enableActiveStatus(false); //disable?
+
+    //entity manager
+    EntityManager *entityManager = worldLevel::entityManager();
+
+    //drop weapon from skelleton and release the skelleton 
+    if(skelletonControllerPointer != nullptr){
+        if(weaponPointer != nullptr){
+            skelletonControllerPointer->detach(weaponPointer);
+        }
+        skelletonControllerPointer->die(); // will deatch from actor and also released
+        skelletonControllerPointer = nullptr;
+    }
+
+    //drop weapon and release
     if (weaponPointer != nullptr)
     {
         weaponPointer->drop();
 
-        if(EntityManager *e = worldLevel::entityManager()){
-            e->add(weaponPointer);
+        if(entityManager != nullptr){
+            entityManager->add(weaponPointer);
         }
 
 
         weaponPointer = nullptr;
     }
 
-    //hide skelleton
-    if(skelletonControllerPointer != nullptr){
-        
-    }
-
+    
 
     //release over outpost, so the outpost ca remove the entity from its own list
     if(outpost != nullptr){
@@ -200,10 +222,11 @@ void AHumanEntityScript::die(){
     }else{
         //default entity manager death
         //Super::die();
-        if (EntityManager *e = worldLevel::entityManager()){
-            e->add(this); //cant call entity super method because super method would add entity instead of human entity
+        if (entityManager != nullptr){
+            entityManager->add(this); //cant call entity super method because super method would add entity instead of human entity
         }
     }
+
 
 }
 
