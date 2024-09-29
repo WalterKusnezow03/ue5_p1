@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/player/teamEnum.h"
+#include "p2/entities/customIk/BoneIk.h"
+
 #include "debugEntity.generated.h"
 
 UCLASS()
@@ -33,4 +35,9 @@ public:
 private:
 	bool clicked;
 	void debugFunction();
+
+	void debugFunction(float deltaTime);
+	float deg = 0.0f;
+
+	class BoneIk bone;
 };

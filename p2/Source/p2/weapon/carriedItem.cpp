@@ -78,7 +78,8 @@ void AcarriedItem::followPlayer(){
 		return; //dont check for bot.
 	}
 
-	//bot follow if bot picked up
+	//bot follow if bot picked up ----> will be attached instead!
+	/*
 	if(botPointer != nullptr){
 		FVector targetPos = botPointer->GetActorLocation() +
 							botPointer->GetActorForwardVector() * 100.0f;
@@ -94,7 +95,7 @@ void AcarriedItem::followPlayer(){
 		//SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
 
-	}
+	}*/
 
 	
 }

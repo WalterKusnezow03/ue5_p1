@@ -64,9 +64,13 @@ void worldLevel::initWorld(UWorld *world){
     
     //edge collector must be added here later
     createPathFinder(world);
+
+
+
+
+    //testing
+    DebugHelper::Debugtest(world);
 }
-
-
 
 /**
  * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start

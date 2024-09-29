@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/util/TVector.h"
+#include "p2/entities/customIk/MMatrix.h"
+#include "p2/entities/customIk/MMatrixChain.h"
 #include "DebugHelper.h"
 
 DebugHelper::DebugHelper()
@@ -9,6 +11,47 @@ DebugHelper::DebugHelper()
 
 DebugHelper::~DebugHelper()
 {
+}
+
+/**
+ * 
+ * 
+ * TESTING 
+ * 
+ * 
+ */
+void DebugHelper::Debugtest(UWorld *world){
+
+	MMatrix A;
+	MMatrix B;
+	FVector ap(-20, -20, 0); //set some offset for start
+	FVector bp(-1, -1, 1); //must be relative to first point, remember that!
+	A.setTranslation(ap);
+	B.setTranslation(bp);
+	showScreenMessage(B.asString());
+	//A *= B;
+	//showScreenMessage(A.asString());
+
+	//A.roll(90);
+	//B.roll(90);
+
+	MMatrixChain chain;
+	chain.add(&A);
+	chain.add(&B);
+	FVector end(1, 1, 1);
+	chain.build(world, end, FColor::Red);
+
+
+
+	chain.setRoll(30, -30); //am einfachsten erstmal, beide 90 grad rotieren
+	chain.build(world, end, FColor::Yellow);
+
+	/*
+	int a = 2;
+	int &b = a;
+	int *c = &a;
+	*/
+
 }
 
 /**
@@ -61,6 +104,12 @@ void DebugHelper::showScreenMessage(FString s, int argument){
 	showScreenMessage(s, argument, FColor::Green);
 }
 
+
+void DebugHelper::showScreenMessage(FString s, float argument){
+	FString res = s;
+	res.Append(FString::Printf(TEXT("%.2f"), argument));
+	showScreenMessage(res, FColor::Green);
+}
 
 
 void DebugHelper::showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color){
@@ -145,6 +194,16 @@ void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End, FCo
 	}
 }
 
+
+void DebugHelper::showLineBetween(UWorld *worldin, FVector Start, FVector End, FColor color, float time){
+	if(worldin != nullptr){
+		DrawDebugLine(worldin, Start, End, color, false, time, 0, 1.0f);
+	}
+}
+
+
+
+
 /// @brief draws a line between 2 given points
 /// @param world world to draw in
 /// @param Start start point
@@ -198,8 +257,37 @@ void DebugHelper::showLine(UWorld *world, TVector<FVector> &vec, FColor color){
 
 
 
+void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec, FColor color, int scale){
+	if(world != nullptr){
+		for(int i = 1; i < vec.size(); i++){
+			showLineBetween(world, vec[i-1] * scale, vec[i] * scale, color);
+		}
+	}
+}
+
+/// @brief shows a line with a certain display time
+/// @param world 
+/// @param vec 
+/// @param color 
+/// @param scale 
+/// @param time 
+void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec, FColor color, float time){
+	if(world != nullptr){
+		for(int i = 1; i < vec.size(); i++){
+			showLineBetween(world, vec[i-1], vec[i], color, time); //with display time
+		}
+	}
+}
 
 
+
+
+
+/**
+ * 
+ * 2D draw
+ * 
+ */
 
 void DebugHelper::showLineBetween(UWorld *world, FVector2D Start, FVector2D End){
 	showLineBetween(world, Start, End, 100);

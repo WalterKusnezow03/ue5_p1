@@ -104,6 +104,19 @@ void assetManager::addBp(skelletonControllerEnum type, UClass *uclassIn){
     }
 }
 
+// --- skelleton u anim instances ---
+UClass* assetManager::findUAnimInstanceBp(skelletonControllerEnum type){
+    UClass *found = skelletonUAnimInstanceAssets.getBp(type);
+    return found;
+}
+
+void assetManager::addUAnimInstanceBp(skelletonControllerEnum type, UClass *uclassin){
+    if(uclassin != nullptr){
+        skelletonUAnimInstanceAssets.addBp(type, uclassin);
+    }
+}
+
+
 
 // --- room assets ---
 

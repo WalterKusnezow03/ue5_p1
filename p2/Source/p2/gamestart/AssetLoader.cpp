@@ -345,12 +345,20 @@ void AssetLoader::loadMaterials(){
 void AssetLoader::loadHumanoid(){
 
     if(assetManager *a = assetManager::instance()){
-
+        
+        //skelleton
         FString humanoidString = FString::Printf(
             TEXT("Blueprint'/Game/Prefabs/testOwnHuman/humanTestBp.humanTestBp_C'")
         );
         UClass *bp = loadUClassBluePrint(humanoidString);
         a->addBp(skelletonControllerEnum::human_skelleton, bp);
+    
+        //uanim instance
+        FString uanimString = FString::Printf(
+            TEXT("Blueprint'/Game/Prefabs/testOwnHuman/HumanAnimBp.HumanAnimBp_C'")
+        );
+        a->addUAnimInstanceBp(skelletonControllerEnum::human_skelleton, loadUClassBluePrint(uanimString));
+    
     }
 
 

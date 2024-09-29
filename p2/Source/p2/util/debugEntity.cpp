@@ -4,6 +4,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
+#include "p2/entities/customIk/BoneIk.h"
 #include "p2/util/debugEntity.h"
 
 // Sets default values
@@ -21,7 +22,10 @@ void AdebugEntity::BeginPlay()
 	clicked = false;
 	takedamage(0);
 
-	
+
+	//setup bone here for now
+	float meterLegScale = 2.0f;
+	bone.setupBones(meterLegScale);
 }
 
 // Called every frame
@@ -29,12 +33,13 @@ void AdebugEntity::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	debugFunction(DeltaTime);
 }
 
 void AdebugEntity::takedamage(int d){
 	if(!clicked){
 		clicked = true;
-		debugFunction();
+		//debugFunction();
 	}
 }
 void AdebugEntity::takedamage(int d, FVector &from){
@@ -52,24 +57,31 @@ teamEnum AdebugEntity::getTeam(){
 	return teamEnum::neutralTeam;
 }
 
+
+
+
 void AdebugEntity::debugFunction(){
-	if(EntityManager *e = worldLevel::entityManager()){
-		/*
-		FVector location1 = GetActorLocation();
-		location1.Z = 20;
+	
+}
 
-		int metersLayoutX = 10;
-		int metersLayoutY = 20;
-		e->createALayout(GetWorld(), location1, metersLayoutX, metersLayoutY);
 
-		//return; //debug only testing rooms now
+void AdebugEntity::debugFunction(float deltaTime){
 
-		//terrain -> moved to world class
-		int meters = 100;
-        //e->createTerrain(GetWorld(), meters);
-		//worldLevel::initWorld(GetWorld());
-		//terrainCreator *t = new terrainCreator();
-		//t->createTerrain(GetWorld(), meters);
-		*/
+
+	//ich brauche jetzt:
+	//die inetrpolation entlang cos quasi, um die amplitude zu finden
+
+	float degreePerSecond = 20;
+	deg += degreePerSecond * deltaTime;
+	//mod
+	if(deg > 360.0f){
+		deg -= 360.0f;
 	}
+
+	float etha = std::abs(std::sin(MMatrix::degToRadian(deg)));
+	FVector offset = FVector(300, 0, 200) + GetActorLocation();
+
+	//DebugHelper::showLineBetween(GetWorld(), FVector(0, 0, 0), offset, FColor::Blue, 100.0f);
+
+	bone.tickAndBuild(GetWorld(), offset, etha, deltaTime * 2);
 }

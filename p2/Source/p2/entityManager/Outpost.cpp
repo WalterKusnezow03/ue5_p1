@@ -115,7 +115,7 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 		//myEntities.push_back(entity); //weil instanz variable mit .punkt
 		entity->setOutpost(this);
 
-		DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
+		//DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
 	}
 }
 

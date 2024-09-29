@@ -13,7 +13,7 @@
 #include "p2/entityManager/Outpost.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/entities/skelletonController.h"
+#include "p2/entities/skelletons/skelletonController.h"
 #include "p2/gameStart/assetManager.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
@@ -65,6 +65,7 @@ void AHumanEntityScript::init(){
         setuphelper = nullptr;
     }
 
+    //spotting
     spottedPlayer = false;
     canSeePlayer = false;
 
@@ -91,7 +92,7 @@ void AHumanEntityScript::init(){
                 if(e != nullptr){ //entity manager
                     FVector location = GetActorLocation();
 
-                    //cast and save pointer
+                    //ask entity manager for an instance (is spawned or recycled)
                     AskelletonController *controller = e->spawnAskelletonController(
                         GetWorld(),
                         location,
@@ -100,8 +101,8 @@ void AHumanEntityScript::init(){
                     if (controller != nullptr)
                     {
                         controller->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
-                        skelletonControllerPointer = controller;
-                        skelletonControllerPointer->setOwner(this);
+                        Super::skelletonControllerPointer = controller;
+                        Super::skelletonControllerPointer->setOwner(this);
                         
                         DebugHelper::showScreenMessage("created human controller!");
                     }
@@ -109,9 +110,17 @@ void AHumanEntityScript::init(){
             }
         }
     }
-    
 
+    //attach weapon to skelleton
+    if(weaponPointer != nullptr && skelletonControllerPointer != nullptr){
+        //detach from bot, testing!
+        skelletonControllerPointer->detach(weaponPointer); //detach completly from everything
+        //skelletonControllerPointer->attachToRightArm(weaponPointer);
+        skelletonControllerPointer->attachToBreastRight(weaponPointer);
 
+        //new attach left hand
+        skelletonControllerPointer->attachLeftArmTo(weaponPointer, "none");
+    }
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){
