@@ -256,8 +256,15 @@ void MMatrix::yawRad(float a){
 
 
 
-
+/// @brief util converts degrees to radian
+/// @param deg deg input
+/// @return 
 float MMatrix::degToRadian(float deg){
     float angleInRadians = deg * (M_PI / 180.0); // Umwandlung in Bogenmaß
     return angleInRadians;
+}
+
+float MMatrix::radToDegree(float rad){
+    float angleInDeg = rad * (180.0 / M_PI); // Umwandlung in Bogenmaß
+    return angleInDeg;
 }

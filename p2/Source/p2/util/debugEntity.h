@@ -38,6 +38,10 @@ private:
 
 	void debugFunction(float deltaTime);
 	float deg = 0.0f;
+	float mpideg = 0.0f;
 
 	class BoneIk bone;
+	class BoneIk bone2;
+
+	void spawnCustomIkActor();
 };

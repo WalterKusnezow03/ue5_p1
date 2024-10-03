@@ -19,6 +19,22 @@ public:
 
 	void tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime);
 
+	void tickAndBuild(
+		UWorld *world,
+		FVector &offset, // offset data in world
+		float etha,
+		float legPitchThete, 
+		float displayTime,
+		FColor color
+	);
+
+	void tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color);
+	float halfTimePhase();
+
+	bool halfIsReached();
+
+	FVector movedLastTick();
+
 private:
 	MMatrix hip;
 	MMatrix knee;
@@ -27,4 +43,18 @@ private:
 
 	void getData(std::vector<MMatrix*> &dataout, FVector &outVector);
 	void setEtha(float etha);
+	void setEtha(float etha, float legPitchThetaRadian); //new testing
+
+	bool halfReached = false;
+
+	//testing needed
+	float degreePerSecond = 200;
+	float deg = 0.0f;
+	float legSwingRadian = 0.0f;
+
+
+
+	//testing
+	FVector prevFootPos;
+	FVector movedDir;
 };

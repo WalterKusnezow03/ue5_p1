@@ -37,11 +37,10 @@ public:
 	void yawRad(float angle);
 
 	static float degToRadian(float deg);
+	static float radToDegree(float rad);
 
 private:
 	//16 langes array für die 4x4 matrix
 	static constexpr int size = 16;
 	float array[16];
-
-	
 };

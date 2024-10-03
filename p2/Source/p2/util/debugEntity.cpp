@@ -5,6 +5,8 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/entities/customIk/BoneIk.h"
+#include "p2/entities/customIk/abstractKinematicFunctions.h"
+#include "p2/entities/customIk/IkActor.h"
 #include "p2/util/debugEntity.h"
 
 // Sets default values
@@ -24,8 +26,12 @@ void AdebugEntity::BeginPlay()
 
 
 	//setup bone here for now
+	/*
 	float meterLegScale = 2.0f;
 	bone.setupBones(meterLegScale);
+	bone2.setupBones(meterLegScale);
+	*/
+	spawnCustomIkActor();
 }
 
 // Called every frame
@@ -71,7 +77,9 @@ void AdebugEntity::debugFunction(float deltaTime){
 	//ich brauche jetzt:
 	//die inetrpolation entlang cos quasi, um die amplitude zu finden
 
-	float degreePerSecond = 20;
+	float displayTime = deltaTime * 2;
+
+	float degreePerSecond = 40;
 	deg += degreePerSecond * deltaTime;
 	//mod
 	if(deg > 360.0f){
@@ -83,5 +91,47 @@ void AdebugEntity::debugFunction(float deltaTime){
 
 	//DebugHelper::showLineBetween(GetWorld(), FVector(0, 0, 0), offset, FColor::Blue, 100.0f);
 
-	bone.tickAndBuild(GetWorld(), offset, etha, deltaTime * 2);
+	//only etha changes
+	bone.tickAndBuild(GetWorld(), offset, etha, displayTime);
+
+	//new testing
+	float thetaLegDeg = 10;
+	
+	//bone2.tickAndBuild(GetWorld(), offset, etha, thetaLegDeg, deltaTime * 2); // irgendwas halt zum testen
+
+
+
+	//testing
+	//mpi deg (rad) mod to [-pi, pi)
+	mpideg += deltaTime;
+	if(mpideg > M_PI){
+		mpideg = -1 * M_PI;
+	}
+
+	float tForLegSwingRadian = abstractKinematicFunctions::pitchlegSwing(mpideg);
+	DebugHelper::showScreenMessage("leg theta ", MMatrix::radToDegree(tForLegSwingRadian));
+	bone2.tickAndBuild(GetWorld(), offset, etha, tForLegSwingRadian * 2, displayTime, FColor::Green);
+}
+
+
+
+
+/**
+ * 
+ * 
+ * TESTING NEEDED FOR CUSTOM IK ACTOR SPAWNING
+ * 
+ * 
+ */
+void AdebugEntity::spawnCustomIkActor(){
+	UWorld *world = GetWorld();
+	if(world){
+		FVector offset = FVector(300, 0, 200) + GetActorLocation();
+		FRotator r;
+		AIkActor *SpawnedActor = world->SpawnActor<AIkActor>(AIkActor::StaticClass(), offset, r);
+		if(SpawnedActor != nullptr){
+			SpawnedActor->SetActorLocation(offset);
+		}
+	}
+	
 }
