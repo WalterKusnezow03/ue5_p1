@@ -61,6 +61,33 @@ void BoneIk::setEtha(float etha, float legPitchThetaRadian){
 
 
 
+void BoneIk::setEthaFromCurrent(float etha){
+     if(etha < 0.0f){
+        etha = 0.0f;
+    }
+    if(etha > 1.0f){
+        etha = 1.0f;
+    }
+    
+    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
+    float lambda = std::acosf(1.0f - etha); // bein nach vorne, in radian!
+    float thetaHip_pitch = lambda; //additional for swing
+    float thetaFoot_pitch = lambda;
+   
+    float thetaKnee_pitch = lambda * 2; // bein anziehen
+
+
+    hip.pitchRadAdd(thetaHip_pitch * -1); //hip to knee, flippen einmal.
+    knee.pitchRadAdd(thetaKnee_pitch); //knee to foot
+    
+    //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
+    foot.pitchRadAdd(thetaFoot_pitch * -1);
+    
+}
+
+
+
+
 
 
 /**

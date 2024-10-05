@@ -29,25 +29,14 @@ void AIkActor::BeginPlay()
 	
 	
 	
-	//arm1.rotateFirstLimbDeg(-90, -90, 0);
-
-	//rotate, then etha works good
-	//arm1.rotateFirstLimbDeg(-90, -90, 0);
-	//arm1.setEtha(0.5f); //0 being fully extended (?)
 
 
 	
-	//arm1.rotateFirstLimbDeg(-90, -90, 0);
-	//arm1.rotateFirstLimbDeg(-20, -20, 0);
-
-	//arm1.setEtha(0.5f); // 0 being fully extended (?)
-
-	//arm1.setEtha(0.5f); //0 being fully extended (?)
 	
 	arm1.rotateFirstLimbDeg(0, -110, 10);
 	arm1.rotateFirstLimbDeg(0, 20, 10);
 	//arm1.rotateFirstLimbDeg(0, 0, 0);
-
+	arm1.setEthaFromCurrent(0.5f); //0 being fully extended (?)
 
 
 	//debug

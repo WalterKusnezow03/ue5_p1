@@ -44,9 +44,10 @@ public:
 
 	void rotateLastLimbDeg(float xDeg, float yDeg, float zDeg);
 	void rotateLastLimbRad(float xDeg, float yDeg, float zDeg);
-	
+
 
 	void setEtha(float etha);
+	void setEthaFromCurrent(float etha);
 
 private:
 	/// @brief hip or shoulder
