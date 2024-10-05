@@ -25,28 +25,43 @@ void BoneIk::setupBones(float completeDistance){
 }
 
 
-/// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 1 being fully extended
+/// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
 /// @param etha etha fraction, will be clamped
 void BoneIk::setEtha(float etha){
+    setEtha(etha, 0);
+}
+
+void BoneIk::setEtha(float etha, float legPitchThetaRadian){
     if(etha < 0.0f){
         etha = 0.0f;
     }
     if(etha > 1.0f){
         etha = 1.0f;
     }
+    
+
+    // legPitchTheta *= -1;
 
     //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
-    float lambda = std::acosf(1.0f - etha); //bein nach vorne, in radian!
-    float thetaHip_pitch = lambda;
+    float lambda = std::acosf(1.0f - etha); // bein nach vorne, in radian!
+    float thetaHip_pitch = lambda + legPitchThetaRadian; //additional for swing
+    float thetaFoot_pitch = lambda - legPitchThetaRadian;
+   
     float thetaKnee_pitch = lambda * 2; // bein anziehen
 
-    
-    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, im uhrzeiger sinn deshalb pos zahl
+
+    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, flippen einmal.
     knee.pitchRad(thetaKnee_pitch); //knee to foot
     
     //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
-    foot.pitchRad(-1 * thetaHip_pitch);
+    foot.pitchRad(thetaFoot_pitch * -1);
+    
 }
+
+
+
+
+
 
 /**
  * 
@@ -191,31 +206,6 @@ void BoneIk::tickAndBuild(
 }
 
 
-void BoneIk::setEtha(float etha, float legPitchThetaRadian){
-    if(etha < 0.0f){
-        etha = 0.0f;
-    }
-    if(etha > 1.0f){
-        etha = 1.0f;
-    }
-    
-
-    // legPitchTheta *= -1;
-
-    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
-    float lambda = std::acosf(1.0f - etha); // bein nach vorne, in radian!
-    float thetaHip_pitch = lambda + legPitchThetaRadian; //additional for swing
-    float thetaFoot_pitch = lambda;
-    float thetaFoot_pitch_noLeg = lambda - legPitchThetaRadian;
-    float thetaKnee_pitch = lambda * 2; // bein anziehen
-
-    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, flippen einmal.
-    knee.pitchRad(thetaKnee_pitch); //knee to foot
-    
-    //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
-    //foot.pitchRad(thetaFoot_pitch * -1);
-    foot.pitchRad(thetaFoot_pitch_noLeg * -1);
-}
 
 
 
@@ -274,16 +264,27 @@ bool BoneIk::halfIsReached(){
 
 
 
-//rotation of starting node section
-
-void BoneIk::roll(float degree){
-    hip.roll(degree);
+//rotate hip / shoulder
+void BoneIk::rotateFirstLimbDeg(float xDeg, float yDeg, float zDeg){
+    MMatrix rotator = MMatrix::createRotatorFromDeg(xDeg, yDeg, zDeg);
+    hip.rotate(rotator);
 }
 
-void BoneIk::pitch(float degree){
-    hip.pitch(degree);
+void BoneIk::rotateFirstLimbRad(float xDeg, float yDeg, float zDeg){
+    MMatrix rotator = MMatrix::createRotatorFromRad(xDeg, yDeg, zDeg);
+    //hip *= rotator;
+    hip.rotate(rotator);
 }
 
-void BoneIk::yaw(float degree){
-    hip.yaw(degree);
+//rotation of last part (hand for example)
+void BoneIk::rotateLastLimbDeg(float xDeg, float yDeg, float zDeg){
+    MMatrix rotator = MMatrix::createRotatorFromDeg(xDeg, yDeg, zDeg);
+    //foot *= rotator;
+    foot.rotate(rotator);
+}
+
+void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
+    MMatrix rotator = MMatrix::createRotatorFromRad(xDeg, yDeg, zDeg);
+    //foot *= rotator;
+    foot.rotate(rotator);
 }

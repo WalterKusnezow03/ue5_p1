@@ -45,4 +45,6 @@ private:
 	//new
 	FVector offset;
 	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
+
+	void LookAt(FVector TargetLocation);
 };

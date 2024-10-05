@@ -2,6 +2,7 @@
 
 
 #include "p2/entities/customIk/BoneIk.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "p2/entities/customIk/IkActor.h"
 
 // Sets default values
@@ -25,10 +26,32 @@ void AIkActor::BeginPlay()
 
 	float armScale = legScaleMeters;
 	arm1.setupBones(armScale);
-	arm1.roll(90); //gegen uhrzeiger sinn pos zahl
-	arm1.pitch(-90); //im uhrzeiger sinn
+	
+	
+	
+	//arm1.rotateFirstLimbDeg(-90, -90, 0);
 
-	arm1.setEtha(0.7f);
+	//rotate, then etha works good
+	//arm1.rotateFirstLimbDeg(-90, -90, 0);
+	//arm1.setEtha(0.5f); //0 being fully extended (?)
+
+
+	
+	//arm1.rotateFirstLimbDeg(-90, -90, 0);
+	//arm1.rotateFirstLimbDeg(-20, -20, 0);
+
+	//arm1.setEtha(0.5f); // 0 being fully extended (?)
+
+	//arm1.setEtha(0.5f); //0 being fully extended (?)
+	
+	arm1.rotateFirstLimbDeg(0, -110, 10);
+	arm1.rotateFirstLimbDeg(0, 20, 10);
+	//arm1.rotateFirstLimbDeg(0, 0, 0);
+
+
+
+	//debug
+	leg2.rotateFirstLimbDeg(0, -90, 10);
 }
 
 // Called every frame
@@ -37,7 +60,7 @@ void AIkActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	updateBone(leg1, DeltaTime, FColor::Red);
-	updatePositionBasedOnMovedDistance(leg1);
+	//updatePositionBasedOnMovedDistance(leg1);
 
 	if(leg1.halfIsReached()){
 		//updateBone(bone2, DeltaTime, FColor::Green);
@@ -48,7 +71,11 @@ void AIkActor::Tick(float DeltaTime)
 	//arms new, must be added
 	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
 	arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
-	//DebugHelper::showLineBetween(GetWorld(), FVector(0, 0, 0), armOff, FColor::Yellow);
+
+	leg2.build(GetWorld(), armOff, FColor::Black, DeltaTime * 2);
+	
+	//draw forward line to approve arm is correct
+	DebugHelper::showLineBetween(GetWorld(), armOff, armOff + FVector(100,0,0), FColor::Green, DeltaTime * 2);
 }
 
 
@@ -70,4 +97,27 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 		offset.X += xMoved;
 	}
 	
+}
+
+
+
+
+
+
+/// @brief look at a location
+/// @param TargetLocation target to look at
+void AIkActor::LookAt(FVector TargetLocation) 
+{
+    // Calculate the rotation needed to look at the target location
+    FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+
+    // Optionally, you can set only the yaw to rotate around the Z-axis
+    //LookAtRotation.Pitch = 0.0f;
+    //LookAtRotation.Roll = 0.0f;
+
+    // Apply the rotation to the actor
+    //SetActorRotation(LookAtRotation);
+
+	float zDegree = LookAtRotation.Yaw;
+
 }

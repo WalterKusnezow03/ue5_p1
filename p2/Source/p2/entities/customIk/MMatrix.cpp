@@ -73,6 +73,17 @@ void MMatrix::operator+=(MMatrix &other){
 /// @brief multiply with another matrix
 /// @param other 
 void MMatrix::operator*=(MMatrix &other){
+    //old, berücksichtigt logik nicht, macht sachen kaputt
+
+    normalizeRotation();
+    other.normalizeRotation();
+
+    /**
+     * eine translation in den ursprung ist nicht notwendig 
+     * bei den knochen weil die sowieso das sind.
+     * 
+     */
+    
     MMatrix result; // Temporary matrix to store the result
 
     for (int row = 0; row < 4; row++) { // Iterate through the rows of 'this' matrix
@@ -90,8 +101,8 @@ void MMatrix::operator*=(MMatrix &other){
         array[i] = result.array[i];
     }
 
+    normalizeRotation();
 }
-
 
 /// @brief multiply and return result
 /// @param other other
@@ -108,10 +119,9 @@ MMatrix MMatrix::operator*(MMatrix &other){
             result.array[row * 4 + col] = sum; // Store the result in the temporary matrix
         }
     }
+    result.normalizeRotation();
     return result;
 }
-
-
 
 
 
@@ -155,54 +165,61 @@ FString MMatrix::asString(){
 }
 
 
+
+
+
+/// @brief util converts degrees to radian
+/// @param deg deg input
+/// @return 
+float MMatrix::degToRadian(float deg){
+    float angleInRadians = ((deg * M_PI) / 180.0); // Umwandlung in Bogenmaß
+    return angleInRadians;
+}
+
+float MMatrix::radToDegree(float rad){
+    float angleInDeg = ((rad * 180.0) / M_PI); // Umwandlung in Bogenmaß
+    return angleInDeg;
+}
+
+
+
+
 /// @brief rotate along X in degree
 /// @param a 
-void MMatrix::roll(float a){
+void MMatrix::roll(float deg){
     /*
     5  6
     9 10
     cos, -sin
     sin, cos
     */
-    float torad = degToRadian(a);
-    array[5] = std::cos(torad);
-    array[9] = std::sin(torad);
-    array[6] = array[9] * -1;
-    array[10] = array[5];
+    float torad = degToRadian(deg);
+    rollRad(torad);
 }
 
 /// @brief rotate with y
 /// @param a degree
-void MMatrix::pitch(float a){
+void MMatrix::pitch(float deg){
     /*
     0  2
     8 10
     cos, sin
     -sin, cos
     */
-    float torad = degToRadian(a);
-    array[0] = std::cos(torad);
-    array[10] = array[0];
-    array[2] = std::sin(torad);
-    array[8] = array[2] * -1;
+    float torad = degToRadian(deg);
+    pitchRad(torad);
 }
 
-void MMatrix::yaw(float a){
+void MMatrix::yaw(float deg){
     /*
     0  1
     4 5
     cos, -sin
     sin, cos
     */
-    float torad = degToRadian(a);
-    array[0] = std::cos(torad);
-    array[5] = array[0];
-    array[4] = std::sin(torad);
-    array[1] = array[4] * -1;
+    float torad = degToRadian(deg);
+    yawRad(torad);
 }
-
-
-
 
 /// @brief rotate along X in degree
 /// @param a 
@@ -213,11 +230,18 @@ void MMatrix::rollRad(float a){
     cos, -sin
     sin, cos
     */
-    array[5] = std::cos(a);
-    array[9] = std::sin(a);
-    array[6] = array[9] * -1;
-    array[10] = array[5];
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+
+    array[5] = cos;
+    array[9] = sin;
+    array[6] = sin * -1;
+    array[10] = cos;
 }
+
+
+
+
 
 /// @brief rotate with y
 /// @param a degree
@@ -228,10 +252,12 @@ void MMatrix::pitchRad(float a){
     cos, sin
     -sin, cos
     */
-    array[0] = std::cos(a);
-    array[10] = array[0];
-    array[2] = std::sin(a);
-    array[8] = array[2] * -1;
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+    array[0] = cos;
+    array[10] = cos;
+    array[2] = sin;
+    array[8] = sin * -1;
 }
 
 void MMatrix::yawRad(float a){
@@ -241,10 +267,157 @@ void MMatrix::yawRad(float a){
     cos, -sin
     sin, cos
     */
-    array[0] = std::cos(a);
-    array[5] = array[0];
-    array[4] = std::sin(a);
-    array[1] = array[4] * -1;
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+
+    array[0] = cos;
+    array[5] = cos;
+    array[4] = sin;
+    array[1] = sin * -1;
+}
+
+
+
+/**
+ * 
+ * ADD
+ * 
+ */
+
+
+/// @brief rotate along X in degree
+/// @param a 
+void MMatrix::rollRadAdd(float a){
+    /*
+    5  6
+    9 10
+    cos, -sin
+    sin, cos
+    */
+    // Create a rotation matrix for rotation, then concatenate to not brick anything
+    MMatrix rotMatrix;
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+
+    rotMatrix.array[5] = cos;
+    rotMatrix.array[9] = sin;
+    rotMatrix.array[6] = sin * -1;
+    rotMatrix.array[10] = cos;
+
+    
+    rotate(rotMatrix);
+   
+}
+
+/// @brief rotate with y
+/// @param a degree
+void MMatrix::pitchRadAdd(float a){
+    /*
+    0  2
+    8 10
+    cos, sin
+    -sin, cos
+    */
+    MMatrix rotMatrix;
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+    rotMatrix.array[0] = cos;
+    rotMatrix.array[2] = sin;
+    rotMatrix.array[8] = sin * -1;
+    rotMatrix.array[10] = cos;
+    
+    rotate(rotMatrix);
+    
+}
+
+void MMatrix::yawRadAdd(float a){
+    /*
+    0  1
+    4 5
+    cos, -sin
+    sin, cos
+    */
+    MMatrix rotMatrix;
+    float cos = std::cos(a);
+    float sin = std::sin(a);
+
+    rotMatrix.array[0] = cos;
+    rotMatrix.array[1] = sin * -1;
+    rotMatrix.array[4] = sin;
+    rotMatrix.array[5] = cos;
+
+    rotate(rotMatrix);
+}
+
+/// @brief factory method to create a rotation around x, y and z
+/// @param x x roll radian rotation
+/// @param y y pitch radian rotation
+/// @param z z yaw radian rotation
+/// @return MMatrix which will rotate another matrix around the desired rotation when multiplying
+MMatrix MMatrix::createRotatorFromRad(float x, float y, float z){
+
+    MMatrix result;
+
+    result.rollRadAdd(x);
+    result.pitchRadAdd(y);
+    result.yawRadAdd(z);
+
+   
+
+    return result;
+}
+
+
+/// @brief factory method to create a rotation around x, y and z
+/// @param x x roll degree rotation
+/// @param y y pitch degree rotation
+/// @param z z yaw degree rotation
+/// @return MMatrix which will rotate another matrix around the desired rotation when multiplying
+MMatrix MMatrix::createRotatorFromDeg(float x, float y, float z){
+    x = MMatrix::degToRadian(x);
+    y = MMatrix::degToRadian(y);
+    z = MMatrix::degToRadian(z);
+    return createRotatorFromRad(x, y, z);
+}
+
+
+
+
+
+
+
+/// @brief multiply with another matrix ROTATION ONLY
+/// @param other 
+void MMatrix::rotate(MMatrix &other){
+    
+    //Rges = R2 * R1 wenn Rges angewand werden soll und r1 als erstes angewandt
+    
+    MMatrix result; // Temporary matrix to store the result
+
+    int limit = 3;
+
+    for (int row = 0; row < limit; row++) { // Iterate through the rows of 'this' matrix
+        for (int col = 0; col < limit; col++) { // Iterate through the columns of 'other' matrix
+            
+            float sum = 0.0f;
+            for (int inner = 0; inner < limit; inner++) { // Perform dot product
+                //sum += array[row * 4 + inner] * other.array[inner * 4 + col];
+                sum += other.array[row * 4 + inner] * array[inner * 4 + col];
+            }
+            result.array[row * 4 + col] = sum; // Store the result in the temporary matrix
+        }
+    }
+
+    // Copy the result back into this matrix
+
+    for (int row = 0; row < 3; row++){
+        for (int col = 0; col < 3; col++){
+
+            int i = row * 4 + col;
+            array[i] = result.array[i];
+        }
+    }
+    normalizeRotation();
 }
 
 
@@ -256,15 +429,36 @@ void MMatrix::yawRad(float a){
 
 
 
-/// @brief util converts degrees to radian
-/// @param deg deg input
-/// @return 
-float MMatrix::degToRadian(float deg){
-    float angleInRadians = deg * (M_PI / 180.0); // Umwandlung in Bogenmaß
-    return angleInRadians;
+void MMatrix::normalizeRotation(){
+
+    for (int row = 0; row < 3; row++) { // Iterate through the rows of 'this' matrix
+        for (int col = 0; col < 3; col++) { // Iterate through the columns of 'other' matrix
+            int i = row * 4 + col;
+            float angleCopy = normalizeAngle(array[i]);
+            array[i] = angleCopy;
+        }
+    }        
 }
 
-float MMatrix::radToDegree(float rad){
-    float angleInDeg = rad * (180.0 / M_PI); // Umwandlung in Bogenmaß
-    return angleInDeg;
+
+//damit keine werte über 360 grad entstehen
+float MMatrix::normalizeAngle(float angle) {
+    // Normalisiere den Winkel auf den Bereich [0, 2π)
+    bool flip = false;
+    while (angle < 0){
+        //angle += 2 * M_PI; // Sicherstellen, dass der Winkel positiv ist
+        angle *= -1;
+        flip = true;
+    }
+
+    float pi2 = 2 * M_PI;
+    while (angle >= pi2){
+        angle -= pi2; // Sicherstellen, dass er im Bereich liegt
+    }
+
+    if(flip){
+        angle *= -1;
+    }
+
+    return angle;
 }

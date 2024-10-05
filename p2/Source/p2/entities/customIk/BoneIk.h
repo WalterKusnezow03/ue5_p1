@@ -39,17 +39,28 @@ public:
 	FVector movedLastTick();
 
 	//rotation of whole bone - starting node
-	void roll(float degree);
-	void pitch(float degree);
-	void yaw(float degree);
+	void rotateFirstLimbDeg(float xDeg, float yDeg, float zDeg);
+	void rotateFirstLimbRad(float xDeg, float yDeg, float zDeg);
+
+	void rotateLastLimbDeg(float xDeg, float yDeg, float zDeg);
+	void rotateLastLimbRad(float xDeg, float yDeg, float zDeg);
+	
 
 	void setEtha(float etha);
 
 private:
+	/// @brief hip or shoulder
 	MMatrix hip;
+	
+	/// @brief knee or ellbow
 	MMatrix knee;
+	
+	/// @brief foot or hand
 	MMatrix foot;
+
+	///@brief foot tip or finger tips end
 	FVector toFootTip;
+
 
 	void getData(std::vector<MMatrix*> &dataout, FVector &outVector);
 	

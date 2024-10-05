@@ -368,7 +368,7 @@ FVector AskelletonController::TargetMesh::socketLocation(){
 	if(actorPointer != nullptr && skeletonPointer != nullptr){
 		
 		FVector a = skeletonPointer->GetSocketLocation(targetSocket);
-		DrawDebugSphere(actorPointer->GetWorld(), a, 5.0f, 12, FColor::Red, false, 1.0f); //draws correctly
+		//DrawDebugSphere(actorPointer->GetWorld(), a, 5.0f, 12, FColor::Red, false, 1.0f); //draws correctly
 		return a;
 
 	}

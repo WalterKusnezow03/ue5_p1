@@ -36,11 +36,28 @@ public:
 	void pitchRad(float angle);
 	void yawRad(float angle);
 
+	void rollRadAdd(float angle);
+	void pitchRadAdd(float angle);
+	void yawRadAdd(float angle);
+	
+
+
 	static float degToRadian(float deg);
 	static float radToDegree(float rad);
+
+	static MMatrix createRotatorFromRad(float x, float y, float z);
+	static MMatrix createRotatorFromDeg(float x, float y, float z);
+
+
+	void rotate(MMatrix &other);
+
+	float normalizeAngle(float angle);
+	void normalizeRotation();
 
 private:
 	//16 langes array für die 4x4 matrix
 	static constexpr int size = 16;
 	float array[16];
+
+	
 };
