@@ -42,8 +42,7 @@ public:
 
 
 	//skelleton
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skelletal Mesh To Control")
-	class USkeletalMeshComponent *skelletonComponentPointer = nullptr;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skelletal Mesh To Control"
 
 	//skelleton uproperty enum val
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skelletal Mesh To Control")
@@ -63,7 +62,9 @@ public:
 
 
 private:
-	void findSkeletonOnStart();
+	class USkeletalMeshComponent *skelletonComponentPointer = nullptr;
+
+	static USkeletalMeshComponent* findSkeleton(AActor *actor);
 	void attachToSocket(AActor *actorToAttach, FName socketName);
 
 
@@ -78,6 +79,24 @@ private:
 	void updateIkPositions();
 	FVector boneWorldLocation(FName boneName);
 
-	class AActor *leftAttached = nullptr;
+	class TargetMesh{
+		public:
+			void init(AActor *actor, FName socketName);
+			void reset();
+			FVector socketLocation();
 
+			bool isInited();
+
+			TargetMesh();
+			~TargetMesh();
+		
+		private:
+			USkeletalMeshComponent *skeletonPointer = nullptr;
+			FName targetSocket;
+			AActor *actorPointer = nullptr;
+		
+	};
+
+	TargetMesh leftHandTargetMesh;
+	TargetMesh rightHandTargetMesh;
 };

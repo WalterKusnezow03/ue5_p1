@@ -26,8 +26,6 @@ private:
 	float EinheitsValue;
 	float stepsToMakePerEinheitsValue;
 
-	int DEBUG_COUNT = 0;
-	int DEBUG_LIMIT = 1000000; // 1.000.000
 
 	int predictFinalCurveElementCount(std::vector<FVector2D> &anchors);
 	void createContinuityCurve(std::vector<FVector2D> &anchors);

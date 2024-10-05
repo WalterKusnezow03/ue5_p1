@@ -36,11 +36,9 @@ private:
 	float degreePerSecond = 40;
 
 	//legs for now
-	class BoneIk bone1;
-	class BoneIk bone2;
-
-
-
+	class BoneIk leg1;
+	class BoneIk leg2;
+	class BoneIk arm1;
 
 	void updateBone(BoneIk &bone, float deltaTime, FColor color);
 

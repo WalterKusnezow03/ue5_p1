@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutpostManager.h"
-#include "p2/meshgen/terrainCreator.h"
+#include "p2/meshgen/generation/terrainCreator.h"
 
 /**
  * saves the world data and nesecarry instance pointers 

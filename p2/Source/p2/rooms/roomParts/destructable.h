@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	materialEnum materialType;
 
+	UPROPERTY(EditAnywhere)
+	bool destructable;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

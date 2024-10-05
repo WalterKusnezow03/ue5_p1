@@ -23,14 +23,6 @@ void AdebugEntity::BeginPlay()
 	Super::BeginPlay();
 	clicked = false;
 	takedamage(0);
-
-
-	//setup bone here for now
-	/*
-	float meterLegScale = 2.0f;
-	bone.setupBones(meterLegScale);
-	bone2.setupBones(meterLegScale);
-	*/
 	spawnCustomIkActor();
 }
 
@@ -73,44 +65,6 @@ void AdebugEntity::debugFunction(){
 
 void AdebugEntity::debugFunction(float deltaTime){
 
-
-	//ich brauche jetzt:
-	//die inetrpolation entlang cos quasi, um die amplitude zu finden
-
-	float displayTime = deltaTime * 2;
-
-	float degreePerSecond = 40;
-	deg += degreePerSecond * deltaTime;
-	//mod
-	if(deg > 360.0f){
-		deg -= 360.0f;
-	}
-
-	float etha = std::abs(std::sin(MMatrix::degToRadian(deg)));
-	FVector offset = FVector(300, 0, 200) + GetActorLocation();
-
-	//DebugHelper::showLineBetween(GetWorld(), FVector(0, 0, 0), offset, FColor::Blue, 100.0f);
-
-	//only etha changes
-	bone.tickAndBuild(GetWorld(), offset, etha, displayTime);
-
-	//new testing
-	float thetaLegDeg = 10;
-	
-	//bone2.tickAndBuild(GetWorld(), offset, etha, thetaLegDeg, deltaTime * 2); // irgendwas halt zum testen
-
-
-
-	//testing
-	//mpi deg (rad) mod to [-pi, pi)
-	mpideg += deltaTime;
-	if(mpideg > M_PI){
-		mpideg = -1 * M_PI;
-	}
-
-	float tForLegSwingRadian = abstractKinematicFunctions::pitchlegSwing(mpideg);
-	DebugHelper::showScreenMessage("leg theta ", MMatrix::radToDegree(tForLegSwingRadian));
-	bone2.tickAndBuild(GetWorld(), offset, etha, tForLegSwingRadian * 2, displayTime, FColor::Green);
 }
 
 

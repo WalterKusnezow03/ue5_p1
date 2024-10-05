@@ -37,8 +37,14 @@ teamEnum Adestructable::getTeam(){
 	return teamEnum::neutralTeam;//all can damage
 }
 
+/// @brief damage method which will hide and disable the actor and create a splitted version
+/// will not react to any damage if "destructable" bool is not enabled
+/// @param d can be ignored
 void Adestructable::takedamage(int d){
-	
+	if(!destructable){
+		return;
+	}
+
 	FVector bottomCenter = GetActorLocation();
 	int cmPerTile = 50;
 	//material will be set somewhere else, no worries
@@ -51,7 +57,10 @@ void Adestructable::takedamage(int d){
 }
 
 
+
 void Adestructable::takedamage(int d, FVector &from){
-	takedamage(d);
+	if(destructable){
+		takedamage(d);
+	}
 }
 

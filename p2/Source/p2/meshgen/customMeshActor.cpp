@@ -6,7 +6,7 @@
 #include "p2/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
 #include "KismetProceduralMeshLibrary.h"
-#include "bezierCurve.h"
+#include "p2/meshgen/generation/bezierCurve.h"
 #include "customMeshActor.h"
 
 
@@ -264,14 +264,7 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
     DebugHelper::addTime(ElapsedTime);
 
 
-    /*
-    //debug plot
-    for (int i = 0; i < navMeshAdd.size(); i++){
-        FVector a = navMeshAdd.at(i);
-        FVector b(0, 0, 10);
-        b += a;
-        DebugHelper::showLineBetween(GetWorld(), a, b, FColor::Red);
-    }*/
+    
 }
 
 

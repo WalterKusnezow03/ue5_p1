@@ -15,6 +15,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/entities/skelletons/skelletonController.h"
 #include "p2/gameStart/assetManager.h"
+#include "p2/entities/skelletons/socketNames.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
@@ -113,13 +114,13 @@ void AHumanEntityScript::init(){
 
     //attach weapon to skelleton
     if(weaponPointer != nullptr && skelletonControllerPointer != nullptr){
-        //detach from bot, testing!
+        
         skelletonControllerPointer->detach(weaponPointer); //detach completly from everything
-        //skelletonControllerPointer->attachToRightArm(weaponPointer);
+        
+        //re attach
         skelletonControllerPointer->attachToBreastRight(weaponPointer);
-
-        //new attach left hand
-        skelletonControllerPointer->attachLeftArmTo(weaponPointer, "none");
+        skelletonControllerPointer->attachLeftArmTo(weaponPointer, socketNames::leftHandSocket);
+        skelletonControllerPointer->attachRightArmTo(weaponPointer, socketNames::rightHandSocket);
     }
 }
 

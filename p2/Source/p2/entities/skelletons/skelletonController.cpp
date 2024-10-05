@@ -36,44 +36,42 @@ skelletonControllerEnum AskelletonController::getType(){
 }
 
 
-/// @brief tries to find the internal skelleton and saves it in the pointer
-void AskelletonController::findSkeletonOnStart(){
-
-	if(skelletonComponentPointer != nullptr){
-		return;
+/// @brief tries to find the internal skelleton of any actor, returns mesh component by pointer
+/// if found, nullptr if not!
+USkeletalMeshComponent* AskelletonController::findSkeleton(AActor *actorIn){
+	if(actorIn == nullptr){
+		return nullptr;
 	}
 
 	// Check if the actor has a skeletal mesh component
-    USkeletalMeshComponent* SkeletalMeshComp = FindComponentByClass<USkeletalMeshComponent>();
+    USkeletalMeshComponent* SkeletalMeshComp = actorIn->FindComponentByClass<USkeletalMeshComponent>();
     if(SkeletalMeshComp != nullptr){
-		skelletonComponentPointer = SkeletalMeshComp;
+		//skelletonComponentPointer = SkeletalMeshComp;
 		//DebugHelper::showScreenMessage("skelleton found A");
-		return;
+		return SkeletalMeshComp;
 	}
 
 	//is not called????
 	TArray<UChildActorComponent *> childActors;
-	GetComponents<UChildActorComponent>(childActors);
+	actorIn->GetComponents<UChildActorComponent>(childActors);
 	for (int i = 0; i < childActors.Num(); i++){
 		UChildActorComponent *current = childActors[i];
 		if(current != nullptr){
 			AActor *actor = current->GetChildActor(); //retrieve child actor to acces its childs..
-			if (actor != nullptr)
-			{
+			if (actor != nullptr){
 				
 				SkeletalMeshComp = actor->FindComponentByClass<USkeletalMeshComponent>();
 				if(SkeletalMeshComp != nullptr){
-					skelletonComponentPointer = SkeletalMeshComp;
+					//skelletonComponentPointer = SkeletalMeshComp;
 					//DebugHelper::showScreenMessage("skelleton found B");
 
-					return;
+					return SkeletalMeshComp;
 				}
 			}
 		}
 	}
 
-
-
+	return nullptr;
 }
 
 
@@ -119,7 +117,10 @@ void AskelletonController::setOwner(IDamageinterface *owner){
 	owningEntity = owner;
 
 	//enableActiveStatus(true);
-	findSkeletonOnStart();
+	if(skelletonComponentPointer == nullptr){
+		skelletonComponentPointer = findSkeleton(this);
+	}
+	
 	setupAnimInstance();
 
 	enableActiveStatus(true);
@@ -153,7 +154,8 @@ void AskelletonController::die(){
 	enableActiveStatus(false); //does not have ffect, bool yes, real visibilty no, transform neither, unreal engine bug!
 	
 	//clean up
-	leftAttached = nullptr;
+	leftHandTargetMesh.reset();
+	rightHandTargetMesh.reset();
 }
 
 
@@ -203,22 +205,28 @@ void AskelletonController::attachToRightArm(AActor *other){
 	}
 }
 
-/// @brief will attach left arm to an actor, ThE POINTER WILL BE SAVED, DO NOT DESTROY
-/// WILL BE CLEANED ON die(); !!
+/// @brief will attach left arm to an actor, THE POINTER WILL BE SAVED, DO NOT DESTROY
 /// @param other
 /// @param otherSocket
 void AskelletonController::attachLeftArmTo(AActor *other, FName otherSocket){
 	
 	if(other != nullptr){
-		leftAttached = other;
+		//leftAttached = other;
+		leftHandTargetMesh.reset();
+		leftHandTargetMesh.init(other, otherSocket);
 	}
 }
 
 
 
 void AskelletonController::attachRightArmTo(AActor *other, FName otherSocket){
-
+	if(other != nullptr){
+		rightHandTargetMesh.reset();
+		rightHandTargetMesh.init(other, otherSocket);
+	}
 }
+
+
 
 
 /// @brief will completly detach other from everything (more universal of a function)
@@ -228,6 +236,7 @@ void AskelletonController::detach(AActor *other){
 		other->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true)); //what is true for?
 	}
 }
+
 
 /// @brief tries to attach a actor to a socket if the skelleton is not nullptr and 
 /// the socket is found
@@ -302,23 +311,72 @@ void AskelletonController::updateIkPositions(){
 	if(animInstance != nullptr && skelletonComponentPointer != nullptr){
 
 
-		if(leftAttached != nullptr){
-			FVector leftHandWorld = boneWorldLocation("palm_01_L");
-			FVector leftEllbowWorld = boneWorldLocation("hand_L");
+		if(leftHandTargetMesh.isInited() && rightHandTargetMesh.isInited()){
 
-			FVector weaponWorld = leftAttached->GetActorLocation(); //for now
-			//will be in local space, which is wanted
-			FVector leftHandTarget = weaponWorld - leftHandWorld; // AB = B - A;
-			FVector leftEllTarget = weaponWorld - leftEllbowWorld;
 
-			
-			animInstance->SetLeftHandEffectorLocation(leftHandTarget);
-			animInstance->SetLeftElbowJointTargetLocation(leftEllTarget);
+			FVector leftHandTarget = leftHandTargetMesh.socketLocation();
+			FVector rightHandTarget = rightHandTargetMesh.socketLocation();
 
-			//DebugHelper::showScreenMessage(leftHandTarget);
+			//MUST BE TRANSFORMED TO LOCAL SPACE OF SKELLETON
+			leftHandTarget = skelletonComponentPointer->GetComponentTransform()
+														.InverseTransformPosition(leftHandTarget);
+
+			rightHandTarget = skelletonComponentPointer->GetComponentTransform()
+														.InverseTransformPosition(rightHandTarget);
+
+
+			animInstance->SetLeftHandEffectorLocation(leftHandTarget); // tick position for anim instance
+			animInstance->SetRightHandEffectorLocation(rightHandTarget);
+
 		}
-		
 	}
 
 	
+}
+
+
+
+
+
+/**
+ * 
+ * 
+ * -- INNER CLASS SECTION --
+ * 
+ */
+//constructor
+AskelletonController::TargetMesh::TargetMesh(){
+
+}
+//destructor
+AskelletonController::TargetMesh::~TargetMesh(){
+}
+
+void AskelletonController::TargetMesh::init(AActor *actor, FName socketNameIn){
+	actorPointer = actor;
+	targetSocket = socketNameIn;
+	skeletonPointer = AskelletonController::findSkeleton(actor);
+}
+
+void AskelletonController::TargetMesh::reset(){
+	actorPointer = nullptr;
+	skeletonPointer = nullptr;
+}
+
+FVector AskelletonController::TargetMesh::socketLocation(){
+	FVector output;
+	if(actorPointer != nullptr && skeletonPointer != nullptr){
+		
+		FVector a = skeletonPointer->GetSocketLocation(targetSocket);
+		DrawDebugSphere(actorPointer->GetWorld(), a, 5.0f, 12, FColor::Red, false, 1.0f); //draws correctly
+		return a;
+
+	}
+	return output;
+}
+
+/// @brief returns if the actor and skelleton are not null and the target can be accessed
+/// @return is inited true false
+bool AskelletonController::TargetMesh::isInited(){
+	return actorPointer != nullptr && skeletonPointer != nullptr;
 }

@@ -17,11 +17,18 @@ void AIkActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//init offset
+	//init offset for now
 	offset = FVector(1000, -1000, 200);
 
-	bone1.setupBones(legScaleMeters);
-	bone2.setupBones(legScaleMeters);
+	leg1.setupBones(legScaleMeters);
+	leg2.setupBones(legScaleMeters);
+
+	float armScale = legScaleMeters;
+	arm1.setupBones(armScale);
+	arm1.roll(90); //gegen uhrzeiger sinn pos zahl
+	arm1.pitch(-90); //im uhrzeiger sinn
+
+	arm1.setEtha(0.7f);
 }
 
 // Called every frame
@@ -29,13 +36,19 @@ void AIkActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	updateBone(bone1, DeltaTime, FColor::Red);
-	updatePositionBasedOnMovedDistance(bone1);
+	updateBone(leg1, DeltaTime, FColor::Red);
+	updatePositionBasedOnMovedDistance(leg1);
 
-	if(bone1.halfIsReached()){
+	if(leg1.halfIsReached()){
 		//updateBone(bone2, DeltaTime, FColor::Green);
 	}
+
 	
+
+	//arms new, must be added
+	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
+	arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
+	//DebugHelper::showLineBetween(GetWorld(), FVector(0, 0, 0), armOff, FColor::Yellow);
 }
 
 
@@ -56,6 +69,5 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 		//if x < 0 means the leg moved the body forward
 		offset.X += xMoved;
 	}
-
-	DebugHelper::showScreenMessage("moved ", (int)offset.X, FColor::Red);
+	
 }

@@ -41,7 +41,7 @@ void BoneIk::setEtha(float etha){
     float thetaKnee_pitch = lambda * 2; // bein anziehen
 
     
-    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, flippen einmal.
+    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, im uhrzeiger sinn deshalb pos zahl
     knee.pitchRad(thetaKnee_pitch); //knee to foot
     
     //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
@@ -143,7 +143,7 @@ FVector BoneIk::movedLastTick(){
  * 
  */
 
-/// @brief tick the bone and rebuild drawing
+/// @brief tick the bone and rebuild drawing, no own motion
 /// @param world world to draw in
 /// @param offset offset to have for bones
 /// @param etha etha between 0 and 1
@@ -158,26 +158,20 @@ void BoneIk::tickAndBuild(UWorld *world, FVector &offset, float etha, float disp
 }
 
 
-/**
- * was brauchen wir:
- * tick function für leg extension
- * tick function für leg swing pitch (was dann ggf das vom hip übernimmt)
- * und den fuss drehen dass er orthogonal zur x achse ist?
- * 
- * 
- * fuss muss sich unbedingt anpassen, -2 lambda ?
- */
+void BoneIk::tickAndBuild(UWorld *world, FVector &offset, float displayTime){
+    build(world, offset, FColor::Green, displayTime);
+}
 
 
 
-/**
- * 
- * 
- * TESTING AREA
- * 
- * 
- */
 
+/// @brief ticks and builds the 2 bone with a given etha and pitch angle 
+/// @param world 
+/// @param offset 
+/// @param etha 
+/// @param legPitchThetaRadian 
+/// @param displayTime 
+/// @param color 
 void BoneIk::tickAndBuild(
     UWorld *world, 
     FVector &offset, //offset data in world
@@ -190,9 +184,6 @@ void BoneIk::tickAndBuild(
     //remember (x roll, y pitch, z yaw)
     //update pitch of knee
     //etha distance percent 0 to 1.0f
-
-    //test value
-    //legPitchThetaRadian = MMatrix::degToRadian(10); //TESTING
 
     setEtha(etha, legPitchThetaRadian); 
     build(world, offset, color, displayTime);
@@ -231,7 +222,11 @@ void BoneIk::setEtha(float etha, float legPitchThetaRadian){
 
 
 
-//new own tick function
+/// @brief tick with automatic ak motion functions
+/// @param world 
+/// @param deltaTime 
+/// @param offset 
+/// @param color 
 void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color){
     float displayTime = deltaTime * 2;
 
@@ -267,7 +262,7 @@ void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor 
 
 
 
-
+//util
 
 float BoneIk::halfTimePhase(){
     return 0.5f; //measured in seconds, 0.5 less always?
@@ -275,4 +270,20 @@ float BoneIk::halfTimePhase(){
 
 bool BoneIk::halfIsReached(){
     return halfReached;
+}
+
+
+
+//rotation of starting node section
+
+void BoneIk::roll(float degree){
+    hip.roll(degree);
+}
+
+void BoneIk::pitch(float degree){
+    hip.pitch(degree);
+}
+
+void BoneIk::yaw(float degree){
+    hip.yaw(degree);
 }

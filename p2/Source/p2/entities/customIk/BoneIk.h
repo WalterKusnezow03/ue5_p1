@@ -17,8 +17,11 @@ public:
 	void setupBones(float completeDistance);
 	void build(UWorld *world, FVector &offset, FColor color, float displayTime);
 
-	void tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime);
+	void tickAndBuild(UWorld *world, FVector &offset, float displayTime); //only move
+	void tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime); //move and etha
+	
 
+	//move, etha and leg pitch
 	void tickAndBuild(
 		UWorld *world,
 		FVector &offset, // offset data in world
@@ -35,6 +38,13 @@ public:
 
 	FVector movedLastTick();
 
+	//rotation of whole bone - starting node
+	void roll(float degree);
+	void pitch(float degree);
+	void yaw(float degree);
+
+	void setEtha(float etha);
+
 private:
 	MMatrix hip;
 	MMatrix knee;
@@ -42,7 +52,7 @@ private:
 	FVector toFootTip;
 
 	void getData(std::vector<MMatrix*> &dataout, FVector &outVector);
-	void setEtha(float etha);
+	
 	void setEtha(float etha, float legPitchThetaRadian); //new testing
 
 	bool halfReached = false;

@@ -47,15 +47,14 @@ private:
 
 			FVector position();
 
-			void applyHeightBeetwennVerticalPositions(FVector2D a, FVector2D b);
+
 			void addheightForAll(int value);
 			void scaleheightForAll(float value);
 			void setheightForAll(float value);
 
 			FVector2D getFirstXColumnAnchor(int xColumn);
 			FVector2D getFirstYRowAnchor(int yRow);
-			std::vector<FVector2D> getXColumAnchors(int xColumn);
-			std::vector<FVector2D> getYRowAnchors(int yRow);
+			
 
 			void plot(UWorld *world);
 			void plotCorners(UWorld * world);
@@ -111,9 +110,7 @@ private:
 
 	void processTopViewBezierCurve(std::vector<FVector2D> &bezier);
 	void applyTopViewCurveToMap(std::vector<FVector2D> &vec);
-	bool isXTouple(FVector2D &a, FVector2D &b);
-	void processTouple(FVector2D &a, FVector2D &b);
-
+	
 	void smooth3dMap();
 	void smooth3dMap(FVector &a, FVector &b, int iterations);
 	

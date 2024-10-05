@@ -25,7 +25,6 @@ void bezierCurve::calculatecurve(
     float _einheitsValue,
     float _stepsPerEinheitsValue
 ){
-    DEBUG_COUNT = 0; 
     /**
      * error handeling
      */
@@ -250,7 +249,7 @@ void bezierCurve::process4Points(
 
 
     float limit = 1.0f; //fixing weird overlap on curves by cutting them off, 0.6f
-    limit = 0.7f; //fix over interpolating
+    limit = 0.8f; //fix over interpolating
     FVector2D prev(-100, 0); //first not in curve vector.
     for (float i = 0; i <= limit; i += step)
     {
@@ -271,12 +270,6 @@ void bezierCurve::process4Points(
         //copy for next
         prev = newPos;
 
-        //debug block:
-        DEBUG_COUNT++;
-        if(DEBUG_COUNT >= DEBUG_LIMIT){
-            // debug return here
-            // return;
-        }
     }
 
     //fillGaps(output);
