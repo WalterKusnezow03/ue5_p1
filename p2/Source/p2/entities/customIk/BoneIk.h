@@ -47,7 +47,8 @@ public:
 
 
 	void setEtha(float etha);
-	void setEthaFromCurrent(float etha);
+	void setEthaFromCurrentRotation(float etha);
+	void rotateTowardsLocalTarget(FVector &vec); 
 
 private:
 	/// @brief hip or shoulder

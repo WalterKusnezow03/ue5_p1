@@ -31,17 +31,19 @@ void AIkActor::BeginPlay()
 	
 
 
-	
-	
+	//works as expected
+	/*
+	arm1.setEthaFromCurrentRotation(0.5f); //0 being fully extended (?)
 	arm1.rotateFirstLimbDeg(0, -110, 10);
 	arm1.rotateFirstLimbDeg(0, 20, 10);
-	//arm1.rotateFirstLimbDeg(0, 0, 0);
-	arm1.setEthaFromCurrent(0.5f); //0 being fully extended (?)
+	*/
+	FVector localTarget(1, -1, 0); //quasi grade aus hoch
+	arm1.rotateTowardsLocalTarget(localTarget); //analyse notwendig
 
-
-	//debug
-	leg2.rotateFirstLimbDeg(0, -90, 10);
+	// debug
+	//leg2.rotateFirstLimbDeg(0, -90, 10);
 }
+
 
 // Called every frame
 void AIkActor::Tick(float DeltaTime)

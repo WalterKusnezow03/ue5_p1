@@ -60,8 +60,9 @@ void BoneIk::setEtha(float etha, float legPitchThetaRadian){
 
 
 
-
-void BoneIk::setEthaFromCurrent(float etha){
+/// @brief sets the etha for the bone from current rotation
+/// @param etha 
+void BoneIk::setEthaFromCurrentRotation(float etha){
      if(etha < 0.0f){
         etha = 0.0f;
     }
@@ -75,7 +76,7 @@ void BoneIk::setEthaFromCurrent(float etha){
     float thetaFoot_pitch = lambda;
    
     float thetaKnee_pitch = lambda * 2; // bein anziehen
-
+ 
 
     hip.pitchRadAdd(thetaHip_pitch * -1); //hip to knee, flippen einmal.
     knee.pitchRadAdd(thetaKnee_pitch); //knee to foot
@@ -314,4 +315,98 @@ void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
     MMatrix rotator = MMatrix::createRotatorFromRad(xDeg, yDeg, zDeg);
     //foot *= rotator;
     foot.rotate(rotator);
+}
+
+
+
+
+
+
+
+
+
+
+
+//irgendwie so einen winkel bestimmen für die knochen
+//eine dir von
+//(1,0,0) richtung x wäre nur pitch
+//(0,1,0) richtung y wäre nur roll
+//(0,0,1) richtung z wäre nur yaw
+//man muss irgendwie den pitch winkel auf x und y aufteilen (oder?)
+
+
+
+/// @brief testing needed
+/// @param vec target for the knee / ellbow
+void BoneIk::rotateTowardsLocalTarget(FVector &vec){
+
+    //vector auf erste limb länge bringen, skalieren
+
+
+    //winkel auf xy und xz ebene?
+    FVector forward(1, 0, 0); //sollte member var werden ggf
+
+    FVector2D forward2d(1, 0);
+    FVector vecNormalized = vec.GetSafeNormal();
+
+    FVector2D xy(vecNormalized.X, vecNormalized.Y);
+    FVector2D xz(vecNormalized.X, vecNormalized.Z);
+
+    //überlegung:
+    //roll ist xz angle 
+    //pitch ist xy angle wie etha ?
+
+
+   
+
+    //cos(theta) = a dot b if a and b are normalized!
+    /*
+        cos(theta) = a * b | cos^-1
+        theta = acos((a*b) / (|a| * |b|))
+
+        bzw weil a und b length 1 sind:
+        theta = acos((a*b) / 1)
+    */
+    float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
+    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
+
+
+    //man muss glaube ich nichts mehr umstellen, es ist das
+    //problem des anwenders den vektor korrekt zu basteln, ob einheits vektor oder nicht
+    float pitchHip = xzSideViewAngle * -1;
+    float pitchKnee = xzSideViewAngle * 2; //umdrehen logischer weise wie etha
+
+    //geprüft und korrekt
+    bool debugRun = false;
+    if(debugRun){
+        hip.pitchRadAdd(pitchHip);   // hip to knee, flippen einmal.
+        knee.pitchRadAdd(pitchKnee); //knee to foot
+        foot.pitchRadAdd(pitchHip); //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
+    }
+    
+
+    
+    //still testing needed:
+    
+    //neu: das muss yaw sein, wie 2D rotations matrix
+    float yawHip = xyTopViewAngle * -1;
+    float yawKnee = xyTopViewAngle * 2;
+    hip.yawRadAdd(yawHip);
+    knee.yawRadAdd(yawKnee); 
+    //foot.rollRadAdd(rollHip * -1); //ggf fuß garnicht drehen
+    
+    //debug
+    FString s = FString::Printf(TEXT("debug angle pitch %.2f ; yaw %.2f"), pitchHip, yawHip);
+    DebugHelper::logMessage(s);
+
+
+    /**
+     *  ACHTUNG UNKLAR :
+     *  -> Rotation muss vorher zurück gesetzt werden ansonsten wird das nicht korrekt funktionieren
+     *  -> oder? 
+     *  -> UNKLAR!
+     * 
+     */
+
+
 }
