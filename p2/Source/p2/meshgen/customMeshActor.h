@@ -133,11 +133,8 @@ private:
 		int layer
 	);
 
-	void createFoliage(TArray<FVectorTouple> &touples);
-	void createFoliage(TArray<FVectorTouple> &touples, MeshData &outputAppend);
 
-
-
+	MeshData createFoliage(TArray<FVectorTouple> &touples); //, MeshData &outputAppend);
 
 	materialEnum materialtypeSet = materialEnum::grassMaterial;
 };

@@ -42,9 +42,19 @@ private:
 
 	void updateBone(BoneIk &bone, float deltaTime, FColor color);
 
-	//new
 	FVector offset;
 	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
 
 	void LookAt(FVector TargetLocation);
+
+
+
+	//new testing more arm targets
+	FVector targetA;
+	FVector targetB;
+	FVector currentArmTick;
+	float timeCopy;
+	int direction = 1;
+	float epsilon = 0.01f;
+	void debugDynamicArmTick(float DeltaTime);
 };

@@ -267,7 +267,7 @@ void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor 
 	}
     float tForLegSwingRadian = abstractKinematicFunctions::legSwingPitch(legSwingRadian);
 
-    //DebugHelper::showScreenMessage("leg theta ", MMatrix::radToDegree(tForLegSwingRadian));
+
 	tickAndBuild(world, offset, etha, tForLegSwingRadian, displayTime, color);
 
 
@@ -396,8 +396,8 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     hip.pitchRadAdd(globalSideAdd);
 
 
-    FString s2 = FString::Printf(TEXT("debug angle %.2f"), globalSideAdd);
-    DebugHelper::logMessage(s2);
+    //FString s2 = FString::Printf(TEXT("debug angle %.2f"), globalSideAdd);
+    //DebugHelper::logMessage(s2);
 
 
 
@@ -422,20 +422,39 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
      *    -> was ja richtig gedacht nur inital Hip Rotation ist. Easy <3
      */
 
+    //return;
+
+    //works as expected.
+
     //GOLBAL ROTATION ON YAW - correct.
-    float yawAngleTarget = yawAngleTo(vec); // scheint richtig zu sein rotieren zum target
+    //problem mit yz flip
+
+    float yawAngleTarget = yawAngleTo(vec);
+    //float yawAngleTarget = yawAngleTo(vec); // scheint richtig zu sein rotieren zum target
+
     hip.yawRadAdd(yawAngleTarget); //scheint korrekt zu sein
-
-
-    //GLOBAL ROTATION ON ROLL - testing needed
-    float rollAngleWeight = rollAngleTo(weight) * -1;
-    hip.rollRadAdd(rollAngleWeight);
+    //DebugHelper::showScreenMessage(vec); //vec richtig, angle FALSCH
+    FString s = FString::Printf(TEXT("ANGLE %.2f"), MMatrix::radToDegree(yawAngleTarget));
+    DebugHelper::showScreenMessage(s);
+    // knee.yawRadAdd(yawAngleTarget * -2);
 
     return;
+
+    //roll causing the issues seemingly.
+
+    //GLOBAL ROTATION ON ROLL - testing needed
+    //sollte nur hip rotieren und nicht ziel punkt schrotten
+    float rollAngleWeight = rollAngleTo(weight);
+    //*-1;
+    hip.rollRadAdd(rollAngleWeight);
+
+    
 
 }
 
 
+
+// NOT IN USE!
 
 /// @brief testing needed
 /// rotates the knee towards a specified target
@@ -464,7 +483,7 @@ void BoneIk::rotateTowardsLocalTarget(FVector &vec){
     //neu: das muss yaw sein, wie 2D rotations matrix
     float yawHip = xyTopViewAngle * -1;
     float yawKnee = xyTopViewAngle * 2;
-    hip.yawRadAdd(yawHip); //ONLY ADD TO HIP TO ROTATE WHOLE LEG ALONG THE AXIS
+    hip.yawRadAdd(yawHip); //ONLY ADD TO HIP TO ROTATE WHOLE LEG ALONG THE AXIS (??)
     //knee.yawRadAdd(yawKnee);
     //foot.rollRadAdd(rollHip * -1); //ggf fuß garnicht drehen
     
@@ -492,13 +511,12 @@ void BoneIk::rotateTowardsLocalTarget(FVector &vec){
 float BoneIk::yawAngleTo(FVector &localTarget){
     //FVector forward(1, 0, 0); //sollte member var werden ggf
     FVector2D forward2d(1, 0);
-    FVector vecNormalized = localTarget.GetSafeNormal();
+    
 
-    FVector2D xy(vecNormalized.X, vecNormalized.Y);
+    FVector2D xy(localTarget.X, localTarget.Y);
+    xy = xy.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
-    FString normalPrint = FString::Printf(TEXT("debug normal: ( %.2f, %.2f )"), xy.X, xy.Y);
-    DebugHelper::logMessage(normalPrint);
-
+    //RECHUNG:
     //cos(theta) = a dot b if a and b are normalized!
     /*
         cos(theta) = a * b | cos^-1
@@ -508,7 +526,10 @@ float BoneIk::yawAngleTo(FVector &localTarget){
         theta = acos((a*b) / 1)
     */
 
-    float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
+    float dot = forward2d.X * xy.X + forward2d.Y * xy.Y;
+
+    float xyTopViewAngle = std::acosf(dot);
+    //float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
     // std::acosf(FVector2D::DotProduct(forward2d, xy)); //----> DOT PRODUCT IST SCHON RADIAN, KEIN ACOS!! EFFICENCY
 
     xyTopViewAngle *= flipRotation(forward2d.X, forward2d.Y, xy.X, xy.Y);
@@ -523,15 +544,13 @@ float BoneIk::yawAngleTo(FVector &localTarget){
 float BoneIk::pitchAngleTo(FVector &localTarget){
     
     FVector2D forward2d(1, 0);
-   
-
-
     forward2d = forward2d.GetSafeNormal();
-    FVector vecNormalized = localTarget.GetSafeNormal();
-
-    FVector2D xz(vecNormalized.X, vecNormalized.Z);
+    
+    FVector2D xz(localTarget.X, localTarget.Z);
+    xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
     float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
+    //keine flip rotation hier, ist ein einzelfall
     return xzSideViewAngle;
 }
 
@@ -545,11 +564,16 @@ float BoneIk::pitchAngleTo(FVector &localTarget){
 float BoneIk::rollAngleTo(FVector &localTarget){
     //FVector forward(1, 0, 0); //sollte member var werden ggf
     FVector2D forward2d(1, 0);
-    FVector vecNormalized = localTarget.GetSafeNormal();
 
-    FVector2D yz(vecNormalized.Y, vecNormalized.Z);
+    FVector2D yz(localTarget.Y, localTarget.Z);
+    yz = yz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
     float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, yz));
+
+    //testing needed
+    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, yz.X, yz.Y);
+
+
     return xzSideViewAngle;
 }
 

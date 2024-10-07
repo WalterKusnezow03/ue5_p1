@@ -148,9 +148,9 @@ FString DebugHelper::connect(int a, int b){
 
 void DebugHelper::showScreenMessage(FVector vec){
 	FString sOut = TEXT("vector: ");
-	FString xPart = FString::Printf(TEXT("%d"), (int)vec.X);
-	FString yPart = FString::Printf(TEXT("%d"), (int)vec.Y);
-	FString zPart = FString::Printf(TEXT("%d"), (int)vec.Z);
+	FString xPart = FString::Printf(TEXT("%.2f"), vec.X);
+	FString yPart = FString::Printf(TEXT("%.2f"), vec.Y);
+	FString zPart = FString::Printf(TEXT("%.2f"), vec.Z);
 
 	sOut = sOut + TEXT("\n") +
 				   xPart + TEXT("\n") +

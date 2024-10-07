@@ -234,9 +234,8 @@ void AcustomMeshActor::process2DMap(std::vector<std::vector<FVector>> &map){ //n
 
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
-    MeshData mFoliage;
-    createFoliage(touples, mFoliage);
-    updateMesh(mFoliage, false, 2); //try no normals for trees, layer 2 trees
+    MeshData mFoliage = createFoliage(touples);
+    updateMesh(mFoliage, false, 2); //try no normals for trees, layer 2 trees, ist getrennt.
 
     if(assetManager *e = assetManager::instance()){
 
@@ -695,14 +694,18 @@ void AcustomMeshActor::ApplyMaterial(
 /// get its position from the actor. The touples expected to be in local coordinate system
 /// @param touples lcoation and normal in a touple
 /// @param outputAppend for example a terrain mesh to create trees on
-void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples, MeshData &outputAppend){
+MeshData AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
+    MeshData outputAppend;
     // iterate over touples
     // determine normal angle and apply foliage, rocks, trees accordingly
     if(touples.Num() < 1){
-        return;
+        return outputAppend;
     }
 
     int created = 0;
+
+    //saves the vertical locations to later choose random once and remove from list
+    std::vector<FVector> potentialLocations;
 
     //if normal faces towards up: flat area, create something
     for(FVectorTouple &t : touples){
@@ -712,13 +715,15 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples, MeshData &o
 
         bool facingUpwards = FVectorUtil::directionIsVertical(normal);
         if(facingUpwards){
-            
+            potentialLocations.push_back(location);
+
+            /*
             MeshData mData = createTree(10, 1); //need to apply offset!
 
             //apply offset
             TArray<FVector> &vertecies = mData.getVerteciesRef();
             for (int i = 0; i < vertecies.Num(); i++){
-                vertecies[i] += location;
+                vertecies[i] += location; //apply offset to object (normal location)
             }
 
             outputAppend.append(mData);
@@ -726,54 +731,47 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples, MeshData &o
             created++;
             if(created > 2){
                 break;
-            }
+            }*/
         }
     }
 
+    //create trees at random valid locations
+    int limit = 3; //tree count
+    int count = 0;
+    int random = 0;
+    int size = potentialLocations.size();
+    while (size > 0){
+
+        random = FVectorUtil::randomNumber(0, size);
+        if(random < size){
+            FVector vec = potentialLocations[random]; //copy, not ref.
+            potentialLocations.erase(potentialLocations.begin() + random);
+            
+            // create tree
+            MeshData mData = createTree(10, 1); //need to apply offset!
+            //apply offset
+            TArray<FVector> &vertecies = mData.getVerteciesRef();
+            for (int i = 0; i < vertecies.Num(); i++){
+                vertecies[i] += vec; //apply offset to object (normal location)
+            }
+
+            outputAppend.append(mData);
+
+            size--;
+        }
+
+        count++;
+        if(count > limit){
+            return outputAppend;
+        }
+    }
+
+    return outputAppend;
 }
 
 
 
 
-
-/// @brief process touples with
-/// @param touples vector of touples with each: (first: center of pane with correct offset, second: normal of pane)
-void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples)
-{
-
-    // iterate over touples
-    // determine normal angle and apply foliage, rocks, trees accordingly
-    if(touples.Num() < 1){
-        return;
-    }
-
-    int created = 0;
-
-    MeshData mDataAll;
-    createFoliage(touples, mDataAll);
-
-    FVector locationBase = GetActorLocation();
-
-    //Apply data
-    if (EntityManager *e = worldLevel::entityManager()){
-        AcustomMeshActor *meshActor = e->spawnAcustomMeshActor(GetWorld(), locationBase);
-        if(meshActor != nullptr){
-            meshActor->SetActorLocation(locationBase);
-
-
-            meshActor->updateMesh(
-                mDataAll,
-                false,
-                0
-            );
-            if(assetManager *a = assetManager::instance()){
-                meshActor->ApplyMaterial(meshActor->Mesh, a->findMaterial(materialEnum::wallMaterial));
-            }
-
-            //meshActor->AttachToActor(this);
-        }
-    }
-}
 
 /// @brief will replace the actor and split it (int terms of bounds) and apply an material
 /// will not use original mesh, just the bounds

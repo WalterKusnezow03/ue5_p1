@@ -53,7 +53,8 @@ void AIkActor::BeginPlay()
 	arm1.rotateEndToTarget(target2, weight); //testing notwendig
 	
 
-
+	targetA = FVector(1.5f, -0.5f, 0);
+	targetB = FVector(1.5f, -0.5f, -1);
 
 	// debug
 	//leg2.rotateFirstLimbDeg(0, -90, 10);
@@ -78,12 +79,23 @@ void AIkActor::Tick(float DeltaTime)
 	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
 	arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
 
+	//debug draw of targets
+	FVector t1 = targetA;
+	FVector t2 = targetB;
+	t1 *= 100;
+	t2 *= 100;
+	t1 += armOff;
+	t2 += armOff;
+	DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Red);
+
+
 	leg2.build(GetWorld(), armOff, FColor::Black, DeltaTime * 2);
 	
 	//draw forward line to approve arm is correct
 	DebugHelper::showLineBetween(GetWorld(), armOff, armOff + FVector(100,0,0), FColor::Green, DeltaTime * 2);
-}
 
+	debugDynamicArmTick(DeltaTime);
+}
 
 /// @brief updates a given bone
 /// @param bone 
@@ -107,9 +119,6 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 
 
 
-
-
-
 /// @brief look at a location
 /// @param TargetLocation target to look at
 void AIkActor::LookAt(FVector TargetLocation) 
@@ -126,4 +135,64 @@ void AIkActor::LookAt(FVector TargetLocation)
 
 	float zDegree = LookAtRotation.Yaw;
 
+}
+
+
+
+
+// --- testing needed ---
+
+void AIkActor::debugDynamicArmTick(float DeltaTime){
+
+	//arm gets build in tick.
+
+	float slow = 0.5f;
+	timeCopy += DeltaTime * direction * slow;
+	if(timeCopy < 0){
+		direction *= -1;
+		timeCopy = 0;
+	}
+	if(timeCopy > 1){
+		direction *= -1;
+		timeCopy = 1;
+	}
+
+
+	FVector directionVecAll = (targetB - targetA); //AB = B - A
+	FVector posNew = targetA + directionVecAll * timeCopy;
+	FVector weight(1, 1, -1);
+	arm1.rotateEndToTarget(posNew, weight);
+	return;
+
+
+
+
+	float velocityScalar = 2.0f;
+
+	//x(t) = x0 +v0t + (1/2 at^2) reicht hier als formel
+	///x(t) = x0 + v0t
+
+	FVector targetLocation = (direction == 1) ? targetA : targetB;
+
+	FVector directionVec = (targetLocation - currentArmTick).GetSafeNormal();
+	FVector zeroVec(0, 0, 0);
+	if(FVector::Dist(targetLocation, currentArmTick) <= epsilon){
+		direction *= -1;
+		timeCopy = 0.0f;
+		return;
+	}
+
+	FVector v0 = directionVec * velocityScalar;
+	/// x(t) = 	     x0 + 	 		v0 * t
+	currentArmTick = currentArmTick + v0 * DeltaTime; // AB = B - A
+
+	
+	//FVector weight(1, 1, -1);
+	arm1.rotateEndToTarget(currentArmTick, weight);
+
+
+
+
+
+	
 }
