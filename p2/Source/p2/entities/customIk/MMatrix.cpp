@@ -20,6 +20,24 @@ MMatrix::~MMatrix()
 
 }
 
+/// @brief resets the rotation back to einheits matrix but not adjusting the translation
+void MMatrix::resetRotation(){
+    for (int row = 0; row < 3; row++){
+        for (int col = 0; col < 3; col++){
+            int i = row * 4 + col; //obviously
+            array[i] = 0.0f;
+        }
+    }
+    //einheits matrix setzen
+    array[0] = 1.0f;
+    array[5] = 1.0f;
+    array[10] = 1.0f;
+    array[15] = 1.0f;
+}
+
+
+
+
 /// @brief copy constructor
 /// @param other 
 MMatrix::MMatrix(MMatrix &other){
@@ -462,3 +480,8 @@ float MMatrix::normalizeAngle(float angle) {
 
     return angle;
 }
+
+
+
+
+

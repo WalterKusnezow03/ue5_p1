@@ -18,9 +18,12 @@ public:
 	AgameModeSubclass();
 	void BeginPlay();
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
 private:
 	
-	void createPathFinder();
+	
 
 
 };

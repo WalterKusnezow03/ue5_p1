@@ -10,19 +10,9 @@ OutpostManager::OutpostManager()
 
 OutpostManager::~OutpostManager()
 {
-
+    
 }
 
-/*
-//set pointer to none on start
-OutpostManager *OutpostManager::instancePointer = nullptr;
-
-OutpostManager * OutpostManager::instance(){
-    if(OutpostManager::instancePointer == nullptr){
-        OutpostManager::instancePointer = new OutpostManager();
-    }
-    return OutpostManager::instancePointer;
-}*/
 
 
 AOutpost *OutpostManager::requestOutpost(UWorld *world, FVector &ownLocation){

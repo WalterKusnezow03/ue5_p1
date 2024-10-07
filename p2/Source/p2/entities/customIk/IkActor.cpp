@@ -32,13 +32,28 @@ void AIkActor::BeginPlay()
 
 
 	//works as expected
+
 	/*
 	arm1.setEthaFromCurrentRotation(0.5f); //0 being fully extended (?)
-	arm1.rotateFirstLimbDeg(0, -110, 10);
-	arm1.rotateFirstLimbDeg(0, 20, 10);
+	arm1.rotateFirstLimbDeg(0, -90, 0);
 	*/
-	FVector localTarget(1, -1, 0); //quasi grade aus hoch
-	arm1.rotateTowardsLocalTarget(localTarget); //analyse notwendig
+	//arm1.rotateFirstLimbDeg(0, 0, 0);
+	
+
+	arm1.rotateFirstLimbDeg(0, -90, 0);
+	
+	//works as expected in default rotation / no rotation applied
+	//testing needed with rotation applied, issues
+	//FVector localTarget(1, 0, -1); //quasi grade aus hoch
+	//arm1.rotateTowardsLocalTarget(localTarget); //analyse notwendig
+
+	//FVector target2(0, -1.9f, 0);
+	FVector target2(1.5f, -0.5f, 0); //sollte das selbe ergebnis prodzuieren bis jetzt: ja tut es.
+	FVector weight(1, 1, -1);
+	arm1.rotateEndToTarget(target2, weight); //testing notwendig
+	
+
+
 
 	// debug
 	//leg2.rotateFirstLimbDeg(0, -90, 10);

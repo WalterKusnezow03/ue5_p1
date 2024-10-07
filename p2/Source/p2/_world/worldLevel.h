@@ -19,7 +19,7 @@ public:
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
 	static RoomManager *roomManager();
-	static void resetWorld(UWorld *world);
+	static void resetWorld();
 
 	static void initWorld(UWorld *world);
 

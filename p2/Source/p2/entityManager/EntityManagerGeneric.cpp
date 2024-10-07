@@ -11,12 +11,15 @@ EntityManagerGeneric<T>::EntityManagerGeneric()
 
 template <typename T>
 EntityManagerGeneric<T>::~EntityManagerGeneric(){
+    actorVector.clear();
+
+    /*
     if(hasActorsLeft()){
         while(hasActorsLeft()){
             //erase elements but dont call destructor. Not the owner of the entites!
             actorVector.erase(actorVector.end() + 0); 
         }
-    }
+    }*/
 
 }
 

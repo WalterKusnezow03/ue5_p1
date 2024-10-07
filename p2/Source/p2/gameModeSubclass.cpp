@@ -32,7 +32,7 @@ AgameModeSubclass::AgameModeSubclass()
     static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Prefabs/player/playerPrefab")); 
     DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-    worldLevel::resetWorld(GetWorld());
+    //worldLevel::resetWorld();
 
     /**
      * ASSET LOADER
@@ -67,39 +67,10 @@ void AgameModeSubclass::BeginPlay()
     worldLevel::initWorld(GetWorld());
 }
 
-void AgameModeSubclass::createPathFinder(){
 
-    GLog->Flush();
+void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
-    //get the world context
-    UWorld* World = GetWorld();
-    if (World)
-    {
-        EdgeCollector c = EdgeCollector();
-        //std::vector<FVector> &edges = 
-        c.getAllEdges(World);
-
-        return;
-        /*
-        //showEdges(edges);
-
-        FString string = FString::Printf(TEXT("collected %d"), edges.size());
-
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, string);
-        }
-
-        PathFinder *p = PathFinder::instance(World);
-        if(p != nullptr){
-            p->addNewNodeVector(edges);
-        }*/
-    }
+    worldLevel::resetWorld();
+    FString s = FString::Printf(TEXT("DEBUG END PLAY"));
+    DebugHelper::logMessage(s);
 }
-
-
-
-
-
-
-

@@ -33,7 +33,7 @@ public:
 
 	static PathFinder *instance(UWorld *worldIn);
 	static PathFinder *instance();
-	//static void deleteInstance();
+	static void deleteInstance();
 
 	void clear(); //clears ALL NODES
 
@@ -103,6 +103,7 @@ private:
 	class UWorld *worldPointer;
 
 	static class PathFinder *pathFinderInstance;
+	
 	static int countNodes;
 
 	void screenMessage(int s);

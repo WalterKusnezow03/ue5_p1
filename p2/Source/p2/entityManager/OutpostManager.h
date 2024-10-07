@@ -13,7 +13,7 @@ class AHumanEntityScript;
 class P2_API OutpostManager
 {
 public:
-	static OutpostManager *instance();
+	
 	OutpostManager();
 	~OutpostManager();
 
@@ -21,7 +21,7 @@ public:
 	void tryRequestOutpost(UWorld *world, AHumanEntityScript *human);
 
 private:
-	static class OutpostManager *instancePointer;
+	
 
 	std::vector<AOutpost *> outposts; //will be cleared by unreal engine
 

@@ -29,7 +29,7 @@ RoomManager *worldLevel::roomManagerPointer = nullptr;
 /// -> outpostManager: holds all outposts and assigns them on request
 /// -> terrainPointer: creates the terrain once and holds the whole mesh for faster ground detection
 /// -> pathfinder singleton instance -> all nodes will be wiped
-void worldLevel::resetWorld(UWorld *world){
+void worldLevel::resetWorld(){
     if(entityManagerPointer != nullptr){
         delete entityManagerPointer;
         entityManagerPointer = nullptr;
@@ -45,8 +45,15 @@ void worldLevel::resetWorld(UWorld *world){
     }
 
     //clears all nodes from graph
-    if(PathFinder *p = PathFinder::instance(world)){
-        p->clear();
+    PathFinder *p = PathFinder::instance();
+    if (p != nullptr)
+    {
+        //p->clear();
+
+        p->deleteInstance();
+
+        FString s = FString::Printf(TEXT("debug end play: deleted path finder"));
+        DebugHelper::logMessage(s);
     }
 }
 

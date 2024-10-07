@@ -32,7 +32,7 @@ PathFinder::PathFinder(UWorld *worldIn)
 PathFinder::~PathFinder()
 {
     worldPointer = nullptr;
-    pathFinderInstance = nullptr;
+    //pathFinderInstance = nullptr;
     delete (TopRight); 
     delete (BottomRight); 
     delete (BottomLeft); 
@@ -42,6 +42,7 @@ PathFinder::~PathFinder()
 }
 
 PathFinder* PathFinder::pathFinderInstance = nullptr; //very imporntant, do not delete!
+
 int PathFinder::countNodes = 0;
 
 PathFinder::Node::Node(FVector posIn){
@@ -153,7 +154,7 @@ PathFinder* PathFinder::instance(UWorld *worldIn){
     if(worldIn == nullptr){
         return nullptr;
     }
-
+    
     if(pathFinderInstance == nullptr){
         pathFinderInstance = new PathFinder(worldIn);
     }
@@ -168,14 +169,15 @@ PathFinder* PathFinder::instance(){
     return pathFinderInstance;
 }
 
-//not recommended
-/*
+/// @brief only call this method to delete the path finder
 void PathFinder::deleteInstance(){
     if(pathFinderInstance != nullptr){
         delete pathFinderInstance;
         pathFinderInstance = nullptr;
     }
-}*/
+    
+}
+
 
 
 

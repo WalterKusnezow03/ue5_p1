@@ -48,9 +48,11 @@ public:
 	static MMatrix createRotatorFromRad(float x, float y, float z);
 	static MMatrix createRotatorFromDeg(float x, float y, float z);
 
+	void resetRotation();
 
 	void rotate(MMatrix &other);
 
+	//normalize rotations when adding them together
 	float normalizeAngle(float angle);
 	void normalizeRotation();
 

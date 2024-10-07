@@ -46,11 +46,24 @@ public:
 	void rotateLastLimbRad(float xDeg, float yDeg, float zDeg);
 
 
+	// etha functions and moving towards targets
 	void setEtha(float etha);
 	void setEthaFromCurrentRotation(float etha);
-	void rotateTowardsLocalTarget(FVector &vec); 
+	void rotateTowardsLocalTarget(FVector &vec);
+
+	
+	void rotateEndToTarget(FVector &vec, FVector &weight);
 
 private:
+	//calculating angles
+	float yawAngleTo(FVector &localTarget);
+	float pitchAngleTo(FVector &localTarget);
+	float rollAngleTo(FVector &localTarget);
+
+	void resetAllRotations();
+
+	int flipRotation(float aX, float aY, float oX, float oY);
+
 	/// @brief hip or shoulder
 	MMatrix hip;
 	
@@ -63,6 +76,8 @@ private:
 	///@brief foot tip or finger tips end
 	FVector toFootTip;
 
+	///@brief will save the total length of the bone for later usuage, dont change, only constructor
+	float totalBoneLengthCopy = 0.0f;
 
 	void getData(std::vector<MMatrix*> &dataout, FVector &outVector);
 	
