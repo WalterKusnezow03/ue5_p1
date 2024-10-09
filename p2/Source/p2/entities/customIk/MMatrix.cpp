@@ -170,6 +170,13 @@ FVector MMatrix::operator*(FVector &other){
     return resultVec;
 }
 
+
+void MMatrix::operator+=(FVector &other){
+    array[3] += other.X;
+    array[7] += other.Y;
+    array[11] += other.Z;
+}
+
 FString MMatrix::asString(){
     FString output = "debug matrix: \n";
     for (int i = 0; i < 16; i++)

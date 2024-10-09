@@ -20,7 +20,8 @@ public:
 	void setTranslation(float x, float y, float z);
 	FVector getTranslation();
 
-	void operator+=(MMatrix & other);
+	void operator+=(FVector &other);
+	void operator+=(MMatrix &other);
 	void operator*=(MMatrix & other);
 
 	FVector operator*(FVector &other);

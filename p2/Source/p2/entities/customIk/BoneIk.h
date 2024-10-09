@@ -15,8 +15,10 @@ public:
 	~BoneIk();
 
 	void setupBones(float completeDistance);
-	void build(UWorld *world, FVector &offset, FColor color, float displayTime);
+	void build(UWorld *world, FVector &offset, FColor color, float displayTime); //in use
+	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); //must be tested
 
+	//not in use anymore
 	void tickAndBuild(UWorld *world, FVector &offset, float displayTime); //only move
 	void tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime); //move and etha
 	
@@ -24,14 +26,14 @@ public:
 	//move, etha and leg pitch
 	void tickAndBuild(
 		UWorld *world,
-		FVector &offset, // offset data in world
+		FVector &offset, // offset data in world ---> must be changed to an matrix with position.
 		float etha,
 		float legPitchThete, 
 		float displayTime,
 		FColor color
 	);
 
-	void tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color);
+	void tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color); //in use
 	float halfTimePhase();
 
 	bool halfIsReached();

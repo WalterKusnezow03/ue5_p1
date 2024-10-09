@@ -125,9 +125,12 @@ void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTi
 
     std::vector<FVector> resultDraw;
     resultDraw.push_back(offset); //INITIAL poINT MUST BE DRAWN AT HIP!
-
+    
+    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
+    //start bei 1 weil erste matrix direkt drin ist
     MMatrix result = *matrizen[0];
-    resultDraw.push_back(result.getTranslation());
+    resultDraw.push_back(result.getTranslation()); //hinzufügen erster zeichen punkt 
+
     for (int i = 1; i < matrizen.size(); i++){
         result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
         //wie als würde man vektoren addieren, aber man multipliziert halt 
@@ -139,11 +142,6 @@ void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTi
     FVector outputVec = result * endVec;
     resultDraw.push_back(outputVec);
 
-    //upscale 
-    int scale = 100;
-    for (int i = 1; i < resultDraw.size(); i++){
-        resultDraw[i] *= scale;
-    }
     
     //COPY THE FOOT MOVED AMOUNT
     int size = resultDraw.size();
@@ -180,6 +178,84 @@ void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTi
 FVector BoneIk::movedLastTick(){
     return movedDir;
 }
+
+
+
+
+void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime){
+
+    std::vector<MMatrix *> matrizen;
+    matrizen.push_back(&offsetAndRotation);
+
+    FVector endVec;
+    getData(matrizen, endVec); 
+    if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
+        return;
+    }
+
+    std::vector<FVector> resultDraw;
+
+    MMatrix result = *matrizen[0];
+    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
+    
+    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
+    //beide sollen nicht mit gezeichnet werden
+    for (int i = 1; i < matrizen.size(); i++)
+    {
+        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
+
+        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
+    }
+
+    //final vector
+    FVector outputVec = result * endVec;
+    resultDraw.push_back(outputVec);
+
+
+    //COPY THE FOOT MOVED AMOUNT
+    int size = resultDraw.size();
+    if (size > 1)
+    {
+        FVector &currentFootPos = resultDraw[size - 1];
+        //AB = B - A
+        movedDir = prevFootPos - currentFootPos;
+        prevFootPos = currentFootPos;
+    }
+
+
+    
+   
+
+    //draw
+    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan};
+    if (world != nullptr)
+    {
+        int off = 1; // nicht welt koordinaten berück sichtigen
+        for (int i = off; i < resultDraw.size(); i++)
+        {
+            FColor c = colors[i % colors.size()];
+            c = color; //override for testing
+            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
+        }
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 
@@ -325,8 +401,9 @@ void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
 
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
+/// x is forward axis, all motion will be made relative to (1,0,0) x - axis
 /// @param vec vector in meters, (1,1,1) is 1 METER!
-/// @param weight weight direction on knee / (ellbow) --> will only be measured in z and y
+/// @param weight weight direction on knee / (ellbow)
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     // man muss hier das end node irgendwo hinbewegen und dann pitch und roll so wählen
     // wie als würde ein gewicht daran hängen
@@ -363,7 +440,7 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     //etha = 1.0 - etha; //um richtig zu flippen? von 0.0 zu 1.0 full extended (not clear if needed here, testing needed)
     float angleFromEtha = std::acos(1.0f - etha);
 
-    float hipAngle = angleFromEtha * -1;
+    float hipAngle = angleFromEtha * -1; //im uhrzeiger sinn
     float kneeAngle = angleFromEtha * 2;
 
     //FString s = FString::Printf(TEXT("debug etha %.2f, debug angle %.2f"), etha, MMatrix::radToDegree(hipAngle));
@@ -373,15 +450,18 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     //WEIGHT KNICK RICHTUNG
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
-    if((weight.X < 0 || weight.Z < 0) && hipAngle < 0){ //hipAngle < 0 ist gegen uhrzeiger sinn scheinbar
-        //flip knee / ell
+    if(
+        (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
+        hipAngle < 0                      //und knick noch im uhrzeiger sinn: flip
+    ){ 
+        //both angles flip
         hipAngle *= -1;
         kneeAngle *= -1;
     }
 
     //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
     
-    hip.pitchRadAdd(hipAngle); 
+    hip.pitchRadAdd(hipAngle);
     knee.pitchRadAdd(kneeAngle); //knee to foot
     foot.pitchRadAdd(hipAngle);
     
@@ -395,60 +475,26 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
 
     hip.pitchRadAdd(globalSideAdd);
 
-
-    //FString s2 = FString::Printf(TEXT("debug angle %.2f"), globalSideAdd);
-    //DebugHelper::logMessage(s2);
-
-
-
-    //return;
-
     
-
-    //return;
-
-    
-    /**
-     * -- Klarstellung um nichts zu vergessen --
-     * 1) yaw heisst:
-     * rotation auf xy ebene von oben gesehen
-     * 
-     * 2) extra rotation auf yaw und roll
-     *    muss theoretisch nur auf hip stattfinden
-     *    weil nurnoch das gesamte bein rotiert wird und sich
-     *    das end gelenk schon an der richtigen end position befindet
-     *    wegen dem pitch (die höhe stimmt quasi)
-     *    jetzt muss nurnoch der gesamte vektor gedreht werden, das bein als GANZES
-     *    -> was ja richtig gedacht nur inital Hip Rotation ist. Easy <3
-     */
-
-    //return;
-
-    //works as expected.
-
-    //GOLBAL ROTATION ON YAW - correct.
-    //problem mit yz flip
-
+    //GOLBAL ROTATION ON YAW 
     float yawAngleTarget = yawAngleTo(vec);
-    //float yawAngleTarget = yawAngleTo(vec); // scheint richtig zu sein rotieren zum target
+    hip.yawRadAdd(yawAngleTarget); //nur die hip alleine rotieren, rotiert alles
 
-    hip.yawRadAdd(yawAngleTarget); //scheint korrekt zu sein
-    //DebugHelper::showScreenMessage(vec); //vec richtig, angle FALSCH
-    FString s = FString::Printf(TEXT("ANGLE %.2f"), MMatrix::radToDegree(yawAngleTarget));
-    DebugHelper::showScreenMessage(s);
-    // knee.yawRadAdd(yawAngleTarget * -2);
 
+    
     return;
 
-    //roll causing the issues seemingly.
+    /**
+     * roll funktioniert nicht wie erwartet!
+     */
 
     //GLOBAL ROTATION ON ROLL - testing needed
     //sollte nur hip rotieren und nicht ziel punkt schrotten
     float rollAngleWeight = rollAngleTo(weight);
     //*-1;
     hip.rollRadAdd(rollAngleWeight);
+    knee.rollRadAdd(rollAngleWeight * -2);
 
-    
 
 }
 
@@ -545,12 +591,12 @@ float BoneIk::pitchAngleTo(FVector &localTarget){
     
     FVector2D forward2d(1, 0);
     forward2d = forward2d.GetSafeNormal();
-    
+
     FVector2D xz(localTarget.X, localTarget.Z);
     xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
     float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
-    //keine flip rotation hier, ist ein einzelfall
+    //KEINE flip rotation hier, ist ein einzelfall
     return xzSideViewAngle;
 }
 
@@ -579,18 +625,19 @@ float BoneIk::rollAngleTo(FVector &localTarget){
 
 
 /// @brief will tell if a angle between vectors is negative or not
-/// @param aX 
-/// @param aY 
-/// @param oX 
-/// @param oY 
-/// @return 
+/// @param aX x comp of vector a
+/// @param aY y comp of vector a
+/// @param oX x comp of vector b
+/// @param oY y comp of vector b
+/// @return +1 for counter clock wise rotation or -1. Multiply your angle with the returned
+/// value to make your angle signed 
 int BoneIk::flipRotation(float aX, float aY, float oX, float oY){
     // Bestimmen der Drehrichtung durch das Kreuzprodukt
-    float crossProduct = aX * oY - aY * oX;
+    float crossProduct_z = aX * oY - aY * oX;
 
     // Wenn das Kreuzprodukt negativ ist, ist der Winkel im Uhrzeigersinn,
     // also negieren wir den Winkel.
-    if (crossProduct < 0) {
+    if (crossProduct_z < 0) {
         return -1;
     }
     return 1;

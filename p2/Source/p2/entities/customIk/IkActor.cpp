@@ -20,11 +20,13 @@ void AIkActor::BeginPlay()
 
 	//init offset for now
 	offset = FVector(1000, -1000, 200);
+	ownLocation.setTranslation(offset);
 
-	leg1.setupBones(legScaleMeters);
-	leg2.setupBones(legScaleMeters);
+	float legScaleCM = 200;
+	leg1.setupBones(legScaleCM);
+	leg2.setupBones(legScaleCM);
 
-	float armScale = legScaleMeters;
+	float armScale = legScaleCM;
 	arm1.setupBones(armScale);
 	
 	
@@ -54,7 +56,9 @@ void AIkActor::BeginPlay()
 	
 
 	targetA = FVector(1.5f, -0.5f, 0);
-	targetB = FVector(1.5f, -0.5f, -1);
+	targetB = FVector(1.5f, 1.0f, -1);
+	targetA *= 100; //auf cm skalieren.
+	targetB *= 100;
 
 	// debug
 	//leg2.rotateFirstLimbDeg(0, -90, 10);
@@ -65,6 +69,11 @@ void AIkActor::BeginPlay()
 void AIkActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//new: rotation and location
+	MMatrix updatedMatrix = ownLocation;
+	
+
 
 	updateBone(leg1, DeltaTime, FColor::Red);
 	//updatePositionBasedOnMovedDistance(leg1);
@@ -77,16 +86,22 @@ void AIkActor::Tick(float DeltaTime)
 
 	//arms new, must be added
 	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
-	arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
+	//arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
+
+	
+	//new: arm with world matrix applied. Testing needed, weird issues.
+	MMatrix armMat = ownLocation;
+	FVector verticalOffset(0, 0, 100);
+	armMat += verticalOffset;
+	arm1.build(GetWorld(), armMat, FColor::Purple, DeltaTime * 2);
+	
 
 	//debug draw of targets
 	FVector t1 = targetA;
 	FVector t2 = targetB;
-	t1 *= 100;
-	t2 *= 100;
 	t1 += armOff;
 	t2 += armOff;
-	DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Red);
+	DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Green);
 
 
 	leg2.build(GetWorld(), armOff, FColor::Black, DeltaTime * 2);
@@ -94,6 +109,10 @@ void AIkActor::Tick(float DeltaTime)
 	//draw forward line to approve arm is correct
 	DebugHelper::showLineBetween(GetWorld(), armOff, armOff + FVector(100,0,0), FColor::Green, DeltaTime * 2);
 
+
+
+
+	//arm pos follow testing
 	debugDynamicArmTick(DeltaTime);
 }
 
@@ -113,8 +132,9 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 	if(xMoved > 0){
 		//if x < 0 means the leg moved the body forward
 		offset.X += xMoved;
+
+		ownLocation.setTranslation(offset);
 	}
-	
 }
 
 
@@ -125,20 +145,10 @@ void AIkActor::LookAt(FVector TargetLocation)
 {
     // Calculate the rotation needed to look at the target location
     FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-
-    // Optionally, you can set only the yaw to rotate around the Z-axis
-    //LookAtRotation.Pitch = 0.0f;
-    //LookAtRotation.Roll = 0.0f;
-
-    // Apply the rotation to the actor
-    //SetActorRotation(LookAtRotation);
-
 	float zDegree = LookAtRotation.Yaw;
 
+	ownOrientation.yawRad(MMatrix::degToRadian(zDegree));
 }
-
-
-
 
 // --- testing needed ---
 
@@ -162,37 +172,6 @@ void AIkActor::debugDynamicArmTick(float DeltaTime){
 	FVector posNew = targetA + directionVecAll * timeCopy;
 	FVector weight(1, 1, -1);
 	arm1.rotateEndToTarget(posNew, weight);
-	return;
 
 
-
-
-	float velocityScalar = 2.0f;
-
-	//x(t) = x0 +v0t + (1/2 at^2) reicht hier als formel
-	///x(t) = x0 + v0t
-
-	FVector targetLocation = (direction == 1) ? targetA : targetB;
-
-	FVector directionVec = (targetLocation - currentArmTick).GetSafeNormal();
-	FVector zeroVec(0, 0, 0);
-	if(FVector::Dist(targetLocation, currentArmTick) <= epsilon){
-		direction *= -1;
-		timeCopy = 0.0f;
-		return;
-	}
-
-	FVector v0 = directionVec * velocityScalar;
-	/// x(t) = 	     x0 + 	 		v0 * t
-	currentArmTick = currentArmTick + v0 * DeltaTime; // AB = B - A
-
-	
-	//FVector weight(1, 1, -1);
-	arm1.rotateEndToTarget(currentArmTick, weight);
-
-
-
-
-
-	
 }

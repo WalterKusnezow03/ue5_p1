@@ -43,18 +43,20 @@ private:
 	void updateBone(BoneIk &bone, float deltaTime, FColor color);
 
 	FVector offset;
+	MMatrix ownLocation;
 	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
 
 	void LookAt(FVector TargetLocation);
 
+	//testing needed and refacturing:
+	MMatrix ownOrientation;
 
 
 	//new testing more arm targets
 	FVector targetA;
 	FVector targetB;
-	FVector currentArmTick;
 	float timeCopy;
 	int direction = 1;
-	float epsilon = 0.01f;
 	void debugDynamicArmTick(float DeltaTime);
+
 };
