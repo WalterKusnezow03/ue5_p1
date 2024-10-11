@@ -171,7 +171,8 @@ void AssetLoader::loadWeapons(){
         
         //ar
         FString rifleString = FString::Printf(
-            TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
+            //TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
+            TEXT("Blueprint'/Game/Prefabs/Weapons/rifle2/rifleBp.rifleBp_C'")
         );
         UClass *riflebp = loadUClassBluePrint(rifleString);
         a->addBp(weaponEnum::assaultRifle, riflebp);

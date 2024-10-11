@@ -61,9 +61,9 @@ void worldLevel::resetWorld(){
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
 
-    bool create = true;
+    bool debugCreate = false; //dont create terrain for debugging 
     //disabled for debugging
-    if(create){
+    if(debugCreate){
         if (!isTerrainInited && world != nullptr){
             createTerrain(world, 300); // 100
         }

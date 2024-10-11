@@ -60,8 +60,9 @@ void AIkActor::BeginPlay()
 	targetA *= 100; //auf cm skalieren.
 	targetB *= 100;
 
-	// debug
-	//leg2.rotateFirstLimbDeg(0, -90, 10);
+	//testing
+	ownOrientation.yawRadAdd(MMatrix::degToRadian(90));
+
 }
 
 
@@ -89,8 +90,13 @@ void AIkActor::Tick(float DeltaTime)
 	//arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
 
 	
-	//new: arm with world matrix applied. Testing needed, weird issues.
-	MMatrix armMat = ownLocation;
+	//neu braucht testing!
+	MMatrix armMat = ownLocation * ownOrientation; //lesen rückwärts: 
+	//rotation um eigene achse IM URSPRUNG
+	//dann translation, aber rückwärts schreiben
+	// R_T = T * R; //genau rückwärts rechnen
+
+	//ownLocation;
 	FVector verticalOffset(0, 0, 100);
 	armMat += verticalOffset;
 	arm1.build(GetWorld(), armMat, FColor::Purple, DeltaTime * 2);
@@ -111,10 +117,12 @@ void AIkActor::Tick(float DeltaTime)
 
 
 
-
 	//arm pos follow testing
 	debugDynamicArmTick(DeltaTime);
+
 }
+
+
 
 /// @brief updates a given bone
 /// @param bone 

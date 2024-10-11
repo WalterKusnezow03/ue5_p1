@@ -126,6 +126,8 @@ void MMatrix::operator*=(MMatrix &other){
 /// @param other other
 /// @return returns a new matrix
 MMatrix MMatrix::operator*(MMatrix &other){
+    normalizeRotation();
+    other.normalizeRotation();
     MMatrix result; // Temporary matrix to store the result
 
     for (int row = 0; row < 4; row++) { // Iterate through the rows of 'this' matrix
@@ -177,6 +179,8 @@ void MMatrix::operator+=(FVector &other){
     array[11] += other.Z;
 }
 
+/// @brief creates a string representation if the matrix with radian angles
+/// @return FString by value representation of the matrix
 FString MMatrix::asString(){
     FString output = "debug matrix: \n";
     for (int i = 0; i < 16; i++)

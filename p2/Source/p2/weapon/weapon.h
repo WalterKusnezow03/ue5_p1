@@ -122,12 +122,17 @@ protected:
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;
+	class USkeletalMeshComponent *gehauseSkeletonPointer;
 	FString verschlussPath;
 	FString magAnimPath;
+	FString gehauseAnimPath;
 
 	//saves the preloaded animation sequences
 	class UAnimSequence *verschlussAnimationSquence;
+	class UAnimSequence *gehauseAnimSequence;
 	class UAnimSequence *magAnimationSequence;
+	class UAnimSequence *magAnimationShootSequence;
+	FString magShootAnimpath;
 
 	//find attachments
 	void findAttachmentChildActors();
@@ -135,6 +140,9 @@ protected:
 	//attachments pointers 
 	class UChildActorComponent *reddotSightChildActor;
 	class UChildActorComponent *ironSightChildActor;
+	
+	/// @brief saves all sights of the weapon find from actor to enable disable them by selected type
+	std::map<weaponSightEnum, AActor *> sightMap;
 
 public:
 	void applySight(weaponSightEnum sight);

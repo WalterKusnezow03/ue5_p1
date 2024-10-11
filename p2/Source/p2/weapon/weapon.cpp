@@ -380,11 +380,15 @@ void Aweapon::animationPathSet(){
 	}
 	if(Type == weaponEnum::assaultRifle){
 		//assault rifle
-		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle/verschlussAnim");
-		mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle/magAnim");
+		//verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle/verschlussAnim");
+		//mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle/magAnim");
+		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle2/verschlussAnim");
+		mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle2/magAnim");
+		gehauseAnimPath = TEXT("/Game/Prefabs/weapons/rifle2/gehauseAnim");
+
+		magShootAnimpath = TEXT("/Game/Prefabs/weapons/rifle2/magAnimShoot");
 	}
 
-	 
 	setVerschlussPath(verschluss_anim_path);
 	setMagAnimPath(mag_anim_path);
 
@@ -392,7 +396,8 @@ void Aweapon::animationPathSet(){
 	//pre load the animations
 	verschlussAnimationSquence = LoadObject<UAnimSequence>(nullptr, *verschluss_anim_path);
 	magAnimationSequence = LoadObject<UAnimSequence>(nullptr, *mag_anim_path);
-
+	gehauseAnimSequence = LoadObject<UAnimSequence>(nullptr, *gehauseAnimPath);
+	magAnimationShootSequence = LoadObject<UAnimSequence>(nullptr, *magShootAnimpath);
 }
 
 void Aweapon::setVerschlussPath(FString path){
@@ -424,6 +429,8 @@ void Aweapon::setupAnimations()
 				verschlussSkeletonPointer = Component;
 			} else if(name.Contains("mag")){
 				magSkeletonPointer = Component;
+			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
+				gehauseSkeletonPointer = Component;
 			}
 		}
     }
@@ -435,6 +442,11 @@ void Aweapon::shootAnimation(){
 	if(verschlussSkeletonPointer != nullptr){
 		//playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
 		playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
+		playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
+
+
+		//trying gehause anim on mag for shoot?
+		playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
 	}
 }
 
@@ -526,12 +538,22 @@ void Aweapon::findAttachmentChildActors(){
 			if(childs[i] != nullptr){
 				FString name = childs[i]->GetName();
 				if(name.Contains("reddot")){
-					//DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
+					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
 					reddotSightChildActor = childs[i];
+
+					AActor *a = childs[i]->GetChildActor();
+					if(a != nullptr){
+						sightMap[weaponSightEnum::enum_reddot] = a;
+					}
 				}
 				if(name.Contains("ironSight")){
-					//DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
+					DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
 					ironSightChildActor = childs[i];
+
+					AActor *a = childs[i]->GetChildActor();
+					if(a != nullptr){
+						sightMap[weaponSightEnum::enum_ironsight] = a;
+					}
 				}
 			}
 		}
@@ -539,7 +561,8 @@ void Aweapon::findAttachmentChildActors(){
 
 
 	//default value
-	applySight(weaponSightEnum::enum_ironsight);
+	//applySight(weaponSightEnum::enum_ironsight);
+	applySight(weaponSightEnum::enum_reddot);
 }
 
 
@@ -548,22 +571,20 @@ void Aweapon::findAttachmentChildActors(){
 /// @param sight sight value in to enable
 void Aweapon::applySight(weaponSightEnum sight){
 
-	std::map<weaponSightEnum, UChildActorComponent *> map;
-	map[weaponSightEnum::enum_reddot] = reddotSightChildActor;
-	map[weaponSightEnum::enum_ironsight] = ironSightChildActor;
+	for (const auto& pair : sightMap){ //map) {
 
-	for (const auto& pair : map) {
-
-		if(pair.first == sight){
-			Super::showChildActor(pair.second, true);
-		}else{
-			Super::showChildActor(pair.second, false);
+		AActor *a = pair.second;
+		bool show = false;
+		if (pair.first == sight)
+		{
+			show = true;
 		}
 
-
-		//access the key with .first and value with .second
-        //std::cout << pair.first << " => " << pair.second << '\n';
-    }
+		if(a != nullptr){
+			DebugHelper::showScreenMessage("show sight try", FColor::Green);
+			AActorUtil::showActor(*a, show);
+		}
+	}
 
 
 

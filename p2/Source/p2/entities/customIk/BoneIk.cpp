@@ -114,69 +114,21 @@ void BoneIk::getData(std::vector<MMatrix*> &dataout, FVector &outVector){
 /// @param toBuildFromlastAnchor 
 /// @param color 
 void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTime){
-    
-    std::vector<MMatrix *> matrizen;
-    FVector endVec;
-    getData(matrizen, endVec);
-
-    if(matrizen.size() < 1){
-        return;
-    }
-
-    std::vector<FVector> resultDraw;
-    resultDraw.push_back(offset); //INITIAL poINT MUST BE DRAWN AT HIP!
-    
-    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
-    //start bei 1 weil erste matrix direkt drin ist
-    MMatrix result = *matrizen[0];
-    resultDraw.push_back(result.getTranslation()); //hinzufügen erster zeichen punkt 
-
-    for (int i = 1; i < matrizen.size(); i++){
-        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
-        //wie als würde man vektoren addieren, aber man multipliziert halt 
-
-        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
-    }
-
-    //final vector
-    FVector outputVec = result * endVec;
-    resultDraw.push_back(outputVec);
-
-    
-    //COPY THE FOOT MOVED AMOUNT
-    int size = resultDraw.size();
-    if (size > 1)
-    {
-        FVector &currentFootPos = resultDraw[size - 1];
-        //AB = B - A
-        movedDir = prevFootPos - currentFootPos;
-        prevFootPos = currentFootPos;
-    }
-
-
-
-    //apply OFFSET
-    for (int i = 1; i < resultDraw.size(); i++){
-        resultDraw[i] += offset;
-    }
-
-    //draw
-    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan};
-    if (world != nullptr)
-    {
-        //DebugHelper::showLine(world, resultDraw, color, displayTime);
-
-        for (int i = 1; i < resultDraw.size(); i++){
-            FColor c = colors[i % colors.size()];
-            c = color; //override for testing
-            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
-        }
-    }
+    MMatrix m;
+    m.setTranslation(offset);
+    build(world, m, color, displayTime);
 }
 
-
+/// @brief returns a vector how much and which direction the bone moved with
+/// the last time it was ticked
+/// @return FVector moved since last tick
 FVector BoneIk::movedLastTick(){
-    return movedDir;
+    FVector copy = movedDir;
+    //reset components
+    movedDir.X = 0;
+    movedDir.Y = 0;
+    movedDir.Z = 0;
+    return copy;
 }
 
 
@@ -481,7 +433,7 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     hip.yawRadAdd(yawAngleTarget); //nur die hip alleine rotieren, rotiert alles
 
 
-    
+
     return;
 
     /**

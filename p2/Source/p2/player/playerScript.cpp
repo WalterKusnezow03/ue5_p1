@@ -91,8 +91,11 @@ void AplayerScript::BeginPlay()
     Aweapon *w = nullptr;
     if(e != nullptr){
         //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
-        w = e->spawnAweapon(GetWorld(), weaponEnum::pistol);
+
+        
+        w = e->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(w != nullptr){
+            w->applySight(weaponSightEnum::enum_reddot);
             w->pickup(CameraComponent);
             playerInventory.addWeapon(w);
         }

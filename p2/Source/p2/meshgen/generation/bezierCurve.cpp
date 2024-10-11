@@ -241,7 +241,9 @@ void bezierCurve::process4Points(
     
     float distance = FVectorUtil::Dist(p0, p3);
     float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
-    if(step == 0 || step <= 0.01f){ //100max z.b.
+    float stepC = step;
+    if (step == 0 || step <= 0.01f)
+    { // 100max z.b.
         return;
     }
     step = 1.0f / step; //to percentage frac of 1
@@ -255,25 +257,19 @@ void bezierCurve::process4Points(
     {
         FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
         newPos.X = (int)(newPos.X);
-        
         // new code
         if(output.size() > 0){
-            
             if(prev.X != newPos.X){
                 output.push_back(newPos);
-                
             }
         }else{
             output.push_back(newPos);
         }
-
         //copy for next
         prev = newPos;
-
     }
 
     //fillGaps(output);
-
 }
 
 
@@ -288,13 +284,16 @@ FVector2D bezierCurve::FVector2DFourAnchorBezier(
     float skalar
 ){
     FVector2D ab = a + skalar * (b - a);
-    FVector2D bc = b + skalar * (c - b) ;
-    FVector2D cd = c + skalar * (d - c) ;
+    FVector2D bc = b + skalar * (c - b);
+    FVector2D cd = c + skalar * (d - c);
     FVector2D abbc = ab + skalar * (bc - ab); //das ding dazwischen
     FVector2D bccd = cd + skalar * (cd - bc); //das ding dazwischen
     FVector2D abbcbccd = abbc + skalar * (bccd - abbc); //das ding dazwischen
     return abbcbccd;
 }
+
+
+
 
 
 
