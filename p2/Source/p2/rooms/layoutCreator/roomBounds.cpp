@@ -5,7 +5,38 @@
 
 
 
-// ---- room methods ----
+/// @brief copy constructor
+/// @param other 
+roomBounds::roomBounds(const roomBounds &other){ //std vec, etc braucht const beim copy constructor!
+    *this = other;
+}
+
+roomBounds &roomBounds::operator=(const roomBounds &other){ //std vec, etc braucht const beim copy constructor!
+    if(this == &other){ //no self assign
+        return *this;
+    }
+
+    xPos = other.xPos;
+    yPos = other.yPos;
+    xScale = other.xScale;
+    yScale = other.yScale;
+    windowPositions = other.windowPositions;
+    doorPositions = other.doorPositions;
+
+    return *this;
+
+    //nachbarschaftsliste wird NICHT übernommen!
+    //KEIN PROPERTY VOM ROOM!
+}
+
+roomBounds::roomBounds(int xpos, int ypos, int xScaleIn, int yScaleIn, int num){
+    xScale = xScaleIn;
+    yScale = yScaleIn;
+    xPos = xpos;
+    yPos = ypos;
+    uclass = nullptr;
+    number = num;
+}
 
 /// @brief default constructor of room
 /// @param xIn xscale
@@ -85,6 +116,7 @@ int roomBounds::yscale(){
 }
 int roomBounds::xpos() { return xPos; }
 int roomBounds::ypos() { return yPos; }
+
 int roomBounds::xOuteredge(){
     return xPos + xScale;
 }
@@ -107,19 +139,6 @@ void roomBounds::addDoorPosition(int x, int y){
     doorPositions.push_back(FVector(x, y, 0));
 }
 
-/// @brief will return the relative door INDEX positions, relative to the left bottom corner
-/// the index scale must be scaled up to meters (*100) and calculated to the bottom left corner
-/// of the room to get the correct door position
-/// @return vector<FVector> &reference
-std::vector<FVector> &roomBounds::readRelativeDoorPositions(){
-    return doorPositions;
-}
-
-
-
-std::vector<FVector> &roomBounds::readRelativeWindowPositions(){
-    return windowPositions;
-}
 
 /// @brief adds a window position and makes it relative
 /// @param x x pos in grid all
@@ -129,15 +148,68 @@ void roomBounds::addWindowPosition(int x, int y){
     x -= xPos;
     y -= yPos;
 
+    /*
     //check all door positions for overlap, dont add if found
     for (int i = 0; i < doorPositions.size(); i++){
         FVector &ref = doorPositions.at(i);
         if(ref.X == x && ref.Y == y){
             return;
         }
-    }
+    }*/
 
     windowPositions.push_back(FVector(x, y, 0));
+}
+
+void roomBounds::addDoorPosition(FVector pos){
+    pos.X -= xPos;
+    pos.Y -= yPos;
+    doorPositions.push_back(pos);
+}
+
+void roomBounds::addWindowPosition(FVector pos){
+    pos.X -= xPos;
+    pos.Y -= yPos;
+
+    /*
+    //check all door positions for overlap, dont add if found
+    for (int i = 0; i < doorPositions.size(); i++){
+        FVector &ref = doorPositions.at(i);
+        if(ref.X == pos.X && ref.Y == pos.Y){
+            return;
+        }
+    }*/
+   //position ggf clampen das sie korrekt ist 
+   // ? sollte es aber nicht ? sollte nicht falsch sein, fehler behandlung aber doch besser
+
+    clampLocalPosition(pos); //scheint aber bei türen auch ohne zu funktionieren!
+    windowPositions.push_back(pos);
+}
+
+
+/// @brief expects position to be relative to bottom left corner (xpos and ypos)
+/// position reference will be edited
+/// @param pos position to clamp to the edges
+void roomBounds::clampLocalPosition(FVector &pos){
+    int xCopy = pos.X;
+    int yCopy = pos.Y;
+    xCopy = std::max(xCopy, 0);
+    xCopy = std::min(xCopy, xScale);
+    yCopy = std::max(yCopy, 0);
+    yCopy = std::min(yCopy, yScale);
+    pos.X = xCopy;
+    pos.Y = yCopy;
+}
+
+/// @brief will return the relative door INDEX positions, relative to the left bottom corner
+/// the index scale must be scaled up to meters (*100) and calculated to the bottom left corner
+/// of the room to get the correct door position
+/// @return vector<FVector> &reference
+std::vector<FVector> &roomBounds::readRelativeDoorPositions(){
+    return doorPositions;
+}
+
+std::vector<FVector> &roomBounds::readRelativeWindowPositions(){
+    return windowPositions;
 }
 
 
@@ -306,3 +378,138 @@ TTouple<int,int> roomBounds::getmanualDoorPosFromTop(){
 }
 
 
+
+
+
+
+int roomBounds::xMax(){
+    return xPos + xScale;
+}
+
+int roomBounds::yMax(){
+    return yPos + yScale;
+}
+
+
+/**
+ * 
+ * 
+ * CONNECT SECTION
+ * 
+ * 
+ */
+
+/// @brief will ignore double connection, will ignore rooms which dont touch each other
+/// @param other 
+void roomBounds::connectTo(roomBounds *other){
+    if(other == nullptr){
+        return;
+    }
+
+    //check if already connected, ignore if yes
+    for (int i = 0; i < neighborRooms.size(); i++){
+        if(neighborRooms.at(i) == other){
+            return;
+        }
+    }
+
+    // findShared axis
+
+    //find connected bounds first
+    int lowerY = std::max(yPos, other->yPos); //flipped on purpose!
+    int higherY = std::min(yMax(), other->yMax());
+    int lowerX = std::max(xPos, other->xPos); //flipped on purpose!    
+    int higherX = std::min(xMax(), other->xMax());
+    
+    float Ymidpoint = (lowerY + higherY) / 2.0f;
+    float Xmidpoint = (lowerX + higherX) / 2.0f;
+
+    if (xMax() == other->xPos){
+        //shared right y axis
+        finishConnection(
+            other,
+            FVector(other->xPos, Ymidpoint, 0)
+        );
+        return;
+    }
+
+    if(yMax() == other->yPos){
+        //shared upper x axis
+        finishConnection(
+            other,
+            FVector(Xmidpoint, other->yPos, 0)
+        );
+        return;
+    }
+
+
+    if(xPos == other->xMax()){
+        //shared left y axis
+        finishConnection(
+            other,
+            FVector(xPos, Ymidpoint, 0)
+        );
+        return;
+    }
+
+    if(yPos == other->yMax()){
+        //shared lower x axis
+        finishConnection(
+            other,
+            FVector(Xmidpoint, yPos, 0)
+        );
+        return;
+    }
+
+    //add door in middle of both wall -->wall bounds!
+
+
+
+}
+
+
+void roomBounds::finishConnection(roomBounds *other, FVector doorPos){
+    if(other == nullptr){
+        return;
+    }
+
+    //pos offset wieder jeweils von door pos abziehen, dann zu doors adden
+    FVector relativeDoorPosForThis = doorPos - FVector(xPos, yPos, 0);
+    FVector relativeDoorPosForOther = doorPos - FVector(other->xPos, other->yPos, 0);
+    
+    
+    //jeweils nachbar hinzufügen
+    neighborRooms.push_back(other);
+    other->neighborRooms.push_back(this);
+
+    doorPositions.push_back(relativeDoorPosForThis);
+    other->doorPositions.push_back(relativeDoorPosForOther);
+    
+}
+
+
+
+/**
+ * 
+ * CONVERT SECTION
+ * 
+ */
+std::vector<FVector> roomBounds::relativeDoorPositionsCm(){
+    std::vector<FVector> vec;
+    for (int i = 0; i < doorPositions.size(); i++){
+        FVector copy = doorPositions[i] * 100;
+        vec.push_back(copy);
+    }
+    return vec;
+}
+
+
+
+std::vector<FVector> roomBounds::relativeWindowPositionsCm(){
+    std::vector<FVector> vec;
+    for (int i = 0; i < windowPositions.size(); i++){
+        FVector copy = windowPositions[i] * 100;
+        vec.push_back(copy);
+    }
+    return vec;
+}

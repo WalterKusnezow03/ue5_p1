@@ -28,6 +28,8 @@ public:
 
 	//Log Messages
 	static void logMessage(FString s);
+	static void logMessage(FString s, FVector a, FVector b);
+	static FString FVectorToString(FVector vec);
 
 	//time
 	static double timeSum;

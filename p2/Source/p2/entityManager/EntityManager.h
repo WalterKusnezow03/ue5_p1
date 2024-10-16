@@ -88,7 +88,6 @@ public:
 	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
 
 	//meshes in general
-	void createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies);
 	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:

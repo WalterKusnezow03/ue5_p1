@@ -7,6 +7,7 @@
 #include "p2/entities/customIk/BoneIk.h"
 #include "p2/entities/customIk/abstractKinematicFunctions.h"
 #include "p2/entities/customIk/IkActor.h"
+#include "p2/rooms/testing/roomProcedural.h"
 #include "p2/util/debugEntity.h"
 
 // Sets default values
@@ -87,5 +88,42 @@ void AdebugEntity::spawnCustomIkActor(){
 			SpawnedActor->SetActorLocation(offset);
 		}
 	}
-	
+
+
+
+
+	//spawn room for testing too
+	FVector location(1000, 1000, 2);
+	AroomProcedural *room = AroomProcedural::spawnRoom(GetWorld(), location);
+	if(room != nullptr){
+
+		int scaleMetersX = 10;
+		int scaleMetersY = 10;
+		int scaleMetersZ = 3;
+		int doorWidthCm = 100;
+		int windowWidthCm = 100;
+
+
+		//local doorpositions
+		std::vector<FVector> doors = {
+			FVector(0, 400, 0)
+		};
+
+		//local windowPositions
+		std::vector<FVector> windows = {
+			FVector(1000, 400, 0),
+			FVector(0, 800, 0)
+		};
+
+		room->createRoom(
+			location,
+			scaleMetersX,
+			scaleMetersY,
+			scaleMetersZ,
+			doors,
+			doorWidthCm,
+			windows,
+			windowWidthCm
+		);
+	}
 }

@@ -5,6 +5,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/rooms/RoomManager.h"
+#include "p2/rooms/layoutCreator/layoutMaker.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 
 worldLevel::worldLevel()
@@ -68,12 +69,12 @@ void worldLevel::initWorld(UWorld *world){
             createTerrain(world, 300); // 100
         }
     }
-    
+
+    //create rooms
+    DebugCreateRooms(world);
+
     //edge collector must be added here later
     createPathFinder(world);
-
-
-
 
     //testing
     DebugHelper::Debugtest(world);
@@ -206,4 +207,49 @@ int worldLevel::getGroundHeight(FVector &pos){
         return terrainPointer->getHeightFor(pos);
     }
     return pos.Z;
+}
+
+
+
+
+
+
+
+//debug method create rooms near world origin
+void worldLevel::DebugCreateRooms(UWorld *world){
+    if(world == nullptr){
+        return;
+    }
+
+
+    int roomsizeMeter = 20;
+    FVector locationToSpawn(
+        roomsizeMeter * -150,
+        roomsizeMeter * -150,
+        2
+    );
+
+
+    //create rooms
+    bool createRoomsOld = false;
+    if(createRoomsOld){
+        if (RoomManager *r = roomManager())
+        {
+            r->createABuilding(world, locationToSpawn, roomsizeMeter, roomsizeMeter);
+        }
+    }
+    
+
+    //new layout creator testing
+    std::vector<TTouple<int, int>> sizesP;
+    sizesP.push_back(TTouple<int, int>(4, 4));
+    sizesP.push_back(TTouple<int, int>(6, 6));
+    sizesP.push_back(TTouple<int, int>(10, 10));
+    sizesP.push_back(TTouple<int, int>(8, 8));
+
+    std::vector<roomBounds> outputRooms;
+
+    layoutMaker l;
+    l.makeLayout(20, 20, sizesP, outputRooms);
+    AroomProcedural::spawnRooms(world, locationToSpawn, outputRooms);
 }

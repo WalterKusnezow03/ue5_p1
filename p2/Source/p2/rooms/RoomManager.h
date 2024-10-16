@@ -70,4 +70,13 @@ private:
 
 
 	void processLayer(UWorld* world, std::vector<roomBounds> &ref, FVector offset, bool createWalls, int &outheight);
+	
+	//new method debugging  needed:
+	void processLayer(
+		UWorld *world,
+		std::vector<roomBounds> &vec,
+		FVector offset,
+		int &outHeightAdd
+	);
+
 };

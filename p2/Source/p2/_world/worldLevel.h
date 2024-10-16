@@ -41,4 +41,8 @@ private:
 	//terrain
 	static class terrainCreator *terrainPointer;
 	static bool isTerrainInited;
+
+
+	
+	static void DebugCreateRooms(UWorld *world);
 };

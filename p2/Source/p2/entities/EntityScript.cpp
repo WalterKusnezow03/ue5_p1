@@ -270,7 +270,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 				PathFinder *p = PathFinder::instance(world);
 
 				//ask for path
-				if(p != nullptr && playerPointer != nullptr && !pathDelayRunning()){
+				if(p != nullptr && playerPointer != nullptr ){
 					FVector a = GetActorLocation();
 					FVector b = playerPointer->GetActorLocation();
 					this->path = p->getPath(a,b);
@@ -328,7 +328,7 @@ void AEntityScript::resetpath(){
 /// @brief will return if any nodes are left in the path
 /// @return true false
 bool AEntityScript::hasNodesInPathLeft(){
-	return !path.empty();
+	return path.size() > 0;
 }
 
 /// @brief will return if a certain position is reached (with some epsilon distance)

@@ -40,9 +40,30 @@ public:
 
 	//custom mesh actor methods
 
+	//material behaviour to damage 
+	void setMaterialBehaiviour(materialEnum mat);
+	void setMaterialBehaiviour(materialEnum mat, bool split);
+	void setMaterialBehaviourAndHealth(materialEnum mat, int health);
+	void setMaterialAndHealthAndSplitOnDeath(materialEnum mat, int health, bool split);
+
+
+
 	static void splitAndreplace(AActor *actor, FVector &bottom, int cmTile, materialEnum materialType);
 
-	void process2DMap(std::vector<std::vector<FVector>> &map);
+	static void splitAndreplace(
+		FVector &bottomCenter,
+		int xBound,
+		int yBound,
+		int zBound,
+		int cmTile,
+		materialEnum materialType,
+		UWorld *world
+	);
+
+	void process2DMap(
+		std::vector<std::vector<FVector>> &map,
+		bool createTrees
+	);
 
 	void process2DMapSimple(
 		std::vector<std::vector<FVector>> &map,
@@ -73,13 +94,44 @@ public:
 		UMaterial *material
 	);
 
-	void createTwoSidedQuad(FVector &a, FVector &b, FVector &c, FVector &d, UMaterial *material);
+	void createTwoSidedQuad(
+		FVector &a, 
+		FVector &b, 
+		FVector &c, 
+		FVector &d, 
+		UMaterial *material);
 
-	void init(materialEnum materialtype);
+	void createTwoSidedQuad(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		UMaterial *material,
+		bool calculateNormals);
 
-private:
+
+
+	static void createQuad(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		MeshData &output
+	);
+
+	static void createTwoSidedQuad(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		MeshData &output
+	);
+
+protected:
 	
 	int health = 100;
+	bool destructableBool = false;
+	bool splitOnDeath = false;
 	bool isDestructable();
 	void setHealth(int d);
 
@@ -109,7 +161,7 @@ private:
 
 
 
-	void buildQuad(
+	static void buildQuad(
 		FVector &a,
 		FVector &b,
 		FVector &c,
@@ -118,7 +170,7 @@ private:
 		TArray<int32> &trianglesOutput
 	);
 
-	void buildTriangle(
+	static void buildTriangle(
 		FVector &a,
 		FVector &b,
 		FVector &c,

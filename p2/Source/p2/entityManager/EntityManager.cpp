@@ -694,17 +694,6 @@ std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, i
     return output;
 }
 
-/// @brief creates a mesh from the given vertecies
-/// @param world world to spawn in
-/// @param vertecies vertecies
-void EntityManager::createAMesh(UWorld *world, std::vector<std::vector<FVector>> &vertecies){
-    FVector location(0, 0, 0);
-    AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
-    if(customMesh != nullptr){
-        customMesh->process2DMap(vertecies);
-    }
-}
-
 
 
 void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d){

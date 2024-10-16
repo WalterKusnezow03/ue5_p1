@@ -6,6 +6,7 @@
 #include "p2/rooms/layoutCreator/layoutCreator.h"
 #include "p2/rooms/layoutCreator/roomBounds.h"
 #include "p2/rooms/room.h"
+#include "p2/rooms/testing/roomProcedural.h"
 #include "RoomManager.h"
 
 
@@ -156,8 +157,8 @@ void RoomManager::createABuilding(UWorld* world, FVector &location, int x, int y
 
         
         // process layer and add up new height from the just created layer
-        processLayer(world, copy, offset, true, height);
-
+        //processLayer(world, copy, offset, true, height);
+        processLayer(world, copy, offset, height); //new method with new rooms
     }
 }
 
@@ -264,6 +265,82 @@ void RoomManager::processLayer(
         }
     }
 }
+
+
+//new: tesing needed
+void RoomManager::processLayer(
+    UWorld* world, 
+    std::vector<roomBounds> &vec, 
+    FVector offset,
+    int &outHeightAdd
+){
+    if(world == nullptr){
+        return;
+    }
+    for (int i = 0; i < vec.size(); i++){
+        roomBounds &current = vec.at(i);
+        int xposInGrid = current.xpos(); //must be converted
+        int yposInGrid = current.ypos();
+
+        //convert positions
+        int xpos = convertScaleToMeter(xposInGrid);
+        int ypos = convertScaleToMeter(yposInGrid);
+
+        FVector position(xpos, ypos, 0); //z position must be aligned too some how (later in terrain integrate)    
+        position += offset;
+
+        int xScale = current.xscale();
+        int yScale = current.yscale();
+        int zScale = 3;
+        outHeightAdd = zScale * 100; //300cm outheight add
+        
+                
+
+        //create room
+        AroomProcedural *newRoom = AroomProcedural::spawnRoom(world, position);
+        if(newRoom != nullptr){
+            std::vector<FVector> &doorPositions = current.readRelativeDoorPositions();
+            std::vector<FVector> &windowPositions = current.readRelativeWindowPositions();
+
+            std::vector<FVector> doorPositionsConverted;
+            std::vector<FVector> windowPositionsConverted;
+
+            for (int j = 0; j < doorPositions.size(); j++){
+                //convert door
+                FVector adjusted = doorPositions.at(j);
+                convertScaleToMeterFVector(adjusted);
+                doorPositionsConverted.push_back(adjusted);
+            }
+
+            for (int j = 0; j < windowPositions.size(); j++){
+                //convert window
+                FVector adjusted = windowPositions.at(j);
+                convertScaleToMeterFVector(adjusted);
+                windowPositionsConverted.push_back(adjusted);
+            }
+
+
+
+            float windowsAndDoorCm = 100; //random magic number for now
+
+            //create room
+            newRoom->createRoom(
+                position,
+                xScale,
+                yScale,
+                zScale,
+                doorPositionsConverted,
+                windowsAndDoorCm,
+                windowPositionsConverted,
+                windowsAndDoorCm
+            );
+        }
+    }
+}
+
+
+
+
 
 
 

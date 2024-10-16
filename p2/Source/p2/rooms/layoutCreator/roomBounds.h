@@ -4,66 +4,92 @@
 #include "p2/util/TTouple.h"
 
 class P2_API roomBounds{
-		public:
-			void updatePosition(int xPos, int yPos);
+	public:
+		void updatePosition(int xPos, int yPos);
 
-			//create room type too!, and door positions
-			int number;
-			//roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn);
-			roomBounds(int xIn, int yIn, int num, UClass *uclassIn);
-			roomBounds(int xIn, int yIn, int num, UClass *uclassIn, int floorIn, roomtypeEnum typeIn);
-			~roomBounds();
+		/// @brief stays public, just for debugging
+		int number;
 
-			roomtypeEnum readType();
-		private:
-			UClass *uclass; //bp to spawn
-		public:
-			UClass *readBp();
-			void updateBp(UClass *ucl);
+		roomBounds(const roomBounds &other); //std vec, etc braucht const beim copy constructor!
+		roomBounds &operator=(const roomBounds &other);
 
-			int xpos();
-			int ypos();
+		//roomBounds(int xIn, int yIn, int num, roomtypeEnum typeIn);
+		roomBounds(int xpos, int ypos, int xScaleIn, int yScaleIn, int num);
+		roomBounds(int xIn, int yIn, int num, UClass *uclassIn);
+		roomBounds(int xIn, int yIn, int num, UClass *uclassIn, int floorIn, roomtypeEnum typeIn);
+		~roomBounds();
 
-			int xscale();
-			int yscale();
+		std::vector<FVector> relativeDoorPositionsCm();
+		std::vector<FVector> relativeWindowPositionsCm();
 
-			int xOuteredge();
-			int yOuteredge();
+		roomtypeEnum readType();
+	private:
+		UClass *uclass; //bp to spawn
+	public:
+		UClass *readBp();
+		void updateBp(UClass *ucl);
 
-			void addNeighbor(roomBounds *n);
-			void addDoorPosition(int x, int y);
-			void addWindowPosition(int x, int y);
+		int xpos();
+		int ypos();
 
-			//void createDoorTo(roomBounds *n);
+		int xscale();
+		int yscale();
 
-			std::vector<FVector> &readRelativeDoorPositions();
-			std::vector<FVector> &readRelativeWindowPositions();
+		int xOuteredge();
+		int yOuteredge();
 
-			//staircase custom doors testing
-			bool isStaircase();
-			TTouple<int, int> getmanualDoorPos();
-			TTouple<int, int> getmanualDoorPosFromRight();
-			TTouple<int, int> getmanualDoorPosFromTop();
+		void addNeighbor(roomBounds *n);
+		void addDoorPosition(int x, int y);
+		void addWindowPosition(int x, int y);
+		void addDoorPosition(FVector pos);
+		void addWindowPosition(FVector pos);
 
-		private:
-			int xScale;
-			int yScale;
-			int xPos;
-			int yPos;
+		void clampLocalPosition(FVector &pos);
 
-			/// @brief relative door positions for the room
-			std::vector<FVector> doorPositions;
+		//void createDoorTo(roomBounds *n);
+		std::vector<FVector> &readRelativeDoorPositions();
+		std::vector<FVector> &readRelativeWindowPositions();
 
-			roomtypeEnum type;
-
-			std::vector<FVector> windowPositions;
+		//staircase custom doors testing
+		bool isStaircase();
+		TTouple<int, int> getmanualDoorPos();
+		TTouple<int, int> getmanualDoorPosFromRight();
+		TTouple<int, int> getmanualDoorPosFromTop();
 
 
-			// ----  TESTING AREA ----
-			//floor for staircase door positions
-			//as staircases will always be just in one dir down to up for now
-			//this will work out
 
-			//just floor for now
-			int floor;
+		//new method, room will create doors on its own
+		void connectTo(roomBounds *other);
+			
+
+	private:
+		int xScale;
+		int yScale;
+		int xPos;
+		int yPos;
+
+		std::vector<roomBounds *> neighborRooms;
+
+		/// @brief relative door positions for the room
+		std::vector<FVector> doorPositions;
+
+		roomtypeEnum type;
+
+		std::vector<FVector> windowPositions;
+
+
+		// ----  TESTING AREA ----
+		//floor for staircase door positions
+		//as staircases will always be just in one dir down to up for now
+		//this will work out
+
+		//just floor for now
+		int floor; //WHY does thius exist ????
+
+
+		//new helper methods
+		int xMax();
+		int yMax();
+		void finishConnection(roomBounds *other, FVector doorPos);
+	
 };

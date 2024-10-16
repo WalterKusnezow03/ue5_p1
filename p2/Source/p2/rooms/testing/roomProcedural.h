@@ -1,0 +1,64 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "p2/meshgen/customMeshActor.h"
+#include "GameFramework/Actor.h"
+#include "roomProcedural.generated.h"
+
+UCLASS()
+class P2_API AroomProcedural : public AcustomMeshActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AroomProcedural();
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	void createRoom(
+		FVector &location, // bottom left corner
+		int scaleMetersX,
+		int scaleMetersY,
+		int scaleMetersZ,
+		std::vector<FVector> &doorPositions,
+		int doorWidthCm,
+		std::vector<FVector> &windowPositions,
+		int windowWidthCm
+	);
+
+	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
+	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBounds> &vec);
+
+private:
+	MeshData createWall(
+		FVector from,
+		FVector to,
+		std::vector<FVector> &doors,
+		std::vector<FVector> &windows,
+		int doorWidthCm,
+		int scaleZCm,
+		FVector &locationOffset
+	);
+
+	void filterForVectorsBetween(
+		FVector &A,
+		FVector &B,
+		std::vector<FVector> &positionsToFilter,
+		std::vector<FVector> &output
+	);
+
+	
+
+	void spawnWindowMeshFromBounds(
+		std::vector<TTouple<FVector, FVector>> &windowTouples,
+		FVector &offset
+	);
+};

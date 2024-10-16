@@ -55,6 +55,13 @@ terrainCreator::chunk::~chunk()
 
 // ---- chunk methods ----
 
+void terrainCreator::chunk::setTreesBlocked(bool b){
+    blockTrees = b;
+}
+bool terrainCreator::chunk::createTrees(){
+    return !blockTrees;
+}
+
 /// @brief will return the inner map as reference, is not deisnged to be modified
 /// @return map by reference, do not modify
 std::vector<std::vector<FVector>> &terrainCreator::chunk::readMap(){
@@ -828,32 +835,6 @@ TVector<FVector2D> &column
             int xInnerIndex = cmToInnerChunkIndex(xInCm);
             int yInnerIndex = cmToInnerChunkIndex(yInCm);
 
-            //Debug plotting
-            /*
-            if(c->xIsValid(xInnerIndex) && c->yIsValid(yInnerIndex)){
-                if(i < column.size() -1){
-
-                    if (terrainCreator::PLOTTING_ENABLED){
-                        FVector k(
-                            xInCm,
-                            yInCm,
-                            newHeight + terrainCreator::ONEMETER * 1.5f
-                        );
-
-                        if (std::abs(k.Y - prev.Y) <= terrainCreator::ONEMETER * 1.1f)
-                        {
-                            DebugHelper::showLineBetween(worldPointer, k, prev, FColor::Yellow);
-                        }
-                        else
-                        {
-                            DebugHelper::showLineBetween(worldPointer, k, prev, FColor::Red);
-                        }
-                        prev = k;
-                    }
-                        
-                    
-                }
-            }*/
 
             c->applyIndivualVertexIndexBased(
                 xInnerIndex,
@@ -965,19 +946,26 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
     //iterate over map and smooth
     for (int i = fromX; i <= toX; i++){
         for (int j = fromY; j <= toY; j++){
-            map.at(i).at(j).setheightForAll(heightToSet);
+            terrainCreator::chunk *c = &map.at(i).at(j);
+            if(c != nullptr){
+                c->setheightForAll(heightToSet);
+                c->setTreesBlocked(true);
+            }
         }
     }
 
     //finally also smooth the map
-    FVector a = location;
+    FVector buffer = FVector(terrainCreator::CHUNKSIZE, terrainCreator::CHUNKSIZE, 0);
+    FVector a = location - buffer;
     FVector b(
-        sizeMetersX + terrainCreator::CHUNKSIZE, 
-        sizeMetersY + terrainCreator::CHUNKSIZE,
+        sizeMetersX, 
+        sizeMetersY,
         0
     );
-    b += a;
-    smooth3dMap(a,b, 1); // disabled for debugging
+    b += (a + buffer * 2);
+
+    int iterations = 2;
+    smooth3dMap(a, b, iterations); // disabled for debugging
 }
 
 /**
@@ -1141,8 +1129,10 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
                 topright = &map.at(x+1).at(y+1);
             }
             std::vector<std::vector<FVector>> &mapReference = currentChunk->readAndMerge(top, right, topright);
-            currentActor->process2DMap(mapReference);
-            currentActor->init(materialEnum::grassMaterial);
+
+            bool treesBlocked = currentChunk->createTrees();
+            currentActor->process2DMap(mapReference, treesBlocked);
+            currentActor->setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
 
             // apply data
             //currentActor->process2DMap(currentChunk->readMap());

@@ -180,6 +180,22 @@ void DebugHelper::logTime(FString message){
 	timeSum = 0.0;
 }
 
+
+void DebugHelper::logMessage(FString s, FVector a, FVector b){
+	s += FVectorToString(a);
+	s += TEXT(" compare to ");
+	s += FVectorToString(b);
+	logMessage(s);
+}
+
+FString DebugHelper::FVectorToString(FVector vec){
+	FString xPart = FString::Printf(TEXT("%.2f"), vec.X);
+	FString yPart = FString::Printf(TEXT("%.2f"), vec.Y);
+	FString zPart = FString::Printf(TEXT("%.2f"), vec.Z);
+	FString sOut = xPart + TEXT(", ") + yPart + TEXT(", ") + zPart;
+    return sOut;
+}
+
 /**
  * 
  *  --- DRAW LINES ---

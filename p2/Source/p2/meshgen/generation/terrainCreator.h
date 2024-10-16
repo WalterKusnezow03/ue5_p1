@@ -76,10 +76,14 @@ private:
 			bool xIsValid(int a);
 			bool yIsValid(int a);
 
+			void setTreesBlocked(bool b);
+			bool createTrees();
+
 		private:
 			std::vector<std::vector<FVector>> innerMap;
 			int x;
 			int y;
+			bool blockTrees = false;
 
 			int clampInnerIndex(int a);
 			

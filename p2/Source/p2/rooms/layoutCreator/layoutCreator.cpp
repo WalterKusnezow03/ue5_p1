@@ -300,9 +300,12 @@ void layoutCreator::grid::getEdges(
 
     //roomBounds *current = data[i][j];
     int xstart = roomToCheck.xpos();
-    int ystart = roomToCheck.ypos() - 1;
+    int ystart = roomToCheck.ypos(); //-1; //wieso hier -1 ? unklar
     int xend = roomToCheck.xOuteredge();
     int yend = roomToCheck.yOuteredge();
+
+    //create inset to prevent weird positions
+
 
 
     getValidWindowPositions(xstart, ystart - 1, xend, ystart - 1, output); //horizontal bottom
@@ -349,7 +352,7 @@ void layoutCreator::grid::getValidWindowPositions(
         if(y1 <= 0){
             //all valid to bottom
             for (int i = x1; i <= x2; i++){
-                TTouple<int, int> a(i, y1);
+                TTouple<int, int> a(i, y1 + 1);
                 output.push_back(a);
             }
 
@@ -358,7 +361,7 @@ void layoutCreator::grid::getValidWindowPositions(
         if(y1 >= data[0].Num() - 1){
             //all valid to top
             for (int i = x1; i <= x2; i++){
-                TTouple<int, int> a(i, y1);
+                TTouple<int, int> a(i, y1 - 1);
                 output.push_back(a);
             }
 
@@ -543,7 +546,8 @@ std::vector<roomBounds> layoutCreator::copyData(){
     if(created.size() > 0){
         for(roomBounds *r : created){
             if(r != nullptr){
-                copy.push_back(*r);
+                roomBounds copyR = *r;
+                copy.push_back(copyR);
             }
         }
     }
@@ -745,7 +749,7 @@ void layoutCreator::connectNeighbors(){
                         if(ystarting < yending){
                             //calculate middle in MAP SCALE MUST BE DOWNSCALED
                             int ymiddle = (int)((ystarting + yending) / 2.0f);
-                            ymiddle = ystarting + 1; //testing +1 
+                            ymiddle = ystarting + 1;
 
                             //set door for both? (might have extra class naming gap or door)
                             left->addDoorPosition(left->xOuteredge(), ymiddle); //x max, y kante
