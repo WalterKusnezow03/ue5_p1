@@ -33,6 +33,8 @@ private:
 	//pathfinder init edge collection
 	static void createPathFinder(UWorld *WorldIn);
 
+	static void humanBotsOnStart(UWorld *worldIn);
+
 	//manager
 	static class EntityManager *entityManagerPointer;
 	static class OutpostManager *outpostManagerPointer;

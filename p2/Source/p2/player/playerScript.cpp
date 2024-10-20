@@ -73,27 +73,21 @@ void AplayerScript::BeginPlay()
 		i->setPlayerReference(this);
 	}
     
-    //testing
-    EntityManager *e = worldLevel::entityManager();
-    if (e != nullptr)
-    {
-        FVector spawnLocation = GetActorLocation();
-        spawnLocation.Y += 300;
-        spawnLocation.X += 300;
-        e->spawnHumanEntity(GetWorld(), spawnLocation, teamEnum::enemyTeam);
-    }
+    
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
 
+    EntityManager *entityMananger = worldLevel::entityManager();
+
     //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
     
     Aweapon *w = nullptr;
-    if(e != nullptr){
+    if(entityMananger != nullptr){
         //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
 
         
-        w = e->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
+        w = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(w != nullptr){
             w->applySight(weaponSightEnum::enum_reddot);
             w->pickup(CameraComponent);

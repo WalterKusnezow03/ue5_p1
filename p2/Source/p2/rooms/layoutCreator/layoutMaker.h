@@ -3,6 +3,8 @@
 #pragma once
 
 #include "p2/rooms/layoutCreator/roomBounds.h"
+#include "p2/rooms/testing/roomBoundData.h"
+#include "p2/util/TTouple.h"
 #include "CoreMinimal.h"
 
 /**
@@ -18,14 +20,14 @@ public:
 		int xMeters,
 		int yMeters,
 		std::vector<TTouple<int, int>> &possibleSizes, 
-		std::vector<roomBounds> &output
+		std::vector<roomBoundData> &output
 	);
 
 	
 
 private:
-	std::vector<std::vector<roomBounds*>> pointerField;
-	std::vector<roomBounds *> owningRoomsVec;
+	std::vector<std::vector<roomBoundData*>> pointerField;
+	std::vector<roomBoundData *> owningRoomsVec;
 	
 	void clearAndFill(int x, int y);
 	void clearField();
@@ -34,14 +36,15 @@ private:
 
 	void tryFit(int xSize, int ySize);
 	bool canFit(int fromX, int fromY, int xSize, int ySize);
-	void fill(int fromX, int fromY, int xSize, int ySize, roomBounds *room);
+	void fill(int fromX, int fromY, int xSize, int ySize, roomBoundData *room);
 
 	void createDoorsAndWindows();
 	void makeDoors();
 
 	void makeWindows();
 	bool isOuterEdge(int i);
+	bool isOuterEdge(int i, int j);
 
 	void checkFree(int xf, int yf, int xto, int yto, std::vector<FVector> &output);
-	int validIndex(int i);
+	bool canBeWindow(int i, int j);
 };

@@ -91,6 +91,8 @@ public:
 	
 	void debugCountNodes();
 
+	void draw(FVector &pos);
+
 private:
 	std::vector<FVector> prevPath;
 
@@ -123,6 +125,8 @@ private:
 			bool hasNode(FVector pos);
 
 			void clear();
+
+			PathFinder::Node *lateadd(FVector pos);
 
 			// new:
 			//std::vector<PathFinder::ConvexPolygon *> polygons;

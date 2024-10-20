@@ -76,6 +76,8 @@ void worldLevel::initWorld(UWorld *world){
     //edge collector must be added here later
     createPathFinder(world);
 
+    humanBotsOnStart(world);
+
     //testing
     DebugHelper::Debugtest(world);
 }
@@ -210,6 +212,26 @@ int worldLevel::getGroundHeight(FVector &pos){
 }
 
 
+/** 
+ * 
+ * DEBUG HUMAN ENTITIES
+ * 
+*/
+void worldLevel::humanBotsOnStart(UWorld *worldIn){
+    if(worldIn == nullptr){
+        return;
+    }
+
+    EntityManager *e = entityManager();
+    if (e != nullptr)
+    {
+        FVector spawnLocation(0, 0, 20);
+        spawnLocation.Y += 1000;
+        spawnLocation.X += 1000;
+        e->spawnHumanEntity(worldIn, spawnLocation, teamEnum::enemyTeam);
+    }
+}
+
 
 
 
@@ -242,12 +264,11 @@ void worldLevel::DebugCreateRooms(UWorld *world){
 
     //new layout creator testing
     std::vector<TTouple<int, int>> sizesP;
-    sizesP.push_back(TTouple<int, int>(4, 4));
     sizesP.push_back(TTouple<int, int>(6, 6));
     sizesP.push_back(TTouple<int, int>(10, 10));
     sizesP.push_back(TTouple<int, int>(8, 8));
 
-    std::vector<roomBounds> outputRooms;
+    std::vector<roomBoundData> outputRooms;
 
     layoutMaker l;
     l.makeLayout(20, 20, sizesP, outputRooms);

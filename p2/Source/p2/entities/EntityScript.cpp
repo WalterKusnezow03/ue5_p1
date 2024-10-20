@@ -271,12 +271,17 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 
 				//ask for path
 				if(p != nullptr && playerPointer != nullptr ){
+
+					
+
 					FVector a = GetActorLocation();
 					FVector b = playerPointer->GetActorLocation();
 					this->path = p->getPath(a,b);
 
 					//no path was found
 					if(this->path.size() <= 0){
+						DebugHelper::showScreenMessage("Entity path empty", FColor::Yellow);
+
 						resetPathDelay(3.0f); //wait 3 seconds before asking for next path, allows player to move, 
 						//better path finding and saving resources because if an issue with the pathfinding occurs,
 						//it wont be solved unless the target moves. 

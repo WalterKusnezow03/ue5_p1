@@ -156,32 +156,26 @@ void roomBounds::addWindowPosition(int x, int y){
             return;
         }
     }*/
-
     windowPositions.push_back(FVector(x, y, 0));
 }
 
 void roomBounds::addDoorPosition(FVector pos){
     pos.X -= xPos;
     pos.Y -= yPos;
+    clampLocalPosition(pos);
+    if(vecContains(pos, windowPositions) || vecContains(pos, doorPositions)){
+        return;
+    }
     doorPositions.push_back(pos);
 }
 
 void roomBounds::addWindowPosition(FVector pos){
     pos.X -= xPos;
     pos.Y -= yPos;
-
-    /*
-    //check all door positions for overlap, dont add if found
-    for (int i = 0; i < doorPositions.size(); i++){
-        FVector &ref = doorPositions.at(i);
-        if(ref.X == pos.X && ref.Y == pos.Y){
-            return;
-        }
-    }*/
-   //position ggf clampen das sie korrekt ist 
-   // ? sollte es aber nicht ? sollte nicht falsch sein, fehler behandlung aber doch besser
-
-    clampLocalPosition(pos); //scheint aber bei türen auch ohne zu funktionieren!
+    clampLocalPosition(pos);
+    if(vecContains(pos, windowPositions) || vecContains(pos, doorPositions)){
+        return;
+    }
     windowPositions.push_back(pos);
 }
 
@@ -192,12 +186,21 @@ void roomBounds::addWindowPosition(FVector pos){
 void roomBounds::clampLocalPosition(FVector &pos){
     int xCopy = pos.X;
     int yCopy = pos.Y;
-    xCopy = std::max(xCopy, 0);
-    xCopy = std::min(xCopy, xScale);
-    yCopy = std::max(yCopy, 0);
-    yCopy = std::min(yCopy, yScale);
+    xCopy = std::clamp(xCopy, 0, xScale);
+    yCopy = std::clamp(yCopy, 0, yScale);
     pos.X = xCopy;
     pos.Y = yCopy;
+}
+
+bool roomBounds::vecContains(FVector &pos, std::vector<FVector> &vec){
+    //check all door positions for overlap, dont add if found
+    for (int i = 0; i < vec.size(); i++){
+        FVector &ref = vec.at(i);
+        if(ref.X == pos.X && ref.Y == pos.Y){
+            return true;
+        }
+    }
+    return false;
 }
 
 /// @brief will return the relative door INDEX positions, relative to the left bottom corner
@@ -421,8 +424,9 @@ void roomBounds::connectTo(roomBounds *other){
     int lowerX = std::max(xPos, other->xPos); //flipped on purpose!    
     int higherX = std::min(xMax(), other->xMax());
     
-    float Ymidpoint = (lowerY + higherY) / 2.0f;
-    float Xmidpoint = (lowerX + higherX) / 2.0f;
+    int Xmidpoint = (int) (lowerX + higherX) / 2.0f; //changed from float to int, damit es auf die meter geclamped ist
+    int Ymidpoint = (int) (lowerY + higherY) / 2.0f;
+    
 
     if (xMax() == other->xPos){
         //shared right y axis

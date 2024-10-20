@@ -64,6 +64,13 @@ void AroomProcedural::createRoom(
 	std::vector<FVector> corners = {bl, tl, tr, br, bl};
 
 	
+	//debug draw doors
+	for(int i = 0; i < doorPositions.size(); i++){
+		FVector transformed = location + doorPositions[i];
+		FVector upV = transformed + FVector(0, 0, zCm);
+		DebugHelper::showLineBetween(GetWorld(), transformed, upV, FColor::Green);
+	}
+
 
 	for (int i = 1; i < corners.size(); i++)
 	{
@@ -112,10 +119,18 @@ MeshData AroomProcedural::createWall(
 	int scaleZCm,
 	FVector &locationOffset
 ){
-	float epsilon = 10;
+	//sort vectors for consistent door placement, otherwise overlap issues occur
+	//very important!
+	FVector connect = to - from;
+	if(connect.X < 0 || connect.Y < 0){
+		FVector copy = to;
+		to = from;
+		from = copy;
+	}
+	
 
 	std::vector<FVector> oneDimWall;
-	oneDimWall.push_back(from);
+	oneDimWall.push_back(from); //FIRST WALL POSITION
 
 	//will save the 1d window representation
 	std::vector<FVector> oneDimWindows;
@@ -124,6 +139,7 @@ MeshData AroomProcedural::createWall(
 	filterForVectorsBetween(
 		from,
 		to,
+		doorWidthCm,
 		doors,
 		doorsFiltered //output
 	);
@@ -132,58 +148,42 @@ MeshData AroomProcedural::createWall(
 	filterForVectorsBetween(
 		from,
 		to,
+		doorWidthCm,
 		windows,
 		windowsFiltered //output
 	);
 
-	//debug
-	if(windows.size() > 0){
-		FString compareWindows = FString::Printf(
-			TEXT("windows %d, filtered %d"), 
-			(int)windows.size(), 
-			(int)windowsFiltered.size()
-		);
-		DebugHelper::logMessage(compareWindows);
-
-	}
+	
 	
 
-
+	//sortVectorsBetween(from, to, windowsFiltered);
 	//merge windows into doors to create gaps consistency
 	for (int i = 0; i < windowsFiltered.size(); i++){
 		doorsFiltered.push_back(windowsFiltered[i]);
 	}
+	//sortVectorsBetween(from, to, doorsFiltered);
 
 
 	// create gaps for wall
-	FVector direction_to = (to - from).GetSafeNormal();
+	FVector direction_to = (to - from).GetSafeNormal() * doorWidthCm;
 	direction_to.Z = 0;
-	direction_to *= doorWidthCm;
 
 	//iterate over filtered doors, make them "2" anchored
 	//when the wall will be created, each second pair will be filled
 	for (int i = 0; i < doorsFiltered.size(); i++){
 		FVector &current = doorsFiltered[i];
-		FVector A = current - direction_to;
+		FVector A = current;
 		FVector B = current + direction_to;
 		oneDimWall.push_back(A);
 		oneDimWall.push_back(B);
 	}
 	//last part added here, wall "complete", lower ceiling 
-	oneDimWall.push_back(to);
+	oneDimWall.push_back(to); //FINAL POSITION
+	sortVectorsBetween(from, to, oneDimWall);
 
-	//COPY WINDOW POSITIONS
-	for (int i = 0; i < windowsFiltered.size(); i++){
-		FVector &current = windowsFiltered[i];
-		FVector A = current - direction_to;
-		FVector B = current + direction_to;
-		oneDimWindows.push_back(A);
-		oneDimWindows.push_back(B);
-	}
+	
 
-
-	FVector toTop(0, 0, std::abs(scaleZCm));
-
+	FVector toTop(0, 0, std::abs(scaleZCm)); //direction to top
 	//CREATE WALL WITH GAPS
 	std::vector<TTouple<FVector, FVector>> twoDimWall;
 	for (int i = 0; i < oneDimWall.size(); i++){
@@ -192,21 +192,15 @@ MeshData AroomProcedural::createWall(
 
 		TTouple<FVector, FVector> touple(bottom, top);
 		twoDimWall.push_back(touple);
+
+		/*
+		DebugHelper::showLineBetween(
+			GetWorld(),
+			bottom + locationOffset,
+			top + locationOffset,
+			FColor::Red);
+		*/
 	}
-
-	//PREPARE WINDOWS FOR WINDOW CREATION
-	std::vector<TTouple<FVector, FVector>> twoDimWindows;
-	for (int i = 0; i < oneDimWindows.size(); i++){
-		FVector bottom = oneDimWindows[i];
-		FVector top = bottom + toTop;
-
-		TTouple<FVector, FVector> touple(bottom, top);
-		twoDimWindows.push_back(touple);
-	}
-
-
-
-
 
 	MeshData output;
 	
@@ -220,9 +214,70 @@ MeshData AroomProcedural::createWall(
 		FVector c = second.last(); //top1
 		FVector d = second.first(); //bottom1
 
+		//draw wall
+		DebugHelper::showLineBetween(
+			GetWorld(),
+			a + locationOffset,
+			c + locationOffset,
+			FColor::Green
+		);
+		DebugHelper::showLineBetween(
+			GetWorld(),
+			b + locationOffset,
+			d + locationOffset,
+			FColor::Green
+		);
+
+		//draw door?
+		if(i + 1 < twoDimWall.size()){
+			TTouple<FVector, FVector> &next = twoDimWall[i + 1];
+			FVector e = next.first(); //bottom
+			FVector f = next.last(); //top
+			DebugHelper::showLineBetween(
+				GetWorld(),
+				c + locationOffset,
+				d + locationOffset,
+				FColor::Yellow
+			);
+			DebugHelper::showLineBetween(
+				GetWorld(),
+				e + locationOffset,
+				f + locationOffset,
+				FColor::Yellow
+			);
+
+		}
+
 		createTwoSidedQuad(a, b, c, d, output);
 	}
 
+
+
+
+
+
+
+
+
+
+	//COPY WINDOW POSITIONS
+	for (int i = 0; i < windowsFiltered.size(); i++){
+		FVector &current = windowsFiltered[i];
+		FVector A = current;
+		FVector B = current + direction_to;
+		oneDimWindows.push_back(A);
+		oneDimWindows.push_back(B);
+	}
+
+	//PREPARE WINDOWS FOR WINDOW CREATION
+	std::vector<TTouple<FVector, FVector>> twoDimWindows;
+	for (int i = 0; i < oneDimWindows.size(); i++){
+		FVector bottom = oneDimWindows[i];
+		FVector top = bottom + toTop;
+
+		TTouple<FVector, FVector> touple(bottom, top);
+		twoDimWindows.push_back(touple);
+	}
 
 	//spawn windows seperately
 	spawnWindowMeshFromBounds(
@@ -274,7 +329,8 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 				newActor->SetActorLocation(fromOffset);
 
 				FVector zeroVec(0, 0, 0);
-				DebugHelper::showLineBetween(GetWorld(), zeroVec, fromOffset, FColor::Red);
+				fromOffset += FVector(0, 0, 10);
+				//DebugHelper::showLineBetween(GetWorld(), zeroVec, fromOffset, FColor::Red);
 
 				// create mesh
 				newActor->createTwoSidedQuad(
@@ -308,6 +364,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 void AroomProcedural::filterForVectorsBetween(
 	FVector &A,
 	FVector &B,
+	int minDistance,
 	std::vector<FVector> &positionsToFilter,
 	std::vector<FVector> &output
 ){
@@ -315,7 +372,8 @@ void AroomProcedural::filterForVectorsBetween(
 	FVector AB = (B - A).GetSafeNormal();
 	FVector BA = (A - B).GetSafeNormal();
 
-	int minDistance = 150;
+	minDistance = std::abs(minDistance);
+	//minDistance *= 0.9f;
 
 	//todo: hinzufügen wenn AB distanz < min distanz, wie man dann mit türen und fenstern umgeht!
 
@@ -329,38 +387,92 @@ void AroomProcedural::filterForVectorsBetween(
 		
 		if(dot >= 0.99f){
 
-			DebugHelper::logMessage(TEXT("DEBUG_VECTOR paralell?"), AB, AC);
+			//DebugHelper::logMessage(TEXT("DEBUG_VECTOR paralell?"), AB, AC);
 
 			//also needs to have an min distance from corners of half window / door width
 			FVector BC = (current - B);
 			if(
-				FVector::Dist(zeroVec, AC) >= minDistance &&  //distance for safety not create weird windows at corners
-				FVector::Dist(zeroVec, BC) >= minDistance
+				lenghtOf(AC) >= minDistance &&  //distance for safety not create weird windows at corners
+				lenghtOf(BC) >= minDistance
 			){
 				output.push_back(current);
 			}
-
-			//output.push_back(current);
 		}
+	}
 
 
-		//OBWOHL MATHE MATISCH KORREKT DENNOCH FEHLER ANFÄLLIG!
+	
+}
 
-		//es reicht auch aus beide skalar produkte zu nehmen, wenn eins negativ (anti paralell) ist
-		//dann overshootet die position
-		//man braucht AB und BA jeweils um die richtung zu ändern
-		/*
-		//reverse dot product, must be near -1 for paralell in reverse dir
-		float dotReversed = BA.X * ACdir.X + BA.Y * ACdir.Y;
-		if(
-			dot >= 0.99f &&
-			dotReversed <= -0.99f //<= more towards -1
-		){
-			output.push_back(current);
+float AroomProcedural::lenghtOf(FVector &vec){
+	FVector zeroVec(0, 0, 0);
+	return std::abs(FVector::Dist(zeroVec, vec));
+}
+
+
+void AroomProcedural::sortVectorsBetween(FVector &A, FVector &B, std::vector<FVector> &output){
+	FVector AB = B - A;
+
+	bool vectorIsXDirection = AB.X != 0; //ansonsten Z
+	bool isNegativeToPositive = true;
+	if(vectorIsXDirection){
+		isNegativeToPositive = AB.X > 0; //from 0 to 8 for example direction
+	}else{
+		isNegativeToPositive = AB.Y > 0; //from 0 to 8 for example direction
+	}
+
+	//sortieren
+	/*
+	std::sort(
+		output.begin(), output.end(),
+		[vectorIsXDirection, isNegativeToPositive]
+		(const FVector &a, const FVector &b) {
+		if(vectorIsXDirection){
+			if(isNegativeToPositive){
+				return a.X < b.X;
+			}else{
+				return a.X > b.X;
+			}
+		}else{
+			if(isNegativeToPositive){
+				return a.Y < b.Y;
+			}else{
+				return a.Y > b.Y;
+			}
 		}
-		*/
+	});
+	*/
+
+	std::sort(
+		output.begin(), output.end(),
+		[vectorIsXDirection, isNegativeToPositive]
+		(const FVector &a, const FVector &b) {
+		if(vectorIsXDirection){
+			return a.X < b.X;
+		}else{
+			return a.Y < b.Y;
+		}
+	});
+
+	//debug print sorted vector
+	DebugHelper::logMessage("debug vector sorted: ");
+	for (int i = 0; i < output.size(); i++)
+	{
+		int number = vectorIsXDirection ? output.at(i).X : output.at(i).Y;
+		FString s = FString::Printf(TEXT("debug vector sorted %d"), number);
+		DebugHelper::logMessage(s); // sieht gut aus
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -369,8 +481,6 @@ void AroomProcedural::filterForVectorsBetween(
 /**
  * static method section
  */
-
-
 
 AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
 	if(world == nullptr){
@@ -389,7 +499,7 @@ AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
 
 
 
-void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<roomBounds> &vec){
+void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<roomBoundData> &vec){
 	if(world == nullptr){
 		return;
 	}
@@ -399,7 +509,7 @@ void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<ro
 
 	//process all rooms to be created
 	for (int i = 0; i < vec.size(); i++){
-		roomBounds &currentRoom = vec.at(i);
+		roomBoundData &currentRoom = vec.at(i);
 		//create proper offset in xpos and ypos as needed
 
 		FVector additionOffset(currentRoom.xpos() * 100, currentRoom.ypos() * 100, 0);
@@ -411,8 +521,8 @@ void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<ro
 
 			newRoom->createRoom(
 				fullOffset,
-				currentRoom.xscale(),
-				currentRoom.yscale(),
+				currentRoom.xScale(),
+				currentRoom.yScale(),
 				heightZDefault,
 				doorPositionsRelativeInMeters,
 				doorAndWindowWidth, 

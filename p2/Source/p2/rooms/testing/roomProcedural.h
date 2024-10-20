@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/meshgen/customMeshActor.h"
 #include "GameFramework/Actor.h"
+#include "p2/rooms/testing/roomBoundData.h"
 #include "roomProcedural.generated.h"
 
 UCLASS()
@@ -35,7 +36,7 @@ public:
 	);
 
 	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
-	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBounds> &vec);
+	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBoundData> &vec);
 
 private:
 	MeshData createWall(
@@ -51,11 +52,14 @@ private:
 	void filterForVectorsBetween(
 		FVector &A,
 		FVector &B,
+		int minDistance,
 		std::vector<FVector> &positionsToFilter,
 		std::vector<FVector> &output
 	);
 
-	
+	void sortVectorsBetween(FVector &a, FVector &b, std::vector<FVector> &vec);
+
+	float lenghtOf(FVector &vec);
 
 	void spawnWindowMeshFromBounds(
 		std::vector<TTouple<FVector, FVector>> &windowTouples,

@@ -91,5 +91,5 @@ class P2_API roomBounds{
 		int xMax();
 		int yMax();
 		void finishConnection(roomBounds *other, FVector doorPos);
-	
+		bool vecContains(FVector &pos, std::vector<FVector> &vec);
 };
