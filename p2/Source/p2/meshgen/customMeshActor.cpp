@@ -256,8 +256,20 @@ void AcustomMeshActor::process2DMap(
 
     materialtypeSet = materialEnum::grassMaterial; //might be changed later, left off for particles..
 
-    updateMesh(output_layer0, triangles_layer0, true, 0); //layer 0 grass
-    updateMesh(output_layer1, triangles_layer1, true, 1); //layer 1 stone
+    MeshData grassLayer(
+        MoveTemp(output_layer0),
+        MoveTemp(triangles_layer0)
+    );
+    updateMesh(grassLayer, true, 0);
+
+    MeshData stoneLayer(
+        MoveTemp(output_layer0),
+        MoveTemp(triangles_layer0)
+    );
+    updateMesh(stoneLayer, true, 1);
+
+    //updateMesh(output_layer0, triangles_layer0, true, 0); //layer 0 grass
+    //updateMesh(output_layer1, triangles_layer1, true, 1); //layer 1 stone
 
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -357,7 +369,16 @@ void AcustomMeshActor::updateMesh(
     TArray<int32> &newtriangles,
     bool createNormals //makes the texture appear flat if not enabled
 ){
-    updateMesh(newvertecies, newtriangles, createNormals, 0);
+    //MeshData meshData;
+    //meshData.setVertecies(MoveTemp(newvertecies));
+    //meshData.setTriangles(MoveTemp(newtriangles));
+    MeshData meshData(
+        MoveTemp(newvertecies),
+        MoveTemp(newtriangles)
+    );
+
+    updateMesh(meshData, createNormals, 0);
+    //updateMesh(newvertecies, newtriangles, createNormals, 0);
 }
 
 
@@ -555,6 +576,33 @@ void AcustomMeshActor::createCube(
     UMaterial *material
 ){
 
+    MeshData meshDataOutput;
+    createQuad(a, d, c, b, meshDataOutput);
+    createQuad(a1, b1, c1, d1, meshDataOutput);
+
+    //sides
+    //must be reverse winding order (ccl)
+    //instead of 0123 -> 3210 to be flipped correctly!
+    createQuad(b, b1, a1, a, meshDataOutput); //correct, must be reverse winding order (ccl)
+    createQuad(c, c1, b1, b, meshDataOutput); 
+    createQuad(d, d1, c1, c, meshDataOutput);
+    createQuad(a, a1, d1, d, meshDataOutput);
+    
+
+    //AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int layer)
+    updateMesh(meshDataOutput, false, 0);
+    if(material != nullptr){
+        ApplyMaterial(Mesh, material);
+    }else{
+        //find wall material if none was provided / nullptr
+        if(assetManager *e = assetManager::instance()){
+            ApplyMaterial(Mesh, e->findMaterial(materialEnum::wallMaterial));
+        }
+    }
+
+
+
+    /*
     TArray<FVector> output;
     TArray<int32> newtriangles;
     TArray<FVector> newNormals;
@@ -583,8 +631,80 @@ void AcustomMeshActor::createCube(
         if(assetManager *e = assetManager::instance()){
             ApplyMaterial(Mesh, e->findMaterial(materialEnum::wallMaterial));
         }
-    }
+    }*/
 }
+
+
+
+
+/// @brief creates a cube mesh from  vertecies, a extend direction and extend length
+/// the mesh data will  be written into the pass by ref output object
+/// @param a 
+/// @param b 
+/// @param c 
+/// @param d 
+/// @param a1 
+/// @param b1 
+/// @param c1 
+/// @param d1 
+/// @param meshDataOutput 
+void AcustomMeshActor::createCube(
+    FVector &a, 
+    FVector &b,
+    FVector &c,
+    FVector &d,
+    FVector &a1, 
+    FVector &b1,
+    FVector &c1,
+    FVector &d1,
+    MeshData &meshDataOutput
+){
+    createQuad(a, d, c, b, meshDataOutput);
+    createQuad(a1, b1, c1, d1, meshDataOutput);
+
+    //sides
+    //must be reverse winding order (ccl)
+    //instead of 0123 -> 3210 to be flipped correctly!
+    createQuad(b, b1, a1, a, meshDataOutput); //correct, must be reverse winding order (ccl)
+    createQuad(c, c1, b1, b, meshDataOutput); 
+    createQuad(d, d1, c1, c, meshDataOutput);
+    createQuad(a, a1, d1, d, meshDataOutput);
+}
+
+
+/// @brief creates a cube mesh from  vertecies, a extend direction and extend length
+/// the mesh data will  be written into the pass by ref output object
+/// @param a 
+/// @param b 
+/// @param c 
+/// @param d 
+/// @param dir direction of extend
+/// @param cmheight cm extend to have
+/// @param outputMeshData mesh data to write to
+void AcustomMeshActor::createCube(
+	FVector &a,
+	FVector &b,
+	FVector &c,
+	FVector &d,
+	FVector &dir,
+	int cmheight,
+	MeshData &outputMeshData
+){
+    dir = dir.GetSafeNormal() * cmheight;
+    FVector a1 = a + dir;
+    FVector b1 = b + dir;
+    FVector c1 = c + dir;
+    FVector d1 = d + dir;
+    createCube(a, b, c, d, a1, b1, c1, d1, outputMeshData);
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -624,7 +744,9 @@ void AcustomMeshActor::createTwoSidedQuad(
         createTwoSidedQuad(a, b, c, d, meshDataOut);
 
         updateMesh(meshDataOut, calculateNormals, 0);
-        ApplyMaterial(Mesh, material);
+        ApplyMaterial(Mesh, material, 0);
+
+        DebugHelper::logMessage("material was not null!");
     }
 }
 
@@ -757,7 +879,8 @@ void AcustomMeshActor::ApplyMaterial(
 	if (ProceduralMeshComponent != nullptr && Material != nullptr) {
 		// Apply the material to the first material slot (index 0) of the procedural mesh
 		ProceduralMeshComponent->SetMaterial(layer, Material);
-	}
+
+    }
 }
 
 

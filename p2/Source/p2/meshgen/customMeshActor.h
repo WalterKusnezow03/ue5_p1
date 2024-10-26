@@ -87,11 +87,33 @@ public:
 		FVector &b,
 		FVector &c,
 		FVector &d,
+		FVector &dir,
+		int cmheight,
+		MeshData &outputMeshData
+	);
+
+	void createCube(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
 		FVector &a1,
 		FVector &b1,
 		FVector &c1,
 		FVector &d1,
 		UMaterial *material
+	);
+
+	void createCube(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		FVector &a1,
+		FVector &b1,
+		FVector &c1,
+		FVector &d1,
+		MeshData &meshDataOutput
 	);
 
 	void createTwoSidedQuad(

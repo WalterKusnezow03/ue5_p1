@@ -26,7 +26,15 @@ void AroomProcedural::Tick(float DeltaTime)
 }
 
 
-
+/// @brief creates the room and mesh and applies it
+/// @param location location to spawn at (Bottom left corner of bounds)
+/// @param scaleMetersX meters on x
+/// @param scaleMetersY meters on y
+/// @param scaleMetersZ meters height
+/// @param doorPositions door positions 
+/// @param doorWidthCm door width (should be ideally 1m as the layout, will be scaled up)
+/// @param windowPositions relative positions to have windows at
+/// @param windowWidthCm window width: should be just as room layout, 1m (100cm)
 void AroomProcedural::createRoom(
 	FVector &location, //bottom left corner
 	int scaleMetersX, 
@@ -71,6 +79,8 @@ void AroomProcedural::createRoom(
 		DebugHelper::showLineBetween(GetWorld(), transformed, upV, FColor::Green);
 	}
 
+	FVector centerOfRoom = FVectorUtil::calculateCenter(bl, tl, tr, br);
+	//(bl + tl + tr + br) / 4;
 
 	for (int i = 1; i < corners.size(); i++)
 	{
@@ -83,7 +93,8 @@ void AroomProcedural::createRoom(
 			windowPositions, 
 			doorWidthCm, 
 			zCm,
-			location
+			location,
+			centerOfRoom
 		);
 		walls.append(tmp);
 	}
@@ -117,7 +128,8 @@ MeshData AroomProcedural::createWall(
 	std::vector<FVector> &windows, //windows in cm local
 	int doorWidthCm,
 	int scaleZCm,
-	FVector &locationOffset
+	FVector &locationOffset,
+	FVector &centerOfRoom
 ){
 	//sort vectors for consistent door placement, otherwise overlap issues occur
 	//very important!
@@ -156,24 +168,32 @@ MeshData AroomProcedural::createWall(
 	
 	
 
-	//sortVectorsBetween(from, to, windowsFiltered);
-	//merge windows into doors to create gaps consistency
-	for (int i = 0; i < windowsFiltered.size(); i++){
-		doorsFiltered.push_back(windowsFiltered[i]);
-	}
-	//sortVectorsBetween(from, to, doorsFiltered);
-
-
+	
 	// create gaps for wall
 	FVector direction_to = (to - from).GetSafeNormal() * doorWidthCm;
 	direction_to.Z = 0;
 
-	//iterate over filtered doors, make them "2" anchored
-	//when the wall will be created, each second pair will be filled
-	for (int i = 0; i < doorsFiltered.size(); i++){
-		FVector &current = doorsFiltered[i];
+	//
+	for (int i = 0; i < windowsFiltered.size(); i++){
+		//doorsFiltered.push_back(windowsFiltered[i]);
+		FVector &current = windowsFiltered[i];
 		FVector A = current;
 		FVector B = current + direction_to;
+		oneDimWall.push_back(A);
+		oneDimWall.push_back(B);
+	}
+	//sortVectorsBetween(from, to, doorsFiltered);
+
+
+
+	//iterate over filtered doors, make them "2" anchored
+	//when the wall will be created, each second pair will be filled
+	int doorWidthIncrease = 2;
+	for (int i = 0; i < doorsFiltered.size(); i++)
+	{
+		FVector &current = doorsFiltered[i];
+		FVector A = current;
+		FVector B = current + direction_to * doorWidthIncrease; //türen breiter machen
 		oneDimWall.push_back(A);
 		oneDimWall.push_back(B);
 	}
@@ -228,7 +248,7 @@ MeshData AroomProcedural::createWall(
 			FColor::Green
 		);
 
-		//draw door?
+		//debug draw door
 		if(i + 1 < twoDimWall.size()){
 			TTouple<FVector, FVector> &next = twoDimWall[i + 1];
 			FVector e = next.first(); //bottom
@@ -248,18 +268,45 @@ MeshData AroomProcedural::createWall(
 
 		}
 
-		createTwoSidedQuad(a, b, c, d, output);
+
+		//flat wall for now
+		//createTwoSidedQuad(a, b, c, d, output);
+
+		//new extruded wall	
+		//testdir
+		FVector sideDir = (d - a); //AB = B - A
+
+		//um einen vektor um 90 grad zu drehen, einen comp negieren,
+		//und x und y vertauschen
+		FVector orthogonalDir(
+			sideDir.Y * -1,
+			sideDir.X,
+			sideDir.Z
+		);
+
+		//nach innen drehen
+		FVector aToCenter = centerOfRoom - a; //AB = B - A
+		float dotProduct = (orthogonalDir.X * aToCenter.X) * (orthogonalDir.Y * aToCenter.Y);
+		if(dotProduct < 0){ //orthogonal zeigt weg von raum, drehen nach innen
+			orthogonalDir *= -1;
+		}
+
+		int widthCm = 20;
+		createCube(
+			a,
+			b,
+			c,
+			d,
+			orthogonalDir,
+			widthCm,
+			output
+		);
+
 	}
 
 
-
-
-
-
-
-
-
-
+	// --- CREATE WINDOWS ---
+	
 	//COPY WINDOW POSITIONS
 	for (int i = 0; i < windowsFiltered.size(); i++){
 		FVector &current = windowsFiltered[i];
@@ -316,7 +363,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 				FVector d = second.first(); //bottom1
 				//newActor->SetActorLocation(offset);
 				
-				//fix offset for mesh, move center to window, move local coors to "0,0,0"
+				//fix offset for mesh, move pivot to bottom center of window, move local coors to "0,0,0"
 
 				FVector center = (d + a) / 2;
 				FVector fromOffset = offset + center;
@@ -326,7 +373,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 				c -= center;
 				d -= center;
 				
-				newActor->SetActorLocation(fromOffset);
+				newActor->SetActorLocation(fromOffset); //apply offset
 
 				FVector zeroVec(0, 0, 0);
 				fromOffset += FVector(0, 0, 10);
@@ -373,10 +420,12 @@ void AroomProcedural::filterForVectorsBetween(
 	FVector BA = (A - B).GetSafeNormal();
 
 	minDistance = std::abs(minDistance);
+
+	float distanceBetweenAB = FVector::Dist(A, B);
+
 	//minDistance *= 0.9f;
 
-	//todo: hinzufügen wenn AB distanz < min distanz, wie man dann mit türen und fenstern umgeht!
-
+	
 	for (int i = 0; i < positionsToFilter.size(); i++){
 		FVector &current = positionsToFilter[i];
 		FVector AC = (current - A); //for distance
@@ -387,16 +436,19 @@ void AroomProcedural::filterForVectorsBetween(
 		
 		if(dot >= 0.99f){
 
-			//DebugHelper::logMessage(TEXT("DEBUG_VECTOR paralell?"), AB, AC);
-
-			//also needs to have an min distance from corners of half window / door width
 			FVector BC = (current - B);
+			float distanceToStartPoint = lenghtOf(AC);
+			float distanceToEndPoint = lenghtOf(BC);
+
 			if(
-				lenghtOf(AC) >= minDistance &&  //distance for safety not create weird windows at corners
-				lenghtOf(BC) >= minDistance
+				distanceToStartPoint >= minDistance && //distanze minimal
+				distanceToEndPoint >= minDistance &&
+				distanceToStartPoint < distanceBetweenAB && //distanz kleiner als maximal sodass innen
+				distanceToEndPoint < distanceBetweenAB
 			){
 				output.push_back(current);
 			}
+
 		}
 	}
 
@@ -482,23 +534,10 @@ void AroomProcedural::sortVectorsBetween(FVector &A, FVector &B, std::vector<FVe
  * static method section
  */
 
-AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
-	if(world == nullptr){
-		return nullptr;
-	}
-
-	FActorSpawnParameters params;
-	AroomProcedural *spawned = world->SpawnActor<AroomProcedural>(
-		AroomProcedural::StaticClass(),
-		location,
-		FRotator::ZeroRotator,
-		params
-	);
-	return spawned;
-}
-
-
-
+/// @brief spawns a vector of roomBound data into the world
+/// @param world world to spawn in
+/// @param location location to spawn at
+/// @param vec vector of rooms
 void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<roomBoundData> &vec){
 	if(world == nullptr){
 		return;
@@ -533,4 +572,23 @@ void AroomProcedural::spawnRooms(UWorld* world, FVector location, std::vector<ro
 
 	}
 }
+
+
+AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
+	if(world == nullptr){
+		return nullptr;
+	}
+
+	FActorSpawnParameters params;
+	AroomProcedural *spawned = world->SpawnActor<AroomProcedural>(
+		AroomProcedural::StaticClass(),
+		location,
+		FRotator::ZeroRotator,
+		params
+	);
+	return spawned;
+}
+
+
+
 

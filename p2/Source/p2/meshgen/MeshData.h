@@ -14,8 +14,9 @@ public:
 	MeshData();
 	~MeshData();
 
+	MeshData(TArray<FVector> &&verteciesIn, TArray<int> &&trianglesIn);
 	MeshData(const MeshData &other);
-	MeshData& operator=(const MeshData & other);
+	MeshData &operator=(const MeshData &other);
 
 	void append(MeshData &other);
 

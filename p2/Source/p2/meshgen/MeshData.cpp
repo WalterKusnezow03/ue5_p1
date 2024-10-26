@@ -7,6 +7,11 @@ MeshData::MeshData()
 {
 }
 
+MeshData::MeshData(TArray<FVector> &&verteciesIn, TArray<int> &&trianglesIn){
+    setVertecies(MoveTemp(verteciesIn));
+    setTriangles(MoveTemp(trianglesIn));
+}
+
 MeshData::~MeshData()
 {
     clearMesh();
@@ -24,6 +29,8 @@ MeshData::MeshData(const MeshData &other){
 /// @return 
 MeshData& MeshData::operator=(const MeshData &other){
     if(&other != this){
+        clearMesh(); //clear mesh data before adding any data!
+
         for (int i = 0; i < other.vertecies.Num(); i++){
             vertecies.Add(other.vertecies[i]);
         }

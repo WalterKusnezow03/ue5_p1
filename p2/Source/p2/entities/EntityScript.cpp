@@ -346,7 +346,12 @@ bool AEntityScript::reachedPosition(FVector pos){
 	if (dist < epsilonDistance){
 		return true;
 	}
-	return false;
+	//2D distance
+	s.Z = 0;
+	pos.Z = 0;
+	return FVector::Dist(s, pos) < epsilonDistance;
+
+	//return false;
 }
 
 
