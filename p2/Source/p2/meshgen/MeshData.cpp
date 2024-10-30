@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "p2/meshgen/meshDataContainer/Quad.h"
 #include "p2/meshgen/MeshData.h"
 
 MeshData::MeshData()
@@ -90,23 +90,47 @@ void MeshData::setTriangles(TArray<int32> &&trianglesIn){
     triangles = MoveTemp(trianglesIn);
 }
 
-//join another mesh, vertecies add, triangles added with offset added to index
+
+
+///join another mesh, vertecies add, triangles added with offset added to index
 void MeshData::append(MeshData &other){
+    TArray<FVector> &verteciesRef = other.getVerteciesRef();
+    TArray<int32> &trianglesRef = other.getTrianglesRef();
+    join(verteciesRef, trianglesRef);
+}
+
+/// join another quad to mesh, vertecies add, triangles added with offset added to index
+void MeshData::append(Quad &&other){
+    quads.push_back(MoveTemp(other));
+
+    Quad &otherRef = quads[quads.size() - 1];
+
+    TArray<FVector> &verteciesRef = otherRef.readVertecies();
+    TArray<int32> &trianglesRef = otherRef.readTriangles();
+    join(verteciesRef, trianglesRef);
+}
+
+
+
+void MeshData::join(TArray<FVector> &verteciesRef, TArray<int32> &trianglesRef){
     int triangleOffset = triangles.Num();
 
     //copy triangles, apply offset
-    for (int i = 0; i < other.triangles.Num(); i++){
-        int32 copy = other.triangles[i];
+    for (int i = 0; i < trianglesRef.Num(); i++){
+        int32 copy = trianglesRef[i];
         copy += triangleOffset;
         triangles.Add(copy);
     }
 
     //copy vertecies
-    for(int i = 0; i < other.vertecies.Num(); i++){
-        FVector &ref = other.vertecies[i];
+    for(int i = 0; i < verteciesRef.Num(); i++){
+        FVector &ref = verteciesRef[i];
         vertecies.Add(ref);
     }
 }
+
+
+
 
 
 
@@ -141,3 +165,82 @@ TArray<FProcMeshTangent> &MeshData::getTangentsRef(){
 TArray<FColor> &MeshData::getVertexColorsRef(){
     return VertexColors;
 }
+
+
+
+
+
+void MeshData::rebuildMeshDataFromQuads(){
+    clearMesh();
+    for (int i = 0; i < quads.size(); i++){
+        Quad &currentQuad = quads[i];
+        TArray<FVector> &verteciesRef = currentQuad.readVertecies();
+        TArray<int32> &trianglesRef = currentQuad.readTriangles();
+        join(verteciesRef, trianglesRef);
+    }
+}
+
+
+/// @brief will process the hit if needed, and return if the mesh needs to be reloaded
+/// @param localHitpoint 
+/// @param direction 
+/// @return 
+bool MeshData::processHit(FVector &localHitpoint, FVector &direction){
+    std::vector<int> closestQuadsIndices;
+    findClosestQuadsTo(localHitpoint, closestQuadsIndices);
+
+    if(closestQuadsIndices.size() > 0){
+
+        for (int i = 0; i < closestQuadsIndices.size(); i++){
+
+            int index = closestQuadsIndices[i];
+            if(index >= 0 && index < quads.size()){
+                Quad &currentQuad = quads[index];
+                bool withinQuad = currentQuad.isWithinQuad(localHitpoint);
+                if(withinQuad){
+                    //todo:
+                    //erase from quads
+
+                    //create new split up mesh
+
+                    //return true
+                    return true;
+                }
+            }
+
+        }
+    }
+    return false;
+}
+
+/// @brief finds closest Quads to a local hitpoint, really important that it is a local one!
+/// WARNING: DO NOT USE THE POINTERS OTHER FOR TEMPORAL USAGE! MIGHT GET INVALID!
+/// @param localHitpoint 
+void MeshData::findClosestQuadsTo(
+    FVector &localHitpoint,
+    std::vector<int> &outputindices 
+){
+    if(quads.size() <= 0){
+        return;
+    }
+
+    
+    Quad *firstQuad = &quads[0];
+    float prevDistance = FVector::Dist(localHitpoint, firstQuad->center());
+    outputindices.push_back(0);
+
+
+    for (int i = 1; i < quads.size(); i++)
+    {
+        Quad &currentQuad = quads[i];
+        float distance = FVector::Dist(currentQuad.center(), localHitpoint);
+        if(distance < prevDistance){
+            distance = prevDistance;
+            outputindices.push_back(i);
+        }
+    }
+
+}
+
+
+

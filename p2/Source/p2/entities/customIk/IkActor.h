@@ -42,7 +42,7 @@ private:
 
 	void updateBone(BoneIk &bone, float deltaTime, FColor color);
 
-	FVector offset;
+	FVector offset; //global offset
 	MMatrix ownLocation;
 	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
 

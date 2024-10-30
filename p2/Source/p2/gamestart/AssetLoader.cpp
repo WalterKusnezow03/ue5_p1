@@ -240,54 +240,14 @@ void AssetLoader::loadRooms(EntityManager *entityManager){
         return;
     }
 
-    //load rooms
-    FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/"));
-    FString bpNamePart = FString::Printf(TEXT("room"));
-    for (int i = 1; i <= 9; i++){
-        FString bpNamePart2 = FString::Printf(TEXT("%d"), i);
-        FString connected = bpNamePart + bpNamePart2;
-        FString finalPath = buildPath(path, connected);
-
-        
-        //entityManager->setRoomuClassBp(world, loadUClassBluePrint(finalPath));
-
-        if(RoomManager *r = worldLevel::roomManager()){
-            r->add(world, loadUClassBluePrint(finalPath));
-        }
-    }
-    
-
     //load door
-    path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/doors/"));
+    FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/doors/"));
     FString _door = FString::Printf(TEXT("doorBp"));
     FString _num = FString::Printf(TEXT("%d"), 1);
     FString _connect = _door + _num;
     FString _builded = buildPath(path, _connect);
     if(assetManager *a = assetManager::instance()){
         a->addBp(roomAssetEnum::doorEnum, loadUClassBluePrint(_builded));
-    }
-
-    
-
-    //load wall
-    path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/walls2/"));
-    FString _wall = FString::Printf(TEXT("basicWallBp"));
-    _builded = buildPath(path, _wall);
-    if(assetManager *a = assetManager::instance()){
-        a->addBp(roomAssetEnum::wallEnum, loadUClassBluePrint(_builded));
-    }
-
-
-
-
-    //load windows
-    path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/windows/"));
-    FString window = FString::Printf(TEXT("windowBp"));
-    _num = FString::Printf(TEXT("%d"), 1);
-    _connect = window + _num;
-    _builded = buildPath(path, _connect);
-    if(assetManager *a = assetManager::instance()){
-        a->addBp(roomAssetEnum::windowEnum, loadUClassBluePrint(_builded));
     }
     
 }

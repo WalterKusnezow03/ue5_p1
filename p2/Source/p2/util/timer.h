@@ -11,21 +11,17 @@ class P2_API timer
 {
 public:
 	timer();
+	timer(float time, bool resetsItselfIn);
 	~timer();
 
-	/// @brief decrement the time
-	/// @param deltaTime 
-	void Tick(float deltaTime);
-
-	/// @brief timer is running or not
-	/// @return timer <= 0
-	bool timesUp();
-
 	void Begin(float time);
+	void Begin(float time, bool resetsItselfIn);
+	void Tick(float deltaTime);
+	bool timesUp();
+	
 
 private:
+	float initialTime;
 	float timeLeft;
-
-
-
+	bool resetsItself = false;
 };

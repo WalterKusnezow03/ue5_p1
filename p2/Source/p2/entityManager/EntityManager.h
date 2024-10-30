@@ -12,8 +12,6 @@
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/particleSystem/particle.h"
-#include "p2/rooms/room.h"
-#include "p2/rooms/RoomManager.h"
 #include "p2/entityManager/EntityManagerGenericMap.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/rooms/roomtypeEnum.h"

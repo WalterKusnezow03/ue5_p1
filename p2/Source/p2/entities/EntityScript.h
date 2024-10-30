@@ -7,6 +7,7 @@
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/player/playerScript.h"
 #include "p2/player/teamEnum.h"
+#include "p2/util/timer.h"
 
 #include "EntityScript.generated.h"
 
@@ -40,6 +41,18 @@ public:
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 
+	virtual bool isWithinMaxRange(FVector vec);
+
+	//must be public
+	void enableActiveStatus(bool enable);
+	//activate methods for manager end
+
+	virtual void despawn();
+
+	void alert();
+	void alert(FVector lookat);
+	void alarm(); //sets spotting status to true
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,6 +62,7 @@ protected:
 
 	// performs the raycast to a target
 	bool performRaycast(AActor *target);
+	bool performRaycast(FVector &direction, FVector &output, int cmLength);
 
 	//raycast ignore params (setup on begin)
 	FCollisionQueryParams ignoreParams;
@@ -97,11 +111,7 @@ protected:
 
 	void showScreenMessage(FString s);
 
-public:
-	virtual bool isWithinMaxRange(FVector vec);
 
-	//activate methods for manager
-protected:
 	virtual void die();
 	bool activated;
 	
@@ -110,14 +120,8 @@ protected:
 	class AskelletonController *skelletonControllerPointer = nullptr;
 
 
-public:
-	//must be public
-	void enableActiveStatus(bool enable);
-	//activate methods for manager end
 
-	virtual void despawn();
 
-	void alert();
-	void alert(FVector lookat);
-	void alarm(); //sets spotting status to true
+	//timer for grounding
+	class timer groundProjectionTimer;
 };

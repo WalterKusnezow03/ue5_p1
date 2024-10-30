@@ -18,22 +18,17 @@ public:
 	void build(UWorld *world, FVector &offset, FColor color, float displayTime); //in use
 	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); //must be tested
 
-	//not in use anymore
-	void tickAndBuild(UWorld *world, FVector &offset, float displayTime); //only move
-	void tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime); //move and etha
-	
-
 	//move, etha and leg pitch
 	void tickAndBuild(
 		UWorld *world,
-		FVector &offset, // offset data in world ---> must be changed to an matrix with position.
+		MMatrix &offsetMatrix, // offset data in world
 		float etha,
-		float legPitchThete, 
+		float legPitchThetaRadian,
 		float displayTime,
 		FColor color
 	);
 
-	void tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color); //in use
+	void tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix, FColor color); 
 	float halfTimePhase();
 
 	bool halfIsReached();
@@ -50,13 +45,15 @@ public:
 
 	// etha functions and moving towards targets
 	void setEtha(float etha);
-	void setEthaFromCurrentRotation(float etha);
-	void rotateTowardsLocalTarget(FVector &vec);
 
 	
 	void rotateEndToTarget(FVector &vec, FVector &weight);
 
 private:
+	float angleFromEtha(float etha);
+	float createHipAngle(float angle);
+	float createKneeAngle(float angle);
+
 	//calculating angles
 	float yawAngleTo(FVector &localTarget);
 	float pitchAngleTo(FVector &localTarget);
@@ -81,9 +78,9 @@ private:
 	///@brief will save the total length of the bone for later usuage, dont change, only constructor
 	float totalBoneLengthCopy = 0.0f;
 
-	void getData(std::vector<MMatrix*> &dataout, FVector &outVector);
+	void getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector);
 	
-	void setEtha(float etha, float legPitchThetaRadian); //new testing
+	void setEtha(float etha, float legPitchThetaRadian);
 
 	bool halfReached = false;
 

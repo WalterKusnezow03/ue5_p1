@@ -49,6 +49,12 @@ void AEntityScript::init(){
 	//set team
 	//setTeam(referenceManager::TEAM_NEUTRAL);
 	setTeam(teamEnum::neutralTeam);
+
+
+
+
+	float groundCastTimeIntervallSeconds = 0.1f;
+	groundProjectionTimer.Begin(groundCastTimeIntervallSeconds, true);
 }
 
 // Called every frame
@@ -72,14 +78,28 @@ void AEntityScript::Tick(float DeltaTime)
 		return;
 	}
 
-	//rest of update
+	//timer
+	groundProjectionTimer.Tick(DeltaTime);
+	bool frameReservedForGroundRaycast = groundProjectionTimer.timesUp();
+
+	//vision
 	canSeePlayer = false; //reset
 	bool withinAngle = withinVisionAngle(playerPointer);
 	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
 	//if not spotted yet, check angle, if angle ok, check vision
-	if(withinAngle && withinRange){
+	if(withinAngle && withinRange && !frameReservedForGroundRaycast){
 		canSeePlayer = performRaycast(playerPointer);
+	}
+	//project to ground
+	if(frameReservedForGroundRaycast){
+		FVector hitpoint;
+		FVector direction(0, 0, -1);
+		bool groundHit = performRaycast(direction, hitpoint, 300);
+		if(groundHit){
+			hitpoint.Z += 50;
+			SetActorLocation(hitpoint);
+		}
 	}
 
 	//look at player when spotted and within angle
@@ -236,6 +256,55 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 	
 }
 
+
+
+
+/// @brief performs a raycast in a direction, if hit the output will be saved in output (pass by ref)
+/// @param direction direction to have
+/// @param output output to save hitpoint in
+/// @param cmLength max length in cm
+/// @return hit or not at max distance
+bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLength) //because a reference is expected it must be valid
+{
+	
+	// Define the start and end vectors for the raycast
+	FVector Start = this->GetActorLocation();
+	direction = direction.GetSafeNormal();
+	Start += direction * 100; //50cm
+
+	// Get the camera location and rotation
+	FVector End = Start + direction * cmLength;
+
+	// Perform the raycast
+	FHitResult HitResult;
+
+	if (EntityManager *e = worldLevel::entityManager())
+	{
+		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
+		ignoreParams = e->getIgnoredRaycastParams(getTeam());
+	}
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
+	
+	// If the raycast hit something, log the hit actor's name
+	if (bHit)
+	{
+		output = HitResult.ImpactPoint;
+	}
+
+	return bHit;
+}
+
+
+
+
+
+
+
+
+
+
+
 /**
  * sets the spotting time a given value
  */
@@ -316,6 +385,8 @@ void AEntityScript::followpath(float deltaTime){
 		// Direction vector from current location to target location
 		FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector
 
+
+		//x(t) = pos + velocity * dt + 1/2 (accelrattion * dt)^2
 		//x(t) = x0 + v0t + 1/2 at^2
 		//x(t) = x0 + v * speed * deltaTime 
 		// Move from current location towards target location by stepDistance

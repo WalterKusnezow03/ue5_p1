@@ -1131,11 +1131,10 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             std::vector<std::vector<FVector>> &mapReference = currentChunk->readAndMerge(top, right, topright);
 
             bool treesBlocked = currentChunk->createTrees();
-            currentActor->process2DMap(mapReference, treesBlocked);
+            currentActor->createTerrainFrom2DMap(mapReference, treesBlocked);
             currentActor->setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
 
-            // apply data
-            //currentActor->process2DMap(currentChunk->readMap());
+            
 
             x++;
             //top corner reached, return

@@ -149,10 +149,15 @@ bool AcustomMeshActor::isDestructable(){
     return properMaterial;
 }
 
+
+
+
+
+
 /// @brief process a 2D map of local coordinates
 /// correct position of the chunk must be set before!
 /// @param map 2D vector of LOCAL coordinates!
-void AcustomMeshActor::process2DMap(
+void AcustomMeshActor::createTerrainFrom2DMap(
     std::vector<std::vector<FVector>> &map,
     bool createTrees    
 ){ //nach dem entity manager stirbt die refenz hier!
@@ -161,12 +166,12 @@ void AcustomMeshActor::process2DMap(
    
     
     //grass
-    TArray<FVector> output_layer0;
-    TArray<int32> triangles_layer0;
+    TArray<FVector> output_grass_layer;
+    TArray<int32> triangles_grass_layer;
 
     //stone
-    TArray<FVector> output_layer1;
-    TArray<int32> triangles_layer1;
+    TArray<FVector> output_stone_layer;
+    TArray<int32> triangles_stone_layer;
 
     TArray<FVectorTouple> touples; //first arg: center, second: normal
 
@@ -199,11 +204,11 @@ void AcustomMeshActor::process2DMap(
                     FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo); //direction obviously
                     if(FVectorUtil::directionIsVertical(normal)){
                         //add to standard output, if direction of normal is vertical, the pane is flat
-                        buildQuad(vzero, vone, vtwo, vthree, output_layer0, triangles_layer0);
+                        buildQuad(vzero, vone, vtwo, vthree, output_grass_layer, triangles_grass_layer);
                     }else{
                         //otherwise the quad should be added to the second
                         //triangle / vertecy array for stone material, more vertical
-                        buildQuad(vzero, vone, vtwo, vthree, output_layer1, triangles_layer1);
+                        buildQuad(vzero, vone, vtwo, vthree, output_stone_layer, triangles_stone_layer);
                     }
 
 
@@ -257,19 +262,17 @@ void AcustomMeshActor::process2DMap(
     materialtypeSet = materialEnum::grassMaterial; //might be changed later, left off for particles..
 
     MeshData grassLayer(
-        MoveTemp(output_layer0),
-        MoveTemp(triangles_layer0)
+        MoveTemp(output_grass_layer),
+        MoveTemp(triangles_grass_layer)
     );
     updateMesh(grassLayer, true, 0);
 
     MeshData stoneLayer(
-        MoveTemp(output_layer0),
-        MoveTemp(triangles_layer0)
+        MoveTemp(output_stone_layer),
+        MoveTemp(triangles_stone_layer)
     );
     updateMesh(stoneLayer, true, 1);
 
-    //updateMesh(output_layer0, triangles_layer0, true, 0); //layer 0 grass
-    //updateMesh(output_layer1, triangles_layer1, true, 1); //layer 1 stone
 
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -364,105 +367,6 @@ void AcustomMeshActor::process2DMapSimple(
 
 
 
-void AcustomMeshActor::updateMesh(
-    TArray<FVector> &newvertecies,
-    TArray<int32> &newtriangles,
-    bool createNormals //makes the texture appear flat if not enabled
-){
-    //MeshData meshData;
-    //meshData.setVertecies(MoveTemp(newvertecies));
-    //meshData.setTriangles(MoveTemp(newtriangles));
-    MeshData meshData(
-        MoveTemp(newvertecies),
-        MoveTemp(newtriangles)
-    );
-
-    updateMesh(meshData, createNormals, 0);
-    //updateMesh(newvertecies, newtriangles, createNormals, 0);
-}
-
-
-
-/// @brief updates the mesh for the actor
-/// @param newvertecies vertecies to set -> OWNER SHIP WILL BE TAKEN
-/// @param newtriangles triangles for the vertecies -> OWNER SHIP WILL BE TAKEN
-/// @param createNormals to create normals or not
-void AcustomMeshActor::updateMesh(
-    TArray<FVector> &newvertecies,
-    TArray<int32> &newtriangles,
-    bool createNormals, //makes the texture appear flat if not enabled
-    int layer
-)
-{
-
-    //find from map
-    MeshData *data;
-    if (meshLayersMap.find(layer) != meshLayersMap.end()){
-        //find meshData from map by reference
-        data = &meshLayersMap[layer]; //hier mit eckigen klammern weil .find ein iterator ist
-    }else{
-        meshLayersMap[layer] = MeshData(); //add
-        data = &meshLayersMap[layer]; //assign the pointer as needed
-    }
-
-    if(data == nullptr){
-        return; //an issue occured return
-    }
-
-    //CLEAR ALL FROM PREVIOUS DATA, EVERYTHING - to prevent any weird issues.
-    data->clearMesh();
-
-    //refresh data 
-    //use MoveTemp to make the r value reference (from left value to right value)
-    data->setVertecies(MoveTemp(newvertecies));
-    data->setTriangles(MoveTemp(newtriangles));
-    if(createNormals){
-        data->calculateNormals(); //calculate the normals to fix flat lighting issue
-    }else{
-        data->clearNormals();
-    }
-
-    // Create the mesh section
-    //int sectionIndex = 0; //auch bei den materials, hier das erste argument, merken
-    if(Mesh != nullptr){
-        /**
-         * example: 
-         * 
-        Mesh->CreateMeshSection(
-            layer, 
-            newvertecies, 
-            this->triangles, 
-            normals, 
-            UV0, 
-            VertexColors, 
-            Tangents, 
-            true
-        );*/
-        Mesh->ClearMeshSection(layer);
-        Mesh->CreateMeshSection(
-            layer, 
-            data->getVerteciesRef(),//newvertecies, 
-            data->getTrianglesRef(),//this->triangles, 
-            data->getNormalsRef(),//normals, 
-            data->getUV0Ref(),//UV0, 
-            data->getVertexColorsRef(),//VertexColors, 
-            data->getTangentsRef(),//Tangents, 
-            true
-        );
-
-        //set for spehere overlap
-        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-        Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-    }
-
-
-    //enable if was disabled!
-    AActorUtil::showActor(*this, true);
-    AActorUtil::enableColliderOnActor(*this, true);
-}
-
-
 
 
 /// @brief updates a mesh layer given on a mesh data object (which will be deep copied)
@@ -485,7 +389,19 @@ void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int la
             data->calculateNormals();
         }
         
-
+        /**
+         * example: 
+         * 
+        Mesh->CreateMeshSection(
+            layer, 
+            newvertecies, 
+            this->triangles, 
+            normals, 
+            UV0, 
+            VertexColors, 
+            Tangents, 
+            true
+        );*/
         Mesh->ClearMeshSection(layer);
         Mesh->CreateMeshSection(
             layer, 
@@ -830,14 +746,15 @@ void AcustomMeshActor::createQuad(
 		FVector &d,
 		MeshData &output
 ){
-    MeshData append;
-    TArray<FVector> verts;
-    TArray<int32> tris;
-    buildTriangle(a, b, c, verts, tris);
-    buildTriangle(a, c, d, verts, tris);
+    TArray<FVector> vertecies;
+    TArray<int32> triangles;
+    buildTriangle(a, b, c, vertecies, triangles);
+    buildTriangle(a, c, d, vertecies, triangles);
 
-    append.setVertecies(MoveTemp(verts));
-    append.setTriangles(MoveTemp(tris));
+    MeshData append(
+        MoveTemp(vertecies),
+        MoveTemp(triangles)
+    );
     output.append(append);
 }
 
@@ -1303,6 +1220,13 @@ void AcustomMeshActor::splitAndreplace(
         }
     }
 }
+
+
+
+
+
+
+
 
 
 

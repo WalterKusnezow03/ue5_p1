@@ -26,66 +26,71 @@ void BoneIk::setupBones(float completeDistance){
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
 }
 
+
+
 /// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
 /// @param etha etha fraction, will be clamped
 void BoneIk::setEtha(float etha){
     setEtha(etha, 0);
 }
 
+/// @brief will set how far the leg is extended
+/// @param etha value from [0,1]
+/// @param legPitchThetaRadian some angle in rad
 void BoneIk::setEtha(float etha, float legPitchThetaRadian){
+    
+    float lambda = angleFromEtha(etha);
+
+    //FString s = FString::Printf(TEXT("etha %.2f angle %d"), etha, (int) MMatrix::radToDegree(lambda));
+    //DebugHelper::showScreenMessage(s, FColor::Purple);
+
+
+    float thetaHip_pitch = createHipAngle(lambda + legPitchThetaRadian);
+    float thetaKnee_pitch = createKneeAngle(lambda); //lambda only sonst bend over to back
+    float thetaFoot_pitch = createHipAngle(lambda - legPitchThetaRadian);
+
+    hip.pitchRad(thetaHip_pitch); //hip to knee
+    knee.pitchRad(thetaKnee_pitch); //knee to foot
+    foot.pitchRad(thetaFoot_pitch);
+    
+    
+}
+
+/// @brief will clamp the etha value and return the angle for the hip, positive
+/// @param etha etha value
+/// @return angle for the hip pitch
+float BoneIk::angleFromEtha(float etha){
+    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
     if(etha < 0.0f){
         etha = 0.0f;
     }
     if(etha > 1.0f){
         etha = 1.0f;
     }
-    
-
-    // legPitchTheta *= -1;
-
-    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
-    float lambda = std::acosf(1.0f - etha); // bein nach vorne, in radian!
-    float thetaHip_pitch = lambda + legPitchThetaRadian; //additional for swing
-    float thetaFoot_pitch = lambda - legPitchThetaRadian;
-   
-    float thetaKnee_pitch = lambda * 2; // bein anziehen
+    /*
+    wenn das skalarprodukt zweier vektoren 0 ergibt sind sie orthogonal zu einander
+    wenn das skalarprodukt zweier normalisierter vektoren 1 ergibt sind sie paralell
+    zu einander
+    Wenn mein etha input 1 ist, dann ist mein output (pi/2) -> 90 grad um den ich dann z.b. vorwärts drehe
+    Wenn mein ehta input 0 ist, dann ist mein output 0 grad
+    */
 
 
-    hip.pitchRad(thetaHip_pitch * -1); //hip to knee, flippen einmal.
-    knee.pitchRad(thetaKnee_pitch); //knee to foot
-    
-    //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
-    foot.pitchRad(thetaFoot_pitch * -1);
-    
+    float lambda = std::acosf(1.0f - etha);
+    //float lambda = std::asinf(etha);
+    return lambda;
+}
+
+
+float BoneIk::createHipAngle(float angle){
+    return angle *-1;
+}
+float BoneIk::createKneeAngle(float angle){
+    return angle * 2;
 }
 
 
 
-/// @brief sets the etha for the bone from current rotation
-/// @param etha 
-void BoneIk::setEthaFromCurrentRotation(float etha){
-     if(etha < 0.0f){
-        etha = 0.0f;
-    }
-    if(etha > 1.0f){
-        etha = 1.0f;
-    }
-    
-    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
-    float lambda = std::acosf(1.0f - etha); // bein nach vorne, in radian!
-    float thetaHip_pitch = lambda; //additional for swing
-    float thetaFoot_pitch = lambda;
-   
-    float thetaKnee_pitch = lambda * 2; // bein anziehen
- 
-
-    hip.pitchRadAdd(thetaHip_pitch * -1); //hip to knee, flippen einmal.
-    knee.pitchRadAdd(thetaKnee_pitch); //knee to foot
-    
-    //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
-    foot.pitchRadAdd(thetaFoot_pitch * -1);
-    
-}
 
 
 
@@ -101,7 +106,7 @@ void BoneIk::setEthaFromCurrentRotation(float etha){
 /// @brief fills all matrix data into the array and the foot tip into the out vector
 /// @param dataout output for matricies
 /// @param outVector output for foot tip vektor
-void BoneIk::getData(std::vector<MMatrix*> &dataout, FVector &outVector){ 
+void BoneIk::getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector){ 
     
     dataout.push_back(&hip);
     dataout.push_back(&knee);
@@ -140,7 +145,7 @@ void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, floa
     matrizen.push_back(&offsetAndRotation);
 
     FVector endVec;
-    getData(matrizen, endVec); 
+    getMatricies(matrizen, endVec); 
     if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
         return;
     }
@@ -215,73 +220,34 @@ void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, floa
  * 
  */
 
-/// @brief tick the bone and rebuild drawing, no own motion
-/// @param world world to draw in
-/// @param offset offset to have for bones
-/// @param etha etha between 0 and 1
-/// @param displayTime display time (f.ex. delta time)
-void BoneIk::tickAndBuild(UWorld *world, FVector &offset, float etha, float displayTime){
-    
-    //remember (x roll, y pitch, z yaw)
-    //update pitch of knee
-    setEtha(etha); //etha distance percent 0 to 1.0f
-    build(world, offset, FColor::Red, displayTime);
 
-}
-
-
-void BoneIk::tickAndBuild(UWorld *world, FVector &offset, float displayTime){
-    build(world, offset, FColor::Green, displayTime);
-}
-
-
-
-
-/// @brief ticks and builds the 2 bone with a given etha and pitch angle 
-/// @param world 
-/// @param offset 
-/// @param etha 
-/// @param legPitchThetaRadian 
-/// @param displayTime 
-/// @param color 
+//new updated method with matrix
 void BoneIk::tickAndBuild(
     UWorld *world, 
-    FVector &offset, //offset data in world
+    MMatrix &offsetMatrix, //offset data in world, including rotation!
     float etha, 
     float legPitchThetaRadian,
     float displayTime,
     FColor color
 ){
-    
-    //remember (x roll, y pitch, z yaw)
-    //update pitch of knee
-    //etha distance percent 0 to 1.0f
-
     setEtha(etha, legPitchThetaRadian); 
-    build(world, offset, color, displayTime);
-
+    build(world, offsetMatrix, color, displayTime);
 }
 
 
 
 
+//NEW refacture for matrix usuage
+void BoneIk::tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix, FColor color){
+    float displayTime = deltaTime * 2; //better visibility of debugdrawing
 
-
-
-
-/// @brief tick with automatic ak motion functions
-/// @param world 
-/// @param deltaTime 
-/// @param offset 
-/// @param color 
-void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor color){
-    float displayTime = deltaTime * 2;
-
-    
     deg += degreePerSecond * deltaTime;
-    //mod
+    //clamp
 	if(deg > 360.0f){
         deg = 0; //-= 360.0f;
+    }
+    if(deg < 0){
+        deg = 0;
     }
     float radlegLiftAngle = MMatrix::degToRadian(deg);
 	float etha = abstractKinematicFunctions::legLift(radlegLiftAngle);
@@ -289,14 +255,12 @@ void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor 
 
     //LEG SWING
     legSwingRadian += deltaTime * MMatrix::degToRadian(degreePerSecond); //synchronize for now
-
     if(legSwingRadian > M_PI){
 		legSwingRadian = -1 * M_PI;
 	}
-    float tForLegSwingRadian = abstractKinematicFunctions::legSwingPitch(legSwingRadian);
 
-
-	tickAndBuild(world, offset, etha, tForLegSwingRadian, displayTime, color);
+    float pitchThetaForLegSwingRadian = abstractKinematicFunctions::legSwingPitch(legSwingRadian);
+	tickAndBuild(world, offsetMatrix, etha, pitchThetaForLegSwingRadian, displayTime, color);
 
 
 
@@ -306,6 +270,18 @@ void BoneIk::tickMotion(UWorld *world, float deltaTime, FVector &offset, FColor 
         halfReached = true;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -354,12 +330,12 @@ void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
 /// x is forward axis, all motion will be made relative to (1,0,0) x - axis
-/// @param vec vector in meters, (1,1,1) is 1 METER!
-/// @param weight weight direction on knee / (ellbow)
+/// @param vec target location relative to (1,0,0) -> is forward look dir
+/// @param weight weight direction on knee / (ellbow) - only x and z will be used
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
-    // man muss hier das end node irgendwo hinbewegen und dann pitch und roll so wählen
-    // wie als würde ein gewicht daran hängen
-    // das wird gut.
+
+
+
     resetAllRotations();
 
     //etha reverse bauen
@@ -373,57 +349,41 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
         vec *= totalBoneLengthCopy;
     }
 
-    //FString distPrint = FString::Printf(TEXT("debug distance %.2f"), distance);
-    //DebugHelper::logMessage(distPrint); //korrekt
 
+    // --- KNICK BASIS ---
+     
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
     float etha = 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
-    
+    float angle = angleFromEtha(etha);
+    float hipAngle = createHipAngle(angle);
+    float kneeAngle = createKneeAngle(angle);
 
-    // totalBoneLengthCopy * 0.01f * distance; //to percentage fraction
-    // clamp
-    if(etha < 0.0f){
-        etha = 0.0f;
-    }
-    if(etha > 1.0f){
-        etha = 1.0f;
-    }
-
-    //etha = 1.0 - etha; //um richtig zu flippen? von 0.0 zu 1.0 full extended (not clear if needed here, testing needed)
-    float angleFromEtha = std::acos(1.0f - etha);
-
-    float hipAngle = angleFromEtha * -1; //im uhrzeiger sinn
-    float kneeAngle = angleFromEtha * 2;
-
-    //FString s = FString::Printf(TEXT("debug etha %.2f, debug angle %.2f"), etha, MMatrix::radToDegree(hipAngle));
-    //DebugHelper::logMessage(s);
-
-    
+   
     //WEIGHT KNICK RICHTUNG
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
     if(
         (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
-        hipAngle < 0                      //und knick noch im uhrzeiger sinn: flip
+        hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
     ){ 
-        //both angles flip
+        //both angles flip based on weight direction 
         hipAngle *= -1;
         kneeAngle *= -1;
     }
-
     //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
-    
-    hip.pitchRadAdd(hipAngle);
+    hip.pitchRadAdd(hipAngle);   //hip nach vorne
     knee.pitchRadAdd(kneeAngle); //knee to foot
-    foot.pitchRadAdd(hipAngle);
-    
+    foot.pitchRadAdd(hipAngle);  //foot gleich zu hip
+
+    // --- KNICK BASIS ENDE ---
+
     
    
-    //GLOBAL TO TARGET ROTATION
-    float globalSideAdd = ((M_PI / 2) - pitchAngleTo(vec)) * -1; //GEPRÜFT! RICHTIG!
+    // --- GLOBAL TO TARGET ROTATION ---
+    float PicthAngleToXForwardAxis = pitchAngleTo(vec);
+    float globalSideAdd = ((M_PI / 2) - PicthAngleToXForwardAxis) * -1; // GEPRÜFT! RICHTIG!
     // - pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
-    //90 grad dazu um relativ zu machen, - winkel um korrekt zu drehen den anderen winkel
-
+    //90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen 
 
     hip.pitchRadAdd(globalSideAdd);
 
@@ -438,7 +398,7 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
 
     /**
      * roll funktioniert nicht wie erwartet!
-     */
+      */
 
     //GLOBAL ROTATION ON ROLL - testing needed
     //sollte nur hip rotieren und nicht ziel punkt schrotten
@@ -446,57 +406,11 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     //*-1;
     hip.rollRadAdd(rollAngleWeight);
     knee.rollRadAdd(rollAngleWeight * -2);
-
-
-}
-
-
-
-// NOT IN USE!
-
-/// @brief testing needed
-/// rotates the knee towards a specified target
-/// @param vec target for the knee / ellbow
-void BoneIk::rotateTowardsLocalTarget(FVector &vec){
-
-    resetAllRotations();
-
-    float xzSideViewAngle = pitchAngleTo(vec);
-    float xyTopViewAngle = yawAngleTo(vec);
-    
-
-    //wie gehabt, flippen und anwenden
-    float pitchHip = xzSideViewAngle * -1;
-    float pitchKnee = xzSideViewAngle * 2; //umdrehen logischer weise wie etha wie immer
-
-    //geprüft und korrekt
    
-    hip.pitchRadAdd(pitchHip);   // hip to knee, flippen einmal.
-    knee.pitchRadAdd(pitchKnee); //knee to foot
-    foot.pitchRadAdd(pitchHip); //new: foot rotates too to be 90 degree to ground (which is orthogonal for now)
-
-    //return;
-
-    //still testing needed:
-    //neu: das muss yaw sein, wie 2D rotations matrix
-    float yawHip = xyTopViewAngle * -1;
-    float yawKnee = xyTopViewAngle * 2;
-    hip.yawRadAdd(yawHip); //ONLY ADD TO HIP TO ROTATE WHOLE LEG ALONG THE AXIS (??)
-    //knee.yawRadAdd(yawKnee);
-    //foot.rollRadAdd(rollHip * -1); //ggf fuß garnicht drehen
-    
-
-    /**
-     *  ACHTUNG UNKLAR :
-     *  -> Rotation muss vorher zurück gesetzt werden ansonsten wird das nicht korrekt funktionieren
-     *  -> oder? 
-     *  -> UNKLAR!
-     * 
-     *  wird gestestet.
-     */
-
 
 }
+
+
 
 
 

@@ -3,16 +3,37 @@
 
 #include "timer.h"
 
-timer::timer()
+
+
+timer::timer(){
+
+}
+
+/// @brief starts the timer at a given time
+/// @param time time will be absolute
+/// @param resetsItselfIn tells if the timer resets itsself when the timesUpFunction returns true
+timer::timer(float time, bool resetsItselfIn)
 {
+    Begin(time, resetsItself);
 }
 
 timer::~timer()
 {
 }
 
-void timer::Begin(float time){
+
+/// @brief starts the timer at a given time
+/// @param time time will be absolute
+/// @param resetsItselfIn tells if the timer resets itsself when the timesUpFunction returns true
+void timer::Begin(float time, bool resetsItselfIn){
+    time = std::abs(time);
+    initialTime = time;
     timeLeft = time;
+    resetsItself = resetsItselfIn;
+}
+
+void timer::Begin(float time){
+    Begin(time, false);
 }
 
 void timer::Tick(float deltaTime){
@@ -21,5 +42,9 @@ void timer::Tick(float deltaTime){
 
 bool timer::timesUp()
 {
-    return timeLeft < 0.05f;
+    bool timeIsUp = timeLeft < 0.05f;
+    if(timeIsUp && resetsItself){
+        timeLeft = initialTime;
+    }
+    return timeIsUp;
 }

@@ -16,7 +16,6 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/util/FVectorUtil.h"
-#include "p2/rooms/room.h"
 
 #include <map>
 
@@ -674,10 +673,7 @@ void EntityManager::createParticle(
 /// @return vector of actors
 std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, int requestCount){
     std::vector<AcustomMeshActor *> output;
-    if (
-        world != nullptr
-    )
-    {
+    if (world != nullptr){
         output.reserve(requestCount);
         FVector location(0, 0, 0);
 

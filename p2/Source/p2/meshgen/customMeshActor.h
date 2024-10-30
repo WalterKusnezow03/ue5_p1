@@ -60,7 +60,7 @@ public:
 		UWorld *world
 	);
 
-	void process2DMap(
+	void createTerrainFrom2DMap(
 		std::vector<std::vector<FVector>> &map,
 		bool createTrees
 	);
@@ -166,18 +166,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent *Mesh;
 
-
-	void updateMesh(
-		TArray<FVector> &newvertecies, 
-		TArray<int32> &newtriangles,
-		bool createNormals
-	);
-	void updateMesh(
-		TArray<FVector> &newvertecies, 
-		TArray<int32> &newtriangles,
-		bool createNormals,
-		int layer
-	);
 
 	void updateMesh(MeshData otherMesh, bool createNormals, int layer);
 

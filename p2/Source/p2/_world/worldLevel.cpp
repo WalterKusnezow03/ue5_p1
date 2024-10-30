@@ -4,7 +4,6 @@
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutpostManager.h"
-#include "p2/rooms/RoomManager.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 
@@ -23,7 +22,7 @@ bool worldLevel::isTerrainInited = false;
 EntityManager *worldLevel::entityManagerPointer = nullptr;
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
-RoomManager *worldLevel::roomManagerPointer = nullptr;
+
 
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
@@ -66,7 +65,7 @@ void worldLevel::initWorld(UWorld *world){
     //disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
-            createTerrain(world, 300); // 100
+            createTerrain(world, 100); // 100
         }
     }
 
@@ -128,15 +127,7 @@ OutpostManager * worldLevel::outpostManager(){
     return outpostManagerPointer;
 }
 
-/// @brief returns the pointer to the room manager, save assets inside the proiveded object by the pointer
-/// DO NOT DELETE
-/// @return returns the pointer to the room manager, use to save room prefabs and instantiate buildings
-RoomManager *worldLevel::roomManager(){
-    if(roomManagerPointer == nullptr){
-        roomManagerPointer = new RoomManager();
-    }
-    return roomManagerPointer;
-}
+
 
 /**
  * 
@@ -168,6 +159,7 @@ void worldLevel::createTerrain(UWorld *world, int meters){
         if(e != nullptr){
             terrainPointer->createTerrain(world, meters);
 
+            /*
             //choose some size between 0 and meters for pos and some scale (lets say 15 - 30?) 
             //some how block the are which is filled?
             int terrainSizehalf = (meters * terrainCreator::ONEMETER) / 2;
@@ -189,7 +181,7 @@ void worldLevel::createTerrain(UWorld *world, int meters){
             //create rooms
             if(RoomManager *r = roomManager()){
                 r->createABuilding(world, locationToSpawn, roomsizeMeter, roomsizeMeter);
-            }
+            }*/
 
             //request mesh actors and apply terrain
             int numberCreated = terrainPointer->chunkNum();
@@ -252,15 +244,6 @@ void worldLevel::DebugCreateRooms(UWorld *world){
     );
 
 
-    //create rooms
-    bool createRoomsOld = false;
-    if(createRoomsOld){
-        if (RoomManager *r = roomManager())
-        {
-            r->createABuilding(world, locationToSpawn, roomsizeMeter, roomsizeMeter);
-        }
-    }
-    
 
     //new layout creator testing
     std::vector<TTouple<int, int>> sizesP;
