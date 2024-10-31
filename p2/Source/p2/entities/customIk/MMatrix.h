@@ -53,9 +53,14 @@ public:
 
 	void rotate(MMatrix &other);
 
+	void invert();
+
+private:
 	//normalize rotations when adding them together
 	float normalizeAngle(float angle);
 	void normalizeRotation();
+
+
 
 private:
 	//16 langes array für die 4x4 matrix
@@ -63,4 +68,9 @@ private:
 	float array[16];
 
 	
+
+	void invertTranslation();
+	void invertRotation();
+	void swapIndices(int a, int b);
+	void invertScale();
 };

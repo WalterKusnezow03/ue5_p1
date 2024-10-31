@@ -25,6 +25,7 @@ void AIkActor::BeginPlay()
 	float legScaleCM = 200;
 	leg1.setupBones(legScaleCM);
 	leg2.setupBones(legScaleCM);
+	leg2.setDegreeInital(180); //testing for offset movement
 
 	float armScale = legScaleCM * 0.8f;
 	arm1.setupBones(armScale);
@@ -51,14 +52,16 @@ void AIkActor::BeginPlay()
 	FVector weight(1, 1, -1);
 	arm1.rotateEndToTarget(target2, weight); //testing notwendig
 	
-
-	targetA = FVector(1.0f, -0.5f, 0);
+	//testing values for arm movement
+	targetA = FVector(1.0f, -0.5f, 2); //z 0  
 	targetB = FVector(1.5f, 1.0f, -1);
 	targetA *= 100; //auf cm skalieren.
 	targetB *= 100;
 
 	//testing
-	ownOrientation.yawRadAdd(MMatrix::degToRadian(90)); 
+	//ownOrientation.yawRadAdd(MMatrix::degToRadian(90));
+	//float initialDegree = 0; //45
+	//ownOrientation.yawRadAdd(MMatrix::degToRadian(initialDegree));
 	//unklar wie sich dann bewegung verhält, ob x forward bleibt
 	//oder ob man auf x und y die distanz messen muss, zumal sich der rote fuss auch nicht mitdreht!
 
@@ -77,13 +80,10 @@ void AIkActor::Tick(float DeltaTime)
 
 
 	//updateBone(leg1, DeltaTime, FColor::Red);
-	updatePositionBasedOnMovedDistance(leg2); //movement for own location
+	//updatePositionBasedOnMovedDistance(leg2); //movement for own location
+	//updatePositionBasedOnMovedDistance(leg1);
 
-	if(leg1.halfIsReached()){
-		//updateBone(bone2, DeltaTime, FColor::Green);
-	}
 
-	
 
 	//arms new, must be added
 	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
@@ -102,24 +102,72 @@ void AIkActor::Tick(float DeltaTime)
 	//orientation rotation matrix dann reingeben als first node / limb 
 	arm1.build(GetWorld(), armMat, FColor::Purple, DeltaTime * 2);
 	//leg2.build(GetWorld(), orientationLocation, FColor::Black, DeltaTime * 2); //new matrix offset
-	//leg2.tickLegMotion(GetWorld(), DeltaTime, offset, FColor::Black); //VECTOR OFFSET
-	leg2.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Black); //MATRIX OFFSET, TESTING NEEDED
+
+	//DISABLED ANIMATION FOR TESTUNG
+	//leg2.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Black); //MATRIX OFFSET
 
 	//fuss geht nicht?
-	leg1.build(GetWorld(), orientationLocation, FColor::Red, DeltaTime * 2); //new matrix offset
+	//leg1.build(GetWorld(), orientationLocation, FColor::Red, DeltaTime * 2); //new matrix offset
+	//leg1.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Red);
+	//TEST
+	MMatrix offsetLeg;
+	FVector offsetLegVec(0, 50, 0);
+	offsetLeg.setTranslation(offsetLegVec);
 
+	MMatrix orientationLocation2 = orientationLocation * offsetLeg; //RT = T * R
+	//leg1.tickLegMotion(GetWorld(), DeltaTime, orientationLocation2, FColor::Red);
 
 	//debug draw of targets
 	FVector t1 = targetA;
 	FVector t2 = targetB;
 	t1 += armOff;
 	t2 += armOff;
-	//DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Green); //draw line of arm movement
+	DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Green, DeltaTime * 2); //draw line of arm movement
 	
+	DebugHelper::showLineBetween(
+		GetWorld(),
+		orientationLocation.getTranslation(), 
+		orientationLocation2.getTranslation(),  
+		FColor::Green, 
+		DeltaTime * 2.0f
+	); //draw line of arm movement
 
 	//arm pos follow testing (works as expected, muss aber refactured werden)
 	debugDynamicArmTick(DeltaTime);
 
+
+
+
+
+	//NEW
+	MMatrix legMat = orientationLocation;
+	//verticalOffset = FVector(0, 0, -200);
+	//legMat += verticalOffset;
+
+	
+
+	FVector targetHip = FVector(1.0f, 0.0f, 1.0f);
+	targetHip = FVector(0, 0, 1.0f);
+	targetHip *= 100;
+
+	FVector weight(- 1, 0, 0);
+	
+	leg1.rotateStartToTargetAndBuild(
+		GetWorld(),
+		targetHip,
+		weight,
+		legMat,
+		FColor::Emerald, //is disabled intenally for better debug understanding
+		DeltaTime * 2.0f
+	);
+	
+
+	//compare
+	weight = FVector(1, 0, 0);
+	FVector targetC = FVector(1.0f, 0.0f, -1.5f);
+	targetC *= 100;
+	leg2.rotateEndToTarget(targetC, weight);
+	leg2.build(GetWorld(), orientationLocation, FColor::Black, DeltaTime * 2); //new matrix offset
 }
 
 
@@ -140,6 +188,11 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 	//sich das bein / der körper auch in die richtige richtung bewegt!
 	
 	FVector pos = trackedBone.movedLastTick();
+	
+	/*offset += pos;
+	ownLocation.setTranslation(pos);
+	return;*/
+
 	float xMoved = pos.X; // say this is forward for now
 	float yMoved = pos.Y;
 	if (xMoved > 0)
@@ -148,11 +201,11 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 		offset.X += xMoved;
 		ownLocation.setTranslation(offset);
 	}
-	/*
+	
 	if(yMoved > 0){
 		offset.Y += yMoved;
 		ownLocation.setTranslation(offset);
-	}*/
+	}
 
 	
 }

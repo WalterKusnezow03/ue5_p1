@@ -15,8 +15,17 @@ public:
 	~BoneIk();
 
 	void setupBones(float completeDistance);
-	void build(UWorld *world, FVector &offset, FColor color, float displayTime); //in use
+	void setDegreeInital(float degree);
+	void build(UWorld *world, FVector &offset, FColor color, float displayTime); // in use
 	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); //must be tested
+
+	void build(
+		UWorld *world,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime,
+		std::vector<MMatrix *> &matrizen // must not be empty
+	);
 
 	//move, etha and leg pitch
 	void tickAndBuild(
@@ -48,6 +57,18 @@ public:
 
 	
 	void rotateEndToTarget(FVector &vec, FVector &weight);
+
+	//new
+	void rotateStartToTargetAndBuild(
+		UWorld *world,
+		FVector &vec,
+		FVector &weight,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime
+	);
+
+	void inverseAll();
 
 private:
 	float angleFromEtha(float etha);
@@ -85,7 +106,7 @@ private:
 	bool halfReached = false;
 
 	//testing needed
-	float degreePerSecond = 200;
+	float degreePerSecond = 400; //200
 	float deg = 0.0f;
 	float legSwingRadian = 0.0f;
 
@@ -94,4 +115,18 @@ private:
 	//testing
 	FVector prevFootPos;
 	FVector movedDir;
+
+
+	//for movementstop
+	float currentEtha = 0.0f;
+	float clampEtha(float etha);
+
+	void rotateEndToTarget(
+		FVector &vec,
+		FVector &weight,
+		MMatrix &start,
+		MMatrix &middle,
+		MMatrix &end,
+		bool inverse
+	);
 };

@@ -250,8 +250,7 @@ void MMatrix::yaw(float deg){
     yawRad(torad);
 }
 
-/// @brief rotate along X in degree
-/// @param a 
+
 void MMatrix::rollRad(float a){
     /*
     5  6
@@ -273,7 +272,7 @@ void MMatrix::rollRad(float a){
 
 
 /// @brief rotate with y
-/// @param a degree
+/// @param a
 void MMatrix::pitchRad(float a){
     /*
     0  2
@@ -314,7 +313,7 @@ void MMatrix::yawRad(float a){
  */
 
 
-/// @brief rotate along X in degree
+/// @brief rotate along X in radian
 /// @param a 
 void MMatrix::rollRadAdd(float a){
     /*
@@ -339,7 +338,7 @@ void MMatrix::rollRadAdd(float a){
 }
 
 /// @brief rotate with y
-/// @param a degree
+/// @param a radian
 void MMatrix::pitchRadAdd(float a){
     /*
     0  2
@@ -495,4 +494,47 @@ float MMatrix::normalizeAngle(float angle) {
 
 
 
+void MMatrix::invert(){
+    invertTranslation();
+    invertRotation();
+    //invertScale();
+}
 
+void MMatrix::invertTranslation(){
+    FVector translation = getTranslation();
+    translation *= -1;
+    setTranslation(translation);
+}
+
+void MMatrix::invertRotation(){
+    //3x3 block transponieren
+    swapIndices(4, 1);
+    swapIndices(8, 2);
+    swapIndices(9, 6);
+}
+/// @brief requires both indeces to be in bounds!
+/// @param a 
+/// @param b 
+void MMatrix::swapIndices(int a, int b){
+    if(a > 0 && b > 0 && a < 16 && b < 16){
+        float copy = array[a];
+        array[a] = array[a];
+        array[b] = copy;
+    }
+}
+
+void MMatrix::invertScale(){
+    //diagonale 3 skalieren
+    float a = array[0];
+    float b = array[5];
+    float c = array[10];
+
+    if(a != 0)
+        array[0] = 1.0f / a;
+
+    if(b != 0)
+        array[5] = 1.0f / b;
+
+    if(c != 0)
+        array[10] = 1.0f / c;
+}

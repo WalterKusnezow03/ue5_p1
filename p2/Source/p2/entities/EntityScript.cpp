@@ -83,13 +83,16 @@ void AEntityScript::Tick(float DeltaTime)
 	bool frameReservedForGroundRaycast = groundProjectionTimer.timesUp();
 
 	//vision
-	canSeePlayer = false; //reset
+	if(!frameReservedForGroundRaycast)
+		canSeePlayer = false; //reset if not reserved for frane update
+	
 	bool withinAngle = withinVisionAngle(playerPointer);
 	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
 	//if not spotted yet, check angle, if angle ok, check vision
 	if(withinAngle && withinRange && !frameReservedForGroundRaycast){
 		canSeePlayer = performRaycast(playerPointer);
+		//DebugHelper::showScreenMessage("check", FColor::Red);
 	}
 	//project to ground
 	if(frameReservedForGroundRaycast){
@@ -110,15 +113,10 @@ void AEntityScript::Tick(float DeltaTime)
 	//act based on vision
 	if(canSeePlayer){
 
-		if(spottedPlayer){
-			//attack if can see and spotted
-			//showScreenMessage("spotted player");
-
-		}else{
-			//update time if can see, but not spotted
+		if(!spottedPlayer){
 			updateSpottingTime(DeltaTime);
+			//DebugHelper::showScreenMessage("time update:", spottingTimeLeft); //is fixed
 		}
-
 
 	}else{
 		//cant see player

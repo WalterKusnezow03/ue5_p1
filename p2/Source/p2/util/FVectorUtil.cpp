@@ -85,12 +85,7 @@ FVector FVectorUtil::randomOffset(int range){
     y %= range;
     z %= range;
 
-    //return FVector(x, y, z);
-    return FVector(
-        randomNumber(range),
-        randomNumber(range),
-        randomNumber(range)
-    );
+    return FVector(x, y, z);
 }
 
 FVector2D FVectorUtil::randomOffset2D(int range){
