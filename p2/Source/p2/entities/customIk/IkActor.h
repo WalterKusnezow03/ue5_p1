@@ -42,8 +42,9 @@ private:
 
 	void updateBone(BoneIk &bone, float deltaTime, FColor color);
 
-	FVector offset; //global offset
-	MMatrix ownLocation;
+	
+	MMatrix ownLocation; //GLOBAL MATRIX
+	MMatrix ownLocationFoot;
 	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
 
 	void LookAt(FVector TargetLocation);
@@ -59,4 +60,6 @@ private:
 	int direction = 1;
 	void debugDynamicArmTick(float DeltaTime);
 
+	MMatrix currentTransform();
+	MMatrix currentFootTransform();
 };

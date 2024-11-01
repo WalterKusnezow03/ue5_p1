@@ -2,7 +2,6 @@
 
 #include "p2/util/TVector.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/entities/customIk/MMatrixChain.h"
 #include "DebugHelper.h"
 
 DebugHelper::DebugHelper()
@@ -35,22 +34,6 @@ void DebugHelper::Debugtest(UWorld *world){
 	//A.roll(90);
 	//B.roll(90);
 
-	MMatrixChain chain;
-	chain.add(&A);
-	chain.add(&B);
-	FVector end(1, 1, 1);
-	chain.build(world, end, FColor::Red);
-
-
-
-	chain.setRoll(30, -30); //am einfachsten erstmal, beide 90 grad rotieren
-	chain.build(world, end, FColor::Yellow);
-
-	/*
-	int a = 2;
-	int &b = a;
-	int *c = &a;
-	*/
 
 }
 

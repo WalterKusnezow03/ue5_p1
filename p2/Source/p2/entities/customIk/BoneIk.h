@@ -16,10 +16,19 @@ public:
 
 	void setupBones(float completeDistance);
 	void setDegreeInital(float degree);
-	void build(UWorld *world, FVector &offset, FColor color, float displayTime); // in use
-	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); //must be tested
+	void build(UWorld *world, FVector &offset, FColor color, float displayTime); //deprecated
+	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); 
 
 	void build(
+		UWorld *world,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime,
+		std::vector<MMatrix *> &matrizen // must not be empty
+	);
+	
+	//new
+	MMatrix buildWithOutput(
 		UWorld *world,
 		MMatrix &offsetAndRotation,
 		FColor color,
@@ -64,6 +73,7 @@ public:
 		FVector &vec,
 		FVector &weight,
 		MMatrix &offsetAndRotation,
+		MMatrix &translationOfactor,
 		FColor color,
 		float displayTime
 	);
@@ -71,6 +81,7 @@ public:
 	void inverseAll();
 
 private:
+	float createEthaFromDistance(float distance);
 	float angleFromEtha(float etha);
 	float createHipAngle(float angle);
 	float createKneeAngle(float angle);
@@ -126,7 +137,8 @@ private:
 		FVector &weight,
 		MMatrix &start,
 		MMatrix &middle,
-		MMatrix &end,
-		bool inverse
+		MMatrix &end
 	);
+
+	FVector offsetToFloor();
 };

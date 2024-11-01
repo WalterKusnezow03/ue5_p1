@@ -17,8 +17,8 @@ void BoneIk::setDegreeInital(float degree){
 }
 
 
-/// @brief sets up the leg, arm
-/// @param completeDistance distance in meters, for now
+/// @brief sets up the leg or arm (Bone)
+/// @param completeDistance distance in meters
 void BoneIk::setupBones(float completeDistance){
 
     totalBoneLengthCopy = completeDistance;
@@ -31,7 +31,26 @@ void BoneIk::setupBones(float completeDistance){
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
 }
 
+/*
+/// @brief creates the vector from hip to floor fromoriginal positions
+/// @return 
+FVector BoneIk::offsetToFloor(){
+    return FVector(0, 0, totalBoneLengthCopy);
+}*/
 
+FVector BoneIk::offsetToFloor(){
+    //matrizen interpolieren um richtungsvektor zu erhalten
+    std::vector<MMatrix *> matricies;
+    FVector foottip;
+    getMatricies(matricies, foottip);
+
+    MMatrix result;
+    for (int i = 0; i < matricies.size(); i++){
+        result *= *matricies[i];
+    }
+
+    return result.getTranslation();
+}
 
 /// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
 /// @param etha etha fraction, will be clamped
@@ -90,6 +109,11 @@ float BoneIk::angleFromEtha(float etha){
     zu einander
     Wenn mein etha input 1 ist, dann ist mein output (pi/2) -> 90 grad um den ich dann z.b. vorwärts drehe
     Wenn mein ehta input 0 ist, dann ist mein output 0 grad
+
+    Erklärung Etha Value: 
+    (0 extended , 1angezogen) -> das passiert weil 1-etha der winkel dann ist
+	acos(1 - 0) = acos(1) = 0 —> nicht rotieren!
+	acos(1 - 1) = acos(0) = 1 —> 90 grad -> ganz einklappen
     */
 
 
@@ -98,19 +122,31 @@ float BoneIk::angleFromEtha(float etha){
     return lambda;
 }
 
-
+/// @brief creates the hip angle and signs it autmatically
+/// @param angle angle for the hip
+/// @return angle signed, ready for matrix pitch apply
 float BoneIk::createHipAngle(float angle){
     return angle *-1;
 }
+/// @brief creates the knee angle and multiplies in automatically
+/// @param angle angle for the knee 
+/// @return signed and multiplied angle for knee, ready for matrix pitch apply
 float BoneIk::createKneeAngle(float angle){
     return angle * 2;
 }
 
-
-
-
-
-
+/// @brief returns the etha value for a distance
+/// @param distance distance from 0,0,0 to target
+/// @return etha value for angles or 0 (fully extended if an issue occured)
+float BoneIk::createEthaFromDistance(float distance){
+    if(totalBoneLengthCopy == 0){
+        return 0; //fully extended error
+    }
+    //distance to etha: 
+    //(remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
+    float etha = 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
+    return etha;
+}
 
 
 
@@ -432,6 +468,9 @@ void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
 /// @param weight weight direction on knee / (ellbow) - only x and z will be used
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
 
+    rotateEndToTarget(vec, weight, hip, knee, foot); //testing needed
+    return;
+    /*
     //problem: z wert wirkt wie abs winkel!
 
     resetAllRotations();
@@ -451,7 +490,8 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     // --- KNICK BASIS ---
      
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    float etha = 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
+    float etha = createEthaFromDistance(distance);
+    // 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
     float angle = angleFromEtha(etha);
     float hipAngle = createHipAngle(angle);
     float kneeAngle = createKneeAngle(angle);
@@ -501,7 +541,7 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
     hip.yawRadAdd(yawAngleTarget); //nur die hip alleine rotieren, rotiert alles
 
 
-
+    */
     return;
 
     /**
@@ -517,6 +557,114 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
    
 
 }
+
+
+/// @brief is tested for backward kinematics!
+/// @param vec local target when x is forward
+/// @param weight weight direction on middle joint limb
+/// @param start start limb (recommenden to be the empty starting one)
+/// @param middle middle limb joint -> ankle / ell / knee limb
+/// @param end end limb 
+void BoneIk::rotateEndToTarget(
+    FVector &vec,
+    FVector &weight,
+    MMatrix &start,
+    MMatrix &middle,
+    MMatrix &end
+)
+{
+    //TODO: add support for using the rotation which is already applied? 
+    start.resetRotation();
+    middle.resetRotation();
+    end.resetRotation();
+
+    //etha reverse bauen
+    FVector zeroVec(0, 0, 0);
+
+    //normalize the target location if exceeding the bone lenght
+    float distance = FVector::Distance(zeroVec, vec);
+    if (distance > totalBoneLengthCopy)
+    {
+        vec = vec.GetSafeNormal();
+        vec *= totalBoneLengthCopy;
+    }
+
+
+    // --- KNICK BASIS ---
+     
+    //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
+    float etha = createEthaFromDistance(distance);
+    // 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
+    float angle = angleFromEtha(etha);
+    float hipAngle = createHipAngle(angle);
+    float kneeAngle = createKneeAngle(angle);
+
+   
+    //WEIGHT KNICK RICHTUNG
+    //anhand des wights dann knicken flippen
+    //also -x oder -z sorgen für einen invertierten knick
+    if(
+        (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
+        hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
+    ){ 
+        //both angles flip based on weight direction 
+        hipAngle *= -1;
+        kneeAngle *= -1;
+    }
+
+    //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
+    start.pitchRadAdd(hipAngle);   //hip nach vorne
+    middle.pitchRadAdd(kneeAngle); //knee to foot
+    end.pitchRadAdd(hipAngle);
+
+
+    //bis hier korrekt
+    //return;
+
+    // --- KNICK BASIS ENDE ---
+    //return;
+
+    // --- GLOBAL TO TARGET ROTATION ---
+    float PicthAngleToXForwardAxis = pitchAngleTo(vec);
+    float globalSideAdd = 0.0f;
+    //winkel manuell drehen weil unsigned
+    if(vec.Z < 0){
+        // pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
+        // 90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen
+        //globalSideAdd = ((M_PI / 2) - PicthAngleToXForwardAxis) *-1; // GEPRÜFT! RICHTIG!
+        globalSideAdd = createHipAngle(((M_PI / 2) - PicthAngleToXForwardAxis)); //methode negiert automatisch
+    }
+    else
+    {
+        //globalSideAdd = ((M_PI / 2) + PicthAngleToXForwardAxis) *-1; //-1 nach wie vor wegen hip angle
+        globalSideAdd = createHipAngle(((M_PI / 2) + PicthAngleToXForwardAxis)); //nach oben drehen
+    }
+
+    
+    start.pitchRadAdd(globalSideAdd);
+
+
+    //prevent bugs with Z rotation, just lock if Y not set to any dir
+    bool isSideWayTarget = (vec.Y != 0);
+    if (isSideWayTarget == false){
+        return;
+    }
+
+    //GOLBAL ROTATION ON YAW only if Y is set!
+    float yawAngleTarget = yawAngleTo(vec);
+    start.yawRadAdd(yawAngleTarget);
+
+    /*
+    //GLOBAL ROTATION ON ROLL - testing needed
+    //sollte nur hip rotieren und nicht ziel punkt schrotten
+    float rollAngleWeight = rollAngleTo(weight);
+    // *-1;
+    hip.rollRadAdd(rollAngleWeight);
+    knee.rollRadAdd(rollAngleWeight * -2);
+    */
+}
+
+
 
 
 
@@ -635,50 +783,57 @@ void BoneIk::resetAllRotations(){
 
 // IK NEW ALIKE BEHAIVIOUR ! TESTING NEEDED!
 
-//debug testing
-void BoneIk::inverseAll(){
-    foot.invert();
-    knee.invert();
-    hip.invert();
-}
+
 
 void BoneIk::rotateStartToTargetAndBuild(
     UWorld*world, 
     FVector &vec, 
     FVector &weight, 
-    MMatrix &offsetAndRotation,
+    MMatrix &offsetAndRotation, //hip matrix?
+    MMatrix &translationOfactor,
     FColor color,
     float displayTime
 ){
-    //rotateEndToTarget(vec, weight);
+
+    //fix offset test (move starting pos to floor if pivot of actor is passed)
+    /*
+    FVector adjustedVector = offsetAndRotation.getTranslation();
+    FVector offset = offsetToFloor();
+    adjustedVector -= offset;
+    offsetAndRotation.setTranslation(adjustedVector);
+    
+    */
 
     std::vector<MMatrix *> matrizen;
 
+    /*
     MMatrix foot1 = foot;
-    //foot1.invert();
     MMatrix knee1 = knee;
-    //knee1.invert();
     MMatrix hip1 = hip;
-    //hip1.invert();
+    */
 
+    MMatrix &foot1 = foot;
+    MMatrix &knee1 = knee;
+    MMatrix &hip1 = hip;
+   
+    
     foot1.resetRotation();
     knee1.resetRotation();
     hip1.resetRotation();
+    
 
     MMatrix empty; //NEW START
 
 
     //FVector vecCopy = vec * -1;
-    bool debugDisable = false;
-    if(!debugDisable)
-        rotateEndToTarget(vec, weight, empty, foot1, knee1, true);
-        /*
-        muss empty, foot und knee sein 
-        damit die winkel richtig sind. 
-        Empty to foot, -> first limb (analog hip)
-        foot to knee -> second limb
-        knee -> lastlimb (analog hand)
-        */
+    rotateEndToTarget(vec, weight, empty, foot1, knee1);
+    /*
+    muss empty, foot und knee sein 
+    damit die winkel richtig sind. 
+    Empty to foot, -> first limb (analog hip)
+    foot to knee -> second limb
+    knee -> lastlimb (analog hand)
+    */
 
     
 
@@ -702,119 +857,126 @@ void BoneIk::rotateStartToTargetAndBuild(
 
     
 
-    
+    /*
     build(
         world,
         offsetAndRotation,
         color,
         displayTime,
         matrizen 
+    );*/
+
+    MMatrix newStart = buildWithOutput(
+        world,
+        offsetAndRotation,
+        color,
+        displayTime,
+        matrizen
     );
 
+    //testing
+    //FVector copy = newStart.getTranslation();
+    //copy += FVector(0, 0, 100);
+    //newStart.setTranslation(copy);
 
-    //nicht so einfach alles, funktioniert nicht wie erwartet!
+    //will probably make matrix shoot in the air.
+    FVector newLocation = newStart.getTranslation();
+    FVector oldLocation = translationOfactor.getTranslation();
+
+    //Override translation
+    translationOfactor.setTranslation(newLocation); //GEHT NICHT! weil der hüftvektor falsch bestimmt wird
+
+    //DebugHelper::showLineBetween(world, FVector(0, 0, 0), newLocation, FColor::Yellow);
+    //DebugHelper::showLineBetween(world, FVector(0, 0, 0), oldLocation, FColor::Purple);
+    
 }
 
 
 
-//man könnte auch einfach vom fuß aus das rotate to target machen
-//und man übergibt was hüfte ist usw selbst
 
 
 
 
 
-/// IS NOT TESTED
-void BoneIk::rotateEndToTarget(
-    FVector &vec,
-    FVector &weight,
-    MMatrix &start,
-    MMatrix &middle,
-    MMatrix &end,
-    bool inverse
-)
-{
 
-    start.resetRotation();
-    middle.resetRotation();
-    end.resetRotation();
 
-    //etha reverse bauen
-    FVector zeroVec(0, 0, 0);
 
-    //normalize the target location if exceeding the bone lenght
-    float distance = FVector::Distance(zeroVec, vec);
-    if (distance > totalBoneLengthCopy)
+
+
+/// @brief interpolates the matricies and returns the final output
+/// @param world 
+/// @param offsetAndRotation 
+/// @param color 
+/// @param displayTime 
+/// @param matrizen 
+/// @return 
+MMatrix BoneIk::buildWithOutput(
+    UWorld *world,
+    MMatrix &offsetAndRotation,
+    FColor color, 
+    float displayTime,
+    std::vector<MMatrix*> &matrizen //must not be empty
+){
+
+    // -- dirty testing --
+
+    matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
+
+    //std::vector<MMatrix *> matrizen;
+    //matrizen.push_back(&offsetAndRotation);
+
+    FVector endVec = toFootTip;
+    // getMatricies(matrizen, endVec);
+    if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
+        return offsetAndRotation;
+    }
+
+    std::vector<FVector> resultDraw;
+
+    MMatrix result = *matrizen[0];
+    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
+    
+    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
+    //beide sollen nicht mit gezeichnet werden
+    for (int i = 1; i < matrizen.size(); i++)
     {
-        vec = vec.GetSafeNormal();
-        vec *= totalBoneLengthCopy;
+        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
+
+        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
+    }
+
+    //final vector
+    FVector outputVec = result * endVec;
+    resultDraw.push_back(outputVec);
+
+
+    //COPY THE FOOT MOVED AMOUNT
+    int size = resultDraw.size();
+    if (size > 1)
+    {
+        FVector &currentFootPos = resultDraw[size - 1];
+        //AB = B - A
+        movedDir = prevFootPos - currentFootPos;
+        prevFootPos = currentFootPos;
     }
 
 
-    // --- KNICK BASIS ---
-     
-    //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    float etha = 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
-    float angle = angleFromEtha(etha);
-    float hipAngle = createHipAngle(angle);
-    float kneeAngle = createKneeAngle(angle);
-
+    
    
-    //WEIGHT KNICK RICHTUNG
-    //anhand des wights dann knicken flippen
-    //also -x oder -z sorgen für einen invertierten knick
-    if(
-        (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
-        hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
-    ){ 
-        //both angles flip based on weight direction 
-        hipAngle *= -1;
-        kneeAngle *= -1;
-    }
 
-    //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
-    start.pitchRadAdd(hipAngle);   //hip nach vorne
-    middle.pitchRadAdd(kneeAngle); //knee to foot
-    end.pitchRadAdd(hipAngle);
-
-
-    //bis hier korrekt
-    //return;
-
-    // --- KNICK BASIS ENDE ---
-    //return;
-
-    // --- GLOBAL TO TARGET ROTATION ---
-    float PicthAngleToXForwardAxis = pitchAngleTo(vec);
-    float globalSideAdd = 0.0f;
-    //winkel manuell drehen weil unsigned
-    if(vec.Z < 0){
-        // pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
-        // 90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen
-        //globalSideAdd = ((M_PI / 2) - PicthAngleToXForwardAxis) *-1; // GEPRÜFT! RICHTIG!
-        globalSideAdd = createHipAngle(((M_PI / 2) - PicthAngleToXForwardAxis));
-    }
-    else
+    //draw
+    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
+    if (world != nullptr)
     {
-        //globalSideAdd = ((M_PI / 2) + PicthAngleToXForwardAxis) *-1; //-1 nach wie vor wegen hip angle
-        globalSideAdd = createHipAngle(((M_PI / 2) + PicthAngleToXForwardAxis)); //nach oben drehen
+        int off = 1; // nicht welt koordinaten berück sichtigen
+        for (int i = off; i < resultDraw.size(); i++)
+        {
+            FColor c = colors[i % colors.size()];
+            //c = color; //override for testing
+            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
+        }
     }
 
-    
-    start.pitchRadAdd(globalSideAdd);
-
-
-    //prevent bugs with Z rotation, just lock if Y not set to any dir
-    if(vec.Y == 0){
-        return;
-    }
-
-    //GOLBAL ROTATION ON YAW 
-    float yawAngleTarget = yawAngleTo(vec);
-    start.yawRadAdd(yawAngleTarget); 
-    //seltsame rotation wenn auf z = 0 bzw vec = (0,0,0) -> doof
-    if(vec.Z != 0){
-        
-    }
-    
+    //returns the final matrix
+    return result;
 }

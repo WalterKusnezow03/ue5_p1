@@ -3,6 +3,7 @@
 
 #include "p2/entities/customIk/BoneIk.h"
 #include "Kismet/KismetMathLibrary.h"
+#include <cmath>
 #include "p2/entities/customIk/IkActor.h"
 
 // Sets default values
@@ -17,12 +18,16 @@ AIkActor::AIkActor()
 void AIkActor::BeginPlay()
 {
 	Super::BeginPlay();
+	float legScaleCM = 200;
+
 
 	//init offset for now
-	offset = FVector(1000, -1000, 200);
+	FVector offset(1000, -1000, 200);
 	ownLocation.setTranslation(offset);
+	offset -= FVector(0, 0, legScaleCM);
+	ownLocationFoot.setTranslation(offset);
 
-	float legScaleCM = 200;
+	
 	leg1.setupBones(legScaleCM);
 	leg2.setupBones(legScaleCM);
 	leg2.setDegreeInital(180); //testing for offset movement
@@ -55,11 +60,18 @@ void AIkActor::BeginPlay()
 	//testing values for arm movement
 	targetA = FVector(1.0f, -0.5f, 2); //z 0  
 	targetB = FVector(1.5f, 1.0f, -1);
+	targetB = targetA - FVector(0, 0, 1); //testing
+
 	targetA *= 100; //auf cm skalieren.
 	targetB *= 100;
 
 	//testing
 	//ownOrientation.yawRadAdd(MMatrix::degToRadian(90));
+
+	//testing look at, works
+	//FVector target(0, 0, 0);
+	//LookAt(target);
+
 	//float initialDegree = 0; //45
 	//ownOrientation.yawRadAdd(MMatrix::degToRadian(initialDegree));
 	//unklar wie sich dann bewegung verhält, ob x forward bleibt
@@ -84,11 +96,6 @@ void AIkActor::Tick(float DeltaTime)
 	//updatePositionBasedOnMovedDistance(leg1);
 
 
-
-	//arms new, must be added
-	FVector armOff = offset + FVector(0, 0, 100); // up offset for arms
-	//arm1.build(GetWorld(), armOff, FColor::Purple, DeltaTime * 2);
-
 	
 	//neu braucht testing!
 	MMatrix orientationLocation = ownLocation * ownOrientation; //lesen rückwärts:
@@ -101,36 +108,24 @@ void AIkActor::Tick(float DeltaTime)
 
 	//orientation rotation matrix dann reingeben als first node / limb 
 	arm1.build(GetWorld(), armMat, FColor::Purple, DeltaTime * 2);
-	//leg2.build(GetWorld(), orientationLocation, FColor::Black, DeltaTime * 2); //new matrix offset
+	
+	leg2.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Black); //MATRIX OFFSET
+	updatePositionBasedOnMovedDistance(leg2);
 
-	//DISABLED ANIMATION FOR TESTUNG
-	//leg2.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Black); //MATRIX OFFSET
 
-	//fuss geht nicht?
-	//leg1.build(GetWorld(), orientationLocation, FColor::Red, DeltaTime * 2); //new matrix offset
-	//leg1.tickLegMotion(GetWorld(), DeltaTime, orientationLocation, FColor::Red);
-	//TEST
-	MMatrix offsetLeg;
-	FVector offsetLegVec(0, 50, 0);
-	offsetLeg.setTranslation(offsetLegVec);
 
-	MMatrix orientationLocation2 = orientationLocation * offsetLeg; //RT = T * R
-	//leg1.tickLegMotion(GetWorld(), DeltaTime, orientationLocation2, FColor::Red);
 
 	//debug draw of targets
+	//arms new, must be added
+	FVector armOff = orientationLocation.getTranslation() + FVector(0, 0, 100); // up offset for arms
+	
 	FVector t1 = targetA;
 	FVector t2 = targetB;
 	t1 += armOff;
 	t2 += armOff;
 	DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Green, DeltaTime * 2); //draw line of arm movement
 	
-	DebugHelper::showLineBetween(
-		GetWorld(),
-		orientationLocation.getTranslation(), 
-		orientationLocation2.getTranslation(),  
-		FColor::Green, 
-		DeltaTime * 2.0f
-	); //draw line of arm movement
+	
 
 	//arm pos follow testing (works as expected, muss aber refactured werden)
 	debugDynamicArmTick(DeltaTime);
@@ -151,7 +146,9 @@ void AIkActor::Tick(float DeltaTime)
 	targetHip *= 100;
 
 	FVector weight(- 1, 0, 0);
-	
+	/*
+	disbaled in favour of testing dynamic movement
+
 	leg1.rotateStartToTargetAndBuild(
 		GetWorld(),
 		targetHip,
@@ -159,15 +156,17 @@ void AIkActor::Tick(float DeltaTime)
 		legMat,
 		FColor::Emerald, //is disabled intenally for better debug understanding
 		DeltaTime * 2.0f
-	);
+	);*/
 	
 
 	//compare
+	/*
 	weight = FVector(1, 0, 0);
 	FVector targetC = FVector(1.0f, 0.0f, -1.5f);
 	targetC *= 100;
 	leg2.rotateEndToTarget(targetC, weight);
 	leg2.build(GetWorld(), orientationLocation, FColor::Black, DeltaTime * 2); //new matrix offset
+	*/
 }
 
 
@@ -182,16 +181,26 @@ void AIkActor::updateBone(BoneIk &bone, float deltaTime, FColor color){
 }
 
 
-
+//CAUTION, will be deprecated (?)
 void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 	//ACHTUNG: TODO: hier muss x und y gemessen werden damit
 	//sich das bein / der körper auch in die richtige richtung bewegt!
 	
 	FVector pos = trackedBone.movedLastTick();
+	pos.X = std::max(0.0, pos.X);
+	pos.Y = std::max(0.0, pos.Y);
+
+	pos.Z = 0; //block Z for now.
+	ownLocation += pos;
+	ownLocationFoot += pos;
+
+	/*
+	ownLocation.setTranslation(offset);
 	
-	/*offset += pos;
-	ownLocation.setTranslation(pos);
-	return;*/
+
+
+	FVector offset = ownLocation.getTranslation();
+	FVector offsetB = ownLocationFoot.getTranslation();
 
 	float xMoved = pos.X; // say this is forward for now
 	float yMoved = pos.Y;
@@ -205,7 +214,7 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 	if(yMoved > 0){
 		offset.Y += yMoved;
 		ownLocation.setTranslation(offset);
-	}
+	}*/
 
 	
 }
@@ -217,7 +226,11 @@ void AIkActor::updatePositionBasedOnMovedDistance(BoneIk &trackedBone){
 void AIkActor::LookAt(FVector TargetLocation) 
 {
     // Calculate the rotation needed to look at the target location
-    FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	MMatrix transform = currentTransform();
+	FVector location = transform.getTranslation();
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(location, TargetLocation);
+
+	//FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 	float zDegree = LookAtRotation.Yaw;
 
 	ownOrientation.yawRad(MMatrix::degToRadian(zDegree));
@@ -252,4 +265,45 @@ void AIkActor::debugDynamicArmTick(float DeltaTime){
 	arm1.rotateEndToTarget(posNew, weight);
 
 
+
+	//debug offste
+	//RT = T * R
+	//MMatrix legMat = ownOrientation * ownLocation;
+	MMatrix legMat = currentFootTransform(); //foot instead of hip. Is intiial offset!
+	weight = FVector(1, 0, 0);
+	FVector target = posNew;
+	
+	leg1.rotateStartToTargetAndBuild(
+		GetWorld(),
+		target,
+		weight,
+		legMat,
+		ownLocation,
+		FColor::Emerald, //is disabled intenally for better debug understanding
+		DeltaTime * 2.0f
+	);
+
+
+}
+
+
+/// @brief returns the current translation and rotation in world in correct order as expected
+/// HIP PIVOT TRANSFORM ONLY
+/// @return current Transform Matrix by value
+MMatrix AIkActor::currentTransform(){
+	// TR = R * T;
+	// RT = T * R;
+	//gewünscht ist jetzt erst an end punkt und dann um eigene
+	//achse zu rotieren, also (geprüft!):
+	MMatrix rotationTransform = ownLocation * ownOrientation;
+	return rotationTransform;
+}
+
+/// @brief returns the current translation and rotation in world in correct order as expected
+/// LOWER LEG PIVOT TRANSFORM ONLY
+/// @return current Transform Matrix by value
+MMatrix AIkActor::currentFootTransform(){
+	//RT = T * R
+	MMatrix rotationTransform = ownLocationFoot * ownOrientation;
+	return rotationTransform;
 }
