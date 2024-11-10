@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/entities/customIk/BoneIk.h"
 #include "IkActor.generated.h"
 
@@ -23,9 +24,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	//own method
+	void SetLocation(FVector &location);
 
 private:
+	float legScaleCM = 200;
 	float legScaleMeters = 2.0f;
 
 	//depreacted sort of
@@ -40,26 +44,78 @@ private:
 	class BoneIk leg2;
 	class BoneIk arm1;
 
-	void updateBone(BoneIk &bone, float deltaTime, FColor color);
+	//GLOBAL TRANSFORM
+	MMatrix ownLocation; 
+	MMatrix ownLocationFoot;
+	MMatrix ownOrientation;
+	MMatrix currentTransform();
+	MMatrix currentFootTransform();
 
 	
-	MMatrix ownLocation; //GLOBAL MATRIX
-	MMatrix ownLocationFoot;
-	void updatePositionBasedOnMovedDistance(BoneIk &boneToTrack);
 
 	void LookAt(FVector TargetLocation);
 
-	//testing needed and refacturing:
-	MMatrix ownOrientation;
 
 
 	//new testing more arm targets
 	FVector targetA;
 	FVector targetB;
+	FVector targetC;
+	FVector targetD;
 	float timeCopy;
 	int direction = 1;
 	void debugDynamicArmTick(float DeltaTime);
+	
 
-	MMatrix currentTransform();
-	MMatrix currentFootTransform();
+	FVector legTarget;
+	float legTime = 0.0f;
+
+	
+
+
+
+	//debug var for hip leg switch
+
+
+
+
+
+
+
+	//debug:
+	float debugFlipTime = 0.0f;
+	float debugStandAloneTime = 0.0f;
+	void standAloneMove(BoneIk &bone, float DeltaTime);
+	//void standAloneMoveEndToTarget(BoneIk &bone, FVector target, float DeltaTime);
+	
+	void standAloneMoveStartFromTo(BoneIk &bone, FVector current, FVector target, float DeltaTime);
+	void standAloneMoveEndFromTo(BoneIk &bone, FVector start, FVector target, float DeltaTime);
+
+	
+
+	FVector hipRelativeToFootRelativeTarget(FVector &other);
+
+	//später prüfen
+	FVector worldToHipRelativeTarget(FVector &other);
+
+
+
+	//NEU
+	class KeyFrameAnimation animationKeys_1;
+	class KeyFrameAnimation legAnimationKeys;
+	void standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
+	void standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
+
+	void plotNextFrameToGround(KeyFrameAnimation &animation);
+	bool performRaycast(FVector &Start, FVector &dir, FVector &outputHit);
+
+	void transformFromWorldToLocalCoordinates(FVector &position);
+
+	void standAloneMoveStartFromTo(
+		BoneIk &bone,
+		FVector start,
+		FVector target,
+		float DeltaTime,
+		float totalTime // custom time progress
+	);
 };

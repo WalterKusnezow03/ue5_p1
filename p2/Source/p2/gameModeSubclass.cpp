@@ -41,14 +41,6 @@ AgameModeSubclass::AgameModeSubclass()
     a.loadAssets();
     
 
-
-
-    //remember at some point the level must be reset too: (maybe just before that is a good approach!)
-    
-    
-    //worldLevel::initWorld(GetWorld());
-
-   
 }
 
 // ----- DEFAULT METHODS -----

@@ -31,14 +31,10 @@ void BoneIk::setupBones(float completeDistance){
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
 }
 
-/*
-/// @brief creates the vector from hip to floor fromoriginal positions
-/// @return 
-FVector BoneIk::offsetToFloor(){
-    return FVector(0, 0, totalBoneLengthCopy);
-}*/
 
-FVector BoneIk::offsetToFloor(){
+/// @brief returns the current local end pos, might be renamed to currentLocalEndInterpolatedPos
+/// @return 
+FVector BoneIk::currentLocalFootInterpolatedPos(){
     //matrizen interpolieren um richtungsvektor zu erhalten
     std::vector<MMatrix *> matricies;
     FVector foottip;
@@ -51,6 +47,31 @@ FVector BoneIk::offsetToFloor(){
 
     return result.getTranslation();
 }
+
+/**
+ * TESTING NEEDED!
+ */
+FVector BoneIk::currentLocalHipInterpolatedPos(){
+
+    FVector fromHip = currentLocalFootInterpolatedPos();
+    return fromHip * -1; //es ist halt genau umgedreht, stell es dir vor!
+}
+
+
+/// @brief normalizes a target to the max radius (total bone length)
+/// @param target 
+void BoneIk::normalizeTarget(FVector &target){
+    //normalize the target location if exceeding the bone lenght
+    FVector zeroVec(0, 0, 0);
+    float distance = FVector::Distance(zeroVec, target);
+    if (distance > totalBoneLengthCopy)
+    {
+        target = target.GetSafeNormal();
+        target *= totalBoneLengthCopy;
+    }
+}
+
+
 
 /// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
 /// @param etha etha fraction, will be clamped
@@ -177,85 +198,21 @@ void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTi
     build(world, m, color, displayTime);
 }
 
-/// @brief returns a vector how much and which direction the bone moved with
-/// the last time it was ticked
-/// @return FVector moved since last tick
-FVector BoneIk::movedLastTick(){
-    FVector copy = movedDir;
-    //reset components
-    movedDir.X = 0;
-    movedDir.Y = 0;
-    movedDir.Z = 0;
-    return copy;
-}
-
-
 
 
 void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime){
 
+
     std::vector<MMatrix *> matrizen;
-    matrizen.push_back(&offsetAndRotation);
-
     FVector endVec;
-    getMatricies(matrizen, endVec); 
-    if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
-        return;
-    }
-
-    std::vector<FVector> resultDraw;
-
-    MMatrix result = *matrizen[0];
-    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
-    
-    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
-    //beide sollen nicht mit gezeichnet werden
-    for (int i = 1; i < matrizen.size(); i++)
-    {
-        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
-
-        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
-    }
-
-    //final vector
-    FVector outputVec = result * endVec;
-    resultDraw.push_back(outputVec);
-
-
-    //COPY THE FOOT MOVED AMOUNT
-    int size = resultDraw.size();
-    if (size > 1)
-    {
-        FVector &currentFootPos = resultDraw[size - 1];
-        //AB = B - A
-        movedDir = prevFootPos - currentFootPos;
-        prevFootPos = currentFootPos;
-    }
-
-
-    
-   
-
-    //draw
-    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan};
-    if (world != nullptr)
-    {
-        int off = 1; // nicht welt koordinaten berück sichtigen
-        for (int i = off; i < resultDraw.size(); i++)
-        {
-            FColor c = colors[i % colors.size()];
-            c = color; //override for testing
-            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
-        }
-    }
-
-
+    getMatricies(matrizen, endVec);
+    build(world, offsetAndRotation, color, displayTime, matrizen);
 
 }
 
 
 
-// --- TESTING --- ---> color full leg for debug!
+
 void BoneIk::build(
     UWorld *world,
     MMatrix &offsetAndRotation,
@@ -294,19 +251,6 @@ void BoneIk::build(
     //final vector
     FVector outputVec = result * endVec;
     resultDraw.push_back(outputVec);
-
-
-    //COPY THE FOOT MOVED AMOUNT
-    int size = resultDraw.size();
-    if (size > 1)
-    {
-        FVector &currentFootPos = resultDraw[size - 1];
-        //AB = B - A
-        movedDir = prevFootPos - currentFootPos;
-        prevFootPos = currentFootPos;
-    }
-
-
     
    
 
@@ -318,7 +262,7 @@ void BoneIk::build(
         for (int i = off; i < resultDraw.size(); i++)
         {
             FColor c = colors[i % colors.size()];
-            //c = color; //override for testing
+            c = color; //override for testing
             DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
         }
     }
@@ -326,20 +270,6 @@ void BoneIk::build(
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -396,13 +326,6 @@ void BoneIk::tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix
     float pitchThetaForLegSwingRadian = abstractKinematicFunctions::legSwingPitch(legSwingRadian);
 	tickAndBuild(world, offsetMatrix, etha, pitchThetaForLegSwingRadian, displayTime, color);
 
-
-
-
-    //for other lag pause
-    if(!halfReached && (deg >= degreePerSecond / 2)){
-        halfReached = true;
-    }
 }
 
 
@@ -417,17 +340,6 @@ void BoneIk::tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix
 
 
 
-
-
-//util
-
-float BoneIk::halfTimePhase(){
-    return 0.5f; //measured in seconds, 0.5 less always?
-}
-
-bool BoneIk::halfIsReached(){
-    return halfReached;
-}
 
 
 
@@ -463,108 +375,17 @@ void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
 
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
-/// x is forward axis, all motion will be made relative to (1,0,0) x - axis
-/// @param vec target location relative to (1,0,0) -> is forward look dir
-/// @param weight weight direction on knee / (ellbow) - only x and z will be used
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
-
-    rotateEndToTarget(vec, weight, hip, knee, foot); //testing needed
-    return;
-    /*
-    //problem: z wert wirkt wie abs winkel!
-
-    resetAllRotations();
-
-    //etha reverse bauen
-    FVector zeroVec(0, 0, 0);
-
-    //normalize the target location if exceeding the bone lenght
-    float distance = FVector::Distance(zeroVec, vec);
-    if (distance > totalBoneLengthCopy)
-    {
-        vec = vec.GetSafeNormal();
-        vec *= totalBoneLengthCopy;
-    }
-
-
-    // --- KNICK BASIS ---
-     
-    //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    float etha = createEthaFromDistance(distance);
-    // 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
-    float angle = angleFromEtha(etha);
-    float hipAngle = createHipAngle(angle);
-    float kneeAngle = createKneeAngle(angle);
-
-    //WEIGHT KNICK RICHTUNG
-    //anhand des wights dann knicken flippen
-    //also -x oder -z sorgen für einen invertierten knick
-    if(
-        (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
-        hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
-    ){ 
-        //both angles flip based on weight direction 
-        hipAngle *= -1;
-        kneeAngle *= -1;
-    }
-    //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
-    hip.pitchRadAdd(hipAngle);   //hip nach vorne
-    knee.pitchRadAdd(kneeAngle); //knee to foot
-    foot.pitchRadAdd(hipAngle);  //foot gleich zu hip
-
-    // --- KNICK BASIS ENDE ---
-
-    
-   
-    // --- GLOBAL TO TARGET ROTATION ---
-    float PicthAngleToXForwardAxis = pitchAngleTo(vec);
-    float globalSideAdd = 0.0f;
-    //winkel manuell drehen weil unsigned
-    if(vec.Z < 0){
-        // pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
-        // 90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen
-        //globalSideAdd = ((M_PI / 2) - PicthAngleToXForwardAxis) *-1; // GEPRÜFT! RICHTIG!
-        globalSideAdd = createHipAngle(((M_PI / 2) - PicthAngleToXForwardAxis));
-    }
-    else
-    {
-        //globalSideAdd = ((M_PI / 2) + PicthAngleToXForwardAxis) *-1; //-1 nach wie vor wegen hip angle
-        globalSideAdd = createHipAngle(((M_PI / 2) + PicthAngleToXForwardAxis)); //nach oben drehen
-    }
-
-
-    hip.pitchRadAdd(globalSideAdd);
-
-    
-    //GOLBAL ROTATION ON YAW 
-    float yawAngleTarget = yawAngleTo(vec);
-    hip.yawRadAdd(yawAngleTarget); //nur die hip alleine rotieren, rotiert alles
-
-
-    */
-    return;
-
-    /**
-     * roll funktioniert nicht wie erwartet!
-      */
-
-    //GLOBAL ROTATION ON ROLL - testing needed
-    //sollte nur hip rotieren und nicht ziel punkt schrotten
-    float rollAngleWeight = rollAngleTo(weight);
-    //*-1;
-    hip.rollRadAdd(rollAngleWeight);
-    knee.rollRadAdd(rollAngleWeight * -2);
-   
-
+    rotateEndToTarget(vec, weight, hip, knee, foot);
 }
 
 
-/// @brief is tested for backward kinematics!
+/// @brief is tested for forward and backward kinematics!
 /// @param vec local target when x is forward
 /// @param weight weight direction on middle joint limb
-/// @param start start limb (recommenden to be the empty starting one)
+/// @param start start limb (foot or hip) (recommenden to be the empty starting einheits matrix)
 /// @param middle middle limb joint -> ankle / ell / knee limb
-/// @param end end limb 
+/// @param end end limb foot / hand or hip / opposite of start!
 void BoneIk::rotateEndToTarget(
     FVector &vec,
     FVector &weight,
@@ -594,6 +415,7 @@ void BoneIk::rotateEndToTarget(
      
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
     float etha = createEthaFromDistance(distance);
+    currentEtha = etha;
     // 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
     float angle = angleFromEtha(etha);
     float hipAngle = createHipAngle(angle);
@@ -618,11 +440,9 @@ void BoneIk::rotateEndToTarget(
     end.pitchRadAdd(hipAngle);
 
 
-    //bis hier korrekt
-    //return;
 
     // --- KNICK BASIS ENDE ---
-    //return;
+    
 
     // --- GLOBAL TO TARGET ROTATION ---
     float PicthAngleToXForwardAxis = pitchAngleTo(vec);
@@ -655,7 +475,7 @@ void BoneIk::rotateEndToTarget(
     start.yawRadAdd(yawAngleTarget);
 
     /*
-    //GLOBAL ROTATION ON ROLL - testing needed
+    //GLOBAL ROTATION ON ROLL - testing needed - BROKEN
     //sollte nur hip rotieren und nicht ziel punkt schrotten
     float rollAngleWeight = rollAngleTo(weight);
     // *-1;
@@ -675,12 +495,11 @@ void BoneIk::rotateEndToTarget(
 /// like a top view 2d rotation
 /// (apply only on first joint if rotation along axis wanted)
 /// @param localTarget 
-/// @return 
+/// @return signed rotation on xy pane from top
 float BoneIk::yawAngleTo(FVector &localTarget){
-    //FVector forward(1, 0, 0); //sollte member var werden ggf
+
     FVector2D forward2d(1, 0);
     
-
     FVector2D xy(localTarget.X, localTarget.Y);
     xy = xy.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
@@ -707,8 +526,8 @@ float BoneIk::yawAngleTo(FVector &localTarget){
 
 /// @brief calculates the angle on xz pane to a local target (making the)
 /// pitch rotation for example for the hip
-/// @param localTarget 
-/// @return 
+/// @param localTarget target when x is forward
+/// @return abs angle on xz pane, NOT Signed
 float BoneIk::pitchAngleTo(FVector &localTarget){
     
     FVector2D forward2d(1, 0);
@@ -728,7 +547,7 @@ float BoneIk::pitchAngleTo(FVector &localTarget){
 /// roll rotation for example for the hip
 /// (apply only on first joint if rotation along axis wanted)
 /// @param localTarget 
-/// @return roll angle between forward and target
+/// @return roll angle between forward and target, signed!
 float BoneIk::rollAngleTo(FVector &localTarget){
     //FVector forward(1, 0, 0); //sollte member var werden ggf
     FVector2D forward2d(1, 0);
@@ -746,7 +565,7 @@ float BoneIk::rollAngleTo(FVector &localTarget){
 }
 
 
-/// @brief will tell if a angle between vectors is negative or not
+/// @brief will tell if a angle between vectors is negative or not (Determines the sign of angle)
 /// @param aX x comp of vector a
 /// @param aY y comp of vector a
 /// @param oX x comp of vector b
@@ -754,6 +573,11 @@ float BoneIk::rollAngleTo(FVector &localTarget){
 /// @return +1 for counter clock wise rotation or -1. Multiply your angle with the returned
 /// value to make your angle signed 
 int BoneIk::flipRotation(float aX, float aY, float oX, float oY){
+    //kreuzproduk 2D
+    //A:=(a,b,0) B:=(c,d,0)
+    //normal := A cross B
+    //normal.Z = ad - bc 
+
     // Bestimmen der Drehrichtung durch das Kreuzprodukt
     float crossProduct_z = aX * oY - aY * oX;
 
@@ -767,7 +591,7 @@ int BoneIk::flipRotation(float aX, float aY, float oX, float oY){
 
 /// @brief resets the rotationof hip knee and foot to original position
 void BoneIk::resetAllRotations(){
-    float rad = MMatrix::degToRadian(0);
+    //float rad = MMatrix::degToRadian(0);
 
     hip.resetRotation();
     knee.resetRotation();
@@ -781,90 +605,47 @@ void BoneIk::resetAllRotations(){
 
 
 
-// IK NEW ALIKE BEHAIVIOUR ! TESTING NEEDED!
 
 
 
-void BoneIk::rotateStartToTargetAndBuild(
+/// @brief DESIGNED FOR FROM FOOT ADJUSTING HIP!
+/// @param world 
+/// @param vec target relative to foot
+/// @param weight weight dir of angle
+/// @param offsetAndRotation FOOT LOCATION WORLD (for now extended variant)
+/// expects correct starting matrix where start limb is located originally (hip or grounded foot)
+/// @param translationOfactor overrides translation of actor based on where hip was moved
+/// @param color 
+/// @param displayTime 
+void BoneIk::rotateStartToTargetAndBuild( //works as expected
     UWorld*world, 
     FVector &vec, 
     FVector &weight, 
-    MMatrix &offsetAndRotation, //hip matrix?
+    MMatrix &offsetAndRotation, 
     MMatrix &translationOfactor,
     FColor color,
     float displayTime
 ){
+    weight *= -1; //sonst falschrum, umdrehen weil rechnung umgedreht! nicht ändern, stimmt so
 
-    //fix offset test (move starting pos to floor if pivot of actor is passed)
-    /*
-    FVector adjustedVector = offsetAndRotation.getTranslation();
-    FVector offset = offsetToFloor();
-    adjustedVector -= offset;
-    offsetAndRotation.setTranslation(adjustedVector);
-    
-    */
 
     std::vector<MMatrix *> matrizen;
-
-    /*
-    MMatrix foot1 = foot;
-    MMatrix knee1 = knee;
-    MMatrix hip1 = hip;
-    */
 
     MMatrix &foot1 = foot;
     MMatrix &knee1 = knee;
     MMatrix &hip1 = hip;
-   
-    
-    foot1.resetRotation();
-    knee1.resetRotation();
-    hip1.resetRotation();
-    
 
-    MMatrix empty; //NEW START
+    MMatrix empty; //NEW START (Hip but backwards)
 
 
-    //FVector vecCopy = vec * -1;
     rotateEndToTarget(vec, weight, empty, foot1, knee1);
-    /*
-    muss empty, foot und knee sein 
-    damit die winkel richtig sind. 
-    Empty to foot, -> first limb (analog hip)
-    foot to knee -> second limb
-    knee -> lastlimb (analog hand)
-    */
-
-    
-
-
-
+   
 
     
     matrizen.push_back(&empty); //damit first limb gezeichnet wird
-
-    bool forward = false;
-    if(forward){
-        matrizen.push_back(&hip1);
-        matrizen.push_back(&knee1);
-        matrizen.push_back(&foot1);
-    }else{
-        //empty.pitch(- 45); //test, new first part, as expected, flipped sign as always for no fucking reason on pitch
-        matrizen.push_back(&foot1);
-        matrizen.push_back(&knee1);
-        matrizen.push_back(&hip1);
-    }
-
-    
-
-    /*
-    build(
-        world,
-        offsetAndRotation,
-        color,
-        displayTime,
-        matrizen 
-    );*/
+    matrizen.push_back(&foot1);
+    matrizen.push_back(&knee1);
+    matrizen.push_back(&hip1); //damit end limb geziechnet wird (?unklar, einfach so lassen)
 
     MMatrix newStart = buildWithOutput(
         world,
@@ -874,18 +655,14 @@ void BoneIk::rotateStartToTargetAndBuild(
         matrizen
     );
 
-    //testing
-    //FVector copy = newStart.getTranslation();
-    //copy += FVector(0, 0, 100);
-    //newStart.setTranslation(copy);
-
     //will probably make matrix shoot in the air.
     FVector newLocation = newStart.getTranslation();
-    FVector oldLocation = translationOfactor.getTranslation();
 
-    //Override translation
-    translationOfactor.setTranslation(newLocation); //GEHT NICHT! weil der hüftvektor falsch bestimmt wird
+    //Override translation of actor (hip)
+    translationOfactor.setTranslation(newLocation); 
 
+    // -- debug draw --
+    //FVector oldLocation = translationOfactor.getTranslation();
     //DebugHelper::showLineBetween(world, FVector(0, 0, 0), newLocation, FColor::Yellow);
     //DebugHelper::showLineBetween(world, FVector(0, 0, 0), oldLocation, FColor::Purple);
     
@@ -950,19 +727,6 @@ MMatrix BoneIk::buildWithOutput(
     resultDraw.push_back(outputVec);
 
 
-    //COPY THE FOOT MOVED AMOUNT
-    int size = resultDraw.size();
-    if (size > 1)
-    {
-        FVector &currentFootPos = resultDraw[size - 1];
-        //AB = B - A
-        movedDir = prevFootPos - currentFootPos;
-        prevFootPos = currentFootPos;
-    }
-
-
-    
-   
 
     //draw
     std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
@@ -972,11 +736,172 @@ MMatrix BoneIk::buildWithOutput(
         for (int i = off; i < resultDraw.size(); i++)
         {
             FColor c = colors[i % colors.size()];
-            //c = color; //override for testing
+            c = color; //override own color from params
             DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
         }
     }
 
     //returns the final matrix
     return result;
+}
+
+
+
+
+
+
+
+
+
+/**
+ * NEW TARGET MOVEMENT AND UPDATE MATRIX
+*/
+void BoneIk::rotateEndToTargetAndBuild(
+    UWorld*world, 
+    FVector &target, 
+    FVector &weight, 
+    MMatrix &offsetAndRotation, 
+    MMatrix &translationOfactorFoot,
+    FColor color,
+    float displayTime
+){
+    rotateEndToTarget(target, weight); //DeltaTime);
+
+    std::vector<MMatrix *> matrizen;
+    FVector footTip;
+    getMatricies(matrizen, footTip);
+    
+
+    MMatrix newStart = buildWithOutput(
+        world,
+        offsetAndRotation,
+        color,
+        displayTime,
+        matrizen
+    );
+
+    //will probably make matrix shoot in the air.
+    FVector newLocation = newStart.getTranslation();
+
+    //Override translation of actor (FOOT!)
+    translationOfactorFoot.setTranslation(newLocation);
+
+}
+
+
+
+
+//new method with hip adjust on runtime
+void BoneIk::rotateEndToTargetAndBuild(
+    UWorld*world, 
+    FVector &target, 
+    FVector &weight, 
+    MMatrix &offsetAndRotation, 
+    MMatrix &translationOfactorFoot,
+    MMatrix &translationOfactorhip, //hip adjust new
+    FColor color,
+    float displayTime
+){
+    //adjust hip based on distance, das muss im actor passieren, nicht hier!
+    //UNKLAR!
+    //wenn der frame projected wurde muss doch der knochen das hip nachzieehn wenn nötig
+    //unklar warum das hier nicht geht / zu viel ist!
+    //KÖNNTE JEDENFALLS AUCH IM ACTOR PASSIEREN!
+    FVector offset;
+    if(!isTragetInRange(target, offset)){
+            
+        //in range of one bone max
+        FVector zeroVec(0, 0, 0);
+        float length = std::abs(FVector::Dist(zeroVec, offset));
+        if(length < totalBoneLengthCopy){
+
+            //rotateStartToTargetAndBuild(); //DAS VIELLEICHT TESTEN!
+
+            //translationOfactorhip += offset; //update offset for next frame
+            FVector rawZ(0, 0, offset.Z);
+            //translationOfactorhip += rawZ;
+            translationOfactorhip += offset;
+            
+            DebugHelper::showLineBetween(
+                world,
+                offsetAndRotation.getTranslation(),
+                offsetAndRotation.getTranslation() + rawZ,
+                FColor::Blue
+            );
+        }
+        
+        
+    }
+
+    rotateEndToTarget(target, weight); //DeltaTime);
+
+    std::vector<MMatrix *> matrizen;
+    FVector footTip;
+    getMatricies(matrizen, footTip);
+    
+
+    MMatrix newStart = buildWithOutput(
+        world,
+        offsetAndRotation,
+        color,
+        displayTime,
+        matrizen
+    );
+
+    //will probably make matrix shoot in the air.
+    FVector newLocation = newStart.getTranslation();
+
+    //Override translation of actor (FOOT!)
+    translationOfactorFoot.setTranslation(newLocation);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * NEW TESTING SECTION
+ * 
+ * todo:
+ * target in range checken, wenn nein muss hip angepasst werden!
+ * extra methode mit zu target und hip anpassung
+ * 
+ */
+
+bool BoneIk::isTargetInRange(FVector &other){
+    FVector zeroVec(0, 0, 0);
+    float length = FVector::Dist(zeroVec, other);
+    return length < totalBoneLengthCopy;
+}
+
+/// @brief direction to offset will be saved in second param if vector wasnt in range of bone
+/// @param other 
+/// @param fromRangeOffset 
+/// @return 
+bool BoneIk::isTragetInRange(FVector &other, FVector &fromRangeOffset){
+    FVector zeroVec(0, 0, 0);
+    float length = FVector::Dist(zeroVec, other);
+
+    length *= 0.95f; //be friendly, allow floating point errors. DO NOT REMOVE
+
+    bool inRange = length <= totalBoneLengthCopy;
+    if(!inRange && length != 0){
+
+        FVector normalizedTarget = other;
+        normalizeTarget(normalizedTarget);
+
+        //output copy from outer radius to target
+        fromRangeOffset = other - normalizedTarget; // AB = B - A;
+        return false;
+    }
+
+    return true;
 }

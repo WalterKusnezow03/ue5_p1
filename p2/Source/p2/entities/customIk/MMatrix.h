@@ -21,6 +21,8 @@ public:
 	FVector getTranslation();
 
 	void operator+=(FVector &other);
+	void operator-=(FVector &other);
+
 	void operator+=(MMatrix &other);
 	void operator*=(MMatrix & other);
 

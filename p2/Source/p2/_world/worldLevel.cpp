@@ -24,6 +24,7 @@ OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
 
 
+/// IS RESET FROM GAME MODE SUBCLASS, MUST BE CALLED ON END PLAY!
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
 /// -> outpostManager: holds all outposts and assigns them on request

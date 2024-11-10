@@ -1,0 +1,34 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/**
+ * 
+ */
+class P2_API TargetInterpolator
+{
+public:
+	TargetInterpolator();
+	~TargetInterpolator();
+
+	void setTarget(FVector from, FVector toTarget, float timeToFrameIn);
+	void overrideTarget(FVector totarget);
+	bool hasReachedTarget();
+	bool hasTargetSetup();
+
+
+	FVector interpolate(float DeltaTime);
+
+private:
+	FVector from;
+	FVector target;
+
+	float deltaTime = 0.0f;
+	float timeToFrame;
+	bool reached = false;
+	float skalar(float timeDistance);
+
+	bool targetSetup = false;
+};

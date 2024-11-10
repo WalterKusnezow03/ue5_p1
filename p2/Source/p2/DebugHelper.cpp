@@ -100,9 +100,9 @@ void DebugHelper::showScreenMessage(FString s, FVector2D a, FVector2D b, FColor 
 	FString xPart = connect(a.X, b.X);
 	FString yPart = connect(a.Y, b.Y);
 
-	sOut = sOut + TEXT("\n") +
-				   xPart + TEXT("\n") +
-				   yPart + TEXT("\n");
+	sOut = sOut + TEXT("\n x:") +
+		   xPart + TEXT("\n y:") +
+		   yPart + TEXT("\n");
 
 	showScreenMessage(sOut, color);
 }
@@ -123,9 +123,9 @@ void DebugHelper::showScreenMessage(FString s, FVector a, FVector b, FColor colo
 }
 
 FString DebugHelper::connect(int a, int b){
-	FString out = FString::Printf(TEXT("%d"), a);
-	out += TEXT(" ");
-	out += FString::Printf(TEXT("%d"), b);
+	FString out = FString::Printf(TEXT("( %d"), a);
+	out += TEXT(" )( ");
+	out += FString::Printf(TEXT("%d )"), b);
 	return out;
 }
 

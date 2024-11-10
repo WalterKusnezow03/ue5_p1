@@ -47,11 +47,8 @@ public:
 	);
 
 	void tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix, FColor color); 
-	float halfTimePhase();
+	
 
-	bool halfIsReached();
-
-	FVector movedLastTick();
 
 	//rotation of whole bone - starting node
 	void rotateFirstLimbDeg(float xDeg, float yDeg, float zDeg);
@@ -78,6 +75,29 @@ public:
 		float displayTime
 	);
 
+	//new with foot pos update
+	void rotateEndToTargetAndBuild(
+		UWorld *world,
+		FVector &vec,
+		FVector &weight,
+		MMatrix &offsetAndRotation,
+		MMatrix &translationOfactor,
+		FColor color,
+		float displayTime
+	);
+
+	//new with foot pos and hip pos adjustment
+	void rotateEndToTargetAndBuild(
+		UWorld *world,
+		FVector &target,
+		FVector &weight,
+		MMatrix &offsetAndRotation,
+		MMatrix &translationOfactorFoot,
+		MMatrix &translationOfactorhip,
+		FColor color,
+		float displayTime
+	);
+
 	void inverseAll();
 
 private:
@@ -85,6 +105,7 @@ private:
 	float angleFromEtha(float etha);
 	float createHipAngle(float angle);
 	float createKneeAngle(float angle);
+	void normalizeTarget(FVector &target);
 
 	//calculating angles
 	float yawAngleTo(FVector &localTarget);
@@ -114,7 +135,6 @@ private:
 	
 	void setEtha(float etha, float legPitchThetaRadian);
 
-	bool halfReached = false;
 
 	//testing needed
 	float degreePerSecond = 400; //200
@@ -123,9 +143,6 @@ private:
 
 
 
-	//testing
-	FVector prevFootPos;
-	FVector movedDir;
 
 
 	//for movementstop
@@ -139,6 +156,16 @@ private:
 		MMatrix &middle,
 		MMatrix &end
 	);
+	
+	//new part of animation keying
+	
+	float moveSpeedCmS = 20.0f;
 
-	FVector offsetToFloor();
+	bool isTargetInRange(FVector &other);
+	bool isTragetInRange(FVector &other, FVector &fromRangeOffset);
+
+public:
+	FVector currentLocalFootInterpolatedPos(); //from front
+	FVector currentLocalHipInterpolatedPos(); //from back
+	//void rotateEndToTarget(FVector &target, FVector &weight, float DeltaTime);
 };

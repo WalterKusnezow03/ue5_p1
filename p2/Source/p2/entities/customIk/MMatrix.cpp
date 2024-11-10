@@ -179,6 +179,10 @@ void MMatrix::operator+=(FVector &other){
     array[7] += other.Y;
     array[11] += other.Z;
 }
+void MMatrix::operator-=(FVector &other){
+    FVector copy = other * -1;
+    *this += other;
+}
 
 /// @brief creates a string representation if the matrix with radian angles
 /// @return FString by value representation of the matrix
@@ -486,7 +490,7 @@ float MMatrix::normalizeAngle(float angle) {
     }
 
     if(flip){
-        angle *= -1;
+        angle *= -1; //zurück flippen 
     }
 
     return angle;
@@ -501,12 +505,15 @@ void MMatrix::invert(){
     //invertScale();
 }
 
+
+// -tx, -ty , -tz
 void MMatrix::invertTranslation(){
     FVector translation = getTranslation();
     translation *= -1;
     setTranslation(translation);
 }
 
+//3x3 block transponieren für invertieren der rotation (da im orthogonalen koordinaten system)
 void MMatrix::invertRotation(){
     //3x3 block transponieren
     swapIndices(4, 1);
