@@ -789,7 +789,9 @@ void BoneIk::rotateEndToTargetAndBuild(
 }
 
 
-
+/**
+ * --- HIP DYNAMIC ADJUST SECTION ---
+ */
 
 //new method with hip adjust on runtime
 void BoneIk::rotateEndToTargetAndBuild(
@@ -808,7 +810,9 @@ void BoneIk::rotateEndToTargetAndBuild(
     //unklar warum das hier nicht geht / zu viel ist!
     //KÖNNTE JEDENFALLS AUCH IM ACTOR PASSIEREN!
     FVector offset;
-    if(!isTragetInRange(target, offset)){
+
+
+    if(false && !isTragetInRange(target, offset)){
             
         //in range of one bone max
         FVector zeroVec(0, 0, 0);
@@ -820,20 +824,22 @@ void BoneIk::rotateEndToTargetAndBuild(
             //translationOfactorhip += offset; //update offset for next frame
             FVector rawZ(0, 0, offset.Z);
             //translationOfactorhip += rawZ;
-            translationOfactorhip += offset;
+            translationOfactorhip += offset; //wieso ist das denn auch falsch.
             
             DebugHelper::showLineBetween(
                 world,
-                offsetAndRotation.getTranslation(),
-                offsetAndRotation.getTranslation() + rawZ,
+                translationOfactorFoot.getTranslation(),
+                translationOfactorFoot.getTranslation() + rawZ,
                 FColor::Blue
             );
         }
         
         
     }
+    
 
-    rotateEndToTarget(target, weight); //DeltaTime);
+
+    rotateEndToTarget(target, weight); 
 
     std::vector<MMatrix *> matrizen;
     FVector footTip;
@@ -895,8 +901,8 @@ bool BoneIk::isTragetInRange(FVector &other, FVector &fromRangeOffset){
     bool inRange = length <= totalBoneLengthCopy;
     if(!inRange && length != 0){
 
-        FVector normalizedTarget = other;
-        normalizeTarget(normalizedTarget);
+        FVector normalizedTarget = other.GetSafeNormal() * totalBoneLengthCopy;
+        //normalizeTarget(normalizedTarget);
 
         //output copy from outer radius to target
         fromRangeOffset = other - normalizedTarget; // AB = B - A;

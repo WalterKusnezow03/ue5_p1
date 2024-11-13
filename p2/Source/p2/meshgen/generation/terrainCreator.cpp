@@ -6,6 +6,7 @@
 #include "bezierCurve.h"
 #include "p2/util/TVector.h"
 #include "HAL/PlatformTime.h"
+#include <algorithm>
 #include "terrainCreator.h"
 
 terrainCreator::terrainCreator()
@@ -32,13 +33,20 @@ terrainCreator::chunk::chunk(int xPos, int yPos)
     y = yPos;
 
     //creates the map for the chunk
-    int limit = terrainCreator::CHUNKSIZE; //+1 fixes the gap but is wrong
+    int limit = terrainCreator::CHUNKSIZE + 1; 
+    //+1 fixes the gap to connect to other chunk, is closed and overriden
+    //in the read and merge method!
+    //do not change, this is correct.
 
-    for (int i = 0; i < limit; i++){
+    for (int i = 0; i < limit; i++){ //x
         
         std::vector<FVector> vec;
-        for (int j = 0; j < limit; j++){
-            FVector pos(i * terrainCreator::ONEMETER, j * terrainCreator::ONEMETER, 0.0f);
+        for (int j = 0; j < limit; j++){ //y
+            FVector pos(
+                i * terrainCreator::ONEMETER, 
+                j * terrainCreator::ONEMETER, 
+                0.0f
+            );
             vec.push_back(pos);
         }
         innerMap.push_back(vec);
@@ -78,27 +86,33 @@ std::vector<std::vector<FVector>>& terrainCreator::chunk::readAndMerge(
     terrainCreator::chunk *right,
     terrainCreator::chunk *topRight
 ){
+
+    //debug:
+    //return innerMap;
+
     //std::vector<std::vector<FVector>> copy = innerMap;
     float offset = terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER;
 
     if(right != nullptr){
+        //new column to be added
         std::vector<FVector> firstColFromNextRight = right->readFirstXColumn();
-        //apply offset
+
         for (int i = 0; i < firstColFromNextRight.size(); i++){
-            firstColFromNextRight.at(i).X += offset;
+            //override 
+            float currentVecHeight = firstColFromNextRight.at(i).Z;
+            innerMap.at(innerMap.size() - 1).at(i).Z = currentVecHeight;
         }
-        innerMap.push_back(firstColFromNextRight);
     }
     
     //might be wrong!
     if(top != nullptr){
         std::vector<FVector> firstRowFromNextTop = top->readFirstYRow();
-        //add row
+        //add row (to each column 1)
         for (int j = 0; j < firstRowFromNextTop.size(); j++){
             if(j < innerMap.size()){
+                //override
                 FVector current = firstRowFromNextTop.at(j);
-                current.Y += offset;
-                innerMap.at(j).push_back(current);
+                innerMap.at(j).at(innerMap.size() - 1).Z = current.Z;
             }
         }
     }
@@ -106,14 +120,11 @@ std::vector<std::vector<FVector>>& terrainCreator::chunk::readAndMerge(
 
     if(topRight != nullptr){
         FVector topRightCorner = topRight->readBottomLeftCorner();
-        //proper offset
-        topRightCorner.X += offset;
-        topRightCorner.Y += offset;
-
-        //add to last col
-        innerMap.at(innerMap.size() - 1).push_back(topRightCorner);
+        
+        //override
+        innerMap.at(innerMap.size() - 1).at(innerMap.size() - 1).Z = topRightCorner.Z;
     }
-    
+
     return innerMap;
 }
 
@@ -193,6 +204,7 @@ std::vector<FVector> terrainCreator::chunk::readFirstXColumn(){
     for (int i = 0; i < innerMap.size(); i++)
     {
         output.push_back(innerMap.at(0).at(i));
+        //output.push_back(innerMap.at(0).at(i));
     }
     return output;
 }
@@ -204,6 +216,7 @@ std::vector<FVector> terrainCreator::chunk::readFirstYRow(){
     for (int i = 0; i < innerMap.size(); i++)
     {
         output.push_back(innerMap.at(i).at(0));
+        //output.push_back(innerMap.at(i).at(0));
     }
     return output;
 }
@@ -250,6 +263,8 @@ int terrainCreator::chunk::clampInnerIndex(int a){
     }
     return a;
 }
+
+
 /// @brief will return if the inner index is in map bounds
 /// @param a 
 /// @return 
@@ -261,58 +276,33 @@ bool terrainCreator::chunk::yIsValid(int a){
     return xIsValid(a);
 }
 
-int terrainCreator::chunk::jumpHeight(){
-    return terrainCreator::ONEMETER;
-}
-int terrainCreator::chunk::heightAdd(){
-    return terrainCreator::ONEMETER / terrainCreator::fractureHeightStep; //test
-}
-
-bool terrainCreator::chunk::jumpOfInterest(FVector &a, FVector &b){
-    int height = std::abs(jumpHeight());
-    return std::abs(a.Z - b.Z) >= height / 2; //halfed at least
-}
 
 FVector2D terrainCreator::chunk::getFirstXColumnAnchor(int xColumn){
-    int chunkInCmY = yPositionInCm();
-    FVector2D baseAnchorAlongAxis(chunkInCmY, 0);
+    
+    FVector2D anchor(
+        yPositionInCm(),
+        innerMap.at(0).at(0).Z
+    );
 
-    int atIndex = innerMap.size() / 2;
-
-    if(xIsValid(xColumn)){
-        float x_yInCmFirst = innerMap.at(xColumn).at(atIndex).Y; //is in cm by default, without offset
-        float y_heightFirst = innerMap.at(xColumn).at(atIndex).Z;
-        FVector2D first(
-            x_yInCmFirst, //nach oben richtung x, achse
-            y_heightFirst
-        );
-        first += baseAnchorAlongAxis;
-        return first;
+    if(xColumn < innerMap.size()){
+        anchor.Y = innerMap.at(xColumn).at(0).Z;
     }
-    return baseAnchorAlongAxis;
+    return anchor; 
 }
 
 FVector2D terrainCreator::chunk::getFirstYRowAnchor(int yRow){
-    int chunkInCmY = xPositionInCm(); //flipped for x
+    
+    FVector2D anchor(
+        xPositionInCm(),
+        innerMap.at(0).at(0).Z
+    );
 
-    //y ist x achse, z ist höhe
-    FVector2D baseAnchorAlongAxis(chunkInCmY, 0);
-
-    int atIndex = innerMap.size() / 2;
-
-    std::vector<FVector2D> anchors;
-    if(xIsValid(yRow)){
-        float x_yInCmFirst = innerMap.at(atIndex).at(yRow).Y; //is in cm by default, without offset
-        float y_heightFirst = innerMap.at(atIndex).at(yRow).Z;
-        // build
-        FVector2D first(
-            x_yInCmFirst, //nach oben richtung x, achse
-            y_heightFirst
-        );
-        first += baseAnchorAlongAxis;
-        return first;
+    if(yRow < innerMap.size()){
+        anchor.Y = innerMap.at(0).at(yRow).Z;
     }
-    return baseAnchorAlongAxis;
+    return anchor; 
+    
+    
 }
 
 
@@ -364,27 +354,53 @@ void terrainCreator::chunk::applyIndivualVertexIndexBased(
     int xIn,
     int yIn,
     float newHeight,
-    bool override
+    bool override,
+    UWorld *world
 ){
-    if(!xIsValid(xIn) || !yIsValid(yIn)){
-        return;
-    }
-
-    xIn = clampInnerIndex(xIn);
-    yIn = clampInnerIndex(yIn);
-    if(override){
-        innerMap.at(xIn).at(yIn).Z = newHeight;
-    }else{
-        float newAvg = innerMap.at(xIn).at(yIn).Z;
-        newAvg += newHeight;
-        newAvg /= 2;
+    
+    if(xIsValid(xIn) && yIsValid(yIn)){
         
-        if(newAvg > terrainCreator::MAXHEIGHT){
-            newAvg = terrainCreator::MAXHEIGHT;
+        //draw debug
+        /*
+        if(world != nullptr){
+            FVector posToSet(
+                xIn * terrainCreator::ONEMETER + xPositionInCm(),
+                yIn * terrainCreator::ONEMETER + yPositionInCm(),
+                newHeight
+            );
+            DebugHelper::showLineBetween(world, posToSet, posToSet + FVector(10, 0, -100), FColor::Green);
         }
-        innerMap.at(xIn).at(yIn).Z = newAvg;
-    }
+        */
 
+        //override
+        if(override){
+            FVector copy = innerMap.at(xIn).at(yIn);
+            copy.Z = newHeight;
+            innerMap.at(xIn).at(yIn) = copy;
+        }else{
+
+            float newAvg = innerMap.at(xIn).at(yIn).Z;
+            newAvg += newHeight;
+            newAvg /= 2;
+            
+            if(newAvg > terrainCreator::MAXHEIGHT){
+                newAvg = terrainCreator::MAXHEIGHT;
+            }
+            innerMap.at(xIn).at(yIn).Z = newAvg;
+        }
+    }else{
+        FString message = FString::Printf(TEXT("CHUNK DEBUG was not valid %d, %d"), xIn, yIn);
+        DebugHelper::logMessage(message);
+        /*
+        if(world != nullptr){
+            FVector posToSet(
+                xIn * terrainCreator::ONEMETER + xPositionInCm(),
+                yIn * terrainCreator::ONEMETER + yPositionInCm(),
+                newHeight
+            );
+            DebugHelper::showLineBetween(world, posToSet, posToSet + FVector(10, 0, -100), FColor::Purple);
+        }*/
+    }
 }
 
 /// @brief will check if a position is within the chunks bounds
@@ -401,42 +417,6 @@ bool terrainCreator::chunk::isInBounds(FVector &a){
            selfY <= a.Y && a.Y <= selfYUpper;
 }
 
-/// @brief will remove all spikes and graps from the map, designed to be called with smooth map function
-void terrainCreator::chunk::fixGaps(){
-    for (int i = 1; i < innerMap.size() - 1; i++){
-        for (int j = 1; j < innerMap.at(i).size() - 1; j++){
-            FVector &center = innerMap.at(i).at(j);
-
-            FVector &up = innerMap.at(i).at(j+1);
-            FVector &down= innerMap.at(i).at(j-1);
-            FVector &right = innerMap.at(i+1).at(j);
-            FVector &left = innerMap.at(i-1).at(j);
-
-            //spitzen
-            float schnittGes = ((up.Z + down.Z) + (left.Z + right.Z)) / 4;
-            if(std::abs(schnittGes - center.Z) > terrainCreator::ONEMETER / 2){
-                center.Z = schnittGes;
-                continue;
-            }
-
-
-            //schnitt oben unten
-            float upDownSchnitt = (up.Z + down.Z) / 2;
-            if(std::abs(upDownSchnitt - center.Z) > terrainCreator::ONEMETER / 2){
-                center.Z = upDownSchnitt;
-                continue;
-            }
-
-            //schnitt rechts links
-            upDownSchnitt = (left.Z + right.Z) / 2;
-            if(std::abs(upDownSchnitt - center.Z) > terrainCreator::ONEMETER / 2){
-                center.Z = upDownSchnitt;
-                continue;
-            }
-        }
-    }
-}
-
 
 
 
@@ -450,15 +430,26 @@ void terrainCreator::chunk::plot(UWorld *world){
     FVector offset(
         x * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE, 
         y * terrainCreator::ONEMETER * terrainCreator::CHUNKSIZE, 
-        120 //10cm
+        0.0f
     );
-    //defferentiate heights
-    std::vector<FColor> colors;
-    colors.push_back(FColor::Red);
-    colors.push_back(FColor::Blue);
-    colors.push_back(FColor::Green);
+    
 
-    float oneThird = terrainCreator::ONEMETER / 2;
+    FColor currentColor = FColor::Yellow;
+
+    bool a = x % 2 == 0;
+    bool b = y % 2 == 0;
+    if(a && b)
+        currentColor = FColor::Yellow; 
+    
+    if(a && !b)
+        currentColor = FColor::Green; 
+    
+    if(!a && b)
+        currentColor = FColor::Red; 
+    
+     if(!a && !b)
+        currentColor = FColor::Blue; 
+
 
     if(world != nullptr){
         for (int i = 1; i < innerMap.size(); i++){
@@ -468,29 +459,10 @@ void terrainCreator::chunk::plot(UWorld *world){
                 FVector prevDown = innerMap.at(i).at(j-1) + offset;
                 FVector current = innerMap.at(i).at(j) + offset;
 
-                int toIndex = (int) std::abs(current.Z / oneThird);
-                FColor currentColor = colors.at(toIndex % colors.size());
                 DebugHelper::showLineBetween(world, prevLeft, current, currentColor);
                 DebugHelper::showLineBetween(world, prevDown, current, currentColor);
             }
         }
-    }
-}
-
-void terrainCreator::chunk::plotCorners(UWorld * world){
-    if(world != nullptr){
-        FVector basePos = position();
-
-        int count = innerMap.size() - 1;
-        FVector top = innerMap.at(count).at(count) + basePos;
-        FVector offset(0, 0, 1000);
-        offset += top;
-        DebugHelper::showLineBetween(world, offset, top, FColor::Blue);
-
-        top = innerMap.at(0).at(0) + basePos;
-        offset = FVector(0, 0, 1000);
-        offset += top;
-        DebugHelper::showLineBetween(world, offset, top, FColor::Red);
     }
 }
 
@@ -501,9 +473,6 @@ void terrainCreator::chunk::plotCorners(UWorld * world){
  * ---- TERRAIN METHODS -----
  * 
  */
-
-
-// ---- terrain methods ---- 
 
 /// @brief will always create a qudratic terrain
 /// @param world world to spawn in / debug draw in
@@ -532,98 +501,13 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
     }
     smooth3dMap();
 
+    //plotAllChunks(world);
 }
 
 
 
 
 
-/// @brief draws the vector in the world for debugging pruposes, scales up coords slightly.
-/// y coords get displayed on z axis!
-/// @param world world to show in
-/// @param vec Fvectors to show
-/// @param color color to draw
-void terrainCreator::debugDrawCurve(UWorld* world, std::vector<FVector2D> &vec, FColor color){
-    if(world != nullptr){
-
-        int upscale = 100;
-        FVector offset(0, 0, 50);
-
-        std::vector<FVector> draw;
-        for(FVector2D &v : vec){
-            //FVector p(v.X * upscale, 0.0f, v.Y * upscale);
-            FVector p(v.X * upscale, 0.0f, v.Y * upscale);
-            p += offset;
-            draw.push_back(p);
-        }
-        //draw.push_back(draw.front()); //dont ceonnect last
-
-        DebugHelper::showLine(world, draw, color);
-    }
-    
-}
-
-
-/// @brief clamps x to map size / einheitsvalue
-/// will clamp x values and clean the map to One meter gaps and will remove duplicates if 
-/// ordered by each other
-/// @param vec vector to clean
-void terrainCreator::cleanValues(TVector<FVector2D> &vec, int scalingCut){
-    
-    //cast all values to clear meters
-    for (int i = 0; i < vec.size(); i++){
-        // Round to nearest multiple of ONEMETER (scalingCut)
-        vec.at(i).X = (int)std::round(vec.at(i).X / scalingCut) * scalingCut; //only x because this function 
-        //is used by 3d too
-    }
-
-    // Remove duplicates
-    int i = 1;
-    int size = vec.size();
-    while (i < size)
-    {
-        if (vec.at(i - 1).X == vec.at(i).X){ //&& vec.at(i - 1).Y == vec.at(i).Y
-            //vec.erase(vec.begin() + i);  // Remove duplicate
-            vec.erase(i);  // Remove duplicate
-        } else {
-            i++;
-        }
-        size = vec.size();
-    }
-
-    //fillGaps(vec);
-
-}
-
-/// @brief linerally interpolates the given vector for X axis, for One meter consitency / distance
-/// between each vector
-/// @param vec passed vector to fill gaps in 
-void terrainCreator::fillGaps(std::vector<FVector2D> &vec){
-
-    int size = vec.size();
-    int i = 1;
-    while(i < size){
-        FVector2D A = vec.at(i - 1); //prev A
-        FVector2D B = vec.at(i); //current B
-        int distance = std::abs(A.X - B.X);
-
-        if(distance > terrainCreator::ONEMETER){
-            FVector2D connect = (B - A).GetSafeNormal();
-            // Compute the number of new points to insert
-            int numPoints = std::floor(distance / ONEMETER);
-            for (int j = 1; j < numPoints; j++) {
-                FVector2D newPos;
-                newPos.X = A.X + j * ONEMETER;
-                newPos.Y = A.Y + j * connect.Y; // Keep the same Y value
-                vec.insert(vec.begin() + i, newPos);
-                i++; // Move to next insertion point
-            }
-            
-        }
-        i++;
-        size = vec.size();
-    }
-}
 
 /// @brief scales the height for all chunks (designed to upscale before bezier and downscale later)
 /// creates more detailed interpolation on Z axis (maybe)
@@ -651,17 +535,12 @@ void terrainCreator::smooth3dMap(){
     FVector b(max, max, 0);
 
     int iterations = 3;
-    smooth3dMap(a, b, iterations);
+    //smooth3dMap(a, b, iterations);
+    smooth3dMap(a, b, 1);
 }
 
 /// @brief will smooth out all chunks rows and columns and merge them together to the map
 void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
-
-    double StartTime = FPlatformTime::Seconds();
-
-    //upscale
-    float scaleToSet = 10.0f;
-    scaleHeightForAll(scaleToSet); //scaling up and scaling down later does smooth out the curve a bit (seemengly)
 
     //calculate enclosed bounds, works as expected
     int fromX = a.X < b.X ? a.X : b.X;
@@ -693,25 +572,15 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
             for (int innerX = 0; innerX < terrainCreator::CHUNKSIZE; innerX++)
             {
                 std::vector<FVector2D> column;
-                //for (int j = 0; j < map.at(i).size(); j++)
                 for (int j = fromY; j <= toY; j++){
                     column.push_back(map.at(i).at(j).getFirstXColumnAnchor(innerX));
                 }
                 output.clear();
-                curve.calculatecurve(column, output, terrainCreator::ONEMETER, 1);
-
-                //if first smooth, and first row, create curve, other wise: reuse
-                if(it == 0 && innerX == 0){
-                    
-                }
-                
-                
-                //cleanValues(output, ONEMETER); //can! be the case
+                curve.calculatecurve(column, output, terrainCreator::ONEMETER);
 
                 //trying writing immidately
-                applyXColumnToMap(xcount, output);
+                applyColumnOrRow(xcount, output, true);
                 xcount++;
-            
             }
         }
         
@@ -721,7 +590,6 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
         //then all y rows
         int ycount = 0;
         for (int cY = fromY; cY <= toY; cY++){
-        //for (int cY = 0; cY < map.size(); cY++){
             for (int innerY = 0; innerY < terrainCreator::CHUNKSIZE; innerY++)
             {
                 std::vector<FVector2D> row;
@@ -731,31 +599,18 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
                 }
 
                 output.clear();
-                curve.calculatecurve(row, output, terrainCreator::ONEMETER, 1);
+                curve.calculatecurve(row, output, terrainCreator::ONEMETER);
                 
-
-                applyYRowToMap(ycount, output);
+                
+                applyColumnOrRow(ycount, output, false);
 
                 ycount++;
             }
         }
 
 
-        //fill gaps and spikes, very important chunk
-        for(int i = 0; i < map.size(); i++){
-            for(int j = 0; j < map.at(i).size(); j++){
-                map.at(i).at(j).fixGaps();
-            }
-        }
     }
 
-    //downscale
-    scaleHeightForAll(1 / scaleToSet);
-
-    //log
-    //double EndTime = FPlatformTime::Seconds();
-    //double ElapsedTime = EndTime - StartTime;
-    //UE_LOG(LogTemp, Log, TEXT("Elapsed time: %f seconds"), ElapsedTime);
 }
 
 
@@ -763,136 +618,114 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
 
 
 
-
-
-
-
-
-
-/// @brief applies the height from the inner vertecies to the map
-/// @param index index of column in whole chunk map
-/// @param column column data to override (int all chunks) (2D bezier)
-void terrainCreator::applyXColumnToMap(int index, 
-TVector<FVector2D> &column
+void terrainCreator::applyColumnOrRow(
+    int index, 
+    TVector<FVector2D> &data,
+    bool isColumn
 ){
-    
-    //copy new height
     float newHeight = 0;
+    int i_InMeter = index;
+    int i_InCm = i_InMeter * terrainCreator::ONEMETER;
 
-    //convert x as m to chunk
-    int xInMeter = index;
-    int xInCm = xInMeter * terrainCreator::ONEMETER;
-    int xInChunk = cmToChunkIndex(xInCm); //x chunk index in map
+    int i_InChunk = cmToChunkIndex(i_InCm); //x chunk index in map
+    if(i_InChunk > map.size() - 1){
+        return; //issue
+    }
 
-    int yInChunk = 0;
+    int other_InChunk = 0;
 
+    FVector current;
     FVector prev;
 
+    FVector current_build_vectordebug;
+
     // convert y as cm to chunk
-    for (int i = 0; i < column.size(); i++){
+    for (int i = 0; i < data.size(); i++){
 
-        FVector2D now = column.at(i);
+        FVector2D now = data.at(i);
         newHeight = now.Y;
-        float yInCm = now.X;
-
-        //find from x value which is y for axis 
-        //the appropaite index
-        //from the cm value which the curve is made in
-        yInChunk = cmToChunkIndex(yInCm);
+        float other_InCm = std::floor(now.X); //test
+        other_InChunk = cmToChunkIndex(other_InCm);
         
+        if(verifyIndex(other_InChunk)){
 
+            terrainCreator::chunk *c = nullptr;
+            int i_InnerIndex = 0;
+            int other_InnerIndex = 0;
+            if (isColumn){
+                c = &map.at(i_InChunk).at(other_InChunk);
+                i_InnerIndex = cmToInnerChunkIndex(i_InCm);
+                other_InnerIndex = cmToInnerChunkIndex(other_InCm);
 
-        if(verifyIndex(yInChunk)){
+                current = FVector(i_InCm, other_InCm, newHeight);
 
-            terrainCreator::chunk *c = &map.at(xInChunk).at(yInChunk);
+                current_build_vectordebug = FVector(
+                    i_InnerIndex * terrainCreator::ONEMETER + i_InChunk * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER,
+                    other_InnerIndex * terrainCreator::ONEMETER + other_InChunk * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER,
+                    newHeight
+                );
+            }
+            else{
+                c = &map.at(other_InChunk).at(i_InChunk);
+                i_InnerIndex = cmToInnerChunkIndex(other_InCm);
+                other_InnerIndex = cmToInnerChunkIndex(i_InCm);
 
-            //calculate the position to apply the height to within the chunk
-            int xInnerIndex = cmToInnerChunkIndex(xInCm);
-            int yInnerIndex = cmToInnerChunkIndex(yInCm);
+                current = FVector(other_InCm, i_InCm, newHeight);
 
-
-            c->applyIndivualVertexIndexBased(
-                xInnerIndex,
-                yInnerIndex,
-                newHeight,
-                true
-                //true //override true
-            );
+                //the same because the coords are flipped above 
+                current_build_vectordebug = FVector(
+                    i_InnerIndex * terrainCreator::ONEMETER + i_InChunk * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER,
+                    other_InnerIndex * terrainCreator::ONEMETER + other_InChunk * terrainCreator::CHUNKSIZE * terrainCreator::ONEMETER,
+                    newHeight
+                );
+            }
 
             
-        }
-
-    }
 
 
-}
+            if(c != nullptr){
+                c->applyIndivualVertexIndexBased(
+                    i_InnerIndex,
+                    other_InnerIndex,
+                    newHeight,
+                    //true,
+                    isColumn,
+                    worldPointer
+                );
+                bool draw = false;
+                if(draw){
+                    DebugHelper::showLineBetween(worldPointer, prev, current, FColor::Orange);
+                    DebugHelper::showLineBetween(worldPointer, current, current + FVector(0,0,-100), FColor::Red);
+                    
+                    //HIER WIRD DER FEHLER SICHTBAR (wenn er auftritt, was er nicht mehr tut.)
+                    DebugHelper::showLineBetween(
+                        worldPointer,
+                        current + FVector(-10, 0, -100),
+                        current_build_vectordebug + FVector(-50, 0, -100),
+                        FColor::Cyan
+                    );
 
-
-
-
-/// @brief same method as x but vars switched
-/// @param index index of row of whole map
-/// @param row row data to override (int all chunks) (2D bezier)
-void terrainCreator::applyYRowToMap(int index, 
-TVector<FVector2D> &row
-//std::vector<FVector2D> &row
-){
-    
-    //copy new height
-    float newHeight = 0;
-
-    //convert x as m to chunk
-    int yInMeter = index;
-    int yInCm = yInMeter * terrainCreator::ONEMETER;
-    int yInChunk = cmToChunkIndex(yInCm); //x chunk index in map
-
-    int xInChunk = 0;
-
-    FVector prev;
-
-    // convert y as cm to chunk
-    for (int i = 0; i < row.size(); i++){
-
-        FVector2D now = row.at(i);
-        newHeight = now.Y;
-        float xInCm = now.X;
-
-        //find from x value which is y for axis 
-        //the appropaite index
-        //from the cm value which the curve is made in
-        xInChunk = cmToChunkIndex(xInCm);
+                    prev = current;
+                }
+            }
         
-
-
-        if(verifyIndex(xInChunk)){
-
-            terrainCreator::chunk *c = &map.at(xInChunk).at(yInChunk);
-
-            /*
-            FVector k(
-                xInCm,
-                yInCm,
-                newHeight
-            );
-            prev = k;
-            */
-
-            //calculate the position to apply the height to within the chunk
-            int xInnerIndex = cmToInnerChunkIndex(xInCm);
-            int yInnerIndex = cmToInnerChunkIndex(yInCm);
-
-            c->applyIndivualVertexIndexBased(
-                xInnerIndex,
-                yInnerIndex,
-                newHeight,
-                false //override, x false, merge values instead
-            );
         }
-
     }
 
 
+
+
 }
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 
@@ -951,7 +784,10 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
 
 
 int terrainCreator::cmToMeter(int a){
-    return a / terrainCreator::ONEMETER;
+    float af = a;
+    float result = a / (terrainCreator::ONEMETER * 1.0f);
+    // return a / terrainCreator::ONEMETER;
+    return std::round(result); //works better!!
 }
 int terrainCreator::meterToInnerChunkIndex(int a){
     return a % terrainCreator::CHUNKSIZE;
@@ -1010,7 +846,10 @@ int terrainCreator::clampIndex(int a){
 /// @brief debug plotting
 /// @param world 
 void terrainCreator::plotAllChunks(UWorld * world){
-    if(world != nullptr && terrainCreator::PLOTTING_ENABLED){
+
+    bool enable = true;
+    if (world != nullptr && (terrainCreator::PLOTTING_ENABLED || enable))
+    {
 
         for (int i = 0; i < map.size(); i++){
             for (int j = 0; j < map.at(i).size(); j++){
@@ -1051,17 +890,33 @@ int terrainCreator::chunkNum(){
     return 0;
 }
 
+
+
 /**
  * ---- APPLY DATA TO MESH ACTORS ----
  */
 
+void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*> &actors){
+    std::vector<AcustomMeshActorBase *> casted;
+    for (int i = 0; i < actors.size(); i++){
+        AcustomMeshActor *currentPointer = actors.at(i);
+        if(currentPointer != nullptr){
+            AcustomMeshActorBase *castedPointer = dynamic_cast<AcustomMeshActorBase*>(currentPointer);
+            if(castedPointer != nullptr){
+                casted.push_back(castedPointer);
+            }
+        }
+    }
+    applyTerrainDataToMeshActors(casted);
+}
+
 /// @brief will create all meshes and populate the data
 /// will not hold on to the reference when goes out of scope, only applies the data
 /// where it can and doesnt go out of bounds
-void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*> &actors){
+void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActorBase*> &actors){
 
 
-    int a = 0;
+    int actorIndex = 0;
     int x = 0;
     int y = 0;
     //inclusive index limit
@@ -1069,10 +924,10 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
     int yLimit = map.size();
 
 
-    while(a < actors.size()){
-        //do actor things
-        AcustomMeshActor *currentActor = actors.at(a);
-        a++;
+    while(actorIndex < actors.size()){
+        
+        AcustomMeshActorBase *currentActor = actors.at(actorIndex);
+        actorIndex++;
         if (currentActor != nullptr)
         {   
             terrainCreator::chunk *currentChunk = &map.at(x).at(y);
@@ -1081,7 +936,7 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
             // apply position
             FVector newPos = currentChunk->position();
 
-            //fix offset to be anchor at bottom lefta dn not center of the mesh,
+            //fix offset to be anchor at bottom left and not center of the mesh,
             //so the coordinate in mesh (0,0) is (0,0) and not (chunksize /2, chunksize/2)
             float offsetCenter = terrainCreator::ONEMETER * (terrainCreator::CHUNKSIZE / 2);
             newPos.X -= offsetCenter;
@@ -1107,7 +962,7 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
 
             bool treesBlocked = currentChunk->createTrees();
             currentActor->createTerrainFrom2DMap(mapReference, treesBlocked);
-            currentActor->setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
+            //currentActor->setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
 
             
 
@@ -1131,19 +986,17 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
     }
 }
 
-/**
- * 
- * ----- DEPRECATED / NOT IN USE -> do NOT remove, might be fixed. -----
- * 
- */
 
 
-// --- top perpective section ---
+
 
 /// @brief will create a random height map chunk wide, then to be smoothed
 void terrainCreator::createRandomHeightMapChunkWide(){
+    int addheight_min = terrainCreator::ONEMETER;
+    int addheight_max = terrainCreator::ONEMETER * 3;
+    int layers = 5;
 
-    int scaleX = FVectorUtil::randomNumber(6, map.size());
+    int scaleX = FVectorUtil::randomNumber(6, map.size()); //random hardcoded for now.
     int scaleY = FVectorUtil::randomNumber(6, scaleX);
     int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
     int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
@@ -1155,14 +1008,15 @@ void terrainCreator::createRandomHeightMapChunkWide(){
     while (
         (endX - startX) >= 3 &&
         (endY - startY) >= 3 &&
-        layerCount < 7
+        layerCount < layers
     ){
         for (int i = startX; i <= endX; i++)
         {
             for (int j = startY; j <= endY; j++)
             {
                 map.at(i).at(j).addheightForAll(
-                    FVectorUtil::randomNumber(terrainCreator::ONEMETER, terrainCreator::ONEMETER * 3)
+                    //FVectorUtil::randomNumber(addheight_min, addheight_max)
+                    terrainCreator::ONEMETER
                 );
             }
         }
@@ -1176,71 +1030,12 @@ void terrainCreator::createRandomHeightMapChunkWide(){
 
 }
 
-/// Deprecated
-/// @brief process a created bezier
-/// @param bezier bezier to apply to map 2d
-void terrainCreator::processTopViewBezierCurve(std::vector<FVector2D> &bezier){
-    
-    if(bezier.size() < 2){
-        return;
-    }
 
-    //sort by x coordinates, later by y
-    std::sort(bezier.begin(), bezier.end(), [](const FVector2D& A, const FVector2D& B) {
-        return A.X < B.X;
-    });
-
-    applyTopViewCurveToMap(bezier);
-}
-
-/// Deprecated
-/// @brief applies the curve to the map
-/// @param vec vector of points, must be sorted by x to identify touples
-void terrainCreator::applyTopViewCurveToMap(std::vector<FVector2D> &vec){
-
-    for (int i = 1; i < vec.size(); i++){
-
-        FVector2D a = vec.at(i - 1);
-        FVector2D b = vec.at(i);
-
-        if(a.X == b.X){
-            processToupleChunk(a, b);
-            i++;
-        }
-
-    }
-}
-
-
-
-
-/// @brief will always add one meter
-/// @param a between a and
-/// @param b b node
-void terrainCreator::processToupleChunk(FVector2D &a, FVector2D &b){
-    //by refernce natürlich weil effizient
-    int xIndex = a.X;
-    int y1 = std::min(a.Y, b.Y);
-    int y2 = std::max(a.Y, b.Y);
-
-    if(
-        verifyIndex(xIndex) //only verify x, y will both be clamped when needed
-    ){
-        //clamp to make sure
-        xIndex = clampIndex(xIndex);
-        y1 = clampIndex(y1);
-        y2 = clampIndex(y2) - 1; //keep like this, last chunk is error prone 
-
-        for (int i = y1; i <= y2; i++){
-            chunk *c = &map.at(xIndex).at(i);
-            if(c != nullptr){
-                c->addheightForAll(terrainCreator::ONEMETER); //new all chunk appl
-            }
-        }
-    }
-
-    
-}
+/**
+ * 
+ * ----- DEPRECATED / NOT IN USE -> do NOT remove, might be fixed. -----
+ * 
+ */
 
 
 /// @brief scales the list with a constant factor
@@ -1266,3 +1061,37 @@ void terrainCreator::offsetPoints(std::vector<FVector2D> &vec, FVector2D offset)
 
 
 
+
+
+
+
+/**
+ * 
+ * --- Example method for creating the terrain ---
+ * 
+ */
+void terrainCreator::debugCreateTerrain(UWorld *world){
+    FVector location(0, 0, 0);
+    int meters = 200;
+    createTerrain(world, meters);
+
+    int numberCreated = chunkNum();
+    std::vector<AcustomMeshActorBase *> meshactors;// = e->requestMeshActors(world, numberCreated);
+
+    for (int i = 0; i < numberCreated; i++){
+        FRotator rotation;
+        FActorSpawnParameters params;
+        AcustomMeshActorBase *SpawnedActor = world->SpawnActor<AcustomMeshActorBase>(
+            AcustomMeshActorBase::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        if(SpawnedActor != nullptr){
+            meshactors.push_back(SpawnedActor);
+        }
+    }
+
+    applyTerrainDataToMeshActors(meshactors);
+
+}

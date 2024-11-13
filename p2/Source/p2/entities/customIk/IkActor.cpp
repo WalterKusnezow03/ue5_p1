@@ -72,14 +72,14 @@ void AIkActor::BeginPlay()
 		legScaleCM //behebt viele fehler!
 	);
 	legAnimationKeys.addFrame(
-		FVector(25, 0, -150),
+		FVector(20, 0, -190),
 		0.5f,
 		false,
 		legScaleCM
 	);
 	legAnimationKeys.addFrame(
 		FVector(50, 0, -200),
-		1.0f,
+		0.5f,
 		true,
 		legScaleCM
 	);
@@ -354,8 +354,8 @@ void AIkActor::standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnim
 	//TESTING NEEDED!
 
 	float halfTime = frames.totalLength();
-	float fullTime = halfTime * 2.0f;
 
+	float fullTime = halfTime * 2.0f;
 	debugFlipTime += DeltaTime;
 	bool moveLeg = debugFlipTime < halfTime;
 	if (debugFlipTime >= fullTime){
@@ -374,15 +374,15 @@ void AIkActor::standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnim
 
 
 		float time = debugFlipTime - halfTime;
-		float skalar = time / halfTime; //x / 1, halfTime is the full skalar
+		float skalar = time / halfTime; //x / 1
 		
 		// HIP TO TARGET
 		standAloneMoveStartFromTo(
 			bone,
 			hipStart, // start
-			FVector(0, 0, 200), // target
+			FVector(0, 0, 200), // target original pos
 			DeltaTime,
-			skalar // irgendwas / 100 = 0.irgendwas
+			skalar // irgendwas / 1 = 0.irgendwas
 		);
 	}
 }
@@ -397,35 +397,24 @@ void AIkActor::standAloneMoveStartFromTo(
 ){
 
 	FVector weight(1, 0, 0);
-
-	/*
-	float slowDown = 0.5f;
-	debugStandAloneTime += DeltaTime * slowDown;
-	if(debugStandAloneTime > 1.0f){
-		debugStandAloneTime = 0;
-		return;
-	}*/
-
 	FVector _direction = target - start;
 	FVector xt = start + _direction * skalar;
 
 
-	MMatrix translationActorFoot = currentFootTransform();
-
-	FVector from = ownLocation.getTranslation();
+	MMatrix current_translationActorFoot = currentFootTransform();
 
 	bone.rotateStartToTargetAndBuild(
 		GetWorld(),
 		xt,
 		weight,
-		translationActorFoot, // foot start
+		current_translationActorFoot, // foot start
 		ownLocation, // hip apply
 		FColor::Black,
 		DeltaTime * 2.0f
 	);
 
-	FVector debugPos = ownLocation.getTranslation();
-	FVector upPos = debugPos + FVector(0, 0, 100);
+	//FVector debugPos = ownLocation.getTranslation();
+	//FVector upPos = debugPos + FVector(0, 0, 100);
 
 	//wird richtig angezeigt aber die hip fliegt weg am ende der animation
 	//DebugHelper::showLineBetween(GetWorld(), debugPos, upPos, FColor::Red); 
@@ -506,21 +495,14 @@ void AIkActor::transformFromWorldToLocalCoordinates(FVector &position){
 	//inverted.rollRad(0);
 	//inverted.pitchRad(0);
 
-
-	
 	FVector toLocal = inverted * position; 
-	//PRÜFEN OB RICHTIG!
-
 	MMatrix current = currentTransform();
 	FVector inWorld = current * toLocal;
 	DebugHelper::showLineBetween(GetWorld(), inWorld, position, FColor::Cyan);
 	DebugHelper::showLineBetween(GetWorld(), inWorld, inWorld + FVector(100,0,0), FColor::Cyan);
-
-	//DebugHelper::showScreenMessage("to local ", toLocal, position, FColor::Orange);
-	//DebugHelper::showScreenMessage("to local");
-
 	position = toLocal;
 }
+
 
 // TESTING NEEDED
 void AIkActor::plotNextFrameToGround(KeyFrameAnimation &animation){
@@ -529,7 +511,7 @@ void AIkActor::plotNextFrameToGround(KeyFrameAnimation &animation){
 		return;
 	}
 	if(animation.nextFrameIsProjected()){
-		DebugHelper::showScreenMessage("was already projected ", FColor::Cyan);
+		//DebugHelper::showScreenMessage("was already projected ", FColor::Cyan);
 		return;
 	}
 
@@ -589,7 +571,7 @@ bool AIkActor::performRaycast(FVector &Start, FVector &dir, FVector &outputHit)
 			FColor::Orange, 
 			2.0f
 		);
-		DebugHelper::showScreenMessage("RAYCAST HIT");
+		//DebugHelper::showScreenMessage("RAYCAST HIT");
 
 		return true;
 	}

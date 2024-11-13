@@ -79,6 +79,8 @@ void AdebugEntity::debugFunction(float deltaTime){
  * 
  */
 void AdebugEntity::spawnCustomIkActor(){
+
+
 	UWorld *world = GetWorld();
 	if(world){
 		FVector offset = FVector(300, 0, 200) + GetActorLocation();

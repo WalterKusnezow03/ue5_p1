@@ -21,19 +21,6 @@ DebugHelper::~DebugHelper()
  */
 void DebugHelper::Debugtest(UWorld *world){
 
-	MMatrix A;
-	MMatrix B;
-	FVector ap(-20, -20, 0); //set some offset for start
-	FVector bp(-1, -1, 1); //must be relative to first point, remember that!
-	A.setTranslation(ap);
-	B.setTranslation(bp);
-	showScreenMessage(B.asString());
-	//A *= B;
-	//showScreenMessage(A.asString());
-
-	//A.roll(90);
-	//B.roll(90);
-
 
 }
 

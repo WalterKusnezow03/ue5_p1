@@ -11,11 +11,12 @@
 #include "Components/BoxComponent.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/customMeshActorBase.h"
 #include <map>
 #include "customMeshActor.generated.h"
 
 UCLASS()
-class P2_API AcustomMeshActor : public AActor, public IDamageinterface
+class P2_API AcustomMeshActor : public AcustomMeshActorBase, public IDamageinterface
 {
 	GENERATED_BODY()
 	
@@ -63,7 +64,7 @@ public:
 	void createTerrainFrom2DMap(
 		std::vector<std::vector<FVector>> &map,
 		bool createTrees
-	);
+	) override;
 
 	void process2DMapSimple(
 		std::vector<std::vector<FVector>> &map,
@@ -116,6 +117,7 @@ public:
 		MeshData &meshDataOutput
 	);
 
+	/*
 	void createTwoSidedQuad(
 		FVector &a, 
 		FVector &b, 
@@ -129,7 +131,8 @@ public:
 		FVector &c,
 		FVector &d,
 		UMaterial *material,
-		bool calculateNormals);
+		bool calculateNormals
+	);
 
 
 
@@ -147,7 +150,7 @@ public:
 		FVector &c,
 		FVector &d,
 		MeshData &output
-	);
+	);*/
 
 protected:
 	
@@ -159,6 +162,7 @@ protected:
 
 	teamEnum team;
 
+	/*
 	/// @brief saves the mesh data in a map for each layer, keeps things organized
 	std::map<int, MeshData> meshLayersMap;
 
@@ -194,6 +198,7 @@ protected:
 		UMaterial *Material,
 		int layer
 	);
+	*/
 
 
 	MeshData createFoliage(TArray<FVectorTouple> &touples); //, MeshData &outputAppend);

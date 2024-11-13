@@ -15,27 +15,23 @@ public:
 
 	void calculatecurve(
 		std::vector<FVector2D> &ref,
-		//std::vector<FVector2D> &output,
 		TVector<FVector2D> &output,
-		float _einheitsValue,
-		float _stepsPerEinheitsValue
+		float _einheitsValue
 	);
 
 private:
-	//new fixed vars
-	float EinheitsValue;
-	float stepsToMakePerEinheitsValue;
 
+	float EinheitsValue;
 
 
 	void createContinuityCurve(std::vector<FVector2D> &anchors);
-
+	
 	void smoothAnchors(std::vector<FVector2D> &ref);
-
+	
 	void processAllPoints(std::vector<FVector2D> &points, TVector<FVector2D> &output);
 	void process4Points(std::vector<FVector2D> &points, int offset, TVector<FVector2D> &output);
 	
-	
+
 	FVector2D FVector2DFourAnchorBezier(
 		FVector2D &a,
 		FVector2D &b,

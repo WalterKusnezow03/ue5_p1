@@ -19,7 +19,9 @@ public:
 	bool hasTargetSetup();
 
 
+
 	FVector interpolate(float DeltaTime);
+	static FVector interpolation(FVector from, FVector to, float skalar);
 
 private:
 	FVector from;
@@ -28,7 +30,7 @@ private:
 	float deltaTime = 0.0f;
 	float timeToFrame;
 	bool reached = false;
-	float skalar(float timeDistance);
+	float skalar();
 
 	bool targetSetup = false;
 };

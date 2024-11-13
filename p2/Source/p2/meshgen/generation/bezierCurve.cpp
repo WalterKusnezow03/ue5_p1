@@ -6,38 +6,29 @@
 bezierCurve::bezierCurve()
 {
     EinheitsValue = 100;
-    stepsToMakePerEinheitsValue = 1;
 }
 
 bezierCurve::~bezierCurve()
 {
 }
 
-/// @brief will calculate the spline for you, EXPECTS ANCHORS TO BE ALONG X AXIS!
+/// @brief will calculate the bezier tangential spline for you, EXPECTS ANCHORS TO BE ALONG X AXIS!
 /// @param ref reference anchor points (p0s and p3s)
 /// @param output output vector to save in, MUST BE CLEAR
 /// @param _einheitsValue einheits value between vectors, for example 100cm unreal engine scale
-/// @param _stepsPerEinheitsValue steps to have per einheits value: for example 2, each 50cm
 void bezierCurve::calculatecurve(
     std::vector<FVector2D> &ref, 
     TVector<FVector2D> &output,
-    float _einheitsValue,
-    float _stepsPerEinheitsValue
+    float _einheitsValue
 ){
-    /**
-     * error handeling
-     */
-    if(ref.size() < 3){ //if points are for example 1: the code wont be createable, weird issues occur
+    //cant create a curve if has less than 3 anchors
+    if(ref.size() < 3){
         return;
     }
 
-    /**
-     * curve code here
-     */
+    //ISSUE NOT ALLOWED DIVISION BY ZERO
     EinheitsValue = std::abs(_einheitsValue); //positive values only
-    stepsToMakePerEinheitsValue = std::abs(_stepsPerEinheitsValue);
-    if(stepsToMakePerEinheitsValue == 0 || EinheitsValue == 0){
-        //ISSUE NOT ALLOWED DIVISION BY ZERO
+    if(EinheitsValue == 0){
         return;
     }
 
@@ -72,10 +63,8 @@ void bezierCurve::smoothAnchors(std::vector<FVector2D> &ref){
     }
 }
 
-/// @brief lets say the anchors array only has anchors on no continuity helpers
-/// @param anchors anchors to process
-/// @param curve curve to save procesced anchors and continouity points in
-/// @param g2Continuity enable g2 continoutiy or use g1
+///@brief calculates the tangential anchors and adds them to anchors in correct order
+/// will override the data and create the points including tangential extensions in correct order
 void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
     if(anchors.size() < 2){
         return;
@@ -91,9 +80,7 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
     while(i < anchors.size()){
 
         if(i == 1){
-            //FIRST PART WILL ALWAYS BE A LINE LIKE THIS!
-
-            //first part
+            //first curve part
             FVector2D p0 = anchors.at(i-1); //start
             FVector2D p3 = anchors.at(i);  // at(i); //end
 
@@ -101,8 +88,8 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             direction += FVector2D(0, direction.Y * 2); //randomness for first point
 
             //is just linear at first
-            FVector2D p1 = p0 + direction * BETAConst; //was BETA, was made beta end to make less agressivee in beginning
-            FVector2D p2 = p3 - direction * BETAConst; // symetrical to first control point
+            FVector2D p1 = p0 + direction * BETAConst; 
+            FVector2D p2 = p3 - direction * BETAConst; 
 
             FVector2D p4 = p3 + direction * BETAConst;
 
@@ -116,17 +103,13 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             i++;
         }else{
             
-            //current p0
-            //FVector2D p3 = anchors.at(i); //next point from this paralell list
-
             FVector2D p3 = curve.at(curve.size() - 2); //prev of p4 is p3
 
-            //default
+            
             if(i < anchors.size() - 1){
-                
-                //p3 und p4 wurden dann ja von vorher gepusht!, nurnoch to next tangent, point und next next tangent
+                //default interpolation:
 
-                //FVector2D p6 = anchors.at(i + 1); //next anchor
+                //p3 und p4 wurden dann ja von vorher gepusht!, nurnoch to next tangent, point und next next tangent
                 FVector2D p6 = anchors.at(i); //next anchor
                 FVector2D dirToNextAnchor = (p6 - p3);
 
@@ -141,7 +124,6 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
             else
             {
                 //last interpolation
-
                 FVector2D p3_current = p3;
                 FVector2D finalPoint = anchors.at(anchors.size() - 1);
                 FVector2D dirToNextAnchor = (finalPoint - p3_current);
@@ -166,9 +148,8 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
         if(i < anchors.size()){
             anchors.at(i) = curve.at(i); //copy
         }
-        else
-        {
-            anchors.push_back(curve.at(i)); //add, critical section. Memory must be allocated before for safety
+        else{
+            anchors.push_back(curve.at(i));
         }
     }
 
@@ -188,7 +169,7 @@ void bezierCurve::processAllPoints(
 ){
 
     //the curves overlap like this
-    //index:      [0] [1] [2] [3] [4] //which makes i += 3, should be correct
+    //index:      [0] [1] [2] [3] [4] //which makes i += 3 (is correct.)
     //first part: p0, p1, p2, p3, p4
     //second part:            p0, p1, p2, p3
     //                               [5], [6]

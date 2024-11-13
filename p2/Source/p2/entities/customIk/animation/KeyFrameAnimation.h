@@ -23,7 +23,7 @@ public:
 		bool mustBeGrounded,
 		float clampDistance
 	);
-	FVector interpolateOld(float DeltaTime);
+	
 	FVector interpolate(float DeltaTime);
 
 	float lastDeltaTime();
@@ -38,28 +38,27 @@ public:
 
 	bool nextFrameIsProjected();
 
+	
+
 private:
 	float totalLengthSave = 0.0f;
 	FVector targetCopy;
 
 	bool frameIsProjected = false;
+	
 
 	std::vector<KeyFrame> frames; //might be replaced with frame class with time stamp
 	float deltaTime = 0.0f;
 	float lastDeltatime = 0.0f;
 
 	int frameIndex = 0;
+	int nextFrameIndex = 1;
 
-	
-
-	void clampIndex();
-	int nextFrameIndex();
-	int prevFrameIndex();
-
+	void updateFrameIndex();
 	bool canAnimate();
 	bool hasAnyFrames();
 
-	float skalar(float timeDistance);
+	
 
 
 

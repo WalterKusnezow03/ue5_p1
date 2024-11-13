@@ -11,14 +11,10 @@
 
 
 // Sets default values
-AcustomMeshActor::AcustomMeshActor()
+AcustomMeshActor::AcustomMeshActor() : AcustomMeshActorBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Create the ProceduralMeshComponent
-    Mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
-    RootComponent = Mesh;
 
 
 }
@@ -162,6 +158,8 @@ void AcustomMeshActor::createTerrainFrom2DMap(
     bool createTrees    
 ){ //nach dem entity manager stirbt die refenz hier!
 
+    //must be called here.
+    setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
     
    
     
@@ -367,7 +365,7 @@ void AcustomMeshActor::process2DMapSimple(
 
 
 
-
+/*
 
 /// @brief updates a mesh layer given on a mesh data object (which will be deep copied)
 /// @param otherMesh 
@@ -389,7 +387,7 @@ void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int la
             data->calculateNormals();
         }
         
-        /**
+        **
          * example: 
          * 
         Mesh->CreateMeshSection(
@@ -401,7 +399,7 @@ void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int la
             VertexColors, 
             Tangents, 
             true
-        );*/
+        );*
         Mesh->ClearMeshSection(layer);
         Mesh->CreateMeshSection(
             layer, 
@@ -428,7 +426,7 @@ void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int la
 
 
 
-
+*/
 
 
 
@@ -628,6 +626,8 @@ void AcustomMeshActor::createCube(
 
 
 
+/*
+
 
 /// @brief creates a two sided quad from 4 vertecies and a material
 /// expecting the vertecies to be already ordered correctly in clockwise order from a to d!
@@ -673,7 +673,6 @@ void AcustomMeshActor::createTwoSidedQuad(
 
 
 
-
 /// @brief build a quad out of two triangles! Important otherwise unfixable issues are in the mesh
 /// @param a 
 /// @param b 
@@ -696,15 +695,15 @@ void AcustomMeshActor::buildQuad(
     buildTriangle(a, c, d, output, trianglesOutput);
     return;
 
-    /*
-                1--2
-                |  |
-                0<-3
+    
+    //            1--2
+    //            |  |
+    //            0<-3
 
-                b--c
-                |  |
-                a<-d
-    */
+    //            b--c
+    //            |  |
+    //            a<-d
+    
 
 }
 
@@ -771,12 +770,6 @@ void AcustomMeshActor::createTwoSidedQuad(
 }
 
 
-
-
-
-
-
-
 /// @brief applys a material to the whole component (slot 0 by default)
 /// @param ProceduralMeshComponent 
 /// @param Material 
@@ -798,7 +791,7 @@ void AcustomMeshActor::ApplyMaterial(
 		ProceduralMeshComponent->SetMaterial(layer, Material);
 
     }
-}
+}*/
 
 
 
@@ -902,8 +895,7 @@ MeshData AcustomMeshActor::createTree(int sizeMeters, float thicknessMeters){
     }
 
     TVector<FVector2D> out;
-    int stepsPerEinheit = 4;
-    s.calculatecurve(nodes, out, einheitsValue, stepsPerEinheit);
+    s.calculatecurve(nodes, out, einheitsValue);
 
     
 

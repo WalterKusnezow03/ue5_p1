@@ -48,48 +48,66 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
     if(reached){
         return target;
     }
-    
+    if(deltaTime >= timeToFrame){
+        reached = true;
+        deltaTime = 0.0f;
+        return target;
+    }
+
     deltaTime += DeltaTime;
     
-    FVector currentPos = from;
-    FVector toFramePos = target;
-    FVector connect = toFramePos - currentPos; // AB = B - A
     
+    FVector connect = target - from; // AB = B - A  
     //gx = A + r (B - A)
-    FVector interpolated = currentPos + skalar(timeToFrame) * connect;
-    
+    //FVector interpolated = from + skalar() * connect;
+
+    FVector interpolated = TargetInterpolator::interpolation(from, target, skalar());
+
     //wenn die richtungs vektoren anti paralell zu einander liegen
     //kann ich prüfen ob mein punkt passiert wurde
-    FVector dirToB = toFramePos - interpolated;
+    FVector dirToB = target - interpolated;
     float dotProduct = FVector::DotProduct(dirToB.GetSafeNormal(), connect.GetSafeNormal());
     
     //is tested
     //DebugHelper::showScreenMessage("dot product: ", dotProduct);
     if (dotProduct <= -0.99f)
     {
-        //anti parellell
+        DebugHelper::showScreenMessage("PASSED FRAME");
+        // anti parellell
         reached = true;
         deltaTime = 0.0f;
+        return interpolated;
     }
 
-    if(FVector::Dist(interpolated, toFramePos) <= 1.0f){ //20
+    if(FVector::Dist(interpolated, target) <= 1.0f){ //1cm
         //DebugHelper::showScreenMessage("switched because of distance");
         reached = true;
         deltaTime = 0.0f;
+        return interpolated;
     }
     return interpolated;
 
 }
 
-float TargetInterpolator::skalar(float timeDistance){
-    if(timeDistance == 0){
+float TargetInterpolator::skalar(){
+    if(timeToFrame == 0){
         return 1;
     }
 
-    float skal = deltaTime / timeDistance;
+    float skal = deltaTime / timeToFrame;
     //DebugHelper::showScreenMessage("skalar interpolate ", skal);
 
     // Berechnet den Skalierungsfaktor `t`, der zwischen 0 und 1 liegt
-    return deltaTime / timeDistance; //t / 1 quasi.
+    return skal; //t / 1 quasi.
 
+}
+
+
+
+
+FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float skalar){
+    FVector connect = toIn - fromIn; // AB = B - A
+    //gx = A + r (B - A)
+    FVector interpolated = fromIn + skalar * connect;
+    return interpolated;
 }

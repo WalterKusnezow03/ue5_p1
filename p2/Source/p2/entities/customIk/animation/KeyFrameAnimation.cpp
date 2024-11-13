@@ -7,6 +7,7 @@
 KeyFrameAnimation::KeyFrameAnimation()
 {
     frameIndex = 0;
+    nextFrameIndex = 1;
     totalLengthSave = 0.0f;
 }
 
@@ -52,53 +53,6 @@ float KeyFrameAnimation::totalLength(){
     return totalLengthSave;
 }
 
-/// @brief DEPRECATED !
-/// @param DeltaTime 
-/// @return 
-FVector KeyFrameAnimation::interpolateOld(float DeltaTime){
-    
-    if(hasAnyFrames()){
-        clampIndex();
-        int i = frameIndex;
-        int inext = nextFrameIndex();
-
-        deltaTime += DeltaTime; //sagen wir abstand erstmal eine sekunde:  t element [0,1]
-
-        KeyFrame &current = frames.at(i);
-        KeyFrame &toFrame = frames.at(inext);
-
-        FVector currentPos = current.readposition();
-        FVector toFramePos = toFrame.readposition();
-        FVector connect = toFramePos - currentPos; // AB = B - A
-        FVector dir = connect; //will be scaled by time!
-        //.GetSafeNormal();
-
-        float t = deltaTime; //t will be element [0,1]
-        //gx = A + r (B - A)
-        //FVector interpolated = currentPos + t * dir;
-        FVector interpolated = currentPos + skalar(toFrame.timeToFrame()) * dir;
-
-        if(FVector::Dist(interpolated, toFramePos) <= 10){
-            frameIndex++;
-            clampIndex();
-            lastDeltatime = deltaTime; //copy for adjust
-            deltaTime = 0;
-
-        }
-
-        return interpolated;
-    }
-
-
-    return FVector(0, 0, 0);
-}
-
-//TODO: prüfen ob richtig!
-float KeyFrameAnimation::skalar(float timeDistance){
-    // Berechnet den Skalierungsfaktor `t`, der zwischen 0 und 1 liegt
-    return deltaTime / timeDistance; //teil / voll
-
-}
 
 
 
@@ -107,36 +61,6 @@ float KeyFrameAnimation::skalar(float timeDistance){
 /// @return has enough or not
 bool KeyFrameAnimation::hasAnyFrames(){
     return frames.size() >= 2; //must be at least 2!
-}
-
-/// @brief clamps the frame index to a valid value if needed
-void KeyFrameAnimation::clampIndex(){
-    if(frameIndex >= frames.size() || frameIndex < 0){
-        frameIndex = 0;
-    }
-}
-
-/// @brief returns the next frame index looping
-/// @return 
-int KeyFrameAnimation::nextFrameIndex(){
-    if (frameIndex >= frames.size() - 1 || frameIndex < 0){
-        return 0;
-    }
-    return frameIndex + 1;
-}
-
-int KeyFrameAnimation::prevFrameIndex(){
-    if (frameIndex >= frames.size() - 1){
-        return 0;
-    }
-
-    int maxIndex = frames.size() - 1;
-    if (frameIndex <= 0 && maxIndex >= 0)
-    {
-        return maxIndex;
-    }
-
-    return frameIndex - 1;
 }
 
 
@@ -155,17 +79,18 @@ float KeyFrameAnimation::lastDeltaTime(){
 FVector KeyFrameAnimation::interpolate(float DeltaTime){
     
     if(hasAnyFrames()){
-        clampIndex();
-        if(interpolator.hasTargetSetup() == false){
+        //DebugHelper::showScreenMessage("nextframe ", nextFrameIndex);
+        if (interpolator.hasTargetSetup() == false)
+        {
             updateFrameInterpolator();
         }
 
         FVector interpolated = interpolator.interpolate(DeltaTime);
 
         if(interpolator.hasReachedTarget()){    
-            frameIndex++;
+            //frameIndex++;
+            updateFrameIndex();
             updateFrameInterpolator();
-            //DebugHelper::showScreenMessage("reached, update interpolator");
         }
 
         return interpolated;
@@ -174,21 +99,27 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime){
     return FVector(0, 0, 0);
 }   
 
+void KeyFrameAnimation::updateFrameIndex(){
+    frameIndex = (frameIndex + 1) % frames.size();
+    nextFrameIndex = (frameIndex + 1) % frames.size();
+}
+
+
+
 void KeyFrameAnimation::updateFrameInterpolator(){
-    clampIndex();
-    int nextI = nextFrameIndex();
-    KeyFrame &firstFrame = frames.at(frameIndex);
-    KeyFrame &nextFrame = frames.at(nextI);
+    KeyFrame &currentFrame = frames.at(frameIndex);
+    KeyFrame &nextFrame = frames.at(nextFrameIndex);
     interpolator.setTarget(
-        firstFrame.readposition(),
+        currentFrame.readposition(),
         nextFrame.readposition(),
         nextFrame.timeToFrame()
     );
 
     //copy next target for the actor to get to adjust hip
+    //targetCopy = nextFrame.readposition();
     targetCopy = nextFrame.readposition();
 
-    //neu
+    //reset frame projected status
     frameIsProjected = false;
 }
 
@@ -210,9 +141,7 @@ void KeyFrameAnimation::updateFrameInterpolator(){
 
 bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     if(hasAnyFrames()){
-        clampIndex();
-        int nextI = nextFrameIndex();
-        KeyFrame &nextFrame = frames.at(nextI);
+        KeyFrame &nextFrame = frames.at(nextFrameIndex);
         return nextFrame.mustBeGrounded();
     }
     return false;
@@ -220,9 +149,7 @@ bool KeyFrameAnimation::nextFrameMustBeGrounded(){
 
 FVector KeyFrameAnimation::readNextFrame(){
     if(hasAnyFrames()){
-        clampIndex(); //for safety
-        int nextI = nextFrameIndex();
-        KeyFrame &nextFrame = frames.at(nextI);
+        KeyFrame &nextFrame = frames.at(nextFrameIndex);
         return nextFrame.readposition();
     }
     return FVector(0, 0, 0);
@@ -246,3 +173,4 @@ void KeyFrameAnimation::overrideNextFrame(FVector &framePos){
 bool KeyFrameAnimation::nextFrameIsProjected(){
     return frameIsProjected;
 }
+

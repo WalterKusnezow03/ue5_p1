@@ -63,11 +63,11 @@ void worldLevel::resetWorld(){
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
 
-    bool debugCreate = false; //dont create terrain for debugging 
+    bool debugCreate = true; //dont create terrain for debugging 
     //disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
-            createTerrain(world, 100); // 100
+            createTerrain(world, 100); // 100m
         }
     }
 
@@ -158,41 +158,27 @@ void worldLevel::createTerrain(UWorld *world, int meters){
             terrainPointer = new terrainCreator();
         }
 
+        terrainPointer->debugCreateTerrain(world); //new test
+        return;
+
         //create terrain
         EntityManager *e = entityManager();
         if(e != nullptr){
+
             terrainPointer->createTerrain(world, meters);
 
-            /*
-            //choose some size between 0 and meters for pos and some scale (lets say 15 - 30?) 
-            //some how block the are which is filled?
-            int terrainSizehalf = (meters * terrainCreator::ONEMETER) / 2;
-            int roomsizeMeter = 15;
-            int roomsizeWorldScale = roomsizeMeter * 100;
-            FVector locationToSpawn(
-                FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
-                FVectorUtil::randomNumber(0, terrainSizehalf - roomsizeWorldScale),
-                0
-            );
-            int spawnheight = terrainPointer->getHeightFor(locationToSpawn);
-            locationToSpawn.Z = spawnheight;
-
-            //create room layouts to embed
-
-            //flatten terrain / override height
-            terrainPointer->setFlatArea(locationToSpawn, roomsizeMeter, roomsizeMeter);
-
-            //create rooms
-            if(RoomManager *r = roomManager()){
-                r->createABuilding(world, locationToSpawn, roomsizeMeter, roomsizeMeter);
-            }*/
-
             //request mesh actors and apply terrain
-            int numberCreated = terrainPointer->chunkNum();
-            std::vector<AcustomMeshActor *> meshes = e->requestMeshActors(world, numberCreated);
+            bool applyAndCreateterrain = true;
+            if(applyAndCreateterrain){
+                int numberCreated = terrainPointer->chunkNum();
+                std::vector<AcustomMeshActor *> meshes = e->requestMeshActors(world, numberCreated);
+                
 
-            terrainPointer->applyTerrainDataToMeshActors(meshes);
 
+
+                terrainPointer->applyTerrainDataToMeshActors(meshes);
+            }
+            
             //finally set created to true
             isTerrainInited = true;
         }
@@ -274,7 +260,6 @@ void worldLevel::debugBezier(UWorld *world){
     std::vector<FVector2D> anchors;
     TVector<FVector2D> outputCurve;
     float oneMeter = 100;
-    float stepsPerMeter = 1;
 
     anchors.push_back(FVector2D(0, 300));
     anchors.push_back(FVector2D(500, 100));
@@ -286,8 +271,7 @@ void worldLevel::debugBezier(UWorld *world){
     b.calculatecurve(
 		anchors,
 		outputCurve,
-		oneMeter,
-		stepsPerMeter
+		oneMeter
 	);
 
     std::vector<FVector> d3Vec;
@@ -298,4 +282,10 @@ void worldLevel::debugBezier(UWorld *world){
     }
 
     DebugHelper::showLine(world, d3Vec, FColor::Black);
+
+    for (int i = 0; i < d3Vec.size(); i++){
+        FVector current = d3Vec.at(i);
+        FVector offset = current + FVector(0, 0, 100);
+        DebugHelper::showLineBetween(world, current, offset, FColor::Black);
+    }
 }

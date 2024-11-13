@@ -475,6 +475,10 @@ void MMatrix::normalizeRotation(){
 
 
 //damit keine werte über 360 grad entstehen
+
+/// @brief normalizes the angle so none of it acts as scaling
+/// @param angle angle in radian
+/// @return 
 float MMatrix::normalizeAngle(float angle) {
     // Normalisiere den Winkel auf den Bereich [0, 2π)
     bool flip = false;
