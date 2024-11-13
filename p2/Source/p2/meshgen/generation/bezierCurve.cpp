@@ -13,7 +13,7 @@ bezierCurve::~bezierCurve()
 {
 }
 
-/// @brief will calculate the spline for you
+/// @brief will calculate the spline for you, EXPECTS ANCHORS TO BE ALONG X AXIS!
 /// @param ref reference anchor points (p0s and p3s)
 /// @param output output vector to save in, MUST BE CLEAR
 /// @param _einheitsValue einheits value between vectors, for example 100cm unreal engine scale
@@ -21,7 +21,6 @@ bezierCurve::~bezierCurve()
 void bezierCurve::calculatecurve(
     std::vector<FVector2D> &ref, 
     TVector<FVector2D> &output,
-    //std::vector<FVector2D> &output,
     float _einheitsValue,
     float _stepsPerEinheitsValue
 ){
@@ -50,18 +49,6 @@ void bezierCurve::calculatecurve(
     //interpolate
     processAllPoints(ref, output); //what if you do it more than once
    
-}
-
-/// @brief predicts the element count for the finally interpolated bezier curve 
-/// @param anchors 
-/// @return 
-int bezierCurve::predictFinalCurveElementCount(std::vector<FVector2D> &anchors){
-    int sum = 0;
-    for (int i = 1; i < anchors.size(); i++){
-        sum += ((int)FVectorUtil::Dist(anchors.at(i - 1), anchors.at(i)) / EinheitsValue);
-    }
-
-    return (int)(sum * 1.2f); //120% for safety
 }
 
 /// @brief iterates over the anchors and moves them closer on y axis together based on their distance on x
@@ -98,83 +85,79 @@ void bezierCurve::createContinuityCurve(std::vector<FVector2D> &anchors){
     //data will be copied later
     std::vector<FVector2D> curve;
 
-
-    //percent distance / one fraction to place p4 and p2 respectivley as control points
-    //tangentially
-    float BETA = 0.6f; //from p0 to p1 scaling
-    float BETA_END = BETA / 2; //p2 to p3: keep second control point more to the end, 
-                               //allows less sharp edges in theory
-
-    //this code creates the curve and should generally create the curve as wanted
+    float BETAConst = 0.25;
 
     int i = 1; 
     while(i < anchors.size()){
 
         if(i == 1){
+            //FIRST PART WILL ALWAYS BE A LINE LIKE THIS!
+
             //first part
             FVector2D p0 = anchors.at(i-1); //start
             FVector2D p3 = anchors.at(i);  // at(i); //end
 
             FVector2D direction = (p3 - p0);
+            direction += FVector2D(0, direction.Y * 2); //randomness for first point
 
             //is just linear at first
-            FVector2D p1 = p0 + direction * BETA_END; //was BETA, was made beta end to make less agressivee in beginning
-            FVector2D p2 = p3 - direction * BETA_END; // symetrical to first control point
+            FVector2D p1 = p0 + direction * BETAConst; //was BETA, was made beta end to make less agressivee in beginning
+            FVector2D p2 = p3 - direction * BETAConst; // symetrical to first control point
 
-            FVector2D p4 = p3 + (p3 - p2) * BETA; //next anchor, next p1, continuity
+            FVector2D p4 = p3 + direction * BETAConst;
 
             curve.push_back(p0);
             curve.push_back(p1);
             curve.push_back(p2);
             curve.push_back(p3);
-            curve.push_back(p4);
+            curve.push_back(p4); //p1 für den nächsten ist das. 
 
 
             i++;
         }else{
-
-            int index = curve.size();
-            FVector2D p0 = curve.at(index - 2); //the one before p4 (alias p1)
-            FVector2D p1 = curve.at(index - 1);
-
-            FVector2D p3 = anchors.at(i); //next point from this paralell list
             
+            //current p0
+            //FVector2D p3 = anchors.at(i); //next point from this paralell list
 
-            //p1 kommt von vorher aber man sollte p4 so wählen es sich an den nächsten 
-            //anker punkt anschmiegen wenn möglich
+            FVector2D p3 = curve.at(curve.size() - 2); //prev of p4 is p3
+
+            //default
             if(i < anchors.size() - 1){
-                FVector2D p6 = anchors.at(i + 1);
-                FVector2D dirToNext = (p6 - p3);
-                FVector2D p4 = p3 + dirToNext * BETA; // AB = B - A //p1 für next
-                FVector2D p2 = p3 - dirToNext * BETA_END; //creating own anchor p2
+                
+                //p3 und p4 wurden dann ja von vorher gepusht!, nurnoch to next tangent, point und next next tangent
 
-                curve.push_back(p2);
-                curve.push_back(p3);
-                curve.push_back(p4); //push last but only if not at end of curve
+                //FVector2D p6 = anchors.at(i + 1); //next anchor
+                FVector2D p6 = anchors.at(i); //next anchor
+                FVector2D dirToNextAnchor = (p6 - p3);
 
-            }else{
+                //create instead p5 and push p6
+                FVector2D tangentToNext_p5 = p6 - dirToNextAnchor * BETAConst; //tangent to p6 from p3
+                curve.push_back(tangentToNext_p5);
+                curve.push_back(p6);
 
+                FVector2D tangentFromNext_p7 = p6 + dirToNextAnchor * BETAConst;
+                curve.push_back(tangentFromNext_p7); //is p4 for next!
+            }
+            else
+            {
                 //last interpolation
-                FVector2D dir = (p3 - p0);
 
-
-                FVector2D p2 = p3 - dir * BETA_END; //p2 is now very aligned to p1
-
-
-                //next p1 point
-                FVector2D p4 = p3 + (p3 - p2) * BETA; 
+                FVector2D p3_current = p3;
+                FVector2D finalPoint = anchors.at(anchors.size() - 1);
+                FVector2D dirToNextAnchor = (finalPoint - p3_current);
+                FVector2D tangentToFinal = finalPoint - dirToNextAnchor * BETAConst;
 
                 //p0 and p1 already in list
-                curve.push_back(p2);
-                curve.push_back(p3);
+                curve.push_back(tangentToFinal);
+                curve.push_back(finalPoint);
+
+                
             }
 
-            
             i++;
         }
 
     }
-
 
     //copy to anchors, i defined before
     i = 0;
@@ -206,7 +189,7 @@ void bezierCurve::processAllPoints(
 
     //the curves overlap like this
     //index:      [0] [1] [2] [3] [4] //which makes i += 3, should be correct
-    //first part: p0, p1, p2, p3, p4next
+    //first part: p0, p1, p2, p3, p4
     //second part:            p0, p1, p2, p3
     //                               [5], [6]
 
@@ -238,38 +221,16 @@ void bezierCurve::process4Points(
     FVector2D &p2 = points[offset + 2];
     FVector2D &p3 = points[offset + 3];
 
-    
-    float distance = FVectorUtil::Dist(p0, p3);
-    float step = (distance / EinheitsValue) / stepsToMakePerEinheitsValue;
-    float stepC = step;
-    if (step == 0 || step <= 0.01f)
-    { // 100max z.b.
-        return;
-    }
-    step = 1.0f / step; //to percentage frac of 1
+    //umwandeln zu inkrementell
+    float distanceX = std::abs(p3.X - p0.X);
 
-
-
-    float limit = 1.0f; //fixing weird overlap on curves by cutting them off, 0.6f
-    limit = 0.8f; //fix over interpolating
-    FVector2D prev(-100, 0); //first not in curve vector.
-    for (float i = 0; i <= limit; i += step)
+    for (float i = 0; i < distanceX; i += EinheitsValue)
     {
-        FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, i);
-        newPos.X = (int)(newPos.X);
-        // new code
-        if(output.size() > 0){
-            if(prev.X != newPos.X){
-                output.push_back(newPos);
-            }
-        }else{
-            output.push_back(newPos);
-        }
-        //copy for next
-        prev = newPos;
-    }
 
-    //fillGaps(output);
+        float skalar = i / distanceX; //x / 1 full
+        FVector2D newPos = FVector2DFourAnchorBezier(p0, p1, p2, p3, skalar);
+        output.push_back(newPos);
+    }
 }
 
 
@@ -287,75 +248,10 @@ FVector2D bezierCurve::FVector2DFourAnchorBezier(
     FVector2D bc = b + skalar * (c - b);
     FVector2D cd = c + skalar * (d - c);
     FVector2D abbc = ab + skalar * (bc - ab); //das ding dazwischen
-    FVector2D bccd = cd + skalar * (cd - bc); //das ding dazwischen
+    FVector2D bccd = bc + skalar * (cd - bc); //das ding dazwischen
     FVector2D abbcbccd = abbc + skalar * (bccd - abbc); //das ding dazwischen
     return abbcbccd;
 }
 
 
 
-
-
-
-
-
-
-
-
-/**
- * 
- * FILL GAPS
- * 
- */
-
-/// @brief fills gaps larger than one
-/// @param vec 
-void bezierCurve::fillGaps(TVector<FVector2D> &vec){
-
-    int i = 1;
-    int size = vec.size();
-    while (i < size){
-
-        FVector2D prev = vec.at(i - 1);
-        FVector2D current = vec.at(i);
-
-        if(std::abs(prev.X - current.X) > (EinheitsValue / stepsToMakePerEinheitsValue)){ //must be converted to average distance!!
-            //std::vector<FVector2D> fill;
-            TVector<FVector2D> fill;
-            linearInterpolate(prev, current, fill);
-
-            // insert
-            // v.insert(startpoint, other.begin(), other.end());
-            //vec.insert(vec.begin() + i, fill.begin(), fill.end());
-            vec.insert(i, fill);
-            i += fill.size(); //to next
-        }
-        i++; //to next default
-
-        size = vec.size();
-    }
-
-
-}
-
-/// @brief linear interpolate from a to b
-/// @param a start
-/// @param b end
-/// @param container container to save in  
-void bezierCurve::linearInterpolate(FVector2D &a, FVector2D &b, TVector<FVector2D> &container){
-    if(stepsToMakePerEinheitsValue != 0){
-        float dist = std::abs(a.X - b.X);
-        float step = (EinheitsValue / stepsToMakePerEinheitsValue);
-        if (dist > step)
-        { // one (centi)meter by default
-
-            float euklidDist = FVectorUtil::Dist(a, b);
-            FVector2D dir = (b - a) / euklidDist; // normalized dir
-            for (float i = 0; i < dist; i += step){
-                FVector2D newPos = a + dir * i;
-                container.push_back(newPos);
-            }
-        }
-    }
-    
-}

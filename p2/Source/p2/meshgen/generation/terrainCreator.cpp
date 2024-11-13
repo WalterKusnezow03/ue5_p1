@@ -514,6 +514,7 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
     int chunks = floor(meters / terrainCreator::CHUNKSIZE); //to chunks
     //int detail = CHUNKSIZE; // 1 by 1 detail
 
+    //fill map
     for (int i = 0; i < chunks; i++){
         std::vector<terrainCreator::chunk> vec;
         for (int j = 0; j < chunks; j++){
@@ -523,39 +524,13 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
         map.push_back(vec);
     }
 
-    
 
-    /**
-     * Enheigheting the whole chunk and smoothening at a later point works much better
-     * and looks much better too.
-     * Terrain will be kept like this
-     * -> additional thoughts: hills could be prdefined by marking certain x and y chunks and
-     * enheighten them more than others
-     */
-
-    
-
-
+    //random height and smooth
     int hillCount = 5; //means 40m height in worse case
-    for (int j = 0; j < hillCount; j++)
-    {
-        createBezierChunkWide();
+    for (int j = 0; j < hillCount; j++){
+        createRandomHeightMapChunkWide();
     }
-    
-    //whole map smoothening (works good but takes long)
-    
     smooth3dMap();
-
-    // must be set on terrain type, more hills, flatter terrain like deserts... etc.
-    // works good and as intended, multiply could be set to 0 < val < 1 values for deserts for example
-    /*
-    float multiply = 1.0f;
-    for (int i = 0; i < map.size(); i++)
-    {
-        for (int j = 0; j < map.at(i).size(); j++){
-            map.at(i).at(j).scaleheightForAll(multiply);
-        }
-    }*/
 
 }
 
@@ -1165,11 +1140,9 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActor*>
 
 // --- top perpective section ---
 
-/// @brief will create a bezier curve and add a 100cm height increase at each chunk enclosed.
-/// @param offset offset chunk index to take along x and y
-void terrainCreator::createBezierChunkWide(){
+/// @brief will create a random height map chunk wide, then to be smoothed
+void terrainCreator::createRandomHeightMapChunkWide(){
 
-    //creates terrain better than a bezier curve imo.
     int scaleX = FVectorUtil::randomNumber(6, map.size());
     int scaleY = FVectorUtil::randomNumber(6, scaleX);
     int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));

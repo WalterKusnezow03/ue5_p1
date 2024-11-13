@@ -46,4 +46,6 @@ private:
 
 	
 	static void DebugCreateRooms(UWorld *world);
+
+	static void debugBezier(UWorld *world);
 };

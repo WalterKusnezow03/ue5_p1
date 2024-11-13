@@ -140,6 +140,6 @@ private:
 	void scaleHeightForAll(float scale);
 
 	//new chunk bezier curve
-	void createBezierChunkWide();
+	void createRandomHeightMapChunkWide();
 	void processToupleChunk(FVector2D &a, FVector2D &b);
 };

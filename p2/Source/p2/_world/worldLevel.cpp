@@ -5,6 +5,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
+#include "p2/util/TVector.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 
 worldLevel::worldLevel()
@@ -80,6 +81,8 @@ void worldLevel::initWorld(UWorld *world){
 
     //testing
     DebugHelper::Debugtest(world);
+
+    debugBezier(world);
 }
 
 /**
@@ -257,4 +260,42 @@ void worldLevel::DebugCreateRooms(UWorld *world){
     layoutMaker l;
     l.makeLayout(20, 20, sizesP, outputRooms);
     AroomProcedural::spawnRooms(world, locationToSpawn, outputRooms);
+}
+
+
+
+
+
+void worldLevel::debugBezier(UWorld *world){
+    if(world == nullptr){
+        return;
+    }
+
+    std::vector<FVector2D> anchors;
+    TVector<FVector2D> outputCurve;
+    float oneMeter = 100;
+    float stepsPerMeter = 1;
+
+    anchors.push_back(FVector2D(0, 300));
+    anchors.push_back(FVector2D(500, 100));
+    anchors.push_back(FVector2D(1000, 200));
+    anchors.push_back(FVector2D(1500, 100));
+    anchors.push_back(FVector2D(2000, 200));
+
+    bezierCurve b;
+    b.calculatecurve(
+		anchors,
+		outputCurve,
+		oneMeter,
+		stepsPerMeter
+	);
+
+    std::vector<FVector> d3Vec;
+    for (int i = 0; i < outputCurve.size(); i++){
+        FVector2D copy = outputCurve[i];
+        FVector projected(copy.X, 0, copy.Y);
+        d3Vec.push_back(projected);
+    }
+
+    DebugHelper::showLine(world, d3Vec, FColor::Black);
 }

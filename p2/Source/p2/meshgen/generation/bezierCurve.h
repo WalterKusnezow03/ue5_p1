@@ -27,17 +27,15 @@ private:
 	float stepsToMakePerEinheitsValue;
 
 
-	int predictFinalCurveElementCount(std::vector<FVector2D> &anchors);
+
 	void createContinuityCurve(std::vector<FVector2D> &anchors);
 
 	void smoothAnchors(std::vector<FVector2D> &ref);
 
 	void processAllPoints(std::vector<FVector2D> &points, TVector<FVector2D> &output);
 	void process4Points(std::vector<FVector2D> &points, int offset, TVector<FVector2D> &output);
-	void fillGaps(TVector<FVector2D> &vec);
-
-	void linearInterpolate(FVector2D &a, FVector2D &b, TVector<FVector2D>  &container);
-
+	
+	
 	FVector2D FVector2DFourAnchorBezier(
 		FVector2D &a,
 		FVector2D &b,
