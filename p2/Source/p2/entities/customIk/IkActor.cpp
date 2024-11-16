@@ -56,8 +56,8 @@ void AIkActor::BeginPlay()
 	animationKeys_1.addFrame(targetB, 1.0f);
 	animationKeys_1.addFrame(FVector(100, 100, 100), 0.1f);
 
-	//testing
-	//ownOrientation.yawRadAdd(MMatrix::degToRadian(90));
+	//testing inital rotation
+	ownOrientation.yawRad(MMatrix::degToRadian(45));
 
 	//testing look at, works
 	//FVector target(0, 0, 0);
@@ -87,6 +87,7 @@ void AIkActor::BeginPlay()
 	);
 
 	//NEU mit double kette
+	//DEPRECATED, MUST BE REMOVED
 	KeyFrameAnimation legHipAdjustKeys; 
 	legHipAdjustKeys.addFrame(
 		FVector(0, 0, 0),
@@ -176,9 +177,8 @@ void AIkActor::LookAt(FVector TargetLocation)
 
 
 
-//THIS METHOD IS ONLY FOR FOOT FOR NOW
+//THIS METHOD IS ONLY FOR NON FOOT
 void AIkActor::standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime){
-	//plotNextFrameToGround(frames); //TESTING NEEDED, must be only for leg!
 
 	//erstmal nur end to target!
 	FVector weight(-1, 0, 0);
@@ -200,27 +200,6 @@ void AIkActor::standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, f
 	);
 }
 
-void AIkActor::standAloneKeyFrameAnimProjected(
-	BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime
-){
-	plotNextFrameToGround(frames); //testing was correct 
-
-	//erstmal nur end to target!
-	FVector weight(1, 0, 0);
-	FVector nextPos = frames.interpolate(DeltaTime); //new function
-	MMatrix translationActor = currentTransform();
-	
-	bone.rotateEndToTargetAndBuild(
-		GetWorld(),
-		nextPos,
-		weight,
-		translationActor, // hip start with orient
-		ownLocationFoot,  // foot apply position
-		ownLocation, // hip apply position
-		FColor::Black,
-		DeltaTime * 2.0f
-	);
-}
 
 
 
@@ -228,55 +207,6 @@ void AIkActor::standAloneKeyFrameAnimProjected(
 
 
 
-
-
-/**
- * 
- * NEW LEG SWITCH WITH ANIM
- * 
- */
-
-
-//CAUTION WILL ONLY WORK FOR ONE, NEEDS PHASE BLOCKING CLASS OR SOMTHING LIKE THAT!
-//TOuPLE WITH EACH BONE IDK! SOEMTHING LIKE THAT NEEDED!
-void AIkActor::standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime){
-	//hier end und start!
-	FVector weight(1, 0, 0);
-
-	//TESTING NEEDED!
-	float halfTime = frames.totalLength();
-
-	float fullTime = halfTime * 2.0f;
-	debugFlipTime += DeltaTime;
-	bool moveLeg = debugFlipTime < halfTime;
-	if (debugFlipTime >= fullTime){
-		debugFlipTime = 0; //otherwise causes issues with leg glitching / hip !, must be fixed later
-		return;
-	}
-	//DebugHelper::showScreenMessage("time now ", debugFlipTime);
-
-
-	if(moveLeg){
-		standAloneKeyFrameAnimProjected(bone, frames, DeltaTime);
-	}else{
-
-		FVector footTarget = frames.readPrevFrame();
-		FVector hipStart = hipRelativeToFootRelativeTarget(footTarget);
-
-
-		float time = debugFlipTime - halfTime;
-		float skalar = time / halfTime; //x / 1
-		
-		// HIP TO TARGET
-		standAloneMoveStartFromTo(
-			bone,
-			hipStart, // start
-			FVector(0, 0, 200), // target original pos
-			DeltaTime,
-			skalar // irgendwas / 1 = 0.irgendwas
-		);
-	}
-}
 
 /// @brief moves the start (hip to a wanted target) relative to the bone end limb
 /// @param bone 
@@ -337,12 +267,6 @@ FVector AIkActor::worldToHipRelativeTarget(FVector &other){
 /// HIP PIVOT TRANSFORM ONLY
 /// @return current Transform Matrix by value
 MMatrix AIkActor::currentTransform(){ //might be renamed to hip pivot 
-	// TR = R * T;
-	// RT = T * R;
-	//gewünscht ist jetzt erst an end punkt und dann um eigene
-	//achse zu rotieren, also (geprüft!):
-	//MMatrix rotationTransform = ownLocation * ownOrientation;
-
 	MMatrix rotationTransform = ownLocation;
 	rotationTransform *= ownOrientation;
 	return rotationTransform;
@@ -379,6 +303,15 @@ void AIkActor::SetLocation(FVector &location){
 
 
 void AIkActor::transformFromWorldToLocalCoordinates(FVector &position){
+
+	//neu test
+	//MUSS GETRENNT INVERTIERT WERDEN NICHT ÄNDERN!!
+	position -= ownLocation.getTranslation();
+	MMatrix copy = ownOrientation;
+	copy.invert();
+	position = copy * position;
+	return;
+
 	MMatrix inverted = currentTransform();
 	inverted.invert(); //damit ich den punkt von world in local bringe
 
@@ -387,11 +320,12 @@ void AIkActor::transformFromWorldToLocalCoordinates(FVector &position){
 	//inverted.pitchRad(0);
 
 	FVector toLocal = inverted * position; 
+	position = toLocal;
 	MMatrix current = currentTransform();
 	FVector inWorld = current * toLocal;
 	DebugHelper::showLineBetween(GetWorld(), inWorld, position, FColor::Cyan);
 	DebugHelper::showLineBetween(GetWorld(), inWorld, inWorld + FVector(100,0,0), FColor::Cyan);
-	position = toLocal;
+	
 }
 
 
@@ -538,15 +472,18 @@ void AIkActor::standAloneKeyFrameAnim(
 	bool mustBeGrounded = frames.nextFrameMustBeGrounded();
 	bool isalreadyProjected = frames.nextFrameIsProjected();
 
+	bool debugBlock = false;
+
 	if(mustBeGrounded && !isalreadyProjected){
 		FVector nextFramePos = frames.readNextFrame();
 
 		//neu offset speichern in double frame anim
 		FVector projectOffsetMade(0,0,0);
 		projectToGround(nextFramePos, projectOffsetMade);
-		frames.processProjectOffset(projectOffsetMade);
+		
+		if(debugBlock == false)
+			frames.processProjectOffset(projectOffsetMade);
 
-		//projectToGround(nextFramePos); //old, replaced with offset save too.
 		frames.overrideNextFrame(nextFramePos);
 	}
 
@@ -560,7 +497,8 @@ void AIkActor::standAloneKeyFrameAnim(
 			FColor::Red, 
 			2.0f
 	);
-	ownLocation += hipoffsetAdd; //intern matrix
+	if(debugBlock == false)
+		ownLocation += hipoffsetAdd; //intern matrix
 
 
 
@@ -622,6 +560,9 @@ void AIkActor::projectToGround(FVector &frameToProject, FVector &offsetMade){
 	MMatrix transform = currentTransform();
 	FVector frameInWorld = transform * frameToProject;
 
+	//EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
+	frameInWorld += FVector(0, 0, legScaleCM); //TEST RAYCAST START NACH OBEN!
+
 	//project frame to floor
 	FVector downVec(0, 0, -1);
 	FVector hitpoint;
@@ -629,16 +570,17 @@ void AIkActor::projectToGround(FVector &frameToProject, FVector &offsetMade){
 	bool wasHit = performRaycast(frameInWorld, downVec, hitpoint);
 	if(wasHit){
 		//offsetMade = hitpoint - frameInWorld; // AB = B - A;
-		transformFromWorldToLocalCoordinates(hitpoint);
-
-		offsetMade = hitpoint - frameToProject;
 		DebugHelper::showLineBetween(
 			GetWorld(), 
-			transform * offsetMade, 
 			transform.getTranslation(), 
+			hitpoint, 
 			FColor::Red, 
 			2.0f
 		);
+
+		transformFromWorldToLocalCoordinates(hitpoint);
+
+		offsetMade = hitpoint - frameToProject;
 
 		frameToProject = hitpoint;
 	}

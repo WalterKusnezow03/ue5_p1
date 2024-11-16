@@ -507,8 +507,9 @@ void MMatrix::invert(){
     invertTranslation();
     invertRotation();
     //invertScale();
-}
 
+    //normalizeRotation(); //kleiner test
+}
 
 // -tx, -ty , -tz
 void MMatrix::invertTranslation(){
@@ -528,9 +529,9 @@ void MMatrix::invertRotation(){
 /// @param a 
 /// @param b 
 void MMatrix::swapIndices(int a, int b){
-    if(a > 0 && b > 0 && a < 16 && b < 16){
+    if(a >= 0 && b >= 0 && a < 16 && b < 16){
         float copy = array[a];
-        array[a] = array[a];
+        array[a] = array[b];
         array[b] = copy;
     }
 }

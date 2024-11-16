@@ -99,10 +99,9 @@ private:
 	class KeyFrameAnimation animationKeys_1;
 	class KeyFrameAnimation legAnimationKeys;
 	void standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
-	void standAloneKeyFrameAnimProjected(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
+	
 
 
-	void standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
 
 	void plotNextFrameToGround(KeyFrameAnimation &animation);
 	bool performRaycast(FVector &Start, FVector &dir, FVector &outputHit);
