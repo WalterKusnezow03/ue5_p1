@@ -13,6 +13,7 @@ class P2_API KeyFrameAnimation
 {
 public:
 	KeyFrameAnimation();
+	KeyFrameAnimation(bool loopIn);
 	~KeyFrameAnimation();
 
 	void addFrame(FVector position, float timeFromLastFrame);
@@ -26,21 +27,28 @@ public:
 	
 	FVector interpolate(float DeltaTime);
 
-	float lastDeltaTime();
+	
 
 	bool nextFrameMustBeGrounded();
 	FVector readNextFrame();
 	FVector readPrevFrame();
+	FVector readLastFrameOfAnimation();
 
 	void overrideNextFrame(FVector &framePos);
+	void overrideCurrentAndNextFrame(FVector &current, FVector &target);
+
+	void resetIndex();
 
 	float totalLength();
 
 	bool nextFrameIsProjected();
 
-	
+	bool reachedLastFrameOfAnimation();
 
 private:
+	bool loop = true;
+	bool reachedEndFrameFlag = false;
+
 	float totalLengthSave = 0.0f;
 	FVector targetCopy;
 

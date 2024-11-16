@@ -18,6 +18,8 @@ public:
 	float timeToFrame();
 	bool mustBeGrounded();
 
+	void setTime(float timeFromLastFrameIn);
+
 private:
 	FVector position;
 	float timeFromLastFrame;

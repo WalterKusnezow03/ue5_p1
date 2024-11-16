@@ -214,7 +214,6 @@ bool MeshData::processHit(FVector &localHitpoint, FVector &direction){
 }
 
 /// @brief finds closest Quads to a local hitpoint, really important that it is a local one!
-/// WARNING: DO NOT USE THE POINTERS OTHER FOR TEMPORAL USAGE! MIGHT GET INVALID!
 /// @param localHitpoint 
 void MeshData::findClosestQuadsTo(
     FVector &localHitpoint,

@@ -15,10 +15,14 @@ public:
 
 	void setTarget(FVector from, FVector toTarget, float timeToFrameIn);
 	void overrideTarget(FVector totarget);
+	void overrideStart(FVector fromTarget);
+
+
 	bool hasReachedTarget();
 	bool hasTargetSetup();
 
-
+	float TimeToFrame();
+	void resetDeltaTime();
 
 	FVector interpolate(float DeltaTime);
 	static FVector interpolation(FVector from, FVector to, float skalar);

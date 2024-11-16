@@ -6,18 +6,22 @@
 KeyFrame::KeyFrame(FVector positionIn, float timeFromLastFrameIn)
 {
     position = positionIn;
-    timeFromLastFrame = timeFromLastFrameIn;
+    setTime(timeFromLastFrameIn);
     grounded = false;
 }
 
 KeyFrame::KeyFrame(FVector positionIn, float timeFromLastFrameIn, bool groundedIn){
     position = positionIn;
-    timeFromLastFrame = timeFromLastFrameIn;
+    setTime(timeFromLastFrameIn);
     grounded = groundedIn;
 }
 
 KeyFrame::~KeyFrame()
 {
+}
+
+void KeyFrame::setTime(float timeFromLastFrameIn){
+    timeFromLastFrame = timeFromLastFrameIn;
 }
 
 FVector KeyFrame::readposition(){

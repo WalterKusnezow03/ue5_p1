@@ -9,7 +9,16 @@ KeyFrameAnimation::KeyFrameAnimation()
     frameIndex = 0;
     nextFrameIndex = 1;
     totalLengthSave = 0.0f;
+    loop = true;
 }
+
+KeyFrameAnimation::KeyFrameAnimation(bool loopIn){
+    frameIndex = 0;
+    nextFrameIndex = 1;
+    totalLengthSave = 0.0f;
+    loop = loopIn;
+}
+
 
 KeyFrameAnimation::~KeyFrameAnimation()
 {
@@ -48,14 +57,22 @@ void KeyFrameAnimation::addFrame(
 
 
 
-
+/// @brief total length time of the animation
+/// @return total length time of the animation
 float KeyFrameAnimation::totalLength(){
     return totalLengthSave;
 }
 
-
-
-
+/// @brief returns whether the end frame was reached, only is flagged if the animation
+/// was not initialized with loop, NOT LOOP!
+/// @return reached last frame flag
+bool KeyFrameAnimation::reachedLastFrameOfAnimation(){
+    if(reachedEndFrameFlag){
+        reachedEndFrameFlag = false;
+        return true;
+    }
+    return false;
+}
 
 /// @brief returns if enough frames are available for an animation (at least 2)
 /// @return has enough or not
@@ -64,12 +81,6 @@ bool KeyFrameAnimation::hasAnyFrames(){
 }
 
 
-
-/// @brief returns the deltatime from lastframe (for example to adjust the hip with the same time)
-/// @return time
-float KeyFrameAnimation::lastDeltaTime(){
-    return lastDeltatime;
-}
 
 
 
@@ -86,9 +97,11 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime){
         }
 
         FVector interpolated = interpolator.interpolate(DeltaTime);
+        //targetCopy = interpolated;
 
         if(interpolator.hasReachedTarget()){    
             //frameIndex++;
+            DebugHelper::showScreenMessage("INTERPOLATOR UPDATE!");
             updateFrameIndex();
             updateFrameInterpolator();
         }
@@ -102,9 +115,16 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime){
 void KeyFrameAnimation::updateFrameIndex(){
     frameIndex = (frameIndex + 1) % frames.size();
     nextFrameIndex = (frameIndex + 1) % frames.size();
+
+    bool isEnd = (nextFrameIndex == 0);
+    if(isEnd && !loop){
+        frameIndex = 0;
+        nextFrameIndex = 1;
+        
+        //set status for asking to end anim
+        reachedEndFrameFlag = true;
+    }
 }
-
-
 
 void KeyFrameAnimation::updateFrameInterpolator(){
     KeyFrame &currentFrame = frames.at(frameIndex);
@@ -123,21 +143,10 @@ void KeyFrameAnimation::updateFrameInterpolator(){
     frameIsProjected = false;
 }
 
-/**
- * todo:
- * man muss den nöchsten animation frame abgreifen und ihn ggf auf den boden plotten
- * man muss aber den aktuellen target frame bearbeiten können /
- * bzw auf den boden prozezieren
- * 
- * damit diese klasse das nicht selber machen muss muss ich den frame abholbar machen
- * der actor selber muss ihn vom lokalen ins welt koordinaten system bringen
- * wenn das geschehen, welt position vom boden / terrain abreifen, 
- * dann überschreiben
- * 
- * Es wäre sinnvoll den FVector per REFERENZ (zu gefährlich, keine pointer verteilen!)
- * (oder lieber pointer damit man ihn nicht per value annimmt) 
- * raus zu geben um ihn sofort zu bearbeiten
- */
+void KeyFrameAnimation::resetIndex(){
+    frameIndex = 0;
+    nextFrameIndex = 1;
+}
 
 bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     if(hasAnyFrames()){
@@ -156,6 +165,20 @@ FVector KeyFrameAnimation::readNextFrame(){
 }
 
 FVector KeyFrameAnimation::readPrevFrame(){
+    //KeyFrame &currFrame = frames.at(frameIndex);
+    //return currFrame.readposition();
+    
+    return targetCopy;
+}
+
+
+/// @brief returns frame position of very last key of animation
+/// @return 
+FVector KeyFrameAnimation::readLastFrameOfAnimation(){
+    if(hasAnyFrames()){
+        KeyFrame &currFrame = frames.at(frames.size() - 1);
+        return currFrame.readposition();
+    }
     return targetCopy;
 }
 
@@ -174,3 +197,13 @@ bool KeyFrameAnimation::nextFrameIsProjected(){
     return frameIsProjected;
 }
 
+
+
+
+
+void KeyFrameAnimation::overrideCurrentAndNextFrame(FVector &current, FVector &next){
+    interpolator.resetDeltaTime();
+    interpolator.overrideStart(current);
+    interpolator.overrideTarget(next);
+    DebugHelper::showScreenMessage("2 override frames! ", FColor::Blue);
+}

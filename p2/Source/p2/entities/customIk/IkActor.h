@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
+#include "p2/entities/customIk/animation/DoubleKeyFrameAnimation.h"
 #include "p2/entities/customIk/BoneIk.h"
 #include "IkActor.generated.h"
 
@@ -64,7 +65,7 @@ private:
 	FVector targetD;
 	float timeCopy;
 	int direction = 1;
-	void debugDynamicArmTick(float DeltaTime);
+
 	
 
 	FVector legTarget;
@@ -85,17 +86,11 @@ private:
 	//debug:
 	float debugFlipTime = 0.0f;
 	float debugStandAloneTime = 0.0f;
-	void standAloneMove(BoneIk &bone, float DeltaTime);
-	//void standAloneMoveEndToTarget(BoneIk &bone, FVector target, float DeltaTime);
 	
-	void standAloneMoveStartFromTo(BoneIk &bone, FVector current, FVector target, float DeltaTime);
-	void standAloneMoveEndFromTo(BoneIk &bone, FVector start, FVector target, float DeltaTime);
+	
 
-	
 
 	FVector hipRelativeToFootRelativeTarget(FVector &other);
-
-	//später prüfen
 	FVector worldToHipRelativeTarget(FVector &other);
 
 
@@ -104,6 +99,9 @@ private:
 	class KeyFrameAnimation animationKeys_1;
 	class KeyFrameAnimation legAnimationKeys;
 	void standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
+	void standAloneKeyFrameAnimProjected(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
+
+
 	void standAloneKeyFrameAnimAndHipAdjustTime(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
 
 	void plotNextFrameToGround(KeyFrameAnimation &animation);
@@ -118,4 +116,15 @@ private:
 		float DeltaTime,
 		float totalTime // custom time progress
 	);
+
+
+
+	//NEU 2
+	class DoubleKeyFrameAnimation legDoubleKeys_1;
+	void projectToGround(FVector &position);
+	void KeyFrameAnimAndHipAdjustTime(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
+	void standAloneKeyFrameAnim(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
+
+	//NEU 3
+	void projectToGround(FVector &frameToProject, FVector &offsetMade);
 };

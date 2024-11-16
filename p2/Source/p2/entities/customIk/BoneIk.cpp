@@ -621,8 +621,8 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     UWorld*world, 
     FVector &vec, 
     FVector &weight, 
-    MMatrix &offsetAndRotation, 
-    MMatrix &translationOfactor,
+    MMatrix &offsetAndRotationOfFoot, 
+    MMatrix &translationOfactor, //overrides translation of actor based on where hip was moved
     FColor color,
     float displayTime
 ){
@@ -649,7 +649,7 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
 
     MMatrix newStart = buildWithOutput(
         world,
-        offsetAndRotation,
+        offsetAndRotationOfFoot,
         color,
         displayTime,
         matrizen
@@ -756,6 +756,16 @@ MMatrix BoneIk::buildWithOutput(
 /**
  * NEW TARGET MOVEMENT AND UPDATE MATRIX
 */
+
+/// @brief rotate end to a target and apply new foot pos if needed!
+/// @param world 
+/// @param target local target of foot if x axis (1,0,0) is forward
+/// @param weight weight direction to apply 
+/// @param offsetAndRotation calculated transform of actor 
+///                         (M = location * rotation <--read direction--)
+/// @param translationOfactorFoot translation of foot of actor which will be modified!
+/// @param color color to draw in
+/// @param displayTime displaytime to draw
 void BoneIk::rotateEndToTargetAndBuild(
     UWorld*world, 
     FVector &target, 
@@ -791,6 +801,7 @@ void BoneIk::rotateEndToTargetAndBuild(
 
 /**
  * --- HIP DYNAMIC ADJUST SECTION ---
+ * DEPRECATED, MOVED TO ACTOR!
  */
 
 //new method with hip adjust on runtime
@@ -804,16 +815,22 @@ void BoneIk::rotateEndToTargetAndBuild(
     FColor color,
     float displayTime
 ){
-    //adjust hip based on distance, das muss im actor passieren, nicht hier!
-    //UNKLAR!
-    //wenn der frame projected wurde muss doch der knochen das hip nachzieehn wenn nötig
-    //unklar warum das hier nicht geht / zu viel ist!
-    //KÖNNTE JEDENFALLS AUCH IM ACTOR PASSIEREN!
+    
     FVector offset;
 
+    bool execute = false; //debug block
+    if (execute && !isTragetInRange(target, offset))
+    {
+        /**
+         * fehler hier:
+         * die hüfte wird zuweit nach unten gekickt aus gründen die ich nicht verstehe
+         * -> dieses down movement passiert quasi zu oft einpaar frames, statt nur eins wie gewollt? 
+         * Es passieren einfach komische sachen. 
+         * Das muss mna nochmal durchdenken und prüfen warum das passiert,
+         * bestimmt nur ein kleiner unscheinbarer fehler,
+         * einfach nochmal schauen wieso das passiert. 
+         */
 
-    if(false && !isTragetInRange(target, offset)){
-            
         //in range of one bone max
         FVector zeroVec(0, 0, 0);
         float length = std::abs(FVector::Dist(zeroVec, offset));
@@ -833,11 +850,7 @@ void BoneIk::rotateEndToTargetAndBuild(
                 FColor::Blue
             );
         }
-        
-        
     }
-    
-
 
     rotateEndToTarget(target, weight); 
 

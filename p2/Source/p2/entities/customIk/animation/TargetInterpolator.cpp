@@ -35,7 +35,13 @@ void TargetInterpolator::overrideTarget(FVector totarget){
     
 }
 
+void TargetInterpolator::overrideStart(FVector fromtarget){
+    from = fromtarget;
+}
 
+void TargetInterpolator::resetDeltaTime(){
+    deltaTime = 0.0f;
+}
 
 
 
@@ -61,7 +67,9 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
     //gx = A + r (B - A)
     //FVector interpolated = from + skalar() * connect;
 
-    FVector interpolated = TargetInterpolator::interpolation(from, target, skalar());
+    float skalarCurrent = skalar();
+    FVector interpolated = TargetInterpolator::interpolation(from, target, skalarCurrent);
+    
 
     //wenn die richtungs vektoren anti paralell zu einander liegen
     //kann ich prüfen ob mein punkt passiert wurde
@@ -70,7 +78,7 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
     
     //is tested
     //DebugHelper::showScreenMessage("dot product: ", dotProduct);
-    if (dotProduct <= -0.99f)
+    if (dotProduct < 0.0f)
     {
         DebugHelper::showScreenMessage("PASSED FRAME");
         // anti parellell
@@ -79,12 +87,7 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
         return interpolated;
     }
 
-    if(FVector::Dist(interpolated, target) <= 1.0f){ //1cm
-        //DebugHelper::showScreenMessage("switched because of distance");
-        reached = true;
-        deltaTime = 0.0f;
-        return interpolated;
-    }
+   
     return interpolated;
 
 }
@@ -96,6 +99,12 @@ float TargetInterpolator::skalar(){
 
     float skal = deltaTime / timeToFrame;
     //DebugHelper::showScreenMessage("skalar interpolate ", skal);
+    if(skal > 1.0f){
+        skal = 1.0f;
+    }
+    if(skal < 0.0f){
+        skal = 0.0f;
+    }
 
     // Berechnet den Skalierungsfaktor `t`, der zwischen 0 und 1 liegt
     return skal; //t / 1 quasi.
@@ -110,4 +119,10 @@ FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float sk
     //gx = A + r (B - A)
     FVector interpolated = fromIn + skalar * connect;
     return interpolated;
+}
+
+
+
+float TargetInterpolator::TimeToFrame(){
+    return timeToFrame;
 }
