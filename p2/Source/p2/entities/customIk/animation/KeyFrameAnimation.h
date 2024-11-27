@@ -45,6 +45,8 @@ public:
 
 	bool reachedLastFrameOfAnimation();
 
+	void tryPushFront(FVector &somePoisition);
+
 private:
 	bool loop = true;
 	bool reachedEndFrameFlag = false;

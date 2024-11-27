@@ -7,6 +7,7 @@ TargetInterpolator::TargetInterpolator()
 {
     reached = true;
     targetSetup = false;
+    timeToFrame = 0.0f;
 }
 
 TargetInterpolator::~TargetInterpolator()
@@ -125,4 +126,14 @@ FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float sk
 
 float TargetInterpolator::TimeToFrame(){
     return timeToFrame;
+}
+
+
+
+FVector TargetInterpolator::readFromPosition(){
+    return from;
+}
+
+FVector TargetInterpolator::readToPosition(){
+    return target;
 }

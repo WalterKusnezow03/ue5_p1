@@ -86,17 +86,6 @@ public:
 		float displayTime
 	);
 
-	//new with foot pos and hip pos adjustment
-	void rotateEndToTargetAndBuild(
-		UWorld *world,
-		FVector &target,
-		FVector &weight,
-		MMatrix &offsetAndRotation,
-		MMatrix &translationOfactorFoot,
-		MMatrix &translationOfactorhip,
-		FColor color,
-		float displayTime
-	);
 
 	void inverseAll();
 
@@ -161,8 +150,7 @@ private:
 	
 	float moveSpeedCmS = 20.0f;
 
-	bool isTargetInRange(FVector &other);
-	bool isTragetInRange(FVector &other, FVector &fromRangeOffset);
+
 
 public:
 	FVector currentLocalFootInterpolatedPos(); //from front

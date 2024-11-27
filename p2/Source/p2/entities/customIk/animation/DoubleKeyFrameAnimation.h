@@ -37,11 +37,13 @@ public:
 	void tryOverrideCurrentAndNextFrameAnimB(FVector &currentNew, FVector &nextNew, float timeToFrameWanted);
 
 	bool nextFrameIsProjected();
+	bool animationCycleWasComplete();
 
-
-	//neu
 	void processProjectOffset(FVector &offsetMade);
 	FVector getProjectionHipOffsetTimed();
+
+	//neu
+	void tryPushFront(FVector &currentLocationRelative);
 
 private:
 	//neu
@@ -55,7 +57,9 @@ private:
 	class TargetInterpolator interpolateB;
 
 	bool isAnimationAPlaying = true;
-	float deltaTime;
+	float deltaTime = 0.0f;
+
+	bool cycleComplete = false;
 
 	bool currentAndNextOverridenB = false;
 
@@ -66,7 +70,7 @@ private:
 	FVector interpolateBtarget(float DeltaTime);
 	float reachTime();
 
-	FVector aReachedTick;
+	FVector aReachedTickFrame;
 
 	/**
 	 * 

@@ -126,6 +126,7 @@ void KeyFrameAnimation::updateFrameIndex(){
     }
 }
 
+/// @brief call update AFTER increase / index update
 void KeyFrameAnimation::updateFrameInterpolator(){
     KeyFrame &currentFrame = frames.at(frameIndex);
     KeyFrame &nextFrame = frames.at(nextFrameIndex);
@@ -206,4 +207,25 @@ void KeyFrameAnimation::overrideCurrentAndNextFrame(FVector &current, FVector &n
     interpolator.overrideStart(current);
     interpolator.overrideTarget(next);
     DebugHelper::showScreenMessage("2 override frames! ", FColor::Blue);
+}
+
+/// @brief pushes a position to the front of the animation temporarly just once and resets the index
+/// if the position is far engough from the current starting frame 
+/// designed for foot to correct its position because another foot moved and changed the relative position!
+/// @param somePosition 
+void KeyFrameAnimation::tryPushFront(FVector &somePosition){
+    //if position far enough
+    float epsilon = 1.0f;
+    FVector starting = interpolator.readFromPosition(); //read current start
+    if(FVector::Dist(somePosition, starting) > epsilon){
+        //GO ONE INDEX BACK
+        frameIndex = frames.size() - 1;
+        nextFrameIndex = 0;
+
+
+        float timeCopy = interpolator.TimeToFrame(); //einfach die zeit übernehmen
+        interpolator.setTarget(somePosition, starting, timeCopy);
+    }
+
+    
 }

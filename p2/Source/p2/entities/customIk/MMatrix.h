@@ -57,6 +57,8 @@ public:
 
 	void invert();
 
+	MMatrix createInverse();
+
 private:
 	//normalize rotations when adding them together
 	float normalizeAngle(float angle);

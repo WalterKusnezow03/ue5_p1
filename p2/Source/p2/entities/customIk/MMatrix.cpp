@@ -503,6 +503,29 @@ float MMatrix::normalizeAngle(float angle) {
 
 
 
+MMatrix MMatrix::createInverse(){
+
+    // DAS MUSS SO SEIN WIE ES DA STEHT, NICHT ANFASSEN! 
+    //erstellt inverse ohne berücksichtigung der skalierung.
+
+    // M = T * R <- lese richtung
+    MMatrix rotCopy = *this;
+    rotCopy.setTranslation(0.0f, 0.0f, 0.0f);
+    rotCopy.invertRotation();
+
+    FVector translateCopy = getTranslation();
+    translateCopy *= -1;
+    MMatrix translation;
+    translation.setTranslation(translateCopy);
+
+    //statt M = T * R <-- lese richtung --
+    //jetzt M = R * T <-- lese richtung --
+    MMatrix result = rotCopy * translation;
+    return result;
+}
+
+
+
 void MMatrix::invert(){
     invertTranslation();
     invertRotation();

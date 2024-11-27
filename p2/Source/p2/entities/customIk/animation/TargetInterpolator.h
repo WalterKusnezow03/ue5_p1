@@ -27,12 +27,15 @@ public:
 	FVector interpolate(float DeltaTime);
 	static FVector interpolation(FVector from, FVector to, float skalar);
 
+	FVector readFromPosition();
+	FVector readToPosition();
+
 private:
 	FVector from;
 	FVector target;
 
 	float deltaTime = 0.0f;
-	float timeToFrame;
+	float timeToFrame = 0.0f;
 	bool reached = false;
 	float skalar();
 

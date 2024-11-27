@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	AIkActor();
 
+	bool debugRaycastDraw = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -48,14 +50,15 @@ private:
 	//GLOBAL TRANSFORM
 	MMatrix ownLocation; 
 	MMatrix ownLocationFoot;
+	MMatrix ownLocationFootRight;
+
 	MMatrix ownOrientation;
 	MMatrix currentTransform();
 	MMatrix currentFootTransform();
+	MMatrix currentFootTransform(MMatrix &foottranslationToRotate);
 
-	
 
 	void LookAt(FVector TargetLocation);
-
 
 
 	//new testing more arm targets
@@ -86,13 +89,10 @@ private:
 	//debug:
 	float debugFlipTime = 0.0f;
 	float debugStandAloneTime = 0.0f;
-	
-	
-
+	float delay = 0.0f;
 
 	FVector hipRelativeToFootRelativeTarget(FVector &other);
-	FVector worldToHipRelativeTarget(FVector &other);
-
+	
 
 
 	//NEU
@@ -103,7 +103,6 @@ private:
 
 
 
-	void plotNextFrameToGround(KeyFrameAnimation &animation);
 	bool performRaycast(FVector &Start, FVector &dir, FVector &outputHit);
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
@@ -120,10 +119,32 @@ private:
 
 	//NEU 2
 	class DoubleKeyFrameAnimation legDoubleKeys_1;
+	class DoubleKeyFrameAnimation legDoubleKeys_2;
 	void projectToGround(FVector &position);
 	void KeyFrameAnimAndHipAdjustTime(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
 	void standAloneKeyFrameAnim(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
 
 	//NEU 3
 	void projectToGround(FVector &frameToProject, FVector &offsetMade);
+
+
+
+	//NEU MIT LEG SWITCH / SEPERATE MATRIX FOR LEGS!
+	bool leg1isPlaying = true;
+	void KeyFrameAnimAndHipAdjustTime(
+		BoneIk &bone,
+		DoubleKeyFrameAnimation &frames,
+		MMatrix &footMatrix, // MMatrix foot transform
+		float DeltaTime,
+		FColor color
+	);
+
+	void buildRaw(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, FColor color);
+	void standAloneKeyFrameAnim(
+		BoneIk &bone,
+		DoubleKeyFrameAnimation &frames,
+		MMatrix &footMatrix,
+		float DeltaTime,
+		FColor color
+	);
 };

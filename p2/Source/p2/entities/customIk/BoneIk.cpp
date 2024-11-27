@@ -642,10 +642,11 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
    
 
     
-    matrizen.push_back(&empty); //damit first limb gezeichnet wird
-    matrizen.push_back(&foot1);
+    matrizen.push_back(&empty); //damit first limb gezeichnet wird von foot to knee usw. Matrix multiplikation
+    //wie gehabt und logisch halt
+    matrizen.push_back(&foot1); 
     matrizen.push_back(&knee1);
-    matrizen.push_back(&hip1); //damit end limb geziechnet wird (?unklar, einfach so lassen)
+    matrizen.push_back(&hip1); //damit end limb geziechnet wird
 
     MMatrix newStart = buildWithOutput(
         world,
@@ -749,12 +750,8 @@ MMatrix BoneIk::buildWithOutput(
 
 
 
-
-
-
-
 /**
- * NEW TARGET MOVEMENT AND UPDATE MATRIX
+ * NEW TARGET MOVEMENT AND UPDATE FOOT MATRIX
 */
 
 /// @brief rotate end to a target and apply new foot pos if needed!
@@ -763,7 +760,7 @@ MMatrix BoneIk::buildWithOutput(
 /// @param weight weight direction to apply 
 /// @param offsetAndRotation calculated transform of actor 
 ///                         (M = location * rotation <--read direction--)
-/// @param translationOfactorFoot translation of foot of actor which will be modified!
+/// @param translationOfactorFoot translation of foot of actor which will be modified! ONLY TRANSLATION!
 /// @param color color to draw in
 /// @param displayTime displaytime to draw
 void BoneIk::rotateEndToTargetAndBuild(
@@ -799,128 +796,4 @@ void BoneIk::rotateEndToTargetAndBuild(
 }
 
 
-/**
- * --- HIP DYNAMIC ADJUST SECTION ---
- * DEPRECATED, MOVED TO ACTOR!
- */
 
-//new method with hip adjust on runtime
-void BoneIk::rotateEndToTargetAndBuild(
-    UWorld*world, 
-    FVector &target, 
-    FVector &weight, 
-    MMatrix &offsetAndRotation, 
-    MMatrix &translationOfactorFoot,
-    MMatrix &translationOfactorhip, //hip adjust new
-    FColor color,
-    float displayTime
-){
-    
-    FVector offset;
-
-    bool execute = false; //debug block
-    if (execute && !isTragetInRange(target, offset))
-    {
-        /**
-         * fehler hier:
-         * die hüfte wird zuweit nach unten gekickt aus gründen die ich nicht verstehe
-         * -> dieses down movement passiert quasi zu oft einpaar frames, statt nur eins wie gewollt? 
-         * Es passieren einfach komische sachen. 
-         * Das muss mna nochmal durchdenken und prüfen warum das passiert,
-         * bestimmt nur ein kleiner unscheinbarer fehler,
-         * einfach nochmal schauen wieso das passiert. 
-         */
-
-        //in range of one bone max
-        FVector zeroVec(0, 0, 0);
-        float length = std::abs(FVector::Dist(zeroVec, offset));
-        if(length < totalBoneLengthCopy){
-
-            //rotateStartToTargetAndBuild(); //DAS VIELLEICHT TESTEN!
-
-            //translationOfactorhip += offset; //update offset for next frame
-            FVector rawZ(0, 0, offset.Z);
-            //translationOfactorhip += rawZ;
-            translationOfactorhip += offset; //wieso ist das denn auch falsch.
-            
-            DebugHelper::showLineBetween(
-                world,
-                translationOfactorFoot.getTranslation(),
-                translationOfactorFoot.getTranslation() + rawZ,
-                FColor::Blue
-            );
-        }
-    }
-
-    rotateEndToTarget(target, weight); 
-
-    std::vector<MMatrix *> matrizen;
-    FVector footTip;
-    getMatricies(matrizen, footTip);
-    
-
-    MMatrix newStart = buildWithOutput(
-        world,
-        offsetAndRotation,
-        color,
-        displayTime,
-        matrizen
-    );
-
-    //will probably make matrix shoot in the air.
-    FVector newLocation = newStart.getTranslation();
-
-    //Override translation of actor (FOOT!)
-    translationOfactorFoot.setTranslation(newLocation);
-
-}
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * NEW TESTING SECTION
- * 
- * todo:
- * target in range checken, wenn nein muss hip angepasst werden!
- * extra methode mit zu target und hip anpassung
- * 
- */
-
-bool BoneIk::isTargetInRange(FVector &other){
-    FVector zeroVec(0, 0, 0);
-    float length = FVector::Dist(zeroVec, other);
-    return length < totalBoneLengthCopy;
-}
-
-/// @brief direction to offset will be saved in second param if vector wasnt in range of bone
-/// @param other 
-/// @param fromRangeOffset 
-/// @return 
-bool BoneIk::isTragetInRange(FVector &other, FVector &fromRangeOffset){
-    FVector zeroVec(0, 0, 0);
-    float length = FVector::Dist(zeroVec, other);
-
-    length *= 0.95f; //be friendly, allow floating point errors. DO NOT REMOVE
-
-    bool inRange = length <= totalBoneLengthCopy;
-    if(!inRange && length != 0){
-
-        FVector normalizedTarget = other.GetSafeNormal() * totalBoneLengthCopy;
-        //normalizeTarget(normalizedTarget);
-
-        //output copy from outer radius to target
-        fromRangeOffset = other - normalizedTarget; // AB = B - A;
-        return false;
-    }
-
-    return true;
-}

@@ -47,6 +47,15 @@ bool DoubleKeyFrameAnimation::isAnimationB(){
 }
 
 
+
+/// @brief gibt den frame zureück der erreicht wurde von der letzen / vorherigen animation (FRAMES A)
+/// dazu da um der hip zu sagen wo sie sich relativ befindet und wo sie sich bewegen soll!
+/// @return frame reached in animation A, final leg pos made!
+FVector DoubleKeyFrameAnimation::readPrevAnimationReachedFrame(){
+    //return framesA.readLastFrameOfAnimation();
+    return aReachedTickFrame;
+}
+
 /// @brief interpolates A or B based on which animation is now wanted
 /// @param DeltaTime delta time passed from Tick()
 /// @return interpolated frame target
@@ -57,7 +66,6 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
     FVector interpolated;
     if(isAnimationA()){
         interpolated = interpolateAtarget(DeltaTime);
-        aReachedTick = interpolated;
     }
     else{
         interpolated = interpolateBtarget(DeltaTime);
@@ -66,16 +74,28 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
     //switch wenn zeit überschritten
     if (reachedTime(deltaTime))
     {
+        if(!isAnimationAPlaying){
+            cycleComplete = true;
+            //reset projection offset once animation played trough!
+            projectionHipOffset = FVector(0, 0, 0);
+
+        }else{
+            //finale position des fusses speichern damit die hip relativ sich weiter bewegen kann
+            aReachedTickFrame = interpolated;
+        }
+
+
         isAnimationAPlaying = !isAnimationAPlaying; //flip bool!
         deltaTime = 0.0f;
         currentAndNextOverridenB = false;
 
         //reset projection offset once animation played trough!
-        projectionHipOffset = FVector(0, 0, 0);
+        //projectionHipOffset = FVector(0, 0, 0);
     }
 
     return interpolated;
 }
+
 
 
 FVector DoubleKeyFrameAnimation::interpolateAtarget(float DeltaTime){
@@ -86,6 +106,7 @@ FVector DoubleKeyFrameAnimation::interpolateAtarget(float DeltaTime){
     return FVector(0, 0, 0);
 }
 
+
 FVector DoubleKeyFrameAnimation::interpolateBtarget(float DeltaTime){
     if(isAnimationB()){
         FVector interpolated = interpolateB.interpolate(DeltaTime);
@@ -95,10 +116,22 @@ FVector DoubleKeyFrameAnimation::interpolateBtarget(float DeltaTime){
 }
 
 
+/// @brief will return if the animation cycle was complete
+/// and reset the boolean if true
+/// @return animation cycle was complete in the last interpolation (frame)
+bool DoubleKeyFrameAnimation::animationCycleWasComplete(){
+    if(cycleComplete){
+        cycleComplete = false;
+        return true;
+    }
+    return false;
+}
 
 
+/// @brief will return if the time needed is reached to finish an animation or interpolation
+/// @param timeCheck 
+/// @return 
 bool DoubleKeyFrameAnimation::reachedTime(float timeCheck){
-    
     if(isAnimationA()){
         return framesA.reachedLastFrameOfAnimation();
     }
@@ -121,7 +154,10 @@ void DoubleKeyFrameAnimation::overrideNextFrame(FVector &framePos){
 }
 
 
-
+/// @brief updates the interpolation target for interpolation B
+/// @param currentNew currentPostion
+/// @param nextNew target position
+/// @param timeToFrameWanted time to frame
 void DoubleKeyFrameAnimation::tryOverrideCurrentAndNextFrameAnimB(
     FVector &currentNew,
     FVector &nextNew,
@@ -152,12 +188,7 @@ FVector DoubleKeyFrameAnimation::readNextFrame(){
     return current.readNextFrame();
 }
 
-/// @brief gibt den frame zureück der erreicht wurde von der letzen / vorherigen animation
-/// @return 
-FVector DoubleKeyFrameAnimation::readPrevAnimationReachedFrame(){
-    return framesA.readLastFrameOfAnimation();
-    //return framesA.readPrevFrame();
-}
+
 
 bool DoubleKeyFrameAnimation::nextFrameMustBeGrounded(){
     //KeyFrameAnimation &current = currentAnimation();
@@ -180,18 +211,20 @@ bool DoubleKeyFrameAnimation::nextFrameIsProjected(){
 ///         -> use the getProjectionHipOffsetTimed() method to apply your hip offset over time
 /// @param offsetMade 
 void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
-    /**
-     * TODO:
-     * projection offset sollte jetzt auch anders herum funktionieren (vielleicht?)
-     * es wird ja auch r+ckwärts ausgerechnet
-     */
     
-    float timeCopy = framesA.totalLength();
-    float timeToFrames = timeCopy * 60.0f;
-    if (timeToFrames != 0.0f){
-        projectionHipOffset = offsetMade / timeToFrames; //60fps, nicht einfach teilen, durch zahl der frames!
+    //float timeCopy = framesA.totalLength() + interpolateB.TimeToFrame(); // do in total time (?)
+    float timeCopy = interpolateB.TimeToFrame(); //testing needed for only during adjust time!
+
+    float timeInFrames = timeCopy * 60.0f;
+    if (timeInFrames > 0.1f){
+        projectionHipOffset = offsetMade / timeInFrames; //60fps, nicht einfach teilen, durch zahl der frames!
     }else{
-        projectionHipOffset = FVector(0, 0, 0);
+        projectionHipOffset = FVector(0,0,0); //no offset if not possible
+    }
+
+    //projektion entfernen wenn man die treppe hochläuft, nur bei negativen werten!
+    if(projectionHipOffset.Z > 0.0f){
+        projectionHipOffset = FVector(0, 0, 0); //TESTING
     }
 }
 
@@ -199,5 +232,22 @@ void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
 /// no offset needed, or any other vector if needed.
 /// @return vector offset for hip to add, is timed with animation linear.
 FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(){
-    return projectionHipOffset;
+    /**
+     * only return if hip adjust time!
+     */
+    if(isAnimationB()){
+        //DebugHelper::showScreenMessage("HIP TIME!");
+        //DebugHelper::showScreenMessage(projectionHipOffset);
+        return projectionHipOffset;
+    }
+    return FVector(0, 0, 0);
+    //old
+    //return projectionHipOffset;
+}
+
+
+
+
+void DoubleKeyFrameAnimation::tryPushFront(FVector &currentLocationRelative){
+    framesA.tryPushFront(currentLocationRelative);
 }
