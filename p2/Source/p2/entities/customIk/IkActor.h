@@ -48,15 +48,18 @@ private:
 	class BoneIk arm1;
 
 	//GLOBAL TRANSFORM
-	MMatrix ownLocation; 
+	MMatrix ownLocation;
+	MMatrix ownOrientation;
+
 	MMatrix ownLocationFoot;
 	MMatrix ownLocationFootRight;
+	MMatrix chestRelative;
+	
 
-	MMatrix ownOrientation;
 	MMatrix currentTransform();
 	MMatrix currentFootTransform();
 	MMatrix currentFootTransform(MMatrix &foottranslationToRotate);
-
+	MMatrix currentShoulderTransform();
 
 	void LookAt(FVector TargetLocation);
 
@@ -99,21 +102,20 @@ private:
 	class KeyFrameAnimation animationKeys_1;
 	class KeyFrameAnimation legAnimationKeys;
 	void standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime);
-	
 
-
+	//neu 4
+	void standAloneKeyFrameAnim(
+		BoneIk &bone,
+		KeyFrameAnimation &frames,
+		MMatrix &initalTransform,
+		float DeltaTime,
+		FColor color
+	);
 
 	bool performRaycast(FVector &Start, FVector &dir, FVector &outputHit);
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
 
-	void standAloneMoveStartFromTo(
-		BoneIk &bone,
-		FVector start,
-		FVector target,
-		float DeltaTime,
-		float totalTime // custom time progress
-	);
 
 
 
@@ -121,8 +123,7 @@ private:
 	class DoubleKeyFrameAnimation legDoubleKeys_1;
 	class DoubleKeyFrameAnimation legDoubleKeys_2;
 	void projectToGround(FVector &position);
-	void KeyFrameAnimAndHipAdjustTime(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
-	void standAloneKeyFrameAnim(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime);
+	
 
 	//NEU 3
 	void projectToGround(FVector &frameToProject, FVector &offsetMade);
@@ -139,7 +140,7 @@ private:
 		FColor color
 	);
 
-	void buildRaw(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, FColor color);
+	void buildRawAndKeepEndInPlace(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, FColor color);
 	void standAloneKeyFrameAnim(
 		BoneIk &bone,
 		DoubleKeyFrameAnimation &frames,
@@ -147,4 +148,12 @@ private:
 		float DeltaTime,
 		FColor color
 	);
+
+
+
+	//create limbs section
+	AActor *createLimbPivotAtTop(int x, int y, int height, int offsetY);
+
+
+
 };

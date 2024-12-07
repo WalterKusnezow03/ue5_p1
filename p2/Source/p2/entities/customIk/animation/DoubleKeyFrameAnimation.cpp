@@ -13,28 +13,10 @@ DoubleKeyFrameAnimation::~DoubleKeyFrameAnimation()
 }
 
 
-KeyFrameAnimation &DoubleKeyFrameAnimation::currentAnimation(){
-    if(isAnimationA()){
-        return framesA;
-    }else{
-        return framesB;
-    }
-}
-
-KeyFrameAnimation &DoubleKeyFrameAnimation::prevAnimation(){
-    if(isAnimationA()){
-        return framesB;
-    }else{
-        return framesA;
-    }
-}
 
 
 void DoubleKeyFrameAnimation::setAnimationA(KeyFrameAnimation &&other){
     framesA = MoveTemp(other);
-}
-void DoubleKeyFrameAnimation::setAnimationB(KeyFrameAnimation &&other){
-    framesB = MoveTemp(other);
 }
 
 
@@ -52,7 +34,6 @@ bool DoubleKeyFrameAnimation::isAnimationB(){
 /// dazu da um der hip zu sagen wo sie sich relativ befindet und wo sie sich bewegen soll!
 /// @return frame reached in animation A, final leg pos made!
 FVector DoubleKeyFrameAnimation::readPrevAnimationReachedFrame(){
-    //return framesA.readLastFrameOfAnimation();
     return aReachedTickFrame;
 }
 
@@ -81,6 +62,7 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
 
         }else{
             //finale position des fusses speichern damit die hip relativ sich weiter bewegen kann
+            //relativ zu der erreichten fuss position die ja relativ zum hip hier in der animation ist
             aReachedTickFrame = interpolated;
         }
 
@@ -89,8 +71,6 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
         deltaTime = 0.0f;
         currentAndNextOverridenB = false;
 
-        //reset projection offset once animation played trough!
-        //projectionHipOffset = FVector(0, 0, 0);
     }
 
     return interpolated;
@@ -148,9 +128,8 @@ float DoubleKeyFrameAnimation::reachTime(){
 }
 
 
-void DoubleKeyFrameAnimation::overrideNextFrame(FVector &framePos){
-    KeyFrameAnimation &current = currentAnimation();
-    return current.overrideNextFrame(framePos); //override next target
+void DoubleKeyFrameAnimation::overrideNextFrameA(FVector &framePos){
+    framesA.overrideNextFrame(framePos); // override next target
 }
 
 
@@ -174,6 +153,9 @@ void DoubleKeyFrameAnimation::tryOverrideCurrentAndNextFrameAnimB(
 }
 
 
+
+
+
 bool DoubleKeyFrameAnimation::currentAndNextForBOverriden(){
     return currentAndNextOverridenB;
 }
@@ -184,8 +166,7 @@ bool DoubleKeyFrameAnimation::currentAndNextForBOverriden(){
 /// @brief returns the next frame of animation A (or current anim, but you only need it from A)
 /// @return 
 FVector DoubleKeyFrameAnimation::readNextFrame(){
-    KeyFrameAnimation &current = currentAnimation();
-    return current.readNextFrame();
+    return framesA.readNextFrame();
 }
 
 

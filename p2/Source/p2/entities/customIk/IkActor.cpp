@@ -6,6 +6,9 @@
 #include <cmath>
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/entities/customIk/animation/DoubleKeyFrameAnimation.h"
+#include "p2/gameStart/assetManager.h"
+#include "p2/_world/worldLevel.h"
+#include "p2/entityManager/EntityManager.h"
 #include "p2/entities/customIk/IkActor.h"
 
 // Sets default values
@@ -23,12 +26,17 @@ void AIkActor::BeginPlay()
 
 
 	//init offset for now
-	FVector offset(1000, -1000, 200);
-	ownLocation.setTranslation(offset);
+	FVector offset(1000, -1000, legScaleCM);
+	ownLocation.setTranslation(offset); //hip location initial
 	offset -= FVector(0, 0, legScaleCM);
 	
+	//make foot
 	ownLocationFoot.setTranslation(offset);
 	ownLocationFootRight.setTranslation(offset);
+
+	//make chest
+	FVector copy = FVector(0, 0, legScaleCM / 2);
+	chestRelative.setTranslation(copy);
 
 	leg1.setupBones(legScaleCM);
 	leg2.setupBones(legScaleCM);
@@ -55,7 +63,7 @@ void AIkActor::BeginPlay()
 
 	animationKeys_1.addFrame(targetA, 0.1f);
 	animationKeys_1.addFrame(targetB, 1.0f);
-	animationKeys_1.addFrame(FVector(100, 100, 100), 0.1f);
+	animationKeys_1.addFrame(FVector(100, 100, 100), 2.0f);
 
 	//testing inital rotation
 	//ownOrientation.yawRad(MMatrix::degToRadian(45));
@@ -92,6 +100,25 @@ void AIkActor::BeginPlay()
 	legDoubleKeys_1.setAnimationA(MoveTemp(legAnimationKeys));
 	legDoubleKeys_2.setAnimationA(MoveTemp(legKeysCopy));
 	// legDoubleKeys_1.setAnimationB(MoveTemp(legHipAdjustKeys)); //DEPRECATED
+
+
+	//CREATE LIMBS
+	AActor *oberschenkelLimb = createLimbPivotAtTop(10, 10, legScaleCM / 2, -20);
+	leg1.attachFirtsLimb(*oberschenkelLimb);
+	AActor *unterschenkelLimb = createLimbPivotAtTop(10, 10, legScaleCM / 2, -20);
+	leg1.attachSecondLimb(*unterschenkelLimb);
+	AActor *footLimb = createLimbPivotAtTop(30, 10, 10, -20);
+	leg1.attachThirdLimb(*footLimb);
+
+
+
+	AActor *oberschenkelLimb1 = createLimbPivotAtTop(10, -10, legScaleCM / 2, 20);
+	leg2.attachFirtsLimb(*oberschenkelLimb1);
+	AActor *unterschenkelLimb1 = createLimbPivotAtTop(10, -10, legScaleCM / 2, 20);
+	leg2.attachSecondLimb(*unterschenkelLimb1);
+	AActor *footLimb1 = createLimbPivotAtTop(30, -10, 10, 20);
+	leg2.attachThirdLimb(*footLimb1);
+	
 }
 
 // Called every frame
@@ -103,35 +130,15 @@ void AIkActor::Tick(float DeltaTime)
 	//neu braucht testing!
 	MMatrix orientationLocation = currentTransform(); 
 	
-	MMatrix armMat = orientationLocation;
-	FVector verticalOffset(0, 0, 100);
-	armMat += verticalOffset;
-
-	//orientation rotation matrix dann reingeben als first node / limb 
-	arm1.build(GetWorld(), armMat, FColor::Purple, DeltaTime * 2);
 	
 
-	//debug draw of targets
-	//arms new, must be added
-	FVector armOff = orientationLocation.getTranslation() + FVector(0, 0, 100); // up offset for arms
+	MMatrix armMat = currentShoulderTransform();
+	standAloneKeyFrameAnim(arm1, animationKeys_1, armMat, DeltaTime, FColor::Purple);
+
+
+
+	//DEBUG TESTING 
 	
-	FVector t1 = targetA;
-	FVector t2 = targetB;
-	t1 += armOff;
-	t2 += armOff;
-	//DebugHelper::showLineBetween(GetWorld(), t1, t2, FColor::Green, DeltaTime * 2); //draw line of arm movement
-	
-	
-	
-	//standAloneKeyFrameAnimAndHipAdjustTime(leg1, legAnimationKeys, DeltaTime);
-	
-	
-	/**
-	 * ACHTUNG!
-	 * Die animationen dürfen NICHT gleichzeitig laufen wenn
-	 * sie das hip oder leg beeinflussen
-	 * (Scheinbar)
-	}*/
 
 	FColor leg1Color = FColor::Red;
 	FColor leg2Color = FColor::Blue;
@@ -147,10 +154,10 @@ void AIkActor::Tick(float DeltaTime)
 
 		}
 		KeyFrameAnimAndHipAdjustTime(leg1, legDoubleKeys_1, ownLocationFootRight, DeltaTime, leg1Color);
-		buildRaw(leg2, ownLocationFoot, DeltaTime, leg2Color);
-	}
-	else
-	{
+		buildRawAndKeepEndInPlace(leg2, ownLocationFoot, DeltaTime, leg2Color);
+
+	}else{
+
 		if(legDoubleKeys_2.animationCycleWasComplete()){//left leg done
 			leg1isPlaying = !leg1isPlaying;
 
@@ -161,15 +168,20 @@ void AIkActor::Tick(float DeltaTime)
 			
 		}
 		KeyFrameAnimAndHipAdjustTime(leg2, legDoubleKeys_2, ownLocationFoot, DeltaTime, leg2Color);
-		buildRaw(leg1, ownLocationFootRight, DeltaTime, leg1Color);
+		buildRawAndKeepEndInPlace(leg1, ownLocationFootRight, DeltaTime, leg1Color);
 	}
 	
-	//any bone (arm) no actor adjusting
-	//standAloneKeyFrameAnim(arm1, animationKeys_1, DeltaTime);
+	
 }
 
 
-void AIkActor::buildRaw(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, FColor color){
+
+/// @brief renders the leg raw if the hip is moved!
+/// @param boneIk bone to render which foot stays in place
+/// @param legTransform leg position to hold and not move from
+/// @param deltaTime delta time
+/// @param color color to render
+void AIkActor::buildRawAndKeepEndInPlace(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, FColor color){
 	/*
 	build leg raw
 
@@ -183,7 +195,7 @@ void AIkActor::buildRaw(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, 
 
 	MMatrix currenttransform = currentTransform();
 	FVector pos = legTransform.getTranslation();
-	transformFromWorldToLocalCoordinates(pos);
+	transformFromWorldToLocalCoordinates(pos); //relativ zur hüfte neu berechnen, auchwenn hüfte sich bewegt!
 
 	boneIk.rotateEndToTargetAndBuild(
 		GetWorld(),
@@ -195,6 +207,10 @@ void AIkActor::buildRaw(BoneIk &boneIk, MMatrix &legTransform, float deltaTime, 
 		deltaTime * 2.0f // displayTime
 	);
 }
+
+
+
+
 
 /// @brief look at a location
 /// @param TargetLocation target to look at
@@ -221,9 +237,9 @@ void AIkActor::LookAt(FVector TargetLocation)
 
 
 
-
-
-
+/**
+ * PLAY ANIM FOR ANY BONE, ONLY FORWARD IK
+ */
 
 /// @brief plays an animation for any bone but will not the actor location
 /// @param bone bone to play for
@@ -231,22 +247,43 @@ void AIkActor::LookAt(FVector TargetLocation)
 /// @param DeltaTime delta time from Tick
 void AIkActor::standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, float DeltaTime){
 
+	MMatrix translationActor = currentTransform();
+
+	standAloneKeyFrameAnim(
+		bone,
+		frames,
+		translationActor,
+		DeltaTime,
+		FColor::Blue
+	);
+}
+
+/**
+ * soll den knochen bauen anhand animation und einen offset vorgeben
+ */
+void AIkActor::standAloneKeyFrameAnim(
+	BoneIk &bone, 
+	KeyFrameAnimation &frames, 
+	MMatrix &initalTransform, 
+	float DeltaTime, 
+	FColor color
+){
 	//erstmal nur end to target!
-	FVector weight(-1, 0, 0);
+	FVector weight(-1, 1, 0); //testing needed for arm rotation
 
 	FVector nextPos = frames.interpolate(DeltaTime); //new function
-	MMatrix translationActor = currentTransform();
+	//MMatrix translationActor = currentTransform();
 	
-	//dummy adjust, not hip
+	//dummy adjust, not foot or end, nothing for now. Could be hand.
 	MMatrix dummy;
 
 	bone.rotateEndToTargetAndBuild(
 		GetWorld(),
 		nextPos,
 		weight,
-		translationActor, //offset and rotation
+		initalTransform, //offset and rotation
 		dummy,
-		FColor::Blue,
+		color,
 		DeltaTime * 2.0f
 	);
 }
@@ -256,41 +293,6 @@ void AIkActor::standAloneKeyFrameAnim(BoneIk &bone, KeyFrameAnimation &frames, f
 
 
 
-
-// DEPRECATED
-
-/// @brief moves the start (hip to a wanted target) relative to the bone end limb
-/// @param bone 
-/// @param start 
-/// @param target 
-/// @param DeltaTime 
-/// @param skalar 
-void AIkActor::standAloneMoveStartFromTo(
-	BoneIk &bone, 
-	FVector start, 
-	FVector target,
-	float DeltaTime,
-	float skalar //custom time progress
-){
-
-	FVector weight(1, 0, 0);
-	FVector _direction = target - start;
-	FVector xt = start + _direction * skalar;
-
-
-	MMatrix current_translationActorFoot = currentFootTransform();
-
-	bone.rotateStartToTargetAndBuild(
-		GetWorld(),
-		xt,
-		weight,
-		current_translationActorFoot, // foot start
-		ownLocation, // hip apply
-		FColor::Black,
-		DeltaTime * 2.0f
-	);
-
-}
 
 
 
@@ -328,11 +330,16 @@ MMatrix AIkActor::currentFootTransform(){
 
 MMatrix AIkActor::currentFootTransform(MMatrix &foottranslationToRotate){
 	//M = T * R <-- lese richtung --
-	MMatrix rotationTransform = foottranslationToRotate * ownOrientation;
+	MMatrix rotationTransform = foottranslationToRotate * ownOrientation; //rotiert fuss das es +bereinstimmt mit actor
 	return rotationTransform;
 }
 
 
+MMatrix AIkActor::currentShoulderTransform(){
+	MMatrix currentT = currentTransform();
+	MMatrix shoulderTransform = chestRelative * currentT; //<-- lese reichtung --
+	return shoulderTransform;
+}
 
 //custom set actor location method for bone ik
 void AIkActor::SetLocation(FVector &location){
@@ -433,122 +440,7 @@ bool AIkActor::performRaycast(FVector &Start, FVector &dir, FVector &outputHit)
 
 
 
-/**
- * 
- * Might be deprecated wait time section because each foot gets its own transform anyway!
- * 
- */
 
-
-// NEW TESTING WITH DOUBLE FRAMES!
-
-void AIkActor::KeyFrameAnimAndHipAdjustTime(BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime){
-	
-	bool moveLeg = frames.isAnimationA();
-
-	if(moveLeg){
-		standAloneKeyFrameAnim(bone, frames, DeltaTime);	
-	}else{
-		
-
-		FVector weight(1, 0, 0);
-
-		if(!frames.currentAndNextForBOverriden()){
-			FVector footTarget = frames.readPrevAnimationReachedFrame(); 
-			FVector hipStart = hipRelativeToFootRelativeTarget(footTarget);
-
-			MMatrix currentAct = currentFootTransform();
-			FVector plot = currentAct * hipStart;
-
-			if(debugRaycastDraw){
-				DebugHelper::showLineBetween(
-					GetWorld(), 
-					currentAct.getTranslation(), 
-					plot, 
-					FColor::Green, 
-					5.0f
-				);
-			}
-			
-
-			FVector hipTarget(0, 0, legScaleCM);
-			float timeWantedSmaple = 1.0f; //needs to be changed later
-			frames.tryOverrideCurrentAndNextFrameAnimB(hipStart, hipTarget, timeWantedSmaple);
-		}
-		
-
-		//build
-		FVector xt = frames.interpolate(DeltaTime);
-
-		MMatrix current_translationActorFoot = currentFootTransform();
-		bone.rotateStartToTargetAndBuild(
-			GetWorld(),
-			xt,
-			weight,
-			current_translationActorFoot, // foot start
-			ownLocation, // hip apply
-			FColor::Blue,
-			DeltaTime * 2.0f
-		);
-
-	}
-}
-
-
-
-
-//new leg update mit double frame animation
-void AIkActor::standAloneKeyFrameAnim(
-	BoneIk &bone, DoubleKeyFrameAnimation &frames, float DeltaTime
-){
-
-	bool mustBeGrounded = frames.nextFrameMustBeGrounded();
-	bool isalreadyProjected = frames.nextFrameIsProjected();	
-	
-	if(mustBeGrounded && !isalreadyProjected){
-
-		FVector nextFramePos = frames.readNextFrame();
-		FVector projectOffsetMade(0,0,0);
-		projectToGround(nextFramePos, projectOffsetMade);
-		frames.processProjectOffset(projectOffsetMade);
-		frames.overrideNextFrame(nextFramePos);
-
-	}
-
-	//HIP PROJECTION ADJUST DO NOT REMOVE!
-	/** 
-	 * Adds the needed hip offset over time
-	 * for the hip when the point gets projected to the floor
-	*/
-	MMatrix translationActorTmp = currentTransform();
-	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed();
-	ownLocation += hipoffsetAdd; 
-	DebugHelper::showLineBetween(
-			GetWorld(), 
-			translationActorTmp * hipoffsetAdd, 
-			translationActorTmp.getTranslation(), 
-			FColor::Red, 
-			2.0f
-	);
-
-
-
-	//do movement	
-	FVector weight(1, 0, 0);
-	FVector nextPos = frames.interpolate(DeltaTime);
-	MMatrix translationActor = currentTransform();
-
-	bone.rotateEndToTargetAndBuild(
-		GetWorld(),
-		nextPos,
-		weight,
-		translationActor, // hip start with orient
-		ownLocationFoot,  // foot apply position
-		//ownLocation, // hip apply position -----> adjustment is made HERE ABOVE!
-		FColor::Black,
-		DeltaTime * 2.0f
-	);
-}
 
 
 
@@ -622,6 +514,8 @@ void AIkActor::projectToGround(FVector &frameToProject, FVector &offsetMade){
  * 
  * NEW SECTION FOR SEPERATE FOOT MATRICIES WHICH IS NEEDED FOR INDIVIDUAL MOVEMENT!
  * 
+ * ONLY FOOT SECTION
+ * 
  * 
  */
 
@@ -644,8 +538,9 @@ void AIkActor::KeyFrameAnimAndHipAdjustTime(
 		FVector weight(1, 0, 0);
 
 		//override starting frame for interpolation B in the beginning
+		//wo ist meine hip relativ zum fuss, wo muss sie hin.
 		if(!frames.currentAndNextForBOverriden()){
-			FVector footTarget = frames.readPrevAnimationReachedFrame(); //könnte falsch sein!
+			FVector footTarget = frames.readPrevAnimationReachedFrame();
 			FVector hipStart = hipRelativeToFootRelativeTarget(footTarget); //find hip location to foot current
 
 			MMatrix currentAct = currentFootTransform(footMatrix); //current Transform
@@ -706,12 +601,12 @@ void AIkActor::standAloneKeyFrameAnim(
 		FVector projectOffsetMade(0,0,0);
 		projectToGround(nextFramePos, projectOffsetMade);
 		frames.processProjectOffset(projectOffsetMade);
-		frames.overrideNextFrame(nextFramePos);
+		frames.overrideNextFrameA(nextFramePos);
 
 	}
 
-	//HIP PROJECTION ADJUST DO NOT REMOVE!
-	/** 
+	/**
+	 * HIP PROJECTION ADJUST DO NOT REMOVE! 
 	 * Adds the needed hip offset over time
 	 * for the hip when the point gets projected to the floor
 	*/
@@ -743,3 +638,59 @@ void AIkActor::standAloneKeyFrameAnim(
 		DeltaTime * 2.0f
 	);
 }
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * ---- new section for limb creation ----
+ * 
+ * 
+ */
+
+AActor *AIkActor::createLimbPivotAtTop(int x, int y, int height, int offsetY){
+
+	height *= -1; //orient downwardss
+	/**
+	 * DEBUG CREATE FOLLOW LIMBS
+	 */
+	UMaterial *material = nullptr;
+	assetManager *assetManagerPointer = assetManager::instance();
+	if(assetManagerPointer != nullptr){
+		material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
+	}
+
+	EntityManager *entitymanagerPointer = worldLevel::entityManager();
+	if(entitymanagerPointer != nullptr){
+		FVector location(0, 0, 0);
+		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
+		if(oberschenkel != nullptr){
+			//int width = 10;
+			//int height = -(legScaleCM / 2);
+
+			FVector a(0,offsetY,0);
+			FVector b(x,offsetY,0);
+			FVector c(x,y + offsetY,0);
+			FVector d(0, y + offsetY,0);
+			FVector at(0,offsetY,height);
+			FVector bt(x,offsetY,height);
+			FVector ct(x,y + offsetY,height);
+			FVector dt(0,y + offsetY,height);
+			oberschenkel->createCube(
+				a,b,c,d,at,bt,ct,dt,
+				material
+			);
+			return oberschenkel;
+		}
+	}
+	return nullptr;
+}
+
+
+
+

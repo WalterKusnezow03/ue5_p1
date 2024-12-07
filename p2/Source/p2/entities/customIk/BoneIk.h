@@ -36,26 +36,6 @@ public:
 		std::vector<MMatrix *> &matrizen // must not be empty
 	);
 
-	//move, etha and leg pitch
-	void tickAndBuild(
-		UWorld *world,
-		MMatrix &offsetMatrix, // offset data in world
-		float etha,
-		float legPitchThetaRadian,
-		float displayTime,
-		FColor color
-	);
-
-	void tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix, FColor color); 
-	
-
-
-	//rotation of whole bone - starting node
-	void rotateFirstLimbDeg(float xDeg, float yDeg, float zDeg);
-	void rotateFirstLimbRad(float xDeg, float yDeg, float zDeg);
-
-	void rotateLastLimbDeg(float xDeg, float yDeg, float zDeg);
-	void rotateLastLimbRad(float xDeg, float yDeg, float zDeg);
 
 
 	// etha functions and moving towards targets
@@ -89,6 +69,19 @@ public:
 
 	void inverseAll();
 
+	//New sction for actor attaching
+	void attachFirtsLimb(AActor &actorToAttach);
+	void attachSecondLimb(AActor &actorToAttach);
+	void attachThirdLimb(AActor &actorToAttach);
+private:
+	UPROPERTY()
+	class AActor *hipLimbPointer = nullptr;
+	UPROPERTY()
+	class AActor *kneeLimbPointer = nullptr;
+	UPROPERTY()
+	class AActor *footLimbPointer = nullptr;
+	bool actorIsAlreadAttached(AActor &actor);
+
 private:
 	float createEthaFromDistance(float distance);
 	float angleFromEtha(float etha);
@@ -100,6 +93,8 @@ private:
 	float yawAngleTo(FVector &localTarget);
 	float pitchAngleTo(FVector &localTarget);
 	float rollAngleTo(FVector &localTarget);
+
+	float pitchAngleToInitialLookDirOfBone(FVector &localTarget);
 
 	void resetAllRotations();
 
@@ -151,9 +146,28 @@ private:
 	float moveSpeedCmS = 20.0f;
 
 
-
-public:
+	//deprecated?
 	FVector currentLocalFootInterpolatedPos(); //from front
 	FVector currentLocalHipInterpolatedPos(); //from back
-	//void rotateEndToTarget(FVector &target, FVector &weight, float DeltaTime);
+	
+
+
+
+	//copy positions for emsh adjustment
+	MMatrix hipCopy;
+	MMatrix kneeCopy;
+	MMatrix footCopy;
+
+	void updateLimb(AActor *limb, MMatrix &matrixRotator, FVector location);
+
+
+	MMatrix buildWithOutput(
+		UWorld *world,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime,
+		std::vector<MMatrix *> &matrizen, // must not be empty
+		std::vector<AActor *> &attachedBones,
+		bool forward
+	);
 };

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include <cmath>
+#include "Math/Rotator.h"
 #include "p2/entities/customIk/MMatrix.h"
 
 MMatrix::MMatrix()
@@ -44,7 +45,7 @@ MMatrix::MMatrix(MMatrix &other){
     *this = other;
 }
 
-
+//copy constructor
 MMatrix& MMatrix::operator=(MMatrix &other){
     if(this == &other){
         return *this;
@@ -57,6 +58,8 @@ MMatrix& MMatrix::operator=(MMatrix &other){
 
     return *this;
 }
+
+
 
 void MMatrix::setTranslation(FVector &other){
     //copy to correct positions in array 
@@ -490,7 +493,7 @@ float MMatrix::normalizeAngle(float angle) {
 
     float pi2 = 2 * M_PI;
     while (angle >= pi2){
-        angle -= pi2; // Sicherstellen, dass er im Bereich liegt
+        angle -= pi2; // Sicherstellen, dass er im Bereich von 360 grad liegt
     }
 
     if(flip){
@@ -526,20 +529,6 @@ MMatrix MMatrix::createInverse(){
 
 
 
-void MMatrix::invert(){
-    invertTranslation();
-    invertRotation();
-    //invertScale();
-
-    //normalizeRotation(); //kleiner test
-}
-
-// -tx, -ty , -tz
-void MMatrix::invertTranslation(){
-    FVector translation = getTranslation();
-    translation *= -1;
-    setTranslation(translation);
-}
 
 //3x3 block transponieren für invertieren der rotation (da im orthogonalen koordinaten system)
 void MMatrix::invertRotation(){
@@ -559,18 +548,30 @@ void MMatrix::swapIndices(int a, int b){
     }
 }
 
-void MMatrix::invertScale(){
-    //diagonale 3 skalieren
-    float a = array[0];
-    float b = array[5];
-    float c = array[10];
 
-    if(a != 0)
-        array[0] = 1.0f / a;
 
-    if(b != 0)
-        array[5] = 1.0f / b;
 
-    if(c != 0)
-        array[10] = 1.0f / c;
+
+
+
+
+
+FRotator MMatrix::extractRotator(){
+    /*
+    float Yaw = FMath::Atan2(M[2], M[0]); // M[0][2] = M[2], M[0][0] = M[0]
+    float Pitch = FMath::Asin(-M[4]);     // M[1][0] = M[4]
+    float Roll = FMath::Atan2(M[6], M[5]); // M[1][2] = M[6], M[1][1] = M[5]
+    */
+    
+
+    //Es wird davon ausgegangen das die matrix nicht skalliert wurde
+    float roll = std::atan2f(array[6], array[5]);
+    float pitch = std::asinf(-1 * array[4]);
+    float yaw = std::atan2f(array[2], array[0]);
+    FRotator extracted(
+        FMath::RadiansToDegrees(pitch),
+        FMath::RadiansToDegrees(yaw), 
+        FMath::RadiansToDegrees(roll)
+    );
+    return extracted;
 }

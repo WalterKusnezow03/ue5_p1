@@ -20,6 +20,8 @@
 /**
  * OBJECT POOL MANAGER
  * 
+ * SINGLE TON INSTANCE POINTER IS PROVIDED BY WORLD LEVEL CLASS 
+ * 
  * will spawn and hold entites which are despawned
  * only this class will spawn any enteties and manage them if they are not needed!
  * will help with object pooling for the whole game

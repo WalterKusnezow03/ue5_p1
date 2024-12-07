@@ -1622,7 +1622,7 @@ bool PathFinder::passTangentailCheck(Node *a, Node *b){
         return true; //if is not part of a convexx hull, true by default
     }
     
-    return false; //issue 
+    return false; //issue, not valid nodes passed!
 }
 
 

@@ -1,17 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include <algorithm>
 #include "p2/entities/customIk/BoneIk.h"
 
 BoneIk::BoneIk()
 {
+    hipLimbPointer = nullptr;
+	kneeLimbPointer = nullptr;
+	footLimbPointer = nullptr;
 }
 
 BoneIk::~BoneIk()
 {
+    hipLimbPointer = nullptr;
+	kneeLimbPointer = nullptr;
+	footLimbPointer = nullptr;
 }
 
 //offset degree start leg motion
+//DEPRECATED
 void BoneIk::setDegreeInital(float degree){
     deg = degree;
 }
@@ -72,6 +79,8 @@ void BoneIk::normalizeTarget(FVector &target){
 }
 
 
+/*
+DEPRECATED
 
 /// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
 /// @param etha etha fraction, will be clamped
@@ -79,18 +88,16 @@ void BoneIk::setEtha(float etha){
     setEtha(etha, 0);
 }
 
+
+//DEPRECATED -> MUST BE REFACTURED
 /// @brief will set how far the leg is extended
 /// @param etha value from [0,1]
-/// @param legPitchThetaRadian some angle in rad
+/// @param legPitchThetaRadian some angle in rad initial
 void BoneIk::setEtha(float etha, float legPitchThetaRadian){
 
     etha = clampEtha(etha);
     currentEtha = etha;
     float lambda = angleFromEtha(etha);
-
-    //FString s = FString::Printf(TEXT("etha %.2f angle %d"), etha, (int) MMatrix::radToDegree(lambda));
-    //DebugHelper::showScreenMessage(s, FColor::Purple);
-
 
     float thetaHip_pitch = createHipAngle(lambda + legPitchThetaRadian);
     float thetaKnee_pitch = createKneeAngle(lambda); //lambda only sonst bend over to back
@@ -98,10 +105,11 @@ void BoneIk::setEtha(float etha, float legPitchThetaRadian){
 
     hip.pitchRad(thetaHip_pitch); //hip to knee
     knee.pitchRad(thetaKnee_pitch); //knee to foot
-    foot.pitchRad(thetaFoot_pitch);
-    
+    foot.pitchRad(thetaFoot_pitch); //foot just like hip
     
 }
+*/
+
 
 float BoneIk::clampEtha(float etha){
     if(etha < 0.0f){
@@ -113,9 +121,28 @@ float BoneIk::clampEtha(float etha){
     return etha;
 }
 
+/**
+ * 
+ ----- ETHA EXPLAINED -----
+
+wenn das skalarprodukt zwier vektoren 0 ergibt sind sie othogonal zu einander
+wenn das skalarprodukt zwier vektoren 1 ergibt sind sie paralell zu einander
+
+wenn das bein ausgestreckt, ist der cos(theta) * n = 1 
+wenn das bein ganz raungezogen ist der cos(theta) * n = 0 weil projeziert lönge 0!
+
+wie komme ich jetzt an den winkel:
+Full extended etha = 1
+der acos(1) = 0,
+man dreht um 0 grad
+ansonsten um 90 grad
+ */
+
+
+
 /// @brief will clamp the etha value and return the angle for the hip, positive
 /// @param etha etha value
-/// @return angle for the hip pitch
+/// @return angle for the hip pitch from etha as dot product 
 float BoneIk::angleFromEtha(float etha){
     //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
     if(etha < 0.0f){
@@ -124,24 +151,26 @@ float BoneIk::angleFromEtha(float etha){
     if(etha > 1.0f){
         etha = 1.0f;
     }
-    /*
-    wenn das skalarprodukt zweier vektoren 0 ergibt sind sie orthogonal zu einander
-    wenn das skalarprodukt zweier normalisierter vektoren 1 ergibt sind sie paralell
-    zu einander
-    Wenn mein etha input 1 ist, dann ist mein output (pi/2) -> 90 grad um den ich dann z.b. vorwärts drehe
-    Wenn mein ehta input 0 ist, dann ist mein output 0 grad
-
-    Erklärung Etha Value: 
-    (0 extended , 1angezogen) -> das passiert weil 1-etha der winkel dann ist
-	acos(1 - 0) = acos(1) = 0 —> nicht rotieren!
-	acos(1 - 1) = acos(0) = 1 —> 90 grad -> ganz einklappen
-    */
-
-
-    float lambda = std::acosf(1.0f - etha);
-    //float lambda = std::asinf(etha);
+    
+    float lambda = std::acosf(etha); //testing. Richtig! --> 1, ganz paralell, 0 grad.
     return lambda;
 }
+
+
+/// @brief returns the etha value for a distance
+/// @param distance distance from 0,0,0 to target
+/// @return etha value, dot product
+float BoneIk::createEthaFromDistance(float distance){
+    if(totalBoneLengthCopy == 0){
+        return 0; //fully extended error
+    }
+    //ganz ausgestreckt: skalarprodukt = 1
+    //ansonsten eingekickt. Ganz angezogen: skalarprodukt 0: 90 grad
+    float etha = (distance / totalBoneLengthCopy);
+    return etha;
+}
+
+
 
 /// @brief creates the hip angle and signs it autmatically
 /// @param angle angle for the hip
@@ -155,20 +184,6 @@ float BoneIk::createHipAngle(float angle){
 float BoneIk::createKneeAngle(float angle){
     return angle * 2;
 }
-
-/// @brief returns the etha value for a distance
-/// @param distance distance from 0,0,0 to target
-/// @return etha value for angles or 0 (fully extended if an issue occured)
-float BoneIk::createEthaFromDistance(float distance){
-    if(totalBoneLengthCopy == 0){
-        return 0; //fully extended error
-    }
-    //distance to etha: 
-    //(remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    float etha = 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
-    return etha;
-}
-
 
 
 /**
@@ -278,55 +293,6 @@ void BoneIk::build(
 
 
 
-/**
- * 
- * TICK
- * 
- */
-
-
-//new updated method with matrix
-void BoneIk::tickAndBuild(
-    UWorld *world, 
-    MMatrix &offsetMatrix, //offset data in world, including rotation!
-    float etha, 
-    float legPitchThetaRadian,
-    float displayTime,
-    FColor color
-){
-    setEtha(etha, legPitchThetaRadian); 
-    build(world, offsetMatrix, color, displayTime);
-}
-
-
-
-
-//NEW refacture for matrix usuage
-void BoneIk::tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix, FColor color){
-    float displayTime = deltaTime * 2; //better visibility of debugdrawing
-
-    deg += degreePerSecond * deltaTime;
-    //clamp
-	if(deg > 360.0f){
-        deg = 0; //-= 360.0f;
-    }
-    if(deg < 0){
-        deg = 0;
-    }
-    float radlegLiftAngle = MMatrix::degToRadian(deg);
-	float etha = abstractKinematicFunctions::legLift(radlegLiftAngle);
-
-
-    //LEG SWING
-    legSwingRadian += deltaTime * MMatrix::degToRadian(degreePerSecond); //synchronize for now
-    if(legSwingRadian > M_PI){
-		legSwingRadian = -1 * M_PI;
-	}
-
-    float pitchThetaForLegSwingRadian = abstractKinematicFunctions::legSwingPitch(legSwingRadian);
-	tickAndBuild(world, offsetMatrix, etha, pitchThetaForLegSwingRadian, displayTime, color);
-
-}
 
 
 
@@ -336,37 +302,6 @@ void BoneIk::tickLegMotion(UWorld *world, float deltaTime, MMatrix &offsetMatrix
 
 
 
-
-
-
-
-
-
-
-//rotate hip / shoulder
-void BoneIk::rotateFirstLimbDeg(float xDeg, float yDeg, float zDeg){
-    MMatrix rotator = MMatrix::createRotatorFromDeg(xDeg, yDeg, zDeg);
-    hip.rotate(rotator);
-}
-
-void BoneIk::rotateFirstLimbRad(float xDeg, float yDeg, float zDeg){
-    MMatrix rotator = MMatrix::createRotatorFromRad(xDeg, yDeg, zDeg);
-    //hip *= rotator;
-    hip.rotate(rotator);
-}
-
-//rotation of last part (hand for example)
-void BoneIk::rotateLastLimbDeg(float xDeg, float yDeg, float zDeg){
-    MMatrix rotator = MMatrix::createRotatorFromDeg(xDeg, yDeg, zDeg);
-    //foot *= rotator;
-    foot.rotate(rotator);
-}
-
-void BoneIk::rotateLastLimbRad(float xDeg, float yDeg, float zDeg){
-    MMatrix rotator = MMatrix::createRotatorFromRad(xDeg, yDeg, zDeg);
-    //foot *= rotator;
-    foot.rotate(rotator);
-}
 
 
 
@@ -399,6 +334,21 @@ void BoneIk::rotateEndToTarget(
     middle.resetRotation();
     end.resetRotation();
 
+    /**
+     * TESTING FURTHER NEEDED
+     * gewicht ziegt ja irgendwo in zy pane und dann wird die x achse gespinnt. Wo liegt das problem
+     */
+    //testing needed
+    if(weight.Y != 0){
+        float rollAngleWeight = rollAngleTo(weight);
+        hip.yawRadAdd(rollAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
+    }
+    
+    /**
+     * testing x roation
+     */
+
+
     //etha reverse bauen
     FVector zeroVec(0, 0, 0);
 
@@ -416,7 +366,6 @@ void BoneIk::rotateEndToTarget(
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
     float etha = createEthaFromDistance(distance);
     currentEtha = etha;
-    // 1.0f - (distance / totalBoneLengthCopy); //richtig so, etha flippen
     float angle = angleFromEtha(etha);
     float hipAngle = createHipAngle(angle);
     float kneeAngle = createKneeAngle(angle);
@@ -442,12 +391,16 @@ void BoneIk::rotateEndToTarget(
 
 
     // --- KNICK BASIS ENDE ---
-    
+
+
+
 
     // --- GLOBAL TO TARGET ROTATION ---
     float PicthAngleToXForwardAxis = pitchAngleTo(vec);
+    
+
     float globalSideAdd = 0.0f;
-    //winkel manuell drehen weil unsigned
+    //winkel manuell drehen weil unsigned result ???
     if(vec.Z < 0){
         // pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
         // 90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen
@@ -460,11 +413,31 @@ void BoneIk::rotateEndToTarget(
         globalSideAdd = createHipAngle(((M_PI / 2) + PicthAngleToXForwardAxis)); //nach oben drehen
     }
 
-    
+    /**
+     *  ---- NEW TESTING PROPER ANGLE CALCULATION FOR PITCH
+     *  ----> achtung. Angle zur x achse (a) sollte das selbe sein wie
+     *   90 - a  <=> angle zur y achse die nach unten zeigt, rotiert um -90 nach unten erzeugt aber leicht andere bewegung
+     
+    PicthAngleToXForwardAxis = pitchAngleToInitialLookDirOfBone(vec);
+    if(vec.Z > 0){
+        PicthAngleToXForwardAxis *= -1;
+    }
+    globalSideAdd = createHipAngle(PicthAngleToXForwardAxis);
+    */
+
+    /**
+     *  ---- END ---- NEW TESTING PROPER ANGLE CALCULATION FOR PITCH
+     */
+
     start.pitchRadAdd(globalSideAdd);
 
 
-    //prevent bugs with Z rotation, just lock if Y not set to any dir
+
+    /**
+     * obere perspektive, wo muss das bein hinrotiert werden von oben gesehen
+     */
+
+    //prevent bugs with Z rotation, just lock if Y not set to any direction
     bool isSideWayTarget = (vec.Y != 0);
     if (isSideWayTarget == false){
         return;
@@ -474,14 +447,6 @@ void BoneIk::rotateEndToTarget(
     float yawAngleTarget = yawAngleTo(vec);
     start.yawRadAdd(yawAngleTarget);
 
-    /*
-    //GLOBAL ROTATION ON ROLL - testing needed - BROKEN
-    //sollte nur hip rotieren und nicht ziel punkt schrotten
-    float rollAngleWeight = rollAngleTo(weight);
-    // *-1;
-    hip.rollRadAdd(rollAngleWeight);
-    knee.rollRadAdd(rollAngleWeight * -2);
-    */
 }
 
 
@@ -550,18 +515,18 @@ float BoneIk::pitchAngleTo(FVector &localTarget){
 /// @return roll angle between forward and target, signed!
 float BoneIk::rollAngleTo(FVector &localTarget){
     //FVector forward(1, 0, 0); //sollte member var werden ggf
-    FVector2D forward2d(1, 0);
+    FVector2D forward2d(0, 1); //z ist up, -z ist initial 
 
     FVector2D yz(localTarget.Y, localTarget.Z);
     yz = yz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
-    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, yz));
+    float yzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, yz));
 
     //testing needed
-    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, yz.X, yz.Y);
+    yzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, yz.X, yz.Y);
 
 
-    return xzSideViewAngle;
+    return yzSideViewAngle;
 }
 
 
@@ -598,6 +563,25 @@ void BoneIk::resetAllRotations(){
     foot.resetRotation();
 
 }
+
+
+// WORKS SORT OF BAD! X AXIS WITH 90 +- manually works better!
+float BoneIk::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
+    FVector2D forward2d(0, -1); //0, -1
+    forward2d = forward2d.GetSafeNormal();
+
+    FVector2D xz(localTarget.X, localTarget.Z);
+    xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
+
+    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
+    //KEINE flip rotation hier, ist ein einzelfall, passiert manuell mit gewicht
+    return xzSideViewAngle;
+}
+
+
+
+
+
 
 
 
@@ -648,12 +632,21 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     matrizen.push_back(&knee1);
     matrizen.push_back(&hip1); //damit end limb geziechnet wird
 
+
+    //reverse bones
+    std::vector<AActor *> bonesAttached;
+    bonesAttached.push_back(hipLimbPointer);
+    bonesAttached.push_back(kneeLimbPointer);
+    bonesAttached.push_back(footLimbPointer);
+
     MMatrix newStart = buildWithOutput(
         world,
         offsetAndRotationOfFoot,
         color,
         displayTime,
-        matrizen
+        matrizen,
+        bonesAttached, //new testing needed
+        false
     );
 
     //will probably make matrix shoot in the air.
@@ -667,6 +660,16 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     //DebugHelper::showLineBetween(world, FVector(0, 0, 0), newLocation, FColor::Yellow);
     //DebugHelper::showLineBetween(world, FVector(0, 0, 0), oldLocation, FColor::Purple);
     
+
+    //copy data for outer usuage
+    MMatrix fCopy = foot.createInverse();
+    footCopy = fCopy;
+
+    MMatrix kCopy = knee.createInverse();
+    kneeCopy = kCopy;
+
+    MMatrix hCopy = hip.createInverse();
+    hipCopy = hCopy;
 }
 
 
@@ -777,14 +780,23 @@ void BoneIk::rotateEndToTargetAndBuild(
     std::vector<MMatrix *> matrizen;
     FVector footTip;
     getMatricies(matrizen, footTip);
-    
+
+
+    //new testing
+    std::vector<AActor *> limbs;
+    limbs.push_back(hipLimbPointer);
+    limbs.push_back(kneeLimbPointer);
+    limbs.push_back(footLimbPointer);
+
 
     MMatrix newStart = buildWithOutput(
         world,
         offsetAndRotation,
         color,
         displayTime,
-        matrizen
+        matrizen,
+        limbs,
+        true
     );
 
     //will probably make matrix shoot in the air.
@@ -793,7 +805,177 @@ void BoneIk::rotateEndToTargetAndBuild(
     //Override translation of actor (FOOT!)
     translationOfactorFoot.setTranslation(newLocation);
 
+
+
+    
+    //copy data for outer usuage (Will not be needed maybe)
+    footCopy = foot;
+    kneeCopy = knee;
+    hipCopy = hip;
 }
 
 
 
+
+
+/// @brief PASSED LIMB REFERENCE MUST NOT EVER GET INVALIDATED!
+/// @param actorToAttach 
+void BoneIk::attachFirtsLimb(AActor &actorToAttach){
+    if(!actorIsAlreadAttached(actorToAttach)){
+        hipLimbPointer = &actorToAttach;
+    }
+    
+}
+
+void BoneIk::attachSecondLimb(AActor &actorToAttach){
+    if(!actorIsAlreadAttached(actorToAttach)){
+        kneeLimbPointer = &actorToAttach;
+    }
+}
+
+void BoneIk::attachThirdLimb(AActor &actorToAttach){
+    if(!actorIsAlreadAttached(actorToAttach)){
+        footLimbPointer = &actorToAttach;
+    }
+}
+
+bool BoneIk::actorIsAlreadAttached(AActor &actor){
+    return &actor == footLimbPointer ||
+           &actor == kneeLimbPointer ||
+           &actor == hipLimbPointer;
+}
+
+
+
+void BoneIk::updateLimb(AActor *limb, MMatrix &matrixRotator, FVector location){
+    //rotator erstellen und auf actor anwenden
+    if(limb != nullptr){
+        limb->SetActorLocation(location);
+        limb->SetActorRotation(matrixRotator.extractRotator());
+    }
+}
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * 
+ * ----- new section with limb update ------
+ * 
+ * 
+ */
+
+/// @brief interpolates the matricies and returns the final output
+/// @param world 
+/// @param offsetAndRotation 
+/// @param color 
+/// @param displayTime 
+/// @param matrizen 
+/// @return 
+MMatrix BoneIk::buildWithOutput(
+    UWorld *world,
+    MMatrix &offsetAndRotation,
+    FColor color, 
+    float displayTime,
+    std::vector<MMatrix*> &matrizen, //must not be empty
+    std::vector<AActor*> &attachedBones,
+    bool forward
+){
+
+    // -- dirty testing --
+
+    matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
+
+    //std::vector<MMatrix *> matrizen;
+    //matrizen.push_back(&offsetAndRotation);
+
+    FVector endVec = toFootTip;
+    // getMatricies(matrizen, endVec);
+    if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
+        return offsetAndRotation;
+    }
+
+    std::vector<FVector> resultDraw;
+
+    MMatrix result = *matrizen[0];
+    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
+    
+    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
+    //beide sollen nicht mit gezeichnet werden
+    for (int i = 1; i < matrizen.size(); i++)
+    {
+        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
+
+        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
+
+    }
+
+    
+
+    //final vector (proper if forward pass)
+    FVector outputVec = result * endVec;
+    resultDraw.push_back(outputVec);
+
+
+
+    //draw
+    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
+    if (world != nullptr)
+    {
+        int off = 1; // nicht welt koordinaten berück sichtigen
+        for (int i = off; i < resultDraw.size(); i++)
+        {
+            FColor c = colors[i % colors.size()];
+            c = color; //override own color from params
+            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
+        }
+    }
+
+
+    //reverse before that ----> doesnt give me the result i want.
+    if(!forward){
+        
+        std::reverse(resultDraw.begin(), resultDraw.end());
+        resultDraw.erase(resultDraw.begin()); //fuss weg der nicht da ist.
+        resultDraw.erase(resultDraw.begin()); //fuss weg der nicht da ist noch immer.
+        resultDraw.push_back(FVector());
+        
+    }
+
+    
+
+    //UPDATE BONES
+    for (int i = 1; i < resultDraw.size(); i++){
+
+        int boneIndex = i - 1;
+        FVector location = resultDraw[i - 1];
+        FVector nextPoint = resultDraw[i];
+        
+
+        FVector lookDir = nextPoint - location;
+
+        if (boneIndex < attachedBones.size()){
+            AActor *currentBone = attachedBones[boneIndex];
+            if(currentBone != nullptr){
+                currentBone->SetActorLocation(location);
+                
+                //rotation anpassen wenn 
+                //objekt so deisnged wurde dass der pivot am oben ende des knochens ist
+                //und die länge des knochens richtung -z schaut, nach unten.
+                lookDir = FVector(lookDir.Z, lookDir.Y, -lookDir.X); 
+                
+                // Alternativ: Rotator aus einer Richtung (Forward Vector) erstellen
+                FRotator DirectionRotator = lookDir.Rotation();
+                currentBone->SetActorRotation(DirectionRotator);
+            }
+        }
+    }
+
+    // returns the final matrix
+    return result;
+}

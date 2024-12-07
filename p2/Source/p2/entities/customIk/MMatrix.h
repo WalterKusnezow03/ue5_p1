@@ -16,6 +16,7 @@ public:
 	MMatrix(MMatrix &other);
 	MMatrix& operator=(MMatrix &other);
 
+
 	void setTranslation(FVector &pos);
 	void setTranslation(float x, float y, float z);
 	FVector getTranslation();
@@ -55,9 +56,10 @@ public:
 
 	void rotate(MMatrix &other);
 
-	void invert();
 
 	MMatrix createInverse();
+
+	FRotator extractRotator();
 
 private:
 	//normalize rotations when adding them together
@@ -66,15 +68,15 @@ private:
 
 
 
-private:
 	//16 langes array für die 4x4 matrix
 	static constexpr int size = 16;
 	float array[16];
 
-	
 
-	void invertTranslation();
+	
 	void invertRotation();
 	void swapIndices(int a, int b);
-	void invertScale();
+	
+
+	
 };

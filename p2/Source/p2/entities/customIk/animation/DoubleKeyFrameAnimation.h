@@ -19,7 +19,7 @@ public:
 	bool isAnimationB();
 
 	void setAnimationA(KeyFrameAnimation &&A);
-	void setAnimationB(KeyFrameAnimation &&B);
+	
 
 	FVector interpolate(float DeltaTime);
 
@@ -30,8 +30,7 @@ public:
 	FVector readPrevAnimationReachedFrame();
 
 	bool nextFrameMustBeGrounded();
-	//void overrideCurrentFrame(FVector &framePos);
-	void overrideNextFrame(FVector &framePos);
+	void overrideNextFrameA(FVector &framePos);
 
 	bool currentAndNextForBOverriden();
 	void tryOverrideCurrentAndNextFrameAnimB(FVector &currentNew, FVector &nextNew, float timeToFrameWanted);
@@ -53,7 +52,7 @@ private:
 	bool reachedTime(float timeCheck);
 
 	class KeyFrameAnimation framesA;
-	class KeyFrameAnimation framesB;
+	
 	class TargetInterpolator interpolateB;
 
 	bool isAnimationAPlaying = true;
@@ -63,7 +62,7 @@ private:
 
 	bool currentAndNextOverridenB = false;
 
-	KeyFrameAnimation &currentAnimation();
+	
 	KeyFrameAnimation &prevAnimation();
 
 	FVector interpolateAtarget(float DeltaTime);
