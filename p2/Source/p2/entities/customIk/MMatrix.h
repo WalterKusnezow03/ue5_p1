@@ -61,10 +61,10 @@ public:
 
 	FRotator extractRotator();
 
+	void transformFromWorldToLocalCoordinates(FVector &position);
+
 private:
-	//normalize rotations when adding them together
-	float normalizeAngle(float angle);
-	void normalizeRotation();
+	
 
 
 

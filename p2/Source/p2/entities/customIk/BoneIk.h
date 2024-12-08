@@ -43,6 +43,7 @@ public:
 
 	
 	void rotateEndToTarget(FVector &vec, FVector &weight);
+	void rotateStartToTarget(FVector &vec, FVector &weight);
 
 	//new
 	void rotateStartToTargetAndBuild(
@@ -95,6 +96,7 @@ private:
 	float rollAngleTo(FVector &localTarget);
 
 	float pitchAngleToInitialLookDirOfBone(FVector &localTarget);
+	float pitchAngleToInitiaToUpDirOfBone(FVector &localTarget);
 
 	void resetAllRotations();
 
@@ -138,7 +140,8 @@ private:
 		FVector &weight,
 		MMatrix &start,
 		MMatrix &middle,
-		MMatrix &end
+		MMatrix &end,
+		bool forward
 	);
 	
 	//new part of animation keying

@@ -27,32 +27,26 @@ public:
 	
 	FVector interpolate(float DeltaTime);
 
-	
 
 	bool nextFrameMustBeGrounded();
 	FVector readNextFrame();
-	FVector readPrevFrame();
-	FVector readLastFrameOfAnimation();
-
-	void overrideNextFrame(FVector &framePos);
-	void overrideCurrentAndNextFrame(FVector &current, FVector &target);
-
-	void resetIndex();
-
+	
+	
 	float totalLength();
-
 	bool nextFrameIsProjected();
-
 	bool reachedLastFrameOfAnimation();
-
-	void tryPushFront(FVector &somePoisition);
+	void tryPushFront(FVector &somePoisition, float time);
+	void overrideNextFrame(FVector &framePos);
+	void restart();
 
 private:
+	FVector latestInterpolation;
 	bool loop = true;
+	bool restarted = true;
 	bool reachedEndFrameFlag = false;
 
 	float totalLengthSave = 0.0f;
-	FVector targetCopy;
+	
 
 	bool frameIsProjected = false;
 	
@@ -74,4 +68,15 @@ private:
 
 	class TargetInterpolator interpolator;
 	void updateFrameInterpolator();
+
+
+
+
+
+//neu projektion auch hier
+public:
+	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+private:
+	void projectToGround(UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade);
+	bool performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit);
 };

@@ -31,13 +31,14 @@ void TargetInterpolator::setTarget(FVector fromIn, FVector totarget, float timeT
 /// @param totarget 
 void TargetInterpolator::overrideTarget(FVector totarget){
 
-    DebugHelper::showScreenMessage("override target, connect:", FColor::Red);
+    //DebugHelper::showScreenMessage("override target, connect:", FColor::Red);
     target = totarget;
-    
+    reached = false;
 }
 
 void TargetInterpolator::overrideStart(FVector fromtarget){
     from = fromtarget;
+    reached = false;
 }
 
 void TargetInterpolator::resetDeltaTime(){
@@ -136,4 +137,12 @@ FVector TargetInterpolator::readFromPosition(){
 
 FVector TargetInterpolator::readToPosition(){
     return target;
+}
+
+/// @brief overrides the starting position
+/// @param position 
+void TargetInterpolator::insertAtFront(FVector &position){
+    //target = from; //skip?
+    from = position;
+
 }

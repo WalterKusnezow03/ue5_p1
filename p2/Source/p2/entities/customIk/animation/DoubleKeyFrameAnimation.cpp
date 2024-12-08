@@ -19,6 +19,10 @@ void DoubleKeyFrameAnimation::setAnimationA(KeyFrameAnimation &&other){
     framesA = MoveTemp(other);
 }
 
+void DoubleKeyFrameAnimation::setAnimationBAdjustPermanentTarget(FVector vector){
+    bTarget = vector;
+    bIsSetToAutoOverride = true;
+}
 
 bool DoubleKeyFrameAnimation::isAnimationA(){
     return isAnimationAPlaying;
@@ -41,59 +45,55 @@ FVector DoubleKeyFrameAnimation::readPrevAnimationReachedFrame(){
 /// @param DeltaTime delta time passed from Tick()
 /// @return interpolated frame target
 FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
+    
     deltaTime += DeltaTime;
 
     
     FVector interpolated;
     if(isAnimationA()){
-        interpolated = interpolateAtarget(DeltaTime);
-    }
-    else{
-        interpolated = interpolateBtarget(DeltaTime);
-    }
+        interpolated = framesA.interpolate(DeltaTime);
 
-    //switch wenn zeit überschritten
-    if (reachedTime(deltaTime))
-    {
-        if(!isAnimationAPlaying){
-            cycleComplete = true;
-            //reset projection offset once animation played trough!
-            projectionHipOffset = FVector(0, 0, 0);
-
-        }else{
-            //finale position des fusses speichern damit die hip relativ sich weiter bewegen kann
-            //relativ zu der erreichten fuss position die ja relativ zum hip hier in der animation ist
+        if(framesA.reachedLastFrameOfAnimation()){
             aReachedTickFrame = interpolated;
+
+            //intepolierte position relativ zur hüfte ist einfach den vektor
+            //umzudrehen
+            if(bIsSetToAutoOverride){    
+                FVector relativeBFrame = aReachedTickFrame * -1; 
+                interpolateB.setTarget(relativeBFrame, bTarget, 1.0f);
+
+
+                
+                //nicht das problem.
+
+                DebugHelper::showScreenMessageCompare(
+                    "interpolator B TEST : ",
+                    relativeBFrame,
+                    FVector(-50,0,200), //expected value
+                    20
+                );
+            }
+            isAnimationAPlaying = false;
         }
 
 
-        isAnimationAPlaying = !isAnimationAPlaying; //flip bool!
-        deltaTime = 0.0f;
-        currentAndNextOverridenB = false;
-
     }
+    else{
+        interpolated = interpolateB.interpolate(DeltaTime);
+        if(interpolateB.hasReachedTarget()){
+            cycleComplete = true;
+            projectionHipOffset = FVector(0, 0, 0);
+            isAnimationAPlaying = true; //flip bool!
+            deltaTime = 0.0f;
+        }
+    }
+
 
     return interpolated;
 }
 
 
 
-FVector DoubleKeyFrameAnimation::interpolateAtarget(float DeltaTime){
-    if(isAnimationA()){
-        FVector interpolated = framesA.interpolate(DeltaTime);
-        return interpolated;
-    }
-    return FVector(0, 0, 0);
-}
-
-
-FVector DoubleKeyFrameAnimation::interpolateBtarget(float DeltaTime){
-    if(isAnimationB()){
-        FVector interpolated = interpolateB.interpolate(DeltaTime);
-        return interpolated;
-    }
-    return FVector(0, 0, 0);
-}
 
 
 /// @brief will return if the animation cycle was complete
@@ -133,32 +133,7 @@ void DoubleKeyFrameAnimation::overrideNextFrameA(FVector &framePos){
 }
 
 
-/// @brief updates the interpolation target for interpolation B
-/// @param currentNew currentPostion
-/// @param nextNew target position
-/// @param timeToFrameWanted time to frame
-void DoubleKeyFrameAnimation::tryOverrideCurrentAndNextFrameAnimB(
-    FVector &currentNew,
-    FVector &nextNew,
-    float timeToFrameWanted
-){
-    if(!currentAndNextOverridenB && isAnimationB()){
-        DebugHelper::showScreenMessage("1 override frames! ", FColor::Blue);
-        currentAndNextOverridenB = true;
-        //framesB.overrideCurrentAndNextFrame(currentNew, nextNew);
 
-
-        interpolateB.setTarget(currentNew, nextNew, timeToFrameWanted);
-    }
-}
-
-
-
-
-
-bool DoubleKeyFrameAnimation::currentAndNextForBOverriden(){
-    return currentAndNextOverridenB;
-}
 
 
 
@@ -170,18 +145,6 @@ FVector DoubleKeyFrameAnimation::readNextFrame(){
 }
 
 
-
-bool DoubleKeyFrameAnimation::nextFrameMustBeGrounded(){
-    //KeyFrameAnimation &current = currentAnimation();
-    //return current.nextFrameMustBeGrounded();
-    return framesA.nextFrameMustBeGrounded();
-}
-
-bool DoubleKeyFrameAnimation::nextFrameIsProjected(){
-    //KeyFrameAnimation &current = currentAnimation();
-    //return current.nextFrameIsProjected();
-    return framesA.nextFrameIsProjected();
-}
 
 
 
@@ -209,6 +172,10 @@ void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
     }
 }
 
+
+
+
+
 /// @brief additional hip offset needed because of projected frames, will be (0,0,0) if
 /// no offset needed, or any other vector if needed.
 /// @return vector offset for hip to add, is timed with animation linear.
@@ -230,5 +197,22 @@ FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(){
 
 
 void DoubleKeyFrameAnimation::tryPushFront(FVector &currentLocationRelative){
-    framesA.tryPushFront(currentLocationRelative);
+    framesA.tryPushFront(currentLocationRelative, 0.5f); //testing 
+}
+
+
+
+
+
+
+void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix){
+    if(world != nullptr){
+        
+        FVector offsetMade(0,0,0);
+        bool wasProjected = framesA.projectNextFrameToGroundIfNeeded(world, actorMatrix, offsetMade);
+        if(wasProjected){
+            //DebugHelper::showScreenMessage("PROCESS OFFSET ", offsetMade, FColor::Orange);
+            processProjectOffset(offsetMade);
+        }
+    }
 }

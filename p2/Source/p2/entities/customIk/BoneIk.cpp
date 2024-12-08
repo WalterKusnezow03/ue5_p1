@@ -306,12 +306,9 @@ void BoneIk::build(
 
 
 
-
-
-
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
-    rotateEndToTarget(vec, weight, hip, knee, foot);
+    rotateEndToTarget(vec, weight, hip, knee, foot, true);
 }
 
 
@@ -326,7 +323,8 @@ void BoneIk::rotateEndToTarget(
     FVector &weight,
     MMatrix &start,
     MMatrix &middle,
-    MMatrix &end
+    MMatrix &end,
+    bool forward
 )
 {
     //TODO: add support for using the rotation which is already applied? 
@@ -375,7 +373,8 @@ void BoneIk::rotateEndToTarget(
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
     if(
-        (weight.X < 0 || weight.Z < 0) && //wenn gewicht negativ
+        (weight.X < 0 || weight.Z < 0) 
+        && //wenn gewicht negativ
         hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
     ){ 
         //both angles flip based on weight direction 
@@ -396,49 +395,36 @@ void BoneIk::rotateEndToTarget(
 
 
     // --- GLOBAL TO TARGET ROTATION ---
-    float PicthAngleToXForwardAxis = pitchAngleTo(vec);
     
-
-    float globalSideAdd = 0.0f;
-    //winkel manuell drehen weil unsigned result ???
-    if(vec.Z < 0){
-        // pi/2 (90 grad) um relativ zum bein zu machen, im urhzeigersinn
-        // 90 grad dazu um relativ zu machen, -1 * winkel um korrekt zu drehen
-        //globalSideAdd = ((M_PI / 2) - PicthAngleToXForwardAxis) *-1; // GEPRÜFT! RICHTIG!
-        globalSideAdd = createHipAngle(((M_PI / 2) - PicthAngleToXForwardAxis)); //methode negiert automatisch
-    }
-    else
-    {
-        //globalSideAdd = ((M_PI / 2) + PicthAngleToXForwardAxis) *-1; //-1 nach wie vor wegen hip angle
-        globalSideAdd = createHipAngle(((M_PI / 2) + PicthAngleToXForwardAxis)); //nach oben drehen
-    }
-
     /**
      *  ---- NEW TESTING PROPER ANGLE CALCULATION FOR PITCH
-     *  ----> achtung. Angle zur x achse (a) sollte das selbe sein wie
-     *   90 - a  <=> angle zur y achse die nach unten zeigt, rotiert um -90 nach unten erzeugt aber leicht andere bewegung
-     
-    PicthAngleToXForwardAxis = pitchAngleToInitialLookDirOfBone(vec);
-    if(vec.Z > 0){
-        PicthAngleToXForwardAxis *= -1;
-    }
-    globalSideAdd = createHipAngle(PicthAngleToXForwardAxis);
-    */
-
-    /**
-     *  ---- END ---- NEW TESTING PROPER ANGLE CALCULATION FOR PITCH
      */
-
+    
+    //BRICKED HALF
+    /*
+    float pitchAngle = 0.0f;
+    if (!forward)
+    {
+        pitchAngle = pitchAngleToInitiaToUpDirOfBone(vec);
+    }else{
+        pitchAngle = pitchAngleToInitialLookDirOfBone(vec);
+    }*/
+    float pitchAngle = pitchAngleToInitialLookDirOfBone(vec);
+    float globalSideAdd = createHipAngle(pitchAngle);
     start.pitchRadAdd(globalSideAdd);
+    
 
 
+
+    FString anglePrint = FString::Printf(TEXT("angle: %.1f"), MMatrix::radToDegree(globalSideAdd));
+    DebugHelper::showScreenMessage(anglePrint,vec, FColor::Orange);
 
     /**
      * obere perspektive, wo muss das bein hinrotiert werden von oben gesehen
      */
 
-    //prevent bugs with Z rotation, just lock if Y not set to any direction
-    bool isSideWayTarget = (vec.Y != 0);
+    // prevent bugs with Z rotation, just lock if Y not set to any direction
+    bool isSideWayTarget = (std::abs(vec.Y) >= 0.1f); //statt != 0.0f ALWAYS USE EPSILON
     if (isSideWayTarget == false){
         return;
     }
@@ -565,7 +551,7 @@ void BoneIk::resetAllRotations(){
 }
 
 
-// WORKS SORT OF BAD! X AXIS WITH 90 +- manually works better!
+
 float BoneIk::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
     FVector2D forward2d(0, -1); //0, -1
     forward2d = forward2d.GetSafeNormal();
@@ -573,13 +559,27 @@ float BoneIk::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
     FVector2D xz(localTarget.X, localTarget.Z);
     xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
 
+    
     float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
-    //KEINE flip rotation hier, ist ein einzelfall, passiert manuell mit gewicht
+    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, xz.X, xz.Y);
+
     return xzSideViewAngle;
 }
 
 
+float BoneIk::pitchAngleToInitiaToUpDirOfBone(FVector &localTarget){
+    FVector2D forward2d(0, 1); //0, -1
+    forward2d = forward2d.GetSafeNormal();
 
+    FVector2D xz(localTarget.X, localTarget.Z);
+    xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
+
+    
+    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
+    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, xz.X, xz.Y);
+
+    return xzSideViewAngle;
+}
 
 
 
@@ -615,22 +615,15 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
 
     std::vector<MMatrix *> matrizen;
 
-    MMatrix &foot1 = foot;
-    MMatrix &knee1 = knee;
-    MMatrix &hip1 = hip;
-
-    MMatrix empty; //NEW START (Hip but backwards)
-
-
-    rotateEndToTarget(vec, weight, empty, foot1, knee1);
-   
-
     
+    MMatrix empty; //NEW START (Hip but backwards)
+    rotateEndToTarget(vec, weight, empty, foot, knee, false);
+    
+
     matrizen.push_back(&empty); //damit first limb gezeichnet wird von foot to knee usw. Matrix multiplikation
-    //wie gehabt und logisch halt
-    matrizen.push_back(&foot1); 
-    matrizen.push_back(&knee1);
-    matrizen.push_back(&hip1); //damit end limb geziechnet wird
+    matrizen.push_back(&foot); 
+    matrizen.push_back(&knee);
+    matrizen.push_back(&hip); //damit end limb geziechnet wird
 
 
     //reverse bones
@@ -655,21 +648,7 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     //Override translation of actor (hip)
     translationOfactor.setTranslation(newLocation); 
 
-    // -- debug draw --
-    //FVector oldLocation = translationOfactor.getTranslation();
-    //DebugHelper::showLineBetween(world, FVector(0, 0, 0), newLocation, FColor::Yellow);
-    //DebugHelper::showLineBetween(world, FVector(0, 0, 0), oldLocation, FColor::Purple);
     
-
-    //copy data for outer usuage
-    MMatrix fCopy = foot.createInverse();
-    footCopy = fCopy;
-
-    MMatrix kCopy = knee.createInverse();
-    kneeCopy = kCopy;
-
-    MMatrix hCopy = hip.createInverse();
-    hipCopy = hCopy;
 }
 
 
@@ -703,8 +682,7 @@ MMatrix BoneIk::buildWithOutput(
 
     matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
 
-    //std::vector<MMatrix *> matrizen;
-    //matrizen.push_back(&offsetAndRotation);
+    
 
     FVector endVec = toFootTip;
     // getMatricies(matrizen, endVec);
@@ -808,10 +786,6 @@ void BoneIk::rotateEndToTargetAndBuild(
 
 
     
-    //copy data for outer usuage (Will not be needed maybe)
-    footCopy = foot;
-    kneeCopy = knee;
-    hipCopy = hip;
 }
 
 
@@ -903,7 +877,6 @@ MMatrix BoneIk::buildWithOutput(
     std::vector<FVector> resultDraw;
 
     MMatrix result = *matrizen[0];
-    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
     
     //über matrizen laufen um die vektoren zu berechnen für die zeichnung
     //beide sollen nicht mit gezeichnet werden

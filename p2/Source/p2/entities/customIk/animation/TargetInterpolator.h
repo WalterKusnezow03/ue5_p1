@@ -30,6 +30,8 @@ public:
 	FVector readFromPosition();
 	FVector readToPosition();
 
+	void insertAtFront(FVector &position);
+
 private:
 	FVector from;
 	FVector target;

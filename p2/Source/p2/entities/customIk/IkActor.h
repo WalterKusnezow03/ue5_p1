@@ -51,13 +51,12 @@ private:
 	MMatrix ownLocation;
 	MMatrix ownOrientation;
 
-	MMatrix ownLocationFoot;
-	MMatrix ownLocationFootRight;
+	MMatrix ownLocationFoot1;
+	MMatrix ownLocationFoot2;
 	MMatrix chestRelative;
 	
 
 	MMatrix currentTransform();
-	MMatrix currentFootTransform();
 	MMatrix currentFootTransform(MMatrix &foottranslationToRotate);
 	MMatrix currentShoulderTransform();
 

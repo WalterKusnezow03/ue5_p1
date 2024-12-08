@@ -96,15 +96,15 @@ void MMatrix::operator+=(MMatrix &other){
 /// @param other 
 void MMatrix::operator*=(MMatrix &other){
     //old, berücksichtigt logik nicht, macht sachen kaputt
-
+    /*
     normalizeRotation();
     other.normalizeRotation();
 
-    /**
+    **
      * eine translation in den ursprung ist nicht notwendig 
      * bei den knochen weil die sowieso das sind.
      * 
-     */
+     
     
     MMatrix result; // Temporary matrix to store the result
 
@@ -124,14 +124,17 @@ void MMatrix::operator*=(MMatrix &other){
     }
 
     normalizeRotation();
+    */
+
+   MMatrix r = *this * other;
+   *this = r;
 }
 
 /// @brief multiply and return result
 /// @param other other
 /// @return returns a new matrix
 MMatrix MMatrix::operator*(MMatrix &other){
-    normalizeRotation();
-    other.normalizeRotation();
+    
     MMatrix result; // Temporary matrix to store the result
 
     for (int row = 0; row < 4; row++) { // Iterate through the rows of 'this' matrix
@@ -143,7 +146,7 @@ MMatrix MMatrix::operator*(MMatrix &other){
             result.array[row * 4 + col] = sum; // Store the result in the temporary matrix
         }
     }
-    result.normalizeRotation();
+    
     return result;
 }
 
@@ -453,7 +456,7 @@ void MMatrix::rotate(MMatrix &other){
             array[i] = result.array[i];
         }
     }
-    normalizeRotation();
+    
 }
 
 
@@ -464,44 +467,6 @@ void MMatrix::rotate(MMatrix &other){
 
 
 
-
-void MMatrix::normalizeRotation(){
-
-    for (int row = 0; row < 3; row++) { // Iterate through the rows of 'this' matrix
-        for (int col = 0; col < 3; col++) { // Iterate through the columns of 'other' matrix
-            int i = row * 4 + col;
-            float angleCopy = normalizeAngle(array[i]);
-            array[i] = angleCopy;
-        }
-    }        
-}
-
-
-//damit keine werte über 360 grad entstehen
-
-/// @brief normalizes the angle so none of it acts as scaling
-/// @param angle angle in radian
-/// @return 
-float MMatrix::normalizeAngle(float angle) {
-    // Normalisiere den Winkel auf den Bereich [0, 2π)
-    bool flip = false;
-    while (angle < 0){
-        //angle += 2 * M_PI; // Sicherstellen, dass der Winkel positiv ist
-        angle *= -1;
-        flip = true;
-    }
-
-    float pi2 = 2 * M_PI;
-    while (angle >= pi2){
-        angle -= pi2; // Sicherstellen, dass er im Bereich von 360 grad liegt
-    }
-
-    if(flip){
-        angle *= -1; //zurück flippen 
-    }
-
-    return angle;
-}
 
 
 
@@ -522,7 +487,7 @@ MMatrix MMatrix::createInverse(){
     translation.setTranslation(translateCopy);
 
     //statt M = T * R <-- lese richtung --
-    //jetzt M = R * T <-- lese richtung --
+    //jetzt M = R^-1 * T^-1 <-- lese richtung --
     MMatrix result = rotCopy * translation;
     return result;
 }
@@ -574,4 +539,18 @@ FRotator MMatrix::extractRotator(){
         FMath::RadiansToDegrees(roll)
     );
     return extracted;
+}
+
+
+
+
+/// @brief converts a position to relative to the hip / actor center
+/// @param position position to convert, will be adjusted by reference
+void MMatrix::transformFromWorldToLocalCoordinates(FVector &position){
+
+	
+	//funktoniert
+	MMatrix inverted = createInverse();
+	position = inverted * position;
+	
 }

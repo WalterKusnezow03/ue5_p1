@@ -19,7 +19,7 @@ public:
 	bool isAnimationB();
 
 	void setAnimationA(KeyFrameAnimation &&A);
-	
+	void setAnimationBAdjustPermanentTarget(FVector vector);
 
 	FVector interpolate(float DeltaTime);
 
@@ -29,24 +29,23 @@ public:
 	//new read last reached frame from prev anim
 	FVector readPrevAnimationReachedFrame();
 
-	bool nextFrameMustBeGrounded();
 	void overrideNextFrameA(FVector &framePos);
-
-	bool currentAndNextForBOverriden();
-	void tryOverrideCurrentAndNextFrameAnimB(FVector &currentNew, FVector &nextNew, float timeToFrameWanted);
-
-	bool nextFrameIsProjected();
 	bool animationCycleWasComplete();
 
 	void processProjectOffset(FVector &offsetMade);
 	FVector getProjectionHipOffsetTimed();
 
-	//neu
+	
 	void tryPushFront(FVector &currentLocationRelative);
+	
+	//neu
+	void projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix);
 
 private:
 	//neu
 	FVector projectionHipOffset;
+	FVector bTarget;
+	bool bIsSetToAutoOverride = false;
 
 	//vorher
 	bool reachedTime(float timeCheck);
@@ -59,14 +58,14 @@ private:
 	float deltaTime = 0.0f;
 
 	bool cycleComplete = false;
+	bool blocked = false;
 
-	bool currentAndNextOverridenB = false;
+	
 
 	
 	KeyFrameAnimation &prevAnimation();
 
-	FVector interpolateAtarget(float DeltaTime);
-	FVector interpolateBtarget(float DeltaTime);
+	
 	float reachTime();
 
 	FVector aReachedTickFrame;

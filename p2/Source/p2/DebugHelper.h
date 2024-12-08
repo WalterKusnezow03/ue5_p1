@@ -22,9 +22,12 @@ public:
 	static void showScreenMessage(FString s, int argument);
 	static void showScreenMessage(FString s, float argument);
 	static void showScreenMessage(FString s, int argument, FColor color);
+	static void showScreenMessage(FString s, FVector a, FColor color);
 	static void showScreenMessage(FString s, FVector a, FVector b, FColor color);
 	static void showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color);
 	static void showScreenMessage(FVector vec);
+
+	static void showScreenMessageCompare(FString message, FVector a, FVector b, float maxDistance);
 
 	//Log Messages
 	static void logMessage(FString s);

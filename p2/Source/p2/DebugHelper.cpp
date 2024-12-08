@@ -94,6 +94,47 @@ void DebugHelper::showScreenMessage(FString s, FVector2D a, FVector2D b, FColor 
 	showScreenMessage(sOut, color);
 }
 
+
+void DebugHelper::showScreenMessage(FString s, FVector a, FColor color){
+	FString aX = FString::Printf(TEXT("( %.2f )"), a.X);
+	FString aY = FString::Printf(TEXT("( %.2f )"), a.Y);
+	FString aZ = FString::Printf(TEXT("( %.2f )"), a.Z);
+
+	FString sOut = s + TEXT("\n") +
+				   aX + TEXT("\n") +
+				   aY + TEXT("\n ") +
+				   aZ + TEXT("\n");
+
+	showScreenMessage(sOut, color);
+}
+
+void DebugHelper::showScreenMessageCompare(FString message, FVector a, FVector b, float maxDistance){
+	
+	FString aX = FString::Printf(TEXT("( %.2f ) ( %.2f)"), a.X, b.X);
+	FString aY = FString::Printf(TEXT("( %.2f ) ( %.2f)"), a.Y, b.Y);
+	FString aZ = FString::Printf(TEXT("( %.2f ) ( %.2f)"), a.Z, b.Z);
+
+	FString sOut = message + TEXT("\n") +
+				   aX + TEXT("\n") +
+				   aY + TEXT("\n ") +
+				   aZ + TEXT("\n");
+
+	float distance = FVector::Dist(a, b);
+	FColor color = FColor::Red;
+	if (distance < maxDistance)
+	{
+		color = FColor::Green;
+		sOut = "OK: " + sOut;
+	}else{
+		sOut = "ISSUE: " + sOut;
+	}
+	showScreenMessage(sOut, color);
+}
+
+
+
+
+
 void DebugHelper::showScreenMessage(FString s, FVector a, FVector b, FColor color){
 
 	FString sOut = s;

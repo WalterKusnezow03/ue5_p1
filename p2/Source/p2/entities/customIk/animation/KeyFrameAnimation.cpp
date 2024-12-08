@@ -57,6 +57,8 @@ void KeyFrameAnimation::addFrame(
 
 
 
+
+
 /// @brief total length time of the animation
 /// @return total length time of the animation
 float KeyFrameAnimation::totalLength(){
@@ -74,6 +76,8 @@ bool KeyFrameAnimation::reachedLastFrameOfAnimation(){
     return false;
 }
 
+
+
 /// @brief returns if enough frames are available for an animation (at least 2)
 /// @return has enough or not
 bool KeyFrameAnimation::hasAnyFrames(){
@@ -83,25 +87,18 @@ bool KeyFrameAnimation::hasAnyFrames(){
 
 
 
-
-
-
-
 FVector KeyFrameAnimation::interpolate(float DeltaTime){
-    
+
     if(hasAnyFrames()){
-        //DebugHelper::showScreenMessage("nextframe ", nextFrameIndex);
-        if (interpolator.hasTargetSetup() == false)
-        {
+    
+        if (interpolator.hasTargetSetup() == false){
             updateFrameInterpolator();
         }
 
         FVector interpolated = interpolator.interpolate(DeltaTime);
-        //targetCopy = interpolated;
+        
 
         if(interpolator.hasReachedTarget()){    
-            //frameIndex++;
-            DebugHelper::showScreenMessage("INTERPOLATOR UPDATE!");
             updateFrameIndex();
             updateFrameInterpolator();
         }
@@ -112,22 +109,25 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime){
     return FVector(0, 0, 0);
 }   
 
+/// @brief updates the frame index and end frame flag if reached
 void KeyFrameAnimation::updateFrameIndex(){
     frameIndex = (frameIndex + 1) % frames.size();
     nextFrameIndex = (frameIndex + 1) % frames.size();
 
-    bool isEnd = (nextFrameIndex == 0);
-    if(isEnd && !loop){
+    bool isEnd = (nextFrameIndex == 0) || (frameIndex == frames.size() - 1);
+    if (isEnd && !loop)
+    {
         frameIndex = 0;
         nextFrameIndex = 1;
-        
-        //set status for asking to end anim
+        //DebugHelper::showScreenMessage("reached end frame!", FColor::Orange);
         reachedEndFrameFlag = true;
     }
+
 }
 
 /// @brief call update AFTER increase / index update
 void KeyFrameAnimation::updateFrameInterpolator(){
+
     KeyFrame &currentFrame = frames.at(frameIndex);
     KeyFrame &nextFrame = frames.at(nextFrameIndex);
     interpolator.setTarget(
@@ -136,18 +136,10 @@ void KeyFrameAnimation::updateFrameInterpolator(){
         nextFrame.timeToFrame()
     );
 
-    //copy next target for the actor to get to adjust hip
-    //targetCopy = nextFrame.readposition();
-    targetCopy = nextFrame.readposition();
-
     //reset frame projected status
     frameIsProjected = false;
 }
 
-void KeyFrameAnimation::resetIndex(){
-    frameIndex = 0;
-    nextFrameIndex = 1;
-}
 
 bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     if(hasAnyFrames()){
@@ -165,34 +157,20 @@ FVector KeyFrameAnimation::readNextFrame(){
     return FVector(0, 0, 0);
 }
 
-FVector KeyFrameAnimation::readPrevFrame(){
-    //KeyFrame &currFrame = frames.at(frameIndex);
-    //return currFrame.readposition();
-    
-    return targetCopy;
-}
 
 
-/// @brief returns frame position of very last key of animation
-/// @return 
-FVector KeyFrameAnimation::readLastFrameOfAnimation(){
-    if(hasAnyFrames()){
-        KeyFrame &currFrame = frames.at(frames.size() - 1);
-        return currFrame.readposition();
-    }
-    return targetCopy;
-}
+
 
 
 /// @brief override the next frame / target value, animation is not overriden, individual to current next
 /// frame!
 /// @param framePos 
 void KeyFrameAnimation::overrideNextFrame(FVector &framePos){
-    //DebugHelper::showScreenMessage("override target!");
     interpolator.overrideTarget(framePos);
-    targetCopy = framePos; //MUST BE UPDATED TOO!
     frameIsProjected = true;
 }
+
+
 
 bool KeyFrameAnimation::nextFrameIsProjected(){
     return frameIsProjected;
@@ -201,31 +179,117 @@ bool KeyFrameAnimation::nextFrameIsProjected(){
 
 
 
-
-void KeyFrameAnimation::overrideCurrentAndNextFrame(FVector &current, FVector &next){
-    interpolator.resetDeltaTime();
-    interpolator.overrideStart(current);
-    interpolator.overrideTarget(next);
-    DebugHelper::showScreenMessage("2 override frames! ", FColor::Blue);
-}
-
 /// @brief pushes a position to the front of the animation temporarly just once and resets the index
 /// if the position is far engough from the current starting frame 
 /// designed for foot to correct its position because another foot moved and changed the relative position!
 /// @param somePosition 
-void KeyFrameAnimation::tryPushFront(FVector &somePosition){
-    //if position far enough
-    float epsilon = 1.0f;
-    FVector starting = interpolator.readFromPosition(); //read current start
-    if(FVector::Dist(somePosition, starting) > epsilon){
-        //GO ONE INDEX BACK
-        frameIndex = frames.size() - 1;
-        nextFrameIndex = 0;
+void KeyFrameAnimation::tryPushFront(FVector &somePosition, float time){
 
-
-        float timeCopy = interpolator.TimeToFrame(); //einfach die zeit übernehmen
-        interpolator.setTarget(somePosition, starting, timeCopy);
-    }
-
+    //frameIndex = frames.size() -1;
+    //nextFrameIndex = 0;
+    interpolator.insertAtFront(somePosition);
     
 }
+
+
+
+
+bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
+    if(world == nullptr){
+        return false;
+    }
+    if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
+        FVector frameToProject = readNextFrame();
+        projectToGround(world, actorMatrix, frameToProject, offsetMade);
+        overrideNextFrame(frameToProject);
+        return true;
+    }
+    return false;
+}
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * PROJEKTION SOLLTE HIER MÖGLICH SEIN
+ * 
+ * 
+ */
+
+/// @brief projects a frame to the ground and writes the porjection into the frame
+/// @param frameToProject frame to project to floor
+/// @param offsetMade offset made from frame to project to hitpoint direction
+void KeyFrameAnimation::projectToGround(
+    UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade
+){
+    if(world == nullptr){
+        return;
+    }
+    MMatrix transform = actorTransform;
+    FVector frameInWorld = transform * frameToProject;
+
+    //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
+	frameInWorld += FVector(0, 0, 200); //TEST RAYCAST START NACH OBEN!
+
+	//project frame to floor
+	FVector downVec(0, 0, -1);
+	FVector hitpoint;
+
+	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
+	if(wasHit){
+		
+		actorTransform.transformFromWorldToLocalCoordinates(hitpoint);
+		offsetMade = hitpoint - frameToProject;
+		frameToProject = hitpoint;
+	}
+}
+
+
+
+
+/// @brief performs a raycast from a start, into a direction, with a max length in this method
+/// @param Start start position
+/// @param dir direction of interest
+/// @param outputHit output hit if any hit happened
+/// @return bool anything was hit
+bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit) {
+
+    if(world == nullptr){
+        return false;
+    }
+
+    float scaleOfVector = 1000; //some random value for now
+	FVector End = Start + dir * scaleOfVector; // gx = A + r (B - A)
+
+	// Perform the raycast
+	FHitResult HitResult;
+
+	FCollisionQueryParams ignoreParams;
+	/*
+	CAUTION: TEAMS PARAM NOT IMPLEMETED YET!
+
+	//params to avoid hitting any other entities
+	if(EntityManager *e = worldLevel::entityManager()){
+		//ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
+		ignoreParams = e->getIgnoredRaycastParams(getTeam());
+	}*/
+	bool bHit = world->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+	
+
+
+
+	//anything was hit
+	if (bHit){
+		outputHit = HitResult.ImpactPoint; //write impactpoint to output
+		return true;
+	}
+
+	return false;
+}
+
+
