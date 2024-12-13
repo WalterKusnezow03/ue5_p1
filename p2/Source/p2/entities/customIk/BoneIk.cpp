@@ -308,7 +308,7 @@ void BoneIk::build(
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
 void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
-    rotateEndToTarget(vec, weight, hip, knee, foot, true);
+    rotateEndToTarget(vec, weight, hip, knee, foot);
 }
 
 
@@ -323,8 +323,7 @@ void BoneIk::rotateEndToTarget(
     FVector &weight,
     MMatrix &start,
     MMatrix &middle,
-    MMatrix &end,
-    bool forward
+    MMatrix &end
 )
 {
     //TODO: add support for using the rotation which is already applied? 
@@ -334,10 +333,10 @@ void BoneIk::rotateEndToTarget(
 
     /**
      * TESTING FURTHER NEEDED
-     * gewicht ziegt ja irgendwo in zy pane und dann wird die x achse gespinnt. Wo liegt das problem
+     * gewicht ziegt ja irgendwo in zy pane und dann wird die bein achse (um -z) gespinnt.
      */
     //testing needed
-    if(weight.Y != 0){
+    if(std::abs(weight.Y) >= 0.1f){ //gegen epsilon prüfen.
         float rollAngleWeight = rollAngleTo(weight);
         hip.yawRadAdd(rollAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
     }
@@ -397,19 +396,14 @@ void BoneIk::rotateEndToTarget(
     // --- GLOBAL TO TARGET ROTATION ---
     
     /**
-     *  ---- NEW TESTING PROPER ANGLE CALCULATION FOR PITCH
+     *  --- global pitch ---
      */
     
-    //BRICKED HALF
-    /*
-    float pitchAngle = 0.0f;
-    if (!forward)
-    {
-        pitchAngle = pitchAngleToInitiaToUpDirOfBone(vec);
-    }else{
-        pitchAngle = pitchAngleToInitialLookDirOfBone(vec);
-    }*/
-    float pitchAngle = pitchAngleToInitialLookDirOfBone(vec);
+    //warum ist das immer initial:
+    //die matrix zeigt zunächst immer nach unten, so ist der knochen im konstruktor definiert
+    //und so muss auch die rotation gefunden werden, egal ob vorwärts
+    //oder rückwärts kinmatic! Der winkel ist beide male korrekt!
+    float pitchAngle = pitchAngleToInitialLookDirOfBone(vec); 
     float globalSideAdd = createHipAngle(pitchAngle);
     start.pitchRadAdd(globalSideAdd);
     
@@ -420,6 +414,8 @@ void BoneIk::rotateEndToTarget(
     DebugHelper::showScreenMessage(anglePrint,vec, FColor::Orange);
 
     /**
+     * --- global yaw top view ---
+     * 
      * obere perspektive, wo muss das bein hinrotiert werden von oben gesehen
      */
 
@@ -616,8 +612,8 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     std::vector<MMatrix *> matrizen;
 
     
-    MMatrix empty; //NEW START (Hip but backwards)
-    rotateEndToTarget(vec, weight, empty, foot, knee, false);
+    MMatrix empty; //NEW START (Hip but backwards, ersatz.)
+    rotateEndToTarget(vec, weight, empty, foot, knee);
     
 
     matrizen.push_back(&empty); //damit first limb gezeichnet wird von foot to knee usw. Matrix multiplikation

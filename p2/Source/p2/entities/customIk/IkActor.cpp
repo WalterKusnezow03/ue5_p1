@@ -66,7 +66,7 @@ void AIkActor::BeginPlay()
 	animationKeys_1.addFrame(FVector(100, 100, 100), 2.0f);
 
 	//testing inital rotation
-	int DEBUGROATATE = 30;
+	int DEBUGROATATE = 20;
 	ownOrientation.yawRad(MMatrix::degToRadian(DEBUGROATATE));
 
 	//legTarget = FVector(100, 0, -100);
@@ -121,6 +121,26 @@ void AIkActor::BeginPlay()
 	AActor *footLimb1 = createLimbPivotAtTop(30, 10, 10, 20);
 	//leg2.attachThirdLimb(*footLimb1);
 	*/
+
+
+	//debug matrix inverse bestimmen:
+	MMatrix current = currentTransform();
+	MMatrix invers = current.jordanInverse(); // current.adjunktInverse();
+	MMatrix identitity = current * invers;
+
+	FString message1 = FString::Printf(TEXT("debug matrix inverse matrix: "));
+	message1 += invers.asString();
+	DebugHelper::logMessage(message1);
+
+	FString message = FString::Printf(TEXT("debug matrix Sollte einheits matrix ergeben: "));
+	message += identitity.asString();
+	DebugHelper::logMessage(message);
+
+
+
+	//DebugHelper::logMessage(current.asString());
+	//DebugHelper::logMessage(invers.asString());
+
 }
 
 // Called every frame
@@ -563,7 +583,9 @@ void AIkActor::KeyFrameAnimAndHipAdjustTime(
 
 		MMatrix m = currentFootTransform(footMatrix);
 		FVector worldSpace = m * xt;
-		DebugHelper::showLineBetween(GetWorld(), m.getTranslation(), worldSpace, FColor::Emerald, 2.0f);
+
+		//debug draw
+		//DebugHelper::showLineBetween(GetWorld(), m.getTranslation(), worldSpace, FColor::Emerald, 2.0f);
 
 
 	}

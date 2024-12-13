@@ -16,6 +16,7 @@ public:
 	MMatrix(MMatrix &other);
 	MMatrix& operator=(MMatrix &other);
 
+	
 
 	void setTranslation(FVector &pos);
 	void setTranslation(float x, float y, float z);
@@ -76,7 +77,26 @@ private:
 	
 	void invertRotation();
 	void swapIndices(int a, int b);
-	
+
+
 
 	
+
+	void transpose();
+
+
+
+	float det(std::vector<float> &matrix);
+	std::vector<float> collectExcept(int x, int y, std::vector<float> &matrix);
+
+
+
+
+public:
+	MMatrix jordanInverse();
+private:
+	void set(int i, int j, float value);
+	float get(int column, int row);
+	void scaleRow(int row, float scale);
+	void minusForRow(int row, int otherRow, float faktor);
 };

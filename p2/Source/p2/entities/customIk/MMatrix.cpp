@@ -193,12 +193,12 @@ void MMatrix::operator-=(FVector &other){
 /// @brief creates a string representation if the matrix with radian angles
 /// @return FString by value representation of the matrix
 FString MMatrix::asString(){
-    FString output = "debug matrix: \n";
+    FString output = "debug matrix: [";
     for (int i = 0; i < 16; i++)
     {
         output += FString::Printf(TEXT(" %.2f"), (array[i]));
         if(i % 4 == 3){
-            output += "\n";
+            output += "][";
         }
     }
     return output;
@@ -466,11 +466,6 @@ void MMatrix::rotate(MMatrix &other){
 
 
 
-
-
-
-
-
 MMatrix MMatrix::createInverse(){
 
     // DAS MUSS SO SEIN WIE ES DA STEHT, NICHT ANFASSEN! 
@@ -553,4 +548,198 @@ void MMatrix::transformFromWorldToLocalCoordinates(FVector &position){
 	MMatrix inverted = createInverse();
 	position = inverted * position;
 	
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * new section for inverse
+ * 
+ */
+
+
+
+void MMatrix::set(int column, int row, float value){
+    int i = column;
+    int j = row;
+    bool lowerRange = i >= 0 && j >= 0;
+    bool higherRange = i < 4 && j < 4;
+    if(lowerRange && higherRange){
+        int index = (row * 4) + column;
+        array[index] = value;
+    }
+}
+
+/// @brief 
+/// @param columnX column to get X
+/// @param rowY row to get Y
+/// @return 
+float MMatrix::get(int columnX, int rowY){
+    
+    bool lowerRange = columnX >= 0 && rowY >= 0;
+    bool higherRange = columnX < 4 && rowY < 4;
+    if(lowerRange && higherRange){
+        int index = (rowY * 4) + columnX;
+        return array[index];
+    }
+    return 0.0f;
+}
+
+
+
+
+//was brauchen wir: eine funktion die die determinante einer matrix bestimmt die man 
+//am besten als array oder MMatrix übergibt und die obere ecke, und grösse quasi
+
+
+
+
+float MMatrix::det(std::vector<float> &matrix){
+
+    float detCurrent = 0.0f;
+    int scale = std::sqrt(matrix.size());
+    if(scale == 2){
+        return matrix[0] * matrix[3] - matrix[1] * matrix[2]; //det2x2 = ad - bc
+    }
+
+    //nur oberste zeile durchgehen und submatrizen determinante holen.
+    for (int i = 0; i < scale; i++){
+        std::vector<float> submatrix = collectExcept(i, 0, matrix);
+        int faktor = i % 2 == 0 ? 1 : -1;
+        detCurrent += matrix[i] * faktor * det(submatrix);
+    }
+    return detCurrent;
+}
+
+/// @brief collects the submatrix of a matrix(as 1D vector) and returns it
+/// @param x x pos to avoid
+/// @param y y pos to avoid
+/// @param matrix matrix to filter
+/// @return filtered submatrix
+std::vector<float> MMatrix::collectExcept(int x, int y, std::vector<float> &matrix){
+    std::vector<float> output;
+    
+    //4x4 = 16
+    int scale = std::sqrt(matrix.size());
+    int index = 0;
+    for(int i = 0; i < scale; i++) //x durchgehen
+    {
+        for(int j = 0; j < scale; j++){
+            if(j != y && i != x){
+                output.push_back(matrix[index]);
+            }    
+            index++;
+        }
+    }
+    return output;
+}
+
+
+void MMatrix::transpose(){
+    /*
+    0  1  2  3
+    4  5  6  7
+    8  9  10 11
+    12 13 14 15
+    */
+    swapIndices(1, 4);
+    swapIndices(2, 8);
+    swapIndices(6, 9);
+    swapIndices(3, 12);
+    swapIndices(7, 13);
+    swapIndices(11, 14);
+}
+
+
+
+
+/// @brief calculates the inverse matrix with jordan gaus algorythm
+/// an identity matrix is returned if the inverse is not possible to make (det(A) = 0)
+/// @return inverse matrix or identity if an issue occured
+MMatrix MMatrix::jordanInverse(){
+    MMatrix identity; //operationen auf diese identity matrix auch anwenden,
+    MMatrix thisMatrix = *this; //kopie um nicht zu manipulieren
+    // das ist am ende die inverse
+
+    for (int x = 0; x < 4; x++){
+        
+        //durch pivot teilen dass 1 in pivot
+        float devide = thisMatrix.get(x, x); //sollte das skallierungs element (sX, sY, sZ) = 0 sein
+        //ist die matrix natürlich nicht invertierbar!!
+        if(devide == 0.0f){
+            DebugHelper::logMessage("debug identitydebug MATRIX NICHT INVERTIERBAR");
+            MMatrix cleanMatrix;
+            return cleanMatrix;
+        }
+        thisMatrix.scaleRow(x, (1.0f / devide)); //d * 1 / d = 1, skallieren pixot.
+        identity.scaleRow(x, (1.0f / devide));
+
+        //darunter wandern, elemente eliminieren
+        for (int y = x + 1; y < 4; y++){
+
+            //gleichung essenziell:
+            //a soll 0 sein
+
+            //1 - - - 
+            //a - - - 
+            //b - - - 
+            //c - - -
+            // usw
+
+            // a - x * 1 = 0 
+            // a = x * 1
+            //heisst dann ja arow -= 1row * x und x ist das spalten element darunter
+            float lower = thisMatrix.get(x, y);
+            thisMatrix.minusForRow(y, x, lower); //von untere, jetzt (1 * something sodass = 0, = something, ist gleich wert.)
+            identity.minusForRow(y, x, lower);
+        }
+    }
+
+    //das verstehe ich noch nicht
+    // Eliminate elements above the pivots (new part)
+    for (int x = 3; x >= 0; x--) {
+        for (int y = x - 1; y >= 0; y--) {
+            float upper = thisMatrix.get(x, y);
+            thisMatrix.minusForRow(y, x, upper); // Eliminate element in (y, x)
+            identity.minusForRow(y, x, upper); // Do the same for identity matrix
+        }
+    }
+    
+
+    //FString message = FString::Printf(TEXT("debug inverse:"));
+	//message += identity.asString();
+    //DebugHelper::logMessage(message);
+
+    return identity;
+}
+
+/// @brief scales a row with a factor 
+/// @param row row to scale
+/// @param scale faktor
+void MMatrix::scaleRow(int row, float scale){
+    int start = row * 4;
+    int end = (row + 1) * 4;
+    for (int i = start; i < end; i++){
+        array[i] *= scale;
+    }
+}
+
+/// @brief subtrahiere von row , other row, mal einem faktor
+/// @param row row to apply subtraction
+/// @param otherRow subtract this row
+/// @param faktor faktor of otherRow 
+void MMatrix::minusForRow(int row, int otherRow, float faktor) {
+    int startRow = row * 4;
+    int startOtherRow = otherRow * 4;
+    for (int i = 0; i < 4; i++) {
+        array[startRow + i] -= faktor * array[startOtherRow + i];
+    }
 }

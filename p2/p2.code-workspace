@@ -94,7 +94,8 @@
 			"mprealsupport": "cpp",
 			"iterator": "cpp",
 			"scoped_allocator": "cpp",
-			"fft": "cpp"
+			"fft": "cpp",
+			"__memory": "cpp"
 		}
 	},
 	"extensions": {

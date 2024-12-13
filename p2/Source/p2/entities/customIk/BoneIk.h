@@ -140,8 +140,7 @@ private:
 		FVector &weight,
 		MMatrix &start,
 		MMatrix &middle,
-		MMatrix &end,
-		bool forward
+		MMatrix &end
 	);
 	
 	//new part of animation keying
