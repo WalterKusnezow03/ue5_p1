@@ -743,3 +743,15 @@ void MMatrix::minusForRow(int row, int otherRow, float faktor) {
         array[startRow + i] -= faktor * array[startOtherRow + i];
     }
 }
+
+
+
+
+
+
+FVector MMatrix::lookDirXForward(){
+    FVector look(1, 0, 0);
+    MMatrix a = *this;
+    a.setTranslation(0, 0, 0); //remove translation, make rotator only
+    return a * look;
+}

@@ -1,11 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Math/UnrealMathUtility.h"
+
 #include "DoubleKeyFrameAnimation.h"
 
 DoubleKeyFrameAnimation::DoubleKeyFrameAnimation()
 {
     deltaTime = 0.0f;
+    isRunningAnimation = false;
 }
 
 DoubleKeyFrameAnimation::~DoubleKeyFrameAnimation()
@@ -58,20 +61,20 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
 
             //intepolierte position relativ zur hüfte ist einfach den vektor
             //umzudrehen
-            if(bIsSetToAutoOverride){    
+            if(bIsSetToAutoOverride){
+                
+                //DEBUG HACKING TIME!
+                //debug was 1.0f for walking
+                float timeToFrameB = 0.1f; //muss später anhand actor velocity skalliert werden!
+                if(!isRunningAnimation){
+                    timeToFrameB = 1.0f;
+                }
+
                 FVector relativeBFrame = aReachedTickFrame * -1; 
-                interpolateB.setTarget(relativeBFrame, bTarget, 1.0f);
+                interpolateB.setTarget(relativeBFrame, bTarget, timeToFrameB);
 
 
                 
-                //nicht das problem.
-
-                DebugHelper::showScreenMessageCompare(
-                    "interpolator B TEST : ",
-                    relativeBFrame,
-                    FVector(-50,0,200), //expected value
-                    20
-                );
             }
             isAnimationAPlaying = false;
         }
@@ -180,6 +183,10 @@ void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
 /// no offset needed, or any other vector if needed.
 /// @return vector offset for hip to add, is timed with animation linear.
 FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(){
+    
+    //NEU: Flugphase wenn Anim A und running
+    FVector flyingOffsetIfRunning = flyingOffset();
+
     /**
      * only return if hip adjust time!
      */
@@ -188,9 +195,9 @@ FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(){
         //DebugHelper::showScreenMessage(projectionHipOffset);
         return projectionHipOffset;
     }
-    return FVector(0, 0, 0);
-    //old
-    //return projectionHipOffset;
+
+    return flyingOffsetIfRunning;
+    //return FVector(0, 0, 0);
 }
 
 
@@ -215,4 +222,72 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(UWorld *world, MMatrix &a
             processProjectOffset(offsetMade);
         }
     }
+}
+
+
+
+
+void DoubleKeyFrameAnimation::setRunning(bool b){
+    isRunningAnimation = b;
+}
+
+/**
+ * 
+ * 
+ * --- new testing ---
+ * 
+ * 
+ */
+
+void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
+    UWorld *world,
+    MMatrix &actorMatrix,
+    float velocity,
+    FVector &lookdir
+){
+
+    if(world != nullptr){
+        
+        FVector offsetMade(0,0,0);
+        bool wasProjected = framesA.projectNextFrameToGroundIfNeeded(
+            world, 
+            actorMatrix, 
+            offsetMade,
+            velocity,
+            lookdir
+        );
+        if(wasProjected){
+            
+            processProjectOffset(offsetMade);
+        }
+    }
+
+}
+
+
+
+
+/// @brief will create the current flying offset if running
+/// @return flying offset 
+FVector DoubleKeyFrameAnimation::flyingOffset(){
+    if(isAnimationA() && isRunningAnimation){
+        float totalTime = framesA.totalLength();
+        return FVector(
+            0,
+            0,
+            sinusFlyingOffset(deltaTime, totalTime)
+        );
+    }
+    return FVector(0, 0, 0);
+}
+
+float DoubleKeyFrameAnimation::sinusFlyingOffset(float time, float width){
+
+    float slice = (PI / width); // Skaliere die Frequenz basierend auf "width"
+    float scaleDownFactor = 0.5f;   // Skaliert die Amplitude des Sinus
+
+    float direction = time > width * 0.5f ? -1 : 1; //nach der hälfte gehts runter
+    direction *= -1;
+
+    return std::sin(slice * time) * direction * scaleDownFactor;
 }

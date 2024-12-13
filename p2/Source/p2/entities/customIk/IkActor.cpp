@@ -66,7 +66,7 @@ void AIkActor::BeginPlay()
 	animationKeys_1.addFrame(FVector(100, 100, 100), 2.0f);
 
 	//testing inital rotation
-	int DEBUGROATATE = 20;
+	int DEBUGROATATE = 0;
 	ownOrientation.yawRad(MMatrix::degToRadian(DEBUGROATATE));
 
 	//legTarget = FVector(100, 0, -100);
@@ -100,6 +100,11 @@ void AIkActor::BeginPlay()
 	FVector bTarget = FVector(0, 0, legScaleCM);
 	legDoubleKeys_1.setAnimationBAdjustPermanentTarget(bTarget);
 	legDoubleKeys_2.setAnimationBAdjustPermanentTarget(bTarget);
+
+
+
+	legDoubleKeys_1.setRunning(true);
+	legDoubleKeys_2.setRunning(true);
 
 	// legDoubleKeys_1.setAnimationB(MoveTemp(legHipAdjustKeys)); //DEPRECATED
 
@@ -558,14 +563,6 @@ void AIkActor::KeyFrameAnimAndHipAdjustTime(
 		FVector xt = frames.interpolate(DeltaTime);
 
 
-		//scheint korrekt geprintet zu werden aber erzeugt komische ergebnisse
-		if(xt.X < 0){
-			FString message = FString::Printf(TEXT("hip adjust pos should be correct %.2f "), xt.X);
-			//DebugHelper::showScreenMessage(message, FColor::Cyan);
-		}
-
-
-
 
 
 		MMatrix current_translationActorFoot = currentFootTransform(footMatrix);
@@ -601,8 +598,21 @@ void AIkActor::standAloneKeyFrameAnim(
 ){
 
 	MMatrix current = currentTransform();
-	frames.projectNextFrameIfNeeded(GetWorld(), current);
-	
+	//frames.projectNextFrameIfNeeded(GetWorld(), current); //default projektion
+
+	bool isRunning = true;
+	if(!isRunning){
+		frames.projectNextFrameIfNeeded(GetWorld(), current);
+	}else{
+		float velocityT = 200.0f; //2ms
+		FVector lookDir = currentTransform().lookDirXForward();
+		lookDir.Z = 0.0f; //xy pane only of interest
+		FVector thisAdd = lookDir * velocityT * DeltaTime;
+
+		frames.projectNextFrameIfNeeded(GetWorld(), current, velocityT, lookDir);
+
+		ownLocation += thisAdd; //running velocity
+	}
 
 	/**
 	 * HIP PROJECTION ADJUST DO NOT REMOVE! 

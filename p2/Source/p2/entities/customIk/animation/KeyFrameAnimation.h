@@ -39,6 +39,9 @@ public:
 	void overrideNextFrame(FVector &framePos);
 	void restart();
 
+
+	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+
 private:
 	FVector latestInterpolation;
 	bool loop = true;
@@ -73,10 +76,39 @@ private:
 
 
 
-//neu projektion auch hier
-public:
-	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+
 private:
+	//projektion der frames
 	void projectToGround(UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade);
 	bool performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit);
+
+
+
+
+	//new section for future projektion
+	float readNextTimeToFrame();
+
+	//projektion mit velocity future
+	void projectToGround(
+		UWorld *world,
+		MMatrix &actorTransform,
+		FVector &frameToProject,
+		FVector &offsetMade,
+		float timeToFrame,
+		float velocity,
+		FVector &lookdirection
+	);
+
+public:
+	//projektion mit velocity future
+	bool projectNextFrameToGroundIfNeeded(
+		UWorld *world,
+		MMatrix &actorMatrix,
+		FVector &offsetMade,
+		float velocity,
+		FVector &lookdir
+	);
+
+
+
 };

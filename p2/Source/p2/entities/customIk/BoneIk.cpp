@@ -79,36 +79,6 @@ void BoneIk::normalizeTarget(FVector &target){
 }
 
 
-/*
-DEPRECATED
-
-/// @brief set etha to a value between 0 and 1, extends leg from a range from 0 to 1, 0 being fully extended
-/// @param etha etha fraction, will be clamped
-void BoneIk::setEtha(float etha){
-    setEtha(etha, 0);
-}
-
-
-//DEPRECATED -> MUST BE REFACTURED
-/// @brief will set how far the leg is extended
-/// @param etha value from [0,1]
-/// @param legPitchThetaRadian some angle in rad initial
-void BoneIk::setEtha(float etha, float legPitchThetaRadian){
-
-    etha = clampEtha(etha);
-    currentEtha = etha;
-    float lambda = angleFromEtha(etha);
-
-    float thetaHip_pitch = createHipAngle(lambda + legPitchThetaRadian);
-    float thetaKnee_pitch = createKneeAngle(lambda); //lambda only sonst bend over to back
-    float thetaFoot_pitch = createHipAngle(lambda - legPitchThetaRadian);
-
-    hip.pitchRad(thetaHip_pitch); //hip to knee
-    knee.pitchRad(thetaKnee_pitch); //knee to foot
-    foot.pitchRad(thetaFoot_pitch); //foot just like hip
-    
-}
-*/
 
 
 float BoneIk::clampEtha(float etha){

@@ -40,6 +40,12 @@ public:
 	
 	//neu
 	void projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix);
+	void projectNextFrameIfNeeded(
+		UWorld *world,
+		MMatrix &actormatrix,
+		float velocity,
+		FVector &lookdir
+	);
 
 private:
 	//neu
@@ -70,24 +76,12 @@ private:
 
 	FVector aReachedTickFrame;
 
-	/**
-	 * 
-	 * die idee:
-	 * eine kette die abgespielt wird und
-	 * die andere immer ein target ggf hat
-	 * das reicht erstmal so.
-	 * 
-	 * man muss ja insgesamt nur abbilden das getauscht wird. 
-	 * 
-	 * es ist noch unklar ob das der richtige ansatz ist
-	 * wenn der switch stattfindet muss noch der richtige frame auch noch
-	 * gesetzt wird. Heisst, bei flip muss der frame UNBEDINGT
-	 * Overriden werden vom actor, sehr wichtig!
-	 * Und vielleicht wäre es wirklich besser das auch dieser klasse
-	 * hier zu überlassen
-	 * und nicht im actor ggf zu überlassen? oder?
-	 * also wenn frames B dann muss auch das target UND Start overriden werden
-	 * 
-	 */
-	
+	float sinusFlyingOffset(float time, float width);
+
+	bool isRunningAnimation = false;
+
+	FVector flyingOffset();
+
+public:
+	void setRunning(bool b);
 };

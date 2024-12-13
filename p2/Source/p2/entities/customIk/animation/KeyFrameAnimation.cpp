@@ -159,9 +159,6 @@ FVector KeyFrameAnimation::readNextFrame(){
 
 
 
-
-
-
 /// @brief override the next frame / target value, animation is not overriden, individual to current next
 /// frame!
 /// @param framePos 
@@ -292,4 +289,110 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
 	return false;
 }
 
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * NEW! TESTING FUTURE TIME FRAMES
+ * 
+ * ---- new section for future projection: velocity and direction? ----
+ * 
+ * 
+ */
+
+float KeyFrameAnimation::readNextTimeToFrame(){
+    if(hasAnyFrames()){
+        KeyFrame &nextFrame = frames.at(nextFrameIndex);
+        return nextFrame.timeToFrame();
+    }
+    return 0.0f;
+}
+
+bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
+    UWorld *world, 
+    MMatrix &actorMatrix, 
+    FVector &offsetMade,
+    float velocity,
+    FVector &lookdir
+){
+    if(world == nullptr){
+        return false;
+    }
+    if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
+        FVector frameToProject = readNextFrame();
+
+        //hier dann auch time to frame holen für future projektion des frames
+        float nextTimeToFrame = readNextTimeToFrame(); 
+
+        projectToGround(
+            world, 
+            actorMatrix, 
+            frameToProject,
+            offsetMade, 
+            nextTimeToFrame,
+            velocity,
+            lookdir
+        );
+        
+        overrideNextFrame(frameToProject);
+        return true;
+    }
+    return false;
+}
+
+/// @brief projects a frame to the ground and writes the porjection into the frame
+/// @param frameToProject frame to project to floor, will be modified!
+/// @param offsetMade offset made from frame to project to hitpoint direction
+void KeyFrameAnimation::projectToGround(
+    UWorld *world, 
+    MMatrix &actorTransform, 
+    FVector &frameToProject, 
+    FVector &offsetMade,
+    float timeToFrame,
+    float velocity, 
+    FVector &lookdirection
+){
+    if(world == nullptr){
+        return;
+    }
+    MMatrix transform = actorTransform;
+    FVector frameInWorld = transform * frameToProject;
+
+    //hier einfach drauf rechnen? (velocity und lookdir)
+    //muss in abhängigkeit mit time to frame sein.
+
+    //x(t) = x0 + v0t + 1/2 at^2
+    //simplified to
+    //x(t) = x0 + v0 t
+    //xthis(t) = frameToProject + lookdir * timeToFrame * velocity
+    //time to frame sollte runter skallieren oder? / sollte so stimmen...
+    FVector offsetFuture = lookdirection * (timeToFrame * velocity);
+    frameInWorld += offsetFuture;
+
+
+
+    //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
+	frameInWorld += FVector(0, 0, 200);
+
+	//project frame to floor
+	FVector downVec(0, 0, -1);
+	FVector hitpoint;
+
+	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
+	if(wasHit){
+
+        //hier den offset wieder abziehen sodass die lokale posiion stimmt
+        //zukunft wieder weg rechnen / abziehen
+        hitpoint -= offsetFuture;
+
+        actorTransform.transformFromWorldToLocalCoordinates(hitpoint);
+		offsetMade = hitpoint - frameToProject;
+		frameToProject = hitpoint;
+	}
+}
 
