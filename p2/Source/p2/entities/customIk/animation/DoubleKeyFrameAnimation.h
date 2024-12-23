@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "TargetInterpolator.h"
+#include "p2/entities/customIk/MMatrix.h"
+#include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "KeyFrameAnimation.h"
 
 /**
@@ -23,37 +25,49 @@ public:
 
 	FVector interpolate(float DeltaTime);
 
-	//From KeyFrame Class
-	FVector readNextFrame();
+	
 	
 	//new read last reached frame from prev anim
 	FVector readPrevAnimationReachedFrame();
 
-	void overrideNextFrameA(FVector &framePos);
+	
 	bool animationCycleWasComplete();
 
 	void processProjectOffset(FVector &offsetMade);
 	FVector getProjectionHipOffsetTimed();
 
 	
-	void tryPushFront(FVector &currentLocationRelative);
-	
-	//neu
+	void overrideCurrentStartingFrame(FVector &currentLocationRelative);
+	void skipAnimationOnce(FVector start, FVector end); 
+
 	void projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix);
+	
 	void projectNextFrameIfNeeded(
 		UWorld *world,
-		MMatrix &actormatrix,
+		MMatrix actorMatrix, // is value pass on purpose
 		float velocity,
-		FVector &lookdir
+		FVector &lookdir,
+		bool &switchToArmLocomotion,
+		float maxHeightSwitch,
+		BoneControllerStates locomotionType
 	);
 
+	void forceProjectNextFrame(
+		UWorld *world,
+		MMatrix &actorMatrix
+	);
+
+	void forceOverrideNextFrame(FVector &pos);
+
 private:
-	//neu
+	
 	FVector projectionHipOffset;
 	FVector bTarget;
 	bool bIsSetToAutoOverride = false;
 
-	//vorher
+	//new velocity for anim B
+	float velocityOfActor = 0.0f;
+
 	bool reachedTime(float timeCheck);
 
 	class KeyFrameAnimation framesA;
@@ -69,7 +83,6 @@ private:
 	
 
 	
-	KeyFrameAnimation &prevAnimation();
 
 	
 	float reachTime();
@@ -82,6 +95,15 @@ private:
 
 	FVector flyingOffset();
 
+
+
+	//neu testing
+	FVector latestWorldProjectedFrame;
+
+
 public:
 	void setRunning(bool b);
+
+
+	
 };

@@ -3,6 +3,7 @@
 
 #include "p2/entities/customIk/animation/TargetInterpolator.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 KeyFrameAnimation::KeyFrameAnimation()
 {
@@ -168,6 +169,14 @@ void KeyFrameAnimation::overrideNextFrame(FVector &framePos){
 }
 
 
+void KeyFrameAnimation::overrideNextFrameAndResetTime(FVector &framePos){
+    interpolator.overrideTarget(framePos);
+    interpolator.resetDeltaTime();
+    frameIsProjected = true;
+}
+
+
+
 
 bool KeyFrameAnimation::nextFrameIsProjected(){
     return frameIsProjected;
@@ -176,20 +185,23 @@ bool KeyFrameAnimation::nextFrameIsProjected(){
 
 
 
-/// @brief pushes a position to the front of the animation temporarly just once and resets the index
-/// if the position is far engough from the current starting frame 
-/// designed for foot to correct its position because another foot moved and changed the relative position!
-/// @param somePosition 
-void KeyFrameAnimation::tryPushFront(FVector &somePosition, float time){
-
-    //frameIndex = frames.size() -1;
-    //nextFrameIndex = 0;
-    interpolator.insertAtFront(somePosition);
-    
+/// @brief overrides the starting position of the current interpolation
+void KeyFrameAnimation::overrideCurrentStartingFrame(FVector &somePosition){
+    interpolator.insertAtFront(somePosition); //override start pos
 }
 
 
-
+/// @brief skip the animation with a and b interpolated keys, after interpolation
+/// the reached end frame flag is true as expected if not looping animation
+/// @param start start frame
+/// @param end end frame
+void KeyFrameAnimation::skipAnimationOnce(FVector start, FVector end){
+    overrideCurrentStartingFrame(start);
+    overrideNextFrameAndResetTime(end);
+    frameIndex = frames.size() - 2; 
+    //next frame will be -1, end will be reached
+    //next frame will be 0 by then 
+}
 
 bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
     if(world == nullptr){
@@ -203,6 +215,26 @@ bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix 
     }
     return false;
 }
+
+
+
+void KeyFrameAnimation::forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
+    if(world == nullptr){
+        return;
+    }
+    FVector frameToProject = readNextFrame();
+    projectToGround(world, actorMatrix, frameToProject, offsetMade);
+    overrideNextFrame(frameToProject);
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -231,7 +263,7 @@ void KeyFrameAnimation::projectToGround(
     FVector frameInWorld = transform * frameToProject;
 
     //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
-	frameInWorld += FVector(0, 0, 200); //TEST RAYCAST START NACH OBEN!
+	frameInWorld += FVector(0, 0, raycastVerticalStartOffsetAdd); //TEST RAYCAST START NACH OBEN! //1000 for now
 
 	//project frame to floor
 	FVector downVec(0, 0, -1);
@@ -240,6 +272,11 @@ void KeyFrameAnimation::projectToGround(
 	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
 	if(wasHit){
 		
+        if(DEBUGDRAW_RAYCAST){
+            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 2000), FColor::Red, 2.0f);
+        }
+        
+
 		actorTransform.transformFromWorldToLocalCoordinates(hitpoint);
 		offsetMade = hitpoint - frameToProject;
 		frameToProject = hitpoint;
@@ -260,7 +297,7 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
         return false;
     }
 
-    float scaleOfVector = 1000; //some random value for now
+    float scaleOfVector = raycastScaleVector; //some random value for now
 	FVector End = Start + dir * scaleOfVector; // gx = A + r (B - A)
 
 	// Perform the raycast
@@ -354,8 +391,8 @@ void KeyFrameAnimation::projectToGround(
     FVector &frameToProject, 
     FVector &offsetMade,
     float timeToFrame,
-    float velocity, 
-    FVector &lookdirection
+    float velocity, //running velocity
+    FVector &lookdirection //look dir of velocity
 ){
     if(world == nullptr){
         return;
@@ -374,10 +411,9 @@ void KeyFrameAnimation::projectToGround(
     FVector offsetFuture = lookdirection * (timeToFrame * velocity);
     frameInWorld += offsetFuture;
 
-
-
     //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
-	frameInWorld += FVector(0, 0, 200);
+	frameInWorld += FVector(0, 0, raycastVerticalStartOffsetAdd);
+
 
 	//project frame to floor
 	FVector downVec(0, 0, -1);
@@ -385,6 +421,12 @@ void KeyFrameAnimation::projectToGround(
 
 	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
 	if(wasHit){
+        
+        if(DEBUGDRAW_RAYCAST){
+            float displayTime = 2.0f;
+            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 2000), FColor::Red, displayTime);
+        }
+        
 
         //hier den offset wieder abziehen sodass die lokale posiion stimmt
         //zukunft wieder weg rechnen / abziehen
@@ -393,6 +435,12 @@ void KeyFrameAnimation::projectToGround(
         actorTransform.transformFromWorldToLocalCoordinates(hitpoint);
 		offsetMade = hitpoint - frameToProject;
 		frameToProject = hitpoint;
-	}
+
+        DebugHelper::showScreenMessage(
+            "RAYCAST OFFSET",
+            offsetMade,
+            FColor::Red
+        );
+    }
 }
 

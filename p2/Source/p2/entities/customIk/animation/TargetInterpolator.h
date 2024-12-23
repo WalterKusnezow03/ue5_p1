@@ -30,6 +30,7 @@ public:
 	FVector readFromPosition();
 	FVector readToPosition();
 
+	void setNewTimeToFrame(float time);
 	void insertAtFront(FVector &position);
 
 private:

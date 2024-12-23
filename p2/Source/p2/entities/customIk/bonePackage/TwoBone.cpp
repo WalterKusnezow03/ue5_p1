@@ -1,32 +1,51 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include <algorithm>
-#include "p2/entities/customIk/BoneIk.h"
+#include "p2/entities/customIk/bonePackage/TwoBone.h"
+#include "p2/entities/customIk/MMatrix.h"
 
-BoneIk::BoneIk()
+TwoBone::TwoBone()
 {
     hipLimbPointer = nullptr;
 	kneeLimbPointer = nullptr;
 	footLimbPointer = nullptr;
 }
 
-BoneIk::~BoneIk()
+TwoBone& TwoBone::operator=(const TwoBone &other){
+    if(&other == this){
+        return *this;
+    }
+    hipLimbPointer = other.hipLimbPointer;
+	kneeLimbPointer = other.kneeLimbPointer;
+	footLimbPointer = other.footLimbPointer;
+
+    hip = other.hip;
+    knee = other.knee;
+    foot = other.foot;
+    toFootTip = other.toFootTip;
+
+    return *this;
+}
+
+TwoBone::TwoBone(const TwoBone &other){
+    if(&other != this){
+        *this = other; //nicht kopieren
+    }
+}
+
+
+TwoBone::~TwoBone()
 {
     hipLimbPointer = nullptr;
 	kneeLimbPointer = nullptr;
 	footLimbPointer = nullptr;
 }
 
-//offset degree start leg motion
-//DEPRECATED
-void BoneIk::setDegreeInital(float degree){
-    deg = degree;
-}
 
 
 /// @brief sets up the leg or arm (Bone)
 /// @param completeDistance distance in meters
-void BoneIk::setupBones(float completeDistance){
+void TwoBone::setupBones(float completeDistance){
 
     totalBoneLengthCopy = completeDistance;
 
@@ -35,39 +54,17 @@ void BoneIk::setupBones(float completeDistance){
     knee.setTranslation(0, 0, -half); //from hip to knee
     foot.setTranslation(0, 0, -half); //from knee to foot
 
+    //debug different sizes
+    knee.setTranslation(0, 0, -half);
+    foot.setTranslation(0, 0, -half); 
+
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
-}
-
-
-/// @brief returns the current local end pos, might be renamed to currentLocalEndInterpolatedPos
-/// @return 
-FVector BoneIk::currentLocalFootInterpolatedPos(){
-    //matrizen interpolieren um richtungsvektor zu erhalten
-    std::vector<MMatrix *> matricies;
-    FVector foottip;
-    getMatricies(matricies, foottip);
-
-    MMatrix result;
-    for (int i = 0; i < matricies.size(); i++){
-        result *= *matricies[i];
-    }
-
-    return result.getTranslation();
-}
-
-/**
- * TESTING NEEDED!
- */
-FVector BoneIk::currentLocalHipInterpolatedPos(){
-
-    FVector fromHip = currentLocalFootInterpolatedPos();
-    return fromHip * -1; //es ist halt genau umgedreht, stell es dir vor!
 }
 
 
 /// @brief normalizes a target to the max radius (total bone length)
 /// @param target 
-void BoneIk::normalizeTarget(FVector &target){
+void TwoBone::normalizeTarget(FVector &target){
     //normalize the target location if exceeding the bone lenght
     FVector zeroVec(0, 0, 0);
     float distance = FVector::Distance(zeroVec, target);
@@ -81,7 +78,7 @@ void BoneIk::normalizeTarget(FVector &target){
 
 
 
-float BoneIk::clampEtha(float etha){
+float TwoBone::clampEtha(float etha){
     if(etha < 0.0f){
         etha = 0.0f;
     }
@@ -113,7 +110,7 @@ ansonsten um 90 grad
 /// @brief will clamp the etha value and return the angle for the hip, positive
 /// @param etha etha value
 /// @return angle for the hip pitch from etha as dot product 
-float BoneIk::angleFromEtha(float etha){
+float TwoBone::angleFromEtha(float etha){
     //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
     if(etha < 0.0f){
         etha = 0.0f;
@@ -130,7 +127,7 @@ float BoneIk::angleFromEtha(float etha){
 /// @brief returns the etha value for a distance
 /// @param distance distance from 0,0,0 to target
 /// @return etha value, dot product
-float BoneIk::createEthaFromDistance(float distance){
+float TwoBone::createEthaFromDistance(float distance){
     if(totalBoneLengthCopy == 0){
         return 0; //fully extended error
     }
@@ -142,16 +139,17 @@ float BoneIk::createEthaFromDistance(float distance){
 
 
 
+
 /// @brief creates the hip angle and signs it autmatically
 /// @param angle angle for the hip
 /// @return angle signed, ready for matrix pitch apply
-float BoneIk::createHipAngle(float angle){
+float TwoBone::createHipAngle(float angle){
     return angle *-1;
 }
 /// @brief creates the knee angle and multiplies in automatically
 /// @param angle angle for the knee 
 /// @return signed and multiplied angle for knee, ready for matrix pitch apply
-float BoneIk::createKneeAngle(float angle){
+float TwoBone::createKneeAngle(float angle){
     return angle * 2;
 }
 
@@ -165,7 +163,7 @@ float BoneIk::createKneeAngle(float angle){
 /// @brief fills all matrix data into the array and the foot tip into the out vector
 /// @param dataout output for matricies
 /// @param outVector output for foot tip vektor
-void BoneIk::getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector){ 
+void TwoBone::getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector){ 
     
     dataout.push_back(&hip);
     dataout.push_back(&knee);
@@ -173,20 +171,11 @@ void BoneIk::getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector){
     outVector = toFootTip; //assign to out
 }
 
-/// @brief builds the bones and draws them
-/// @param world 
-/// @param toBuildFromlastAnchor 
-/// @param color 
-void BoneIk::build(UWorld *world, FVector &offset, FColor color, float displayTime){
-    MMatrix m;
-    m.setTranslation(offset);
-    build(world, m, color, displayTime);
-}
 
 
 
-void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime){
 
+void TwoBone::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime){
 
     std::vector<MMatrix *> matrizen;
     FVector endVec;
@@ -198,7 +187,7 @@ void BoneIk::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, floa
 
 
 
-void BoneIk::build(
+void TwoBone::build(
     UWorld *world,
     MMatrix &offsetAndRotation,
     FColor color, 
@@ -277,7 +266,7 @@ void BoneIk::build(
 
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
-void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
+void TwoBone::rotateEndToTarget(FVector &vec, FVector &weight){
     rotateEndToTarget(vec, weight, hip, knee, foot);
 }
 
@@ -288,7 +277,7 @@ void BoneIk::rotateEndToTarget(FVector &vec, FVector &weight){
 /// @param start start limb (foot or hip) (recommenden to be the empty starting einheits matrix)
 /// @param middle middle limb joint -> ankle / ell / knee limb
 /// @param end end limb foot / hand or hip / opposite of start!
-void BoneIk::rotateEndToTarget(
+void TwoBone::rotateEndToTarget(
     FVector &vec,
     FVector &weight,
     MMatrix &start,
@@ -325,19 +314,23 @@ void BoneIk::rotateEndToTarget(
     {
         vec = vec.GetSafeNormal();
         vec *= totalBoneLengthCopy;
+        distance = totalBoneLengthCopy; //clamp
     }
-
 
     // --- KNICK BASIS ---
      
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
     float etha = createEthaFromDistance(distance);
-    currentEtha = etha;
+    
     float angle = angleFromEtha(etha);
     float hipAngle = createHipAngle(angle);
     float kneeAngle = createKneeAngle(angle);
 
-   
+
+
+
+
+
     //WEIGHT KNICK RICHTUNG
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
@@ -380,8 +373,8 @@ void BoneIk::rotateEndToTarget(
 
 
 
-    FString anglePrint = FString::Printf(TEXT("angle: %.1f"), MMatrix::radToDegree(globalSideAdd));
-    DebugHelper::showScreenMessage(anglePrint,vec, FColor::Orange);
+    //FString anglePrint = FString::Printf(TEXT("angle: %.1f"), MMatrix::radToDegree(globalSideAdd));
+    //DebugHelper::showScreenMessage(anglePrint,vec, FColor::Orange);
 
     /**
      * --- global yaw top view ---
@@ -413,7 +406,7 @@ void BoneIk::rotateEndToTarget(
 /// (apply only on first joint if rotation along axis wanted)
 /// @param localTarget 
 /// @return signed rotation on xy pane from top
-float BoneIk::yawAngleTo(FVector &localTarget){
+float TwoBone::yawAngleTo(FVector &localTarget){
 
     FVector2D forward2d(1, 0);
     
@@ -445,7 +438,7 @@ float BoneIk::yawAngleTo(FVector &localTarget){
 /// pitch rotation for example for the hip
 /// @param localTarget target when x is forward
 /// @return abs angle on xz pane, NOT Signed
-float BoneIk::pitchAngleTo(FVector &localTarget){
+float TwoBone::pitchAngleTo(FVector &localTarget){
     
     FVector2D forward2d(1, 0);
     forward2d = forward2d.GetSafeNormal();
@@ -465,7 +458,7 @@ float BoneIk::pitchAngleTo(FVector &localTarget){
 /// (apply only on first joint if rotation along axis wanted)
 /// @param localTarget 
 /// @return roll angle between forward and target, signed!
-float BoneIk::rollAngleTo(FVector &localTarget){
+float TwoBone::rollAngleTo(FVector &localTarget){
     //FVector forward(1, 0, 0); //sollte member var werden ggf
     FVector2D forward2d(0, 1); //z ist up, -z ist initial 
 
@@ -489,7 +482,7 @@ float BoneIk::rollAngleTo(FVector &localTarget){
 /// @param oY y comp of vector b
 /// @return +1 for counter clock wise rotation or -1. Multiply your angle with the returned
 /// value to make your angle signed 
-int BoneIk::flipRotation(float aX, float aY, float oX, float oY){
+int TwoBone::flipRotation(float aX, float aY, float oX, float oY){
     //kreuzproduk 2D
     //A:=(a,b,0) B:=(c,d,0)
     //normal := A cross B
@@ -507,7 +500,7 @@ int BoneIk::flipRotation(float aX, float aY, float oX, float oY){
 }
 
 /// @brief resets the rotationof hip knee and foot to original position
-void BoneIk::resetAllRotations(){
+void TwoBone::resetAllRotations(){
     //float rad = MMatrix::degToRadian(0);
 
     hip.resetRotation();
@@ -518,7 +511,7 @@ void BoneIk::resetAllRotations(){
 
 
 
-float BoneIk::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
+float TwoBone::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
     FVector2D forward2d(0, -1); //0, -1
     forward2d = forward2d.GetSafeNormal();
 
@@ -533,7 +526,7 @@ float BoneIk::pitchAngleToInitialLookDirOfBone(FVector &localTarget){
 }
 
 
-float BoneIk::pitchAngleToInitiaToUpDirOfBone(FVector &localTarget){
+float TwoBone::pitchAngleToInitiaToUpDirOfBone(FVector &localTarget){
     FVector2D forward2d(0, 1); //0, -1
     forward2d = forward2d.GetSafeNormal();
 
@@ -567,7 +560,7 @@ float BoneIk::pitchAngleToInitiaToUpDirOfBone(FVector &localTarget){
 /// @param translationOfactor overrides translation of actor based on where hip was moved
 /// @param color 
 /// @param displayTime 
-void BoneIk::rotateStartToTargetAndBuild( //works as expected
+void TwoBone::rotateStartToTargetAndBuild( //works as expected
     UWorld*world, 
     FVector &vec, 
     FVector &weight, 
@@ -589,7 +582,7 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     matrizen.push_back(&empty); //damit first limb gezeichnet wird von foot to knee usw. Matrix multiplikation
     matrizen.push_back(&foot); 
     matrizen.push_back(&knee);
-    matrizen.push_back(&hip); //damit end limb geziechnet wird
+    //matrizen.push_back(&hip); //damit end limb geziechnet wird
 
 
     //reverse bones
@@ -598,6 +591,10 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
     bonesAttached.push_back(kneeLimbPointer);
     bonesAttached.push_back(footLimbPointer);
 
+    
+
+    
+    
     MMatrix newStart = buildWithOutput(
         world,
         offsetAndRotationOfFoot,
@@ -607,20 +604,17 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
         bonesAttached, //new testing needed
         false
     );
+    
 
     //will probably make matrix shoot in the air.
     FVector newLocation = newStart.getTranslation();
 
     //Override translation of actor (hip)
-    translationOfactor.setTranslation(newLocation); 
+    translationOfactor.setTranslation(newLocation);
 
-    
+    //backup
+    copyCurrentMatricies();
 }
-
-
-
-
-
 
 
 
@@ -636,17 +630,13 @@ void BoneIk::rotateStartToTargetAndBuild( //works as expected
 /// @param displayTime 
 /// @param matrizen 
 /// @return 
-MMatrix BoneIk::buildWithOutput(
+MMatrix TwoBone::buildWithOutput(
     UWorld *world,
     MMatrix &offsetAndRotation,
     FColor color, 
     float displayTime,
     std::vector<MMatrix*> &matrizen //must not be empty
 ){
-
-    // -- dirty testing --
-
-    matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
 
     
 
@@ -658,12 +648,11 @@ MMatrix BoneIk::buildWithOutput(
 
     std::vector<FVector> resultDraw;
 
-    MMatrix result = *matrizen[0];
-    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
+    MMatrix result = offsetAndRotation;
     
     //über matrizen laufen um die vektoren zu berechnen für die zeichnung
     //beide sollen nicht mit gezeichnet werden
-    for (int i = 1; i < matrizen.size(); i++)
+    for (int i = 0; i < matrizen.size(); i++)
     {
         result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
 
@@ -677,15 +666,11 @@ MMatrix BoneIk::buildWithOutput(
 
 
     //draw
-    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
     if (world != nullptr)
     {
-        int off = 1; // nicht welt koordinaten berück sichtigen
-        for (int i = off; i < resultDraw.size(); i++)
+        for (int i = 1; i < resultDraw.size(); i++)
         {
-            FColor c = colors[i % colors.size()];
-            c = color; //override own color from params
-            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
+            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], color, displayTime);
         }
     }
 
@@ -710,7 +695,7 @@ MMatrix BoneIk::buildWithOutput(
 /// @param translationOfactorFoot translation of foot of actor which will be modified! ONLY TRANSLATION!
 /// @param color color to draw in
 /// @param displayTime displaytime to draw
-void BoneIk::rotateEndToTargetAndBuild(
+void TwoBone::rotateEndToTargetAndBuild(
     UWorld*world, 
     FVector &target, 
     FVector &weight, 
@@ -749,9 +734,7 @@ void BoneIk::rotateEndToTargetAndBuild(
     //Override translation of actor (FOOT!)
     translationOfactorFoot.setTranslation(newLocation);
 
-
-
-    
+    copyCurrentMatricies();
 }
 
 
@@ -760,26 +743,26 @@ void BoneIk::rotateEndToTargetAndBuild(
 
 /// @brief PASSED LIMB REFERENCE MUST NOT EVER GET INVALIDATED!
 /// @param actorToAttach 
-void BoneIk::attachFirtsLimb(AActor &actorToAttach){
+void TwoBone::attachFirtsLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         hipLimbPointer = &actorToAttach;
     }
     
 }
 
-void BoneIk::attachSecondLimb(AActor &actorToAttach){
+void TwoBone::attachSecondLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         kneeLimbPointer = &actorToAttach;
     }
 }
 
-void BoneIk::attachThirdLimb(AActor &actorToAttach){
+void TwoBone::attachThirdLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         footLimbPointer = &actorToAttach;
     }
 }
 
-bool BoneIk::actorIsAlreadAttached(AActor &actor){
+bool TwoBone::actorIsAlreadAttached(AActor &actor){
     return &actor == footLimbPointer ||
            &actor == kneeLimbPointer ||
            &actor == hipLimbPointer;
@@ -787,7 +770,7 @@ bool BoneIk::actorIsAlreadAttached(AActor &actor){
 
 
 
-void BoneIk::updateLimb(AActor *limb, MMatrix &matrixRotator, FVector location){
+void TwoBone::updateLimb(AActor *limb, MMatrix &matrixRotator, FVector location){
     //rotator erstellen und auf actor anwenden
     if(limb != nullptr){
         limb->SetActorLocation(location);
@@ -817,7 +800,7 @@ void BoneIk::updateLimb(AActor *limb, MMatrix &matrixRotator, FVector location){
 /// @param displayTime 
 /// @param matrizen 
 /// @return 
-MMatrix BoneIk::buildWithOutput(
+MMatrix TwoBone::buildWithOutput(
     UWorld *world,
     MMatrix &offsetAndRotation,
     FColor color, 
@@ -827,26 +810,18 @@ MMatrix BoneIk::buildWithOutput(
     bool forward
 ){
 
-    // -- dirty testing --
 
-    matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
-
-    //std::vector<MMatrix *> matrizen;
-    //matrizen.push_back(&offsetAndRotation);
-
-    FVector endVec = toFootTip;
-    // getMatricies(matrizen, endVec);
+    FVector endVec = toFootTip;    
     if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
         return offsetAndRotation;
     }
 
     std::vector<FVector> resultDraw;
+    MMatrix result = offsetAndRotation;
 
-    MMatrix result = *matrizen[0];
-    
     //über matrizen laufen um die vektoren zu berechnen für die zeichnung
     //beide sollen nicht mit gezeichnet werden
-    for (int i = 1; i < matrizen.size(); i++)
+    for (int i = 0; i < matrizen.size(); i++)
     {
         result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
 
@@ -854,37 +829,40 @@ MMatrix BoneIk::buildWithOutput(
 
     }
 
-    
-
     //final vector (proper if forward pass)
     FVector outputVec = result * endVec;
     resultDraw.push_back(outputVec);
 
 
+    //inversen holen für umkehrpass
+    //kette neu zeichnen, gedreht. 
+    if(!forward){
+        resultDraw.clear();
+        std::vector<MMatrix> inverted;
+        for (int i = matrizen.size() - 1; i >= 0; i--){
+            MMatrix currentInvert = matrizen[i]->createInverse();
+            inverted.push_back(currentInvert);
+        }
+
+        MMatrix start = result;
+        resultDraw.push_back(start.getTranslation());
+        for (int i = 0; i < inverted.size(); i++){
+            start *= inverted[i];
+            resultDraw.push_back(start.getTranslation());
+        }
+        outputVec = start * endVec;
+        resultDraw.push_back(outputVec);
+    }
 
     //draw
     std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
     if (world != nullptr)
     {
-        int off = 1; // nicht welt koordinaten berück sichtigen
-        for (int i = off; i < resultDraw.size(); i++)
-        {
-            FColor c = colors[i % colors.size()];
-            c = color; //override own color from params
-            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
+        for (int i = 1; i < resultDraw.size(); i++){
+            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], color, displayTime);
         }
     }
 
-
-    //reverse before that ----> doesnt give me the result i want.
-    if(!forward){
-        
-        std::reverse(resultDraw.begin(), resultDraw.end());
-        resultDraw.erase(resultDraw.begin()); //fuss weg der nicht da ist.
-        resultDraw.erase(resultDraw.begin()); //fuss weg der nicht da ist noch immer.
-        resultDraw.push_back(FVector());
-        
-    }
 
     
 
@@ -917,4 +895,24 @@ MMatrix BoneIk::buildWithOutput(
 
     // returns the final matrix
     return result;
+}
+
+
+
+
+
+
+
+
+
+
+//copy data for outside use
+void TwoBone::copyCurrentMatricies(){
+    hipCopy = hip;
+	kneeCopy = knee;
+	footCopy = foot;
+}
+
+FVector TwoBone::endLimbWorldLocation(){
+    return footCopy.getTranslation();
 }

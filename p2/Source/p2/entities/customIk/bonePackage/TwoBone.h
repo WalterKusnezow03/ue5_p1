@@ -3,39 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MMatrix.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 /**
  * will hold 3 matricies to crate an arm or an leg
  */
-class P2_API BoneIk
+class P2_API TwoBone
 {
 public:
-	BoneIk();
-	~BoneIk();
+	TwoBone();
+	TwoBone(const TwoBone &other); //copy constructor für push back notwending
+	~TwoBone();
+
+	TwoBone& operator=(const TwoBone &other);
+
+	FVector endLimbWorldLocation();
 
 	void setupBones(float completeDistance);
-	void setDegreeInital(float degree);
-	void build(UWorld *world, FVector &offset, FColor color, float displayTime); //deprecated
-	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime); 
-
-	void build(
-		UWorld *world,
-		MMatrix &offsetAndRotation,
-		FColor color,
-		float displayTime,
-		std::vector<MMatrix *> &matrizen // must not be empty
-	);
 	
-	//new
-	MMatrix buildWithOutput(
-		UWorld *world,
-		MMatrix &offsetAndRotation,
-		FColor color,
-		float displayTime,
-		std::vector<MMatrix *> &matrizen // must not be empty
-	);
-
+	
+	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime);
 
 
 	// etha functions and moving towards targets
@@ -45,7 +32,6 @@ public:
 	void rotateEndToTarget(FVector &vec, FVector &weight);
 	void rotateStartToTarget(FVector &vec, FVector &weight);
 
-	//new
 	void rotateStartToTargetAndBuild(
 		UWorld *world,
 		FVector &vec,
@@ -74,6 +60,10 @@ public:
 	void attachFirtsLimb(AActor &actorToAttach);
 	void attachSecondLimb(AActor &actorToAttach);
 	void attachThirdLimb(AActor &actorToAttach);
+
+	FVector copyLatestStartLimbPosition();
+	FVector copyLatestEndLimbPosition();
+
 private:
 	UPROPERTY()
 	class AActor *hipLimbPointer = nullptr;
@@ -122,17 +112,9 @@ private:
 	void setEtha(float etha, float legPitchThetaRadian);
 
 
-	//testing needed
-	float degreePerSecond = 400; //200
-	float deg = 0.0f;
-	float legSwingRadian = 0.0f;
 
 
 
-
-
-	//for movementstop
-	float currentEtha = 0.0f;
 	float clampEtha(float etha);
 
 	void rotateEndToTarget(
@@ -143,19 +125,10 @@ private:
 		MMatrix &end
 	);
 	
-	//new part of animation keying
-	
-	float moveSpeedCmS = 20.0f;
-
-
-	//deprecated?
-	FVector currentLocalFootInterpolatedPos(); //from front
-	FVector currentLocalHipInterpolatedPos(); //from back
-	
 
 
 
-	//copy positions for emsh adjustment
+	//copy positions for mesh adjustment
 	MMatrix hipCopy;
 	MMatrix kneeCopy;
 	MMatrix footCopy;
@@ -172,4 +145,25 @@ private:
 		std::vector<AActor *> &attachedBones,
 		bool forward
 	);
+
+
+	void build(
+		UWorld *world,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime,
+		std::vector<MMatrix *> &matrizen // must not be empty
+	);
+	
+	//new
+	MMatrix buildWithOutput(
+		UWorld *world,
+		MMatrix &offsetAndRotation,
+		FColor color,
+		float displayTime,
+		std::vector<MMatrix *> &matrizen // must not be empty
+	);
+
+	
+	void copyCurrentMatricies();
 };

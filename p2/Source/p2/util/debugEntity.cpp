@@ -4,7 +4,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "p2/entities/customIk/BoneIk.h"
+
 #include "p2/entities/customIk/IkActor.h"
 #include "p2/rooms/testing/roomProcedural.h"
 #include "p2/util/debugEntity.h"

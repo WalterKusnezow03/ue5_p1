@@ -41,12 +41,14 @@ void MMatrix::resetRotation(){
 
 /// @brief copy constructor
 /// @param other 
-MMatrix::MMatrix(MMatrix &other){
-    *this = other;
+MMatrix::MMatrix(const MMatrix &other){
+    if(&other != this){
+        *this = other;
+    }
 }
 
 //copy constructor
-MMatrix& MMatrix::operator=(MMatrix &other){
+MMatrix& MMatrix::operator=(const MMatrix &other){
     if(this == &other){
         return *this;
     }

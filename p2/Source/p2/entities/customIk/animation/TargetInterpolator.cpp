@@ -43,8 +43,13 @@ void TargetInterpolator::overrideStart(FVector fromtarget){
 
 void TargetInterpolator::resetDeltaTime(){
     deltaTime = 0.0f;
+    reached = false;
 }
 
+void TargetInterpolator::setNewTimeToFrame(float time){
+    timeToFrame = time;
+    reached = false;
+}
 
 
 bool TargetInterpolator::hasReachedTarget(){

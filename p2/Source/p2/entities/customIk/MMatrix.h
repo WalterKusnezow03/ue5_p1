@@ -13,8 +13,8 @@ public:
 	MMatrix();
 	~MMatrix();
 
-	MMatrix(MMatrix &other);
-	MMatrix& operator=(MMatrix &other);
+	MMatrix(const MMatrix &other);
+	MMatrix& operator=(const MMatrix &other);
 
 	
 

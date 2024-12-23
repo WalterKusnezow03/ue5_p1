@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TargetInterpolator.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "KeyFrame.h"
 
 /**
@@ -35,14 +36,23 @@ public:
 	float totalLength();
 	bool nextFrameIsProjected();
 	bool reachedLastFrameOfAnimation();
-	void tryPushFront(FVector &somePoisition, float time);
+	void overrideCurrentStartingFrame(FVector &somePoisition);
 	void overrideNextFrame(FVector &framePos);
+	void overrideNextFrameAndResetTime(FVector &framePos);
 	void restart();
 
+	void skipAnimationOnce(FVector start, FVector end);
 
 	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
 
+	void forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+
 private:
+	bool DEBUGDRAW_RAYCAST = false;
+
+	float raycastVerticalStartOffsetAdd = 500.0f;
+	float raycastScaleVector = 1000.0f;
+
 	FVector latestInterpolation;
 	bool loop = true;
 	bool restarted = true;

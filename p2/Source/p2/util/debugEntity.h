@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/player/teamEnum.h"
-#include "p2/entities/customIk/BoneIk.h"
+
 
 #include "debugEntity.generated.h"
 
@@ -40,8 +40,6 @@ private:
 	float deg = 0.0f;
 	float mpideg = 0.0f;
 
-	class BoneIk bone;
-	class BoneIk bone2;
 
 	void spawnCustomIkActor();
 };
