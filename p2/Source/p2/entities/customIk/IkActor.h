@@ -33,36 +33,18 @@ public:
 
 private:
 	
-	float legScaleCM = 200.0f;
 
 	//new bone controllers for arms and legs
 	class BoneController hipController;
-	class BoneController shoulderController;
-	MMatrix hipToShoulderMatrix;
-
-	bool hipIsPivot = true;
 
 
 
-	//GLOBAL TRANSFORM
-	MMatrix ownLocation;
-	MMatrix ownOrientation;
-
-	
-
-	MMatrix currentTransform();
-
+	void getWeaponOnStart();
+	class Aweapon *weaponPointer;
 
 	void LookAt(FVector TargetLocation);	
 
 	bool performRaycast(FVector &Start, FVector &dir, FVector &outputHit);
-
-	void transformFromWorldToLocalCoordinates(FVector &position);
-
-
-	//could be deprecated
-	void projectToGround(FVector &position);
-	void projectToGround(FVector &frameToProject, FVector &offsetMade);
 
 
 	AActor *createLimbPivotAtTop(int x, int y, int height, int offsetY);

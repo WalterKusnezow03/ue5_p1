@@ -14,5 +14,5 @@ enum class BoneControllerStates
     locomotion,
     locomotionClimb,
     locomotionClimbAdjust,
-    moveToTarget
+    locomotionClimbAll
 };

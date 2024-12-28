@@ -7,6 +7,10 @@
 
 /**
  * will hold 3 matricies to crate an arm or an leg
+ * 
+ * the default look direction an bone is towards the positive X axis, all angles will
+ * be measured to the positive x axis, the initial look dir will be to the positive x axis!
+ * 
  */
 class P2_API TwoBone
 {
@@ -22,11 +26,15 @@ public:
 	void setupBones(float completeDistance);
 	
 	
-	void build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime);
+	void build(
+		UWorld *world, 
+		MMatrix &offsetAndRotation, 
+		MMatrix &endEffector, 
+		FColor color, 
+		float displayTime
+	);
 
 
-	// etha functions and moving towards targets
-	void setEtha(float etha);
 
 	
 	void rotateEndToTarget(FVector &vec, FVector &weight);
@@ -48,13 +56,12 @@ public:
 		FVector &vec,
 		FVector &weight,
 		MMatrix &offsetAndRotation,
-		MMatrix &translationOfactor,
+		MMatrix &endEffectorWorldToUpdate,
 		FColor color,
 		float displayTime
 	);
 
 
-	void inverseAll();
 
 	//New sction for actor attaching
 	void attachFirtsLimb(AActor &actorToAttach);
@@ -63,6 +70,9 @@ public:
 
 	FVector copyLatestStartLimbPosition();
 	FVector copyLatestEndLimbPosition();
+
+
+	void resetAllRotations();
 
 private:
 	UPROPERTY()
@@ -88,7 +98,7 @@ private:
 	float pitchAngleToInitialLookDirOfBone(FVector &localTarget);
 	float pitchAngleToInitiaToUpDirOfBone(FVector &localTarget);
 
-	void resetAllRotations();
+	
 
 	int flipRotation(float aX, float aY, float oX, float oY);
 
@@ -147,13 +157,7 @@ private:
 	);
 
 
-	void build(
-		UWorld *world,
-		MMatrix &offsetAndRotation,
-		FColor color,
-		float displayTime,
-		std::vector<MMatrix *> &matrizen // must not be empty
-	);
+	
 	
 	//new
 	MMatrix buildWithOutput(

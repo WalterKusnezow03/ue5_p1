@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 /**
  * 
@@ -16,7 +17,7 @@ public:
 	void setTarget(FVector from, FVector toTarget, float timeToFrameIn);
 	void overrideTarget(FVector totarget);
 	void overrideStart(FVector fromTarget);
-
+	void overrideStartSpeedRelative(FVector newStart);
 
 	bool hasReachedTarget();
 	bool hasTargetSetup();
@@ -31,16 +32,29 @@ public:
 	FVector readToPosition();
 
 	void setNewTimeToFrame(float time);
-	void insertAtFront(FVector &position);
+
+
+
+	void overrideStartWorld(FVector targetIn);
+	void overrideTargetWorld(FVector targetIn);
+	void overrideStartWorldSpeedRelative(FVector newStart, MMatrix &actor);
+	
 
 private:
 	FVector from;
 	FVector target;
+	FVector from_original;
+
+
+	FVector fromWorld;
+	FVector targetWorld;
 
 	float deltaTime = 0.0f;
 	float timeToFrame = 0.0f;
 	bool reached = false;
+	
 	float skalar();
 
 	bool targetSetup = false;
+	bool worldtargetSetup = false;
 };

@@ -517,19 +517,23 @@ void MMatrix::swapIndices(int a, int b){
 
 
 
-
+/// @brief not tested, issues!
+/// @return 
 FRotator MMatrix::extractRotator(){
     /*
-    float Yaw = FMath::Atan2(M[2], M[0]); // M[0][2] = M[2], M[0][0] = M[0]
-    float Pitch = FMath::Asin(-M[4]);     // M[1][0] = M[4]
-    float Roll = FMath::Atan2(M[6], M[5]); // M[1][2] = M[6], M[1][1] = M[5]
+    0  1  2  3
+    4  5  6  7
+    8  9 10 11
+    12 13 14 15
     */
+
+    //Atan2(y,x) <-- merken, liefert signed angle zur x achse
     
 
     //Es wird davon ausgegangen das die matrix nicht skalliert wurde
     float roll = std::atan2f(array[6], array[5]);
-    float pitch = std::asinf(-1 * array[4]);
-    float yaw = std::atan2f(array[2], array[0]);
+    float pitch = std::asinf(-1 * array[2]);
+    float yaw = std::atan2f(array[1], array[0]) * -1; //test, rotation waffe war vorher falsch herum an x achse
     FRotator extracted(
         FMath::RadiansToDegrees(pitch),
         FMath::RadiansToDegrees(yaw), 
@@ -665,6 +669,7 @@ void MMatrix::transpose(){
 
 /// @brief calculates the inverse matrix with jordan gaus algorythm
 /// an identity matrix is returned if the inverse is not possible to make (det(A) = 0)
+/// the inverse is calculated in O(n^2)
 /// @return inverse matrix or identity if an issue occured
 MMatrix MMatrix::jordanInverse(){
     MMatrix identity; //operationen auf diese identity matrix auch anwenden,

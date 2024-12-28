@@ -175,93 +175,41 @@ void TwoBone::getMatricies(std::vector<MMatrix*> &dataout, FVector &outVector){
 
 
 
-void TwoBone::build(UWorld *world, MMatrix &offsetAndRotation, FColor color, float displayTime){
+void TwoBone::build(
+    UWorld *world, 
+    MMatrix &offsetAndRotation, 
+    MMatrix &endEffector, 
+    FColor color, 
+    float displayTime
+){
 
     std::vector<MMatrix *> matrizen;
     FVector endVec;
     getMatricies(matrizen, endVec);
-    build(world, offsetAndRotation, color, displayTime, matrizen);
 
+    //new testing
+    std::vector<AActor *> limbs;
+    limbs.push_back(hipLimbPointer);
+    limbs.push_back(kneeLimbPointer);
+    limbs.push_back(footLimbPointer);
+
+
+    MMatrix newStart = buildWithOutput(
+        world,
+        offsetAndRotation,
+        color,
+        displayTime,
+        matrizen,
+        limbs,
+        true //forward
+    );
+
+
+    copyCurrentMatricies();
+
+    FVector translation = newStart.getTranslation();
+    endEffector.setTranslation(translation);
 }
-
-
-
-
-void TwoBone::build(
-    UWorld *world,
-    MMatrix &offsetAndRotation,
-    FColor color, 
-    float displayTime,
-    std::vector<MMatrix*> &matrizen //must not be empty
-){
-
-    // -- dirty testing --
-
-    matrizen.insert(matrizen.begin() + 0, &offsetAndRotation);
-
-    //std::vector<MMatrix *> matrizen;
-    //matrizen.push_back(&offsetAndRotation);
-
-    FVector endVec = toFootTip;
-    // getMatricies(matrizen, endVec);
-    if(matrizen.size() < 2){ // <2 weil mindestens ein knochen muss vorhanden sein
-        return;
-    }
-
-    std::vector<FVector> resultDraw;
-
-    MMatrix result = *matrizen[0];
-    //resultDraw.push_back(result.getTranslation()); //ersten zeichen punkt NICHT hinzufügen, kommt aus welt koordinaten
-    
-    //über matrizen laufen um die vektoren zu berechnen für die zeichnung
-    //beide sollen nicht mit gezeichnet werden
-    for (int i = 1; i < matrizen.size(); i++)
-    {
-        result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
-
-        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
-    }
-
-    //final vector
-    FVector outputVec = result * endVec;
-    resultDraw.push_back(outputVec);
-    
-   
-
-    //draw
-    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
-    if (world != nullptr)
-    {
-        int off = 1; // nicht welt koordinaten berück sichtigen
-        for (int i = off; i < resultDraw.size(); i++)
-        {
-            FColor c = colors[i % colors.size()];
-            c = color; //override for testing
-            DebugHelper::showLineBetween(world, resultDraw[i - 1], resultDraw[i], c, displayTime);
-        }
-    }
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -548,16 +496,13 @@ float TwoBone::pitchAngleToInitiaToUpDirOfBone(FVector &localTarget){
 
 
 
-
-
-
 /// @brief DESIGNED FOR FROM FOOT ADJUSTING HIP!
 /// @param world 
 /// @param vec target relative to foot
 /// @param weight weight dir of angle
-/// @param offsetAndRotation FOOT LOCATION WORLD (for now extended variant)
+/// @param offsetAndRotation END EFFECTOR WORLD (Hand or foot to keep)
 /// expects correct starting matrix where start limb is located originally (hip or grounded foot)
-/// @param translationOfactor overrides translation of actor based on where hip was moved
+/// @param translationOfactor START EFFECTOR ADJUST overrides translation of actor based on where hip was moved
 /// @param color 
 /// @param displayTime 
 void TwoBone::rotateStartToTargetAndBuild( //works as expected
@@ -565,7 +510,7 @@ void TwoBone::rotateStartToTargetAndBuild( //works as expected
     FVector &vec, 
     FVector &weight, 
     MMatrix &offsetAndRotationOfFoot, 
-    MMatrix &translationOfactor, //overrides translation of actor based on where hip was moved
+    MMatrix &translationOfactor, //overrides translation of actor based on where hip was moved, start martix
     FColor color,
     float displayTime
 ){
@@ -692,7 +637,7 @@ MMatrix TwoBone::buildWithOutput(
 /// @param weight weight direction to apply 
 /// @param offsetAndRotation calculated transform of actor 
 ///                         (M = location * rotation <--read direction--)
-/// @param translationOfactorFoot translation of foot of actor which will be modified! ONLY TRANSLATION!
+/// @param endEffectorWorldToUpdate translation of foot of actor which will be modified! ONLY TRANSLATION!
 /// @param color color to draw in
 /// @param displayTime displaytime to draw
 void TwoBone::rotateEndToTargetAndBuild(
@@ -700,7 +645,7 @@ void TwoBone::rotateEndToTargetAndBuild(
     FVector &target, 
     FVector &weight, 
     MMatrix &offsetAndRotation, 
-    MMatrix &translationOfactorFoot,
+    MMatrix &endEffectorWorldToUpdate,
     FColor color,
     float displayTime
 ){
@@ -732,7 +677,7 @@ void TwoBone::rotateEndToTargetAndBuild(
     FVector newLocation = newStart.getTranslation();
 
     //Override translation of actor (FOOT!)
-    translationOfactorFoot.setTranslation(newLocation);
+    endEffectorWorldToUpdate.setTranslation(newLocation);
 
     copyCurrentMatricies();
 }

@@ -26,6 +26,9 @@ Aweapon::Aweapon()
 	verschlussSkeletonPointer = nullptr;
 	magSkeletonPointer = nullptr;
 
+	rightHandTargetSkelletonPointer = nullptr;
+	leftHandTargetSkelletonPointer = nullptr;
+
 	reddotSightChildActor = nullptr;
 	ironSightChildActor = nullptr;
 
@@ -432,6 +435,12 @@ void Aweapon::setupAnimations()
 			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
 				gehauseSkeletonPointer = Component;
 			}
+			else if(name.Contains("RightHandTarget")){
+				rightHandTargetSkelletonPointer = Component;
+			}
+			else if(name.Contains("LeftHandTarget")){
+				leftHandTargetSkelletonPointer = Component;
+			}
 		}
     }
     
@@ -458,30 +467,6 @@ void Aweapon::reloadAnimation(){
 	}
 }
 
-
-/*
-// DEPRECATED
-/// @brief plays an animatin for a skeleton from a path
-/// @param AnimationPath path to the animation
-/// @param skeleton 
-void Aweapon::playAnimation(
-	const FString& AnimationPath, 
-	USkeletalMeshComponent *skeleton,
-	float time
-){
-
-
-    UAnimSequence* AnimSequence = LoadObject<UAnimSequence>(nullptr, *AnimationPath);
-    if (AnimSequence && skeleton){
-		float animationLength = AnimSequence->GetPlayLength();
-		float playRate = animationLength / time; // cooldownTime; //properly scale
-
-		skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
-		// Set the animation speed
-        //skeleton->SetPlayRate(60 * cooldownTime);
-		skeleton->SetPlayRate(playRate);
-	}
-}*/
 
 
 
@@ -605,4 +590,35 @@ ammunitionEnum Aweapon::getAmmunitionType(){
 	}
 
 	return ammunitionEnum::assaultrifle556;
+}
+
+
+
+
+
+
+/**
+ * 
+ * Bone controller attachment / socket locations!
+ * 
+ */
+
+FVector Aweapon::leftHandLocation(){
+	if(leftHandTargetSkelletonPointer != nullptr){
+		// Get the world location of the Skeletal Mesh Component
+    	FVector componentWorldLocation = leftHandTargetSkelletonPointer->GetComponentLocation();
+		return componentWorldLocation;
+	}
+
+	return GetActorLocation();
+}
+
+FVector Aweapon::rightHandLocation(){
+	if(rightHandTargetSkelletonPointer != nullptr){
+		// Get the world location of the Skeletal Mesh Component
+    	FVector componentWorldLocation = rightHandTargetSkelletonPointer->GetComponentLocation();
+		return componentWorldLocation;
+	}
+
+	return GetActorLocation();
 }

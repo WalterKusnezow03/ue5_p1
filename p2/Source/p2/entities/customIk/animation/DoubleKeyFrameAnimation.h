@@ -24,22 +24,23 @@ public:
 	void setAnimationBAdjustPermanentTarget(FVector vector);
 
 	FVector interpolate(float DeltaTime);
+	FVector interpolate(float DeltaTime, FVector currentRelative); //experimental
+	FVector interpolateWorld(
+		float DeltaTime,
+		FVector currentPosWorld,
+		MMatrix &actor
+	);
 
-	
-	
-	//new read last reached frame from prev anim
-	FVector readPrevAnimationReachedFrame();
-
-	
 	bool animationCycleWasComplete();
 
 	void processProjectOffset(FVector &offsetMade);
-	FVector getProjectionHipOffsetTimed();
+	FVector getProjectionHipOffsetTimed(float DeltaTime);
 
 	
 	void overrideCurrentStartingFrame(FVector &currentLocationRelative);
-	void skipAnimationOnce(FVector start, FVector end); 
-
+	void skipAnimationOnce(FVector start, FVector end);
+	void skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end);
+	
 	void projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix);
 	
 	void projectNextFrameIfNeeded(
@@ -60,8 +61,9 @@ public:
 	void forceOverrideNextFrame(FVector &pos);
 
 private:
-	
-	FVector projectionHipOffset;
+	float animationSpeedHipAdjust = 50.0f;
+
+	FVector projectionHipOffsetComplete;
 	FVector bTarget;
 	bool bIsSetToAutoOverride = false;
 
@@ -73,6 +75,7 @@ private:
 	class KeyFrameAnimation framesA;
 	
 	class TargetInterpolator interpolateB;
+	//class Interpolator interpolateB;
 
 	bool isAnimationAPlaying = true;
 	float deltaTime = 0.0f;

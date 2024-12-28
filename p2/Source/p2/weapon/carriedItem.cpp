@@ -130,7 +130,7 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 		enableCollider(false);
 
 		showItem(true);
-		renderOnTop(true);
+		
 
 		//attachment to actor / component
 		//this->AttachToActor(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
@@ -138,7 +138,7 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 	}
 }
 
-/// @brief pickup emthod for bot
+/// @brief pickup method for bot
 /// @param actorIn actor bot  
 void AcarriedItem::pickupBot(AActor *actorIn){
 	if(botPointer == nullptr && actorIn != nullptr && cameraPointer == nullptr){
@@ -204,51 +204,9 @@ void AcarriedItem::drop(){
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showItem(true);
-	renderOnTop(false); //testing needed
+	
 }
 
-void AcarriedItem::renderOnTop(bool enable){
-
-	//DebugHelper::showScreenMessage("changed priority");
-
-   /**
-	* general hierachy
-	* UObject
-		UActorComponent
-			USceneComponent
-				UPrimitiveComponent
-					UStaticMeshComponent
-					USkeletalMeshComponent
-	*
-	* Change render priority:
-	*
-	* TranslucencySortPriority = Priority; //is a public Iv of every UPrimtiveComponent
-    */
-
-	/*
-	//not needed because only custom depth is used by now on its own
-    int stencilValue = 0;
-	if(enable){
-		stencilValue = 1;
-	}
-	
-	
-	//this approach works but the weapons look bad.
-	
-	std::list<USkeletalMeshComponent *> list;
-	this->findAllOfType<USkeletalMeshComponent>(*this, list);
-
-	int counted = list.size();
-	DebugHelper::showScreenMessage(FString::Printf(TEXT("COLLECTED SKELETONS %d"), counted), FColor::Yellow);
-	
-
-	for (USkeletalMeshComponent *s : list){
-		if(s != nullptr){
-			s->SetRenderCustomDepth(enable); //just true always, only change layer
-			//s->SetCustomDepthStencilValue(stencilValue); // Higher value can render in front
-		}
-	}*/
-}
 
 template <typename T>
 void AcarriedItem::findAllOfType(AActor &a , std::list<T*> & items)
@@ -302,4 +260,14 @@ void AcarriedItem::leftMouseDown(){
 
 void AcarriedItem::leftMouseUp(){
 
+}
+
+
+
+FVector AcarriedItem::leftHandLocation(){
+	return GetActorLocation();
+}
+
+FVector AcarriedItem::rightHandLocation(){
+	return GetActorLocation();
 }

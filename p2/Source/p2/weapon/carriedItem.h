@@ -29,6 +29,11 @@ public:
 
 	bool isActive();
 
+
+	virtual FVector leftHandLocation();
+	virtual FVector rightHandLocation();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,12 +60,7 @@ protected:
 
 	void showScreenMessage(FString s);
 
-	void renderOnTop(bool enable);
-
-
-	//template <typename T>
-	//void findAllOfType(T &t, std::list<T *> &items);
-
+	
 	template <typename T>
 	void findAllOfType(AActor &a, std::list<T *> &items);
 

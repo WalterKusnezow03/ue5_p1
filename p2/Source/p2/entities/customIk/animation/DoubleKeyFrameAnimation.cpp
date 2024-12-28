@@ -38,12 +38,7 @@ bool DoubleKeyFrameAnimation::isAnimationB(){
 
 
 
-/// @brief gibt den frame zureück der erreicht wurde von der letzen / vorherigen animation (FRAMES A)
-/// dazu da um der hip zu sagen wo sie sich relativ befindet und wo sie sich bewegen soll!
-/// @return frame reached in animation A, final leg pos made!
-FVector DoubleKeyFrameAnimation::readPrevAnimationReachedFrame(){
-    return aReachedTickFrame;
-}
+
 
 /// @brief interpolates A or B based on which animation is now wanted
 /// @param DeltaTime delta time passed from Tick()
@@ -57,46 +52,47 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
     if(isAnimationA()){
         interpolated = framesA.interpolate(DeltaTime);
 
-        DebugHelper::showScreenMessage("A interpolating !", interpolated, FColor::Cyan);
+        //DebugHelper::showScreenMessage("A interpolating !", interpolated, FColor::Cyan);
 
         if(framesA.reachedLastFrameOfAnimation()){
+
+            isAnimationAPlaying = false; //switch to B
             aReachedTickFrame = interpolated;
 
-            DebugHelper::showScreenMessage("A reached !", interpolated, FColor::Emerald);
-
-            //intepolierte position relativ zur hüfte ist einfach den vektor
-            //umzudrehen
+            //intepolierte position relativ zur hüfte ist einfach 
+            //den vektor umdrehen
             if(bIsSetToAutoOverride){
                 
                 //relativer frame vom fuss zur hip
                 FVector relativeBFrame = aReachedTickFrame * -1; 
 
-
-                //DEBUG HACKING TIME!
-                //debug was 1.0f for walking
-                float timeToFrameB = 0.1f; //muss später anhand actor velocity skalliert werden!
-                if(!isRunningAnimation){
+                
+                float timeToFrameB = 0.1f;
+                if(velocityOfActor > 0.0f){
+                    float distance = FVector::Dist(relativeBFrame, bTarget);
+                    timeToFrameB = distance / velocityOfActor;
+                }else{
                     timeToFrameB = framesA.totalLength();
-                    timeToFrameB = 0.5f; //debug
+                    timeToFrameB *= 0.5f; //debug
                 }
 
-                //FVector relativeBFrame = aReachedTickFrame * -1; 
+                //interpolateB.setSpeed(animationSpeedHipAdjust);
                 interpolateB.setTarget(relativeBFrame, bTarget, timeToFrameB);
 
 
                 
             }
-            isAnimationAPlaying = false;
+            
         }
 
 
     }
     else{
-        DebugHelper::showScreenMessage("B interpolating!", FColor::Black);
+        //DebugHelper::showScreenMessage("B interpolating!", FColor::Black);
         interpolated = interpolateB.interpolate(DeltaTime);
         if(interpolateB.hasReachedTarget()){
             cycleComplete = true;
-            projectionHipOffset = FVector(0, 0, 0);
+            projectionHipOffsetComplete = FVector(0, 0, 0);
             isAnimationAPlaying = true; //flip bool!
             deltaTime = 0.0f;
         }
@@ -157,23 +153,12 @@ float DoubleKeyFrameAnimation::reachTime(){
 ///         -> use the getProjectionHipOffsetTimed() method to apply your hip offset over time
 /// @param offsetMade 
 void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
+    if(offsetMade.Z > 0.0f){
+        projectionHipOffsetComplete = FVector(0, 0, 0); //block positive offset
+        return;
+    }
+    projectionHipOffsetComplete = offsetMade;
     
-    //float timeCopy = framesA.totalLength() + interpolateB.TimeToFrame(); // do in total time (?)
-    float timeCopy = interpolateB.TimeToFrame(); //testing needed for only during adjust time!
-
-    float timeInFrames = timeCopy * 60.0f;
-    if (timeInFrames > 0.1f){
-        projectionHipOffset = offsetMade / timeInFrames; //60fps, nicht einfach teilen, durch zahl der frames!
-    }else{
-        projectionHipOffset = FVector(0,0,0); //no offset if not possible
-    }
-
-    //DebugHelper::showScreenMessage("processed offset: ", projectionHipOffset, FColor::Emerald);
-
-    //projektion entfernen wenn man die treppe hochläuft, nur bei negativen werten!
-    if(projectionHipOffset.Z > 0.0f){
-        projectionHipOffset = FVector(0, 0, 0); //TESTING blocking pos offset
-    }
 }
 
 
@@ -183,25 +168,22 @@ void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
 /// @brief additional hip offset needed because of projected frames, will be (0,0,0) if
 /// no offset needed, or any other vector if needed.
 /// @return vector offset for hip to add, is timed with animation linear.
-FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(){
+FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(float DeltaTime){
     /**
      * only return if hip adjust time!
      * process of leg on floor and hip adjust
      */
     if(isAnimationB()){
-        return projectionHipOffset;
+        float fullTime = interpolateB.TimeToFrame();
+
+        // x => ((dist * dt) / t) = dist
+        return ((projectionHipOffsetComplete * DeltaTime) / fullTime);
     }
 
 
     //NEU: Flugphase wenn Anim A und running
-    FVector flyingOffsetIfRunning = flyingOffset();
-    return flyingOffsetIfRunning;
-    //return FVector(0, 0, 0);
+    return flyingOffset();
 }
-
-
-
-
 
 
 
@@ -303,7 +285,8 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
         world, 
         actorMatrix, 
         velocity, 
-        noneDir, b, 
+        noneDir, 
+        b, 
         infheight, 
         BoneControllerStates::none
     );
@@ -347,16 +330,200 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
             switchToArmLocomotion = true;
             offsetMade = FVector(0, 0, 0); //reset, switched to arm locomotion
         }
-        if(locomotionType == BoneControllerStates::locomotionClimb){ //dont apply anything if climbing keys
+        if(
+            locomotionType == BoneControllerStates::locomotionClimb ||
+            locomotionType == BoneControllerStates::locomotionClimbAll 
+        ){ //dont apply anything if climbing keys
             offsetMade = FVector(0, 0, 0);
         }
-
+        
+        //hier zusätzlich neue velocity speichern
+        velocityOfActor = velocity;
         if(wasProjected){
             processProjectOffset(offsetMade);
         }
-
-
-        //hier zusätzlich neue velocity speichern
-        velocityOfActor = velocity;
     }
+}
+
+
+
+
+
+
+
+
+
+/// @brief interpolates A or B based on which animation is now wanted
+/// @param DeltaTime delta time passed from Tick()
+/// @return interpolated frame target
+FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime, FVector currentRelative){
+    
+    deltaTime += DeltaTime;
+
+    
+    FVector interpolated;
+    if(isAnimationA()){
+        
+        interpolated = framesA.interpolate(DeltaTime, currentRelative);
+
+        //DebugHelper::showScreenMessage("A interpolating !", interpolated, FColor::Cyan);
+
+        if(framesA.reachedLastFrameOfAnimation()){
+
+            isAnimationAPlaying = false; //switch to B
+            aReachedTickFrame = interpolated;
+
+            //intepolierte position relativ zur hüfte ist einfach 
+            //den vektor umdrehen
+            if(bIsSetToAutoOverride){
+                
+                //relativer frame vom fuss zur hip
+                FVector relativeBFrame = aReachedTickFrame * -1;
+
+                
+                //interpolateB.setSpeed(animationSpeedHipAdjust);
+
+                float timeToFrameB = 0.1f;
+                if(velocityOfActor > 0.0f){
+                    float distance = FVector::Dist(relativeBFrame, bTarget);
+                    timeToFrameB = distance / velocityOfActor;
+                }else{
+                    timeToFrameB = framesA.totalLength();
+                    timeToFrameB *= 0.5f; //debug
+                }
+                interpolateB.setTarget(relativeBFrame, bTarget, timeToFrameB);
+
+
+                
+            }
+            
+        }
+
+
+    }
+    else{
+
+        interpolateB.overrideStartSpeedRelative(currentRelative);
+        interpolated = interpolateB.interpolate(DeltaTime);
+
+        //interpolated = interpolateB.interpolate(DeltaTime, currentRelative);
+        if(interpolateB.hasReachedTarget()){
+            cycleComplete = true;
+            projectionHipOffsetComplete = FVector(0, 0, 0);
+            isAnimationAPlaying = true; //flip bool!
+            deltaTime = 0.0f;
+        }
+    }
+
+
+    return interpolated;
+}
+
+
+
+
+/**
+ * 
+ * 
+ * 
+ * ---- WORLD SECTION ----
+ * 
+ * 
+ */
+
+/// @brief will override the world and local animation
+/// @param actor actor world pos to make frames relative, both world and local keyframes are made
+/// @param start world pos, will be relative to actor
+/// @param end world pos, will be relative to actor
+void DoubleKeyFrameAnimation::skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end){
+    framesA.skipAnimationOnceWorld(actor, start, end);
+}
+
+
+/// @brief will interpolate to target World if possible and switch to local / default animation
+/// if an issue occured
+/// @param DeltaTime 
+/// @param currentPosWorld 
+/// @param actor 
+/// @return 
+FVector DoubleKeyFrameAnimation::interpolateWorld(
+    float DeltaTime, 
+    FVector currentPosWorld, 
+    MMatrix &actor //limb start matrix
+){
+    deltaTime += DeltaTime;
+
+    
+    FVector interpolated;
+    if(isAnimationA()){
+        
+        
+        interpolated = framesA.interpolateWorld(
+            DeltaTime,
+            currentPosWorld,
+            actor
+        );
+
+        //DebugHelper::showScreenMessage("A interpolating !", interpolated, FColor::Cyan);
+
+        if(framesA.reachedLastFrameOfAnimation()){
+
+            isAnimationAPlaying = false; //switch to B
+            aReachedTickFrame = interpolated;
+
+            //intepolierte position relativ zur hüfte ist einfach 
+            //den vektor umdrehen
+            if(bIsSetToAutoOverride){
+                
+                //relativer frame vom fuss zur hip
+                FVector relativeBFrame = aReachedTickFrame * -1;
+
+                
+                //interpolateB.setSpeed(animationSpeedHipAdjust);
+
+                float timeToFrameB = 0.1f;
+                if(velocityOfActor > 0.0f){
+                    float distance = FVector::Dist(relativeBFrame, bTarget);
+                    timeToFrameB = distance / velocityOfActor;
+                }else{
+                    //very random.
+                    timeToFrameB = framesA.totalLength();
+                    timeToFrameB *= 0.5f; //debug
+                }
+                interpolateB.setTarget(relativeBFrame, bTarget, timeToFrameB);
+
+
+                
+            }
+            
+        }
+
+
+    }
+    else{
+
+        /*
+        ACHTUNG: HIER NOCH LOKAL!
+        ---> kann auch so bleiben weil die hüfte eher immer eine relative position zum
+             end effector hat als eine globale. 
+             etwas anderes macht in diesem anwendungsfall keinen sinn.
+        
+        */
+        MMatrix inverse = actor.jordanInverse();
+        FVector currentRelative = inverse * currentPosWorld;
+
+        interpolateB.overrideStartSpeedRelative(currentRelative);
+        interpolated = interpolateB.interpolate(DeltaTime);
+
+        //interpolated = interpolateB.interpolate(DeltaTime, currentRelative);
+        if(interpolateB.hasReachedTarget()){
+            cycleComplete = true;
+            projectionHipOffsetComplete = FVector(0, 0, 0);
+            isAnimationAPlaying = true; //flip bool!
+            deltaTime = 0.0f;
+        }
+    }
+    return interpolated;
+
+
 }

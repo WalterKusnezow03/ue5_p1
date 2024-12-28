@@ -67,6 +67,9 @@ public:
 	//returns if the weapon is active or not
 	//bool isActive();
 
+	virtual FVector leftHandLocation() override;
+	virtual FVector rightHandLocation() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -119,6 +122,9 @@ protected:
 	//plays any anim
 	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
 	void playAnimation(UAnimSequence *AnimSequence, USkeletalMeshComponent *skeleton, float time);
+
+	class USkeletalMeshComponent *rightHandTargetSkelletonPointer;
+	class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;

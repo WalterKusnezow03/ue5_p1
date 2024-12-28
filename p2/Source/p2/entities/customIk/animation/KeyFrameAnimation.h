@@ -27,7 +27,12 @@ public:
 	);
 	
 	FVector interpolate(float DeltaTime);
-
+	FVector interpolate(float DeltaTime, FVector currentPos);
+	FVector interpolateWorld(
+		float DeltaTime,
+		FVector currentPosWorld,
+		MMatrix &actor
+	);
 
 	bool nextFrameMustBeGrounded();
 	FVector readNextFrame();
@@ -42,16 +47,27 @@ public:
 	void restart();
 
 	void skipAnimationOnce(FVector start, FVector end);
+	void skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end);
+
+
 
 	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+	//projektion mit velocity future
+	bool projectNextFrameToGroundIfNeeded(
+		UWorld *world,
+		MMatrix &actorMatrix,
+		FVector &offsetMade,
+		float velocity,
+		FVector &lookdir
+	);
 
 	void forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
 
 private:
-	bool DEBUGDRAW_RAYCAST = false;
+	bool DEBUGDRAW_RAYCAST = true;
 
 	float raycastVerticalStartOffsetAdd = 500.0f;
-	float raycastScaleVector = 1000.0f;
+	float raycastScaleVector = 5000.0f;
 
 	FVector latestInterpolation;
 	bool loop = true;
@@ -62,6 +78,7 @@ private:
 	
 
 	bool frameIsProjected = false;
+
 	
 
 	std::vector<KeyFrame> frames; //might be replaced with frame class with time stamp
@@ -75,11 +92,11 @@ private:
 	bool canAnimate();
 	bool hasAnyFrames();
 
-	
 
 
 
 	class TargetInterpolator interpolator;
+	// class TargetInterpolator interpolator;
 	void updateFrameInterpolator();
 
 
@@ -90,35 +107,26 @@ private:
 private:
 	//projektion der frames
 	void projectToGround(UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade);
-	bool performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit);
-
-
-
-
-	//new section for future projektion
-	float readNextTimeToFrame();
-
-	//projektion mit velocity future
 	void projectToGround(
 		UWorld *world,
 		MMatrix &actorTransform,
 		FVector &frameToProject,
 		FVector &offsetMade,
-		float timeToFrame,
-		float velocity,
-		FVector &lookdirection
+		FVector &hitpointOutput
 	);
-
-public:
 	//projektion mit velocity future
-	bool projectNextFrameToGroundIfNeeded(
+	void projectToGround(
 		UWorld *world,
-		MMatrix &actorMatrix,
+		MMatrix &actorTransform,
+		FVector &frameToProject,
+		FVector &worldHitOutput, //world hitpoint
 		FVector &offsetMade,
-		float velocity,
-		FVector &lookdir
+		float timeToFrame,
+		float velocity,		   // running velocity
+		FVector &lookdirection // look dir of velocity
 	);
 
+	bool performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit);
 
 
 };

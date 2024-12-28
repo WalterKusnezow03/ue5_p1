@@ -14,6 +14,7 @@ TargetInterpolator::~TargetInterpolator()
 {
 }
 
+
 bool TargetInterpolator::hasTargetSetup(){
     return targetSetup;
 }
@@ -33,13 +34,43 @@ void TargetInterpolator::overrideTarget(FVector totarget){
 
     //DebugHelper::showScreenMessage("override target, connect:", FColor::Red);
     target = totarget;
-    reached = false;
 }
 
 void TargetInterpolator::overrideStart(FVector fromtarget){
     from = fromtarget;
-    reached = false;
 }
+
+
+
+
+void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
+    
+
+    float distanceOld = FVector::Dist(from, target);
+    float speed = distanceOld / timeToFrame; //sei distanz 40m und ttf 2s, dann sinds 20ms
+
+
+    // Aktualisiere Startpunkt
+    from = newStart;
+
+    //delta time muss nicht resettet werden! Ansonsten bricked alles.
+
+    // Neue Time-to-Frame berechnen
+    float newDistance = FVector::Dist(from, target);
+    float newTimeToFrame = newDistance / speed;
+
+    // Neue deltaTime basierend auf dem alten Fortschritt
+    timeToFrame = newTimeToFrame;
+
+    if(timeToFrame < 0.01f){
+        reached = true;
+    }
+}
+
+
+
+
+
 
 void TargetInterpolator::resetDeltaTime(){
     deltaTime = 0.0f;
@@ -59,11 +90,13 @@ bool TargetInterpolator::hasReachedTarget(){
 
 FVector TargetInterpolator::interpolate(float DeltaTime){
     if(reached){
+        worldtargetSetup = false;
         return target;
     }
     if(deltaTime >= timeToFrame){
         reached = true;
         deltaTime = 0.0f;
+        worldtargetSetup = false;
         return target;
     }
 
@@ -91,6 +124,7 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
         // anti parellell
         reached = true;
         deltaTime = 0.0f;
+        worldtargetSetup = false;
         return interpolated;
     }
 
@@ -99,13 +133,17 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
 
 }
 
+
+
+
+
 float TargetInterpolator::skalar(){
     if(timeToFrame == 0){
         return 1;
     }
 
-    float skal = deltaTime / timeToFrame;
-    //DebugHelper::showScreenMessage("skalar interpolate ", skal);
+    float skal = deltaTime / timeToFrame; //fractionThis = this / all
+    
     if(skal > 1.0f){
         skal = 1.0f;
     }
@@ -144,10 +182,59 @@ FVector TargetInterpolator::readToPosition(){
     return target;
 }
 
-/// @brief overrides the starting position
-/// @param position 
-void TargetInterpolator::insertAtFront(FVector &position){
-    //target = from; //skip?
-    from = position;
 
+
+
+
+
+
+
+/** 
+ * 
+ * 
+ * ---- WORLD SPACE SECTION ----
+ * 
+ * 
+ * 
+ * man könnte hier noch überlegen ob man start local und worldgleichzeitig baut
+ * 
+ * 
+*/
+
+
+void TargetInterpolator::overrideStartWorld(FVector targetIn){
+    fromWorld = targetIn;
 }
+
+void TargetInterpolator::overrideTargetWorld(FVector targetIn){
+    targetWorld = targetIn;
+    worldtargetSetup = true;
+}
+
+/// @brief overrides the starting position of the interpolation in world position
+/// if the world target is setup, the local target will be also updated, relative to the actor matrix transform
+/// @param newStart new world frame start
+/// @param actor actor with rotation and translation
+void TargetInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatrix &actor){
+
+    MMatrix inverse = actor.jordanInverse();
+    if (!worldtargetSetup)
+    {
+        //translate start to local and override start
+        FVector startLocal = inverse * newStart;
+        overrideStartSpeedRelative(startLocal);
+        return;
+    }else{
+        //DebugHelper::showScreenMessage("OVERRIDE WORLD START TARGET");
+        
+        //translate start and target to local and override both, target must be available
+        FVector targetLocalNew = inverse * targetWorld;
+        overrideTarget(targetLocalNew);
+        FVector startLocal = inverse * newStart;
+        overrideStartSpeedRelative(startLocal);
+        return;
+    }
+}
+
+
+

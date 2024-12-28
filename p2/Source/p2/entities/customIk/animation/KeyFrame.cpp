@@ -3,16 +3,16 @@
 
 #include "p2/entities/customIk/animation/KeyFrame.h"
 
-KeyFrame::KeyFrame(FVector positionIn, float timeFromLastFrameIn)
+KeyFrame::KeyFrame(FVector positionIn, float velocityIn)
 {
     position = positionIn;
-    setTime(timeFromLastFrameIn);
+    setVelocity(velocityIn);
     grounded = false;
 }
 
-KeyFrame::KeyFrame(FVector positionIn, float timeFromLastFrameIn, bool groundedIn){
+KeyFrame::KeyFrame(FVector positionIn, float velocityIn, bool groundedIn){
     position = positionIn;
-    setTime(timeFromLastFrameIn);
+    setVelocity(velocityIn);
     grounded = groundedIn;
 }
 
@@ -20,16 +20,16 @@ KeyFrame::~KeyFrame()
 {
 }
 
-void KeyFrame::setTime(float timeFromLastFrameIn){
-    timeFromLastFrame = timeFromLastFrameIn;
+void KeyFrame::setVelocity(float velocityIn){
+    velocity = velocityIn;
 }
 
 FVector KeyFrame::readposition(){
     return position;
 }
 
-float KeyFrame::timeToFrame(){
-    return timeFromLastFrame;
+float KeyFrame::readVelocity(){
+    return velocity;
 }
 
 bool KeyFrame::mustBeGrounded(){

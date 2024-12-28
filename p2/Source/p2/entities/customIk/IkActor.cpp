@@ -28,15 +28,8 @@ void AIkActor::BeginPlay()
 
 	//init offset for now
 	FVector offset(1000, -1000, 200);
-	ownLocation.setTranslation(offset); //hip location initial
-	
-	
-	//debug testign controller, init offset
 	hipController.SetLocation(offset);
 
-	//testing inital rotation
-	int DEBUGROATATE = 0;
-	ownOrientation.yawRad(MMatrix::degToRadian(DEBUGROATATE));
 	
 	/*
 	//debug matrix inverse bestimmen (klappt):
@@ -53,18 +46,14 @@ void AIkActor::BeginPlay()
 	DebugHelper::logMessage(message);
 	*/
 
+	weaponPointer = nullptr;
 	hipController.SetControllerState(BoneControllerStates::locomotion);
-
-	/*
-	BoneController b(100.0f);
-	shoulderController = b;
-	shoulderController.SetControllerState(BoneControllerStates::none);
-	*/
+	getWeaponOnStart();
+	hipController.attachCarriedItem(weaponPointer);
 
 
-	//testing 
-	FVector shoulderOffsetVec(0, 0, 100);
-	hipToShoulderMatrix.setTranslation(shoulderOffsetVec);
+	//testing rotation
+	hipController.yawRotate(-10);
 
 
 
@@ -83,82 +72,23 @@ void AIkActor::Tick(float DeltaTime)
 
 
 	hipController.Tick(DeltaTime, GetWorld());
-
-	/*
-	if(hipIsPivot){
-		hipController.Tick(DeltaTime, GetWorld());
-		
-		//M = Tshoulder * Thip * Rhip  <-- lese richtung --
-		MMatrix hip = hipController.currentTransform();
-		MMatrix applied = hipToShoulderMatrix * hip;
-		FVector offsetVector = applied.getTranslation();
-
-		shoulderController.Tick(DeltaTime, GetWorld(), offsetVector);
-		
-	}else{
-		
-		shoulderController.Tick(DeltaTime, GetWorld());
-		MMatrix shoulder = shoulderController.currentTransform();
-
-		MMatrix relationInversed = hipToShoulderMatrix.createInverse();
-		MMatrix applied = relationInversed * shoulder; //M = T * A <-- lese richtung --
-		hipController.Tick(DeltaTime, GetWorld(), applied.getTranslation());
-
-	}
-	*/
-	
+	SetActorLocation(hipController.GetLocation());
+	//rotation muss auch noch kopiert werden
 }
-
-
-
 
 /// @brief look at a location
 /// @param TargetLocation target to look at
 void AIkActor::LookAt(FVector TargetLocation) 
 {
-    // Calculate the rotation needed to look at the target location
-	MMatrix transform = currentTransform();
-	FVector location = transform.getTranslation();
-	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(location, TargetLocation);
-
-	//FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	float zDegree = LookAtRotation.Yaw;
-
-	ownOrientation.yawRad(MMatrix::degToRadian(zDegree));
+	hipController.LookAt(TargetLocation);
 }
-
-
-
-
-/// @brief returns the current translation and rotation in world in correct order as expected
-/// HIP PIVOT TRANSFORM ONLY
-/// @return current Transform Matrix by value
-MMatrix AIkActor::currentTransform(){ //might be renamed to hip pivot 
-	MMatrix rotationTransform = ownLocation * ownOrientation;
-	return rotationTransform;
-}
-
-
 
 //custom set actor location method for bone ik
 void AIkActor::SetLocation(FVector &location){
-	ownLocation.setTranslation(location);
+	hipController.SetLocation(location);
 }
 
 
-
-
-
-
-
-/// @brief converts a position to relative to the hip / actor center
-/// @param position position to convert, will be adjusted by reference
-void AIkActor::transformFromWorldToLocalCoordinates(FVector &position){
-
-	MMatrix inverse = currentTransform().createInverse();
-
-	position = inverse * position;
-}
 
 /// @brief performs a raycast from a start, into a direction, with a max length in this method
 /// @param Start start position
@@ -168,7 +98,7 @@ void AIkActor::transformFromWorldToLocalCoordinates(FVector &position){
 bool AIkActor::performRaycast(FVector &Start, FVector &dir, FVector &outputHit) 
 {
 
-	float scaleOfVector = legScaleCM * 3; //some random value for now
+	float scaleOfVector = 200000; //some random value for now
 	FVector End = Start + dir * scaleOfVector; // gx = A + r (B - A)
 
 	// Perform the raycast
@@ -193,16 +123,6 @@ bool AIkActor::performRaycast(FVector &Start, FVector &dir, FVector &outputHit)
 		outputHit = HitResult.ImpactPoint; //write impactpoint to output
 
 		
-		//debug draw
-		if(debugRaycastDraw){
-			DebugHelper::showLineBetween(
-				GetWorld(),
-				currentTransform().getTranslation(),
-				outputHit,
-				FColor::Orange, 
-				2.0f
-			);
-		}
 		
 		//DebugHelper::showScreenMessage("RAYCAST HIT");
 
@@ -212,72 +132,34 @@ bool AIkActor::performRaycast(FVector &Start, FVector &dir, FVector &outputHit)
 	return false;
 }
 
+void AIkActor::getWeaponOnStart(){
+	EntityManager *e = worldLevel::entityManager();
+    if (e != nullptr)
+    {
 
+        //testing new helper (works as expected)
+        weaponSetupHelper *setuphelper = new weaponSetupHelper();
+        setuphelper->setWeaponTypeToCreate(weaponEnum::pistol);
 
+        Aweapon *w = e->spawnAweapon(GetWorld(), setuphelper);
+		//showScreenMessage("begin weapon");
+		if (w != nullptr){
+			//showScreenMessage("human pickup weapon");
+			
+			//kein pickup erstmal, managed by bone controller
+			//w->pickupBot(this);
 
+            //save pointer
+            weaponPointer = w;
+        }
 
-
-
-
-
-
-
-void AIkActor::projectToGround(FVector &frameToProject){
-	MMatrix transform = currentTransform();
-	FVector frameInWorld = transform * frameToProject;
-
-	//project frame to floor
-	FVector downVec(0, 0, -1);
-	FVector hitpoint;
-
-
-	bool wasHit = performRaycast(frameInWorld, downVec, hitpoint);
-	if(wasHit){
-		transformFromWorldToLocalCoordinates(hitpoint);
-		frameToProject = hitpoint;
-	}
+        delete setuphelper; //immer löschen nicht vergessen!
+        setuphelper = nullptr;
+    }
 }
 
 
 
-
-/// @brief projects a frame to the ground and writes the porjection into the frame
-/// @param frameToProject frame to project to floor
-/// @param offsetMade offset made from frame to project to hitpoint direction
-void AIkActor::projectToGround(FVector &frameToProject, FVector &offsetMade){
-	MMatrix transform = currentTransform();
-	FVector frameInWorld = transform * frameToProject;
-
-	//EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
-	frameInWorld += FVector(0, 0, legScaleCM); //TEST RAYCAST START NACH OBEN!
-
-	//project frame to floor
-	FVector downVec(0, 0, -1);
-	FVector hitpoint;
-
-	bool wasHit = performRaycast(frameInWorld, downVec, hitpoint);
-	if(wasHit){
-		//offsetMade = hitpoint - frameInWorld; // AB = B - A;
-		if(debugRaycastDraw){
-			DebugHelper::showLineBetween(
-				GetWorld(), 
-				transform.getTranslation(), 
-				hitpoint, 
-				FColor::Red, 
-				2.0f
-			);
-		}
-		
-
-		transformFromWorldToLocalCoordinates(hitpoint);
-
-		//DebugHelper::showScreenMessage("projected ", hitpoint, FVector(), FColor::Orange);
-
-		offsetMade = hitpoint - frameToProject;
-
-		frameToProject = hitpoint;
-	}
-}
 
 
 
