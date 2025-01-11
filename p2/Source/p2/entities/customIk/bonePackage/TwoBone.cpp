@@ -124,7 +124,7 @@ float TwoBone::angleFromEtha(float etha){
 }
 
 
-/// @brief returns the etha value for a distance
+/// @brief returns the etha (angle) value for a distance
 /// @param distance distance from 0,0,0 to target
 /// @return etha value, dot product
 float TwoBone::createEthaFromDistance(float distance){
@@ -153,6 +153,39 @@ float TwoBone::createKneeAngle(float angle){
     return angle * 2;
 }
 
+
+
+
+/**
+ * 
+ * 
+ * Allgemiennen cosinus satz wieder implementieren
+ * 
+ * 
+ */
+
+void TwoBone::createEthaPitchAnglesFor(float distanceTotarget, float &firstOuput, float &secondOutput, bool forwardIK){
+
+    float c = distanceTotarget;
+    float b_toKneelength = FVector::Dist(knee.getTranslation(), FVector(0,0,0));
+    float a_toFootLenght = FVector::Dist(foot.getTranslation(), FVector(0,0,0));
+
+    if(!forwardIK){
+        float copy = b_toKneelength;
+        b_toKneelength = a_toFootLenght;
+        a_toFootLenght = b_toKneelength;
+    }
+
+    float b2 = b_toKneelength * b_toKneelength;
+    float a2 = a_toFootLenght * a_toFootLenght;
+    float c2 = c * c;
+
+    float alpha = std::acosf((b2 + c2 - a2) / (2 * b_toKneelength * c));
+    float beta = std::acosf((a2 + c2 - b2) / (2 * a_toFootLenght * c));
+
+    firstOuput = alpha;
+    secondOutput = - beta; //eigentlich ja flip an der stelle
+}
 
 /**
  * 
@@ -245,12 +278,10 @@ void TwoBone::rotateEndToTarget(
     //testing needed
     if(std::abs(weight.Y) >= 0.1f){ //gegen epsilon prüfen.
         float rollAngleWeight = rollAngleTo(weight);
-        hip.yawRadAdd(rollAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
+        start.yawRadAdd(rollAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
     }
     
-    /**
-     * testing x roation
-     */
+
 
 
     //etha reverse bauen
@@ -761,6 +792,7 @@ MMatrix TwoBone::buildWithOutput(
         return offsetAndRotation;
     }
 
+    std::vector<MMatrix> resultMatricies;
     std::vector<FVector> resultDraw;
     MMatrix result = offsetAndRotation;
 
@@ -769,38 +801,48 @@ MMatrix TwoBone::buildWithOutput(
     for (int i = 0; i < matrizen.size(); i++)
     {
         result *= *matrizen[i]; //durch das multiplizieren der matrizen wandert man sie entlang
-
-        resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
-
+        if(forward){
+            resultDraw.push_back(result.getTranslation()); //translation will be now in result space always
+            resultMatricies.push_back(result); //debug blocked
+        }
     }
 
     //final vector (proper if forward pass)
-    FVector outputVec = result * endVec;
-    resultDraw.push_back(outputVec);
+    FVector outputVec;
+    if (forward){
+        outputVec = result * endVec;
+        resultDraw.push_back(outputVec);
+    }
 
-
+    //WENN RÜCKWÄRTS: NOCHMAL!
     //inversen holen für umkehrpass
-    //kette neu zeichnen, gedreht. 
-    if(!forward){
+    //kette neu zeichnen, gedreht.
+    if (!forward)
+    {
         resultDraw.clear();
         std::vector<MMatrix> inverted;
         for (int i = matrizen.size() - 1; i >= 0; i--){
-            MMatrix currentInvert = matrizen[i]->createInverse();
+            MMatrix currentInvert = matrizen[i]->jordanInverse(); // createInverse();
             inverted.push_back(currentInvert);
         }
 
         MMatrix start = result;
         resultDraw.push_back(start.getTranslation());
         for (int i = 0; i < inverted.size(); i++){
+            
             start *= inverted[i];
             resultDraw.push_back(start.getTranslation());
+            resultMatricies.push_back(start);
         }
         outputVec = start * endVec;
         resultDraw.push_back(outputVec);
     }
 
+
+
+
+
     //draw
-    std::vector<FColor> colors = {FColor::Green, FColor::Red, FColor::Cyan, FColor::Green};
     if (world != nullptr)
     {
         for (int i = 1; i < resultDraw.size(); i++){
@@ -810,36 +852,25 @@ MMatrix TwoBone::buildWithOutput(
 
 
     
+    /**
+     * neuer versuch mit extraction des rotators. 
+     * Was korrekt sein sollte
+     * aber bei eigen rotation nicht klappt um yaw. Scheinabr.
+     */
 
-    //UPDATE BONES
-    for (int i = 1; i < resultDraw.size(); i++){
+    //update bones based on matricies build
+    for(int i = 0; i < resultMatricies.size(); i++){
+        MMatrix &current = resultMatricies.at(i);
+        FVector location = current.getTranslation();
 
-        int boneIndex = i - 1;
-        FVector location = resultDraw[i - 1];
-        FVector nextPoint = resultDraw[i];
-        
-
-        FVector lookDir = nextPoint - location;
-
-        if (boneIndex < attachedBones.size()){
-            AActor *currentBone = attachedBones[boneIndex];
-            if(currentBone != nullptr){
-                currentBone->SetActorLocation(location);
-                
-                //rotation anpassen wenn 
-                //objekt so deisnged wurde dass der pivot am oben ende des knochens ist
-                //und die länge des knochens richtung -z schaut, nach unten.
-                lookDir = FVector(lookDir.Z, lookDir.Y, -lookDir.X); 
-                
-                // Alternativ: Rotator aus einer Richtung (Forward Vector) erstellen
-                FRotator DirectionRotator = lookDir.Rotation();
-                currentBone->SetActorRotation(DirectionRotator);
-            }
+        if (i < attachedBones.size()){
+            AActor *currentBone = attachedBones[i];
+            updateLimb(currentBone, current, location);
         }
     }
-
-    // returns the final matrix
     return result;
+
+    
 }
 
 

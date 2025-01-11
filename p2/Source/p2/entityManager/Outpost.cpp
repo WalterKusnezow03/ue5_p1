@@ -47,13 +47,14 @@ void AOutpost::Tick(float DeltaTime)
 			bool inRange = isInRange(location);
 			if(!inRange){
 				//despawn
-				DebugHelper::showScreenMessage("player left the area");
 				releaseAll();
+				switchPlayerEnteredStatus(false);
 			}
 			else
 			{
 				//spawn if needed
 				initEntitiesIfNeeded();
+				switchPlayerEnteredStatus(true);
 			}
 		}
 	}
@@ -68,6 +69,27 @@ void AOutpost::Tick(float DeltaTime)
 	DebugHelper::showLineBetween(GetWorld(), corner, draw, FColor::Red);
 	DebugHelper::showLineBetween(GetWorld(), draw, drawEnd, FColor::Red);
 }
+
+
+/// @brief will react to a player entered status
+/// @param status 
+void AOutpost::switchPlayerEnteredStatus(bool status){
+
+	if(status != playerEntered){
+		playerEntered = status;
+		if(playerEntered){
+			DebugHelper::showScreenMessage("player entered the area");
+		}else{
+			DebugHelper::showScreenMessage("player left the area");
+		}
+	}
+
+}
+
+
+
+
+
 
 /// @brief returns if a vector is in the max range of the outpost
 /// @param vec to check

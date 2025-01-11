@@ -42,7 +42,12 @@ public:
 
 	void attachCarriedItem(AcarriedItem *carriedItem);
 
+	//testing
+	void attachLimbMeshes(AActor *top, AActor *bottom, int index);
+
 private:
+	
+
 	class AcarriedItem *attachedCarriedItem;
 
 	bool isRunning = false; //debug
@@ -126,9 +131,6 @@ private:
 	void TickBuildNone(float DeltatTime);
 	void TickLocomotion(float DeltaTime);
 	
-	void TickLocomotionClimb(float DeltaTime);
-	void TickLocomotionClimbAdjust(float DeltaTime);
-
 	
 	void TickArms(float DeltaTime);
 
@@ -136,12 +138,21 @@ private:
 
 	void TickLimbNone(int limbIndex, float DeltaTime);
 
+	void drawBody(float DeltaTime);
 
 	void updateHipLocation(MMatrix &updatetHipJointMat, int leg);
 	void transformFromWorldToLocalCoordinates(FVector &position, int leg);
 
 
-	//geföhrlich
+
+	void moveBoneAndSnapEndEffectorToTarget(
+		int index,
+		float DeltaTime,
+		FVector targetWorld,
+		FVector weight
+	);
+
+	//world pointer for raycast and drawing
 	class UWorld *world = nullptr;
 	UWorld* GetWorld();
 

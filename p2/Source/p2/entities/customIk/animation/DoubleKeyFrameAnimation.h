@@ -6,6 +6,7 @@
 #include "TargetInterpolator.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
+#include "p2/entities/customIk/animation/GravityInterpolator.h"
 #include "KeyFrameAnimation.h"
 
 /**
@@ -35,8 +36,9 @@ public:
 
 	void processProjectOffset(FVector &offsetMade);
 	FVector getProjectionHipOffsetTimed(float DeltaTime);
-
+	FVector getProjectionHipOffsetTimed(float DeltaTime, FVector currentEndEffector);
 	
+
 	void overrideCurrentStartingFrame(FVector &currentLocationRelative);
 	void skipAnimationOnce(FVector start, FVector end);
 	void skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end);
@@ -58,10 +60,10 @@ public:
 		MMatrix &actorMatrix
 	);
 
-	void forceOverrideNextFrame(FVector &pos);
+	
 
 private:
-	float animationSpeedHipAdjust = 50.0f;
+	class GravityInterpolator gravityInterpolator;
 
 	FVector projectionHipOffsetComplete;
 	FVector bTarget;

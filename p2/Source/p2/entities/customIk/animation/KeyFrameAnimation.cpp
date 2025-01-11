@@ -90,7 +90,11 @@ bool KeyFrameAnimation::hasAnyFrames(){
 }
 
 
-
+/**
+ * 
+ * ---- INTERPOLATE DEFAULT ----
+ * 
+ */
 
 FVector KeyFrameAnimation::interpolate(float DeltaTime){
 
@@ -159,6 +163,8 @@ void KeyFrameAnimation::updateFrameInterpolator(){
 }
 
 
+/// @brief will tell if the next key frame must be grounded or not
+/// @return must be grounded
 bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     if(hasAnyFrames()){
         KeyFrame &nextFrame = frames.at(nextFrameIndex);
@@ -167,6 +173,8 @@ bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     return false;
 }
 
+/// @brief copies the next frames position
+/// @return position of next frame of animation
 FVector KeyFrameAnimation::readNextFrame(){
     if(hasAnyFrames()){
         KeyFrame &nextFrame = frames.at(nextFrameIndex);
@@ -185,12 +193,6 @@ void KeyFrameAnimation::overrideNextFrame(FVector &framePos){
     frameIsProjected = true;
 }
 
-
-void KeyFrameAnimation::overrideNextFrameAndResetTime(FVector &framePos){
-    interpolator.overrideTarget(framePos);
-    interpolator.resetDeltaTime();
-    frameIsProjected = true;
-}
 
 
 
@@ -241,6 +243,12 @@ void KeyFrameAnimation::skipAnimationOnceWorld(MMatrix &actor, FVector start, FV
 
 
 
+/**
+ * 
+ * ---- PROJECTION SECTION ----
+ * 
+ */
+
 bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
     if(world == nullptr){
         return false;
@@ -267,13 +275,6 @@ void KeyFrameAnimation::forceProjectToGround(UWorld *world, MMatrix &actorMatrix
     interpolator.overrideTargetWorld(worldHit);
 }
 
-/**
- * 
- * 
- * PROJEKTION SOLLTE HIER MÖGLICH SEIN
- * 
- * 
- */
 
 /// @brief projects a frame to the ground and writes the porjection into the frame
 /// @param frameToProject frame to project to floor
@@ -366,11 +367,10 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
  * 
  * 
  * 
- * ---- new section for future projection: velocity and direction? ----
+ * ---- future projection ----
  * 
  * 
  */
-
 
 bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
     UWorld *world, 
@@ -379,13 +379,32 @@ bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
     float velocity,
     FVector &lookdir
 ){
+    FVector worldHit_notneeded;
+    return projectNextFrameToGroundIfNeeded(
+        world,
+        actorMatrix,
+        offsetMade,
+        velocity,
+        lookdir,
+        worldHit_notneeded
+    );
+}
+
+bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
+    UWorld *world, 
+    MMatrix &actorMatrix, 
+    FVector &offsetMade,
+    float velocity,
+    FVector &lookdir,
+    FVector &worldHitMade
+){
     if(world == nullptr){
         return false;
     }
     if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
 
         FVector frameToProject = readNextFrame();
-        float nextTimeToFrame = interpolator.TimeToFrame(); //(frameA,frameB)
+        float nextTimeToFrame = interpolator.TimeToFrame(); 
         FVector worldHitOutput;
 
         projectToGround(
@@ -401,6 +420,8 @@ bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
         
         overrideNextFrame(frameToProject);
         interpolator.overrideTargetWorld(worldHitOutput);
+
+        worldHitMade = worldHitOutput; //copy
         return true;
     }
     return false;
@@ -449,8 +470,8 @@ void KeyFrameAnimation::projectToGround(
 	if(wasHit){
         
         if(DEBUGDRAW_RAYCAST){
-            float displayTime = 2.0f;
-            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 2000), FColor::Red, displayTime);
+            float displayTime = 1.0f;
+            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 200), FColor::Yellow, displayTime);
         }
 
 
@@ -484,10 +505,15 @@ void KeyFrameAnimation::projectToGround(
 
 
 
+/**
+ * 
+ * ---- INTERPOLATE WITH LOCAL UPDATE ----
+ * 
+ */
 
 /// @brief interpolate with considering current pos 
-/// @param DeltaTime 
-/// @param currentPos 
+/// @param DeltaTime delta time since last frame
+/// @param currentPos current local position
 /// @return 
 FVector KeyFrameAnimation::interpolate(float DeltaTime, FVector currentPos){
 
@@ -524,8 +550,7 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime, FVector currentPos){
 /**
  * 
  * 
- * 
- * ---- WORLD SECTION ----
+ * ---- INTERPOLATE WITH WORLD UPDATE ----
  * 
  * 
  */
@@ -533,6 +558,10 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime, FVector currentPos){
 
 /// @brief will interpolate to target World if possible and switch to local / default animation
 /// if an issue occured
+/// @param DeltaTime delta time since last frame
+/// @param currentPosWorld current position in world
+/// @param actor actor matrix in world (with rotation) to update the world frames to local ones
+/// @return interpolation based on actor matrix and current position (of end effector) in world
 FVector KeyFrameAnimation::interpolateWorld(
     float DeltaTime, 
     FVector currentPosWorld, 

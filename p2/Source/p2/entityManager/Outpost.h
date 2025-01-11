@@ -70,6 +70,10 @@ private:
 
 	FVector randomOffset(int range);
 
+
+	bool playerEntered = false;
+	void switchPlayerEnteredStatus(bool status);
+
 public:
 	//alert / alarm all entites
 	void alertAll();

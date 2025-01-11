@@ -164,7 +164,6 @@ void DoubleKeyFrameAnimation::processProjectOffset(FVector &offsetMade){
 
 
 
-
 /// @brief additional hip offset needed because of projected frames, will be (0,0,0) if
 /// no offset needed, or any other vector if needed.
 /// @return vector offset for hip to add, is timed with animation linear.
@@ -177,9 +176,13 @@ FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(float DeltaTime){
         float fullTime = interpolateB.TimeToFrame();
 
         // x => ((dist * dt) / t) = dist
-        return ((projectionHipOffsetComplete * DeltaTime) / fullTime);
-    }
+        FVector offsetReturn = ((projectionHipOffsetComplete * DeltaTime) / fullTime);
 
+        float zCopy = offsetReturn.Z;
+        DebugHelper::showScreenMessage("offset returned", zCopy);
+
+        return offsetReturn;
+    }
 
     //NEU: Flugphase wenn Anim A und running
     return flyingOffset();
@@ -187,6 +190,13 @@ FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(float DeltaTime){
 
 
 
+// ---- new testing gravity maker ----
+FVector DoubleKeyFrameAnimation::getProjectionHipOffsetTimed(
+    float DeltaTime, 
+    FVector currentEndEffector
+){
+    return gravityInterpolator.interpolate(currentEndEffector, DeltaTime);
+}
 
 
 
@@ -207,9 +217,6 @@ void DoubleKeyFrameAnimation::overrideCurrentStartingFrame(FVector &currentLocat
     framesA.overrideCurrentStartingFrame(currentLocationRelative); //override target interpolator start
 }
 
-void DoubleKeyFrameAnimation::forceOverrideNextFrame(FVector &pos){
-    framesA.overrideNextFrameAndResetTime(pos);
-}
 
 /// @brief will skip the next A frames animation once completly with an start and end point!
 /// @param start starting pos
@@ -302,6 +309,7 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
 /// @param switchToArmLocomotion need to switch to arm locomotion output if maxHeightSwitch exceeded
 /// @param maxHeightSwitch max height before switching locomotion boolean
 /// @param locomotionType if the locomotion type is climbing, none hip extra offset will be saved
+/// @param worldHitPoint will save the world hitpoint relative to actors speed (next world ground target)
 /// because the arm is moving differently from a leg / hip
 void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
     UWorld *world,
@@ -319,21 +327,23 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
         actorMatrix -= removeFlyOffset;
 
         FVector offsetMade(0,0,0);
+        FVector worldHitPoint(0, 0, 0);
         bool wasProjected = framesA.projectNextFrameToGroundIfNeeded(
-            world, 
-            actorMatrix, 
+            world,
+            actorMatrix,
             offsetMade,
             velocity,
-            lookdir
+            lookdir,
+            worldHitPoint
         );
+
+        //locomotion climbing required to get to this height!
         if(offsetMade.Z > maxHeightSwitch){
             switchToArmLocomotion = true;
             offsetMade = FVector(0, 0, 0); //reset, switched to arm locomotion
         }
-        if(
-            locomotionType == BoneControllerStates::locomotionClimb ||
-            locomotionType == BoneControllerStates::locomotionClimbAll 
-        ){ //dont apply anything if climbing keys
+        if(locomotionType == BoneControllerStates::locomotionClimbAll)
+        { //dont apply anything if climbing keys
             offsetMade = FVector(0, 0, 0);
         }
         
@@ -341,6 +351,7 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
         velocityOfActor = velocity;
         if(wasProjected){
             processProjectOffset(offsetMade);
+            gravityInterpolator.updateGroundPosition(worldHitPoint);
         }
     }
 }
@@ -503,7 +514,7 @@ FVector DoubleKeyFrameAnimation::interpolateWorld(
     else{
 
         /*
-        ACHTUNG: HIER NOCH LOKAL!
+        ACHTUNG: HIER NOCH NUR LOKAL!
         ---> kann auch so bleiben weil die hüfte eher immer eine relative position zum
              end effector hat als eine globale. 
              etwas anderes macht in diesem anwendungsfall keinen sinn.
@@ -518,7 +529,7 @@ FVector DoubleKeyFrameAnimation::interpolateWorld(
         //interpolated = interpolateB.interpolate(DeltaTime, currentRelative);
         if(interpolateB.hasReachedTarget()){
             cycleComplete = true;
-            projectionHipOffsetComplete = FVector(0, 0, 0);
+            projectionHipOffsetComplete = FVector(0, 0, 0); //reset offset vector
             isAnimationAPlaying = true; //flip bool!
             deltaTime = 0.0f;
         }

@@ -218,14 +218,14 @@ void BoneController::setupAnimation(){
 		armScaleCM
 	);
 	climbAnimationKeys.addFrame(
-		FVector(20, 0, -armScaleCM),
+		FVector(10, 0, -armScaleCM),
 		0.5f, //time to prev frame
 		false,
 		armScaleCM
 	);
 	climbAnimationKeys.addFrame(
-		FVector(50, 0, armScaleCM), //nach oben strecken
-		0.5f, //time to prev frame
+		FVector(armScaleCM, 0, armScaleCM), //nach oben strecken, so weit wie es geht
+		1.5f, //time to prev frame
 		true, //GROUNDED
 		armScaleCM
 	);
@@ -237,6 +237,41 @@ void BoneController::setupAnimation(){
 }
 
 
+void BoneController::attachLimbMeshes(AActor *top, AActor *bottom, int index){
+	TwoBone *bone = findBone(index);
+	if(bone != nullptr){
+		if(top != nullptr){
+			bone->attachFirtsLimb(*top);
+			top->SetActorEnableCollision(false);
+		}
+		if(bottom != nullptr){
+			bone->attachSecondLimb(*bottom);
+			bottom->SetActorEnableCollision(false);
+		}	
+	}
+}
+
+
+
+
+
+
+void BoneController::drawBody(float DeltaTime){
+	MMatrix current = currentTransform();
+	MMatrix shoulder1 = currentTransform(SHOULDER_1);
+	MMatrix shoulder2 = currentTransform(SHOULDER_2);
+	MMatrix foot1 = currentTransform(FOOT_1);
+	MMatrix foot2 = currentTransform(FOOT_2);
+
+	FVector com = current.getTranslation();
+
+	DeltaTime *= 1.1f;
+
+	DebugHelper::showLineBetween(GetWorld(), com, shoulder1.getTranslation(), FColor::Red, DeltaTime);
+	DebugHelper::showLineBetween(GetWorld(), com, shoulder2.getTranslation(), FColor::Red, DeltaTime);
+	DebugHelper::showLineBetween(GetWorld(), com, foot1.getTranslation(), FColor::Red, DeltaTime);
+	DebugHelper::showLineBetween(GetWorld(), com, foot2.getTranslation(), FColor::Red, DeltaTime);
+}
 
 void BoneController::SetLocation(FVector &pos){
     //setup
@@ -422,30 +457,19 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn, FVector overrideLoca
 void BoneController::Tick(float DeltaTime, UWorld *worldIn){
     world = worldIn;
 
-	
+	drawBody(DeltaTime); //debug draw body
 
-    if(currentMotionState == BoneControllerStates::none){
+	if(currentMotionState == BoneControllerStates::none){
         TickBuildNone(DeltaTime);
     }
     if(currentMotionState == BoneControllerStates::locomotion){
         TickLocomotion(DeltaTime);
 		TickArms(DeltaTime);
 	}
-	
-	if(currentMotionState == BoneControllerStates::locomotionClimb){
-		TickLocomotionClimb(DeltaTime);
-		TickLegsNone(DeltaTime);
-	}
-	if(currentMotionState == BoneControllerStates::locomotionClimbAdjust){
-		TickLocomotionClimbAdjust(DeltaTime);
-		TickArms(DeltaTime);
-	}
-	
-
-
 	if(currentMotionState == BoneControllerStates::locomotionClimbAll){
 		TickLocomotionClimbAll(DeltaTime);
 	}
+
 }
 
 
@@ -497,151 +521,6 @@ void BoneController::TickLocomotion(float DeltaTime){
 }
 
 
-/// @brief locomotion for climbing with arms -> must be set to locomotion climb if
-/// the projected leg locomotion is too far up.
-/// once the climbing is complete its switched to locomotion climb adjust,
-/// leg 1 will complete the climb
-/// @param DeltaTime 
-void BoneController::TickLocomotionClimb(float DeltaTime){
-	//es braucht eine temporäre double keyframe kette für beide arme
-	//für temporäres hochziehen was einmal ausgeführt wird
-
-	
-
-	//switch to next leg but update relative position
-	
-	if(armClimbKeys_1.animationCycleWasComplete()){
-
-		//switch to climb adjust (bein aufsetzen)
-		currentMotionState = BoneControllerStates::locomotionClimbAdjust;
-
-		FVector footPos = ownLocationFoot1.getTranslation();
-        transformFromWorldToLocalCoordinates(footPos, FOOT_1);
-
-		//hand effector als target (funktioniert so)
-		FVector frame = ownLocationHand1.getTranslation();
-		transformFromWorldToLocalCoordinates(frame, FOOT_1);
-		legDoubleKeys_1.skipAnimationOnce(footPos, frame);
-
-		/**
-		 * DEBUG WISE ADDED 
-		 * Works as expected if single bone.
-		 
-		footPos = ownLocationFoot1.getTranslation();
-		frame = ownLocationHand1.getTranslation();
-		legDoubleKeys_1.skipAnimationOnceWorld(footPos, frame);*/
-		/**
-		 * Reset der rotation hier notwendig weil nach
-		 * einem backward build, einen raw build durchzuführen,
-		 * alle rotationen falsch sind (noch im umgedrehten zustand).
-		 * Wenn der arm in der ausgangs lage nun ist,
-		 * ist das resetten korrekt.
-		 * Wenn nicht, muss zum ausgangs punkt (initial target von start 
-		 * effector(schulter) aus gesehen) hinrotiert werden.
-		 */
-		arm1.resetAllRotations(); //TESTING DEBUGGING ROTATION BUG! 
-
-		return;
-	}
-
-	//sollte erstmal auch einfach nur ein arm sein
-
-	//problem: teilweise wird ein arm zu lange abgespielt was auch echt komisch ist
-	//nach dem adjust glitched der nochmal
-	/** old working
-	playForwardAndBackwardKinematicAnim(
-		arm1, 
-		armClimbKeys_1, 
-		ownLocationHand1, 
-		DeltaTime, 
-		arm1Color, 
-		SHOULDER_1
-	);*/
-
-
-	/**
-	 * Debug testing, geht soweit 
-	 * */
-	std::vector<int> limbs;
-	std::vector<DoubleKeyFrameAnimation *> animations;
-	limbs.push_back(SHOULDER_1);
-	animations.push_back(&armClimbKeys_1);
-
-	playForwardAndBackwardKinematicAnimSynchronized(
-		DeltaTime,
-		limbs,
-		animations
-	);
-
-
-
-
-
-	//will skip arms which are invloved in climbing
-	TickArms(DeltaTime);
-}
-
-
-/// @brief plays the locomotion climb adjusting for the 
-/// first leg until the adjustment is complete. After adjusting (animation cycle is complete)
-/// its switched back to default locomotion (walking)
-/// @param DeltaTime 
-void BoneController::TickLocomotionClimbAdjust(float DeltaTime){
-
-	
-	
-	//switch to next leg but update relative position
-	if(legDoubleKeys_1.animationCycleWasComplete()){
-		leg1isPlaying = false;
-
-		MMatrix currentTransformLeg2 = currentTransform(FOOT_2);
-
-		//die hip wurde mit dem anderen bein bewegt /(leg 1, also muss leg2 geupdated werden)
-		FVector footPos = ownLocationFoot2.getTranslation();
-		
-		transformFromWorldToLocalCoordinates(footPos, FOOT_2);
-		legDoubleKeys_2.overrideCurrentStartingFrame(footPos); //update starting pos of the foot because the actor moved
-		legDoubleKeys_2.forceProjectNextFrame(world, currentTransformLeg2);
-
-		currentMotionState = BoneControllerStates::locomotion;
-		return;
-	}
-
-	//playForwardAndBackwardKinematicAnim(leg1, legDoubleKeys_1, ownLocationFoot1, DeltaTime, leg1Color, FOOT_1);
-	
-	//debug testing
-	std::vector<int> limbs;
-	std::vector<DoubleKeyFrameAnimation *> animations;
-	limbs.push_back(FOOT_1);
-	animations.push_back(&legDoubleKeys_1);
-
-	playForwardAndBackwardKinematicAnimSynchronized(
-		DeltaTime,
-		limbs,
-		animations
-	);
-	
-	
-	
-	
-	
-	
-	
-	TickLimbNone(FOOT_2, DeltaTime);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -664,11 +543,9 @@ void BoneController::TickBuildNone(float DeltaTime){
 /// @param DeltaTime 
 void BoneController::TickArms(float DeltaTime){
 
-	if(
-		currentMotionState != BoneControllerStates::locomotionClimb &&
-		currentMotionState != BoneControllerStates::locomotionClimbAll
-	){
-		TickLimbNone(SHOULDER_1, DeltaTime); //unklar ob andere hand auch waffe halten soll
+	//unklar ob hand 1 auch waffe halten soll, oder nur klettern, oder beide.
+	if(false && currentMotionState != BoneControllerStates::locomotionClimbAll){
+		TickLimbNone(SHOULDER_1, DeltaTime); 
 	}
 
 	
@@ -694,20 +571,54 @@ void BoneController::TickArms(float DeltaTime){
 
 		//attach hand
 		FVector targetWorld = attachedCarriedItem->rightHandLocation(); // arm 2 (?)
-		//DebugHelper::showScreenMessage("target: ", targetWorld, FColor::Emerald);
+		moveBoneAndSnapEndEffectorToTarget(
+			SHOULDER_2,
+			DeltaTime,
+			targetWorld,
+			FVector(0, 0, -1)
+		);
+
+		if(currentMotionState != BoneControllerStates::locomotionClimbAll){
+			FVector targetWorld1 = attachedCarriedItem->leftHandLocation();
+			moveBoneAndSnapEndEffectorToTarget(
+				SHOULDER_1,
+				DeltaTime,
+				targetWorld1,
+				FVector(0, 0, -1)
+			);
+		}
+	}
+}
+
+
+
+
+
+void BoneController::moveBoneAndSnapEndEffectorToTarget(
+	int index, 
+	float DeltaTime, 
+	FVector targetWorld,
+	FVector weight
+){
+	weight = weight.GetSafeNormal();
+
+	TwoBone *bone = findBone(index);
+	MMatrix *end = findEndEffector(index);
+	MMatrix translationActor = currentTransform(index);
+	FColor color = limbColor(index);
+
+	if (bone != nullptr && end != nullptr)
+	{
+
 		FVector targetLocal = targetWorld;
-		transformFromWorldToLocalCoordinates(targetLocal, SHOULDER_2);
-
-		FColor color = limbColor(SHOULDER_2);
-		FVector weight(-1, 0, 0);
-		MMatrix translationActor = currentTransform(SHOULDER_2);
-
-		arm2.rotateEndToTargetAndBuild(
+		transformFromWorldToLocalCoordinates(targetLocal, index);
+		
+		bone->rotateEndToTargetAndBuild(
 			GetWorld(),
 			targetLocal,
 			weight,
 			translationActor, // hip start with orient
-			ownLocationHand2, //ownLocationFoot,  // foot apply positions
+			*end, //ownLocationFoot,  // foot apply positions
 			color, 
 			DeltaTime * 2.0f
 		);
@@ -738,13 +649,12 @@ void BoneController::TickLimbNone(int limbIndex, float DeltaTime){
 		transformFromWorldToLocalCoordinates(target, limbIndex);
 
 		bone->build(
-			GetWorld(), 
-			transform, 
-			*endEffector, //by reference updatet
-			limbColor(limbIndex), 
+			GetWorld(),
+			transform,
+			*endEffector, // by reference updatet
+			limbColor(limbIndex),
 			DeltaTime * 2.0f
-		);		
-		
+		);
 	}
 }
 
@@ -852,7 +762,7 @@ void BoneController::buildRawAndKeepEndInPlace(
 		weight,
 		currenttransform, // MMatrix &offsetAndRotation,
 		legEndTransform,
-		color,//FColor::Red,
+		color,
 		deltaTime * 2.0f // displayTime
 	);
 
@@ -916,26 +826,21 @@ void BoneController::playForwardKinematicAnim(
 	float velocityT = addVelocityBasedOnState(); 
     FVector lookDir = currentTransform().lookDirXForward();
 	lookDir.Z = 0.0f; //xy pane only of interest
+
 	bool switchToArmLocomotion = false;
-	//nicht projezieren wenn grade adjust ist zum klettern (bein hoch ziehen)
-	if(currentMotionState != BoneControllerStates::locomotionClimbAdjust){ 
-		frames.projectNextFrameIfNeeded(
-			GetWorld(), 
-			current,
-			velocityT,
-			lookDir,
-			switchToArmLocomotion, //boolean by reference, switch needed or not
-			legScaleCM, //max height 
-			currentMotionState
-		);
-	}
+	frames.projectNextFrameIfNeeded(
+		GetWorld(), 
+		current,
+		velocityT,
+		lookDir,
+		switchToArmLocomotion, //boolean by reference, switch needed or not
+		legScaleCM, //max height 
+		currentMotionState
+	);
 	
 	//override motion state if needed
 	if(switchToArmLocomotion && currentMotionState == BoneControllerStates::locomotion){
-		currentMotionState = BoneControllerStates::locomotionClimb;
-		
-		//debug override to test new animation overlapped method
-		currentMotionState = BoneControllerStates::locomotionClimbAll; //debug test
+		currentMotionState = BoneControllerStates::locomotionClimbAll; //switch to climb motion
 	}
 
 	FVector thisAdd = lookDir * velocityT * DeltaTime;
@@ -949,10 +854,22 @@ void BoneController::playForwardKinematicAnim(
 	 * Adds the needed hip offset over time
 	 * for the hip when the point gets projected to the floor
 	*/
-	MMatrix translationActorTmp = currentTransform(); 
-	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
+	//FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
+	//ownLocation += hipoffsetAdd; 
+
+	/**
+	 * HIP PROJECTION - GRAVITY
+	 */
+	FVector endEffector = footMatrix.getTranslation();
+	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime, endEffector);
 	ownLocation += hipoffsetAdd; 
 
+
+
+
+
+	//debug draw 
+	MMatrix translationActorTmp = currentTransform(); 
 	DebugHelper::showLineBetween(
 			GetWorld(), 
 			translationActorTmp * hipoffsetAdd, 
@@ -965,7 +882,10 @@ void BoneController::playForwardKinematicAnim(
 	//do movement
 	//nochmal neu rechnen nach offset
     MMatrix translationActor = currentTransform(leg);	
+	
 	FVector weight(1, 0, 0);
+
+
 
 
 	//end effector update - old
@@ -973,7 +893,7 @@ void BoneController::playForwardKinematicAnim(
 
 	
 
-	// WORKSSS!!!!
+	//interpolate World is used to play any animation - even if no target is setup!
 	FVector EndEffectorWorld = footMatrix.getTranslation();
 	nextPos = frames.interpolateWorld(
 		DeltaTime,
@@ -997,12 +917,12 @@ void BoneController::playForwardKinematicAnim(
 
 /// @brief plays the animation and adjusts the hip of the actor based on the movement made
 /// the end effector will be kept in place
-/// @param bone 
-/// @param frames 
-/// @param footMatrix 
-/// @param DeltaTime 
-/// @param color 
-/// @param leg 
+/// @param bone bone to move start effector from (the hip)
+/// @param frames frames to play
+/// @param footMatrix end effector matrix 
+/// @param DeltaTime deltatime
+/// @param color color
+/// @param leg limb index
 void BoneController::playBackwardKinematicAnim(
 	TwoBone &bone, 
 	DoubleKeyFrameAnimation &frames, 
@@ -1015,26 +935,25 @@ void BoneController::playBackwardKinematicAnim(
 	FVector weight(1, 0, 0);
 
 	//offset for foot during hip adjust movement
-	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
+	
+	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime, footMatrix.getTranslation());
+	//FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
 	footMatrix += hipoffsetAdd;
 	
 
-	//build
-	//FVector xt = frames.interpolate(DeltaTime);
-
 	
-	//new live update position at all times
+	//new live update local position at all times
 	FVector StartEffectorWorld = currentTransform(leg).getTranslation();
 	MMatrix inverse = currentFootTransform(footMatrix).jordanInverse();
 	FVector startEffectorLocal = inverse * StartEffectorWorld;
-	FVector xt = frames.interpolate(DeltaTime, startEffectorLocal); //interpolated with live location update
+
+	//interpolated with live location update
+	FVector xt = frames.interpolate(DeltaTime, startEffectorLocal); 
 	
 	//draw
 	FVector copy = startEffectorLocal;
 	FVector start = footMatrix.getTranslation();
-	DebugHelper::showLineBetween(GetWorld(), start + copy, start, FColor::Cyan, 5.0f);
-
-	
+	//DebugHelper::showLineBetween(GetWorld(), start + copy, start, FColor::Cyan, 5.0f);
 
 
 	MMatrix current_RotatedFoot = currentFootTransform(footMatrix);
@@ -1055,7 +974,8 @@ void BoneController::playBackwardKinematicAnim(
 
     //inverse berechnen sodass man den offset zurück wandert und hip beinflusst
 	//wichtig!
-	updateHipLocation(ownLocationRelativeToHip, leg);
+	updateHipLocation(ownLocationRelativeToHip, leg); 
+
 
 }
 
@@ -1077,7 +997,6 @@ float BoneController::addVelocityBasedOnState(){
 	}
 	return 0.0f;
 }
-
 
 
 
@@ -1117,26 +1036,6 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		FVector frame = ownLocationHand1.getTranslation();
 		MMatrix startMat = currentTransform(FOOT_1);
 		legDoubleKeys_1.skipAnimationOnceWorld(startMat, footPos, frame);
-
-		/*
-		FVector footPos = ownLocationFoot1.getTranslation();
-        transformFromWorldToLocalCoordinates(footPos, FOOT_1);
-
-		//hand effector als target (funktioniert so bei der anderen methode)
-		FVector frame = ownLocationHand1.getTranslation();
-		transformFromWorldToLocalCoordinates(frame, FOOT_1);
-		legDoubleKeys_1.skipAnimationOnce(footPos, frame);
-		*/
-
-
-
-		DebugHelper::showLineBetween(
-			GetWorld(),
-			footPos,
-			frame,
-			FColor::Yellow,
-			10.0f
-		);
 		
 	}
 	
@@ -1199,7 +1098,9 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 
 
 /**
- * tested for single arm climb movement
+ * plays animations for limbs and their animations,
+ * caution: the first bone to play backward kinematic in list, will be the only one for this
+ * function call
  */
 void BoneController::playForwardAndBackwardKinematicAnimSynchronized(
 	float DeltaTime,
@@ -1237,3 +1138,5 @@ void BoneController::playForwardAndBackwardKinematicAnimSynchronized(
 	}
 	
 }
+
+

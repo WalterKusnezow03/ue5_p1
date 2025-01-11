@@ -14,6 +14,7 @@ MMatrix::MMatrix()
     array[5] = 1.0f;
     array[10] = 1.0f;
     array[15] = 1.0f;
+
 }
 
 MMatrix::~MMatrix()
@@ -34,10 +35,9 @@ void MMatrix::resetRotation(){
     array[5] = 1.0f;
     array[10] = 1.0f;
     array[15] = 1.0f;
+
+
 }
-
-
-
 
 /// @brief copy constructor
 /// @param other 
@@ -97,43 +97,12 @@ void MMatrix::operator+=(MMatrix &other){
 /// @brief multiply with another matrix
 /// @param other 
 void MMatrix::operator*=(MMatrix &other){
-    //old, berücksichtigt logik nicht, macht sachen kaputt
-    /*
-    normalizeRotation();
-    other.normalizeRotation();
-
-    **
-     * eine translation in den ursprung ist nicht notwendig 
-     * bei den knochen weil die sowieso das sind.
-     * 
-     
-    
-    MMatrix result; // Temporary matrix to store the result
-
-    for (int row = 0; row < 4; row++) { // Iterate through the rows of 'this' matrix
-        for (int col = 0; col < 4; col++) { // Iterate through the columns of 'other' matrix
-            float sum = 0.0f;
-            for (int inner = 0; inner < 4; inner++) { // Perform dot product
-                sum += array[row * 4 + inner] * other.array[inner * 4 + col];
-            }
-            result.array[row * 4 + col] = sum; // Store the result in the temporary matrix
-        }
-    }
-
-    // Copy the result back into this matrix
-    for (int i = 0; i < 16; i++) {
-        array[i] = result.array[i];
-    }
-
-    normalizeRotation();
-    */
-
-   MMatrix r = *this * other;
-   *this = r;
+    MMatrix r = *this * other;
+    *this = r;
 }
 
 /// @brief multiply and return result
-/// @param other other
+/// @param other other matrix to append like: This * other 
 /// @return returns a new matrix
 MMatrix MMatrix::operator*(MMatrix &other){
     
@@ -225,43 +194,6 @@ float MMatrix::radToDegree(float rad){
 
 
 
-
-/// @brief rotate along X in degree
-/// @param a 
-void MMatrix::roll(float deg){
-    /*
-    5  6
-    9 10
-    cos, -sin
-    sin, cos
-    */
-    float torad = degToRadian(deg);
-    rollRad(torad);
-}
-
-/// @brief rotate with y
-/// @param a degree
-void MMatrix::pitch(float deg){
-    /*
-    0  2
-    8 10
-    cos, sin
-    -sin, cos
-    */
-    float torad = degToRadian(deg);
-    pitchRad(torad);
-}
-
-void MMatrix::yaw(float deg){
-    /*
-    0  1
-    4 5
-    cos, -sin
-    sin, cos
-    */
-    float torad = degToRadian(deg);
-    yawRad(torad);
-}
 
 
 void MMatrix::rollRad(float a){
@@ -399,14 +331,26 @@ MMatrix MMatrix::createRotatorFromRad(float x, float y, float z){
 
     MMatrix result;
 
-    result.rollRadAdd(x);
-    result.pitchRadAdd(y);
-    result.yawRadAdd(z);
+    //zerlegt
+    MMatrix rollMat;
+    rollMat.rollRadAdd(x);
 
-   
+    MMatrix pitchMat;
+    rollMat.pitchRadAdd(y);
+
+    MMatrix yawMat;
+    rollMat.yawRadAdd(x);
+
+    result *= rollMat;
+    result *= pitchMat;
+    result *= yawMat;
 
     return result;
 }
+
+
+
+
 
 
 /// @brief factory method to create a rotation around x, y and z
@@ -432,7 +376,7 @@ MMatrix MMatrix::createRotatorFromDeg(float x, float y, float z){
 void MMatrix::rotate(MMatrix &other){
     
     //Rges = R2 * R1 wenn Rges angewand werden soll und r1 als erstes angewandt
-    
+    /*
     MMatrix result; // Temporary matrix to store the result
 
     int limit = 3;
@@ -441,56 +385,49 @@ void MMatrix::rotate(MMatrix &other){
         for (int col = 0; col < limit; col++) { // Iterate through the columns of 'other' matrix
             
             float sum = 0.0f;
-            for (int inner = 0; inner < limit; inner++) { // Perform dot product
-                //sum += array[row * 4 + inner] * other.array[inner * 4 + col];
+            for (int inner = 0; inner < limit; inner++) { 
                 sum += other.array[row * 4 + inner] * array[inner * 4 + col];
             }
             result.array[row * 4 + col] = sum; // Store the result in the temporary matrix
         }
+    }*/
+
+
+    MMatrix result; 
+    for (int col = 0; col < 3; col++){
+        for (int row = 0; row < 3; row++){
+
+            float sum = 0.0f;
+            for (int i = 0; i < 4; i++){
+                float fromThis = get(i, row);
+                float fromOther = other.get(col, i);
+                sum += fromThis * fromOther;
+            }
+            result.set(col, row, sum);
+        }
+    
     }
 
+
     // Copy the result back into this matrix
-
-    for (int row = 0; row < 3; row++){
-        for (int col = 0; col < 3; col++){
-
+    for (int row = 0; row < 3; row++)
+    {
+        for (int col = 0; col < 3; col++)
+        {
             int i = row * 4 + col;
             array[i] = result.array[i];
         }
     }
-    
+
+
+
+
 }
-
-
-
-
-
-
-
 
 MMatrix MMatrix::createInverse(){
-
-    // DAS MUSS SO SEIN WIE ES DA STEHT, NICHT ANFASSEN! 
-    //erstellt inverse ohne berücksichtigung der skalierung.
-
-    // M = T * R <- lese richtung
-    MMatrix rotCopy = *this;
-    rotCopy.setTranslation(0.0f, 0.0f, 0.0f);
-    rotCopy.invertRotation();
-
-    FVector translateCopy = getTranslation();
-    translateCopy *= -1;
-    MMatrix translation;
-    translation.setTranslation(translateCopy);
-
-    //statt M = T * R <-- lese richtung --
-    //jetzt M = R^-1 * T^-1 <-- lese richtung --
-    MMatrix result = rotCopy * translation;
-    return result;
+    // -- using jordan inverse by default --
+    return jordanInverse();
 }
-
-
-
 
 //3x3 block transponieren für invertieren der rotation (da im orthogonalen koordinaten system)
 void MMatrix::invertRotation(){
@@ -499,6 +436,9 @@ void MMatrix::invertRotation(){
     swapIndices(8, 2);
     swapIndices(9, 6);
 }
+
+
+
 /// @brief requires both indeces to be in bounds!
 /// @param a 
 /// @param b 
@@ -517,41 +457,79 @@ void MMatrix::swapIndices(int a, int b){
 
 
 
-/// @brief not tested, issues!
-/// @return 
+/// @brief extracts the rotator from this matrix
+/// @return FRotator rotation of this matrix
 FRotator MMatrix::extractRotator(){
+    
+    //rotation wird mithilfe von unreal extrahiert 
+    //weil ich es selber nicht weiss
     /*
-    0  1  2  3
-    4  5  6  7
-    8  9 10 11
-    12 13 14 15
+    //so korrekt
+    FMatrix MyMatrix(
+        FPlane(get(0, 0), get(0, 1), get(0, 2), get(0, 3)), // erste Spalte
+        FPlane(get(1, 0), get(1, 1), get(1, 2), get(1, 3)), // zweite Spalte
+        FPlane(get(2, 0), get(2, 1), get(2, 2), get(2, 3)), // dritte Spalte
+        FPlane(get(3, 0), get(3, 1), get(3, 2), get(3, 3))  // vierte Spalte
+    );
+    return MyMatrix.Rotator();
     */
 
-    //Atan2(y,x) <-- merken, liefert signed angle zur x achse
-    
+    //extracting rotation from a matrix:
+    /*
 
-    //Es wird davon ausgegangen das die matrix nicht skalliert wurde
-    float roll = std::atan2f(array[6], array[5]);
-    float pitch = std::asinf(-1 * array[2]);
-    float yaw = std::atan2f(array[1], array[0]) * -1; //test, rotation waffe war vorher falsch herum an x achse
-    FRotator extracted(
-        FMath::RadiansToDegrees(pitch),
-        FMath::RadiansToDegrees(yaw), 
-        FMath::RadiansToDegrees(roll)
-    );
-    return extracted;
+        r11 = a, 
+        r12 = b,
+        r13 = c
+
+        r21 = e,
+        r22 = f, 
+        r23 = g
+
+        r31 = i, 
+        r32 = j,
+        r33 = k
+
+
+        M = {
+            a b c d
+            e f g h
+            i j k l        
+        }
+
+        yaw = atan2(r21, r11)
+        pitch = asin(-1 * r31)
+        roll = atan2(r32, r33)
+
+        yaw = atan2(b, a)
+        pitch = asin(-1 * i)
+        roll = atan2(j, k)
+
+
+    */
+
+    float _yaw = std::atan2f(get(0, 1), get(0, 0));
+    float _pitch = -1 * std::asinf(get(0, 2));
+    float _roll = std::atan2f(get(1, 2), get(2, 2));
+
+    _yaw = MMatrix::radToDegree(_yaw);
+    _pitch = MMatrix::radToDegree(_pitch);
+    _roll = MMatrix::radToDegree(_roll);
+
+    //keep rotation like this, unreal is. Bugged.
+    FRotator r(-1 * _pitch, _yaw, -1 * _roll); //YESS
+
+
+    return r;
+
 }
 
-
-
-
-/// @brief converts a position to relative to the hip / actor center
+/// @brief converts a position to relative this matrix by using the jordan inverse
 /// @param position position to convert, will be adjusted by reference
 void MMatrix::transformFromWorldToLocalCoordinates(FVector &position){
 
 	
 	//funktoniert
-	MMatrix inverted = createInverse();
+	MMatrix inverted = jordanInverse();
 	position = inverted * position;
 	
 }
@@ -625,6 +603,8 @@ float MMatrix::det(std::vector<float> &matrix){
     return detCurrent;
 }
 
+
+
 /// @brief collects the submatrix of a matrix(as 1D vector) and returns it
 /// @param x x pos to avoid
 /// @param y y pos to avoid
@@ -649,6 +629,7 @@ std::vector<float> MMatrix::collectExcept(int x, int y, std::vector<float> &matr
 }
 
 
+/// @brief transposes this matrix as expected
 void MMatrix::transpose(){
     /*
     0  1  2  3
@@ -686,7 +667,7 @@ MMatrix MMatrix::jordanInverse(){
             MMatrix cleanMatrix;
             return cleanMatrix;
         }
-        thisMatrix.scaleRow(x, (1.0f / devide)); //d * 1 / d = 1, skallieren pixot.
+        thisMatrix.scaleRow(x, (1.0f / devide)); //d * 1 / d = 1, skallieren pivot.
         identity.scaleRow(x, (1.0f / devide));
 
         //darunter wandern, elemente eliminieren
@@ -761,4 +742,104 @@ FVector MMatrix::lookDirXForward(){
     MMatrix a = *this;
     a.setTranslation(0, 0, 0); //remove translation, make rotator only
     return a * look;
+}
+
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * NEW ROTATION MEASUREMENT TO AXIS
+ * 
+ * 
+ */
+
+
+float MMatrix::rollAngleTo(FVector &localTarget){
+    //FVector forward(1, 0, 0); //sollte member var werden ggf
+    FVector2D forward2d(0, 1); //z ist up, -z ist initial 
+
+    FVector2D yz(localTarget.Y, localTarget.Z);
+    yz = yz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
+
+    float yzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, yz));
+
+    //testing needed
+    yzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, yz.X, yz.Y);
+
+
+    return yzSideViewAngle;
+}
+
+float MMatrix::pitchAngleTo(FVector &localTarget){
+    
+    FVector2D forward2d(1, 0);
+    forward2d = forward2d.GetSafeNormal();
+
+    FVector2D xz(localTarget.X, localTarget.Z);
+    xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
+
+    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
+    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, xz.X, xz.Y);
+
+    return xzSideViewAngle;
+}
+
+
+float MMatrix::yawAngleTo(FVector &localTarget){
+
+    FVector2D forward2d(1, 0);
+    
+    FVector2D xy(localTarget.X, localTarget.Y);
+    xy = xy.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
+
+    //RECHUNG:
+    //cos(theta) = a dot b if a and b are normalized!
+    /*
+        cos(theta) = a * b | cos^-1
+        theta = acos((a*b) / (|a| * |b|))
+
+        bzw weil a und b length 1 sind:
+        theta = acos((a*b) / 1)
+    */
+
+    float dot = forward2d.X * xy.X + forward2d.Y * xy.Y;
+
+    float xyTopViewAngle = std::acosf(dot);
+    //float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
+    // std::acosf(FVector2D::DotProduct(forward2d, xy)); //----> DOT PRODUCT IST SCHON RADIAN, KEIN ACOS!! EFFICENCY
+
+    xyTopViewAngle *= flipRotation(forward2d.X, forward2d.Y, xy.X, xy.Y);
+
+    return xyTopViewAngle;
+}
+
+
+/// @brief will tell if a angle between vectors is negative or not (Determines the sign of angle)
+/// @param aX x comp of vector a
+/// @param aY y comp of vector a
+/// @param oX x comp of vector b
+/// @param oY y comp of vector b
+/// @return +1 for counter clock wise rotation or -1. Multiply your angle with the returned
+/// value to make your angle signed 
+int MMatrix::flipRotation(float aX, float aY, float oX, float oY){
+    //kreuzproduk 2D
+    //A:=(a,b,0) B:=(c,d,0)
+    //normal := A cross B
+    //normal.Z = ad - bc 
+
+    // Bestimmen der Drehrichtung durch das Kreuzprodukt
+    float crossProduct_z = aX * oY - aY * oX;
+
+    // Wenn das Kreuzprodukt negativ ist, ist der Winkel im Uhrzeigersinn,
+    // also negieren wir den Winkel.
+    if (crossProduct_z < 0) {
+        return -1;
+    }
+    return 1;
 }

@@ -90,6 +90,8 @@ private:
 	float createKneeAngle(float angle);
 	void normalizeTarget(FVector &target);
 
+	void createEthaPitchAnglesFor(float distanceTotarget, float &firstOuput, float &secondOutput, bool forwardIK);
+
 	//calculating angles
 	float yawAngleTo(FVector &localTarget);
 	float pitchAngleTo(FVector &localTarget);
@@ -170,4 +172,6 @@ private:
 
 	
 	void copyCurrentMatricies();
+
+
 };

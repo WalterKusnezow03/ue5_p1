@@ -43,7 +43,7 @@ public:
 	bool reachedLastFrameOfAnimation();
 	void overrideCurrentStartingFrame(FVector &somePoisition);
 	void overrideNextFrame(FVector &framePos);
-	void overrideNextFrameAndResetTime(FVector &framePos);
+	
 	void restart();
 
 	void skipAnimationOnce(FVector start, FVector end);
@@ -59,6 +59,15 @@ public:
 		FVector &offsetMade,
 		float velocity,
 		FVector &lookdir
+	);
+
+	bool projectNextFrameToGroundIfNeeded(
+		UWorld *world,
+		MMatrix &actorMatrix,
+		FVector &offsetMade,
+		float velocity,
+		FVector &lookdir,
+		FVector &worldHitMade
 	);
 
 	void forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);

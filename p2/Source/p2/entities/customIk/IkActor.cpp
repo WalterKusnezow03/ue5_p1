@@ -53,7 +53,7 @@ void AIkActor::BeginPlay()
 
 
 	//testing rotation
-	hipController.yawRotate(-10);
+	hipController.yawRotate(60);
 
 
 
@@ -63,6 +63,67 @@ void AIkActor::BeginPlay()
 	FabrikBone debugFabrikBone;
 	debugFabrikBone.moveEndToTarget(GetWorld(), FVector(200,-300,200), ownLocation, debugDisplayTime);
 	*/
+
+
+
+	//extract angles
+	MMatrix rotTest;
+	rotTest.yawRadAdd(MMatrix::degToRadian(90));
+	rotTest.yawRadAdd(MMatrix::degToRadian(25));
+	rotTest.pitchRadAdd(MMatrix::degToRadian(45));
+	rotTest.pitchRadAdd(MMatrix::degToRadian(-45));
+	FRotator r = rotTest.extractRotator();
+	FString string = FString::Printf(
+		TEXT("ROTATION DEBUG x %f ; y %f; z %f"), 
+		r.Roll,
+		r.Pitch,
+		r.Yaw
+	);
+	DebugHelper::logMessage(string);
+
+	// testing axis rotation - bringt nichts. Man braucht quaternionen für rotation damit es einfach ist.
+	/*
+	MMatrix mat;
+	mat.setTranslation(1, 0, 0);
+	mat.yawRadAdd(MMatrix::degToRadian(90));
+	mat.pitchRadAdd(MMatrix::degToRadian(45));
+	std::vector<FVector> axesCopy = mat.getAxes();
+	for (int i = 0; i < axesCopy.size(); i++){
+		FVector &current = axesCopy.at(i);
+		DebugHelper::logMessage("debugvector ", current);
+	}
+	*/
+
+	// debug testing meshes
+	float legScaleCM = 150.0f;
+	float armScaleCM = 100.0f;
+	float legHalfScale = legScaleCM / 2.0f;
+	float armHalfScale = armScaleCM / 2.0f;
+
+	int sizeX = 10;
+	int sizeY = 10;
+	int offY = sizeY / 2;
+	offY = 0;
+
+	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
+	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
+	hipController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
+	
+	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
+	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
+	hipController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
+
+	
+	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
+	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
+	hipController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
+	
+
+	//holding weapon
+	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
+	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
+	hipController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
+	
 }
 
 // Called every frame
@@ -174,6 +235,12 @@ void AIkActor::getWeaponOnStart(){
  * 
  */
 
+/// @brief creates a cube of x,y,height size
+/// @param x x size
+/// @param y y size
+/// @param height height size
+/// @param offsetY offset on y
+/// @return new mesh actor
 AActor *AIkActor::createLimbPivotAtTop(int x, int y, int height, int offsetY){
 
 	height *= -1; //orient downwardss

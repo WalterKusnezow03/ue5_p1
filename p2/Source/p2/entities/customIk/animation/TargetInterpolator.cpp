@@ -44,7 +44,17 @@ void TargetInterpolator::overrideStart(FVector fromtarget){
 
 
 void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
-    
+    /**
+     * was passiert hier:
+     * alte distanz und time to frame ergeben velocity
+     *
+     * velocity: m/s
+     * newDist: m
+     *
+     * newtime = (m) / (m/s) = m * (s/m) = s
+     * 
+     * delta time muss nicht resettet werden! Ansonsten bricked alles.
+     */
 
     float distanceOld = FVector::Dist(from, target);
     float speed = distanceOld / timeToFrame; //sei distanz 40m und ttf 2s, dann sinds 20ms
@@ -52,8 +62,6 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
 
     // Aktualisiere Startpunkt
     from = newStart;
-
-    //delta time muss nicht resettet werden! Ansonsten bricked alles.
 
     // Neue Time-to-Frame berechnen
     float newDistance = FVector::Dist(from, target);

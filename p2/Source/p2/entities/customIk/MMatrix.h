@@ -33,19 +33,15 @@ public:
 
 	FString asString();
 
-	void roll(float angle);
-	void pitch(float angle);
-	void yaw(float angle);
-
-	void rollRad(float angle);
 	void pitchRad(float angle);
+	void rollRad(float angle);
 	void yawRad(float angle);
 
 	void rollRadAdd(float angle);
 	void pitchRadAdd(float angle);
 	void yawRadAdd(float angle);
-	
 
+	
 
 	static float degToRadian(float deg);
 	static float radToDegree(float rad);
@@ -64,9 +60,10 @@ public:
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
 
+
+	
 private:
 	
-
 
 
 	//16 langes array für die 4x4 matrix
@@ -102,4 +99,11 @@ private:
 	float get(int column, int row);
 	void scaleRow(int row, float scale);
 	void minusForRow(int row, int otherRow, float faktor);
+
+
+	//new section for rotation measure
+	int flipRotation(float aX, float aY, float oX, float oY);
+	float pitchAngleTo(FVector &localTarget);
+	float yawAngleTo(FVector &localTarget);
+	float rollAngleTo(FVector &localTarget);
 };

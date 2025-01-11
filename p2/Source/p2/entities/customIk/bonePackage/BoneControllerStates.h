@@ -12,7 +12,5 @@ enum class BoneControllerStates
 {
 	none,
     locomotion,
-    locomotionClimb,
-    locomotionClimbAdjust,
     locomotionClimbAll
 };
