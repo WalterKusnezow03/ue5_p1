@@ -28,14 +28,14 @@ AplayerScript::AplayerScript()
     float halfHeight = 80.0f; // 90f
     GetCapsuleComponent()->InitCapsuleSize(radius, halfHeight);
 
-    // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
     CameraComponent->SetupAttachment(GetCapsuleComponent());
     CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	CameraComponent->bUsePawnControlRotation = true;
-	
 
-	// Set default values
+
+
+    // Set default values
     TurnRateGamepad = 45.f;
     LookUpRateGamepad = 45.f;
 
@@ -82,16 +82,16 @@ void AplayerScript::BeginPlay()
 
     //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
     
-    Aweapon *w = nullptr;
+    Aweapon *weapon = nullptr;
     if(entityMananger != nullptr){
         //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
 
         
-        w = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
-        if(w != nullptr){
-            w->applySight(weaponSightEnum::enum_reddot);
-            w->pickup(CameraComponent);
-            playerInventory.addWeapon(w);
+        weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
+        if(weapon != nullptr){
+            weapon->applySight(weaponSightEnum::enum_reddot);
+            weapon->pickup(CameraComponent);
+            playerInventory.addWeapon(weapon);
         }
     }
     
@@ -130,6 +130,21 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
     PlayerInputComponent->BindAction("rightMouse", IE_Pressed, this, &AplayerScript::aim);
     PlayerInputComponent->BindAction("rightMouse", IE_Released, this, &AplayerScript::aim);
+}
+
+
+
+void AplayerScript::switchCamera(){
+    if(isCamInPlayer){
+        CameraComponent->SetRelativeLocation(FVector(200.56f, 1.75f, 64.f)); // Position the camera
+	    CameraComponent->bUsePawnControlRotation = false;
+        CameraComponent->SetRelativeRotation(FRotator(-90, 0, 0)); // Look downward
+        
+    }else{
+        CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
+	    CameraComponent->bUsePawnControlRotation = true;
+    }
+    
 }
 
 
@@ -234,6 +249,9 @@ void AplayerScript::Jump(){
 
 
     }
+
+    //debug
+    switchCamera();
 
     //TESTING of layout creator, works as expected
     

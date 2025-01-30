@@ -90,7 +90,10 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime){
     else{
         //DebugHelper::showScreenMessage("B interpolating!", FColor::Black);
         interpolated = interpolateB.interpolate(DeltaTime);
-        if(interpolateB.hasReachedTarget()){
+        
+        //NEW
+        if(interpolateB.hasReachedTarget() && gravityInterpolator.groundReachedFlag()){
+        //if(interpolateB.hasReachedTarget()){
             cycleComplete = true;
             projectionHipOffsetComplete = FVector(0, 0, 0);
             isAnimationAPlaying = true; //flip bool!
@@ -418,7 +421,12 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime, FVector currentRel
         interpolated = interpolateB.interpolate(DeltaTime);
 
         //interpolated = interpolateB.interpolate(DeltaTime, currentRelative);
-        if(interpolateB.hasReachedTarget()){
+        
+        //new: alos listen for ground reached on B!
+        if(interpolateB.hasReachedTarget() && gravityInterpolator.groundReachedFlag()){
+
+        
+        //if(interpolateB.hasReachedTarget()){
             cycleComplete = true;
             projectionHipOffsetComplete = FVector(0, 0, 0);
             isAnimationAPlaying = true; //flip bool!

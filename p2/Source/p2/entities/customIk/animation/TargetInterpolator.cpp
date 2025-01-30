@@ -28,6 +28,18 @@ void TargetInterpolator::setTarget(FVector fromIn, FVector totarget, float timeT
     targetSetup = true;
 }
 
+void TargetInterpolator::setTarget(
+	FVector fromIn, 
+	FVector toTarget, 
+	FRotator fromRotationIn, 
+	FRotator toRotationIn, 
+	float timeToFrameIn
+){
+    setTarget(fromIn, toTarget, timeToFrameIn);
+    fromRotation = fromRotationIn;
+    toRotation = toRotationIn;
+}
+
 /// @brief override target of a RUNNING ANIMATION!
 /// @param totarget 
 void TargetInterpolator::overrideTarget(FVector totarget){
@@ -41,7 +53,14 @@ void TargetInterpolator::overrideStart(FVector fromtarget){
 }
 
 
-
+void TargetInterpolator::overrideStart(FVector fromtarget, FRotator fromRotationIn){
+    overrideStart(fromtarget);
+    fromRotation = fromRotationIn;
+}
+void TargetInterpolator::overrideTarget(FVector totarget, FRotator toRotationIn){
+    overrideTarget(totarget);
+    toRotation = toRotationIn;
+}
 
 void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
     /**
@@ -142,8 +161,36 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
 }
 
 
+FRotator TargetInterpolator::interpolateRotationOnly(float DeltaTime){
+    if(deltaTime >= timeToFrame){
+        reached = true;
+        deltaTime = 0.0f;
+        worldtargetSetup = false;
+        return toRotation;
+    }
+    deltaTime += DeltaTime;
+
+    FRotator rotationOutgoing = TargetInterpolator::interpolationRotation(
+        fromRotation, 
+        toRotation, 
+        skalar() //current skalar
+    );
+    return rotationOutgoing;
+}
 
 
+FVector TargetInterpolator::interpolate(float DeltaTime, FRotator &rotationOutgoing){
+    FVector outpos = interpolate(DeltaTime);
+    
+    float skalarCurrent = skalar();
+    FRotator interpolatedRotation = TargetInterpolator::interpolationRotation(
+        fromRotation, 
+        toRotation, 
+        skalarCurrent
+    );
+    rotationOutgoing = interpolatedRotation;
+    return outpos;
+}
 
 float TargetInterpolator::skalar(){
     if(timeToFrame == 0){
@@ -174,7 +221,32 @@ FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float sk
     return interpolated;
 }
 
+FRotator TargetInterpolator::interpolationRotation(FRotator fromIn, FRotator toIn, float skalar){
+    
+    FRotator output;
+    output.Roll = fromIn.Roll + skalar * rotationDirectionShorter(fromIn.Roll, toIn.Roll);
+    output.Pitch = fromIn.Pitch + skalar * rotationDirectionShorter(fromIn.Pitch, toIn.Pitch);
+    output.Yaw = fromIn.Yaw + skalar * rotationDirectionShorter(fromIn.Yaw, toIn.Yaw);
 
+    return output;
+}
+
+/// @brief creates the shorter rotation direction between two angles a and b which can be signed
+/// but will be clamped from -180 to 180 degrees
+/// @param a 
+/// @param b 
+/// @return signed shorter angle
+float TargetInterpolator::rotationDirectionShorter(float a, float b){
+    a = std::clamp(a, -180.0f, 180.0f);
+    b = std::clamp(b, -180.0f, 180.0f);
+
+    float diffA = a - b;
+    float diffB = b - a;
+    if(std::abs(diffA) < std::abs(diffB)){
+        return diffA;
+    }
+    return diffB;
+}
 
 float TargetInterpolator::TimeToFrame(){
     return timeToFrame;

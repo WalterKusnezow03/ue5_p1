@@ -48,6 +48,7 @@ public:
 
 	static MMatrix createRotatorFromRad(float x, float y, float z);
 	static MMatrix createRotatorFromDeg(float x, float y, float z);
+	static MMatrix createRotatorFrom(FRotator &other);
 
 	void resetRotation();
 

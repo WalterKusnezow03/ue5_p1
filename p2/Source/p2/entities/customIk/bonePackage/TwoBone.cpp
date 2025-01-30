@@ -54,12 +54,23 @@ void TwoBone::setupBones(float completeDistance){
     knee.setTranslation(0, 0, -half); //from hip to knee
     foot.setTranslation(0, 0, -half); //from knee to foot
 
-    //debug different sizes
-    knee.setTranslation(0, 0, -half);
-    foot.setTranslation(0, 0, -half); 
 
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
 }
+
+void TwoBone::setupBones(float distanceHipKnee, float distanceKneeFoot){
+    distanceHipKnee = std::abs(distanceHipKnee);
+    distanceKneeFoot = std::abs(distanceKneeFoot);
+    totalBoneLengthCopy = distanceHipKnee + distanceKneeFoot;
+    float half = totalBoneLengthCopy / 2.0f;
+
+    hip.setTranslation(0, 0, 0); //from to hip is 0,0,0
+    knee.setTranslation(0, 0, -distanceHipKnee); //from hip to knee
+    foot.setTranslation(0, 0, -distanceKneeFoot); //from knee to foot
+
+    toFootTip = FVector(half / 2, 0, 0); //x is forward for now
+}
+
 
 
 /// @brief normalizes a target to the max radius (total bone length)
@@ -159,32 +170,61 @@ float TwoBone::createKneeAngle(float angle){
 /**
  * 
  * 
- * Allgemiennen cosinus satz wieder implementieren
+ * Allgemiennen cosinus satz nutzen um winkel der 
+ * 2 knochen zu bestimmen
  * 
  * 
  */
 
-void TwoBone::createEthaPitchAnglesFor(float distanceTotarget, float &firstOuput, float &secondOutput, bool forwardIK){
 
-    float c = distanceTotarget;
-    float b_toKneelength = FVector::Dist(knee.getTranslation(), FVector(0,0,0));
-    float a_toFootLenght = FVector::Dist(foot.getTranslation(), FVector(0,0,0));
+/// @brief will calculate the angles based on the bone lengths and override first and second output
+/// for the root joint and second joint pitch angle
+/// @param distanceTotarget 
+/// @param firstOuput for root joint
+/// @param secondOutput for second joint
+/// @param forwardIK 
+/// @param middle second joint matrix (translation is needed for bone length)
+/// @param end third joint matrix (translation is needed for bone length)
+void TwoBone::createEthaPitchAnglesFor(
+    float distanceTotarget, 
+    float &firstOuput, 
+    float &secondOutput, 
+    bool forwardIK,
+    MMatrix &middle,
+    MMatrix &end
+){
 
-    if(!forwardIK){
-        float copy = b_toKneelength;
-        b_toKneelength = a_toFootLenght;
-        a_toFootLenght = b_toKneelength;
-    }
+    float _c = std::abs(distanceTotarget);
+    float _b = std::abs(middle.getTranslation().Size());
+    float _a = std::abs(end.getTranslation().Size());
 
-    float b2 = b_toKneelength * b_toKneelength;
-    float a2 = a_toFootLenght * a_toFootLenght;
-    float c2 = c * c;
+    float a2 = _a * _a;
+    float b2 = _b * _b;
+    float c2 = _c * _c;
 
-    float alpha = std::acosf((b2 + c2 - a2) / (2 * b_toKneelength * c));
-    float beta = std::acosf((a2 + c2 - b2) / (2 * a_toFootLenght * c));
+    /*
+    float alpha = std::acosf(((b2 + c2 - a2) / (2 * _b * _c)));
+    float beta = std::acosf(((a2 + c2 - b2) / (2 * _a * _c)));
+    float gamma = std::acosf(((a2 + b2 - c2) / (2 * _a * _b)));
+    */
+    float alpha = std::acosf(FMath::Clamp((b2 + c2 - a2) / (2 * _b * _c), -1.0f, 1.0f));
+    float beta = std::acosf(FMath::Clamp((a2 + c2 - b2) / (2 * _a * _c), -1.0f, 1.0f));
+    float gamma = std::acosf(FMath::Clamp((a2 + b2 - c2) / (2 * _a * _b), -1.0f, 1.0f));
 
-    firstOuput = alpha;
-    secondOutput = - beta; //eigentlich ja flip an der stelle
+
+
+    firstOuput = -1 * alpha;
+    //secondOutput = alpha * 2; //*-2 um den winkel einfach zu flippen bei gleichgrossen knochen
+
+    gamma = MMatrix::degToRadian(180 - std::abs(MMatrix::radToDegree(gamma)));
+    secondOutput = gamma;
+
+    FString debugAngleString = FString::Printf(
+        TEXT("AngleDebug alpha HIP %.2f, gamma KNEE %.2f"),
+        MMatrix::radToDegree(alpha),
+        MMatrix::radToDegree(gamma)
+    );
+    DebugHelper::logMessage(debugAngleString);
 }
 
 /**
@@ -248,7 +288,7 @@ void TwoBone::build(
 
 /// @brief will rotate the complete bone (chain) towards a target location with a weight
 void TwoBone::rotateEndToTarget(FVector &vec, FVector &weight){
-    rotateEndToTarget(vec, weight, hip, knee, foot);
+    rotateEndToTarget(vec, weight, hip, knee, foot, true);
 }
 
 
@@ -263,7 +303,8 @@ void TwoBone::rotateEndToTarget(
     FVector &weight,
     MMatrix &start,
     MMatrix &middle,
-    MMatrix &end
+    MMatrix &end,
+    bool debugForwardIk
 )
 {
     //TODO: add support for using the rotation which is already applied? 
@@ -305,6 +346,16 @@ void TwoBone::rotateEndToTarget(
     float hipAngle = createHipAngle(angle);
     float kneeAngle = createKneeAngle(angle);
 
+
+    //ATTENTION: NEW TESTING COS SATZ!
+    createEthaPitchAnglesFor(
+        distance, 
+        hipAngle, 
+        kneeAngle, 
+        debugForwardIk,
+        middle,
+        end
+    );
 
 
 
@@ -552,7 +603,7 @@ void TwoBone::rotateStartToTargetAndBuild( //works as expected
 
     
     MMatrix empty; //NEW START (Hip but backwards, ersatz.)
-    rotateEndToTarget(vec, weight, empty, foot, knee);
+    rotateEndToTarget(vec, weight, empty, foot, knee, false);
     
 
     matrizen.push_back(&empty); //damit first limb gezeichnet wird von foot to knee usw. Matrix multiplikation

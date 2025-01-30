@@ -18,6 +18,7 @@ public:
 	void resetVelocity();
 
 	void updateGroundPosition(FVector groundIn);
+	bool groundReachedFlag();
 
 private:
 	FVector groundPosition;
@@ -27,6 +28,7 @@ private:
 
 	FVector gravityVector();
 	bool groundReached(FVector &compare);
+	
 
 	float gravityA = -981.0f; //9.81 meter
 	FVector velocityVector;

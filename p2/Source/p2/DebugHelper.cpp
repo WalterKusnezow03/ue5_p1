@@ -35,6 +35,9 @@ void DebugHelper::Debugtest(UWorld *world){
 /// @param color 
 void DebugHelper::showScreenMessage(FString s, FColor color){
 
+	//debug
+	return;
+
 	bool check = false;
 	if(check){
 		FString filterString = "filter string";

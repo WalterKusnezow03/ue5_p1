@@ -15,9 +15,21 @@ public:
 	~TargetInterpolator();
 
 	void setTarget(FVector from, FVector toTarget, float timeToFrameIn);
+	void setTarget(
+		FVector fromIn, 
+		FVector toTarget, 
+		FRotator fromRotationIn, 
+		FRotator toRotationIn, 
+		float timeToFrameIn
+	);
+	
 	void overrideTarget(FVector totarget);
 	void overrideStart(FVector fromTarget);
 	void overrideStartSpeedRelative(FVector newStart);
+
+	void overrideStart(FVector fromtarget, FRotator fromRotationIn);
+	void overrideTarget(FVector totarget, FRotator toRotationIn);
+
 
 	bool hasReachedTarget();
 	bool hasTargetSetup();
@@ -26,6 +38,10 @@ public:
 	void resetDeltaTime();
 
 	FVector interpolate(float DeltaTime);
+	FVector interpolate(float DeltaTime, FRotator &rotationOutgoing);
+	FRotator interpolateRotationOnly(float DeltaTime);
+
+	static FRotator interpolationRotation(FRotator fromIn, FRotator toIn, float skalar);
 	static FVector interpolation(FVector from, FVector to, float skalar);
 
 	FVector readFromPosition();
@@ -43,11 +59,12 @@ public:
 private:
 	FVector from;
 	FVector target;
-	FVector from_original;
-
-
+	
 	FVector fromWorld;
 	FVector targetWorld;
+
+	FRotator fromRotation;
+	FRotator toRotation;
 
 	float deltaTime = 0.0f;
 	float timeToFrame = 0.0f;
@@ -57,4 +74,6 @@ private:
 
 	bool targetSetup = false;
 	bool worldtargetSetup = false;
+
+	static float rotationDirectionShorter(float a, float b);
 };

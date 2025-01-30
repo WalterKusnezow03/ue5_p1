@@ -65,6 +65,10 @@ bool GravityInterpolator::groundReached(FVector &compare){
     return false;
 }
 
+bool GravityInterpolator::groundReachedFlag(){
+    return reachedFlag;
+}
+
 void GravityInterpolator::resetVelocity(){
     velocityVector = FVector(0.0f, 0.0f, 0.0f);
 }

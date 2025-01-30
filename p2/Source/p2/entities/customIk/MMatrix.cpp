@@ -366,10 +366,12 @@ MMatrix MMatrix::createRotatorFromDeg(float x, float y, float z){
 }
 
 
-
-
-
-
+MMatrix MMatrix::createRotatorFrom(FRotator &other){
+    float x = MMatrix::degToRadian(other.Roll);
+    float y = MMatrix::degToRadian(other.Pitch);
+    float z = MMatrix::degToRadian(other.Yaw);
+    return createRotatorFromRad(x, y, z);
+}
 
 /// @brief multiply with another matrix ROTATION ONLY
 /// @param other 
@@ -507,6 +509,8 @@ FRotator MMatrix::extractRotator(){
 
     */
 
+
+    //kontext: get(column, row)
     float _yaw = std::atan2f(get(0, 1), get(0, 0));
     float _pitch = -1 * std::asinf(get(0, 2));
     float _roll = std::atan2f(get(1, 2), get(2, 2));
@@ -515,8 +519,9 @@ FRotator MMatrix::extractRotator(){
     _pitch = MMatrix::radToDegree(_pitch);
     _roll = MMatrix::radToDegree(_roll);
 
-    //keep rotation like this, unreal is. Bugged.
-    FRotator r(-1 * _pitch, _yaw, -1 * _roll); //YESS
+    //keep rotation like this
+    //FRotator Constructor expects FRotator(Yin, Zin, Rin)
+    FRotator r(-1 * _pitch, _yaw, -1 * _roll); 
 
 
     return r;

@@ -44,10 +44,16 @@ public:
 	UPROPERTY(VisibleAnywhere)
     class UCameraComponent* CameraComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* CameraComponentSecondary;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
     class UAnimInstance* AnimInstance;
 
 private:
+	bool isCamInPlayer = true;
+	void switchCamera();
+
 	//int team = 0;
 	teamEnum team;
 

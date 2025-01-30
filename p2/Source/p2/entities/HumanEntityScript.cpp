@@ -85,6 +85,7 @@ void AHumanEntityScript::init(){
 
 
     //create skelleton and attach to this.
+    /*
     if(skelletonControllerPointer == nullptr){
         if(assetManager *a = assetManager::instance()){
             UClass *humanController = a->findBp(skelletonControllerEnum::human_skelleton);
@@ -111,6 +112,7 @@ void AHumanEntityScript::init(){
             }
         }
     }
+    
 
     //attach weapon to skelleton
     if(weaponPointer != nullptr && skelletonControllerPointer != nullptr){
@@ -121,7 +123,7 @@ void AHumanEntityScript::init(){
         skelletonControllerPointer->attachToBreastRight(weaponPointer);
         skelletonControllerPointer->attachLeftArmTo(weaponPointer, socketNames::leftHandSocket);
         skelletonControllerPointer->attachRightArmTo(weaponPointer, socketNames::rightHandSocket);
-    }
+    }*/
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){

@@ -1467,7 +1467,7 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
                     worldPointer,
                     current->pos,
                     prevNode->pos,
-                    FColor::Red,
+                    FColor::Cyan,
                     5.0f
                 );
             }
@@ -1479,11 +1479,26 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
 
                 std::vector<FVector> outputPath = constructPath(end);
                 
-                //clean all status to prevent issues, everything must be cleared
+                //draw
+                for (int i = 1; i < outputPath.size(); i++){
+                    FVector nodeA = outputPath.at(i);
+                    FVector nodeB = outputPath.at(i-1);
+
+                    DebugHelper::showLineBetween(
+                        worldPointer,
+                        nodeA,
+                        nodeB,
+                        FColor::Red,
+                        5.0f
+                    );
+                }
+
+                // clean all status to prevent issues, everything must be cleared
                 for (int i = 0; i < markedForCleanUp.size(); i++)
                 {
                     Node *n = markedForCleanUp.at(i);
-                    if(n != nullptr){
+                    if (n != nullptr)
+                    {
                         n->reset();
                     }
                 }

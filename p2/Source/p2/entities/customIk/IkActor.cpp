@@ -47,7 +47,7 @@ void AIkActor::BeginPlay()
 	*/
 
 	weaponPointer = nullptr;
-	hipController.SetControllerState(BoneControllerStates::locomotion);
+	hipController.setStateWalking();
 	getWeaponOnStart();
 	hipController.attachCarriedItem(weaponPointer);
 
@@ -67,11 +67,12 @@ void AIkActor::BeginPlay()
 
 
 	//extract angles
+	/*
 	MMatrix rotTest;
 	rotTest.yawRadAdd(MMatrix::degToRadian(90));
 	rotTest.yawRadAdd(MMatrix::degToRadian(25));
 	rotTest.pitchRadAdd(MMatrix::degToRadian(45));
-	rotTest.pitchRadAdd(MMatrix::degToRadian(-45));
+	rotTest.pitchRadAdd(MMatrix::degToRadian(-10));
 	FRotator r = rotTest.extractRotator();
 	FString string = FString::Printf(
 		TEXT("ROTATION DEBUG x %f ; y %f; z %f"), 
@@ -80,19 +81,8 @@ void AIkActor::BeginPlay()
 		r.Yaw
 	);
 	DebugHelper::logMessage(string);
-
-	// testing axis rotation - bringt nichts. Man braucht quaternionen für rotation damit es einfach ist.
-	/*
-	MMatrix mat;
-	mat.setTranslation(1, 0, 0);
-	mat.yawRadAdd(MMatrix::degToRadian(90));
-	mat.pitchRadAdd(MMatrix::degToRadian(45));
-	std::vector<FVector> axesCopy = mat.getAxes();
-	for (int i = 0; i < axesCopy.size(); i++){
-		FVector &current = axesCopy.at(i);
-		DebugHelper::logMessage("debugvector ", current);
-	}
 	*/
+
 
 	// debug testing meshes
 	float legScaleCM = 150.0f;
@@ -118,6 +108,19 @@ void AIkActor::BeginPlay()
 	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
 	hipController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
 	
+
+	//torso
+	/**
+	 * torso wird jetzt erstmal auch hier erstellt
+	 * 
+	 * die create limb methode usw muss irgendwann entweder durch meshes
+	 * aus den assets ersetzt werden
+	 * oder eine eigene klasse existieren die diese detailierter
+	 * erstellen kann!
+	 */
+	AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, -sizeY * 2.0f);
+	hipController.attachTorso(torsoMesh);
+
 
 	//holding weapon
 	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);

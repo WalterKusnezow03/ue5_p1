@@ -9,10 +9,11 @@
 #include "p2/entities/customIk/bonePackage/ArmMotionStates.h"
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
 
 /**
  * This class will manage Bones of itself
- * and all amtricies creating one skelleton
+ * and all end effector matricies
  * 
  * just as the bones, the initial look dir is towards the positive x axis!
  * 
@@ -38,20 +39,31 @@ public:
 
 	MMatrix currentTransform();
 
-	void SetControllerState(BoneControllerStates state);
+	
 
 	void attachCarriedItem(AcarriedItem *carriedItem);
 
-	//testing
+	//attach meshes
 	void attachLimbMeshes(AActor *top, AActor *bottom, int index);
+	void attachTorso(AActor *torsoPointer);
+
+	//movement and item interaction set state
+	void setStateWalking();
+	void setStateRunning();
+	void stopLocomotion();
+	void weaponAimDownSight();
+	void weaponContactPosition();
 
 private:
-	
+	//torso 
+	class AActor *attachedTorso;
+	void TickUpdateTorso();
+
 
 	class AcarriedItem *attachedCarriedItem;
 
-	bool isRunning = false; //debug
-	float velocity = 200.0f;
+	bool isRunning = false; //debug //false
+	float velocity = 150.0f;
 
 	FColor leg1Color = FColor::Red;
 	FColor leg2Color = FColor::Blue;
@@ -59,25 +71,19 @@ private:
 	FColor arm2Color = FColor::Emerald;
 
 	//limb indices, dont change
-	int FOOT_1 = 1;
-	int FOOT_2 = 2;
-	int SHOULDER_1 = 3;
-	int SHOULDER_2 = 4;
-
-
+	const int FOOT_1 = 1;
+	const int FOOT_2 = 2;
+	const int SHOULDER_1 = 3;
+	const int SHOULDER_2 = 4;
+	
 
 	//motion state
 	BoneControllerStates currentMotionState;
-	
-	//hand motion state
-	ArmMotionStates currentArmMotionState;
-
 
 
 	bool leg1isPlaying;
 
 	
-
 	float addVelocityBasedOnState();
 
 	MMatrix ownLocation;
@@ -106,10 +112,6 @@ private:
 
 	//arm climb locomotion keys
 	class DoubleKeyFrameAnimation armClimbKeys_1;
-
-	//arm animation keys move to target 
-	class KeyFrameAnimation armTransitKeys_1;
-	class KeyFrameAnimation armTransitKeys_2;
 
 
 
@@ -239,4 +241,11 @@ private:
 
 	bool climb_hand1cycleComplete = false;
 	bool climb_setHandTarget = false;
+
+
+
+
+
+	//new motion queue section
+	class MotionQueue armMotionQueue;
 };

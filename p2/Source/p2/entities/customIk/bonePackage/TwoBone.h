@@ -24,8 +24,8 @@ public:
 	FVector endLimbWorldLocation();
 
 	void setupBones(float completeDistance);
-	
-	
+	void setupBones(float distanceHipKnee, float distanceKneeFoot);
+
 	void build(
 		UWorld *world, 
 		MMatrix &offsetAndRotation, 
@@ -90,7 +90,14 @@ private:
 	float createKneeAngle(float angle);
 	void normalizeTarget(FVector &target);
 
-	void createEthaPitchAnglesFor(float distanceTotarget, float &firstOuput, float &secondOutput, bool forwardIK);
+	void createEthaPitchAnglesFor(
+		float distanceTotarget, 
+		float &firstOuput, 
+		float &secondOutput, 
+		bool forwardIK,
+		MMatrix &middle,
+    	MMatrix &end
+	);
 
 	//calculating angles
 	float yawAngleTo(FVector &localTarget);
@@ -134,7 +141,8 @@ private:
 		FVector &weight,
 		MMatrix &start,
 		MMatrix &middle,
-		MMatrix &end
+		MMatrix &end,
+		bool debugForwardIk
 	);
 	
 

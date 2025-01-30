@@ -7,10 +7,14 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
+#include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
+#include "p2/entities/customIk/animation/motionChain/MotionAction.h"
 #include "CoreMinimal.h"
+
 
 BoneController::BoneController()
 {
+	attachedTorso = nullptr;
 	attachedCarriedItem = nullptr;
 	setupBones();
 	setupAnimation(); // temporary zum denken
@@ -20,6 +24,7 @@ BoneController::BoneController()
 }
 
 BoneController::BoneController(float legScaleCmIn, float armScaleCmIn){
+	attachedTorso = nullptr;
 	attachedCarriedItem = nullptr;
 	legScaleCM = std::abs(legScaleCmIn);
 	armScaleCM = std::abs(armScaleCmIn);
@@ -30,7 +35,8 @@ BoneController::BoneController(float legScaleCmIn, float armScaleCmIn){
 
 BoneController::BoneController(BoneController &other){
 	attachedCarriedItem = nullptr;
-	if(&other != this){
+	attachedTorso = nullptr;
+	if (&other != this){
 		*this = other;
 	}
 }
@@ -69,7 +75,8 @@ BoneController &BoneController::operator=(BoneController &other){
 	armClimbKeys_1 = other.armClimbKeys_1;
 
 	currentMotionState = other.currentMotionState;
-	currentArmMotionState = other.currentArmMotionState;
+
+	//caution: DO NOT COPY MESHES OR ATTACHED ITEMS! (?) -> will not be needed i guess.
 
 	return *this;
 }
@@ -78,6 +85,14 @@ BoneController::~BoneController()
 {
 
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -234,6 +249,35 @@ void BoneController::setupAnimation(){
 	armClimbKeys_1.setAnimationBAdjustPermanentTarget(hipTargetFromHand);
 
 	armClimbKeys_1.setRunning(false);
+
+
+
+
+	//animation states new for motion queue state machine thingy
+	MotionAction aimingState;
+	FRotator rotationForTarget;
+	FVector targetAim(armScaleCM * 0.8f, 0, armScaleCM);
+	aimingState.setLocationAndRotation(targetAim, rotationForTarget);
+	armMotionQueue.addTarget(ArmMotionStates::handsFollowItem, aimingState);
+
+
+	//other states will follow of here for a holstered weapong for example
+	MotionAction contactState;
+	FRotator rotationForTarget2;
+	rotationForTarget2.Pitch = 45; //45 degree to front
+	FVector targetContactStateLocation(armScaleCM * 0.25f, 0, armScaleCM);
+	contactState.setLocationAndRotation(targetContactStateLocation, rotationForTarget2);
+	armMotionQueue.addTarget(ArmMotionStates::kontaktStellung, contactState);
+
+	
+
+	MotionAction holsterState;
+	FRotator rotationForTarget3;
+	rotationForTarget2.Pitch = -90; //45 degree to front
+	FVector targetHolsterStateLocation(0, armScaleCM * 0.1f, 0);
+	contactState.setLocationAndRotation(targetHolsterStateLocation, rotationForTarget3);
+	armMotionQueue.addTarget(ArmMotionStates::holsterItem, holsterState);
+
 }
 
 
@@ -248,6 +292,12 @@ void BoneController::attachLimbMeshes(AActor *top, AActor *bottom, int index){
 			bone->attachSecondLimb(*bottom);
 			bottom->SetActorEnableCollision(false);
 		}	
+	}
+}
+
+void BoneController::attachTorso(AActor *torsoPointerIn){
+	if(torsoPointerIn != nullptr){
+		attachedTorso = torsoPointerIn;
 	}
 }
 
@@ -272,6 +322,19 @@ void BoneController::drawBody(float DeltaTime){
 	DebugHelper::showLineBetween(GetWorld(), com, foot1.getTranslation(), FColor::Red, DeltaTime);
 	DebugHelper::showLineBetween(GetWorld(), com, foot2.getTranslation(), FColor::Red, DeltaTime);
 }
+
+
+/// @brief will update the torso location 
+void BoneController::TickUpdateTorso(){
+	if(attachedTorso != nullptr){
+		MMatrix currentTransformMat = currentTransform();
+		FRotator orient = ownOrientation.extractRotator();
+		attachedTorso->SetActorLocation(currentTransformMat.getTranslation());
+		attachedTorso->SetActorRotation(orient);
+	}
+}
+
+
 
 void BoneController::SetLocation(FVector &pos){
     //setup
@@ -303,6 +366,11 @@ void BoneController::LookAt(FVector TargetLocation)
 
 	ownOrientation.yawRad(MMatrix::degToRadian(zDegree));
 }
+
+
+
+
+
 
 void BoneController::yawRotate(float degree){
 	float rad = MMatrix::degToRadian(degree);
@@ -435,12 +503,40 @@ void BoneController::updateHipLocation(MMatrix &updatetHipJointMat, int limbinde
 }
 
 
-
-
-
-void BoneController::SetControllerState(BoneControllerStates state){
-    currentMotionState = state;
+//api for updating states easily
+void BoneController::setStateWalking(){
+	currentMotionState = BoneControllerStates::locomotion;
+	isRunning = false;
 }
+
+void BoneController::setStateRunning(){
+	currentMotionState = BoneControllerStates::locomotion;
+	isRunning = true;
+}
+
+void BoneController::stopLocomotion(){
+	currentMotionState = BoneControllerStates::none;
+}
+
+void BoneController::weaponAimDownSight(){
+	//block arm motion state changes while climbing
+	if(currentMotionState != BoneControllerStates::locomotionClimbAll){
+		if(attachedCarriedItem != nullptr){
+			armMotionQueue.updateState(ArmMotionStates::handsFollowItem);
+		}
+	}
+}
+
+void BoneController::weaponContactPosition(){
+	//block arm motion state changes while climbing
+	if(currentMotionState != BoneControllerStates::locomotionClimbAll){
+		if(attachedCarriedItem != nullptr){
+			armMotionQueue.updateState(ArmMotionStates::kontaktStellung);
+		}
+	}
+}
+
+
 
 
 //will be designed for arms
@@ -458,6 +554,7 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
     world = worldIn;
 
 	drawBody(DeltaTime); //debug draw body
+	TickUpdateTorso();
 
 	if(currentMotionState == BoneControllerStates::none){
         TickBuildNone(DeltaTime);
@@ -497,6 +594,8 @@ void BoneController::TickLocomotion(float DeltaTime){
 			legDoubleKeys_2.overrideCurrentStartingFrame(footPos); //update starting pos of the foot because the actor moved
 
 			
+
+			
 		}
 	}else{
 		
@@ -513,9 +612,9 @@ void BoneController::TickLocomotion(float DeltaTime){
             transformFromWorldToLocalCoordinates(footPos, FOOT_1);
 			legDoubleKeys_1.overrideCurrentStartingFrame(footPos); //update starting pos of the foot because the actor moved
 
-			
 		}
 	}
+
 
 	
 }
@@ -543,42 +642,41 @@ void BoneController::TickBuildNone(float DeltaTime){
 /// @param DeltaTime 
 void BoneController::TickArms(float DeltaTime){
 
-	//unklar ob hand 1 auch waffe halten soll, oder nur klettern, oder beide.
-	if(false && currentMotionState != BoneControllerStates::locomotionClimbAll){
-		TickLimbNone(SHOULDER_1, DeltaTime); 
-	}
-
 	
-	
-	
-	//TickLimbNone(SHOULDER_2, DeltaTime); //holds weapon now. 
 
 	/**
-	 * TESTING MOVE ARM TO TARGET WEAPON
-	 * ---- EXPIREMENTAL ----
-	 * 
-	 * ----> arm 2 always holds the gun now
+	 * arm holing item at least one handed if attached
 	 */
 	if(attachedCarriedItem != nullptr){
 
-		//move weapon by this actor for now
-		MMatrix weaponWorldMatrix = currentTransform(weaponMatrixOffset);
-		FVector locationWeapon = weaponWorldMatrix.getTranslation();
-		attachedCarriedItem->SetActorLocation(locationWeapon); //update location
-		FRotator rotator = ownOrientation.extractRotator();
-		attachedCarriedItem->SetActorRotation(rotator);
+		bool NEWSECTION = true;
+		if (!NEWSECTION){
+			// move weapon by this actor for now
+			MMatrix weaponWorldMatrix = currentTransform(weaponMatrixOffset);
+			FVector locationWeapon = weaponWorldMatrix.getTranslation();
+			attachedCarriedItem->SetActorLocation(locationWeapon); //update location
+			FRotator rotator = ownOrientation.extractRotator();
+			attachedCarriedItem->SetActorRotation(rotator);
 
 
-		//attach hand
-		FVector targetWorld = attachedCarriedItem->rightHandLocation(); // arm 2 (?)
-		moveBoneAndSnapEndEffectorToTarget(
-			SHOULDER_2,
-			DeltaTime,
-			targetWorld,
-			FVector(0, 0, -1)
-		);
+			//attach hand
+			FVector targetWorld = attachedCarriedItem->rightHandLocation(); // arm 2 (?)
+			moveBoneAndSnapEndEffectorToTarget(
+				SHOULDER_2,
+				DeltaTime,
+				targetWorld,
+				FVector(0, 0, -1)
+			);
+		}
 
-		if(currentMotionState != BoneControllerStates::locomotionClimbAll){
+
+
+		
+		//will be removed probably!:
+
+		//if (!NEWSECTION && currentMotionState != BoneControllerStates::locomotionClimbAll)
+		if (currentMotionState != BoneControllerStates::locomotionClimbAll)
+		{
 			FVector targetWorld1 = attachedCarriedItem->leftHandLocation();
 			moveBoneAndSnapEndEffectorToTarget(
 				SHOULDER_1,
@@ -587,7 +685,51 @@ void BoneController::TickArms(float DeltaTime){
 				FVector(0, 0, -1)
 			);
 		}
+
+		/**
+		 * 
+		 * 
+		 * ----- NEW SECTION FOR ARMS! Ticking the arm motion queue-----
+		 * 
+		 * 
+		 */
+		if(NEWSECTION && currentMotionState != BoneControllerStates::locomotionClimbAll || 
+		(currentMotionState == BoneControllerStates::locomotionClimbAll &&
+		 armMotionQueue.isTransitioning())
+		){
+			MMatrix transform = currentTransform();
+			MMatrix transformLeftArm = currentTransform(SHOULDER_1);
+			MMatrix transformRightArm = currentTransform(SHOULDER_2);
+			MMatrix *endEffectorLeft = findEndEffector(SHOULDER_1);
+			MMatrix *endEffectorRight = findEndEffector(SHOULDER_2);
+
+			TwoBone *leftArm = findBone(SHOULDER_1);
+			TwoBone *rightArm = findBone(SHOULDER_2);
+			if(
+				rightArm != nullptr && leftArm != nullptr &&
+				endEffectorRight != nullptr && endEffectorLeft != nullptr
+			){
+				armMotionQueue.Tick(
+					transform, 
+					transformLeftArm,
+					transformRightArm,
+					*endEffectorRight,
+					*endEffectorLeft,
+					*leftArm, 
+					*rightArm, 
+					attachedCarriedItem, 
+					DeltaTime
+				);
+
+				
+			}
+		}
 	}
+
+
+	
+
+	
 }
 
 
@@ -651,7 +793,7 @@ void BoneController::TickLimbNone(int limbIndex, float DeltaTime){
 		bone->build(
 			GetWorld(),
 			transform,
-			*endEffector, // by reference updatet
+			*endEffector, // by reference updated
 			limbColor(limbIndex),
 			DeltaTime * 2.0f
 		);
@@ -665,11 +807,6 @@ void BoneController::TickLimbNone(int limbIndex, float DeltaTime){
  */
 
 
-/**
- * soll den knochen bauen anhand animation und einen offset vorgeben
- * 
- * ----- todo: refacture / remove! --> index sollte übergeben des bones
- */
 
 void BoneController::playForwardKinematicAnim(
 	TwoBone &bone, 
@@ -827,35 +964,31 @@ void BoneController::playForwardKinematicAnim(
     FVector lookDir = currentTransform().lookDirXForward();
 	lookDir.Z = 0.0f; //xy pane only of interest
 
-	bool switchToArmLocomotion = false;
+	bool switchToClimbLocomotion = false;
 	frames.projectNextFrameIfNeeded(
 		GetWorld(), 
 		current,
 		velocityT,
 		lookDir,
-		switchToArmLocomotion, //boolean by reference, switch needed or not
+		switchToClimbLocomotion, //boolean by reference, switch needed or not
 		legScaleCM, //max height 
 		currentMotionState
 	);
 	
 	//override motion state if needed
-	if(switchToArmLocomotion && currentMotionState == BoneControllerStates::locomotion){
+	if(switchToClimbLocomotion && currentMotionState == BoneControllerStates::locomotion){
 		currentMotionState = BoneControllerStates::locomotionClimbAll; //switch to climb motion
+
+		//put item to holster
+		armMotionQueue.updateState(ArmMotionStates::holsterItem);
 	}
 
+	//running velocity
 	FVector thisAdd = lookDir * velocityT * DeltaTime;
-	ownLocation += thisAdd; //running velocity, sollte auch hier so passen im Bone Controller
+	ownLocation += thisAdd; 
 
 
 
-
-	/**
-	 * HIP PROJECTION ADJUST DO NOT REMOVE! 
-	 * Adds the needed hip offset over time
-	 * for the hip when the point gets projected to the floor
-	*/
-	//FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
-	//ownLocation += hipoffsetAdd; 
 
 	/**
 	 * HIP PROJECTION - GRAVITY
@@ -867,35 +1000,16 @@ void BoneController::playForwardKinematicAnim(
 
 
 
-
-	//debug draw 
-	MMatrix translationActorTmp = currentTransform(); 
-	DebugHelper::showLineBetween(
-			GetWorld(), 
-			translationActorTmp * hipoffsetAdd, 
-			translationActorTmp.getTranslation(), 
-			FColor::Red, 
-			2.0f
-	);
-
-
 	//do movement
 	//nochmal neu rechnen nach offset
     MMatrix translationActor = currentTransform(leg);	
 	
 	FVector weight(1, 0, 0);
-
-
-
-
-	//end effector update - old
-	FVector nextPos;
-
 	
 
 	//interpolate World is used to play any animation - even if no target is setup!
 	FVector EndEffectorWorld = footMatrix.getTranslation();
-	nextPos = frames.interpolateWorld(
+	FVector nextPos = frames.interpolateWorld(
 		DeltaTime,
 		EndEffectorWorld,
 		translationActor
@@ -937,25 +1051,18 @@ void BoneController::playBackwardKinematicAnim(
 	//offset for foot during hip adjust movement
 	
 	FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime, footMatrix.getTranslation());
-	//FVector hipoffsetAdd = frames.getProjectionHipOffsetTimed(DeltaTime);
 	footMatrix += hipoffsetAdd;
 	
 
 	
 	//new live update local position at all times
-	FVector StartEffectorWorld = currentTransform(leg).getTranslation();
-	MMatrix inverse = currentFootTransform(footMatrix).jordanInverse();
-	FVector startEffectorLocal = inverse * StartEffectorWorld;
+	FVector StartEffectorWorld = currentTransform(leg).getTranslation(); //hip start
+	MMatrix inverse = currentFootTransform(footMatrix).jordanInverse(); //foot local system
+	FVector startEffectorLocal = inverse * StartEffectorWorld; //hip relative to current foot / end effector pos
 
 	//interpolated with live location update
 	FVector xt = frames.interpolate(DeltaTime, startEffectorLocal); 
 	
-	//draw
-	FVector copy = startEffectorLocal;
-	FVector start = footMatrix.getTranslation();
-	//DebugHelper::showLineBetween(GetWorld(), start + copy, start, FColor::Cyan, 5.0f);
-
-
 	MMatrix current_RotatedFoot = currentFootTransform(footMatrix);
 
     //hip matrix aber da wo der fuss attached ist am oberschenkel
@@ -967,7 +1074,7 @@ void BoneController::playBackwardKinematicAnim(
 		xt,
 		weight,
 		current_RotatedFoot, // foot start
-		ownLocationRelativeToHip, // hip apply HIER MUSS DIE LIMB PASSENDE HIP MATRIX REIN!!!
+		ownLocationRelativeToHip, // hip apply / update der zwischen matrix 
 		color, //FColor::Blue,
 		DeltaTime * 2.0f
 	);
@@ -1011,19 +1118,19 @@ float BoneController::addVelocityBasedOnState(){
 
 
 
-/**
- * 
- * 
- * ---  new testing region for synchronus movement of bones with BK ---
- * 
- */
-
-
+/// @brief will allow the actor to climb. If the arm motion queue is transitioning
+/// it will be ticked until its finished (for example to holster the weapon)
+/// @param DeltaTime 
 void BoneController::TickLocomotionClimbAll(float DeltaTime){
-
-
-
 	
+
+	//new: block climbing while arm motion is transitioning
+	if(armMotionQueue.isTransitioning()){
+		TickLegsNone(DeltaTime);
+		TickArms(DeltaTime);
+		return;
+	}
+
 	//switch to next leg but update relative position
 	
 	//hand reached target, end effector bleibt gelockt für das bein
@@ -1031,7 +1138,6 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 
 		climb_setHandTarget = true;
 		
-		//neu:
 		FVector footPos = ownLocationFoot1.getTranslation();
 		FVector frame = ownLocationHand1.getTranslation();
 		MMatrix startMat = currentTransform(FOOT_1);
@@ -1046,9 +1152,12 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		currentMotionState = BoneControllerStates::locomotion;
 		climb_setHandTarget = false;
 		climb_hand1cycleComplete = false;
+
+		armMotionQueue.updateState(ArmMotionStates::handsFollowItem); //switch to aim state again
 		return;
 	}
 	
+	//if climb complete: allow leg to finish
 	if(armClimbKeys_1.animationCycleWasComplete()){
 		if(climb_hand1cycleComplete == false){
 			arm1.resetAllRotations();
@@ -1072,7 +1181,8 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		TickLimbNone(SHOULDER_1, DeltaTime);
 	}
 
-	if(climb_setHandTarget){ //debug: force linear, geht nicht
+	//add leg motion if hand already reached its target
+	if(climb_setHandTarget){ 
 		limbs.push_back(FOOT_1);
 		animations.push_back(&legDoubleKeys_1);
 	}
@@ -1100,7 +1210,8 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 /**
  * plays animations for limbs and their animations,
  * caution: the first bone to play backward kinematic in list, will be the only one for this
- * function call
+ * function call. Prevents bugs. All other animations will fix them selve because
+ * the world frame is passed and updates the animation dynamically later
  */
 void BoneController::playForwardAndBackwardKinematicAnimSynchronized(
 	float DeltaTime,
@@ -1120,7 +1231,7 @@ void BoneController::playForwardAndBackwardKinematicAnimSynchronized(
 				bone != nullptr &&
 				effectorMat != nullptr
 			){
-				bool moveLeg = frames->isAnimationA();
+				bool moveLeg = frames->isAnimationA(); //otherwise is B, backward build, BK 
 				if(moveLeg){
 					// ---- FORWARD BUILD ----
 					playForwardKinematicAnim(*bone, *frames, *effectorMat, DeltaTime, color, limbIndex);	
