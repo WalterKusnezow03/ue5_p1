@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MotionAction.h"
+#include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "p2/entities/customIk/animation/TargetInterpolator.h"
 
 /**
@@ -18,6 +19,8 @@ public:
 
 	bool isTransitioning();
 	void addTarget(ArmMotionStates state, MotionAction action);
+
+	void updateStateIfPossible(ArmMotionStates state);
 	void updateState(ArmMotionStates state);
 	void Tick(MMatrix &transform, TwoBone &bone, AcarriedItem &item, float DeltaTime);
 
@@ -60,4 +63,39 @@ private:
 	);
 
 	bool handsAtItem();
+
+
+
+
+//new section for hip align
+public:
+	
+
+	bool hipInTransit();
+
+	MMatrix TickUpdatedHipMoveAlignMatrix(
+		MMatrix &hipJointMatStartRotated,
+		MMatrix &orientation,
+		MMatrix &endEffector,
+		TwoBone &bone1,
+		float DeltaTime,
+		UWorld *world,
+		bool &reachedFlag
+	);
+
+private:
+	class TargetInterpolator hipInterpolator;
+	bool hipTransitioning = false;
+	bool setupHipTarget = false;
+
+	void updateHipLocation(
+		MMatrix &actorMatTranslation, 
+    	MMatrix actorRotationInv,
+    	MMatrix &updatetHipJointMat, 
+    	MMatrix &hipJointMatLocal
+	);
+	float signedYawAngle(MMatrix &actorWorld, FVector actorComToEndEffector);
+
+	bool isParalel(MMatrix &orientation, FVector directionOfEndEffector);
+	bool reached(FVector &a, FVector &b);
 };

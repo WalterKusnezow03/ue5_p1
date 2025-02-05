@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 /**
  * 
@@ -16,6 +17,7 @@ public:
 
 	FVector copyPosition();
 	FRotator copyRotation();
+	MMatrix copyRotationAsMMatrix();
 
 	void setLocation(FVector &pos);
 	void setRotation(FRotator &rotator);

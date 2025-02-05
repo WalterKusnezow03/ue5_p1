@@ -331,7 +331,7 @@ bool EdgeCollector::isVertical(FVector A, FVector B){
 
     float skalarProduktUp = std::abs(connectNormal.Z); //Up component
 
-    return skalarProduktUp > 0.7f; //edge of interest wenn er weit genug nach oben zeigt.
+    return skalarProduktUp > 0.8f; //edge of interest wenn er weit genug nach oben zeigt.
 }
 
 
@@ -448,7 +448,7 @@ void EdgeCollector::showLine(FVector e, FVector g){
 
 void EdgeCollector::scaleUpConvexHullShape(std::vector<edgeData> &edges){
     std::vector<FVector> apply;
-    int pushAwaycm = 200;
+    int pushAwaycm = 100;
     //SCALE UP SHAPE
     for (int i = 0; i < edges.size(); i++){
         
@@ -503,49 +503,6 @@ void EdgeCollector::scaleUpConvexHullShape(std::vector<edgeData> &edges){
 /// @param world 
 void EdgeCollector::collectRaycasts(std::vector<edgeData> &edges, UWorld *world){
 
-    /*
-    std::vector<FVector> apply;
-    int pushAwaycm = 200;
-    //SCALE UP SHAPE
-    for (int i = 0; i < edges.size(); i++){
-
-        edgeData *prev = &edges.at(i);
-        if(i == 0){
-            prev = &edges.back();
-        }
-        else
-        {
-            prev = &edges.at(i - 1);
-        }
-
-        edgeData *current = &edges.at(i);
-        edgeData *next = &edges.at(i);
-        if(i == edges.size() - 1){
-            next = &edges.front();
-        }
-        else
-        {
-            next = &edges.at(i + 1);
-        }
-
-        //calculate connect, add up, invert * -1, normalize, scale
-        FVector dirA = prev->top - current->top; // AB = B - A
-        FVector dirB = next->top - current->top;
-        dirA.Z = 0;
-        dirB.Z = 0;
-        FVector addInvertDir = (dirA + dirB).GetSafeNormal() * -1 * pushAwaycm;
-        apply.push_back(addInvertDir);
-    }
-
-    //override data after calculating to keep pushout consistent and not immidiatly maniupulating
-    for (int i = 0; i < apply.size(); i++){
-        if(i < edges.size()){
-            FVector applied = apply.at(i);
-            edges.at(i).top += applied;
-            edges.at(i).bottom += applied;
-        }
-    }
-    */
 
     // create raycasts
     for (int i = 0; i < edges.size(); i++)

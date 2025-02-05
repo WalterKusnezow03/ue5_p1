@@ -58,6 +58,10 @@ void TwoBone::setupBones(float completeDistance){
     toFootTip = FVector(half / 2, 0, 0); //x is forward for now
 }
 
+FVector TwoBone::startRelativeToEnd_Initial(){
+    return FVector(0, 0, totalBoneLengthCopy);
+}
+
 void TwoBone::setupBones(float distanceHipKnee, float distanceKneeFoot){
     distanceHipKnee = std::abs(distanceHipKnee);
     distanceKneeFoot = std::abs(distanceKneeFoot);
@@ -193,7 +197,7 @@ void TwoBone::createEthaPitchAnglesFor(
     MMatrix &middle,
     MMatrix &end
 ){
-
+    
     float _c = std::abs(distanceTotarget);
     float _b = std::abs(middle.getTranslation().Size());
     float _a = std::abs(end.getTranslation().Size());
@@ -224,7 +228,8 @@ void TwoBone::createEthaPitchAnglesFor(
         MMatrix::radToDegree(alpha),
         MMatrix::radToDegree(gamma)
     );
-    DebugHelper::logMessage(debugAngleString);
+   
+
 }
 
 /**
@@ -278,7 +283,7 @@ void TwoBone::build(
     );
 
 
-    copyCurrentMatricies();
+    //copyCurrentMatricies();
 
     FVector translation = newStart.getTranslation();
     endEffector.setTranslation(translation);
@@ -456,8 +461,7 @@ float TwoBone::yawAngleTo(FVector &localTarget){
     float dot = forward2d.X * xy.X + forward2d.Y * xy.Y;
 
     float xyTopViewAngle = std::acosf(dot);
-    //float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
-    // std::acosf(FVector2D::DotProduct(forward2d, xy)); //----> DOT PRODUCT IST SCHON RADIAN, KEIN ACOS!! EFFICENCY
+    
 
     xyTopViewAngle *= flipRotation(forward2d.X, forward2d.Y, xy.X, xy.Y);
 
@@ -640,7 +644,7 @@ void TwoBone::rotateStartToTargetAndBuild( //works as expected
     translationOfactor.setTranslation(newLocation);
 
     //backup
-    copyCurrentMatricies();
+    //copyCurrentMatricies();
 }
 
 
@@ -761,7 +765,7 @@ void TwoBone::rotateEndToTargetAndBuild(
     //Override translation of actor (FOOT!)
     endEffectorWorldToUpdate.setTranslation(newLocation);
 
-    copyCurrentMatricies();
+    //copyCurrentMatricies();
 }
 
 

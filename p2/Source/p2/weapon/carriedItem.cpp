@@ -78,7 +78,7 @@ void AcarriedItem::followPlayer(){
 		return; //dont check for bot.
 	}
 
-	//bot follow if bot picked up ----> will be attached instead!
+	//bot follow if bot picked up ----> will be attached instead! ----> New: attached by skelletal mesh!
 	/*
 	if(botPointer != nullptr){
 		FVector targetPos = botPointer->GetActorLocation() +
@@ -138,7 +138,7 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 	}
 }
 
-/// @brief pickup method for bot
+/// @brief pickup method for bot, pointer will be saved!
 /// @param actorIn actor bot  
 void AcarriedItem::pickupBot(AActor *actorIn){
 	if(botPointer == nullptr && actorIn != nullptr && cameraPointer == nullptr){
@@ -148,7 +148,7 @@ void AcarriedItem::pickupBot(AActor *actorIn){
 
 		showItem(true);
 
-		this->AttachToActor(botPointer, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+		//this->AttachToActor(botPointer, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 	}
 }
 

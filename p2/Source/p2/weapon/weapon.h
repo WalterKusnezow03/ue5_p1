@@ -12,6 +12,7 @@
 #include "ammunitionEnum.h"
 #include "attachmentEnums/weaponSightEnum.h"
 #include "p2/player/teamEnum.h"
+#include "p2/util/timer.h"
 
 #include "weapon.generated.h"
 
@@ -91,9 +92,13 @@ protected:
 	bool isAiming;
 	int bulletsInMag;
 
+	bool isReloading = false;
+
 	float timeleft;
 	float cooldownTime;
 	float reloadTime;
+
+	class timer timer;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -143,14 +143,32 @@ FVector Aweapon::getOffsetVector(){
  * will update the cooldown time / decrease it
  */
 void Aweapon::updateCooltime(float time){
+	//new
+	if(!timer.timesUp()){
+		timer.Tick(time);
+	}else{
+		if(!singleFireMode()){
+			abzugHinten = false; 
+		}
+		isReloading = false;
+	}
+
+	//old
+	/*
 	if(isCooling()){
 		timeleft -= time;
 	}else{
-		if(!singleFireMode()){
-			abzugHinten = false; //can shoot again if auto release
-		}
 		
-	}
+		//can shoot again if auto release
+		if(!singleFireMode()){
+			abzugHinten = false; 
+		}
+
+		//reload flag finish
+		if(isReloading){
+			isReloading = false;
+		}
+	}*/
 }
 /// @brief will say if single fire is on
 /// @return true false
@@ -196,7 +214,7 @@ void Aweapon::shoot(){
 	}
 }
 
-/// @brief shoot method for the bot
+/// @brief shoot method for the bot, requires the bot to pickup the weapon(pickupBot method to save the pointer!)
 /// will shoot the bot weapon 
 /// @param target 
 void Aweapon::shootBot(FVector target){
@@ -314,14 +332,17 @@ void Aweapon::aim(bool aimstatus){
 
 
 void Aweapon::resetCoolTime(float time){
-	timeleft = time;
+	//timeleft = time;
+
+	timer.Begin(time);
 }
 
 /**
  * will return if the weapon is cooling at the moment
  */
 bool Aweapon::isCooling(){
-	return timeleft > 0.05f;
+	return (timer.timesUp() == false);
+	//return timeleft > 0.05f;
 }
 
 /**
@@ -346,6 +367,8 @@ void Aweapon::reload(int amount){
 		bulletsInMag += amount;
 		resetCoolTime(reloadTime);
 		reloadAnimation();
+
+		isReloading = true;
 	}
 }
 
@@ -604,6 +627,16 @@ ammunitionEnum Aweapon::getAmmunitionType(){
  */
 
 FVector Aweapon::leftHandLocation(){
+
+	//DOES NOT WORK!
+	if(isReloading){
+		if(magSkeletonPointer != nullptr){
+			FVector componentWorldLocation = magSkeletonPointer->GetComponentLocation();
+			return componentWorldLocation;
+		}
+	}
+	
+	
 	if(leftHandTargetSkelletonPointer != nullptr){
 		// Get the world location of the Skeletal Mesh Component
     	FVector componentWorldLocation = leftHandTargetSkelletonPointer->GetComponentLocation();

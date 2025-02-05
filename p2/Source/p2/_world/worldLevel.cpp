@@ -82,7 +82,7 @@ void worldLevel::initWorld(UWorld *world){
     //testing
     DebugHelper::Debugtest(world);
 
-    debugBezier(world);
+    //debugBezier(world);
 }
 
 /**

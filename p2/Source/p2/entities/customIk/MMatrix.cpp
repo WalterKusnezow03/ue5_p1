@@ -80,6 +80,14 @@ void MMatrix::setTranslation(float x, float y, float z){
     array[11] = z;
 }
 
+/// @brief will copy the translation of the given matrix
+/// @param other other matrix to copy the translation from
+void MMatrix::setTranslation(MMatrix &other){
+    array[3] = other.array[3];
+    array[7] = other.array[7];
+    array[11] = other.array[11];
+}
+
 FVector MMatrix::getTranslation(){
     FVector out;
     out.X = array[3];
@@ -426,6 +434,28 @@ void MMatrix::rotate(MMatrix &other){
 
 }
 
+
+/// @brief resets the rotation and rotates in roll pitch yaw order
+/// @param other rotation to rotate in
+void MMatrix::setRotation(FRotator &other){
+    resetRotation();
+    rollRadAdd(MMatrix::degToRadian(other.Roll));
+    pitchRadAdd(MMatrix::degToRadian(other.Pitch));
+    yawRadAdd(MMatrix::degToRadian(other.Yaw));
+}
+
+/// @brief will copy the rotation of the other matrix
+/// @param other rotation to copy from matrix
+void MMatrix::setRotation(MMatrix &other){
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            set(i, j, other.get(i, j));
+        }
+    }
+}
+
+
+
 MMatrix MMatrix::createInverse(){
     // -- using jordan inverse by default --
     return jordanInverse();
@@ -438,6 +468,7 @@ void MMatrix::invertRotation(){
     swapIndices(8, 2);
     swapIndices(9, 6);
 }
+
 
 
 
@@ -526,6 +557,17 @@ FRotator MMatrix::extractRotator(){
 
     return r;
 
+}
+
+MMatrix MMatrix::extarctRotatorMatrix(){
+    MMatrix out;
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            out.set(i, j, get(i, j));
+        }
+    }
+
+    return out;
 }
 
 /// @brief converts a position to relative this matrix by using the jordan inverse
@@ -753,98 +795,3 @@ FVector MMatrix::lookDirXForward(){
 
 
 
-
-
-
-/**
- * 
- * 
- * NEW ROTATION MEASUREMENT TO AXIS
- * 
- * 
- */
-
-
-float MMatrix::rollAngleTo(FVector &localTarget){
-    //FVector forward(1, 0, 0); //sollte member var werden ggf
-    FVector2D forward2d(0, 1); //z ist up, -z ist initial 
-
-    FVector2D yz(localTarget.Y, localTarget.Z);
-    yz = yz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
-
-    float yzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, yz));
-
-    //testing needed
-    yzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, yz.X, yz.Y);
-
-
-    return yzSideViewAngle;
-}
-
-float MMatrix::pitchAngleTo(FVector &localTarget){
-    
-    FVector2D forward2d(1, 0);
-    forward2d = forward2d.GetSafeNormal();
-
-    FVector2D xz(localTarget.X, localTarget.Z);
-    xz = xz.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
-
-    float xzSideViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xz));
-    xzSideViewAngle *= flipRotation(forward2d.X, forward2d.Y, xz.X, xz.Y);
-
-    return xzSideViewAngle;
-}
-
-
-float MMatrix::yawAngleTo(FVector &localTarget){
-
-    FVector2D forward2d(1, 0);
-    
-    FVector2D xy(localTarget.X, localTarget.Y);
-    xy = xy.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
-
-    //RECHUNG:
-    //cos(theta) = a dot b if a and b are normalized!
-    /*
-        cos(theta) = a * b | cos^-1
-        theta = acos((a*b) / (|a| * |b|))
-
-        bzw weil a und b length 1 sind:
-        theta = acos((a*b) / 1)
-    */
-
-    float dot = forward2d.X * xy.X + forward2d.Y * xy.Y;
-
-    float xyTopViewAngle = std::acosf(dot);
-    //float xyTopViewAngle = std::acosf(FVector2D::DotProduct(forward2d, xy));
-    // std::acosf(FVector2D::DotProduct(forward2d, xy)); //----> DOT PRODUCT IST SCHON RADIAN, KEIN ACOS!! EFFICENCY
-
-    xyTopViewAngle *= flipRotation(forward2d.X, forward2d.Y, xy.X, xy.Y);
-
-    return xyTopViewAngle;
-}
-
-
-/// @brief will tell if a angle between vectors is negative or not (Determines the sign of angle)
-/// @param aX x comp of vector a
-/// @param aY y comp of vector a
-/// @param oX x comp of vector b
-/// @param oY y comp of vector b
-/// @return +1 for counter clock wise rotation or -1. Multiply your angle with the returned
-/// value to make your angle signed 
-int MMatrix::flipRotation(float aX, float aY, float oX, float oY){
-    //kreuzproduk 2D
-    //A:=(a,b,0) B:=(c,d,0)
-    //normal := A cross B
-    //normal.Z = ad - bc 
-
-    // Bestimmen der Drehrichtung durch das Kreuzprodukt
-    float crossProduct_z = aX * oY - aY * oX;
-
-    // Wenn das Kreuzprodukt negativ ist, ist der Winkel im Uhrzeigersinn,
-    // also negieren wir den Winkel.
-    if (crossProduct_z < 0) {
-        return -1;
-    }
-    return 1;
-}

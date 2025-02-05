@@ -7,6 +7,7 @@ MotionQueue::MotionQueue()
 {
     updateState(ArmMotionStates::handsFollowItem); //default at start
     transitioning = false;
+    hipInterpolator.setNewTimeToFrame(0.5f); //debug wise
 }
 
 MotionQueue::~MotionQueue()
@@ -24,8 +25,19 @@ void MotionQueue::addTarget(ArmMotionStates state, MotionAction action){
     statesMap[state] = action;
 }
 
+/// @brief updates the motion state if possible (animation and state changed or not)
+/// @param state 
+void MotionQueue::updateStateIfPossible(ArmMotionStates state){
+    if(state != currentState && !transitioning){
+        updateState(state);
+    }
+}
+
+
+/// @brief force overrides the current motion state
+/// @param state 
 void MotionQueue::updateState(ArmMotionStates state){
-    
+
     transitioning = true; //update transit to true so it gets ticked later
 
     MotionAction current = statesMap[currentState];
@@ -67,7 +79,9 @@ void MotionQueue::Tick(
 ){
 
     if(item != nullptr){
-        if(transitioning){
+
+        if (transitioning)
+        {
 
             FVector currentLocationWorldWillBeLocal = item->GetActorLocation();
             transform.transformFromWorldToLocalCoordinates(currentLocationWorldWillBeLocal);
@@ -88,46 +102,47 @@ void MotionQueue::Tick(
 
             FRotator finalRotation = transformCopy.extractRotator();
 
-            item->SetActorLocation(posWorld);
             item->SetActorRotation(finalRotation);
+            item->SetActorLocation(posWorld);
+            
 
             //wenn fertig interpoliert, abbruch. Klar.
             if(interpolator.hasReachedTarget()){
                 transitioning = false;
-                /*if(currentState == ArmMotionStates::holsterItem){
-                    currentState = ArmMotionStates::none;
-                }*/
             }
-        }else{
-            
+        }
+        else
+        {
+
             //default follow
             MotionAction *currentStatePointer = &statesMap[currentState];
             if(currentStatePointer != nullptr){
 
                 //MUST BE CLEANED AND REFACTURED!
-                //setting up data for the weapon transform                
-                FRotator rotation = currentStatePointer->copyRotation();
-
-                MMatrix rotatorMatrix = MMatrix::createRotatorFrom(rotation);
-                rotatorMatrix *= transform;
-
-                FRotator finalRotation = rotatorMatrix.extractRotator();
-
-                FVector location = currentStatePointer->copyPosition();
-                //FVector posWorld = rotatorMatrix * location; //test statt transform
-                FVector posWorld = transform * location; //test statt transform
-
-
-                item->SetActorLocation(posWorld);
+                //setting up data for the weapon transform
+                MMatrix rotation = currentStatePointer->copyRotationAsMMatrix();
+                rotation *= transform;
+                FRotator finalRotation = rotation.extractRotator();
                 item->SetActorRotation(finalRotation);
 
-                DebugHelper::showScreenMessage("default update motion queue", FColor::Green);
+
+
+                FVector location = currentStatePointer->copyPosition();
+                FVector posWorld = transform * location;
+                item->SetActorLocation(posWorld);
+                
             }else{
                 DebugHelper::showScreenMessage("ISSUE!!!", FColor::Red);
             }
         }
 
-
+        //debug draw item location to transform
+        
+        /*DebugHelper::showLineBetween(
+            item->GetWorld(), 
+            transform.getTranslation(), 
+            item->GetActorLocation()
+        );*/
 
 
 
@@ -183,11 +198,10 @@ void MotionQueue::Tick(
 /// @return true / false move hands to item
 bool MotionQueue::handsAtItem(){
     bool alreadyHolstered = (currentState == ArmMotionStates::holsterItem) && !isTransitioning();
-    bool isNoneState = (currentState == ArmMotionStates::none);
-    if (alreadyHolstered || isNoneState)
-    {
+    if(alreadyHolstered){
         return false;
     }
+
     return true;
 }
 
@@ -232,4 +246,147 @@ void MotionQueue::moveAndBuildBone(
         FColor::Red,
         DeltaTime
     );
+}
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * leg type of motion states
+ * 
+ */
+
+
+
+MMatrix MotionQueue::TickUpdatedHipMoveAlignMatrix(
+    MMatrix &hipJointMatStartRotated,
+    MMatrix &orientation,
+    MMatrix &endEffector,
+    TwoBone &bone1,
+    float DeltaTime,
+    UWorld *world,
+    bool &reachedFlag
+){
+    FVector targetRelativeToEnd = bone1.startRelativeToEnd_Initial();
+    FVector jointStartWorld = hipJointMatStartRotated.getTranslation();
+    FVector jointTargetWorld = endEffector.getTranslation() + targetRelativeToEnd;
+    //direction of hip to target
+    FVector direction = jointTargetWorld - jointStartWorld;
+
+    if(reached(jointStartWorld, jointTargetWorld)){
+        if(isParalel(orientation, direction)){
+            hipTransitioning = false;
+            reachedFlag = true;
+            return hipJointMatStartRotated;
+        }
+        
+    }
+
+    reachedFlag = false;
+    hipTransitioning = true;
+    if(!setupHipTarget){
+        FRotator orientationExtracted = orientation.extractRotator();
+        
+        
+        float angleYaw = signedYawAngle(orientation, direction);
+        FRotator orientationRotated = orientationExtracted;
+        orientationRotated.Yaw += angleYaw;
+
+        setupHipTarget = true;
+        //might bring here joint start and end to actor system
+        hipInterpolator.setTarget(
+            jointStartWorld,
+            jointTargetWorld,
+            orientationExtracted,
+            orientationRotated,
+            0.5f
+        );
+    }
+    if(hipTransitioning){
+
+        FRotator newRotation;
+        FVector posWorldHip = hipInterpolator.interpolate(DeltaTime, newRotation); //interpoliert immer in local space
+
+        MMatrix newHipOffsetted;
+        newHipOffsetted.setRotation(newRotation);
+        newHipOffsetted.setTranslation(posWorldHip);
+
+        if(hipInterpolator.hasReachedTarget()){
+            reachedFlag = true;
+            setupHipTarget = false;
+            hipTransitioning = false; //update transit flag
+            hipInterpolator.setNewTimeToFrame(0.5f);
+        }
+        return newHipOffsetted;
+    }
+
+    //wenn nicht in transit ist das target reached!
+    return hipJointMatStartRotated;
+
+
+
+}
+
+
+
+
+
+
+bool MotionQueue::hipInTransit(){
+    return hipTransitioning;
+}
+
+bool MotionQueue::reached(FVector &a, FVector &b){
+    return FVector::Dist(a, b) <= 2.0f;
+}
+
+bool MotionQueue::isParalel(MMatrix &orientation, FVector directionOfEndEffector){
+    FVector forward = orientation.lookDirXForward();
+    forward = forward.GetSafeNormal();
+    directionOfEndEffector = directionOfEndEffector.GetSafeNormal();
+    directionOfEndEffector.Z = 0.0f;
+    forward.Z = 0.0f;
+
+    return std::abs(FVector::DotProduct(forward, directionOfEndEffector)) > 0.9f;
+}
+
+float MotionQueue::signedYawAngle(MMatrix &actorWorld, FVector actorComToEndEffector){
+    FVector lookDir = actorWorld.lookDirXForward().GetSafeNormal();
+    actorComToEndEffector = actorComToEndEffector.GetSafeNormal();
+
+    lookDir.Z = 0.0f;
+    actorComToEndEffector.Z = 0.0f;
+
+    float dotproduct = FVector::DotProduct(lookDir, actorComToEndEffector);
+    float sign = lookDir.X * actorComToEndEffector.Y - lookDir.Y * actorComToEndEffector.X < 0.0f ? -1.0f : 1.0f;
+
+
+    float angle = MMatrix::radToDegree(std::acosf(dotproduct)) * sign;
+    return angle;
+}
+
+void MotionQueue::updateHipLocation(
+    MMatrix &actorMatTranslation, 
+    MMatrix actorRotationInv,
+    MMatrix &updatetHipJointMat, 
+    MMatrix &hipJointMatLocal
+){
+    
+    //ich habe meinen joint geändert
+    //und möchte jetzt meine hip dazu bewegen
+    //ich nehme die joint start world matrix und rechne die locale inverse drauf
+    //damit ich die aktualisierte actor matrix com erhalte
+    MMatrix inverseTranslation = hipJointMatLocal.jordanInverse();
+    actorRotationInv.invertRotation();
+    MMatrix hipWorldNew = updatetHipJointMat * inverseTranslation;
+    //actorMatTranslation = hipWorldNew;
+
+    FVector updatePos = hipWorldNew.getTranslation();
+    actorMatTranslation.setTranslation(updatePos);
 }

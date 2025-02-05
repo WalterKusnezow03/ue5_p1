@@ -22,6 +22,7 @@ public:
 	TwoBone& operator=(const TwoBone &other);
 
 	FVector endLimbWorldLocation();
+	FVector startRelativeToEnd_Initial();
 
 	void setupBones(float completeDistance);
 	void setupBones(float distanceHipKnee, float distanceKneeFoot);

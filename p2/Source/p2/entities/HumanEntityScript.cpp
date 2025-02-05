@@ -32,9 +32,8 @@ AHumanEntityScript::AHumanEntityScript()
 
 void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
+    weaponPointer = nullptr;
     this->init();
-
-    
 }
 
 void AHumanEntityScript::init(){
@@ -42,25 +41,34 @@ void AHumanEntityScript::init(){
 
     //DebugHelper::showScreenMessage("human init");
     
-    //weapon
+    //weapon currently hidden
+    
     EntityManager *e = worldLevel::entityManager();
-    if (e != nullptr)
+    if (e != nullptr && weaponPointer == nullptr)
     {
 
         //testing new helper (works as expected)
         weaponSetupHelper *setuphelper = new weaponSetupHelper();
-        setuphelper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
-        setuphelper->setSightAttachment(weaponSightEnum::enum_reddot);
+        
+        setuphelper->setWeaponTypeToCreate(weaponEnum::pistol);
+        //setuphelper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
+        //setuphelper->setSightAttachment(weaponSightEnum::enum_reddot);
 
         Aweapon *w = e->spawnAweapon(GetWorld(), setuphelper);
 		//showScreenMessage("begin weapon");
 		if (w != nullptr){
 			//showScreenMessage("human pickup weapon");
-			w->pickupBot(this);
+			w->pickupBot(this); //saves the pointer inside the weapon. Weapon is further managed by custom skelleton
+
+            boneController.attachCarriedItem(w); //NEW!
 
             //save pointer
             weaponPointer = w;
+
+            e->addActorToIgnoreRaycastParams(weaponPointer, teamEnum::neutralTeam);
         }
+
+        
 
         delete setuphelper; //immer löschen nicht vergessen!
         setuphelper = nullptr;
@@ -83,47 +91,6 @@ void AHumanEntityScript::init(){
 
 
 
-
-    //create skelleton and attach to this.
-    /*
-    if(skelletonControllerPointer == nullptr){
-        if(assetManager *a = assetManager::instance()){
-            UClass *humanController = a->findBp(skelletonControllerEnum::human_skelleton);
-
-            if(humanController != nullptr){
-                if(e != nullptr){ //entity manager
-                    FVector location = GetActorLocation();
-
-                    //ask entity manager for an instance (is spawned or recycled)
-                    AskelletonController *controller = e->spawnAskelletonController(
-                        GetWorld(),
-                        location,
-                        skelletonControllerEnum::human_skelleton
-                    );
-                    if (controller != nullptr)
-                    {
-                        controller->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
-                        Super::skelletonControllerPointer = controller;
-                        Super::skelletonControllerPointer->setOwner(this);
-                        
-                        DebugHelper::showScreenMessage("created human controller!");
-                    }
-                }
-            }
-        }
-    }
-    
-
-    //attach weapon to skelleton
-    if(weaponPointer != nullptr && skelletonControllerPointer != nullptr){
-        
-        skelletonControllerPointer->detach(weaponPointer); //detach completly from everything
-        
-        //re attach
-        skelletonControllerPointer->attachToBreastRight(weaponPointer);
-        skelletonControllerPointer->attachLeftArmTo(weaponPointer, socketNames::leftHandSocket);
-        skelletonControllerPointer->attachRightArmTo(weaponPointer, socketNames::rightHandSocket);
-    }*/
 }
 
 void AHumanEntityScript::Tick(float DeltaTime){
@@ -141,7 +108,14 @@ void AHumanEntityScript::Tick(float DeltaTime){
 
         //addition to the base entity: attack the player if in vision
         if(canSeePlayer && spottedPlayer){
+            boneController.weaponAimDownSight();
             attackPlayer();
+        }
+        if(!canSeePlayer && spottedPlayer){
+            boneController.weaponContactPosition();
+        }
+        if(!canSeePlayer && !spottedPlayer){
+            boneController.weaponHolsterPosition();
         }
 
         //if needed one is found
@@ -164,7 +138,13 @@ void AHumanEntityScript::attackPlayer(){
 /// @brief shoot at a specified target
 /// @param target 
 void AHumanEntityScript::shootAt(FVector target){
+    
+    if(!boneController.canChangeStateNow()){
+        return;
+    }
+    //boneController.stopLocomotion(); //blocked debug wise
     Super::LookAt(target); //look at the target
+    
 
     if(weaponPointer != nullptr){
         //will try to shoot the weapon
@@ -202,14 +182,7 @@ void AHumanEntityScript::die(){
     //entity manager
     EntityManager *entityManager = worldLevel::entityManager();
 
-    //drop weapon from skelleton and release the skelleton 
-    if(skelletonControllerPointer != nullptr){
-        if(weaponPointer != nullptr){
-            skelletonControllerPointer->detach(weaponPointer);
-        }
-        skelletonControllerPointer->die(); // will deatch from actor and also released
-        skelletonControllerPointer = nullptr;
-    }
+    boneController.dropWeapon();
 
     //drop weapon and release
     if (weaponPointer != nullptr)

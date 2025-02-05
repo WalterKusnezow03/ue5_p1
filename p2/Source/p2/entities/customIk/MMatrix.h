@@ -16,8 +16,7 @@ public:
 	MMatrix(const MMatrix &other);
 	MMatrix& operator=(const MMatrix &other);
 
-	
-
+	void setTranslation(MMatrix &other);
 	void setTranslation(FVector &pos);
 	void setTranslation(float x, float y, float z);
 	FVector getTranslation();
@@ -53,15 +52,17 @@ public:
 	void resetRotation();
 
 	void rotate(MMatrix &other);
-
+	void setRotation(FRotator &other);
+	void setRotation(MMatrix &other);
 
 	MMatrix createInverse();
 
 	FRotator extractRotator();
+	MMatrix extarctRotatorMatrix();
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
 
-
+	void invertRotation();
 	
 private:
 	
@@ -73,7 +74,7 @@ private:
 
 
 	
-	void invertRotation();
+	
 	void swapIndices(int a, int b);
 
 
@@ -95,16 +96,12 @@ public:
 
 	FVector lookDirXForward();
 
+
 private:
 	void set(int i, int j, float value);
 	float get(int column, int row);
 	void scaleRow(int row, float scale);
 	void minusForRow(int row, int otherRow, float faktor);
 
-
-	//new section for rotation measure
-	int flipRotation(float aX, float aY, float oX, float oY);
-	float pitchAngleTo(FVector &localTarget);
-	float yawAngleTo(FVector &localTarget);
-	float rollAngleTo(FVector &localTarget);
+	
 };

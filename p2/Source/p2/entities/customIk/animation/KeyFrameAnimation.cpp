@@ -4,6 +4,7 @@
 #include "p2/entities/customIk/animation/TargetInterpolator.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/_world/worldLevel.h"
 
 KeyFrameAnimation::KeyFrameAnimation()
 {
@@ -135,6 +136,11 @@ void KeyFrameAnimation::updateFrameIndex(){
         nextFrameIndex = 1;
         //DebugHelper::showScreenMessage("reached end frame!", FColor::Orange);
         reachedEndFrameFlag = true;
+
+
+
+        //reset rotation!
+        resetRotationOnFramesFlag();
     }
 
 }
@@ -173,12 +179,18 @@ bool KeyFrameAnimation::nextFrameMustBeGrounded(){
     return false;
 }
 
-/// @brief copies the next frames position
+/// @brief copies the next frames position AND ROTATES IT IF NEEDED!
 /// @return position of next frame of animation
 FVector KeyFrameAnimation::readNextFrame(){
     if(hasAnyFrames()){
         KeyFrame &nextFrame = frames.at(nextFrameIndex);
-        return nextFrame.readposition();
+
+        FVector position = nextFrame.readposition();
+        addRotationToFrame(position);
+        return position;
+
+        //old
+        //return nextFrame.readposition();
     }
     return FVector(0, 0, 0);
 }
@@ -219,9 +231,9 @@ void KeyFrameAnimation::skipAnimationOnce(FVector start, FVector end){
     interpolator.resetDeltaTime();
     frameIndex = frames.size() - 2; 
     //next frame will be -1, end will be reached
-    //next frame will be 0 by then 
-}
+    //next frame will be 0 by then
 
+}
 
 /// @brief will override the world and local animation
 /// @param actor actor world pos to make frames relative, both world and local keyframes are made
@@ -249,73 +261,9 @@ void KeyFrameAnimation::skipAnimationOnceWorld(MMatrix &actor, FVector start, FV
  * 
  */
 
-bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
-    if(world == nullptr){
-        return false;
-    }
-    if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
-
-        forceProjectToGround(world, actorMatrix, offsetMade);
-
-        return true;
-    }
-    return false;
-}
 
 
 
-void KeyFrameAnimation::forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade){
-    if(world == nullptr){
-        return;
-    }
-    FVector frameToProject = readNextFrame();
-    FVector worldHit;
-    projectToGround(world, actorMatrix, frameToProject, offsetMade, worldHit);
-    overrideNextFrame(frameToProject);
-    interpolator.overrideTargetWorld(worldHit);
-}
-
-
-/// @brief projects a frame to the ground and writes the porjection into the frame
-/// @param frameToProject frame to project to floor
-/// @param offsetMade offset made from frame to project to hitpoint direction
-void KeyFrameAnimation::projectToGround(
-    UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade
-){
-    FVector worldOutput;
-    projectToGround(
-        world,
-        actorTransform,
-        frameToProject,
-        offsetMade,
-        worldOutput
-    );
-    interpolator.overrideTargetWorld(worldOutput);
-}
-
-/// @brief projects a frame to the ground and writes the porjection into the frame
-/// @param frameToProject frame to project to floor
-/// @param offsetMade offset made from frame to project to hitpoint direction
-void KeyFrameAnimation::projectToGround(
-    UWorld *world, 
-    MMatrix &actorTransform, 
-    FVector &frameToProject, 
-    FVector &offsetMade,
-    FVector &hitpointOutput //world hit
-){
-
-    FVector lookNone(1, 0, 0);
-    projectToGround(
-        world,
-        actorTransform,
-        frameToProject,
-        hitpointOutput,
-        offsetMade,
-        0.0f,                   // ignored time to frame extra
-        0.0f,                   // ignored running velocity extra
-        lookNone                // ignored look dir of velocity
-    );
-}
 
 /// @brief performs a raycast from a start, into a direction, with a max length in this method
 /// @param Start start position
@@ -328,25 +276,20 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
         return false;
     }
 
-    float scaleOfVector = raycastScaleVector; //some random value for now
-	FVector End = Start + dir * scaleOfVector; // gx = A + r (B - A)
+	FVector End = Start + dir * raycastScaleVector; // gx = A + r (B - A)
 
 	// Perform the raycast
 	FHitResult HitResult;
 
 	FCollisionQueryParams ignoreParams;
-	/*
-	CAUTION: TEAMS PARAM NOT IMPLEMETED YET!
-
-	//params to avoid hitting any other entities
-	if(EntityManager *e = worldLevel::entityManager()){
-		//ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
-		ignoreParams = e->getIgnoredRaycastParams(getTeam());
-	}*/
-	bool bHit = world->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
 	
-
-
+	//params to avoid hitting own bones, weapons, etc
+	if(EntityManager *e = worldLevel::entityManager()){
+		//example for getting all
+		ignoreParams = e->getIgnoredRaycastParams();
+	}
+	bool bHit = world->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
+	
 
 	//anything was hit
 	if (bHit){
@@ -360,145 +303,6 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
 
 
 
-
-
-
-/**
- * 
- * 
- * 
- * ---- future projection ----
- * 
- * 
- */
-
-bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
-    UWorld *world, 
-    MMatrix &actorMatrix, 
-    FVector &offsetMade,
-    float velocity,
-    FVector &lookdir
-){
-    FVector worldHit_notneeded;
-    return projectNextFrameToGroundIfNeeded(
-        world,
-        actorMatrix,
-        offsetMade,
-        velocity,
-        lookdir,
-        worldHit_notneeded
-    );
-}
-
-bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(
-    UWorld *world, 
-    MMatrix &actorMatrix, 
-    FVector &offsetMade,
-    float velocity,
-    FVector &lookdir,
-    FVector &worldHitMade
-){
-    if(world == nullptr){
-        return false;
-    }
-    if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
-
-        FVector frameToProject = readNextFrame();
-        float nextTimeToFrame = interpolator.TimeToFrame(); 
-        FVector worldHitOutput;
-
-        projectToGround(
-            world, 
-            actorMatrix, 
-            frameToProject,
-            worldHitOutput,
-            offsetMade, 
-            nextTimeToFrame,
-            velocity,
-            lookdir
-        );
-        
-        overrideNextFrame(frameToProject);
-        interpolator.overrideTargetWorld(worldHitOutput);
-
-        worldHitMade = worldHitOutput; //copy
-        return true;
-    }
-    return false;
-}
-
-/// @brief projects a frame to the ground and writes the porjection into the frame
-/// @param frameToProject frame to project to floor, will be modified!
-/// @param offsetMade offset made from frame to project to hitpoint direction
-void KeyFrameAnimation::projectToGround(
-    UWorld *world, 
-    MMatrix &actorTransform, 
-    FVector &frameToProject, 
-    FVector &worldHitOutput, 
-    FVector &offsetMade,
-    float timeToFrame,
-    float velocity, //running velocity
-    FVector &lookdirection //look dir of velocity
-){
-    if(world == nullptr){
-        return;
-    }
-    MMatrix transform = actorTransform;
-    FVector frameInWorld = transform * frameToProject;
-
-    //hier einfach drauf rechnen? (velocity und lookdir)
-    //muss in abhängigkeit mit time to frame sein.
-
-    //x(t) = x0 + v0t + 1/2 at^2
-    //simplified to
-    //x(t) = x0 + v0 t
-    //xthis(t) = frameToProject + lookdir * timeToFrame * velocity
-    //time to frame sollte runter skallieren oder? / sollte so stimmen...
-    FVector lookdir = lookdirection.GetSafeNormal();
-    FVector offsetFuture = lookdir * (timeToFrame * velocity);
-    frameInWorld += offsetFuture;
-
-    //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
-	frameInWorld += FVector(0, 0, raycastVerticalStartOffsetAdd);
-
-
-	//project frame to floor
-	FVector downVec(0, 0, -1);
-	FVector hitpoint;
-
-	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
-	if(wasHit){
-        
-        if(DEBUGDRAW_RAYCAST){
-            float displayTime = 1.0f;
-            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 200), FColor::Yellow, displayTime);
-        }
-
-
-        //world copy
-        worldHitOutput = hitpoint;
-
-        //hier den offset wieder abziehen sodass die lokale posiion stimmt
-        //zukunft wieder weg rechnen / abziehen
-        hitpoint -= offsetFuture;
-
-
-        //inverse ins locale system
-        MMatrix inverse = actorTransform.jordanInverse();
-        hitpoint = inverse * hitpoint;
-        //actorTransform.transformFromWorldToLocalCoordinates(hitpoint);
-		
-        
-        offsetMade = hitpoint - frameToProject;
-		frameToProject = hitpoint;
-
-        DebugHelper::showScreenMessage(
-            "RAYCAST OFFSET",
-            offsetMade,
-            FColor::Red
-        );
-    }
-}
 
 
 
@@ -530,14 +334,14 @@ FVector KeyFrameAnimation::interpolate(float DeltaTime, FVector currentPos){
         FVector interpolated = interpolator.interpolate(DeltaTime);
 
         if(interpolator.hasReachedTarget()){
-            DebugHelper::logMessage("debugmotion interpolator update");
+            //DebugHelper::logMessage("debugmotion interpolator update");
             updateFrameIndex();
             updateFrameInterpolator();
         }
 
         return interpolated;
     }
-    DebugHelper::showScreenMessage("not enough frames!");
+    //DebugHelper::showScreenMessage("not enough frames!");
     return FVector(0, 0, 0);
 }   
 
@@ -579,15 +383,174 @@ FVector KeyFrameAnimation::interpolateWorld(
         FVector interpolated = interpolator.interpolate(DeltaTime);
 
         if(interpolator.hasReachedTarget()){
-            DebugHelper::logMessage("debugmotion interpolator update");
+            //DebugHelper::logMessage("debugmotion interpolator update");
             updateFrameIndex();
             updateFrameInterpolator();
         }
 
         return interpolated;
     }
-    DebugHelper::showScreenMessage("not enough frames!");
+    //DebugHelper::showScreenMessage("not enough frames!");
     return FVector(0, 0, 0);
 
 
+}
+
+
+
+
+
+
+
+/**
+ * 
+ * ---- new rotation on frames setup ----
+ * 
+ */
+void KeyFrameAnimation::rotateNextFrames(float signedAngleYawDegree){
+    if(signedAngleYawDegree == 0.0f){
+        rotateFramesBasedOnAngle = false;
+        return;
+    }
+    rotateFramesBasedOnAngle = true;
+    rotateFramesMatrix.resetRotation();
+    rotateFramesMatrix.yawRad(MMatrix::degToRadian(signedAngleYawDegree));
+}
+
+void KeyFrameAnimation::resetRotationOnFramesFlag(){
+    rotateFramesBasedOnAngle = false;
+}
+
+void KeyFrameAnimation::addRotationToFrame(FVector &localFrameToRotate){
+    if(rotateFramesBasedOnAngle){
+        localFrameToRotate = rotateFramesMatrix * localFrameToRotate;
+    }
+}
+
+
+
+/**
+ * 
+ * new methods with container
+ * 
+ */
+void KeyFrameAnimation::forceRefreshTarget(
+    FrameProjectContainer &containerInOut
+){
+
+    FVector frameToProject = readNextFrame();
+    if (nextFrameMustBeGrounded()){
+
+        float nextTimeToFrame = interpolator.TimeToFrame(); 
+        FVector worldHitOutput;
+
+        projectToGround(
+            containerInOut,
+            frameToProject,
+            nextTimeToFrame
+        );
+        overrideNextFrame(frameToProject);
+        interpolator.overrideTargetWorld(worldHitOutput);
+
+    }
+    else
+    {
+
+        //bring frame to world coordinates and override too.
+        MMatrix &actorMatrix = containerInOut.actorMatrix();
+        overrideNextFrame(frameToProject);
+        frameToProject = actorMatrix * frameToProject;
+        interpolator.overrideTargetWorld(frameToProject);
+    }
+
+
+}
+
+
+
+
+
+bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(FrameProjectContainer &containerInOut){
+    if(!nextFrameIsProjected() && nextFrameMustBeGrounded()){
+
+        FVector frameToProject = readNextFrame();
+        float nextTimeToFrame = interpolator.TimeToFrame();
+        frameIsProjected = true;
+
+        projectToGround(
+            containerInOut,
+            frameToProject,
+            nextTimeToFrame
+        );
+
+        overrideNextFrame(frameToProject);
+
+        FVector worldHitOutput = containerInOut.getWorldHit();
+        interpolator.overrideTargetWorld(worldHitOutput);
+
+        return true;
+    }
+    return false;
+}
+
+void KeyFrameAnimation::projectToGround(
+    FrameProjectContainer &containerInOut,
+    FVector &frameToProject, 
+    float timeToFrame
+){
+    UWorld *world = containerInOut.getWorld();
+    if(world == nullptr){
+        return;
+    }
+    MMatrix &transform = containerInOut.actorMatrix();
+    FVector frameInWorld = transform * frameToProject;
+
+    FVector lookdir = containerInOut.getLookDir().GetSafeNormal();
+	float velocity = containerInOut.getVelocity();
+
+    //hier einfach drauf rechnen (velocity und lookdir)
+
+    //x(t) = x0 + v0t + 1/2 at^2
+    //simplified to
+    //x(t) = x0 + v0 t
+    //xthis(t) = frameToProject + lookdir * timeToFrame * velocity
+  
+    FVector offsetFuture = lookdir * (timeToFrame * velocity);
+    frameInWorld += offsetFuture;
+
+    //EXTRA OFFSET NEEDED HERE, sont terrain nicht berührt, könnte durchlaufen!
+	frameInWorld += FVector(0, 0, raycastVerticalStartOffsetAdd);
+
+
+	//project frame to floor
+	FVector downVec(0, 0, -1);
+	FVector hitpoint;
+
+	bool wasHit = performRaycast(world, frameInWorld, downVec, hitpoint);
+	if(wasHit){
+        
+        if(DEBUGDRAW_RAYCAST){
+            float displayTime = 1.0f;
+            DebugHelper::showLineBetween(world, hitpoint, hitpoint + FVector(0, 0, 200), FColor::Yellow, displayTime);
+        }
+
+
+        //world copy
+        FVector worldHitOutput = hitpoint;
+
+        //hier den offset wieder abziehen sodass die lokale posiion stimmt
+        //zukunft wieder weg rechnen / abziehen
+        hitpoint -= offsetFuture;
+
+
+        //inverse vom hitpoint ins locale system
+        MMatrix inverse = transform.jordanInverse();
+        hitpoint = inverse * hitpoint;
+        frameToProject = hitpoint;
+        
+        
+        FVector offsetMade = hitpoint - frameToProject;
+
+        containerInOut.updateWorldHitAndOffset(worldHitOutput, offsetMade);
+    }
 }

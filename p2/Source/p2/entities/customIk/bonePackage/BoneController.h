@@ -10,6 +10,7 @@
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
+#include "p2/entities/customIk/animation/FrameProjectContainer.h"
 
 /**
  * This class will manage Bones of itself
@@ -35,11 +36,11 @@ public:
 	void SetLocation(FVector &vector);
 	FVector GetLocation();
 	void LookAt(FVector TargetLocation);
-	void yawRotate(float degree);
+	
 
 	MMatrix currentTransform();
 
-	
+	void overrideRotationYaw(float degree);
 
 	void attachCarriedItem(AcarriedItem *carriedItem);
 
@@ -53,11 +54,34 @@ public:
 	void stopLocomotion();
 	void weaponAimDownSight();
 	void weaponContactPosition();
+	void weaponHolsterPosition();
 
+	void dropWeapon();
+
+	bool canChangeStateNow();
+
+	
+	
 private:
+	FVector latestLookAtDirection;
+	bool isANewLookDirection(FVector &other);
+
+	bool isWaitingForAnimStop = false;
+	void waitForLocomotionStopIfNeeded();
+
+	void updateHipLocation(MMatrix &updatetHipJointMat, int leg);
+	void updateHipLocationAndRotation(MMatrix &updatedStartingJointMat, int limbIndex);
+
+	bool rotationPending = false;
+	void TickInPlaceWalk(float DeltaTime);
+	class TargetInterpolator rotationInterpolator;
+
+	void refreshLocomotionframes();
+
 	//torso 
 	class AActor *attachedTorso;
 	void TickUpdateTorso();
+
 
 
 	class AcarriedItem *attachedCarriedItem;
@@ -110,10 +134,15 @@ private:
 	class DoubleKeyFrameAnimation legDoubleKeys_1;
 	class DoubleKeyFrameAnimation legDoubleKeys_2;
 
+	
+
+
+
 	//arm climb locomotion keys
 	class DoubleKeyFrameAnimation armClimbKeys_1;
 
-
+	//in play walk keys
+	class KeyFrameAnimation legInPlaceWalk;
 
 	float legScaleCM = 150.0f;
 	float armScaleCM = 100.0f;
@@ -142,7 +171,7 @@ private:
 
 	void drawBody(float DeltaTime);
 
-	void updateHipLocation(MMatrix &updatetHipJointMat, int leg);
+	
 	void transformFromWorldToLocalCoordinates(FVector &position, int leg);
 
 
@@ -220,7 +249,6 @@ private:
 
 	//single forward ik action
 	void playForwardKinematicAnim(
-		TwoBone &bone, 
 		KeyFrameAnimation &frames, 
 		float DeltaTime,
 		int limbIndex
@@ -248,4 +276,18 @@ private:
 
 	//new motion queue section
 	class MotionQueue armMotionQueue;
+
+
+	//new
+	class MotionQueue legMotionQueue;
+	class KeyFrameAnimation legSimpleKeys_1;
+	class KeyFrameAnimation legSimpleKeys_2;
+
+	bool ALIGNHIP_FLAG = false;
+	void TickHipAutoAlign(float DeltaTime);
+
+
+
+	//new
+	FrameProjectContainer generateFrameProjectContainer(int limbindex);
 };

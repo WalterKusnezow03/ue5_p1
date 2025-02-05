@@ -93,8 +93,12 @@ void AplayerScript::BeginPlay()
             weapon->pickup(CameraComponent);
             playerInventory.addWeapon(weapon);
         }
+
+
+
+
+        entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
-    
 }
 
 // Called to bind functionality to input
@@ -135,14 +139,18 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 
 void AplayerScript::switchCamera(){
+    return;
+
     if(isCamInPlayer){
-        CameraComponent->SetRelativeLocation(FVector(200.56f, 1.75f, 64.f)); // Position the camera
+        CameraComponent->SetRelativeLocation(FVector(0, 0, 4000.0f)); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = false;
-        CameraComponent->SetRelativeRotation(FRotator(-90, 0, 0)); // Look downward
+        CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
         
     }else{
+        //default player cam setup
         CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
+        CameraComponent->SetRelativeRotation(FRotator(0, 0, 0)); // Look downward
     }
     
 }

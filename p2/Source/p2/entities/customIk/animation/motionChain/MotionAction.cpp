@@ -24,6 +24,9 @@ FRotator MotionAction::copyRotation(){
     return targetRotation;
 }
 
+MMatrix MotionAction::copyRotationAsMMatrix(){
+    return MMatrix::createRotatorFrom(targetRotation);
+}
 
 void MotionAction::setLocation(FVector &pos){
     targetLocation = pos;

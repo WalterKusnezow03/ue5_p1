@@ -31,29 +31,15 @@ void AIkActor::BeginPlay()
 	hipController.SetLocation(offset);
 
 	
-	/*
-	//debug matrix inverse bestimmen (klappt):
-	MMatrix current = currentTransform();
-	MMatrix invers = current.jordanInverse(); // current.adjunktInverse();
-	MMatrix identitity = current * invers;
-
-	FString message1 = FString::Printf(TEXT("debug matrix inverse matrix: "));
-	message1 += invers.asString();
-	DebugHelper::logMessage(message1);
-
-	FString message = FString::Printf(TEXT("debug matrix Sollte einheits matrix ergeben: "));
-	message += identitity.asString();
-	DebugHelper::logMessage(message);
-	*/
-
+	//testing rotation
+	hipController.overrideRotationYaw(60);
 	weaponPointer = nullptr;
 	hipController.setStateWalking();
 	getWeaponOnStart();
 	hipController.attachCarriedItem(weaponPointer);
 
 
-	//testing rotation
-	hipController.yawRotate(60);
+	
 
 
 

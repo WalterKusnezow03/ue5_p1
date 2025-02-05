@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/meshgen/meshDataContainer/Quad.h"
+
 
 /**
  * The data must be saved here to organize mesh actor layers for different materials 
@@ -20,12 +20,14 @@ public:
 	MeshData &operator=(const MeshData &other);
 
 	void append(MeshData &other);
-	void append(Quad &&other);
+
+	void rebuild(TArray<FVector> &&verteciesIn, TArray<int> &&trianglesIn);
 
 	void clearMesh();
-	void clearNormals();
+	
 	void setVertecies(TArray<FVector> &&verteciesIn);
 	void setTriangles(TArray<int32> &&trianglesIn);
+
 	void calculateNormals();
 
 	TArray<FVector> &getVerteciesRef();
@@ -35,26 +37,25 @@ public:
 	TArray<FProcMeshTangent> &getTangentsRef();
 	TArray<FColor> &getVertexColorsRef();
 
-	bool processHit(FVector &localHitpoint, FVector &direction);
+	
 
 private:
+	void clearNormals();
+
 	//mesh data i understand
 	TArray<FVector> vertecies;
 	TArray<int32> triangles;
 	TArray<FVector> normals;
 
-	//what ever these are
-	TArray<FVector2D> UV0;
-    TArray<FProcMeshTangent> Tangents; 
+	TArray<FProcMeshTangent> Tangents; 
     TArray<FColor> VertexColors;
 
+	//what ever these are
+	TArray<FVector2D> UV0;
+    
 
-	std::vector<Quad> quads;
-	void join(TArray<FVector> &vertecies, TArray<int32> &triangles);
-	void rebuildMeshDataFromQuads();
 
-	void findClosestQuadsTo(
-		FVector &localHitpoint,
-		std::vector<int> &outputindices 
-	);
+	
+	void join(TArray<FVector> &vertecies, TArray<int32> &triangles, TArray<FVector> &normalsin);
+	
 };

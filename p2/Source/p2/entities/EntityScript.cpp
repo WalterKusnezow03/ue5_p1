@@ -24,6 +24,7 @@ void AEntityScript::BeginPlay()
 {
 	Super::BeginPlay();
 	init();
+	setupBoneController();
 }
 
 /// @brief will enable the entity for tick
@@ -51,11 +52,132 @@ void AEntityScript::init(){
 	setTeam(teamEnum::neutralTeam);
 
 
+	FVector offset = GetActorLocation();
+	boneController.SetLocation(offset);
 
-
-	float groundCastTimeIntervallSeconds = 0.1f;
-	groundProjectionTimer.Begin(groundCastTimeIntervallSeconds, true);
+	
 }
+
+void AEntityScript::setupBoneController(){
+	
+
+	//init offset for now
+
+	FVector offset = GetActorLocation();
+	boneController.SetLocation(offset);
+
+	// debug testing meshes
+	float legScaleCM = 150.0f;
+	float armScaleCM = 100.0f;
+	float legHalfScale = legScaleCM / 2.0f;
+	float armHalfScale = armScaleCM / 2.0f;
+
+	int sizeX = 10;
+	int sizeY = 10;
+	int offY = sizeY / 2;
+	offY = 0;
+
+	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
+	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
+	boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
+	
+	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
+	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
+	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
+
+	
+	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
+	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
+	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
+	
+
+	//torso
+	/**
+	 * torso wird jetzt erstmal auch hier erstellt
+	 * 
+	 * die create limb methode usw muss irgendwann entweder durch meshes
+	 * aus den assets ersetzt werden
+	 * oder eine eigene klasse existieren die diese detailierter
+	 * erstellen kann!
+	 */
+	AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, -sizeY * 2.0f);
+	boneController.attachTorso(torsoMesh);
+
+
+	//holding weapon
+	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
+	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
+	boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
+	
+
+
+
+	
+
+	//DEBUG HIDE OWN MESH 
+	
+}
+
+
+AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int offsetY){
+
+	height *= -1; //orient downwardss
+	/**
+	 * DEBUG CREATE FOLLOW LIMBS
+	 */
+	UMaterial *material = nullptr;
+	assetManager *assetManagerPointer = assetManager::instance();
+	if(assetManagerPointer != nullptr){
+		
+		if(team == teamEnum::enemyTeam){
+			material = assetManagerPointer->findMaterial(materialEnum::stoneMaterial);
+		}else{
+			material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
+		}
+		
+	}
+
+	EntityManager *entitymanagerPointer = worldLevel::entityManager();
+	if(entitymanagerPointer != nullptr){
+		FVector location(0, 0, 0);
+		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
+		if(oberschenkel != nullptr){
+			//int width = 10;
+			//int height = -(legScaleCM / 2);
+
+			FVector a(0,offsetY,0);
+			FVector b(x,offsetY,0);
+			FVector c(x,y + offsetY,0);
+			FVector d(0, y + offsetY,0);
+			FVector at(0,offsetY,height);
+			FVector bt(x,offsetY,height);
+			FVector ct(x,y + offsetY,height);
+			FVector dt(0,y + offsetY,height);
+			oberschenkel->createCube(
+				a,b,c,d,at,bt,ct,dt,
+				material
+			);
+
+			//NEW ADD TO IGNORED PARAMS FOR THIS TEAM AND RAYCAST SKELLETON!
+			entitymanagerPointer->addActorToIgnoreRaycastParams(oberschenkel, team);
+
+			oberschenkel->setDamagedOwner(this);
+
+			return oberschenkel;
+		}
+	}
+	return nullptr;
+}
+
+
+
+
+
+
+
+
+
+
 
 // Called every frame
 void AEntityScript::Tick(float DeltaTime)
@@ -66,6 +188,15 @@ void AEntityScript::Tick(float DeltaTime)
 	if(!isActivatedForUpdate()){
 		return;
 	}
+
+	
+	//tick bone controller
+	if(true){
+		boneController.Tick(DeltaTime, GetWorld());
+		SetActorLocation(boneController.GetLocation());
+	}
+	
+
 
 	//get player pointer if needed
 	if(playerPointer == nullptr){
@@ -78,35 +209,20 @@ void AEntityScript::Tick(float DeltaTime)
 		return;
 	}
 
-	//timer
-	groundProjectionTimer.Tick(DeltaTime);
-	bool frameReservedForGroundRaycast = groundProjectionTimer.timesUp();
-
-	//vision
-	if(!frameReservedForGroundRaycast)
-		canSeePlayer = false; //reset if not reserved for frane update
+	canSeePlayer = false; //reset if not reserved for frane update
 	
 	bool withinAngle = withinVisionAngle(playerPointer);
 	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
 	//if not spotted yet, check angle, if angle ok, check vision
-	if(withinAngle && withinRange && !frameReservedForGroundRaycast){
+	if(withinAngle && withinRange){
 		canSeePlayer = performRaycast(playerPointer);
 		//DebugHelper::showScreenMessage("check", FColor::Red);
 	}
-	//project to ground
-	if(frameReservedForGroundRaycast){
-		FVector hitpoint;
-		FVector direction(0, 0, -1);
-		bool groundHit = performRaycast(direction, hitpoint, 300);
-		if(groundHit){
-			hitpoint.Z += 50;
-			SetActorLocation(hitpoint);
-		}
-	}
+
 
 	//look at player when spotted and within angle
-	if(spottedPlayer && withinAngle){
+	if(canSeePlayer && spottedPlayer && withinAngle){
 		LookAt(playerPointer);
 	}
 
@@ -115,9 +231,9 @@ void AEntityScript::Tick(float DeltaTime)
 
 		if(!spottedPlayer){
 			updateSpottingTime(DeltaTime);
-			//DebugHelper::showScreenMessage("time update:", spottingTimeLeft); //is fixed
 		}
-
+		
+	
 	}else{
 		//cant see player
 		if(spottedPlayer){
@@ -266,7 +382,9 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 {
 	
 	// Define the start and end vectors for the raycast
-	FVector Start = this->GetActorLocation();
+	//FVector Start = this->GetActorLocation();
+
+	FVector Start = boneController.GetLocation();
 	direction = direction.GetSafeNormal();
 	Start += direction * 100; //50cm
 
@@ -342,6 +460,8 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 					
 
 					FVector a = GetActorLocation();
+
+					a = boneController.GetLocation();
 					FVector b = playerPointer->GetActorLocation();
 					this->path = p->getPath(a,b);
 
@@ -371,27 +491,41 @@ void AEntityScript::followpath(float deltaTime){
 
 		
 
-		FVector currentLocation = GetActorLocation();
+		//FVector currentLocation = GetActorLocation();
+
+		FVector currentLocation = boneController.GetLocation();
 		FVector nextPos = path.front();
 
 		if(reachedPosition(nextPos)){
 			path.erase(path.begin() + 0); //first node pop
+			
+			if(!hasNodesInPathLeft()){
+				boneController.stopLocomotion();
+			}
+			
 			return;
 		}
 
 
 		// Direction vector from current location to target location
-		FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector
+		//FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector
 
 
 		//x(t) = pos + velocity * dt + 1/2 (accelrattion * dt)^2
 		//x(t) = x0 + v0t + 1/2 at^2
 		//x(t) = x0 + v * speed * deltaTime 
 		// Move from current location towards target location by stepDistance
-		FVector newLocation = currentLocation + dir * deltaTime * speed;
-		SetActorLocation(newLocation);
+		//FVector newLocation = currentLocation + dir * deltaTime * speed;
+		//SetActorLocation(newLocation);
 
 
+
+		//NEW BONE CONTROLLER INTERACTION!
+		if(!canSeePlayer){
+			LookAt(nextPos);
+			boneController.setStateWalking(); //update motion and then look at
+			
+		}
 	}
 }
 
@@ -410,11 +544,22 @@ bool AEntityScript::hasNodesInPathLeft(){
 /// @return true or false
 bool AEntityScript::reachedPosition(FVector pos){
 	FVector s = GetActorLocation();
+
+	s = boneController.GetLocation();
 	float dist = FVector::Dist(s, pos);
-	float epsilonDistance = 25;
+	float epsilonDistance = 100;
 	if (dist < epsilonDistance){
 		return true;
 	}
+
+	s.Z = 0;
+	pos.Z = 0;
+	dist = FVector::Dist(s, pos);
+	if (dist < epsilonDistance){
+		return true;
+	}
+
+
 	//2D distance
 	s.Z = 0;
 	pos.Z = 0;
@@ -447,12 +592,11 @@ void AEntityScript::LookAt(FVector TargetLocation)
 
     // Apply the rotation to the actor
     SetActorRotation(LookAtRotation);
+
+
+	//NEW
+	boneController.LookAt(TargetLocation);
 }
-
-
-
-
-
 
 void AEntityScript::showScreenMessage(FString s){
 	if (GEngine)

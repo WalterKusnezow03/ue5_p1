@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "TargetInterpolator.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "FrameProjectContainer.h"
 #include "KeyFrame.h"
 
 /**
@@ -50,29 +51,32 @@ public:
 	void skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end);
 
 
+	//new
+	bool projectNextFrameToGroundIfNeeded(FrameProjectContainer &containerInOut);
 
-	bool projectNextFrameToGroundIfNeeded(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
-	//projektion mit velocity future
-	bool projectNextFrameToGroundIfNeeded(
-		UWorld *world,
-		MMatrix &actorMatrix,
-		FVector &offsetMade,
-		float velocity,
-		FVector &lookdir
+	void forceRefreshTarget(
+		FrameProjectContainer &containerInOut
 	);
 
-	bool projectNextFrameToGroundIfNeeded(
-		UWorld *world,
-		MMatrix &actorMatrix,
-		FVector &offsetMade,
-		float velocity,
-		FVector &lookdir,
-		FVector &worldHitMade
-	);
 
-	void forceProjectToGround(UWorld *world, MMatrix &actorMatrix, FVector &offsetMade);
+
+
+
+	/**
+	 * --- START new section for rotation on frames! ---
+	 */
+	void rotateNextFrames(float singedAngleYaw);
+	void resetRotationOnFramesFlag();
 
 private:
+	void addRotationToFrame(FVector &localFrameToRotate);
+	bool rotateFramesBasedOnAngle = false;
+	MMatrix rotateFramesMatrix;
+	/**
+	 * --- END new section for rotation on frames! ---
+	 */
+
+
 	bool DEBUGDRAW_RAYCAST = true;
 
 	float raycastVerticalStartOffsetAdd = 500.0f;
@@ -114,25 +118,12 @@ private:
 
 
 private:
-	//projektion der frames
-	void projectToGround(UWorld *world, MMatrix &actorTransform, FVector &frameToProject, FVector &offsetMade);
+	
+
 	void projectToGround(
-		UWorld *world,
-		MMatrix &actorTransform,
+		FrameProjectContainer &containerInOut,
 		FVector &frameToProject,
-		FVector &offsetMade,
-		FVector &hitpointOutput
-	);
-	//projektion mit velocity future
-	void projectToGround(
-		UWorld *world,
-		MMatrix &actorTransform,
-		FVector &frameToProject,
-		FVector &worldHitOutput, //world hitpoint
-		FVector &offsetMade,
-		float timeToFrame,
-		float velocity,		   // running velocity
-		FVector &lookdirection // look dir of velocity
+		float timeToFrame
 	);
 
 	bool performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit);

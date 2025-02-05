@@ -30,13 +30,14 @@ class P2_API EntityManager
 {
 private:
 	FCollisionQueryParams collisionIgnoreParams;
-	void addActorToIgnoreRaycastParams(AActor *actor, teamEnum team);
+	
 
 	std::map<teamEnum, FCollisionQueryParams> collisionMap;
 
 public:
-	//static EntityManager *instance();
-	//static void deleteInstance();
+	void addActorToIgnoreRaycastParams(AActor *actor, teamEnum team);
+	void addActorToIgnoredAllParams(AActor *actor);
+
 	FCollisionQueryParams &getIgnoredRaycastParams();
 	FCollisionQueryParams &getIgnoredRaycastParams(teamEnum team);
 

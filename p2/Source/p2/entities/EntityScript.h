@@ -8,6 +8,7 @@
 #include "p2/player/playerScript.h"
 #include "p2/player/teamEnum.h"
 #include "p2/util/timer.h"
+#include "p2/entities/customIk/bonePackage/BoneController.h"
 
 #include "EntityScript.generated.h"
 
@@ -117,11 +118,15 @@ protected:
 	
 	void enableCollider(bool enable);
 	
-	class AskelletonController *skelletonControllerPointer = nullptr;
 
 
 
 
-	//timer for grounding
-	class timer groundProjectionTimer;
+
+
+
+	class BoneController boneController;
+	void setupBoneController();
+	AActor *createLimbPivotAtTop(int x, int y, int height, int offsetY);
+
 };

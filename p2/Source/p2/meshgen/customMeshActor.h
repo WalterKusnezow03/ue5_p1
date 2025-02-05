@@ -152,6 +152,8 @@ public:
 		MeshData &output
 	);*/
 
+	void setDamagedOwner(IDamageinterface *damagedOwnerIn);
+
 protected:
 	
 	int health = 100;
@@ -161,6 +163,8 @@ protected:
 	void setHealth(int d);
 
 	teamEnum team;
+
+	class IDamageinterface *damagedOwner = nullptr;
 
 	/*
 	/// @brief saves the mesh data in a map for each layer, keeps things organized

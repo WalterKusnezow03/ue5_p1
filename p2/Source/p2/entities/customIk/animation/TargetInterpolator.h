@@ -24,12 +24,20 @@ public:
 	);
 	
 	void overrideTarget(FVector totarget);
+	void overrideTarget(FRotator toRotationIn);
 	void overrideStart(FVector fromTarget);
+	void overrideStart(FRotator fromRotationIn);
 	void overrideStartSpeedRelative(FVector newStart);
+	void overrideStartSpeedRelative(FRotator newRotation);
+	void overrideStartSpeedRelative(FVector newStart, FRotator newRoation);
 
 	void overrideStart(FVector fromtarget, FRotator fromRotationIn);
 	void overrideTarget(FVector totarget, FRotator toRotationIn);
 
+
+
+	//void overrideStartSpeedRelative(FRotator rotator);
+	//void overrideTarget(FRotator rotator);
 
 	bool hasReachedTarget();
 	bool hasTargetSetup();
@@ -76,4 +84,6 @@ private:
 	bool worldtargetSetup = false;
 
 	static float rotationDirectionShorter(float a, float b);
+
+	float shorterAngleSum(FRotator &a, FRotator &b);
 };

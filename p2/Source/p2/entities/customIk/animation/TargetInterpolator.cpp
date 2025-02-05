@@ -52,6 +52,10 @@ void TargetInterpolator::overrideStart(FVector fromtarget){
     from = fromtarget;
 }
 
+void TargetInterpolator::overrideStart(FRotator fromRotationIn){
+    fromRotation = fromRotationIn;
+}
+
 
 void TargetInterpolator::overrideStart(FVector fromtarget, FRotator fromRotationIn){
     overrideStart(fromtarget);
@@ -60,6 +64,16 @@ void TargetInterpolator::overrideStart(FVector fromtarget, FRotator fromRotation
 void TargetInterpolator::overrideTarget(FVector totarget, FRotator toRotationIn){
     overrideTarget(totarget);
     toRotation = toRotationIn;
+}
+
+
+void TargetInterpolator::overrideTarget(FRotator toRotationIn){
+    toRotation = toRotationIn;
+}
+
+void TargetInterpolator::overrideStartSpeedRelative(FVector newStart, FRotator newRoation){
+    overrideStartSpeedRelative(newStart);
+    fromRotation = newRoation;
 }
 
 void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
@@ -72,7 +86,8 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
      *
      * newtime = (m) / (m/s) = m * (s/m) = s
      * 
-     * delta time muss nicht resettet werden! Ansonsten bricked alles.
+     * metersnew / speed = m * (s/m) = s
+     * 
      */
 
     float distanceOld = FVector::Dist(from, target);
@@ -93,6 +108,27 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
         reached = true;
     }
 }
+
+void TargetInterpolator::overrideStartSpeedRelative(FRotator newRotation){
+    float distanceOld = shorterAngleSum(fromRotation, toRotation);
+    float speed = distanceOld / timeToFrame; //sei distanz 40m und ttf 2s, dann sinds 20ms
+
+    // Aktualisiere Startrotation
+    fromRotation = newRotation;
+
+    // Neue Time-to-Frame berechnen
+    float newDistance = shorterAngleSum(fromRotation, toRotation);
+    float newTimeToFrame = newDistance / speed;
+
+    // Neue deltaTime basierend auf dem alten Fortschritt
+    timeToFrame = newTimeToFrame;
+
+    if(timeToFrame <= 0.01f){
+        reached = true;
+    }
+}
+
+
 
 
 
@@ -170,11 +206,25 @@ FRotator TargetInterpolator::interpolateRotationOnly(float DeltaTime){
     }
     deltaTime += DeltaTime;
 
+    float skalarCurrent = skalar();
+
+    if(skalarCurrent >= 1.0f){
+        reached = true;
+        deltaTime = 0.0f;
+        worldtargetSetup = false;
+        return toRotation;
+    }
+    //DebugHelper::showScreenMessage("skalar rotation", skalarCurrent); //teilweise NAN wert, unendllich
+
+    
     FRotator rotationOutgoing = TargetInterpolator::interpolationRotation(
-        fromRotation, 
-        toRotation, 
-        skalar() //current skalar
+        fromRotation,
+        toRotation,
+        skalarCurrent // current skalar
     );
+
+    //ISSUES WITH REACHING, is not switching!!
+
     return rotationOutgoing;
 }
 
@@ -193,8 +243,12 @@ FVector TargetInterpolator::interpolate(float DeltaTime, FRotator &rotationOutgo
 }
 
 float TargetInterpolator::skalar(){
-    if(timeToFrame == 0){
-        return 1;
+    //hier muss ein epsilon value sein!
+    //1 / 0 = unendlich
+    float epsilon = 0.1f;
+    if (timeToFrame <= 0 + epsilon)
+    {
+        return 1.0f;
     }
 
     float skal = deltaTime / timeToFrame; //fractionThis = this / all
@@ -213,6 +267,12 @@ float TargetInterpolator::skalar(){
 
 
 
+/*
+
+---- static methods -----
+
+
+*/
 
 FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float skalar){
     FVector connect = toIn - fromIn; // AB = B - A
@@ -246,6 +306,16 @@ float TargetInterpolator::rotationDirectionShorter(float a, float b){
         return diffA;
     }
     return diffB;
+}
+
+
+
+float TargetInterpolator::shorterAngleSum(FRotator &a, FRotator &b){
+    float sum = 0.0f;
+    sum += std::abs(rotationDirectionShorter(a.Roll, b.Roll));
+    sum += std::abs(rotationDirectionShorter(a.Pitch, b.Pitch));
+    sum += std::abs(rotationDirectionShorter(a.Yaw, b.Yaw));
+    return sum;
 }
 
 float TargetInterpolator::TimeToFrame(){

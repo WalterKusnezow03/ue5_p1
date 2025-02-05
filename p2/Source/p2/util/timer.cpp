@@ -32,6 +32,8 @@ void timer::Begin(float time, bool resetsItselfIn){
     resetsItself = resetsItselfIn;
 }
 
+/// @brief will begin the timer, one time timer!
+/// @param time 
 void timer::Begin(float time){
     Begin(time, false);
 }

@@ -8,6 +8,7 @@
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/animation/GravityInterpolator.h"
 #include "KeyFrameAnimation.h"
+#include "FrameProjectContainer.h"
 
 /**
  * will store 2 seperate key frame animations and tell the status if A or B
@@ -20,6 +21,8 @@ public:
 
 	bool isAnimationA();
 	bool isAnimationB();
+
+	void setToA();
 
 	void setAnimationA(KeyFrameAnimation &&A);
 	void setAnimationBAdjustPermanentTarget(FVector vector);
@@ -35,32 +38,24 @@ public:
 	bool animationCycleWasComplete();
 
 	void processProjectOffset(FVector &offsetMade);
-	FVector getProjectionHipOffsetTimed(float DeltaTime);
-	FVector getProjectionHipOffsetTimed(float DeltaTime, FVector currentEndEffector);
+	FVector getProjectionOffsetTimed(float DeltaTime, FVector currentEndEffector);
 	
 
 	void overrideCurrentStartingFrame(FVector &currentLocationRelative);
 	void skipAnimationOnce(FVector start, FVector end);
 	void skipAnimationOnceWorld(MMatrix &actor, FVector start, FVector end);
 	
-	void projectNextFrameIfNeeded(UWorld *world, MMatrix &actorMatrix);
 	
 	void projectNextFrameIfNeeded(
-		UWorld *world,
-		MMatrix actorMatrix, // is value pass on purpose
-		float velocity,
-		FVector &lookdir,
+		FrameProjectContainer &container,
 		bool &switchToArmLocomotion,
 		float maxHeightSwitch,
 		BoneControllerStates locomotionType
 	);
 
-	void forceProjectNextFrame(
-		UWorld *world,
-		MMatrix &actorMatrix
-	);
-
 	
+
+	void forceRefreshTarget(FrameProjectContainer &container);
 
 private:
 	class GravityInterpolator gravityInterpolator;
@@ -105,10 +100,13 @@ private:
 	//neu testing
 	FVector latestWorldProjectedFrame;
 
+	void updateInterpolatorB(FVector reachedA);
+
+	//new
+	bool rotationRequested = false; //must be set to false once framesA finishes playing
 
 public:
 	void setRunning(bool b);
 
-
-	
+	void rotateNextFramesA(float degreeYawSigned);
 };

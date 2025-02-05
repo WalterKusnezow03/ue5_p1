@@ -126,9 +126,9 @@ FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(teamEnum team){
 }
 
 /// @brief adds a actor to the ignored params which are used by entiteies for raycasting and 
-/// partfinder
+/// pathfinder
 /// improoves performance
-/// @param actor actor reference to be ignored
+/// @param actor actor reference to be ignored in own team and all ignored actors (they are seperate params)
 void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
     if(actor != nullptr){
         //add to correct map
@@ -146,12 +146,17 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
         }
 
         //add to all
-        collisionIgnoreParams.AddIgnoredActor(actor);
+        addActorToIgnoredAllParams(actor);
     }
-   
 }
 
-
+/// @brief adds a ignored actor to the all ignore params
+/// @param actor actor to ignore
+void EntityManager::addActorToIgnoredAllParams(AActor *actor){
+    if(actor != nullptr){
+        collisionIgnoreParams.AddIgnoredActor(actor);
+    }
+}
 
 
 
@@ -444,7 +449,7 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
             AcustomMeshActor *pointer = meshActorList.getFirstActor();
             if(pointer != nullptr){
                 //debug, need to remove later
-                DebugHelper::showScreenMessage("POPPED MESH FROM BACKUP", FColor::Green);
+                //DebugHelper::showScreenMessage("POPPED MESH FROM BACKUP", FColor::Green);
                 pointer->SetActorLocation(location);
                 return pointer;
             }

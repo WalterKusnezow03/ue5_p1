@@ -573,7 +573,9 @@ std::vector<FVector> PathFinder::findPath(
                         if(canSeeTangential(current, n)){
                             
 
-                            float gxNew = current->gx + distance(current->pos, n->pos);
+                            //gxnew = gx + hx, potentially smaller then prev of other
+                            //is shorter path.
+                            float gxNew = current->gx + distance(current->pos, n->pos); 
                             if(gxNew < n->gx){
                                 //screenMessage(300);
                                 float hxEnd = distance(n->pos, end->pos);
@@ -696,12 +698,9 @@ bool PathFinder::canSee(FVector &Start, FVector &End){
         }
     
         //default casting
-        bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-        if(bHit){
-            return false;
-        }else{
-            return true;
-        }
+        bool hittedAnything = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+        bool canSee = !hittedAnything;
+        return canSee;
     }
     return false;
 }
@@ -807,9 +806,7 @@ void PathFinder::Quadrant::add(Node *n){
     }   
 }
 
-/** 
- * TESTING NEEDED!
-*/
+
 void PathFinder::Quadrant::fillMapTo(int xIndex, int yIndex){
     PathFinder *instance = PathFinder::instance();
     if(instance != nullptr){
@@ -1031,13 +1028,13 @@ std::vector<PathFinder::Node*> &PathFinder::Chunk::getNodes(){
 PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
 
     
-    //test add node
+    //add node if didnt had any yet
     if(nodes.size() <= 0){
         DebugHelper::showScreenMessage("RETURNED ASYNC CONNECT NODE ", FColor::Yellow);
         return lateadd(pos);
     }
 
-
+    //find the closest node 
     float closest = std::numeric_limits<float>::max();
     PathFinder::Node *closestNode = nullptr;
     for (int i = 0; i < nodes.size(); i++)
@@ -1054,6 +1051,8 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
             }
         }
     }
+
+    //connect node or not.
     if(PathFinder::PREBUILD_EDGES_ENABLED && closestNode == nullptr){
         DebugHelper::showScreenMessage("ASYNC LATE CONNECT NODE ", FColor::Yellow);
         return lateadd(pos);
@@ -1066,6 +1065,9 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
 }
 
 
+/// @brief will add a new node to the chunk and connect the edges if the prebuild mode is enabled / forced
+/// @param pos position to create the new node at
+/// @return created node, may not be fully connected yet if operation is async.
 PathFinder::Node* PathFinder::Chunk::lateadd(FVector pos){
     PathFinder::Node *s = new PathFinder::Node(pos);
     nodes.push_back(s);
@@ -1130,6 +1132,10 @@ void PathFinder::Node::reset(){
     closedFlag = false;
 }
 
+/// @brief will update the came from node and gx, and fx value for this node
+/// @param gxIn 
+/// @param hxEnd 
+/// @param came 
 void PathFinder::Node::updateCameFrom(float gxIn, float hxEnd, PathFinder::Node &came){
     this->camefrom = &came;
 
@@ -1203,16 +1209,16 @@ void PathFinder::Node::addTangentialNeighbor(Node *n){
 
 /// @brief connects a node in all quadrants IF ENABLED BOOL IN HEADER FILE
 ///
-/// --- ISSUES I AM AWARE OF : ---
+/// --- ISSUE I AM AWARE OF : ---
 /// if 2 nodes are compared to each other which are part of 1 convex hull the condition
 /// of tangentiality wont be ever true. 
 /// since it still brings some computanional overhead
 /// the plottet nodes will maybe tracked in polygonal shape-objects some time in future.
+///
 /// it is unclear for me whether i will implement that because searching for the node
 /// in a list brings with O(n) rougly the same overhead as checking the tangential edges for
 /// all points, which is also already greatly reduced by limiting a max distance and 
 /// the subgraph functionality.
-/// ---> it wont be needed most likely
 /// @param node node to connect
 void PathFinder::connect(Node *node){
     if(node != nullptr && PathFinder::PREBUILD_EDGES_ENABLED){
@@ -1240,7 +1246,7 @@ void PathFinder::connect(Node *node){
                     if(PathFinder::ASYNC_EDGE_PREBUILDING){
                         asyncCanSee(node, enclosedByMaxDistance.at(i));
                     }else{
-                        //if (p->canSee(node->pos, enclosedByMaxDistance.at(i)->pos)) 
+                        
                         if (p->canSeeTangential(node, enclosedByMaxDistance.at(i))) 
                         {
                             node->addTangentialNeighbor(compare);
@@ -1354,7 +1360,9 @@ FTraceDelegate *PathFinder::requestDelegate(Node *a, Node *b){
                 if(bHit){
                     FHitResult hitP = TraceData.OutHits[0];
                     FVector hitPos = hitP.ImpactPoint;
-                    if(FVector::Dist(hitPos, b->pos) <= 100){
+
+                    //if distance close enough to target, forgive the hit.
+                    if(FVector::Dist(hitPos, b->pos) <= 25){ //50cm
                         bHit = false; //testing needed
                         //DebugHelper::showScreenMessage("async trace false positive", FColor::Purple);
                     }

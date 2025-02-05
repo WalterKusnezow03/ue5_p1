@@ -34,6 +34,10 @@ void AcustomMeshActor::Tick(float DeltaTime)
 
 }
 
+void AcustomMeshActor::setDamagedOwner(IDamageinterface *damagedOwnerIn){
+    damagedOwner = damagedOwnerIn;
+}
+
 /// @brief sets the health of the material 
 /// if material is glass it will be split on death
 /// @param mat material to set
@@ -85,8 +89,10 @@ void AcustomMeshActor::takedamage(int d){
         {
             health -= d;
             if(health <= 0){
-                health = 100;
 
+                damagedOwner = nullptr;
+
+                health = 100;
                 if(splitOnDeath){
                     splitAndreplace(this, originPoint, 50, materialtypeSet);
                 }
@@ -105,8 +111,9 @@ void AcustomMeshActor::takedamage(int d){
     }
 
     
-
-
+    if(damagedOwner != nullptr){
+        damagedOwner->takedamage(d);
+    }
 }
 
 /// @brief allows tha ctor to react to damage from a origin
@@ -141,6 +148,10 @@ void AcustomMeshActor::setHealth(int d){
 bool AcustomMeshActor::isDestructable(){
     bool properMaterial = materialtypeSet == materialEnum::glassMaterial ||
            materialtypeSet == materialEnum::wallMaterial;
+
+    if(damagedOwner != nullptr){
+        return false;
+    }
 
     return properMaterial;
 }
@@ -357,10 +368,8 @@ void AcustomMeshActor::process2DMapSimple(
         }
     }
 
-    outputData.clearMesh();
-    outputData.setVertecies(MoveTemp(output_layer)); //r value reference must be moved
-    outputData.setTriangles(MoveTemp(triangles_layer));
-    outputData.calculateNormals();
+    outputData.rebuild(MoveTemp(output_layer), MoveTemp(triangles_layer));
+
 }
 
 
