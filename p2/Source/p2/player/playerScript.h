@@ -27,6 +27,8 @@ public:
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 
+	void debugPathFinder();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

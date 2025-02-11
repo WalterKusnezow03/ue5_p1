@@ -48,9 +48,14 @@ public:
 	FVector interpolate(float DeltaTime);
 	FVector interpolate(float DeltaTime, FRotator &rotationOutgoing);
 	FRotator interpolateRotationOnly(float DeltaTime);
+	MMatrix interpolateAndGenerateTransform(float DeltaTime);
+	
 
 	static FRotator interpolationRotation(FRotator fromIn, FRotator toIn, float skalar);
 	static FVector interpolation(FVector from, FVector to, float skalar);
+	 
+	FVector interpolationBezier(float skalar);
+	static FVector ThreeAnchorBezier(FVector &a, FVector &b, FVector &c, float skalar);
 
 	FVector readFromPosition();
 	FVector readToPosition();
@@ -64,10 +69,12 @@ public:
 	void overrideStartWorldSpeedRelative(FVector newStart, MMatrix &actor);
 	
 
-private:
+protected:
 	FVector from;
 	FVector target;
-	
+
+	FVector prev;
+
 	FVector fromWorld;
 	FVector targetWorld;
 

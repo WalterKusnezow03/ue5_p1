@@ -59,9 +59,8 @@ AOutpost *OutpostManager::nearestOutpostTo(FVector location){
 
     float distanceMax = 100 * 100; //100m
 
-    
-    AOutpost *found = outposts.front();
-    float foundDist = FVector::Dist(found->GetActorLocation(), location);
+    AOutpost *found = nullptr;
+    float foundDist = 100000000000.0f;
 
     for (int i = 0; i < outposts.size(); i++){
         AOutpost *current = outposts.at(i);

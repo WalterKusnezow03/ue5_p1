@@ -73,14 +73,18 @@ public:
 
 	bool hipInTransit();
 
+
+	//new!
 	MMatrix TickUpdatedHipMoveAlignMatrix(
 		MMatrix &hipJointMatStartRotated,
 		MMatrix &orientation,
 		MMatrix &endEffector,
 		TwoBone &bone1,
 		float DeltaTime,
+		float signedYawAngleAddedToFrames,
 		UWorld *world,
-		bool &reachedFlag
+		bool &reachedFlag,
+		float velocityOfMovement
 	);
 
 private:
@@ -88,12 +92,8 @@ private:
 	bool hipTransitioning = false;
 	bool setupHipTarget = false;
 
-	void updateHipLocation(
-		MMatrix &actorMatTranslation, 
-    	MMatrix actorRotationInv,
-    	MMatrix &updatetHipJointMat, 
-    	MMatrix &hipJointMatLocal
-	);
+	void resetHipInterpolatorAndFlags();
+
 	float signedYawAngle(MMatrix &actorWorld, FVector actorComToEndEffector);
 
 	bool isParalel(MMatrix &orientation, FVector directionOfEndEffector);

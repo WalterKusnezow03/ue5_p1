@@ -8,6 +8,7 @@ TargetInterpolator::TargetInterpolator()
     reached = true;
     targetSetup = false;
     timeToFrame = 0.0f;
+    prev = FVector(0, 0, 0);
 }
 
 TargetInterpolator::~TargetInterpolator()
@@ -171,7 +172,9 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
     //FVector interpolated = from + skalar() * connect;
 
     float skalarCurrent = skalar();
+    
     FVector interpolated = TargetInterpolator::interpolation(from, target, skalarCurrent);
+    //FVector interpolated = interpolationBezier(skalarCurrent);
     
 
     //wenn die richtungs vektoren anti paralell zu einander liegen
@@ -240,6 +243,15 @@ FVector TargetInterpolator::interpolate(float DeltaTime, FRotator &rotationOutgo
     );
     rotationOutgoing = interpolatedRotation;
     return outpos;
+}
+
+MMatrix TargetInterpolator::interpolateAndGenerateTransform(float DeltaTime){
+    MMatrix outMatrix;
+    FRotator rotatorOut;
+    FVector pos = interpolate(DeltaTime, rotatorOut);
+    outMatrix.setRotation(rotatorOut);
+    outMatrix.setTranslation(pos);
+    return outMatrix;
 }
 
 float TargetInterpolator::skalar(){
@@ -388,3 +400,38 @@ void TargetInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatr
 
 
 
+
+
+
+
+/**
+ * new bezier interpolation - testing needed
+ * is not debugged!
+ */
+FVector TargetInterpolator::interpolationBezier(float skalar){
+    FVector tangente = (from - prev).GetSafeNormal(); //AB = B - A
+    float dist = FVector::Dist(from, target);
+    float skalDist = dist * 0.25f;
+    FVector weight = from + tangente * skalDist;
+
+    if(skalar >= 1.0f){
+        prev = weight; //save weight for prev knot tangent
+        return target;
+    }
+
+    
+
+    return ThreeAnchorBezier(from, weight, target, skalar);
+}
+
+FVector TargetInterpolator::ThreeAnchorBezier(
+    FVector &a,
+    FVector &b,
+    FVector &c,
+    float skalar
+){
+    FVector ab = a + skalar * (b - a);
+    FVector bc = b + skalar * (c - b);
+    FVector abbc = ab + skalar * (bc - ab); // das ding dazwischen
+    return abbc;
+}

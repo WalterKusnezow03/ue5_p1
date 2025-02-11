@@ -36,7 +36,7 @@ public:
 	void SetLocation(FVector &vector);
 	FVector GetLocation();
 	void LookAt(FVector TargetLocation);
-	
+	void updateRotation(float addDegreeYaw);
 
 	MMatrix currentTransform();
 
@@ -47,6 +47,7 @@ public:
 	//attach meshes
 	void attachLimbMeshes(AActor *top, AActor *bottom, int index);
 	void attachTorso(AActor *torsoPointer);
+	void attachPedalFoots(AActor *left, AActor *right);
 
 	//movement and item interaction set state
 	void setStateWalking();
@@ -63,7 +64,10 @@ public:
 	
 	
 private:
+	void resetPendingRotationStatus();
+	float lookAtPendingAngle = 0.0f;
 	FVector latestLookAtDirection;
+
 	bool isANewLookDirection(FVector &other);
 
 	bool isWaitingForAnimStop = false;

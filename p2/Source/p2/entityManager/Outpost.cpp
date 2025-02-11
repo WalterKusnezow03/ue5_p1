@@ -21,6 +21,7 @@ AOutpost::AOutpost()
 }
 
 // Called when the game starts or when spawned
+/// CAUTION: Will create 5 human entities on begin play, on spawn!
 void AOutpost::BeginPlay()
 {
 	Super::BeginPlay();

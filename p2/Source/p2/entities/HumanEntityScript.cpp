@@ -34,6 +34,7 @@ void AHumanEntityScript::BeginPlay(){
     Super::BeginPlay(); //super methods first, will also call init there.
     weaponPointer = nullptr;
     this->init();
+    DebugHelper::showScreenMessage("human start!");
 }
 
 void AHumanEntityScript::init(){

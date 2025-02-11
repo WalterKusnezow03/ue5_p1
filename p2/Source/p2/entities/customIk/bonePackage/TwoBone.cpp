@@ -223,11 +223,11 @@ void TwoBone::createEthaPitchAnglesFor(
     gamma = MMatrix::degToRadian(180 - std::abs(MMatrix::radToDegree(gamma)));
     secondOutput = gamma;
 
-    FString debugAngleString = FString::Printf(
+    /*FString debugAngleString = FString::Printf(
         TEXT("AngleDebug alpha HIP %.2f, gamma KNEE %.2f"),
         MMatrix::radToDegree(alpha),
         MMatrix::radToDegree(gamma)
-    );
+    );*/
    
 
 }
@@ -318,7 +318,8 @@ void TwoBone::rotateEndToTarget(
     end.resetRotation();
 
     /**
-     * TESTING FURTHER NEEDED
+     * Top view yaw rotation of weight
+     * 
      * gewicht ziegt ja irgendwo in zy pane und dann wird die bein achse (um -z) gespinnt.
      */
     //testing needed
@@ -343,14 +344,17 @@ void TwoBone::rotateEndToTarget(
     }
 
     // --- KNICK BASIS ---
-     
+    /*
     //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    float etha = createEthaFromDistance(distance);
+    //float etha = createEthaFromDistance(distance);
     
     float angle = angleFromEtha(etha);
     float hipAngle = createHipAngle(angle);
     float kneeAngle = createKneeAngle(angle);
+    */
 
+    float hipAngle = 0.0f;
+    float kneeAngle = 0.0f;
 
     //ATTENTION: NEW TESTING COS SATZ!
     createEthaPitchAnglesFor(
@@ -370,9 +374,9 @@ void TwoBone::rotateEndToTarget(
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
     if(
-        (weight.X < 0 || weight.Z < 0) 
+        (weight.X < 0.0f || weight.Z < 0.0f) 
         && //wenn gewicht negativ
-        hipAngle < 0                      //und knick noch nach vorne (default) (insgesamt ein gegensatz)
+        hipAngle < 0.0f  //angle zeigt grade nach vorne
     ){ 
         //both angles flip based on weight direction 
         hipAngle *= -1;
@@ -406,26 +410,6 @@ void TwoBone::rotateEndToTarget(
     start.pitchRadAdd(globalSideAdd);
     
 
-
-
-    //FString anglePrint = FString::Printf(TEXT("angle: %.1f"), MMatrix::radToDegree(globalSideAdd));
-    //DebugHelper::showScreenMessage(anglePrint,vec, FColor::Orange);
-
-    /**
-     * --- global yaw top view ---
-     * 
-     * obere perspektive, wo muss das bein hinrotiert werden von oben gesehen
-     */
-
-    // prevent bugs with Z rotation, just lock if Y not set to any direction
-    bool isSideWayTarget = (std::abs(vec.Y) >= 0.1f); //statt != 0.0f ALWAYS USE EPSILON
-    if (isSideWayTarget == false){
-        return;
-    }
-
-    //GOLBAL ROTATION ON YAW only if Y is set!
-    float yawAngleTarget = yawAngleTo(vec);
-    start.yawRadAdd(yawAngleTarget);
 
 }
 
@@ -600,8 +584,8 @@ void TwoBone::rotateStartToTargetAndBuild( //works as expected
     FColor color,
     float displayTime
 ){
-    weight *= -1; //sonst falschrum, umdrehen weil rechnung umgedreht! nicht ändern, stimmt so
-
+    //weight *= -1;
+    weight.X *= -1; //sonst falschrum, umdrehen weil rechnung umgedreht! nicht ändern, stimmt so, X is Forward!
 
     std::vector<MMatrix *> matrizen;
 
@@ -907,11 +891,6 @@ MMatrix TwoBone::buildWithOutput(
 
 
     
-    /**
-     * neuer versuch mit extraction des rotators. 
-     * Was korrekt sein sollte
-     * aber bei eigen rotation nicht klappt um yaw. Scheinabr.
-     */
 
     //update bones based on matricies build
     for(int i = 0; i < resultMatricies.size(); i++){
@@ -927,12 +906,6 @@ MMatrix TwoBone::buildWithOutput(
 
     
 }
-
-
-
-
-
-
 
 
 

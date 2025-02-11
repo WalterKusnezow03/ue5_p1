@@ -24,6 +24,7 @@ EntityManager *worldLevel::entityManagerPointer = nullptr;
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
 
+bool worldLevel::areBotsInited = false;
 
 /// IS RESET FROM GAME MODE SUBCLASS, MUST BE CALLED ON END PLAY!
 /// @brief clears all pointers -> call only on very begin or very end of level!
@@ -67,7 +68,9 @@ void worldLevel::initWorld(UWorld *world){
     //disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
-            createTerrain(world, 100); // 100m
+            int meters = 100;
+            meters = 1000;
+            createTerrain(world, meters); // 100m
         }
     }
 
@@ -77,7 +80,9 @@ void worldLevel::initWorld(UWorld *world){
     //edge collector must be added here later
     createPathFinder(world);
 
-    humanBotsOnStart(world);
+    //creates one bot, BUT 5 humans will spawn if one outpost is created!
+    humanBotsOnStart(world, 1);
+        
 
     //testing
     DebugHelper::Debugtest(world);
@@ -199,18 +204,26 @@ int worldLevel::getGroundHeight(FVector &pos){
  * DEBUG HUMAN ENTITIES
  * 
 */
-void worldLevel::humanBotsOnStart(UWorld *worldIn){
+void worldLevel::humanBotsOnStart(UWorld *worldIn, int count){
     if(worldIn == nullptr){
         return;
     }
+    if(worldLevel::areBotsInited){
+        return;
+    }
+    worldLevel::areBotsInited = true;
 
     EntityManager *e = entityManager();
     if (e != nullptr)
     {
-        FVector spawnLocation(1000, 1000, 20);
-        spawnLocation.Y += 1000;
-        spawnLocation.X += 1000;
-        e->spawnHumanEntity(worldIn, spawnLocation, teamEnum::enemyTeam);
+        for (int i = 0; i < count; i++){
+            FVector spawnLocation(-1000, -1000, 20);
+            spawnLocation.Y += 1000;
+            spawnLocation.X += 1000;
+            e->spawnHumanEntity(worldIn, spawnLocation, teamEnum::enemyTeam);
+        }
+
+        
     }
 }
 

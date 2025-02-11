@@ -33,7 +33,7 @@ private:
 	//pathfinder init edge collection
 	static void createPathFinder(UWorld *WorldIn);
 
-	static void humanBotsOnStart(UWorld *worldIn);
+	static void humanBotsOnStart(UWorld *worldIn, int count);
 
 	//manager
 	static class EntityManager *entityManagerPointer;
@@ -43,8 +43,9 @@ private:
 	static class terrainCreator *terrainPointer;
 	static bool isTerrainInited;
 
+	//bots
+	static bool areBotsInited;
 
-	
 	static void DebugCreateRooms(UWorld *world);
 
 	static void debugBezier(UWorld *world);

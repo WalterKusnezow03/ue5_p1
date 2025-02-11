@@ -495,10 +495,8 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
 
 
     //random height and smooth
-    int hillCount = 5; //means 40m height in worse case
-    for (int j = 0; j < hillCount; j++){
-        createRandomHeightMapChunkWide();
-    }
+    int layers = 20;
+    createRandomHeightMapChunkWide(layers);
     smooth3dMap();
 
     //plotAllChunks(world);
@@ -991,73 +989,52 @@ void terrainCreator::applyTerrainDataToMeshActors(std::vector<AcustomMeshActorBa
 
 
 /// @brief will create a random height map chunk wide, then to be smoothed
-void terrainCreator::createRandomHeightMapChunkWide(){
-    int addheight_min = terrainCreator::ONEMETER;
-    int addheight_max = terrainCreator::ONEMETER * 3;
-    int layers = 5;
+void terrainCreator::createRandomHeightMapChunkWide(int layers){
 
-    int scaleX = FVectorUtil::randomNumber(6, map.size()); //random hardcoded for now.
-    int scaleY = FVectorUtil::randomNumber(6, scaleX);
+    for (int i = 0; i < std::abs(layers); i++){
+        terrainHillSetup newHill = createRandomHillData();
+        applyHillData(newHill);
+    }
+}
+
+
+terrainHillSetup terrainCreator::createRandomHillData(){
+    int scaleX = FVectorUtil::randomNumber(4, map.size()); //random hardcoded for now.
+    int scaleY = FVectorUtil::randomNumber(4, map.size());
     int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
     int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
 
-    int endX = clampIndex(startX + scaleX);
-    int endY = clampIndex(startY + scaleY);
+    int heightMin = terrainCreator::ONEMETER;
+    int heightMax = heightMin * 3;
 
-    int layerCount = 0;
-    while (
-        (endX - startX) >= 3 &&
-        (endY - startY) >= 3 &&
-        layerCount < layers
-    ){
-        for (int i = startX; i <= endX; i++)
-        {
-            for (int j = startY; j <= endY; j++)
-            {
-                map.at(i).at(j).addheightForAll(
-                    //FVectorUtil::randomNumber(addheight_min, addheight_max)
-                    terrainCreator::ONEMETER
-                );
-            }
-        }
-        layerCount++;
-        startX = clampIndex(startX + 1);
-        startY = clampIndex(startX + 1);
-        endX = clampIndex(endX - 1);
-        endY = clampIndex(endY - 1);
-    }
-    return;
-
+    return terrainHillSetup(
+        startX,
+        startY,
+        scaleX,
+        scaleY,
+        heightMin,
+        heightMax
+    );
 }
 
 
-/**
- * 
- * ----- DEPRECATED / NOT IN USE -> do NOT remove, might be fixed. -----
- * 
- */
-
-
-/// @brief scales the list with a constant factor
-/// @param points points to scale
-/// @param factor factor to apply
-void terrainCreator::upScalePoints(std::vector<FVector2D> &points, float factor){
-    if(factor > 0){
-        for (int i = 0; i < points.size(); i++){
-            FVector2D &referenced = points.at(i);
-            referenced *= factor;
+/// @brief will enheight the map based on the passed hilldata in size X, size Y and height add
+/// @param hillData 
+void terrainCreator::applyHillData(terrainHillSetup &hillData){
+    for (int i = clampIndex(hillData.xPosCopy()); i < clampIndex(hillData.xTargetCopy()); i++){
+        for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
+            map.at(i).at(j).addheightForAll(hillData.getRandomHeightFromRange());
         }
     }
 }
 
-/// @brief apply an offset to every point of the vector
-/// @param vec vector
-/// @param offset offset to apply
-void terrainCreator::offsetPoints(std::vector<FVector2D> &vec, FVector2D offset){
-    for (int i = 0; i < vec.size(); i++){
-        vec.at(i) += offset;
-    }
-}
+
+
+
+
+
+
+
 
 
 

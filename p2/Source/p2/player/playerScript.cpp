@@ -142,8 +142,8 @@ void AplayerScript::switchCamera(){
     return;
 
     if(isCamInPlayer){
-        CameraComponent->SetRelativeLocation(FVector(0, 0, 4000.0f)); // Position the camera
-	    CameraComponent->bUsePawnControlRotation = false;
+        CameraComponent->SetRelativeLocation(FVector(0, 0, 2000.0f)); // Position the camera
+	    CameraComponent->bUsePawnControlRotation = true;
         CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
         
     }else{
@@ -155,8 +155,28 @@ void AplayerScript::switchCamera(){
     
 }
 
+void AplayerScript::debugPathFinder(){
+    FVector posA(0, 0, 200);
+    FVector own = GetActorLocation();
 
+    DebugHelper::showLineBetween(GetWorld(), posA, own, FColor::Yellow);
 
+    PathFinder *in = PathFinder::instance();
+    if(in != nullptr){
+        std::vector<FVector> drawPath = in->getPath(posA, own);
+        for (int i = 1; i < drawPath.size(); i++){
+            FVector a = drawPath.at(i - 1);
+            FVector b = drawPath.at(i);
+
+            a.Z = own.Z;
+            b.Z = own.Z;
+            for (int j = 0; j < 30; j++)
+            {
+                DebugHelper::showLineBetween(GetWorld(), a + FVector(0,0,j), b + FVector(0,0,j), FColor::Green);
+            }
+        }
+    }
+}
 
 // Called every frame
 void AplayerScript::Tick(float DeltaTime)
@@ -361,6 +381,9 @@ void AplayerScript::setHolding(bool h){
 
 void AplayerScript::leftMouseDown(){
     setHolding(true);
+
+    //debug
+    //debugPathFinder();
 }
 
 void AplayerScript::leftMouseUp(){
