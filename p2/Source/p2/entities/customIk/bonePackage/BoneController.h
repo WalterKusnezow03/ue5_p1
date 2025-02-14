@@ -39,6 +39,7 @@ public:
 	void updateRotation(float addDegreeYaw);
 
 	MMatrix currentTransform();
+	FVector lookDirection();
 
 	void overrideRotationYaw(float degree);
 
@@ -48,6 +49,8 @@ public:
 	void attachLimbMeshes(AActor *top, AActor *bottom, int index);
 	void attachTorso(AActor *torsoPointer);
 	void attachPedalFoots(AActor *left, AActor *right);
+	void attachHead(AActor *headPointer);
+
 
 	//movement and item interaction set state
 	void setStateWalking();
@@ -80,12 +83,18 @@ private:
 	void TickInPlaceWalk(float DeltaTime);
 	class TargetInterpolator rotationInterpolator;
 
+	bool rotationWithoutLocomotion = false;
+
+
 	void refreshLocomotionframes();
 
 	//torso 
 	class AActor *attachedTorso;
 	void TickUpdateTorso();
 
+	//head mesh
+	class AActor *attachedHead;
+	void TickUpdateHead();
 
 
 	class AcarriedItem *attachedCarriedItem;
@@ -103,7 +112,7 @@ private:
 	const int FOOT_2 = 2;
 	const int SHOULDER_1 = 3;
 	const int SHOULDER_2 = 4;
-	
+	const int HEAD = 5;
 
 	//motion state
 	BoneControllerStates currentMotionState;
@@ -114,6 +123,7 @@ private:
 	
 	float addVelocityBasedOnState();
 
+	//transform
 	MMatrix ownLocation;
 	MMatrix ownOrientation;
 
@@ -128,6 +138,9 @@ private:
 	MMatrix shoulder2MatrixOffset;
 	MMatrix ownLocationHand1; //real world location end hand 1
 	MMatrix ownLocationHand2; //real world location end hand 2
+
+	//head
+	MMatrix headMatrixOffset;
 
 	//socket for item
 	MMatrix weaponMatrixOffset;

@@ -96,13 +96,9 @@ BoneController::~BoneController()
 
 
 
-
-
-
-
-
-
-
+FVector BoneController::lookDirection(){
+	return ownOrientation.lookDirXForward().GetSafeNormal();
+}
 
 /// @brief finds the bone by index, returns a pointer to the bone
 /// @param limbIndex 
@@ -189,7 +185,10 @@ void BoneController::setupBones(){
 	shoulder1MatrixOffset.setTranslation(sideLeftShoulder);
 	shoulder2MatrixOffset.setTranslation(sideRightShoulder);
 
-	FVector weaponSocketFront(armScaleCM * 0.8f, 0.0f, armScaleCM); //same height as arm, forward is X
+	FVector headOffset(0, 0, armScaleCM);
+	headMatrixOffset.setTranslation(headOffset);
+
+	FVector weaponSocketFront(armScaleCM * 0.8f, 0.0f, armScaleCM); // same height as arm, forward is X
 	weaponMatrixOffset.setTranslation(weaponSocketFront);
 }
 
@@ -362,6 +361,11 @@ void BoneController::attachTorso(AActor *torsoPointerIn){
 	}
 }
 
+void BoneController::attachHead(AActor *headPointer){
+	if(headPointer != nullptr){
+		attachedHead = headPointer;
+	}
+}
 
 
 
@@ -394,6 +398,17 @@ void BoneController::TickUpdateTorso(){
 		attachedTorso->SetActorRotation(orient);
 	}
 }
+
+/// @brief will update the head location (for now, individual rotation will be added later.)
+void BoneController::TickUpdateHead(){
+	if(attachedHead != nullptr){
+		MMatrix currentTransformMat = currentTransform(HEAD);
+		FRotator orient = ownOrientation.extractRotator();
+		attachedHead->SetActorLocation(currentTransformMat.getTranslation());
+		attachedHead->SetActorRotation(orient);
+	}
+}
+
 
 
 
@@ -440,7 +455,14 @@ void BoneController::LookAt(FVector TargetLocation)
 			return;
 		}
 		//isWaitingForAnimStop = true;
-		
+
+
+		//walk towards wanted rotation
+		if(currentMotionState == BoneControllerStates::none){
+			rotationWithoutLocomotion = true;
+			currentMotionState = BoneControllerStates::locomotion;
+		}
+	
 		if(currentMotionState == BoneControllerStates::locomotion){
 			latestLookAtDirection = connect;
 
@@ -471,6 +493,12 @@ void BoneController::updateRotation(float signedAngle){
 void BoneController::resetPendingRotationStatus(){
 	ALIGNHIP_FLAG = false;
 	lookAtPendingAngle = 0.0f;
+
+	//reset rotation locotmotion flag
+	if(rotationWithoutLocomotion){
+		currentMotionState = BoneControllerStates::none;
+		rotationWithoutLocomotion = false;
+	}
 }
 
 
@@ -519,7 +547,10 @@ MMatrix BoneController::currentTransform(MMatrix &offset){
 }
 
 
-MMatrix BoneController::currentTransform(int leg){
+/// @brief gets the current transform for the relative starting joint by limb index
+/// @param leg limb index (FOOT_1 for example, or HEAD)
+/// @return MMatrix current transform
+MMatrix BoneController::currentTransform(int leg){ 
     if(leg == FOOT_1){
 		return currentTransform(hip1MatrixOffset);
     }
@@ -532,8 +563,11 @@ MMatrix BoneController::currentTransform(int leg){
     if(leg == SHOULDER_2){
         return currentTransform(shoulder2MatrixOffset);
     }
+	if(leg == HEAD){
+		return currentTransform(headMatrixOffset);
+	}
 
-    return currentTransform();
+	return currentTransform();
 }
 
 MMatrix BoneController::offsetMatrixByLimb(int limb){
@@ -666,7 +700,10 @@ void BoneController::refreshLocomotionframes(){
 
 
 void BoneController::stopLocomotion(){
-	isWaitingForAnimStop = true;
+	if(currentMotionState != BoneControllerStates::none){
+		isWaitingForAnimStop = true;
+	}
+	
 }
 
 void BoneController::weaponAimDownSight(){
@@ -717,8 +754,8 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 
 	drawBody(DeltaTime); //debug draw body
 	TickUpdateTorso();
-	
-	
+	TickUpdateHead();
+
 	//new testing
 	if(rotationPending && currentMotionState != BoneControllerStates::locomotionClimbAll){
 		TickInPlaceWalk(DeltaTime);
@@ -853,7 +890,8 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 			lookAtPendingAngle,
 			GetWorld(),
 			reachedHipTargetAutoAdjust,
-			200.0f //2m/s
+			//200.0f //2m/s
+			300.0f //3ms
 		);
 
 		if(!reachedHipTargetAutoAdjust)
@@ -861,7 +899,7 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 
 		if(reachedHipTargetAutoAdjust){
 
-			DebugHelper::showScreenMessage("new rotation reached");
+			//DebugHelper::showScreenMessage("new rotation reached");
 
 			//stop anim.
 			//ALIGNHIP_FLAG = false;

@@ -39,6 +39,8 @@ private:
 	//weapon
 	class Aweapon *weaponPointer;
 
+	void adaptWeaponToCurrentPlayerVisibilty();
+
 	void attackPlayer();
 	void shootAt(FVector target);
 

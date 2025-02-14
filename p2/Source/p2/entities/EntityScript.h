@@ -127,6 +127,7 @@ protected:
 
 	class BoneController boneController;
 	void setupBoneController();
-	AActor *createLimbPivotAtTop(int x, int y, int height, int offsetY);
+	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 
+	
 };

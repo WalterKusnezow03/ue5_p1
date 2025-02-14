@@ -77,17 +77,17 @@ void AEntityScript::setupBoneController(){
 	int offY = sizeY / 2;
 	offY = 0;
 
-	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
-	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, offY);
+	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
 	boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
 	
-	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
-	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, -offY);
+	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
 	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
 
 	
-	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
-	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, -offY);
+	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
 	
 
@@ -100,16 +100,24 @@ void AEntityScript::setupBoneController(){
 	 * oder eine eigene klasse existieren die diese detailierter
 	 * erstellen kann!
 	 */
-	AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, -sizeY * 2.0f);
+	AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
 	boneController.attachTorso(torsoMesh);
 
 
 	//holding weapon
-	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
-	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, offY);
+	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
 	
+	//foot
+	AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
+	AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
+	boneController.attachPedalFoots(foot1, foot2);
 
+
+	//head
+	AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
+	boneController.attachHead(headPointer);
 
 
 	
@@ -119,7 +127,7 @@ void AEntityScript::setupBoneController(){
 }
 
 
-AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int offsetY){
+AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFront){
 
 	height *= -1; //orient downwardss
 	/**
@@ -128,13 +136,7 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int offset
 	UMaterial *material = nullptr;
 	assetManager *assetManagerPointer = assetManager::instance();
 	if(assetManagerPointer != nullptr){
-		
-		if(team == teamEnum::enemyTeam){
-			material = assetManagerPointer->findMaterial(materialEnum::stoneMaterial);
-		}else{
-			material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
-		}
-		
+		material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
 	}
 
 	EntityManager *entitymanagerPointer = worldLevel::entityManager();
@@ -145,30 +147,34 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int offset
 			//int width = 10;
 			//int height = -(legScaleCM / 2);
 
-			FVector a(0,offsetY,0);
-			FVector b(x,offsetY,0);
-			FVector c(x,y + offsetY,0);
-			FVector d(0, y + offsetY,0);
-			FVector at(0,offsetY,height);
-			FVector bt(x,offsetY,height);
-			FVector ct(x,y + offsetY,height);
-			FVector dt(0,y + offsetY,height);
+			float xHalf = x / 2.0f;
+			float yHalf = y / 2.0f;
+
+			FVector a(-xHalf + pushFront, -yHalf,0);
+			FVector b(xHalf + pushFront, -yHalf, 0);
+			FVector c(xHalf + pushFront, yHalf,0);
+			FVector d(pushFront, yHalf,0);
+
+
+			FVector at(-xHalf + pushFront, -yHalf, height);
+			FVector bt(xHalf + pushFront, -yHalf, height);
+			FVector ct(xHalf + pushFront, yHalf, height);
+			FVector dt(pushFront, yHalf, height);
+
 			oberschenkel->createCube(
 				a,b,c,d,at,bt,ct,dt,
 				material
 			);
 
-			//NEW ADD TO IGNORED PARAMS FOR THIS TEAM AND RAYCAST SKELLETON!
-			entitymanagerPointer->addActorToIgnoreRaycastParams(oberschenkel, team);
-
-			oberschenkel->setDamagedOwner(this);
+			entitymanagerPointer->addActorToIgnoreRaycastParams(
+				this, getTeam()
+			);
 
 			return oberschenkel;
 		}
 	}
 	return nullptr;
 }
-
 
 
 
@@ -214,31 +220,31 @@ void AEntityScript::Tick(float DeltaTime)
 	bool withinAngle = withinVisionAngle(playerPointer);
 	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
-	//if not spotted yet, check angle, if angle ok, check vision
+	
+	// if not spotted yet, check angle, if angle ok, check vision
 	if(withinAngle && withinRange){
 		canSeePlayer = performRaycast(playerPointer);
-		//DebugHelper::showScreenMessage("check", FColor::Red);
+		if(canSeePlayer){
+			DebugHelper::showScreenMessage("player vision check", FColor::Red);
+		}
 	}
 
 
 	//look at player when spotted and within angle
+	/*
 	if(canSeePlayer && spottedPlayer && withinAngle){
 		LookAt(playerPointer);
 	}
+	*/
 
 	//act based on vision
 	if(canSeePlayer){
-
 		if(!spottedPlayer){
 			updateSpottingTime(DeltaTime);
 		}
-		
-	
 	}else{
 		//cant see player
-		if(spottedPlayer){
-			//follow
-		}else{
+		if(!spottedPlayer){
 			//cant see, hasnt spotted: reset
 			setSpottingTime(defaultSpottingTime);
 		}
@@ -276,15 +282,18 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 		//wenn das skalarpdoukt zweier vektoren 0 ergibt sind sie orthogonal zu einander
 		//wenn das skalarprodukt zweier vektoren 1 ergibt sind sie paralell zu einander
 
-		FVector forward = GetActorForwardVector().GetSafeNormal();
+		//FVector forward = GetActorForwardVector().GetSafeNormal();
+		FVector forward = boneController.lookDirection();
+		FVector currentLocation = boneController.GetLocation();
+
 		//ab = b - a
-		FVector ab = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		FVector ab = (target->GetActorLocation() - currentLocation).GetSafeNormal();
 
 		float skalarprodukt = FVector::DotProduct(forward, ab);
 
 
 		//mindestens orthogonal oder näher an der 1
-		if(skalarprodukt >= 0){
+		if(skalarprodukt >= 0.0f){
 			return true;
 		}
 	}
@@ -311,7 +320,8 @@ void AEntityScript::setupRaycastIgnoreParams(){
 /// @param vec 
 /// @return 
 bool AEntityScript::isWithinMaxRange(FVector vec){
-	return (FVector::Dist(GetActorLocation(), vec) <= MAXDISTANCE);
+	FVector currentLocation = boneController.GetLocation(); //GetActorLocation()
+	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE);
 }
 
 /// @brief performs a raycast to the target and checks if "can see it"
@@ -354,11 +364,7 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		{
 			
 			AActor *actor = HitResult.GetActor();
-			/*
-			if(actor == playerPointer){
-				return true;
-			}*/
-
+			
 			if(actor == target){
 				return true;
 			}
@@ -397,7 +403,7 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 	if (EntityManager *e = worldLevel::entityManager())
 	{
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
-		ignoreParams = e->getIgnoredRaycastParams(getTeam());
+		ignoreParams = e->getIgnoredRaycastParams();
 	}
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
@@ -432,10 +438,10 @@ void AEntityScript::setSpottingTime(float time){
  * update the spotting time
  */
 void AEntityScript::updateSpottingTime(float deltaTime){
-	if(spottingTimeLeft > 0){
+	if(spottingTimeLeft > 0.0f){
 		spottingTimeLeft -= deltaTime;
 	}else{
-		spottingTimeLeft = 0;
+		spottingTimeLeft = 0.0f;
 		spottedPlayer = true;
 	}
 }
@@ -447,7 +453,9 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 /// @param deltaTime to calculate the movement speed
 void AEntityScript::moveTowardsPlayer(float deltaTime){
 	if(spottedPlayer && !canSeePlayer){
-		if(!hasNodesInPathLeft() && !pathDelayRunning()){
+		DebugHelper::showScreenMessage("move to player path!");
+		if (!hasNodesInPathLeft() && !pathDelayRunning())
+		{
 			//ask for path
 			UWorld *world = GetWorld();
 			if(world != nullptr){
@@ -475,7 +483,6 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 					}
 				}
 			}
-			
 		}
 
 		//move path
@@ -523,9 +530,9 @@ void AEntityScript::followpath(float deltaTime){
 		//NEW BONE CONTROLLER INTERACTION!
 		if(!canSeePlayer){
 			LookAt(nextPos);
-			boneController.setStateWalking(); //update motion and then look at
-			
 		}
+
+		
 	}
 }
 

@@ -108,16 +108,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
         }
 
         //addition to the base entity: attack the player if in vision
-        if(canSeePlayer && spottedPlayer){
-            boneController.weaponAimDownSight();
-            attackPlayer();
-        }
-        if(!canSeePlayer && spottedPlayer){
-            boneController.weaponContactPosition();
-        }
-        if(!canSeePlayer && !spottedPlayer){
-            boneController.weaponHolsterPosition();
-        }
+        adaptWeaponToCurrentPlayerVisibilty();
 
         //if needed one is found
         findOutPostNearby();
@@ -128,6 +119,28 @@ void AHumanEntityScript::Tick(float DeltaTime){
         }
     }
 }
+
+
+void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
+    if(canSeePlayer){
+        DebugHelper::showScreenMessage("can see", FColor::Red);
+    }
+
+    if(canSeePlayer && spottedPlayer){
+        boneController.weaponAimDownSight();
+        attackPlayer();
+    }
+    if(!canSeePlayer){
+        if(!spottedPlayer){
+            boneController.weaponHolsterPosition();
+        }else{
+            boneController.weaponContactPosition();
+        }
+    }
+}
+
+
+
 
 /// @brief attack the player if playerpointer not nullptr
 void AHumanEntityScript::attackPlayer(){
@@ -143,9 +156,12 @@ void AHumanEntityScript::shootAt(FVector target){
     if(!boneController.canChangeStateNow()){
         return;
     }
-    //boneController.stopLocomotion(); //blocked debug wise
-    Super::LookAt(target); //look at the target
-    
+
+    DebugHelper::showScreenMessage("shoot bot!");
+
+    // boneController.stopLocomotion(); //blocked debug wise
+    Super::LookAt(target); // look at the target
+
 
     if(weaponPointer != nullptr){
         //will try to shoot the weapon
