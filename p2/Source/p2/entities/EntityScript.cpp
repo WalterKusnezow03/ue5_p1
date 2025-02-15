@@ -67,8 +67,8 @@ void AEntityScript::setupBoneController(){
 	boneController.SetLocation(offset);
 
 	// debug testing meshes
-	float legScaleCM = 150.0f;
-	float armScaleCM = 100.0f;
+	float legScaleCM = 100.0f;
+	float armScaleCM = 70.0f;
 	float legHalfScale = legScaleCM / 2.0f;
 	float armHalfScale = armScaleCM / 2.0f;
 
@@ -170,6 +170,8 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 				this, getTeam()
 			);
 
+			oberschenkel->setDamagedOwner(this);
+
 			return oberschenkel;
 		}
 	}
@@ -225,7 +227,7 @@ void AEntityScript::Tick(float DeltaTime)
 	if(withinAngle && withinRange){
 		canSeePlayer = performRaycast(playerPointer);
 		if(canSeePlayer){
-			DebugHelper::showScreenMessage("player vision check", FColor::Red);
+			//DebugHelper::showScreenMessage("player vision check", FColor::Red);
 		}
 	}
 
@@ -453,7 +455,6 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 /// @param deltaTime to calculate the movement speed
 void AEntityScript::moveTowardsPlayer(float deltaTime){
 	if(spottedPlayer && !canSeePlayer){
-		DebugHelper::showScreenMessage("move to player path!");
 		if (!hasNodesInPathLeft() && !pathDelayRunning())
 		{
 			//ask for path
@@ -486,6 +487,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 		}
 
 		//move path
+		DebugHelper::showScreenMessage("move to player path!");
 		followpath(deltaTime); //testing
 	}
 }
@@ -511,6 +513,9 @@ void AEntityScript::followpath(float deltaTime){
 			}
 			
 			return;
+		}else{
+			//try to switch to walking state if needed
+			boneController.setStateWalking();
 		}
 
 

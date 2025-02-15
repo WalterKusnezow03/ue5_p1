@@ -57,6 +57,9 @@ void AcarriedItem::followPlayer(){
 		return;
 	}
 
+	//DEBUG FOR BONE CONTROLLER:
+	return;
+
 	//player follow if player picked up
 	if (isPickedupByPlayer())
 	{
@@ -134,7 +137,15 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 
 		//attachment to actor / component
 		//this->AttachToActor(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
-		this->AttachToComponent(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+		
+		
+		
+		
+		//DEBUG HIDDEN FOR BONE CONTROLLER
+		/**
+		 * this->AttachToComponent(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+		 * */
+		//DEBUG HIDDEN FOR BONE CONTROLLER
 	}
 }
 

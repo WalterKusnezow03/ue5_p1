@@ -123,7 +123,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
 
 void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer){
-        DebugHelper::showScreenMessage("can see", FColor::Red);
+        //DebugHelper::showScreenMessage("can see", FColor::Red);
     }
 
     if(canSeePlayer && spottedPlayer){

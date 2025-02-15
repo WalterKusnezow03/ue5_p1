@@ -38,6 +38,8 @@ public:
 	void LookAt(FVector TargetLocation);
 	void updateRotation(float addDegreeYaw);
 
+	void debugUpdateTransform(FVector location, FRotator rotation);
+
 	MMatrix currentTransform();
 	FVector lookDirection();
 
@@ -56,6 +58,9 @@ public:
 	void setStateWalking();
 	void setStateRunning();
 	void stopLocomotion();
+
+
+	void weaponAimDownSight(bool aimStatus);
 	void weaponAimDownSight();
 	void weaponContactPosition();
 	void weaponHolsterPosition();
@@ -64,8 +69,13 @@ public:
 
 	bool canChangeStateNow();
 
-	
-	
+
+	void updateStatesBasedOnCamera(UCameraComponent &camera);
+
+	FVector stabilizedHipLocation();
+
+	void debugDrawHeadForward(UWorld *worldPointer, float DeltaTime);
+
 private:
 	void resetPendingRotationStatus();
 	float lookAtPendingAngle = 0.0f;
@@ -79,9 +89,7 @@ private:
 	void updateHipLocation(MMatrix &updatetHipJointMat, int leg);
 	void updateHipLocationAndRotation(MMatrix &updatedStartingJointMat, int limbIndex);
 
-	bool rotationPending = false;
-	void TickInPlaceWalk(float DeltaTime);
-	class TargetInterpolator rotationInterpolator;
+	
 
 	bool rotationWithoutLocomotion = false;
 
@@ -161,8 +169,8 @@ private:
 	//in play walk keys
 	class KeyFrameAnimation legInPlaceWalk;
 
-	float legScaleCM = 150.0f;
-	float armScaleCM = 100.0f;
+	float legScaleCM = 100.0f;
+	float armScaleCM = 70.0f;
 
 	class TwoBone leg1;
 	class TwoBone leg2;

@@ -100,6 +100,7 @@ FVector BoneController::lookDirection(){
 	return ownOrientation.lookDirXForward().GetSafeNormal();
 }
 
+
 /// @brief finds the bone by index, returns a pointer to the bone
 /// @param limbIndex 
 /// @return 
@@ -168,6 +169,9 @@ void BoneController::setupBones(){
 
 	arm1.setupBones(armScaleCM);
 	arm2.setupBones(armScaleCM);
+	arm1.setAsArm();
+	arm2.setAsArm();
+
 
 	int hipSideoffset = 10;
 	int shoulderSideOffset = 15;
@@ -295,7 +299,9 @@ void BoneController::setupAnimation(){
 	//animation states new for motion queue state machine thingy
 	MotionAction aimingState;
 	FRotator rotationForTarget;
-	FVector targetAim(armScaleCM * 0.8f, 0, armScaleCM);
+	FVector targetAim(armScaleCM * 0.8f, 0, armScaleCM); //old
+	//debug:
+	//FVector targetAim(armScaleCM * 0.8f, armScaleCM * 0.5f, armScaleCM);
 	aimingState.setLocationAndRotation(targetAim, rotationForTarget);
 	armMotionQueue.addTarget(ArmMotionStates::handsFollowItem, aimingState);
 
@@ -450,7 +456,7 @@ void BoneController::LookAt(FVector TargetLocation)
 
 		if(dotProduct >= 0.99f){
 			ALIGNHIP_FLAG = false;
-			rotationPending = false;
+			
 			// DebugHelper::showScreenMessage("ROTATION ALREADY REACHED!");
 			return;
 		}
@@ -509,7 +515,8 @@ void BoneController::overrideRotationYaw(float degree){
 	ownOrientation.yawRadAdd(MMatrix::degToRadian(degree));
 }
 
-/// @brief method to attach a carried item to the hands of the actor
+/// @brief method to attach a carried item to the hands of the actor, will override the current
+/// item if not nullptr
 /// @param carriedItem 
 void BoneController::attachCarriedItem(AcarriedItem *carriedItem){
 	if(carriedItem != nullptr){
@@ -706,6 +713,56 @@ void BoneController::stopLocomotion(){
 	
 }
 
+
+
+
+
+/// @brief needs to be called every frame from the player!
+/// @param camera camera of the player
+void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
+	/**
+	 * IS TESTED - should ensure proper weapon location infront of camera
+	 */
+	if(canChangeStateNow()){
+
+		FVector camForward = camera.GetForwardVector();
+		FVector camLocation = camera.GetComponentLocation() +
+							  camForward * armScaleCM * 0.9f;
+
+		//location ins locale bringen!
+		currentTransform().transformFromWorldToLocalCoordinates(camLocation);
+
+		FRotator cameraRot = camera.GetComponentRotation();
+
+
+		FRotator camPitched;
+		camPitched.Pitch = cameraRot.Pitch * -1.0f; //must be flipped.
+
+		
+		//ADS
+		MotionAction action;
+		action.setLocationAndRotation(camLocation, camPitched); //local matrix now
+		armMotionQueue.addTarget(ArmMotionStates::handsFollowItem, action);
+
+
+		//HIP
+		camLocation += FVector(-armScaleCM * 0.2f,0,0) + 
+					  FVector(0, armScaleCM * 0.2f, 0);
+		MotionAction hipaction;
+		hipaction.setLocationAndRotation(camLocation, camPitched); //local matrix now
+		armMotionQueue.addTarget(ArmMotionStates::kontaktStellung, hipaction);
+	}
+}
+
+
+void BoneController::weaponAimDownSight(bool aimStatus){
+	if(aimStatus){
+		weaponAimDownSight();
+	}else{
+		weaponContactPosition();
+	}
+}
+
 void BoneController::weaponAimDownSight(){
 	//block arm motion state changes while climbing
 	if(canChangeStateNow()){
@@ -755,13 +812,6 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 	drawBody(DeltaTime); //debug draw body
 	TickUpdateTorso();
 	TickUpdateHead();
-
-	//new testing
-	if(rotationPending && currentMotionState != BoneControllerStates::locomotionClimbAll){
-		TickInPlaceWalk(DeltaTime);
-		TickArms(DeltaTime);
-		return; 
-	}
 
 	if(currentMotionState == BoneControllerStates::none){
         TickBuildNone(DeltaTime);
@@ -895,7 +945,7 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 		);
 
 		if(!reachedHipTargetAutoAdjust)
-			updateHipLocationAndRotation(update, index); 
+			updateHipLocationAndRotation(update, index);
 
 		if(reachedHipTargetAutoAdjust){
 
@@ -930,57 +980,6 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 	
 }
 
-void BoneController::TickInPlaceWalk(float DeltaTime){
-	//if has rotation to make: 
-	//do inplace walk
-	if(rotationPending){
-
-		
-		FRotator newRotation = rotationInterpolator.interpolateRotationOnly(DeltaTime);
-		ownOrientation.setRotation(newRotation);
-
-		if(rotationInterpolator.hasReachedTarget()){
-			DebugHelper::showScreenMessage("reached rotation!");
-			rotationPending = false;
-			refreshLocomotionframes();
-			return;
-		}
-	}
-	
-
-
-	if(leg1isPlaying){
-		
-		TickLimbNone(FOOT_2, DeltaTime);
-
-		playForwardKinematicAnim(
-			legInPlaceWalk,
-			DeltaTime,
-			FOOT_1
-		);
-
-		if(legInPlaceWalk.reachedLastFrameOfAnimation()){
-			leg1isPlaying = false;
-
-			//projection der frames hier ggf noch notwending
-		}
-	}else{
-		TickLimbNone(FOOT_1, DeltaTime);
-
-		playForwardKinematicAnim(
-			legInPlaceWalk,
-			DeltaTime,
-			FOOT_2
-		);
-
-		if(legInPlaceWalk.reachedLastFrameOfAnimation()){
-			leg1isPlaying = true;
-		}
-	}
-}
-
-
-
 
 
 
@@ -1003,57 +1002,43 @@ void BoneController::TickBuildNone(float DeltaTime){
 /// @param DeltaTime 
 void BoneController::TickArms(float DeltaTime){
 
-	
-
-	/**
-	 * arm holing item at least one handed if attached
-	 */
-	if(attachedCarriedItem != nullptr){
-
-
-		/**
-		 * 
-		 * 
-		 * ----- NEW SECTION FOR ARMS! Ticking the arm motion queue-----
-		 * 
-		 * 
-		 */
-		if(currentMotionState != BoneControllerStates::locomotionClimbAll || 
-			(currentMotionState == BoneControllerStates::locomotionClimbAll &&
-		 	armMotionQueue.isTransitioning())
-		){
-			MMatrix transform = currentTransform();
-			MMatrix transformLeftArm = currentTransform(SHOULDER_1);
-			MMatrix transformRightArm = currentTransform(SHOULDER_2);
-			MMatrix *endEffectorLeft = findEndEffector(SHOULDER_1);
-			MMatrix *endEffectorRight = findEndEffector(SHOULDER_2);
-
-			TwoBone *leftArm = findBone(SHOULDER_1);
-			TwoBone *rightArm = findBone(SHOULDER_2);
-			if(
-				rightArm != nullptr && leftArm != nullptr &&
-				endEffectorRight != nullptr && endEffectorLeft != nullptr
-			){
-				armMotionQueue.Tick(
-					transform, 
-					transformLeftArm,
-					transformRightArm,
-					*endEffectorRight,
-					*endEffectorLeft,
-					*leftArm, 
-					*rightArm, 
-					attachedCarriedItem, 
-					DeltaTime
-				);
-
-				
-			}
+	//move arms if not climbing and no transition is left
+	if(currentMotionState == BoneControllerStates::locomotionClimbAll){
+		if(!armMotionQueue.isTransitioning()){ //no transition is left
+			return;
 		}
 	}
 
 
-	
+	MMatrix *endEffectorLeft = findEndEffector(SHOULDER_1);
+	MMatrix *endEffectorRight = findEndEffector(SHOULDER_2);
 
+	TwoBone *leftArm = findBone(SHOULDER_1);
+	TwoBone *rightArm = findBone(SHOULDER_2);
+	if(
+		rightArm != nullptr && leftArm != nullptr &&
+		endEffectorRight != nullptr && endEffectorLeft != nullptr
+	){
+
+		MMatrix transform = currentTransform();
+		MMatrix transformLeftArm = currentTransform(SHOULDER_1);
+		MMatrix transformRightArm = currentTransform(SHOULDER_2);
+
+
+		armMotionQueue.Tick(
+			transform, 
+			transformLeftArm,
+			transformRightArm,
+			*endEffectorRight,
+			*endEffectorLeft,
+			*leftArm, 
+			*rightArm, 
+			attachedCarriedItem, 
+			world,
+			DeltaTime
+		);
+				
+	}
 	
 }
 
@@ -1580,4 +1565,48 @@ FrameProjectContainer BoneController::generateFrameProjectContainer(int limbinde
 	container.setup(GetWorld(), current, velocityT, lookDir);
 
 	return container;
+}
+
+
+
+
+
+
+/**
+ * new debug
+ */
+void BoneController::debugUpdateTransform(FVector location, FRotator rotation){
+	ownLocation.setTranslation(location);
+	ownOrientation.setRotation(rotation);
+}
+
+
+FVector BoneController::stabilizedHipLocation(){
+	FVector currentLocation = GetLocation();
+	if(currentMotionState == BoneControllerStates::locomotion){
+		if(leg1isPlaying){
+			FVector ground = legDoubleKeys_1.copyGroundPosition();
+			ground += FVector(0, 0, legScaleCM);
+			ground.X = currentLocation.X;
+			ground.Y = currentLocation.Y;
+			return ground;
+		}
+		else
+		{
+			FVector ground = legDoubleKeys_2.copyGroundPosition();
+			ground += FVector(0, 0, legScaleCM);
+			ground.X = currentLocation.X;
+			ground.Y = currentLocation.Y;
+			return ground;
+		}
+	}
+
+	return currentLocation;
+}
+
+void BoneController::debugDrawHeadForward(UWorld *worldPointer, float DeltaTime){
+	MMatrix t = currentTransform(HEAD);
+	FVector a = t.getTranslation();
+	FVector b = ownOrientation.lookDirXForward() * 100.0f + a;
+	DebugHelper::showLineBetween(worldPointer, a, b, FColor::Orange, DeltaTime * 2.0f);
 }

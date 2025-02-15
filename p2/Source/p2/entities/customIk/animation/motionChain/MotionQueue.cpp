@@ -75,6 +75,7 @@ void MotionQueue::Tick(
     TwoBone &leftArm, 
     TwoBone &rightArm, 
     AcarriedItem *item, 
+    UWorld *world,
     float DeltaTime
 ){
 
@@ -98,9 +99,11 @@ void MotionQueue::Tick(
             //actor and wanted rotation combined for the carried item
             MMatrix rotatorMatrix = MMatrix::createRotatorFrom(rotation);
             MMatrix transformCopy = transform;
-            transformCopy *= rotatorMatrix;
+            transformCopy.setTranslation(0, 0, 0);
+            transformCopy = transformCopy * rotatorMatrix; //M = B * A <-- lese richtung --
 
             FRotator finalRotation = transformCopy.extractRotator();
+
 
             item->SetActorRotation(finalRotation);
             item->SetActorLocation(posWorld);
@@ -118,14 +121,15 @@ void MotionQueue::Tick(
             MotionAction *currentStatePointer = &statesMap[currentState];
             if(currentStatePointer != nullptr){
 
-                //MUST BE CLEANED AND REFACTURED!
+                
                 //setting up data for the weapon transform
+                MMatrix rotationRein = transform;
+                rotationRein.setTranslation(0, 0, 0); //make pure rotation matrix
                 MMatrix rotation = currentStatePointer->copyRotationAsMMatrix();
-                rotation *= transform;
-                FRotator finalRotation = rotation.extractRotator();
+                rotationRein *= rotation; //erst skellet dann target rotation
+
+                FRotator finalRotation = rotationRein.extractRotator();
                 item->SetActorRotation(finalRotation);
-
-
 
                 FVector location = currentStatePointer->copyPosition();
                 FVector posWorld = transform * location;
@@ -136,19 +140,17 @@ void MotionQueue::Tick(
             }
         }
 
-        //debug draw item location to transform
         
-        /*DebugHelper::showLineBetween(
-            item->GetWorld(), 
-            transform.getTranslation(), 
-            item->GetActorLocation()
-        );*/
 
 
 
 
         FVector rightHandtarget = item->rightHandLocation();
         FVector leftHandtarget = item->leftHandLocation();
+
+        //DebugHelper::showLineBetween(item->GetWorld(), rightHandtarget, rightHandtarget + FVector(0, 0, 50));
+        //DebugHelper::showLineBetween(item->GetWorld(), leftHandtarget, leftHandtarget + FVector(0, 0, 50));
+
         FVector weight(0, 0, -1);
 
         //dont move arms if state is none
@@ -160,7 +162,7 @@ void MotionQueue::Tick(
                 transformLeftArm, // transform limb start
                 endEffectorLeft,
                 leftArm,
-                item->GetWorld()
+                world
             );
 
             moveBoneAndSnapEndEffectorToTarget(
@@ -170,26 +172,31 @@ void MotionQueue::Tick(
                 transformRightArm, //transform limb start
                 endEffectorRight,
                 rightArm,
-                item->GetWorld()
-            );
-        }else{
-            moveAndBuildBone(
-                DeltaTime,
-                transformLeftArm, // shoulder start
-                endEffectorLeft,
-                leftArm,
-                item->GetWorld()
-            );
-
-            moveAndBuildBone(
-                DeltaTime,
-                transformRightArm, // shoulder start
-                endEffectorRight,
-                rightArm,
-                item->GetWorld()
+                world
             );
         }
+    }else{
+        //default build bones if item is null!
+
+        moveAndBuildBone(
+            DeltaTime,
+            transformLeftArm, // shoulder start
+            endEffectorLeft,
+            leftArm,
+            world
+        );
+
+        moveAndBuildBone(
+            DeltaTime,
+            transformRightArm, // shoulder start
+            endEffectorRight,
+            rightArm,
+            world
+        );
+
     }
+
+    
     
 
 }

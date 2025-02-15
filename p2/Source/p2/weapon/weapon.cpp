@@ -231,6 +231,7 @@ void Aweapon::shootBot(FVector target){
 		}
 
 		shootProtected(start, target, ownTeam); // protected weapon shoot call
+		releaseShoot(); //release for bot automatically
 	}
 }
 
@@ -458,10 +459,10 @@ void Aweapon::setupAnimations()
 			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
 				gehauseSkeletonPointer = Component;
 			}
-			else if(name.Contains("RightHandTarget")){
+			else if(name.Contains("righthand")){
 				rightHandTargetSkelletonPointer = Component;
 			}
-			else if(name.Contains("LeftHandTarget")){
+			else if(name.Contains("lefthand")){
 				leftHandTargetSkelletonPointer = Component;
 			}
 		}
@@ -630,9 +631,20 @@ FVector Aweapon::leftHandLocation(){
 
 	//DOES NOT WORK!
 	if(isReloading){
-		if(magSkeletonPointer != nullptr){
+		if (magSkeletonPointer != nullptr)
+		{
+			//DebugHelper::showScreenMessage("reload location", FColor::Purple);
 			FVector componentWorldLocation = magSkeletonPointer->GetComponentLocation();
-			return componentWorldLocation;
+
+
+			/**
+			 * get the bon location of "Mag" inside the skelletal component
+			 * pointer to get the real world location of this "bone"
+			 * and not the component itself
+			 */
+			FVector BoneLocation = magSkeletonPointer->GetBoneLocation(TEXT("Mag"));
+			return BoneLocation;
+			//return componentWorldLocation;
 		}
 	}
 	

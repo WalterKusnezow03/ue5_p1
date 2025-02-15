@@ -11,6 +11,7 @@
 
 #include "teamEnum.h"
 #include "p2/interfaces/Damageinterface.h"
+#include "p2/entities/customIk/bonePackage/BoneController.h"
 
 #include "playerScript.generated.h"
 
@@ -61,8 +62,6 @@ private:
 
 	class playerInventory playerInventory;
 
-	FString idle;
-	FString walking;
 
 	// Pointer to the Skeletal Mesh Component
     class USkeletalMeshComponent* SkeletalMeshComponent;
@@ -72,6 +71,8 @@ private:
 	bool sprinting;
 	void sprint();
 	static const int SPRINT_MULTIPLY = 3;
+
+	bool isWalking;
 
 	float timeleft;
 	void resetAnimtime(float newTime);
@@ -105,4 +106,14 @@ private:
 	
 
 	void PlayAnimation(UAnimSequence *AnimSequence);
+
+
+
+	//new
+	void TickBoneController(float DeltaTime);
+	void resetFlagsOnTick();
+
+	class BoneController boneController;
+	void setupBoneController();
+	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 };

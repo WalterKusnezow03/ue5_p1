@@ -25,15 +25,17 @@ AplayerScript::AplayerScript()
 
     // Set capsule size
     float radius = 55.0f;
-    float halfHeight = 80.0f; // 90f
+    float halfHeight = 85.0f; //100cm leg, 70 arms / torso = 170 -> 170 /2 = 85.0f
     GetCapsuleComponent()->InitCapsuleSize(radius, halfHeight);
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
     CameraComponent->SetupAttachment(GetCapsuleComponent());
-    CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
-	CameraComponent->bUsePawnControlRotation = true;
+    //CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 84.f)); // Position the camera
+    //CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, halfHeight * 2.0f)); // Position the camera
+    CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, halfHeight)); // Position the camera
+    CameraComponent->bUsePawnControlRotation = true;
 
-
+    DebugHelper::logMessage("debugsetup player capsule");
 
     // Set default values
     TurnRateGamepad = 45.f;
@@ -48,9 +50,7 @@ AplayerScript::AplayerScript()
     // Initialize the Skeletal Mesh Component pointer
     SkeletalMeshComponent = GetMesh();
 
-    //animations
-    idle = TEXT("/Game/Imported/Humanoid/rifle_aiming_idle.rifle_aiming_idle");
-    walking = TEXT("/Game/Imported/Humanoid/walking.walking");
+    
 
 
     if (GEngine && SkeletalMeshComponent) {
@@ -72,11 +72,13 @@ void AplayerScript::BeginPlay()
 	if(i){
 		i->setPlayerReference(this);
 	}
-    
-    
+
+
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
+
+    setupBoneController(); 
 
     EntityManager *entityMananger = worldLevel::entityManager();
 
@@ -92,10 +94,9 @@ void AplayerScript::BeginPlay()
             weapon->applySight(weaponSightEnum::enum_reddot);
             weapon->pickup(CameraComponent);
             playerInventory.addWeapon(weapon);
+
+            boneController.attachCarriedItem(weapon);
         }
-
-
-
 
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
@@ -142,6 +143,8 @@ void AplayerScript::switchCamera(){
     return;
 
     if(isCamInPlayer){
+        
+        
         CameraComponent->SetRelativeLocation(FVector(0, 0, 2000.0f)); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
         CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
@@ -178,6 +181,7 @@ void AplayerScript::debugPathFinder(){
     }
 }
 
+
 // Called every frame
 void AplayerScript::Tick(float DeltaTime)
 {
@@ -186,6 +190,51 @@ void AplayerScript::Tick(float DeltaTime)
     shoot(); //shoot the weapon if needed or release. Method handles automatically
 
     updateAnimTime(DeltaTime);
+
+    
+    TickBoneController(DeltaTime);
+    resetFlagsOnTick();
+}
+
+
+void AplayerScript::TickBoneController(float DeltaTime){
+
+    //override rotation and location for now
+    FVector pos = GetActorLocation();
+    FRotator rot = GetActorRotation();
+    rot.Pitch = 0.0f;
+    //boneController.debugUpdateTransform(pos, rot);
+
+    FVector controllerLocation = boneController.GetLocation();
+    boneController.debugUpdateTransform(pos, rot);
+    //boneController.overrideRotationYaw(rot.Yaw);
+
+    //new testing needed
+    SetActorLocation(boneController.stabilizedHipLocation());
+
+    //update some of the states based on the camera
+    if(CameraComponent != nullptr){
+        boneController.updateStatesBasedOnCamera(*CameraComponent);
+    }
+
+
+    //debug
+    isWalking = false;
+
+    //wenn walking, auch locomotion an
+    if(isWalking){
+        boneController.setStateWalking();
+    }else{
+        boneController.stopLocomotion();
+    }
+
+    boneController.Tick(DeltaTime, GetWorld());
+
+    boneController.debugDrawHeadForward(GetWorld(), DeltaTime);
+}
+
+void AplayerScript::resetFlagsOnTick(){
+    isWalking = false;
 }
 
 /**
@@ -223,13 +272,14 @@ void AplayerScript::MoveForward(float Value)
         const FRotator YawRotation(0, Rotation.Yaw, 0);
 
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, Value);
 
-        //if(!animationisPlaying())
-        //    PlayAnimation(LoadObject<UAnimSequence>(nullptr, *walking));
+        if(true){
+            AddMovementInput(Direction, Value);
+        }
+        
+
+        isWalking = true;
     }
-
-	
 }
 
 void AplayerScript::MoveRight(float Value)
@@ -246,8 +296,9 @@ void AplayerScript::MoveRight(float Value)
 
 void AplayerScript::TurnAtRate(float Rate)
 {
-    AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
+    float yawRate = Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds();
+    AddControllerYawInput(yawRate);
+    //AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
 void AplayerScript::LookUpAtRate(float Rate)
@@ -331,14 +382,17 @@ void AplayerScript::performRaycast()
 			if(weapon){
 				weapon->pickup(CameraComponent);
                 playerInventory.addWeapon(weapon);
+
+                boneController.attachCarriedItem(weapon);
             }
-		}
+        }
 
 		
     }
 }
 
 void AplayerScript::drop(){
+    boneController.dropWeapon(); 
     playerInventory.dropWeapon();
 }
 
@@ -351,6 +405,7 @@ void AplayerScript::reload(){
 void AplayerScript::aim(){
     aiming = !aiming;
     playerInventory.aim(aiming);
+    boneController.weaponAimDownSight(aiming);
 }
 
 /**
@@ -444,4 +499,138 @@ void AplayerScript::setTeam(teamEnum teamIn){
 
 teamEnum AplayerScript::getTeam(){
     return team;
+}
+
+
+
+
+
+
+
+
+
+
+
+void AplayerScript::setupBoneController(){
+	
+
+	//init offset for now
+
+	FVector offset = GetActorLocation();
+	boneController.SetLocation(offset);
+
+	// debug testing meshes
+	float legScaleCM = 100.0f;
+	float armScaleCM = 70.0f;
+	float legHalfScale = legScaleCM / 2.0f;
+	float armHalfScale = armScaleCM / 2.0f;
+
+    //set camera to head pos:
+    if(CameraComponent){
+        float allScale = legScaleCM + armScaleCM;
+        float allHalf = allScale / 2.0f;
+        allHalf += 20.0f; //add up
+        CameraComponent->SetRelativeLocation(FVector(0, 0, allHalf));
+    }
+    
+
+    int sizeX = 10;
+	int sizeY = 10;
+	int offY = sizeY / 2;
+	offY = 0;
+
+	
+	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
+	
+	//holding weapon
+	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+	boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
+
+    return;
+
+
+	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
+	
+	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
+
+
+    AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
+	boneController.attachTorso(torsoMesh);
+
+    //foot
+	AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
+	AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
+	boneController.attachPedalFoots(foot1, foot2);
+
+
+	//head
+	AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
+	boneController.attachHead(headPointer);
+
+
+	
+
+	//DEBUG HIDE OWN MESH 
+	
+}
+
+
+AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFront){
+
+	height *= -1; //orient downwardss
+	/**
+	 * DEBUG CREATE FOLLOW LIMBS
+	 */
+	UMaterial *material = nullptr;
+	assetManager *assetManagerPointer = assetManager::instance();
+	if(assetManagerPointer != nullptr){
+		material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
+	}
+
+	EntityManager *entitymanagerPointer = worldLevel::entityManager();
+	if(entitymanagerPointer != nullptr){
+		FVector location(0, 0, 0);
+		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
+		if(oberschenkel != nullptr){
+			//int width = 10;
+			//int height = -(legScaleCM / 2);
+
+			float xHalf = x / 2.0f;
+			float yHalf = y / 2.0f;
+
+			FVector a(-xHalf + pushFront, -yHalf,0);
+			FVector b(xHalf + pushFront, -yHalf, 0);
+			FVector c(xHalf + pushFront, yHalf,0);
+			FVector d(pushFront, yHalf,0);
+
+
+			FVector at(-xHalf + pushFront, -yHalf, height);
+			FVector bt(xHalf + pushFront, -yHalf, height);
+			FVector ct(xHalf + pushFront, yHalf, height);
+			FVector dt(pushFront, yHalf, height);
+
+			oberschenkel->createCube(
+				a,b,c,d,at,bt,ct,dt,
+				material
+			);
+
+			entitymanagerPointer->addActorToIgnoreRaycastParams(
+				this, getTeam()
+			);
+
+			oberschenkel->setDamagedOwner(this);
+
+
+
+			return oberschenkel;
+		}
+	}
+	return nullptr;
 }
