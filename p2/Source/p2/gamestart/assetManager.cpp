@@ -90,32 +90,6 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
 }
 
 
-// --- skelletons ---
-UClass *assetManager::findBp(skelletonControllerEnum type){
-    UClass *found = skelletonControllerAssets.getBp(type);
-    if(found != nullptr){
-        return found;
-    }
-    return nullptr;
-}
-void assetManager::addBp(skelletonControllerEnum type, UClass *uclassIn){
-    if(uclassIn != nullptr){
-        skelletonControllerAssets.addBp(type, uclassIn);
-    }
-}
-
-// --- skelleton u anim instances ---
-UClass* assetManager::findUAnimInstanceBp(skelletonControllerEnum type){
-    UClass *found = skelletonUAnimInstanceAssets.getBp(type);
-    return found;
-}
-
-void assetManager::addUAnimInstanceBp(skelletonControllerEnum type, UClass *uclassin){
-    if(uclassin != nullptr){
-        skelletonUAnimInstanceAssets.addBp(type, uclassin);
-    }
-}
-
 
 
 // --- room assets ---

@@ -36,13 +36,6 @@ public:
 	UClass *findBp(particleEnum type);
 	void addBp(particleEnum type, UClass *asset);
 
-	//skelleton controllers
-	UClass *findBp(skelletonControllerEnum type);
-	void addBp(skelletonControllerEnum type, UClass *uclassIn);
-
-	//skelleton u anim instances
-	UClass *findUAnimInstanceBp(skelletonControllerEnum type);
-	void addUAnimInstanceBp(skelletonControllerEnum type, UClass *uclassin);
 
 	//all materials
 	UMaterial *findMaterial(materialEnum type);
@@ -61,8 +54,6 @@ private:
 	class assetManagerGeneric<throwableEnum, UClass> throwableAssets;
 	class assetManagerGeneric<particleEnum, UClass> particleAssets;
 
-	class assetManagerGeneric<skelletonControllerEnum, UClass> skelletonControllerAssets;
-	class assetManagerGeneric<skelletonControllerEnum, UClass> skelletonUAnimInstanceAssets;
 
 	class assetManagerGeneric<materialEnum, UMaterial> materialAssets;
 };

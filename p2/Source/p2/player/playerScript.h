@@ -56,6 +56,7 @@ public:
 private:
 	bool isCamInPlayer = true;
 	void switchCamera();
+	FVector cameraReltiveLocationOriginal;
 
 	//int team = 0;
 	teamEnum team;

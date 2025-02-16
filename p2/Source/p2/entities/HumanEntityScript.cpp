@@ -13,7 +13,6 @@
 #include "p2/entityManager/Outpost.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/entities/skelletons/skelletonController.h"
 #include "p2/gameStart/assetManager.h"
 #include "p2/entities/skelletons/socketNames.h"
 
@@ -99,13 +98,8 @@ void AHumanEntityScript::Tick(float DeltaTime){
 
     //only tick if wanted
     if(Super::isActivatedForUpdate()){
-        //reload weapon
-        if(weaponPointer != nullptr){
-            if(!weaponPointer->enoughBulletsInMag() && weaponPointer->canReload()){
-                int defaultSize = 30;
-                weaponPointer->reload(defaultSize);
-            }
-        }
+
+        reloadOwnWeaponIfNeeded();
 
         //addition to the base entity: attack the player if in vision
         adaptWeaponToCurrentPlayerVisibilty();
@@ -121,6 +115,17 @@ void AHumanEntityScript::Tick(float DeltaTime){
 }
 
 
+void AHumanEntityScript::reloadOwnWeaponIfNeeded(){
+    //reload weapon
+    if(weaponPointer != nullptr){
+        if(!weaponPointer->enoughBulletsInMag() && weaponPointer->canReload()){
+            int defaultSize = 30;
+            weaponPointer->reload(defaultSize);
+        }
+    }
+}
+
+
 void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer){
         //DebugHelper::showScreenMessage("can see", FColor::Red);
@@ -129,6 +134,7 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer && spottedPlayer){
         boneController.weaponAimDownSight();
         attackPlayer();
+        Super::resetpath(); //clear path, might change!
     }
     if(!canSeePlayer){
         if(!spottedPlayer){
@@ -157,7 +163,7 @@ void AHumanEntityScript::shootAt(FVector target){
         return;
     }
 
-    DebugHelper::showScreenMessage("shoot bot!");
+    
 
     // boneController.stopLocomotion(); //blocked debug wise
     Super::LookAt(target); // look at the target
@@ -165,6 +171,7 @@ void AHumanEntityScript::shootAt(FVector target){
 
     if(weaponPointer != nullptr){
         //will try to shoot the weapon
+        DebugHelper::showScreenMessage("shoot bot!");
         weaponPointer->shootBot(target);
     }
 }

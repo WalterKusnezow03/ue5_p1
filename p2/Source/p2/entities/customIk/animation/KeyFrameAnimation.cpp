@@ -13,16 +13,16 @@ KeyFrameAnimation::KeyFrameAnimation()
     totalLengthSave = 0.0f;
     loop = true;
 
-    //interpolator.setSpeed(50.0f); //100
 }
 
+
+/// @brief constructor
+/// @param loopIn if true: last frame will be also interpolated to the first once one cycle is complete
 KeyFrameAnimation::KeyFrameAnimation(bool loopIn){
     frameIndex = 0;
     nextFrameIndex = 1;
     totalLengthSave = 0.0f;
     loop = loopIn;
-
-    //interpolator.setSpeed(50.0f); //debug
 }
 
 
@@ -44,6 +44,8 @@ void KeyFrameAnimation::addFrame(FVector position, float timeFromLastFrame){
 void KeyFrameAnimation::addFrame(FVector position, float timeFromLastFrame, bool mustBeGrounded){
     totalLengthSave += timeFromLastFrame;
     frames.push_back(KeyFrame(position, timeFromLastFrame, mustBeGrounded));
+
+    updateAverageVelocity();
 }
 
 void KeyFrameAnimation::addFrame(
@@ -59,6 +61,8 @@ void KeyFrameAnimation::addFrame(
 
     totalLengthSave += timeFromLastFrame;
     frames.push_back(KeyFrame(position, timeFromLastFrame, mustBeGrounded));
+    
+    updateAverageVelocity();
 }
 
 
@@ -426,6 +430,11 @@ FVector KeyFrameAnimation::interpolateWorld(
  * ---- new rotation on frames setup ----
  * 
  */
+
+
+/// @brief rotates this animations keyframe in a singed yaw angle,
+/// rotation will be reset once completed (reaching the end frame)
+/// @param signedAngleYawDegree 
 void KeyFrameAnimation::rotateNextFrames(float signedAngleYawDegree){
     if(signedAngleYawDegree == 0.0f){
         rotateFramesBasedOnAngle = false;
@@ -573,4 +582,46 @@ void KeyFrameAnimation::projectToGround(
 
         containerInOut.updateWorldHitAndOffset(worldHitOutput, offsetMade);
     }
+}
+
+
+
+
+
+
+
+// --- velocity tracking section of all frames ---
+
+
+
+void KeyFrameAnimation::updateAverageVelocity(){
+    float sum = 0.0f;
+    for (int i = 1; i < frames.size(); i++){
+        KeyFrame &prevFrame = frames.at(i-1);
+        KeyFrame &frame = frames.at(i);
+        
+        FVector posA = prevFrame.readposition();
+        FVector posB = frame.readposition();
+        float time = frame.readTimeToFrame();
+
+        sum += linearVelocity(posA, posB, time);
+    }
+    if(frames.size() > 0){
+        sum /= (frames.size() - 1); //-1 strecken abschnitte
+    }
+    averageVelocityOfFrames = sum;
+}
+
+float KeyFrameAnimation::linearVelocity(FVector &a, FVector &b, float timeBetween){
+    //v = m / s
+    timeBetween = std::abs(timeBetween);
+    timeBetween = std::max(timeBetween, 0.0000001f); //avoid div by zero
+    float dist = FVector::Dist(a, b);
+    float velocity = dist / timeBetween;
+    return velocity;
+}
+
+float KeyFrameAnimation::averageVelocity(){
+    //if new frames added: recreate
+    return averageVelocityOfFrames;
 }

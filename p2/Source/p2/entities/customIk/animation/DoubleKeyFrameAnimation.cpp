@@ -453,28 +453,27 @@ FVector DoubleKeyFrameAnimation::interpolateWorld(
 
 
 void DoubleKeyFrameAnimation::updateInterpolatorB(FVector reachedA){
-    //relativer frame vom fuss zur hip
+    //relativer frame vom fuss zur hip ist einfach umgedreht.
     FVector relativeBFrame = reachedA * -1;
-
-    /**
-     * 
-     * angle must be measured here later too!
-     * 
-     */
+    
+    float distance = FVector::Dist(relativeBFrame, bTarget);
+    float velocityAll = framesA.averageVelocity() + velocityOfActor;
     float timeToFrameB = 0.1f;
-    if(velocityOfActor > 0.0f){
-        float distance = FVector::Dist(relativeBFrame, bTarget);
-        timeToFrameB = distance / velocityOfActor;
-    }else{
-        //very random.
-        timeToFrameB = framesA.totalLength();
-        timeToFrameB *= 0.5f; //debug
+    if(velocityAll > 0.0f){
+        timeToFrameB = distance / velocityAll;
     }
+
     interpolateB.setTarget(relativeBFrame, bTarget, timeToFrameB);
 
 }
 
 
+
+/// @brief returns the average linear velocity between keyframes
+/// @return average velocity
+float DoubleKeyFrameAnimation::averageVelocity(){
+    return framesA.averageVelocity();
+}
 
 
 
@@ -488,6 +487,9 @@ void DoubleKeyFrameAnimation::updateInterpolatorB(FVector reachedA){
  * 
  * 
  */
+
+/// @brief rotates the next keyframe animation in a signed yaw angle (degree)
+/// @param signedAngleYawDegree 
 void DoubleKeyFrameAnimation::rotateNextFramesA(
     float signedAngleYawDegree
 ){
@@ -495,6 +497,8 @@ void DoubleKeyFrameAnimation::rotateNextFramesA(
 }
 
 
+/// @brief resets the animation to anim a, and its animation to the first frame
+/// also removes any rotation previosuly applied
 void DoubleKeyFrameAnimation::resetAnimationToStartAndResetRotation(){
     isAnimationAPlaying = true;
     cycleComplete = false;

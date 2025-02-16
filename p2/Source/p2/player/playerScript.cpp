@@ -140,7 +140,7 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 
 void AplayerScript::switchCamera(){
-    return;
+    //return;
 
     if(isCamInPlayer){
         
@@ -151,7 +151,7 @@ void AplayerScript::switchCamera(){
         
     }else{
         //default player cam setup
-        CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
+        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
         CameraComponent->SetRelativeRotation(FRotator(0, 0, 0)); // Look downward
     }
@@ -529,8 +529,9 @@ void AplayerScript::setupBoneController(){
     if(CameraComponent){
         float allScale = legScaleCM + armScaleCM;
         float allHalf = allScale / 2.0f;
-        allHalf += 20.0f; //add up
-        CameraComponent->SetRelativeLocation(FVector(0, 0, allHalf));
+        allHalf += 5.0f; //add up
+        cameraReltiveLocationOriginal = FVector(0, 0, allHalf);
+        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
     }
     
 

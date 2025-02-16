@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "EntityScript.h"
 #include "p2/weapon/weapon.h"
-#include "p2/entities/skelletons/skelletonController.h"
 #include "HumanEntityScript.generated.h"
 
 
@@ -50,9 +49,8 @@ private:
 
 	//range of outpost check
 	virtual bool isWithinMaxRange(FVector vec) override;
-	
-	//MOVED TO ENTITY
-	//class AskelletonController *skelletonControllerPointer = nullptr;
+
+	void reloadOwnWeaponIfNeeded();
 
 public:
 	void setOutpost(AOutpost *outpostIn);

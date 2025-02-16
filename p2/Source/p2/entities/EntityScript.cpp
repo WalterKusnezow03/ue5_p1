@@ -496,7 +496,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 /// @param deltaTime for calculating the movement speed
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
-		float speed = 350.0f; //3m/s
+		//float speed = 350.0f; //3m/s
 
 		
 
@@ -541,6 +541,7 @@ void AEntityScript::followpath(float deltaTime){
 	}
 }
 
+/// @brief clears the path completly
 void AEntityScript::resetpath(){
 	this->path.clear();
 }

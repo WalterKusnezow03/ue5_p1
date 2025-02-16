@@ -100,15 +100,6 @@ void EntityManager::add(AcustomMeshActor *meshActorIn){
     }
 }
 
-/// @brief adds a skelleton to the entity manager
-/// @param skelletonIn 
-void EntityManager::add(AskelletonController *skelletonIn){
-    if(skelletonIn != nullptr){
-        skelletonControllerEnum typeread = skelletonIn->getType();
-        skelletonMap.add(typeread, skelletonIn);
-    }
-}
-
 
 
 /**
@@ -483,38 +474,6 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 }
 
 
-
-AskelletonController* EntityManager::spawnAskelletonController(
-    UWorld* worldIn, 
-    FVector &location, 
-    skelletonControllerEnum type
-){
-    if(worldIn != nullptr){
-        if(skelletonMap.hasActorsLeft(type)){
-            AskelletonController *controller = skelletonMap.getFirstActor(type);
-            if(controller != nullptr){
-                controller->SetActorLocation(location);
-                return controller;
-            }
-        }else{
-            
-            if(assetManager *a = assetManager::instance()){
-                UClass *bp = a->findBp(type);
-                if(bp != nullptr){
-                    AActor *spawned = spawnAactor(worldIn, bp, location);
-                    if(spawned != nullptr){
-                        AskelletonController *controllerCasted = Cast<AskelletonController>(spawned);
-                        if(controllerCasted != nullptr){
-                            return controllerCasted;
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-    return nullptr;
-}
 
 /** 
 * ---- PARTICLE / EXPLOSION SECTION ----

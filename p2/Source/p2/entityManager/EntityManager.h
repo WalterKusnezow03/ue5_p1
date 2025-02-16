@@ -51,7 +51,7 @@ public:
 	void add(AthrowableItem *throwableItem);
 	void add(Aparticle *particleIn);
 	void add(AcustomMeshActor *meshActorIn);
-	void add(AskelletonController *skelletonIn);
+	
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);
@@ -66,10 +66,6 @@ public:
 
 	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
 
-	AskelletonController *spawnAskelletonController(
-		UWorld *worldIn,
-		FVector &location,
-		skelletonControllerEnum type);
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!
@@ -113,7 +109,7 @@ private:
 	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
 	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
 
-	class EntityManagerGenericMap<skelletonControllerEnum, AskelletonController> skelletonMap;
+	
 
 	//Particles 
 
