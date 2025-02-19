@@ -282,3 +282,48 @@ FVector AcarriedItem::leftHandLocation(){
 FVector AcarriedItem::rightHandLocation(){
 	return GetActorLocation();
 }
+
+FVector AcarriedItem::leftHandFingerLocation(HandBoneIndexEnum type){
+	return GetActorLocation();
+}
+
+FVector AcarriedItem::rightHandFingerLocation(HandBoneIndexEnum type){
+	return GetActorLocation();
+}
+
+void AcarriedItem::loadFingerTargets(HandTargetContainer &container){
+	
+	HandBoneIndexEnum handtype = container.readHandtype();
+	if(handtype == HandBoneIndexEnum::leftHand){
+		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::thumb), HandBoneIndexEnum::thumb);
+		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger1), HandBoneIndexEnum::finger1);
+		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger2), HandBoneIndexEnum::finger2);
+		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger3), HandBoneIndexEnum::finger3);
+		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger4), HandBoneIndexEnum::finger4);
+
+		//update rotation here too...
+	}
+	if(handtype == HandBoneIndexEnum::rightHand){
+		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::thumb), HandBoneIndexEnum::thumb);
+		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger1), HandBoneIndexEnum::finger1);
+		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger2), HandBoneIndexEnum::finger2);
+		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger3), HandBoneIndexEnum::finger3);
+		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger4), HandBoneIndexEnum::finger4);
+
+		//update rotation here too...
+	}
+
+}
+
+
+
+/// @brief returns the actor rotation as MMatrix to aligns the hands with
+/// makes Roll 0.0f!
+/// @return 
+MMatrix AcarriedItem::handAlignForwardRotationMatrix(){
+	FRotator rotator = GetActorRotation();
+	rotator.Pitch *= -1; //?????? like this?
+	rotator.Roll = 0.0f;
+	MMatrix rotMat(rotator);
+	return rotMat;
+}

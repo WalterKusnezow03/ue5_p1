@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include <list>
+#include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
+#include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
 #include "carriedItem.generated.h"
 
 UCLASS()
@@ -33,6 +35,10 @@ public:
 	virtual FVector leftHandLocation();
 	virtual FVector rightHandLocation();
 
+	virtual FVector leftHandFingerLocation(HandBoneIndexEnum type);
+	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type);
+
+	virtual void loadFingerTargets(HandTargetContainer &container);
 
 protected:
 	// Called when the game starts or when spawned
@@ -63,6 +69,8 @@ protected:
 	
 	template <typename T>
 	void findAllOfType(AActor &a, std::list<T *> &items);
+
+	MMatrix handAlignForwardRotationMatrix();
 
 public:	
 	// Called every frame

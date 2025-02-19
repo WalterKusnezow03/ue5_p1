@@ -10,6 +10,8 @@
 #include "carriedItem.h"
 #include "weaponEnum.h"
 #include "ammunitionEnum.h"
+#include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
+#include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
 #include "attachmentEnums/weaponSightEnum.h"
 #include "p2/player/teamEnum.h"
 #include "p2/util/timer.h"
@@ -71,6 +73,25 @@ public:
 	virtual FVector leftHandLocation() override;
 	virtual FVector rightHandLocation() override;
 
+	virtual FVector leftHandFingerLocation(HandBoneIndexEnum type) override;
+	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type) override;
+
+	virtual void loadFingerTargets(HandTargetContainer &container) override;
+
+private:
+	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> left_fingerTargetsMap;
+	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> right_fingerTargetsMap;
+
+	HandBoneIndexEnum socketNameToEnum(FString &name);
+
+	void addIfIsAHandTarget(USkeletalMeshComponent *pointer);
+
+	void addToFingerTargetMap(
+		std::map<HandBoneIndexEnum, USkeletalMeshComponent *> &map,
+		HandBoneIndexEnum finger,
+		USkeletalMeshComponent *component
+	);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -94,7 +115,7 @@ protected:
 
 	bool isReloading = false;
 
-	float timeleft;
+	
 	float cooldownTime;
 	float reloadTime;
 

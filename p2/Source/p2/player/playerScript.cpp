@@ -548,7 +548,8 @@ void AplayerScript::setupBoneController(){
 	//holding weapon
 	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
+    unterarm_1 = nullptr; //DEBUG
+    boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); // hand 2 debug
 
     return;
 

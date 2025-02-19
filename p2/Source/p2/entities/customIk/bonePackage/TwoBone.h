@@ -11,6 +11,12 @@
  * the default look direction an bone is towards the positive X axis, all angles will
  * be measured to the positive x axis, the initial look dir will be to the positive x axis!
  * 
+ * 
+ * 
+ * CAUTION!
+ * x is forward, default look dir is foward X,
+ * y is right side by default! remember!
+ * 
  */
 class P2_API TwoBone
 {

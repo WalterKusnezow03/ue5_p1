@@ -12,6 +12,7 @@
 #include "ammunitionEnum.h"
 #include <map>
 #include "p2/player/teamEnum.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "carriedItem.h"
 
 
@@ -39,7 +40,7 @@ Aweapon::Aweapon()
 	offset = FVector(-100, 100.0f, 0);
 
 	//time
-	timeleft = 0;
+	
 	cooldownTime = calculateRpm(600);
 	reloadTime = 1.5f;
 
@@ -153,22 +154,6 @@ void Aweapon::updateCooltime(float time){
 		isReloading = false;
 	}
 
-	//old
-	/*
-	if(isCooling()){
-		timeleft -= time;
-	}else{
-		
-		//can shoot again if auto release
-		if(!singleFireMode()){
-			abzugHinten = false; 
-		}
-
-		//reload flag finish
-		if(isReloading){
-			isReloading = false;
-		}
-	}*/
 }
 /// @brief will say if single fire is on
 /// @return true false
@@ -459,14 +444,10 @@ void Aweapon::setupAnimations()
 			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
 				gehauseSkeletonPointer = Component;
 			}
-			else if(name.Contains("righthand")){
-				rightHandTargetSkelletonPointer = Component;
-			}
-			else if(name.Contains("lefthand")){
-				leftHandTargetSkelletonPointer = Component;
-			}
+			
+			addIfIsAHandTarget(Component);
 		}
-    }
+	}
     
 }
 
@@ -627,9 +608,76 @@ ammunitionEnum Aweapon::getAmmunitionType(){
  * 
  */
 
+
+/// @brief right hand may be named "righthand"
+/// 	   right hand subparts may be named "righthand_thumb"!! MUST FOLLOW THIS NAMING!
+/// @param Component 
+void Aweapon::addIfIsAHandTarget(USkeletalMeshComponent *Component){
+	if(Component){
+		FString name = Component->GetName();
+		if(name.Contains("righthand")){
+			HandBoneIndexEnum enumCheckup = socketNameToEnum(name);
+			if(enumCheckup == HandBoneIndexEnum::none){ //
+				rightHandTargetSkelletonPointer = Component;
+			}else{
+				addToFingerTargetMap(
+					right_fingerTargetsMap,
+					enumCheckup,
+					Component
+				);
+			}
+		}
+		else if(name.Contains("lefthand")){
+			HandBoneIndexEnum enumCheckup = socketNameToEnum(name);
+			if(enumCheckup == HandBoneIndexEnum::none){ //
+				leftHandTargetSkelletonPointer = Component;
+			}else{
+				addToFingerTargetMap(
+					left_fingerTargetsMap,
+					enumCheckup,
+					Component
+				);
+			}
+		}
+	}
+}
+
+/// @brief will try to find the finger name from the string, returns "none" if no matches
+/// @param name name to check
+/// @return none if none found
+HandBoneIndexEnum Aweapon::socketNameToEnum(FString &name){
+	if(name.Contains("thumb"))
+		return HandBoneIndexEnum::thumb;
+	if(name.Contains("finger1"))
+		return HandBoneIndexEnum::finger1;
+	if(name.Contains("finger2"))
+		return HandBoneIndexEnum::finger2;
+	if(name.Contains("finger3"))
+		return HandBoneIndexEnum::finger3;
+	if(name.Contains("finger4"))
+		return HandBoneIndexEnum::finger4;
+
+	return HandBoneIndexEnum::none;
+}
+
+void Aweapon::addToFingerTargetMap(
+	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> &map,
+	HandBoneIndexEnum fingerIndex,
+	USkeletalMeshComponent *component
+){
+	if(component != nullptr){
+		map[fingerIndex] = component;
+	}
+}
+
+
+
+
+
+
+
 FVector Aweapon::leftHandLocation(){
 
-	//DOES NOT WORK!
 	if(isReloading){
 		if (magSkeletonPointer != nullptr)
 		{
@@ -666,4 +714,82 @@ FVector Aweapon::rightHandLocation(){
 	}
 
 	return GetActorLocation();
+}
+
+
+void Aweapon::loadFingerTargets(HandTargetContainer &container){
+	Super::loadFingerTargets(container);
+
+	//update rotations
+	FRotator rotationForHand;
+	HandBoneIndexEnum handType = container.readHandtype();
+	if(handType == HandBoneIndexEnum::leftHand){
+		rotationForHand.Roll = 90.0f;
+	}
+	if(handType == HandBoneIndexEnum::rightHand){
+		rotationForHand.Roll = -90.0f;
+	}
+
+	MMatrix handRotator(rotationForHand);
+	
+	MMatrix actorRotator = Super::handAlignForwardRotationMatrix();
+	MMatrix finalRotation = actorRotator * handRotator; // M = R * R <-- lese richtung --
+	container.setOrientation(finalRotation);
+
+	// --- debug
+
+	if(isPickedupByPlayer() && false){
+		FRotator debugRotator = finalRotation.extractRotator();
+		//debugRotator = GetActorRotation();
+		DebugHelper::showScreenMessage("rotator roll ", (float)debugRotator.Roll);
+		DebugHelper::showScreenMessage("rotator pitch ", (float)debugRotator.Pitch);
+		DebugHelper::showScreenMessage("rotator yaw ", (float)debugRotator.Yaw);
+
+		/*
+		FVector look = finalRotation.lookDirXForward();
+		DebugHelper::showLineBetween(
+			GetWorld(),
+			GetActorLocation(),
+			GetActorLocation() + look * 50.0f,
+			FColor::Purple,
+			1.0f
+		);
+		*/
+
+		//DebugHelper::showScreenMessage("load fingers", FColor::Yellow);
+	}
+	
+
+	// --- debug end
+}
+
+FVector Aweapon::leftHandFingerLocation(HandBoneIndexEnum type){
+	//DebugHelper::showScreenMessage("load fingers left", FColor::Red);
+	/**
+	 *  achtung: es braucht einen seperaten container der speichert wo die finger positionen sind
+		bzw weitere skelletal mesh components
+		weil finger auch an mehreren stellen anbringbar sind
+
+		es braucht sowas wie ein „objekt finger position pair"!
+	 * 
+	 */
+	if (left_fingerTargetsMap.find(type) != left_fingerTargetsMap.end()) {
+		// Key exists
+	}
+	return leftHandLocation();
+}
+
+FVector Aweapon::rightHandFingerLocation(HandBoneIndexEnum type){
+	//DebugHelper::showScreenMessage("load fingers right", FColor::Purple);
+	if (right_fingerTargetsMap.find(type) != right_fingerTargetsMap.end()) {
+		// Key exists
+		USkeletalMeshComponent *comp = right_fingerTargetsMap[type];
+		if(comp != nullptr){
+			//DebugHelper::showScreenMessage("load fingers right", FColor::Purple);
+			FVector pos = comp->GetComponentLocation();
+			//DebugHelper::showScreenMessage(pos);
+			return pos;
+		}
+	}
+	return rightHandLocation();
 }
