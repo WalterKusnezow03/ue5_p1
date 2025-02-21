@@ -88,6 +88,7 @@ void worldLevel::initWorld(UWorld *world){
     DebugHelper::Debugtest(world);
 
     //debugBezier(world);
+    debugAngleFinder(world);
 }
 
 /**
@@ -301,4 +302,122 @@ void worldLevel::debugBezier(UWorld *world){
         FVector offset = current + FVector(0, 0, 100);
         DebugHelper::showLineBetween(world, current, offset, FColor::Black);
     }
+}
+
+
+
+
+void worldLevel::debugAngleFinder(UWorld *world){
+
+    //return;
+
+    /**
+     * achtung infinite loop!
+     */
+
+    std::vector<float> bones;
+    float lenghtAll = 1000.0f;
+    int pieces = 10;
+    float part = 200.0f; //mehr als reinpassen
+    for (int i = 0; i < pieces; i++){
+        bones.push_back(part);
+    }
+
+    std::vector<FVector2D> output = worldLevel::findAngles(lenghtAll, bones);
+
+    //draw
+    float maxHeight = 0.0f;
+    for (int i = 0; i < output.size(); i++){
+        FVector2D &current = output.at(i);
+        if(current.Y > maxHeight){
+            maxHeight = current.Y;
+        }
+    }
+
+    FVector prev(-1 * 2000.0f, 0, 100.0f);
+    float time = 100.0f;
+    for (int i = 0; i < output.size(); i++)
+    {
+        FVector2D current2D = output.at(i);
+        FVector current(current2D.X, 0.0f, current2D.Y);
+        current += prev;
+
+        FColor color = i % 2 == 0 ? FColor::Red : FColor::Cyan;
+        DebugHelper::showLineBetween(world, current, prev, color, time);
+        prev = current;
+    }
+}
+
+std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float> &bones){
+    std::vector<FVector2D> vec;
+    FVector2D axis(lengthAll, 0.0f);
+
+    float sum = 0.0f;
+    for (int i = 0; i < bones.size(); i++){
+        vec.push_back(FVector2D(bones.at(i), 0.0f));
+        sum += bones.at(i);
+    }
+
+    FString showString = FString::Printf(TEXT("AngleHelper distance now: %.2f , distance target: %.2f"), sum, lengthAll);
+    DebugHelper::logMessage(showString);
+
+    int currentIndex = 0;
+    int max = 100000000;
+    int i = 0;
+
+    float angleLimit = 30.0f; //test
+    float angleStep = 10.0f;
+    float angleSoFar = 0.0f;
+    while (i < max)
+    {
+        i++;
+        if(i > max){
+            break;
+        }
+        if(sum <= lengthAll){ //reached
+            DebugHelper::logMessage("AngleHelperReached");
+            break;
+        }
+        if(currentIndex >= vec.size()){
+            //reached by mistake
+            if(sum > lengthAll){
+                currentIndex = 0;
+                angleSoFar = 0.0f;
+
+                //limit update
+                angleLimit -= 5.0f;
+                if(angleLimit < 0.0f){
+                    angleLimit = 0.0f;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        FVector2D &currentVector = vec.at(currentIndex);
+        if(currentVector.X > 0.0f){
+            //vorherigen winkel ausgleichen
+
+
+            //abziehen, drehen, drauf rechnen
+            sum -= currentVector.X;
+            float rotateAt = angleStep;
+            MMatrix::rotateVectorDeg2D(rotateAt, currentVector);
+            sum += currentVector.X;
+
+            angleSoFar += rotateAt * 2.0f;
+        }
+        
+        if(currentVector.X <= 0.0f || std::abs(angleSoFar) > angleLimit){
+            currentIndex++;
+            if(angleSoFar > 0.0f){
+                angleStep = std::abs(angleStep) * -1.0f;
+            }else{
+                angleStep = std::abs(angleStep);
+            }
+        }
+    }
+    return vec;
 }

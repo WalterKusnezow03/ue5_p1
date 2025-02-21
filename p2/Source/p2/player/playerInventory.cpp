@@ -31,6 +31,7 @@ playerInventory::~playerInventory()
 }
 
 playerInventory::wslot::wslot(Aweapon *in){
+    this->weaponPointer = nullptr;
     this->weaponPointer = in;
 }
 
@@ -304,4 +305,22 @@ float playerInventory::wslot::recoilValue(){
     }
 
     return 0.0f;
+}
+
+
+
+
+
+/// @brief you are NOT allowed to delete this!
+/// @return pointer or nullptr if none found
+Aweapon *playerInventory::getItemPointer(){
+    //return weaponPointer;
+    if(currentIndexIsValid()){
+        playerInventory::wslot *currentSolt = weaponVector[currentIndex];
+        if(currentSolt != nullptr){
+            return currentSolt->weaponPointer;
+        }
+        
+    }
+    return nullptr;
 }

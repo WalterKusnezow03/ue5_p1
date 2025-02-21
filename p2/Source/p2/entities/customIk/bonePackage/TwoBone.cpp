@@ -214,15 +214,17 @@ void TwoBone::createEthaPitchAnglesFor(
     float b2 = _b * _b;
     float c2 = _c * _c;
 
-    
+    /*
     float alpha = std::acosf(((b2 + c2 - a2) / (2 * _b * _c)));
     float beta = std::acosf(((a2 + c2 - b2) / (2 * _a * _c)));
     float gamma = std::acosf(((a2 + b2 - c2) / (2 * _a * _b)));
-   /* 
+    */
+   
+
     float alpha = std::acosf(FMath::Clamp((b2 + c2 - a2) / (2 * _b * _c), -1.0f, 1.0f));
     float beta = std::acosf(FMath::Clamp((a2 + c2 - b2) / (2 * _a * _c), -1.0f, 1.0f));
     float gamma = std::acosf(FMath::Clamp((a2 + b2 - c2) / (2 * _a * _b), -1.0f, 1.0f));
-*/
+
 
 
     firstOuput = -1 * alpha;
@@ -237,7 +239,7 @@ void TwoBone::createEthaPitchAnglesFor(
         MMatrix::radToDegree(alpha),
         MMatrix::radToDegree(gamma)
     );*/
-   
+
 
 }
 
@@ -331,7 +333,6 @@ void TwoBone::rotateEndToTarget(
      * 
      * gewicht ziegt ja irgendwo in zy pane und dann wird die bein achse (um z) gespinnt.
      */
-    //testing needed
     if(std::abs(weight.Y) >= 0.1f){ //gegen epsilon prüfen.
         float rollAngleWeight = rollAngleTo(weight);
         start.yawRadAdd(rollAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
@@ -353,16 +354,11 @@ void TwoBone::rotateEndToTarget(
         distance = totalBoneLengthCopy; //clamp
     }
 
-    // --- KNICK BASIS ---
-    /*
-    //distance to etha: (remember, here: 0 is extended, 1 is fully to hip, 180 deg angle)
-    //float etha = createEthaFromDistance(distance);
-    
-    float angle = angleFromEtha(etha);
-    float hipAngle = createHipAngle(angle);
-    float kneeAngle = createKneeAngle(angle);
-    */
+    //hier nicht global yaw!
 
+
+    // --- KNICK BASIS ---
+    
     float hipAngle = 0.0f;
     float kneeAngle = 0.0f;
 
@@ -377,17 +373,10 @@ void TwoBone::rotateEndToTarget(
     );
 
 
-
-
-
     //WEIGHT KNICK RICHTUNG
     //anhand des wights dann knicken flippen
     //also -x oder -z sorgen für einen invertierten knick
-    if(
-        (weight.X < 0.0f || weight.Z < 0.0f) 
-        && //wenn gewicht negativ
-        hipAngle < 0.0f  //angle zeigt grade nach vorne
-    ){ 
+    if(flipAngleForBoneNeeded(vec, weight, hipAngle)){ 
         //both angles flip based on weight direction 
         hipAngle *= -1.0f;
         kneeAngle *= -1.0f;
@@ -398,10 +387,7 @@ void TwoBone::rotateEndToTarget(
     middle.pitchRadAdd(kneeAngle); //knee to foot
     end.pitchRadAdd(hipAngle);
 
-
-
-    // --- KNICK BASIS ENDE ---
-
+    
 
 
 
@@ -409,8 +395,8 @@ void TwoBone::rotateEndToTarget(
     
     /**
      *  --- global pitch ---
-     */
-    
+     
+    */
     //warum ist das immer initial:
     //die matrix zeigt zunächst immer nach unten, so ist der knochen im konstruktor definiert
     //und so muss auch die rotation gefunden werden, egal ob vorwärts
@@ -421,22 +407,63 @@ void TwoBone::rotateEndToTarget(
     
 
 
+
+    
     /**
      *  --- global yaw ---
-     */
+    */
     if(isArmBone()){
-        float yawAngle = yawAngleTo(vec) * -1.0f;
-        start.yawRadAdd(createHipAngle(yawAngle));
+        if(pitchTooLow(pitchAngle)){
+            float increase = 1.5f;
+            float frac = ((MMatrix::radToDegree(pitchAngle) * increase) / 100.0f); // doesnt work as expected
+            float angle = yawAngleTo(vec) * frac;
+            start.yawRadAdd(angle); // start
+
+            FString s = FString::Printf(
+                TEXT("ptch too low: %.2f ; fraction: %.2f"),
+                MMatrix::radToDegree(pitchAngle),
+                frac
+            );
+            DebugHelper::showScreenMessage(s, FColor::Black);
+        }
+        else
+        {
+            float yawAngle = yawAngleTo(vec); //arm overlap if pitch angle to steep!
+            start.yawRadAdd(yawAngle);
+        }
+    }
+}
+
+bool TwoBone::flipAngleForBoneNeeded(FVector &target, FVector &weight, float hipAngle){
+
+    bool flipByWeight = (weight.X < 0.0f || weight.Z < 0.0f); //wenn gewicht negativ
+    bool negativeHip = hipAngle < 0.0f; //angle zeigt grade nach vorne
+    if(flipByWeight && negativeHip){
+        return true;
+    }
+
+    if(isArmBone()){
+        bool negativeTarget = target.X < 0.0f;
+        if(negativeTarget){
+            return true;
+        }
     }
     
-    
-
+    return false;
 }
 
 /// @brief fllag for global yaw rotation, is blocked for leg movement because of. Bugs.
 /// @return is meant to be an arm or not
 bool TwoBone::isArmBone(){
     return isArmFlag;
+}
+
+
+bool TwoBone::pitchTooLow(float globalPitch){
+    if(std::abs(MMatrix::radToDegree(globalPitch)) < 45.0f){
+        return true;
+    }
+    return false;
 }
 
 /// @brief calculates the yaw angle (from top perspektive) to a local target
@@ -446,8 +473,11 @@ bool TwoBone::isArmBone(){
 /// @param localTarget 
 /// @return signed rotation on xy pane from top
 float TwoBone::yawAngleTo(FVector &localTarget){
+    
+    
 
-    FVector2D forward2d(1, 0);
+    //calculate angle
+    FVector2D forward2d(1.0f, 0);
     
     FVector2D xy(localTarget.X, localTarget.Y);
     xy = xy.GetSafeNormal(); //nur 2d normalisieren weil sonst fehler auftreten, nicht 3D!
@@ -462,7 +492,7 @@ float TwoBone::yawAngleTo(FVector &localTarget){
         theta = acos((a*b) / 1)
     */
 
-    float dot = forward2d.X * xy.X + forward2d.Y * xy.Y;
+    float dot = forward2d.X * xy.X; //+ forward2d.Y * xy.Y;
 
     float xyTopViewAngle = std::acosf(dot);
     
@@ -531,7 +561,7 @@ float TwoBone::flipRotation(float aX, float aY, float oX, float oY){
 
     // Wenn das Kreuzprodukt negativ ist, ist der Winkel im Uhrzeigersinn,
     // also negieren wir den Winkel.
-    if (crossProduct_z < 0) {
+    if (crossProduct_z < 0.0f) {
         return -1.0f;
     }
     return 1.0f;
@@ -781,19 +811,21 @@ void TwoBone::rotateEndToTargetAndBuild(
 void TwoBone::attachFirtsLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         hipLimbPointer = &actorToAttach;
+        disableLimbCollision(*hipLimbPointer);
     }
-    
 }
 
 void TwoBone::attachSecondLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         kneeLimbPointer = &actorToAttach;
+        disableLimbCollision(*kneeLimbPointer);
     }
 }
 
 void TwoBone::attachThirdLimb(AActor &actorToAttach){
     if(!actorIsAlreadAttached(actorToAttach)){
         footLimbPointer = &actorToAttach;
+        disableLimbCollision(*footLimbPointer);
     }
 }
 
@@ -801,6 +833,15 @@ bool TwoBone::actorIsAlreadAttached(AActor &actor){
     return &actor == footLimbPointer ||
            &actor == kneeLimbPointer ||
            &actor == hipLimbPointer;
+}
+
+
+/// @brief disbales physics collision for an actor
+/// @param actor actor physics collision to disable, NOT raycasting
+void TwoBone::disableLimbCollision(AActor& actor){
+    if (UPrimitiveComponent* RootComp = Cast<UPrimitiveComponent>(actor.GetRootComponent())) {
+        RootComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+    }
 }
 
 

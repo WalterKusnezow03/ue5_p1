@@ -140,7 +140,7 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 
 void AplayerScript::switchCamera(){
-    //return;
+    return;
 
     if(isCamInPlayer){
         
@@ -391,9 +391,17 @@ void AplayerScript::performRaycast()
     }
 }
 
+
+/// @brief drops the weapon from the inventory and bone controller and attaches the new weapon if
+/// possible
 void AplayerScript::drop(){
     boneController.dropWeapon(); 
     playerInventory.dropWeapon();
+
+    Aweapon *otherWeaponNow = playerInventory.getItemPointer();
+    if(otherWeaponNow != nullptr){
+        boneController.attachCarriedItem(otherWeaponNow);
+    }
 }
 
 void AplayerScript::reload(){
@@ -550,6 +558,29 @@ void AplayerScript::setupBoneController(){
 	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
     unterarm_1 = nullptr; //DEBUG
     boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); // hand 2 debug
+
+
+    //fingers right
+    int fingerX = 2;
+    int fingerY = 4;
+    HandBoneIndexEnum array[] = {
+        HandBoneIndexEnum::thumb,
+        HandBoneIndexEnum::finger1,
+        HandBoneIndexEnum::finger2,
+        HandBoneIndexEnum::finger3,
+        HandBoneIndexEnum::finger4,
+    };
+    for (int i = 0; i < 5; i++)
+    {
+        AActor *fingertop = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+        AActor *fingerbottom = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+        boneController.attachFinger(
+            fingertop,
+            fingerbottom,
+            HandBoneIndexEnum::rightHand,
+            array[i]
+        );
+    }
 
     return;
 

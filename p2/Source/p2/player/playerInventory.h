@@ -28,6 +28,8 @@ public:
 
 	float recoilValue();
 
+	Aweapon *getItemPointer();
+
 private:
 	class wslot{
 		public:

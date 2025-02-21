@@ -242,7 +242,7 @@ void BoneController::setupAnimation(){
 	legDoubleKeys_2.setAnimationA(MoveTemp(legKeysCopy));
 
 	FVector hipTargetFromFoot = FVector(0, 0, legScaleCM);
-	legDoubleKeys_1.setAnimationBAdjustPermanentTarget(hipTargetFromFoot);
+	legDoubleKeys_1.setAnimationBAdjustPermanentTarget(hipTargetFromFoot); //very important!
 	legDoubleKeys_2.setAnimationBAdjustPermanentTarget(hipTargetFromFoot);
 
 
@@ -250,6 +250,9 @@ void BoneController::setupAnimation(){
 	legDoubleKeys_1.setRunning(isRunning); //member var from this
 	legDoubleKeys_2.setRunning(isRunning);
 
+	//testing - works
+	legDoubleKeys_1.scaleToVelocityInCms(100.0f);
+	legDoubleKeys_2.scaleToVelocityInCms(100.0f);
 
 
 	/**
@@ -385,6 +388,21 @@ void BoneController::attachHead(AActor *headPointer){
 		attachedHead = headPointer;
 	}
 }
+
+void BoneController::attachFinger(
+	AActor *top, 
+	AActor *bottom, 
+	HandBoneIndexEnum hand,
+	HandBoneIndexEnum finger
+){
+	if(hand == HandBoneIndexEnum::leftHand){
+		hand1.attachLimbMeshes(top, bottom, finger);
+	}
+	if(hand == HandBoneIndexEnum::rightHand){
+		hand2.attachLimbMeshes(top, bottom, finger);
+	}
+}
+
 
 
 
@@ -740,7 +758,7 @@ void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
 
 		FVector camForward = camera.GetForwardVector();
 		FVector camLocation = camera.GetComponentLocation() +
-							  camForward * armScaleCM * 0.9f;
+							  camForward * armScaleCM * 0.95f;
 
 		//location ins locale bringen!
 		currentTransform().transformFromWorldToLocalCoordinates(camLocation);

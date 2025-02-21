@@ -93,6 +93,8 @@ private:
 	class AActor *footLimbPointer = nullptr;
 	bool actorIsAlreadAttached(AActor &actor);
 
+	void disableLimbCollision(AActor &actor);
+
 private:
 	bool isArmFlag = false;
 
@@ -110,6 +112,8 @@ private:
 		MMatrix &middle,
     	MMatrix &end
 	);
+
+	bool flipAngleForBoneNeeded(FVector &target, FVector &weight, float hipAngle);
 
 	//calculating angles
 	float yawAngleTo(FVector &localTarget);
@@ -193,5 +197,5 @@ private:
 	
 	void copyCurrentMatricies();
 
-
+	bool pitchTooLow(float pitchAngle);
 };

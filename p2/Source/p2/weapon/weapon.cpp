@@ -720,47 +720,17 @@ FVector Aweapon::rightHandLocation(){
 void Aweapon::loadFingerTargets(HandTargetContainer &container){
 	Super::loadFingerTargets(container);
 
-	//update rotations
-	FRotator rotationForHand;
+	
+	MMatrix handRotator;
 	HandBoneIndexEnum handType = container.readHandtype();
 	if(handType == HandBoneIndexEnum::leftHand){
-		rotationForHand.Roll = 90.0f;
+		handRotator.rollRadAdd(MMatrix::degToRadian(90.0f));
 	}
 	if(handType == HandBoneIndexEnum::rightHand){
-		rotationForHand.Roll = -90.0f;
+		handRotator.rollRadAdd(MMatrix::degToRadian(-90.0f));
 	}
+	container.setOrientation(handRotator);
 
-	MMatrix handRotator(rotationForHand);
-	
-	MMatrix actorRotator = Super::handAlignForwardRotationMatrix();
-	MMatrix finalRotation = actorRotator * handRotator; // M = R * R <-- lese richtung --
-	container.setOrientation(finalRotation);
-
-	// --- debug
-
-	if(isPickedupByPlayer() && false){
-		FRotator debugRotator = finalRotation.extractRotator();
-		//debugRotator = GetActorRotation();
-		DebugHelper::showScreenMessage("rotator roll ", (float)debugRotator.Roll);
-		DebugHelper::showScreenMessage("rotator pitch ", (float)debugRotator.Pitch);
-		DebugHelper::showScreenMessage("rotator yaw ", (float)debugRotator.Yaw);
-
-		/*
-		FVector look = finalRotation.lookDirXForward();
-		DebugHelper::showLineBetween(
-			GetWorld(),
-			GetActorLocation(),
-			GetActorLocation() + look * 50.0f,
-			FColor::Purple,
-			1.0f
-		);
-		*/
-
-		//DebugHelper::showScreenMessage("load fingers", FColor::Yellow);
-	}
-	
-
-	// --- debug end
 }
 
 FVector Aweapon::leftHandFingerLocation(HandBoneIndexEnum type){
