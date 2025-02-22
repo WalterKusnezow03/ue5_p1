@@ -55,4 +55,6 @@ private:
 
 
 	static void debugCreateWater(UWorld *world);
+
+	static void debugCreateTree(UWorld *world);
 };

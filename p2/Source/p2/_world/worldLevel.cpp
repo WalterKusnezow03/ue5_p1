@@ -8,6 +8,7 @@
 #include "p2/util/TVector.h"
 #include "p2/meshgen/customMeshActorWater.h"
 #include "p2/meshgen/generation/terrainCreator.h"
+#include "p2/meshgen/foliage/MatrixTree.h"
 
 worldLevel::worldLevel()
 {
@@ -92,6 +93,8 @@ void worldLevel::initWorld(UWorld *world){
     debugAngleFinder(world);
 
     debugCreateWater(world);
+
+    debugCreateTree(world);
 }
 
 /**
@@ -428,7 +431,29 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 
 
 
+void worldLevel::debugCreateTree(UWorld *world){
 
+
+    if (world != nullptr)
+    {
+        EntityManager *e = worldLevel::entityManager();
+        if(e != nullptr){
+            FVector location(-2000, 0, 0);
+            AcustomMeshActor *actor = e->spawnAcustomMeshActor(world, location);
+
+            MatrixTree tree;
+            tree.generate(1000, 100); //1000 height, 100 step per matrix
+            int layer = 0;
+            MeshData &otherMesh = tree.meshDataByReference();
+            actor->updateMesh(otherMesh, false, layer);
+
+            actor->ApplyMaterial(
+                materialEnum::treeMaterial,
+                layer
+            );
+        }
+    }
+}
 
 
 
