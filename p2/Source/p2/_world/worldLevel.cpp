@@ -6,6 +6,7 @@
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 #include "p2/util/TVector.h"
+#include "p2/meshgen/customMeshActorWater.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 
 worldLevel::worldLevel()
@@ -89,6 +90,8 @@ void worldLevel::initWorld(UWorld *world){
 
     //debugBezier(world);
     debugAngleFinder(world);
+
+    debugCreateWater(world);
 }
 
 /**
@@ -420,4 +423,30 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
         }
     }
     return vec;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+void worldLevel::debugCreateWater(UWorld *world){
+    if(world != nullptr){
+
+        int sizeX = 100000;
+        int sizeY = 100000;
+        int detail = 1000;
+
+        EntityManager *pointer = worldLevel::entityManager();
+        if(pointer != nullptr){
+            AcustomMeshActorWater *actor = pointer->createWater(world, sizeX, sizeY, detail);
+        }
+    }
 }

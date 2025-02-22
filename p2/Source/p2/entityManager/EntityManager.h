@@ -65,7 +65,9 @@ public:
 	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
 
 	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
+	AcustomMeshActorWater *createWater(UWorld *world, int sizeX, int sizeY, int detail);
 
+	
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!

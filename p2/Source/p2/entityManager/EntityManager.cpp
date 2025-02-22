@@ -6,6 +6,7 @@
 #include "p2/particleSystem/particle.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/meshgen/customMeshActor.h"
+#include "p2/meshgen/customMeshActorWater.h"
 #include "p2/gamestart/assetManager.h"
 
 #include "Engine/World.h"
@@ -295,16 +296,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
         }
     }
 
-    /*
-    //default spawn if needed
-    UClass *selectedBp = weaponBpClass; //to created, default is stick gun
-
-    std::map<weaponEnum, UClass *> map;
-    map[weaponEnum::assaultRifle] = assaultRifleBpClass;
-    map[weaponEnum::pistol] = pistolBpClass;
-
-    selectedBp = map[typeToSpawn];
-    */
     UClass *selectedBp = nullptr;
     if(assetManager *a = assetManager::instance()){
         selectedBp = a->findBp(typeToSpawn);
@@ -474,6 +465,23 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 }
 
 
+AcustomMeshActorWater *EntityManager::createWater(UWorld *world, int sizeX, int sizeY, int detail){
+
+    if(world != nullptr){
+        FVector location(0, 0, 0);
+
+        //spawn
+        FActorSpawnParameters params;
+        AcustomMeshActorWater *SpawnedActor = world->SpawnActor<AcustomMeshActorWater>(
+            AcustomMeshActorWater::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        return SpawnedActor;
+    }
+    return nullptr;
+}
 
 /** 
 * ---- PARTICLE / EXPLOSION SECTION ----

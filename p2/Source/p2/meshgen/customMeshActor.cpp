@@ -169,119 +169,12 @@ void AcustomMeshActor::createTerrainFrom2DMap(
     bool createTrees    
 ){ //nach dem entity manager stirbt die refenz hier!
 
+    TArray<FVectorTouple> touples;
+    Super::createTerrainFrom2DMap(map, touples);
+
     //must be called here.
     setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
     
-   
-    
-    //grass
-    TArray<FVector> output_grass_layer;
-    TArray<int32> triangles_grass_layer;
-
-    //stone
-    TArray<FVector> output_stone_layer;
-    TArray<int32> triangles_stone_layer;
-
-    TArray<FVectorTouple> touples; //first arg: center, second: normal
-
-    std::vector<FVector> navMeshAdd;
-
-    FVector originVec(0, 0, 0);
-
-    //iterate over the map and create all triangles by creating the quads from 4 given vertecies
-    for (int x = 0; x < map.size() - 1; x++){
-        for (int y = 0; y < map.at(x).size() - 1; y++){
-            /*
-                1--2
-                |  |
-                0<-3
-             */
-            bool copy = (x != 0); //prev 0 and 1 indices will be copied
-
-
-            if(x + 1 < map.size() && y + 1 < map.at(x + 1).size()){
-                try{
-                    //get the vertecies
-                    FVector vzero = map.at(x).at(y);
-                    FVector vone = map.at(x).at(y + 1);
-                    FVector vtwo = map.at(x + 1).at(y + 1);
-                    FVector vthree = map.at(x + 1).at(y);
-
-                    //add to standard output
-                    //buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
-
-                    FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo); //direction obviously
-                    if(FVectorUtil::directionIsVertical(normal)){
-                        //add to standard output, if direction of normal is vertical, the pane is flat
-                        buildQuad(vzero, vone, vtwo, vthree, output_grass_layer, triangles_grass_layer);
-                    }else{
-                        //otherwise the quad should be added to the second
-                        //triangle / vertecy array for stone material, more vertical
-                        buildQuad(vzero, vone, vtwo, vthree, output_stone_layer, triangles_stone_layer);
-                    }
-
-
-                    //calculate center
-                    FVector centerLocal = FVectorUtil::calculateCenter(vzero, vone, vtwo);
-                    FVector centerWorld = centerLocal + GetActorLocation();
-                   
-
-                    // create and add touple to list
-                    FVectorTouple t(centerLocal, normal); // first center, then normal
-                    touples.Add(t);
-
-                    
-
-                    /**
-                     * ADD NODES TO NAV MESH
-                     */
-                    // only add the normal if the surface is flat
-
-                    //testing only three per chunk, raycasting takes a lot of power
-                    if (navMeshAdd.size() <= 6 && FVectorUtil::edgeIsVertical(originVec, normal))
-                    {
-                        if (navMeshAdd.size() == 0)
-                        {
-                            navMeshAdd.push_back(centerWorld);
-                        }
-                        else
-                        {
-                            // only push nodes 3 meters away from each other -> reduce mesh count
-                            FVector &prev = navMeshAdd.back();
-                            if (FVector::Dist(prev, centerWorld) >= 300)
-                            {
-                                navMeshAdd.push_back(centerWorld);
-                            }
-                        }
-                    }
-                }catch (const std::exception &e)
-                {
-                    //this try catch block was just added when debugging can certainly be
-                    //kept for safety 
-                    DebugHelper::showScreenMessage("mesh actor exception!", FColor::Red);
-                }
-            }
-            
-        }
-    }
-
-
-    //process created data and apply meshes and materials
-
-    materialtypeSet = materialEnum::grassMaterial; //might be changed later, left off for particles..
-
-    MeshData grassLayer(
-        MoveTemp(output_grass_layer),
-        MoveTemp(triangles_grass_layer)
-    );
-    updateMesh(grassLayer, true, 0);
-
-    MeshData stoneLayer(
-        MoveTemp(output_stone_layer),
-        MoveTemp(triangles_stone_layer)
-    );
-    updateMesh(stoneLayer, true, 1);
-
 
 
     //iterate over touples and add foliage based on height and if the pane is flat or vertical
@@ -291,33 +184,6 @@ void AcustomMeshActor::createTerrainFrom2DMap(
     }
 
 
-    if(assetManager *e = assetManager::instance()){
-
-        //grass
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::grassMaterial), 0); //layer 0
-        //stone
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::stoneMaterial), 1); //layer 1
-
-        //tree
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::treeMaterial), 2); //layer 2
-    
-    
-    }
-
-    
-    
-    double StartTime = FPlatformTime::Seconds();
-    //add all normal centers to navmesh to allow the bots to move over the terrain
-    if(PathFinder *f = PathFinder::instance(GetWorld())){
-        FVector offset(0, 0, 70);
-        f->addNewNodeVector(navMeshAdd, offset);
-    }
-    double EndTime = FPlatformTime::Seconds();
-    double ElapsedTime = EndTime - StartTime;
-    DebugHelper::addTime(ElapsedTime);
-
-
-    
 }
 
 
@@ -371,71 +237,6 @@ void AcustomMeshActor::process2DMapSimple(
     outputData.rebuild(MoveTemp(output_layer), MoveTemp(triangles_layer));
 
 }
-
-
-
-/*
-
-/// @brief updates a mesh layer given on a mesh data object (which will be deep copied)
-/// @param otherMesh 
-/// @param createNormals 
-/// @param layer 
-void AcustomMeshActor::updateMesh(MeshData otherMesh, bool createNormals, int layer){
-
-    meshLayersMap[layer] = otherMesh; //assign operator is overriden
-
-    MeshData *data = nullptr;
-    if (meshLayersMap.find(layer) != meshLayersMap.end()){
-        //find meshData from map by reference
-        data = &meshLayersMap[layer]; //hier mit eckigen klammern weil .find ein iterator ist
-    }
-
-    if(data != nullptr && Mesh != nullptr){
-        data->clearNormals();
-        if(createNormals){
-            data->calculateNormals();
-        }
-        
-        **
-         * example: 
-         * 
-        Mesh->CreateMeshSection(
-            layer, 
-            newvertecies, 
-            this->triangles, 
-            normals, 
-            UV0, 
-            VertexColors, 
-            Tangents, 
-            true
-        );*
-        Mesh->ClearMeshSection(layer);
-        Mesh->CreateMeshSection(
-            layer, 
-            data->getVerteciesRef(),//newvertecies, 
-            data->getTrianglesRef(),//this->triangles, 
-            data->getNormalsRef(),//normals, 
-            data->getUV0Ref(),//UV0, 
-            data->getVertexColorsRef(),//VertexColors, 
-            data->getTangentsRef(),//Tangents, 
-            true
-        );
-
-        //set for spehere overlap
-        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-        Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-    }
-    //enable if was disabled!
-    AActorUtil::showActor(*this, true);
-    AActorUtil::enableColliderOnActor(*this, true);
-
-
-}
-
-
-
-*/
 
 
 
