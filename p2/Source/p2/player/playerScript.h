@@ -58,7 +58,9 @@ private:
 	void switchCamera();
 	FVector cameraReltiveLocationOriginal;
 
-	//int team = 0;
+	void cameraDefaultFpv();
+	void cameraDebugFpv();
+
 	teamEnum team;
 
 	class playerInventory playerInventory;

@@ -143,20 +143,33 @@ void AplayerScript::switchCamera(){
     return;
 
     if(isCamInPlayer){
-        
-        
-        CameraComponent->SetRelativeLocation(FVector(0, 0, 2000.0f)); // Position the camera
-	    CameraComponent->bUsePawnControlRotation = true;
-        CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
-        
-    }else{
-        //default player cam setup
+        cameraDebugFpv();
+        isCamInPlayer = false;
+    }
+    else
+    {
+        cameraDefaultFpv();
+        isCamInPlayer = true;
+    }
+}
+
+void AplayerScript::cameraDefaultFpv(){
+    if(CameraComponent){
         CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
         CameraComponent->SetRelativeRotation(FRotator(0, 0, 0)); // Look downward
     }
-    
 }
+
+void AplayerScript::cameraDebugFpv(){
+    if(CameraComponent){
+        CameraComponent->SetRelativeLocation(FVector(0, 0, 2000.0f)); // Position the camera
+	    CameraComponent->bUsePawnControlRotation = true;
+        CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
+    }
+}
+
+
 
 void AplayerScript::debugPathFinder(){
     FVector posA(0, 0, 200);
@@ -230,7 +243,9 @@ void AplayerScript::TickBoneController(float DeltaTime){
 
     boneController.Tick(DeltaTime, GetWorld());
 
-    boneController.debugDrawHeadForward(GetWorld(), DeltaTime);
+
+    
+    //boneController.debugDrawHeadForward(GetWorld(), DeltaTime);
 }
 
 void AplayerScript::resetFlagsOnTick(){
