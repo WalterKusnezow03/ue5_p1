@@ -32,6 +32,12 @@ public:
 		FVector &d
 	);
 
+	void appendDoublesided(
+		FVector &a,
+		FVector &b,
+		FVector &c
+	);
+
 	void rebuild(TArray<FVector> &&verteciesIn, TArray<int> &&trianglesIn);
 
 	void clearMesh();
@@ -48,7 +54,7 @@ public:
 	TArray<FProcMeshTangent> &getTangentsRef();
 	TArray<FColor> &getVertexColorsRef();
 
-	
+	void offsetAllvertecies(FVector &offset);
 
 private:
 	void clearNormals();

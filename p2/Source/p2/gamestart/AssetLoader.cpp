@@ -276,8 +276,10 @@ void AssetLoader::loadMaterials(){
             materialEnum::treeMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/treeMaterial.treeMaterial'"))
         );
-
-
+        a->addMaterial(
+            materialEnum::palmLeafMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/palmLeafMaterial.palmLeafMaterial'"))
+        );
 
         //HOUSE MATERIALS
         //wall material

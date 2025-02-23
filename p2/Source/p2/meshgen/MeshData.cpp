@@ -203,6 +203,19 @@ void MeshData::append(
     append(a, c, d);
 }
 
+void MeshData::appendDoublesided(
+    FVector &a, 
+    FVector &b, 
+    FVector &c
+){
+    /*
+    1 2
+    0 
+    */
+    append(a, b, c); 
+    append(a, c, b); 
+}
+
 
 void MeshData::buildTriangle(
     FVector &a, 
@@ -225,6 +238,13 @@ void MeshData::buildTriangle(
 
 
 
+/// @brief offsets all vertecies in a given direction
+/// @param offset 
+void MeshData::offsetAllvertecies(FVector &offset){
+    for (int i = 0; i < vertecies.Num(); i++){
+        vertecies[i] += offset;
+    }
+}
 
 
 

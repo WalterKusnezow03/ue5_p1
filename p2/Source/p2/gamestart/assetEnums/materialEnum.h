@@ -10,5 +10,6 @@ enum class materialEnum
     glassMaterial,
     stoneMaterial,
     sandMaterial,
-    treeMaterial
+    treeMaterial,
+    palmLeafMaterial
 };

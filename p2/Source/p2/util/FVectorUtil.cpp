@@ -111,6 +111,14 @@ int FVectorUtil::randomNumber(int range){
 int FVectorUtil::randomNumber(int lower, int higher){
     int a = std::rand();
     a %= higher;
+    if(lower < 0 && a > 0){
+        if(a < std::abs(lower)){
+            int neg = std::rand();
+            if(neg % 2 == 0){
+                a *= -1;
+            }
+        }
+    }
     if (a < lower) //clamp lower bound
     {
         return lower;

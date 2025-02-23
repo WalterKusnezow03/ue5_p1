@@ -6,6 +6,8 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/meshgen/MeshData.h"
 #include "IndexChain.h"
+#include "p2/meshgen/foliage/helper/FVectorShape.h"
+#include "ETreeType.h"
 
 /**
  * 
@@ -16,39 +18,58 @@ public:
 	MatrixTree();
 	~MatrixTree();
 
-	void generate(int height, int perCmMatrix);
+	void generate(int height, int perCmMatrix, ETreeType tyep);
 
-	void generateMesh();
+	
 
-	MeshData &meshDataByReference();
+	MeshData &meshDataStemByReference();
+	MeshData &meshDataLeafByReference();
 
 private:
-	int stemCount;
-	MMatrix stemTop();
+	void clean();
 
-	bool wasModified = false; //save for rebuild
+	int leafCountPerJoint = 10;
 
-	/** 
-	 * Alle matrizen sollten in einem vektor festgehalten werden
-	 * Die chains sollten mit indices erstellt werden
-	 */
+	void generateMesh();
+	void generateLeafs();
+	void generateLeaf(MMatrix &offset);
+
+	MeshData ownMeshData;
+	MeshData leafMeshData;
+
+	ETreeType treeType;
+	int stemCountTop;
+
+	MMatrix stemTop;
+
 	std::vector<MMatrix> matrices;
-	std::vector<IndexChain> indexChains;
 
-	std::vector<FVector> shapeByEnum();
-	std::vector<MMatrix> buildChain(IndexChain &indexChain);
+	/// @brief index chains to save subtrees instead of copying all matrices
+	std::vector<IndexChain> indexChains;
+	MMatrix identityMatrix;
+
+	std::vector<MMatrix> leafTops;
+
+	std::vector<FVectorShape> shapeByEnum(ETreeType type);
+	void buildChain(IndexChain &indexChain);
+
+	FVectorShape leafShapeByEnum(ETreeType type);
 
 	bool indexIsValid(int index);
 	MMatrix &matrixByIndex(int index);
-	MMatrix identityMatrix;
+	void randomRotationForAllMatrices();
 
-	MeshData ownMeshData;
-
-	/**
-	 * sollte hier auch das mesh selber drin gespeichert werden?
-	 */
-
-	void moveVerteciesFromLocalToWorld(MMatrix &mat, std::vector<FVector> &vector);
 	void wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &meshToAddTo);
-	void join(std::vector<FVector> &lower, std::vector<FVector> &upper, MeshData &mesh);
+
+
+	void createSubTrees(MMatrix &offset);
+	void createSubTrees(MMatrix &offset, int partsPerTree, int count);
+	IndexChain createSubTree(MMatrix &offset, int parts);
+
+	int subTreeCountByEnum(ETreeType type);
+	int rotationRangeByEnum(ETreeType type);
+	int partsPerSubTreeByEnum(ETreeType type);
+
+	MMatrix randomRotator();
+	MMatrix randomRotator(int lower, int heigher);
 };

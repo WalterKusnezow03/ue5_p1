@@ -9,6 +9,7 @@
 #include "p2/meshgen/customMeshActorWater.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
+#include "p2/meshgen/foliage/ETreeType.h"
 
 worldLevel::worldLevel()
 {
@@ -442,14 +443,21 @@ void worldLevel::debugCreateTree(UWorld *world){
             AcustomMeshActor *actor = e->spawnAcustomMeshActor(world, location);
 
             MatrixTree tree;
-            tree.generate(1000, 100); //1000 height, 100 step per matrix
-            int layer = 0;
-            MeshData &otherMesh = tree.meshDataByReference();
-            actor->updateMesh(otherMesh, false, layer);
-
+            tree.generate(1000, 100, ETreeType::EPalmTree); //1000 height, 100 step per matrix
+            int stemlayer = 0;
+            MeshData &otherMesh = tree.meshDataStemByReference();
+            actor->updateMesh(otherMesh, false, actor->layerByMaterialEnum(materialEnum::treeMaterial));
             actor->ApplyMaterial(
-                materialEnum::treeMaterial,
-                layer
+                materialEnum::treeMaterial
+            );
+
+
+
+            int leafLayer = 1;
+            MeshData &leafMesh = tree.meshDataLeafByReference();
+            actor->updateMesh(leafMesh, false, actor->layerByMaterialEnum(materialEnum::palmLeafMaterial));
+            actor->ApplyMaterial(
+                materialEnum::palmLeafMaterial
             );
         }
     }
