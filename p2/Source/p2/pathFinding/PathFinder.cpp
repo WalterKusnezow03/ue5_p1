@@ -457,7 +457,10 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
         
         //PREBUILD EDGES
         if(PREBUILD_EDGES_ENABLED){
-            showPos(start->pos, FColor::Blue);
+            if(false){
+                showPos(start->pos, FColor::Blue);
+            }
+            
             showPos(end->pos, FColor::Purple);
             return findPath_prebuildEdges(start, end);
         }
@@ -467,7 +470,7 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
         //find path
         std::vector<PathFinder::Node *> graph = getSubGraph(a, b);
         
-        if(debugDrawNodes){
+        if(debugDrawNodes && false){
             showPos(start->pos, FColor::Blue);
             showPos(end->pos, FColor::Red);
             DebugHelper::showLineBetween(worldPointer, start->pos, end->pos, FColor::Yellow);
@@ -1470,7 +1473,7 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
         {
             //debugDraw
             PathFinder::Node *prevNode = current->camefrom;
-            if(prevNode != nullptr){
+            if(prevNode != nullptr && false){
                 DebugHelper::showLineBetween(
                     worldPointer,
                     current->pos,
@@ -1491,14 +1494,17 @@ std::vector<FVector> PathFinder::findPath_prebuildEdges(
                 for (int i = 1; i < outputPath.size(); i++){
                     FVector nodeA = outputPath.at(i);
                     FVector nodeB = outputPath.at(i-1);
-
-                    DebugHelper::showLineBetween(
-                        worldPointer,
-                        nodeA,
-                        nodeB,
-                        FColor::Red,
-                        5.0f
-                    );
+                    
+                    if(false){
+                        DebugHelper::showLineBetween(
+                            worldPointer,
+                            nodeA,
+                            nodeB,
+                            FColor::Red,
+                            5.0f
+                        );
+                    }
+                    
                 }
 
                 // clean all status to prevent issues, everything must be cleared

@@ -543,8 +543,8 @@ void AplayerScript::setupBoneController(){
 	boneController.SetLocation(offset);
 
 	// debug testing meshes
-	float legScaleCM = 100.0f;
-	float armScaleCM = 70.0f;
+	float legScaleCM = boneController.legScale();
+	float armScaleCM = boneController.armScale();
 	float legHalfScale = legScaleCM / 2.0f;
 	float armHalfScale = armScaleCM / 2.0f;
 
@@ -563,21 +563,19 @@ void AplayerScript::setupBoneController(){
 	int offY = sizeY / 2;
 	offY = 0;
 
-	
+    //links arm
 	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
 	
-	//holding weapon
+	//holding weapon rechts
 	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
 	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-    unterarm_1 = nullptr; //DEBUG
     boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); // hand 2 debug
 
 
     //fingers right
     int fingerX = 2;
-    int fingerY = 4;
     HandBoneIndexEnum array[] = {
         HandBoneIndexEnum::thumb,
         HandBoneIndexEnum::finger1,
@@ -587,12 +585,24 @@ void AplayerScript::setupBoneController(){
     };
     for (int i = 0; i < 5; i++)
     {
+        //right hand
+        int fingerY = boneController.fingerScale(array[i]);
         AActor *fingertop = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
         AActor *fingerbottom = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
         boneController.attachFinger(
             fingertop,
             fingerbottom,
             HandBoneIndexEnum::rightHand,
+            array[i]
+        );
+
+        //left hand
+        AActor *fingertop1 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+        AActor *fingerbottom2 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+        boneController.attachFinger(
+            fingertop1,
+            fingerbottom2,
+            HandBoneIndexEnum::leftHand,
             array[i]
         );
     }

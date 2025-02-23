@@ -424,7 +424,7 @@ void TwoBone::rotateEndToTarget(
                 MMatrix::radToDegree(pitchAngle),
                 frac
             );
-            DebugHelper::showScreenMessage(s, FColor::Black);
+            //DebugHelper::showScreenMessage(s, FColor::Black);
         }
         else
         {
@@ -731,7 +731,7 @@ MMatrix TwoBone::buildWithOutput(
 
 
     //draw
-    if (world != nullptr)
+    if (world != nullptr && DEBUG_DRAW)
     {
         for (int i = 1; i < resultDraw.size(); i++)
         {
@@ -943,7 +943,7 @@ MMatrix TwoBone::buildWithOutput(
 
 
     //draw
-    if (world != nullptr)
+    if (world != nullptr && DEBUG_DRAW)
     {
         for (int i = 1; i < resultDraw.size(); i++){
             if(isArmBone()){

@@ -95,7 +95,7 @@ void worldLevel::initWorld(UWorld *world){
 
     debugCreateWater(world);
 
-    debugCreateTree(world);
+
 }
 
 /**
@@ -428,42 +428,6 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
     }
     return vec;
 }
-
-
-
-
-void worldLevel::debugCreateTree(UWorld *world){
-
-
-    if (world != nullptr)
-    {
-        EntityManager *e = worldLevel::entityManager();
-        if(e != nullptr){
-            FVector location(-2000, 0, 0);
-            AcustomMeshActor *actor = e->spawnAcustomMeshActor(world, location);
-
-            MatrixTree tree;
-            tree.generate(1000, 100, ETreeType::EPalmTree); //1000 height, 100 step per matrix
-            int stemlayer = 0;
-            MeshData &otherMesh = tree.meshDataStemByReference();
-            actor->updateMesh(otherMesh, false, actor->layerByMaterialEnum(materialEnum::treeMaterial));
-            actor->ApplyMaterial(
-                materialEnum::treeMaterial
-            );
-
-
-
-            int leafLayer = 1;
-            MeshData &leafMesh = tree.meshDataLeafByReference();
-            actor->updateMesh(leafMesh, false, actor->layerByMaterialEnum(materialEnum::palmLeafMaterial));
-            actor->ApplyMaterial(
-                materialEnum::palmLeafMaterial
-            );
-        }
-    }
-}
-
-
 
 
 
