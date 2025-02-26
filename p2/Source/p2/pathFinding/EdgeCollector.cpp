@@ -409,8 +409,8 @@ void EdgeCollector::ComputeConvexHull(std::vector<edgeData> &points) { //passed 
 /// @param c 
 /// @return 
 bool EdgeCollector::IsClockwise(const edgeData& a, const edgeData& b, const edgeData& c) {
-    return (b.top.X - a.top.X) * (c.top.Y - a.top.Y) - (b.top.Y - a.top.Y) * (c.top.Y - a.top.Y) < 0;
-
+    //return (b.top.X - a.top.X) * (c.top.Y - a.top.Y) - (b.top.Y - a.top.Y) * (c.top.Y - a.top.Y) < 0; //wrong
+    return (b.top.X - a.top.X) * (c.top.Y - a.top.Y) - (b.top.Y - a.top.Y) * (c.top.X - a.top.X) < 0;
     // < 0 means, kolliniear vectors are kept and ignored.
 }
 
