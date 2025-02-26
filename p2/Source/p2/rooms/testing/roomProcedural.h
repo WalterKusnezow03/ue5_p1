@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/meshgen/customMeshActor.h"
 #include "GameFramework/Actor.h"
+#include "p2/util/TTouple.h"
 #include "p2/rooms/testing/roomBoundData.h"
 #include "roomProcedural.generated.h"
 

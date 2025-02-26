@@ -10,6 +10,7 @@
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
+#include "p2/meshgen/foliage/rocks/RockCreator.h"
 
 worldLevel::worldLevel()
 {
@@ -95,7 +96,7 @@ void worldLevel::initWorld(UWorld *world){
 
     debugCreateWater(world);
 
-
+    debugCreateRock(world);
 }
 
 /**
@@ -444,6 +445,28 @@ void worldLevel::debugCreateWater(UWorld *world){
         EntityManager *pointer = worldLevel::entityManager();
         if(pointer != nullptr){
             AcustomMeshActorWater *actor = pointer->createWater(world, sizeX, sizeY, detail);
+        }
+    }
+}
+
+
+
+
+void worldLevel::debugCreateRock(UWorld *world){
+    if(world != nullptr){
+        EntityManager *pointer = worldLevel::entityManager();
+        if(pointer != nullptr){
+
+            RockCreator rock;
+            MeshData meshData = rock.createMesh();
+
+            FVector location(-2000, 0, 0);
+            AcustomMeshActor *actor = pointer->spawnAcustomMeshActor(world, location);
+
+            if(actor != nullptr){
+                actor->updateMesh(meshData, false, 0);
+                actor->ApplyMaterial(materialEnum::stoneMaterial);
+            }
         }
     }
 }

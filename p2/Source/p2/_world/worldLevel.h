@@ -56,4 +56,5 @@ private:
 
 	static void debugCreateWater(UWorld *world);
 
+	static void debugCreateRock(UWorld *world);
 };

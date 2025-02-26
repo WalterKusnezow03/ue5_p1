@@ -247,3 +247,14 @@ bool TVector<T>::contains(T &element){
     }
     return false;
 }
+
+
+
+template <typename T>
+std::vector<T> TVector<T>::copy(){
+    std::vector<T> output;
+    for (int i = 0; i < size(); i++){
+        output.push_back(*this[i]);
+    }
+    return output;
+}

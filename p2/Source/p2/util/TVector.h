@@ -37,6 +37,8 @@ public:
     T &operator[](int index);
     TVector<T> &operator=(TVector<T> &ref);
 
+    std::vector<T> copy();
+
 private:
     std::vector<T> vec;
 

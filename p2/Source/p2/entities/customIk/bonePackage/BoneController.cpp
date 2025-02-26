@@ -21,7 +21,7 @@ BoneController::BoneController()
 	currentMotionState = BoneControllerStates::none; //by default
 
 	//default scales
-	fingerScaleCmSetup = 10;
+	fingerScaleCmSetup = 6;
 	legScaleCM = 100.0f;
 	armScaleCM = 70.0f;
 
