@@ -6,7 +6,6 @@
 #include "p2/entityManager/OutpostManager.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 #include "p2/util/TVector.h"
-#include "p2/meshgen/customMeshActorWater.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
@@ -173,6 +172,7 @@ void worldLevel::createTerrain(UWorld *world, int meters){
         }
 
         terrainPointer->debugCreateTerrain(world); //new test
+        isTerrainInited = true;
         return;
 
         //create terrain
@@ -436,17 +436,7 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 
 
 void worldLevel::debugCreateWater(UWorld *world){
-    if(world != nullptr){
-
-        int sizeX = 100000;
-        int sizeY = 100000;
-        int detail = 1000;
-
-        EntityManager *pointer = worldLevel::entityManager();
-        if(pointer != nullptr){
-            AcustomMeshActorWater *actor = pointer->createWater(world, sizeX, sizeY, detail);
-        }
-    }
+    
 }
 
 
@@ -464,10 +454,9 @@ void worldLevel::debugCreateRock(UWorld *world){
             AcustomMeshActor *actor = pointer->spawnAcustomMeshActor(world, location);
 
             if(actor != nullptr){
-                actor->updateMesh(meshData, false, actor->layerByMaterialEnum(materialEnum::stoneMaterial));
-                actor->ApplyMaterial(materialEnum::stoneMaterial);
-
+                actor->replaceMeshData(meshData, materialEnum::stoneMaterial);
                 actor->enableDebug();
+                actor->ReloadMeshAndApplyAllMaterials();
             }
         }
     }

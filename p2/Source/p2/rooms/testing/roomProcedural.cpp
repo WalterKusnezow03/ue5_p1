@@ -56,7 +56,7 @@ void AroomProcedural::createRoom(
 	FVector tl = bl + FVector(0, scaleMetersY * 100, 0);
 	FVector tr = tl + FVector(scaleMetersX * 100, 0, 0);
 	FVector br = bl + FVector(scaleMetersX * 100, 0, 0);
-	createTwoSidedQuad(bl, tl, tr, br, floorAndRoof);
+	floorAndRoof.appendDoublesided(bl, tl, tr, br);
 
 	//roof
 	FVector offset(0, 0, zCm);
@@ -64,7 +64,7 @@ void AroomProcedural::createRoom(
 	FVector tl1 = tl + offset;
 	FVector tr1 = tr + offset;
 	FVector br1 = br + offset;
-	createTwoSidedQuad(bl1, tl1, tr1, br1, floorAndRoof);
+	floorAndRoof.appendDoublesided(bl1, tl1, tr1, br1);
 
 
 	//dann wände --> die man mit einer methode schreibt
@@ -101,22 +101,11 @@ void AroomProcedural::createRoom(
 
 
 	//testing from here needed to spawn the room / apply mesh(es)
-	bool createNormals = true;
-	updateMesh(floorAndRoof, createNormals, 0);
-	updateMesh(walls, createNormals, 1);
-
-	if (assetManager *e = assetManager::instance())
-	{
-        //floor
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::stoneMaterial), 0); //layer 0
-
-		//walls
-        ApplyMaterial(Mesh, e->findMaterial(materialEnum::wallMaterial), 1); //layer 0
-	}
-
-
-
-
+	floorAndRoof.calculateNormals();
+	walls.calculateNormals();
+	replaceMeshData(floorAndRoof, materialEnum::stoneMaterial);
+	replaceMeshData(walls, materialEnum::wallMaterial);
+	ReloadMeshAndApplyAllMaterials();
 }
 
 
@@ -287,19 +276,17 @@ MeshData AroomProcedural::createWall(
 		//nach innen drehen
 		FVector aToCenter = centerOfRoom - a; //AB = B - A
 		float dotProduct = (orthogonalDir.X * aToCenter.X) * (orthogonalDir.Y * aToCenter.Y);
-		if(dotProduct < 0){ //orthogonal zeigt weg von raum, drehen nach innen
+		if(dotProduct < 0.0f){ //orthogonal zeigt weg von raum, drehen nach innen
 			orthogonalDir *= -1;
 		}
 
 		int widthCm = 20;
-		createCube(
+		output.appendCube(
 			a,
 			b,
 			c,
 			d,
-			orthogonalDir,
-			widthCm,
-			output
+			orthogonalDir.GetSafeNormal() * widthCm
 		);
 
 	}
@@ -380,10 +367,10 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 				//DebugHelper::showLineBetween(GetWorld(), zeroVec, fromOffset, FColor::Red);
 
 				// create mesh
+
 				newActor->createTwoSidedQuad(
 					a, b, c, d,
-					assetManagerPointer->findMaterial(materialEnum::glassMaterial),
-					true
+					materialEnum::glassMaterial
 				);
 
 				//set splitting on death to true

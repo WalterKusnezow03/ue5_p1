@@ -130,14 +130,7 @@ void AEntityScript::setupBoneController(){
 AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFront){
 
 	height *= -1; //orient downwardss
-	/**
-	 * DEBUG CREATE FOLLOW LIMBS
-	 */
-	UMaterial *material = nullptr;
-	assetManager *assetManagerPointer = assetManager::instance();
-	if(assetManagerPointer != nullptr){
-		material = assetManagerPointer->findMaterial(materialEnum::wallMaterial);
-	}
+	
 
 	EntityManager *entitymanagerPointer = worldLevel::entityManager();
 	if(entitymanagerPointer != nullptr){
@@ -163,7 +156,7 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 
 			oberschenkel->createCube(
 				a,b,c,d,at,bt,ct,dt,
-				material
+				materialEnum::wallMaterial
 			);
 
 			entitymanagerPointer->addActorToIgnoreRaycastParams(

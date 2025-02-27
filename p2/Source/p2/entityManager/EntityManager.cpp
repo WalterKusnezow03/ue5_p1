@@ -6,7 +6,6 @@
 #include "p2/particleSystem/particle.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/meshgen/customMeshActor.h"
-#include "p2/meshgen/customMeshActorWater.h"
 #include "p2/gamestart/assetManager.h"
 
 #include "Engine/World.h"
@@ -465,24 +464,6 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 }
 
 
-AcustomMeshActorWater *EntityManager::createWater(UWorld *world, int sizeX, int sizeY, int detail){
-
-    if(world != nullptr){
-        FVector location(0, 0, 0);
-
-        //spawn
-        FActorSpawnParameters params;
-        AcustomMeshActorWater *SpawnedActor = world->SpawnActor<AcustomMeshActorWater>(
-            AcustomMeshActorWater::StaticClass(),
-            location,
-            FRotator::ZeroRotator,
-            params
-        );
-        return SpawnedActor;
-    }
-    return nullptr;
-}
-
 /** 
 * ---- PARTICLE / EXPLOSION SECTION ----
 */
@@ -674,8 +655,10 @@ void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FV
         if(customMesh != nullptr){
 
             customMesh->createTwoSidedQuad(
-                a, b, c, d, am->findMaterial(materialEnum::wallMaterial)
+                a, b, c, d,
+                materialEnum::wallMaterial
             );
+
         }
 
     }
