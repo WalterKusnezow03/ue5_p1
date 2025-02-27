@@ -49,7 +49,7 @@ void MatrixTree::loadProperties(){
     addPropertyToMap(oakProperty);
 
     //ab 300 kein recursion aber wieso!
-    TreeProperties palmBush(300, 100, ETreeType::EPalmBush, ETerrainType::ETropical, 8, 2, 1);
+    TreeProperties palmBush(100, 100, ETreeType::EPalmBush, ETerrainType::ETropical, 8, 2, 1);
     addPropertyToMap(palmBush); //recursion?
 }
 
@@ -270,11 +270,12 @@ void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
             }
         }
         
-        
         subMesh.calculateNormals();
     }
 
-    mesh.append(subMesh); //add new subtree mesh to data
+    //mesh.append(subMesh); //add new subtree mesh to data
+
+    mesh.appendEfficent(subMesh); //NEW
 }
 
 /// @brief creates subtrees for a desired tree property

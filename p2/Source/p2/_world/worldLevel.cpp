@@ -464,8 +464,10 @@ void worldLevel::debugCreateRock(UWorld *world){
             AcustomMeshActor *actor = pointer->spawnAcustomMeshActor(world, location);
 
             if(actor != nullptr){
-                actor->updateMesh(meshData, false, 0);
+                actor->updateMesh(meshData, false, actor->layerByMaterialEnum(materialEnum::stoneMaterial));
                 actor->ApplyMaterial(materialEnum::stoneMaterial);
+
+                actor->enableDebug();
             }
         }
     }
