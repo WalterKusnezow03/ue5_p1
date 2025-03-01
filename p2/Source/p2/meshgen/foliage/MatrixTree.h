@@ -20,6 +20,7 @@ public:
 	~MatrixTree();
 
 	void generate(ETerrainType type);
+	void generate(ETreeType treeTypeIn);
 
 	MeshData &meshDataStemByReference();
 	MeshData &meshDataLeafByReference();
@@ -27,8 +28,8 @@ public:
 private:
 	void clean();
 
-	int leafCountPerJoint = 10;
 
+	void processAndGenerate(TreeProperties &properties);
 	void generateMesh();
 	void generateLeafs(TreeProperties &properties);
 	void generateLeaf(MMatrix &offset);
@@ -51,7 +52,7 @@ private:
 
 	std::vector<MMatrix> leafTops;
 
-	std::vector<FVectorShape> shapeByEnum(ETreeType type);
+	std::vector<FVectorShape> StemShapeByEnum(ETreeType type);
 	void buildChain(IndexChain &indexChain);
 
 	FVectorShape leafShapeByEnum(ETreeType type);
@@ -81,5 +82,7 @@ private:
 	/// @brief all property map
 	std::map<ETerrainType, std::vector<TreeProperties>> terrainPropertyMap;
 	TreeProperties defaultProperty;
+	
 	TreeProperties &findProperty(ETerrainType type);
+	TreeProperties &findProperty(ETreeType type);
 };

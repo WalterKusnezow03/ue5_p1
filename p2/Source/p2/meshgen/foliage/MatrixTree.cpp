@@ -48,9 +48,12 @@ void MatrixTree::loadProperties(){
     defaultProperty = oakProperty;
     addPropertyToMap(oakProperty);
 
-    //ab 300 kein recursion aber wieso!
     TreeProperties palmBush(100, 100, ETreeType::EPalmBush, ETerrainType::ETropical, 8, 2, 1);
-    addPropertyToMap(palmBush); //recursion?
+    addPropertyToMap(palmBush);
+
+
+    TreeProperties cactus(700, 50, ETreeType::ECactus, ETerrainType::EDesert, 0, 3, 3);
+    addPropertyToMap(cactus);
 }
 
 void MatrixTree::addPropertyToMap(TreeProperties &property){
@@ -90,6 +93,32 @@ TreeProperties &MatrixTree::findProperty(ETerrainType typeOfTerrain){
     return defaultProperty;
 }
 
+
+/// @brief tries to find a random property by tree type, default property if none found
+/// @param type 
+/// @return 
+TreeProperties &MatrixTree::findProperty(ETreeType type){
+    std::vector<TreeProperties*> foundProperties;
+
+    for(auto &ref : terrainPropertyMap){
+        std::vector<TreeProperties> &current = ref.second;
+        for (int i = 0; i < current.size(); i++){
+            TreeProperties &property = current[i];
+            if(property.getTreeType() == type){
+                foundProperties.push_back(&property);
+            }
+        }
+    }
+    if(foundProperties.size() > 0){
+        int random = FVectorUtil::randomNumber(0, foundProperties.size()) % foundProperties.size();
+        TreeProperties *pointer = foundProperties[random];
+        if(pointer != nullptr){
+            return *pointer;
+        }
+    }
+    return defaultProperty;
+}
+
 /// @brief cleans all leaf and mesh data
 void MatrixTree::clean(){
     leafMeshData.clearMesh();
@@ -118,13 +147,27 @@ MeshData &MatrixTree::meshDataLeafByReference(){
 /// @param cmPerStep 
 /// @param terrainType 
 void MatrixTree::generate(ETerrainType terrainType){
+    clean();
     TreeProperties &properties = findProperty(terrainType);
+    processAndGenerate(properties);
+}
 
-    
+/// @brief generates a tree by type, might fail if no preset is defined
+/// @param treeType 
+void MatrixTree::generate(ETreeType treeTypeIn){
+    clean();
+    TreeProperties &properties = findProperty(treeTypeIn);
+    if(properties.getTreeType() != treeTypeIn){
+        return;
+    }
+    processAndGenerate(properties);
+}
+
+
+void MatrixTree::processAndGenerate(TreeProperties &properties){
+    clean();
     int cmPerStep = properties.getDetailStep();
     treeType = properties.getTreeType();
-
-    clean();
 
     //create randomRotations
     randomRotationForAllMatrices();
@@ -146,7 +189,6 @@ void MatrixTree::generate(ETerrainType terrainType){
 
     generateMesh();
     generateLeafs(properties);
-
 }
 
 
@@ -168,55 +210,7 @@ MMatrix &MatrixTree::matrixByIndex(int index){
     return identityMatrix;
 }
 
-std::vector<FVectorShape> MatrixTree::shapeByEnum(ETreeType type){
-    std::vector<FVectorShape> output;
 
-    int size = 100;
-    if(type == ETreeType::Edefault){
-        size = 50;
-        FVectorShape shape;
-        shape.push_back(FVector(0, 0, 0));
-        shape.push_back(FVector(0,size,0));
-        shape.push_back(FVector(size,size,0));
-        shape.push_back(FVector(size,0,0));
-        
-
-        output.push_back(shape);
-        
-    }
-    if(type == ETreeType::EPalmTree || type == ETreeType::EPalmBush){
-        size = 20;
-        int sizeInner = 10;
-        
-
-        FVectorShape shapeOuter;
-        shapeOuter.push_back(FVector(0,0,0));
-        shapeOuter.push_back(FVector(0,size,0));
-        shapeOuter.push_back(FVector(size,size,0));
-        shapeOuter.push_back(FVector(size,0,0));
-        
-
-        MMatrix offset;
-        offset.setTranslation(- size / 2.0f, - size / 2.0f, 0);
-        shapeOuter.moveVerteciesWith(offset);
-        output.push_back(shapeOuter);
-
-        FVectorShape shapeInner;
-        shapeInner.push_back(FVector(0,0,0));
-        shapeInner.push_back(FVector(0,sizeInner,0));
-        shapeInner.push_back(FVector(sizeInner,sizeInner,0));
-        shapeInner.push_back(FVector(sizeInner,0,0));
-        
-
-
-        offset.setTranslation(- sizeInner / 2.0f, - sizeInner / 2.0f, 0);
-        shapeInner.moveVerteciesWith(offset);
-        output.push_back(shapeInner);
-
-    }
-
-    return output; //for vertecies sorroundign the shape
-}
 
 
 /// @brief generates the stem meshes from the created index chains
@@ -242,7 +236,7 @@ void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
         for (int i = 0; i < matricesIn.size(); i++)
         {
             MMatrix &currentMatrix = matricesIn[i];
-            std::vector<FVectorShape> current = shapeByEnum(treeType);
+            std::vector<FVectorShape> current = StemShapeByEnum(treeType);
             for (int j = 0; j < current.size(); j++){
                 FVectorShape &currentShape = current[j];
                 currentShape.moveVerteciesWith(currentMatrix);
@@ -256,6 +250,12 @@ void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
             { 
                 FVectorShape &currentShape = allShapes[i];
                 currentShape.joinMeshData(subMesh);
+
+                //close top shape
+                if(i == allShapes.size() - 1){
+                    MeshData closedTop = currentShape.closeMeshAtCenter(true);
+                    subMesh.append(closedTop);
+                }
             }
 
             //add to leaf locations
@@ -404,7 +404,66 @@ void MatrixTree::generateLeaf(MMatrix &offset){
 
 
 
+/**
+ * 
+ * 
+ * ----- SHAPE PRESETS -----
+ * 
+ * 
+ */
 
+/// @brief 
+/// @param type 
+/// @return 
+std::vector<FVectorShape> MatrixTree::StemShapeByEnum(ETreeType type){
+    std::vector<FVectorShape> output;
+
+    int size = 100;
+    if(type == ETreeType::Edefault || type == ETreeType::ECactus){
+        size = 50;
+        FVectorShape shape;
+        shape.push_back(FVector(0, 0, 0));
+        shape.push_back(FVector(0,size,0));
+        shape.push_back(FVector(size,size,0));
+        shape.push_back(FVector(size,0,0));
+        
+
+        output.push_back(shape);
+        
+    }
+    if(type == ETreeType::EPalmTree || type == ETreeType::EPalmBush){
+        size = 20;
+        int sizeInner = 10;
+        
+
+        FVectorShape shapeOuter;
+        shapeOuter.push_back(FVector(0,0,0));
+        shapeOuter.push_back(FVector(0,size,0));
+        shapeOuter.push_back(FVector(size,size,0));
+        shapeOuter.push_back(FVector(size,0,0));
+        
+
+        MMatrix offset;
+        offset.setTranslation(- size / 2.0f, - size / 2.0f, 0);
+        shapeOuter.moveVerteciesWith(offset);
+        output.push_back(shapeOuter);
+
+        FVectorShape shapeInner;
+        shapeInner.push_back(FVector(0,0,0));
+        shapeInner.push_back(FVector(0,sizeInner,0));
+        shapeInner.push_back(FVector(sizeInner,sizeInner,0));
+        shapeInner.push_back(FVector(sizeInner,0,0));
+        
+
+
+        offset.setTranslation(- sizeInner / 2.0f, - sizeInner / 2.0f, 0);
+        shapeInner.moveVerteciesWith(offset);
+        output.push_back(shapeInner);
+
+    }
+
+    return output; //for vertecies sorroundign the shape
+}
 
 
 

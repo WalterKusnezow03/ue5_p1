@@ -483,6 +483,7 @@ void EntityManager::createExplosion(UWorld *world, FVector &location){
         for (int i = 0; i < amount; i++)
         {
             FVector dir = FVectorUtil::randomOffset(100); //lets say just one meter because its normalized
+            dir.Z = 200;
 
             createParticle(world, particleEnum::smoke_enum, location, dir, speed, smokeLifeTime);
 

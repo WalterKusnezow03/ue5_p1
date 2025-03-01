@@ -9,6 +9,7 @@
 #include "p2/meshgen/generation/bezierCurve.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
+#include <set>
 #include "customMeshActor.h"
 
 
@@ -269,10 +270,26 @@ void AcustomMeshActor::createCube(
 
 
 
+void AcustomMeshActor::filterTouplesForVerticalVectors(
+    TArray<FVectorTouple> &touples,
+    std::vector<FVector> &potentialLocations
+){
+    // iterate over touples
+    // determine normal angle and apply foliage, rocks, trees accordingly
+    if (touples.Num() < 1){
+        return;
+    }
 
-
-
-
+    //if normal faces towards up: flat area, create something
+    for(FVectorTouple &t : touples){
+        FVector &location = t.first();
+        FVector &normal = t.second();
+        bool facingUpwards = FVectorUtil::directionIsVertical(normal);
+        if(facingUpwards){
+            potentialLocations.push_back(location); 
+        }
+    }
+}
 
 /// @brief create foliage and append it to the output mesh data, the output mesh data will
 /// get its position from the actor. The touples expected to be in local coordinate system
@@ -293,16 +310,10 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
     //saves the vertical locations to later choose random once and remove from list
     std::vector<FVector> potentialLocations;
-
-    //if normal faces towards up: flat area, create something
-    for(FVectorTouple &t : touples){
-        FVector &location = t.first();
-        FVector &normal = t.second();
-        bool facingUpwards = FVectorUtil::directionIsVertical(normal);
-        if(facingUpwards){
-            potentialLocations.push_back(location); 
-        }
-    }
+    filterTouplesForVerticalVectors(
+        touples,
+        potentialLocations
+    );
 
     //create trees at random valid locations
     int limit = 3; //tree count
@@ -320,6 +331,7 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
     ReloadMeshAndApplyAllMaterials();
 
 }
+
 
 
 /// @brief creates a matrix tree and appends the meshdata to the wanted output passed by reference
@@ -343,6 +355,7 @@ void AcustomMeshActor::createTreeAndSaveMeshTo(
     meshDataStem.append(currentTreeStemMesh);
     meshDataLeaf.append(currentLeafMesh);
 }
+
 
 
 

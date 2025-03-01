@@ -123,6 +123,12 @@ protected:
 		MeshData &meshDataStem,
 		MeshData &meshDataLeaf
 	);
+	
 
 	materialEnum materialtypeSet = materialEnum::grassMaterial;
+
+	void filterTouplesForVerticalVectors(
+		TArray<FVectorTouple> &touples,
+		std::vector<FVector> &potentialLocations
+	);
 };
