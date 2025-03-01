@@ -298,15 +298,11 @@ void AcustomMeshActor::filterTouplesForVerticalVectors(
 void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
     
 
-    MeshData &meshDataStem = findMeshDataReference(materialEnum::treeMaterial, ELod::lodNear, true);
-    MeshData &meshDataLeaf = findMeshDataReference(materialEnum::palmLeafMaterial, ELod::lodNear, false); //noraycast
-
     // iterate over touples
     // determine normal angle and apply foliage, rocks, trees accordingly
     if (touples.Num() < 1){
         return;
     }
-
 
     //saves the vertical locations to later choose random once and remove from list
     std::vector<FVector> potentialLocations;
@@ -322,7 +318,7 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
         int index = FVectorUtil::randomNumber(0, potentialLocations.size() - 1);
         if (index < potentialLocations.size() && index >= 0)
         {
-            createTreeAndSaveMeshTo(potentialLocations[index], meshDataStem, meshDataLeaf);
+            createTreeAndSaveToMesh(potentialLocations[index]);
             potentialLocations.erase(potentialLocations.begin() + index);
         }
     }
@@ -334,15 +330,10 @@ void AcustomMeshActor::createFoliage(TArray<FVectorTouple> &touples){
 
 
 
-/// @brief creates a matrix tree and appends the meshdata to the wanted output passed by reference
-/// @param location 
-/// @param meshDataStem 
-/// @param meshDataLeaf 
-void AcustomMeshActor::createTreeAndSaveMeshTo(
-    FVector &location, 
-    MeshData &meshDataStem, 
-    MeshData &meshDataLeaf
-){
+
+//new!
+
+void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
     MatrixTree tree;
     tree.generate(thisTerrainType); //this terrain type now available
     
@@ -352,9 +343,19 @@ void AcustomMeshActor::createTreeAndSaveMeshTo(
     currentTreeStemMesh.offsetAllvertecies(location);
     currentLeafMesh.offsetAllvertecies(location);
 
+    materialEnum stemTargetMaterial = currentTreeStemMesh.targetMaterial();
+    materialEnum leafTargetMaterial = currentLeafMesh.targetMaterial();
+
+    MeshData &meshDataStem = findMeshDataReference(stemTargetMaterial, ELod::lodNear, true);
+    MeshData &meshDataLeaf = findMeshDataReference(leafTargetMaterial, ELod::lodNear, false); //noraycast
+
     meshDataStem.append(currentTreeStemMesh);
     meshDataLeaf.append(currentLeafMesh);
+    
 }
+
+
+
 
 
 

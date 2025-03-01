@@ -40,19 +40,23 @@ void MatrixTree::loadProperties(){
     
     */
     TreeProperties palmProperty(1000, 100, ETreeType::EPalmTree, ETerrainType::ETropical, 8, 8, 3);
-    palmProperty.addTerrainType(ETerrainType::EDesert); //additional types for more than one terrain
+    palmProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
+    palmProperty.addTerrainType(ETerrainType::EDesert); // additional types for more than one terrain
     addPropertyToMap(palmProperty);
 
     TreeProperties oakProperty(1000, 100, ETreeType::Edefault, ETerrainType::ETropical, 30, 10, 3);
     oakProperty.addTerrainType(ETerrainType::EForest);
+    oakProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
     defaultProperty = oakProperty;
     addPropertyToMap(oakProperty);
 
     TreeProperties palmBush(100, 100, ETreeType::EPalmBush, ETerrainType::ETropical, 8, 2, 1);
+    palmBush.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
     addPropertyToMap(palmBush);
 
 
     TreeProperties cactus(700, 50, ETreeType::ECactus, ETerrainType::EDesert, 0, 3, 3);
+    cactus.setTargetedMaterials(materialEnum::palmLeafMaterial, materialEnum::palmLeafMaterial);
     addPropertyToMap(cactus);
 }
 
@@ -94,30 +98,6 @@ TreeProperties &MatrixTree::findProperty(ETerrainType typeOfTerrain){
 }
 
 
-/// @brief tries to find a random property by tree type, default property if none found
-/// @param type 
-/// @return 
-TreeProperties &MatrixTree::findProperty(ETreeType type){
-    std::vector<TreeProperties*> foundProperties;
-
-    for(auto &ref : terrainPropertyMap){
-        std::vector<TreeProperties> &current = ref.second;
-        for (int i = 0; i < current.size(); i++){
-            TreeProperties &property = current[i];
-            if(property.getTreeType() == type){
-                foundProperties.push_back(&property);
-            }
-        }
-    }
-    if(foundProperties.size() > 0){
-        int random = FVectorUtil::randomNumber(0, foundProperties.size()) % foundProperties.size();
-        TreeProperties *pointer = foundProperties[random];
-        if(pointer != nullptr){
-            return *pointer;
-        }
-    }
-    return defaultProperty;
-}
 
 /// @brief cleans all leaf and mesh data
 void MatrixTree::clean(){
@@ -152,20 +132,14 @@ void MatrixTree::generate(ETerrainType terrainType){
     processAndGenerate(properties);
 }
 
-/// @brief generates a tree by type, might fail if no preset is defined
-/// @param treeType 
-void MatrixTree::generate(ETreeType treeTypeIn){
-    clean();
-    TreeProperties &properties = findProperty(treeTypeIn);
-    if(properties.getTreeType() != treeTypeIn){
-        return;
-    }
-    processAndGenerate(properties);
-}
 
 
 void MatrixTree::processAndGenerate(TreeProperties &properties){
     clean();
+    ownMeshData.setTargetMaterial(properties.targetMaterialForStem());
+    leafMeshData.setTargetMaterial(properties.targetMaterialForLeaf());
+
+
     int cmPerStep = properties.getDetailStep();
     treeType = properties.getTreeType();
 

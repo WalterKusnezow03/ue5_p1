@@ -25,6 +25,9 @@ TreeProperties &TreeProperties::operator=(const TreeProperties &other){
     leafcountPerJointSaved = other.leafcountPerJointSaved;
     partsPerSubtreeSaved = other.partsPerSubtreeSaved;
     subTreeCountSaved = other.subTreeCountSaved;
+
+    leafMaterial = other.leafMaterial;
+	stemMaterial = other.stemMaterial;
     return *this;
 }
 
@@ -133,4 +136,19 @@ int TreeProperties::subTreeCount(){
         return rand;
     }
     return 0;
+}
+
+
+
+void TreeProperties::setTargetedMaterials(materialEnum stem, materialEnum leaf){
+    stemMaterial = stem;
+    leafMaterial = leaf;
+}
+
+materialEnum TreeProperties::targetMaterialForStem(){
+    return stemMaterial;
+}
+
+materialEnum TreeProperties::targetMaterialForLeaf(){
+    return leafMaterial;
 }

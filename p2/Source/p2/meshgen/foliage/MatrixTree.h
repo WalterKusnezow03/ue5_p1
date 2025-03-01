@@ -20,7 +20,6 @@ public:
 	~MatrixTree();
 
 	void generate(ETerrainType type);
-	void generate(ETreeType treeTypeIn);
 
 	MeshData &meshDataStemByReference();
 	MeshData &meshDataLeafByReference();
@@ -84,5 +83,5 @@ private:
 	TreeProperties defaultProperty;
 	
 	TreeProperties &findProperty(ETerrainType type);
-	TreeProperties &findProperty(ETreeType type);
+	
 };
