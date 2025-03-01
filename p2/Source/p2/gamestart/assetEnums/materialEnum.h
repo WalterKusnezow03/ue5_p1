@@ -12,5 +12,6 @@ enum class materialEnum
     sandMaterial,
     redsandMaterial,
     treeMaterial,
-    palmLeafMaterial
+    palmLeafMaterial,
+    waterMaterial
 };

@@ -10,6 +10,7 @@
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
+#include "p2/meshgen/water/customWaterActor.h"
 
 worldLevel::worldLevel()
 {
@@ -412,7 +413,24 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 
 
 void worldLevel::debugCreateWater(UWorld *world){
-    
+    //return;
+
+    if(world != nullptr){
+        FVector location(-1000, -1000, 100);
+        FRotator rotation;
+        FActorSpawnParameters params;
+        AcustomWaterActor *SpawnedActor = world->SpawnActor<AcustomWaterActor>(
+            AcustomWaterActor::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        if(SpawnedActor != nullptr){
+            int distanceeBetweenVertecies = 20;
+            int vertexcount = 100;
+            SpawnedActor->createWaterPane(vertexcount, vertexcount, distanceeBetweenVertecies);
+        }
+    }
 }
 
 

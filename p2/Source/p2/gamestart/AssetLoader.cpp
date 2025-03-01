@@ -291,6 +291,11 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/redsandMaterial.redsandMaterial'"))
         );
         
+        //water material
+        a->addMaterial(
+            materialEnum::waterMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/waterMaterial.waterMaterial'"))
+        );
 
         //HOUSE MATERIALS
         //wall material

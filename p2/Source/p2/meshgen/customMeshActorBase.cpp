@@ -692,7 +692,8 @@ std::vector<materialEnum> AcustomMeshActorBase::materialVector(){
         materialEnum::sandMaterial,
         materialEnum::redsandMaterial,
         materialEnum::treeMaterial,
-        materialEnum::palmLeafMaterial
+        materialEnum::palmLeafMaterial,
+        materialEnum::waterMaterial
     };
     return types;
 }
