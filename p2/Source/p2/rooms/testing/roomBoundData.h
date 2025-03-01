@@ -29,6 +29,7 @@ public:
 	int xMax();
 	int yMax();
 
+	FVector positionInMeterSpace(int onemeter);
 
 private:
 	int x = 0;

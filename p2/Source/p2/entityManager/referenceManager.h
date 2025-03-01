@@ -27,6 +27,8 @@ public:
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
+	FVector playerLocation();
+	FVector playerLookDir();
 
 private:
 	// private constructor for singleton

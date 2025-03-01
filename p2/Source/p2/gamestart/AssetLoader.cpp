@@ -281,6 +281,17 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/palmLeafMaterial.palmLeafMaterial'"))
         );
 
+        //sand material
+        a->addMaterial(
+            materialEnum::sandMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/sandMaterial.sandMaterial'"))
+        );
+        a->addMaterial(
+            materialEnum::redsandMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/redsandMaterial.redsandMaterial'"))
+        );
+        
+
         //HOUSE MATERIALS
         //wall material
         a->addMaterial(

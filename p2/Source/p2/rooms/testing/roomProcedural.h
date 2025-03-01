@@ -25,19 +25,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void createRoom(
-		FVector &location, // bottom left corner
-		int scaleMetersX,
-		int scaleMetersY,
-		int scaleMetersZ,
-		std::vector<FVector> &doorPositions,
-		int doorWidthCm,
-		std::vector<FVector> &windowPositions,
-		int windowWidthCm
-	);
+	static void generate(UWorld *world, int sizeXMeters, int sizeYMeters, FVector location);
 
-	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
-	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBoundData> &vec);
+	
 
 private:
 	MeshData createWall(
@@ -67,4 +57,29 @@ private:
 		std::vector<TTouple<FVector, FVector>> &windowTouples,
 		FVector &offset
 	);
+
+
+
+
+
+
+
+	void createRoom(
+		FVector location,
+		roomBoundData &someData,
+		int oneMeter
+	);
+
+	void createRoom(
+		FVector &location, // bottom left corner
+		int scaleMetersX,
+		int scaleMetersY,
+		int scaleMetersZ,
+		std::vector<FVector> &doorPositions,
+		std::vector<FVector> &windowPositions,
+		int onemeter
+	);
+
+	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
+	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBoundData> &vec);
 };

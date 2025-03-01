@@ -179,21 +179,9 @@ void worldLevel::createTerrain(UWorld *world, int meters){
         EntityManager *e = entityManager();
         if(e != nullptr){
 
-            terrainPointer->createTerrain(world, meters);
+            terrainPointer->createTerrainAndSpawnMeshActors(world, meters);
 
-            //request mesh actors and apply terrain
-            bool applyAndCreateterrain = true;
-            if(applyAndCreateterrain){
-                int numberCreated = terrainPointer->chunkNum();
-                std::vector<AcustomMeshActor *> meshes = e->requestMeshActors(world, numberCreated);
-                
-
-
-
-                terrainPointer->applyTerrainDataToMeshActors(meshes);
-            }
-            
-            //finally set created to true
+            // finally set created to true
             isTerrainInited = true;
         }
     }
@@ -255,19 +243,7 @@ void worldLevel::DebugCreateRooms(UWorld *world){
         2
     );
 
-
-
-    //new layout creator testing
-    std::vector<TTouple<int, int>> sizesP;
-    sizesP.push_back(TTouple<int, int>(6, 6));
-    sizesP.push_back(TTouple<int, int>(10, 10));
-    sizesP.push_back(TTouple<int, int>(8, 8));
-
-    std::vector<roomBoundData> outputRooms;
-
-    layoutMaker l;
-    l.makeLayout(20, 20, sizesP, outputRooms);
-    AroomProcedural::spawnRooms(world, locationToSpawn, outputRooms);
+    AroomProcedural::generate(world, roomsizeMeter, roomsizeMeter, locationToSpawn);
 }
 
 

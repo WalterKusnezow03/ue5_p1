@@ -24,6 +24,14 @@ int roomBoundData::ypos(){
     return y;
 }
 
+FVector roomBoundData::positionInMeterSpace(int onemeter){
+    return FVector(
+        xpos() * onemeter,
+        ypos() * onemeter,
+        0
+    );
+}
+
 int roomBoundData::xScale(){
     return xscale;
 }
@@ -108,16 +116,6 @@ void roomBoundData::defineOverlap(
             return;
         }
 
-        /*
-        if (otherY < thisYmax){
-            a = otherY;
-            b = thisYmax;
-        }
-        else if(otherYmax > y){
-            a = otherYmax;
-            b = thisY;
-        }*/
-
         if(a != -1 && b != -1){
             int middle = (a + b) / 2.0f;
 
@@ -146,27 +144,6 @@ void roomBoundData::defineOverlap(
             //add neighbors each
             connectedNeighbors.push_back(&other);
             other.connectedNeighbors.push_back(this);
-
-
-            /*
-            if(flip){
-                if(!xyFlipped){
-                    addDoorPosition(thisX, middle);
-                    other.addDoorPosition(otherXmax, middle);
-                }else{
-                    addDoorPosition(middle, thisX);
-                    other.addDoorPosition(middle, otherXmax);
-                }
-                
-            }else{
-                if(!xyFlipped){
-                    addDoorPosition(thisXmax, middle);
-                    other.addDoorPosition(otherX, middle);
-                }else{
-                    addDoorPosition(middle, thisXmax);
-                    other.addDoorPosition(middle, otherX);
-                }
-            }*/
 
         }
 

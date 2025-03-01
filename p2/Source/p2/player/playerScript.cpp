@@ -671,8 +671,9 @@ AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 				a,b,c,d,at,bt,ct,dt,
 				materialEnum::wallMaterial
 			);
+            oberschenkel->disablePhysicscollision();
 
-			entitymanagerPointer->addActorToIgnoreRaycastParams(
+            entitymanagerPointer->addActorToIgnoreRaycastParams(
 				this, getTeam()
 			);
 
