@@ -274,6 +274,12 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/waterMaterial.waterMaterial'"))
         );
 
+        //snow material
+        a->addMaterial(
+            materialEnum::snowMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/snowMaterial.snowMaterial'"))
+        );
+
         //HOUSE MATERIALS
         //wall material
         a->addMaterial(

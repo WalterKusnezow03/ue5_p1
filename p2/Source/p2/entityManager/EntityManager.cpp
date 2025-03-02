@@ -33,6 +33,16 @@ EntityManager::~EntityManager()
     
 }
 
+
+template class EntityManagerGeneric<AEntityScript>;
+template class EntityManagerGenericMap<teamEnum, AHumanEntityScript>;
+template class EntityManagerGeneric<AcustomMeshActor>;
+template class EntityManagerGenericMap<weaponEnum, Aweapon>;
+template class EntityManagerGenericMap<throwableEnum, AthrowableItem>;
+template class EntityManagerGenericMap<particleEnum, Aparticle>;
+
+
+
 /// @brief add an entity to the manager
 /// @param entity 
 void EntityManager::add(AEntityScript *entity){

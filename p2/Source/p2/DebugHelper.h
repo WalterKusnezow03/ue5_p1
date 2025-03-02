@@ -51,7 +51,7 @@ public:
 	static void showLine(UWorld *world, std::vector<FVector> &vec, FColor color, float time);
 	static void showLine(UWorld *world, TArray<FVector> &vec);
 	static void showLine(UWorld *world, TArray<FVector> &vec, FColor color);
-	static void showLine(UWorld *world, TVector<FVector> &vec, FColor color);
+
 
 
 	//Fvector 2D

@@ -4,7 +4,7 @@
 
 #include "p2/entityManager/EntityManagerGenericMap.h"
 #include "p2/entityManager/EntityManagerGeneric.h"
-
+/*
 template <typename E, typename T>
 EntityManagerGenericMap<E,T>::EntityManagerGenericMap()
 {
@@ -95,4 +95,4 @@ void EntityManagerGenericMap<E,T>::erase(E type, T * actor){
             pointer->erase(actor);
         }
     }
-}
+}*/

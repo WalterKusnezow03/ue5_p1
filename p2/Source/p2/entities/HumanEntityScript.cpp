@@ -171,7 +171,7 @@ void AHumanEntityScript::shootAt(FVector target){
 
     if(weaponPointer != nullptr){
         //will try to shoot the weapon
-        DebugHelper::showScreenMessage("shoot bot!");
+        //DebugHelper::showScreenMessage("shoot bot!");
         weaponPointer->shootBot(target);
     }
 }

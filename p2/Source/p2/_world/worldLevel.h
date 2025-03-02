@@ -53,6 +53,7 @@ private:
 	static void debugAngleFinder(UWorld *world);
 	static std::vector<FVector2D> findAngles(float lengthAll, std::vector<float> &bones);
 
+	static void createGroundPane(UWorld *world);
 
 	static void debugCreateWater(UWorld *world);
 

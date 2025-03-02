@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "assetManagerGeneric.h"
+#include "p2/gamestart/assetEnums/entityEnum.h"
+#include "p2/gamestart/assetEnums/materialEnum.h"
+#include "p2/weapon/weaponEnum.h"
+#include "p2/throwableItems/throwableEnum.h"
 #include <map>
 
 /**

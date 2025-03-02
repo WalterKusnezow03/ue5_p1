@@ -243,6 +243,9 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 		if(botPointer != nullptr){
 			Params.AddIgnoredActor(botPointer);
 		}
+		Params.bTraceComplex = false; //new lower complexity
+
+		
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
 

@@ -10,20 +10,54 @@
  */
 template <typename T>
 class P2_API EntityManagerGeneric{
-	static_assert(std::is_base_of<AActor, T>::value, "T must be derived from AActor");
+	//static_assert(std::is_base_of<AActor, T>::value, "T must be derived from AActor");
 
 public:
-	EntityManagerGeneric();
-	~EntityManagerGeneric();
+	EntityManagerGeneric(){
+		
+	}
+	~EntityManagerGeneric(){
+		actorVector.clear();
+	}
 
 	
-	void add(T *actor);
+	void add(T *actor){
+		if(actor != nullptr){
+			for (int i = 0; i < actorVector.size(); i++){
+				if(actorVector.at(i) == actor){
+					return; //duplicate found
+				}
+			}
+			actorVector.push_back(actor);
+	
+			//DebugHelper::showScreenMessage("released an entity! ", FColor::Yellow);
+		}
+	}
 
-	void erase(T *actor);
+	void erase(T *actor){
+		if(actor != nullptr){
+			for (int i = 0; i < actorVector.size(); i++){
+				if(actorVector.at(i) == actor){
+					actorVector.erase(actorVector.begin() + i);
+					return;
+				}
+			}
+		}
+	}
 
-	T *getFirstActor();
+	T *getFirstActor(){
+		if(hasActorsLeft()){
+			T *actor = actorVector.back(); //get last elements, first would do shifting elements(bad)
+			actorVector.pop_back();
+			//DebugHelper::showScreenMessage("popped an entity! ", FColor::Yellow);
+			return actor;
+		}
+		return nullptr;
+	}
 
-	bool hasActorsLeft();
+	bool hasActorsLeft(){
+		return actorVector.size() > 0;
+	}
 
 private:
 	/// @brief ector vector T* pointers

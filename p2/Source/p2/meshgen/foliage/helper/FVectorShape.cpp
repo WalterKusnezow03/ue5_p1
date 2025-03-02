@@ -232,6 +232,7 @@ std::vector<FVector> FVectorShape::vectorCopy(){
 }
 
 void FVectorShape::createRandomNewSmoothedShape(int sizeXYMax, int smoothStep){
+    vec.clear();
     int halfsize = sizeXYMax / 2;
 
     int detail = 8;

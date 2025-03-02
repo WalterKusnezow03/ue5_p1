@@ -16,6 +16,7 @@
 #include "p2/meshgen/customMeshActorBase.h"
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/entityManager/EntityManagerGenericMap.h"
+#include "p2/entityManager/EntityManagerGeneric.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/rooms/roomtypeEnum.h"
 
@@ -102,16 +103,16 @@ private:
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso
 	//weil hier so nicht gewollt, wie in java den generic type
 	//team unabhängig speichern
-	class EntityManagerGeneric<AEntityScript> entityList; 
+	EntityManagerGeneric<AEntityScript> entityList; 
 	
 	//hier werden ALLE toten humans ausbewahrt, basierend auf team
-	class EntityManagerGenericMap<teamEnum, AHumanEntityScript> humanEntityMap;
-	class EntityManagerGeneric<AcustomMeshActor> meshActorList;
+	EntityManagerGenericMap<teamEnum, AHumanEntityScript> humanEntityMap;
+	EntityManagerGeneric<AcustomMeshActor> meshActorList;
 
 	//GENERIC ENUM MAPS OF GENERIC MANAGERS / BACKUP ON DEATH 
-	class EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
-	class EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
-	class EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
+	EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
+	EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
+	EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
 
 	
 

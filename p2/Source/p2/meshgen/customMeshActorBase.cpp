@@ -704,7 +704,8 @@ std::vector<materialEnum> AcustomMeshActorBase::materialVector(){
         materialEnum::redsandMaterial,
         materialEnum::treeMaterial,
         materialEnum::palmLeafMaterial,
-        materialEnum::waterMaterial
+        materialEnum::waterMaterial,
+        materialEnum::snowMaterial
     };
     return types;
 }
@@ -715,6 +716,9 @@ materialEnum AcustomMeshActorBase::groundMaterialFor(ETerrainType terraintype){
     }
     if(terraintype == ETerrainType::EDesert){
         return materialEnum::redsandMaterial;
+    }
+    if(terraintype == ETerrainType::ESnowHill){
+        return materialEnum::snowMaterial;
     }
     return materialEnum::grassMaterial;
 }
@@ -730,7 +734,8 @@ std::vector<ETerrainType> AcustomMeshActorBase::terrainVector(){
         ETerrainType::EDesert,
         ETerrainType::EOcean,
         ETerrainType::EForest,
-        ETerrainType::ETropical
+        ETerrainType::ETropical,
+        ETerrainType::ESnowHill
     };
     return vector;
 }

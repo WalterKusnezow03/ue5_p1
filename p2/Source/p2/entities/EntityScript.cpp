@@ -349,22 +349,24 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 			ignoreParams = e->getIgnoredRaycastParams(getTeam());
 		}
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
+		ignoreParams.bTraceComplex = false;  //HIER LOWER RAYCAST DETAIL-> FASTER
+		
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult, 
+			Start, 
+			End, 
+			ECC_Visibility, 
+			ignoreParams
+		);
 		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
-
-
 
 		// If the raycast hit something, log the hit actor's name
 		if (bHit)
 		{
-			
-			AActor *actor = HitResult.GetActor();
-			
+			AActor *actor = HitResult.GetActor();	
 			if(actor == target){
 				return true;
 			}
-
-			
 		}
 	}
 	return false;
@@ -480,7 +482,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 		}
 
 		//move path
-		DebugHelper::showScreenMessage("move to player path!");
+		//DebugHelper::showScreenMessage("move to player path!");
 		followpath(deltaTime); //testing
 	}
 }

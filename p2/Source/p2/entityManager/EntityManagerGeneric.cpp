@@ -3,7 +3,7 @@
 
 #include "EntityManagerGeneric.h"
 #include "p2/DebugHelper.h"
-
+/*
 template <typename T>
 EntityManagerGeneric<T>::EntityManagerGeneric()
 {
@@ -13,15 +13,6 @@ EntityManagerGeneric<T>::EntityManagerGeneric()
 template <typename T>
 EntityManagerGeneric<T>::~EntityManagerGeneric(){
     actorVector.clear();
-
-    /*
-    if(hasActorsLeft()){
-        while(hasActorsLeft()){
-            //erase elements but dont call destructor. Not the owner of the entites!
-            actorVector.erase(actorVector.end() + 0); 
-        }
-    }*/
-
 }
 
 /// @brief returns if any actors are left in the list
@@ -81,4 +72,4 @@ void EntityManagerGeneric<T>::erase(T * actor){
         }
     }
     
-}
+}*/

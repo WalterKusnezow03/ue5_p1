@@ -9,6 +9,7 @@
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
+#include "p2/meshgen/customMeshActorBase.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
 #include "p2/meshgen/water/customWaterActor.h"
 
@@ -87,6 +88,7 @@ void worldLevel::initWorld(UWorld *world){
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
     humanBotsOnStart(world, 1);
         
+    createGroundPane(world);
 
     //testing
     DebugHelper::Debugtest(world);
@@ -411,12 +413,39 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 
 
 
+void worldLevel::createGroundPane(UWorld *world){
+    if(world != nullptr){
+
+        int size = 100000;
+        FVector location(-size, -size, 100);
+        std::vector<FVector> verteciesPane = MeshData::create2DQuadVertecies(size, size);
+        if(verteciesPane.size() == 4){
+            MeshData ground;
+            ground.append(verteciesPane[0], verteciesPane[1], verteciesPane[2], verteciesPane[3]);
+            ground.calculateNormals();
+
+
+            FRotator rotation;
+            FActorSpawnParameters params;
+            AcustomMeshActorBase *SpawnedActor = world->SpawnActor<AcustomMeshActorBase>(
+                AcustomWaterActor::StaticClass(),
+                location,
+                FRotator::ZeroRotator,
+                params
+            );
+            if(SpawnedActor != nullptr){
+                SpawnedActor->replaceMeshData(ground, materialEnum::stoneMaterial);
+            }
+        }
+    }
+}
+
 
 void worldLevel::debugCreateWater(UWorld *world){
     //return;
 
     if(world != nullptr){
-        FVector location(-1000, -1000, 100);
+        FVector location(-2000, -2000, 100);
         FRotator rotation;
         FActorSpawnParameters params;
         AcustomWaterActor *SpawnedActor = world->SpawnActor<AcustomWaterActor>(

@@ -32,7 +32,7 @@ void AIkActor::BeginPlay()
 
 	
 	//testing rotation
-	//hipController.overrideRotationYaw(-89.9f); //-90 anim bug!
+	hipController.overrideRotationYaw(60.0f); //-90 anim bug!
 	//hipController.overrideRotationYaw(-90.0f); //close to -90 (-89.9999f)anim bug! bei
 	weaponPointer = nullptr;
 	hipController.setStateWalking();
