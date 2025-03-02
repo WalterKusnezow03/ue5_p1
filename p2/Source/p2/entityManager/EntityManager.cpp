@@ -6,6 +6,8 @@
 #include "p2/particleSystem/particle.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/meshgen/customMeshActor.h"
+#include "p2/meshgen/customMeshActorBase.h"
+#include "p2/meshgen/water/customWaterActor.h"
 #include "p2/gamestart/assetManager.h"
 
 #include "Engine/World.h"

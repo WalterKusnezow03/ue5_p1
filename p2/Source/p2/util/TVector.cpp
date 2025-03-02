@@ -71,6 +71,7 @@ void TVector<T>::clear(){
 template <typename T>
 void TVector<T>::erase(int index){
     if(index >= 0 && index < sizeIndex && vec.size() > 0 && sizeIndex > 0){
+            
         vec.erase(vec.begin() + index);
         sizeIndex--;
         if (sizeIndex < 0)

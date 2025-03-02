@@ -5,7 +5,7 @@
 #include "p2/gamestart/assetManager.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/gamestart/assetEnums/rooms/roomAssetEnum.h"
+
 
 AssetLoader::AssetLoader(UWorld *worldIn)
 {
@@ -33,8 +33,6 @@ void AssetLoader::loadAssets()
     loadThrower();
     loadParticles();
 
-    //loadTerrain(entityManager); //terrain needs to be loaded first because of the empty mesh actor needed for rooms too
-    loadRooms(entityManager);
 
 }
 
@@ -228,27 +226,6 @@ void AssetLoader::loadParticles(){
 
 }
 
-
-// ---- LOAD ROOMS ----
-
-void AssetLoader::loadRooms(EntityManager *entityManager){
-
-    //needs uworld for rooms
-    if(!entityManager){
-        return;
-    }
-
-    //load door
-    FString path = FString::Printf(TEXT("/Game/Prefabs/rooms/walls/doors/"));
-    FString _door = FString::Printf(TEXT("doorBp"));
-    FString _num = FString::Printf(TEXT("%d"), 1);
-    FString _connect = _door + _num;
-    FString _builded = buildPath(path, _connect);
-    if(assetManager *a = assetManager::instance()){
-        a->addBp(roomAssetEnum::doorEnum, loadUClassBluePrint(_builded));
-    }
-    
-}
 
 
 // ---- LOAD MATERIALS ----

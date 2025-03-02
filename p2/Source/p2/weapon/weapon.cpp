@@ -260,12 +260,13 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 				{
 					//damage entity if some other team
 					teamEnum entityTeam = entity->getTeam();
-					if(entityTeam != ownTeam){
+					if(entityTeam != ownTeam || entityTeam == teamEnum::none){
 						if(DEBUG_DRAW){
 							DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 						}
-						
-						entity->takedamage(20); //must be changed later
+
+						FVector hitpoint = HitResult.ImpactPoint;
+						entity->takedamage(damageForAmmunitionType(), hitpoint); // must be changed later
 					}else{
 						//own team hit / any other
 						if(DEBUG_DRAW){
@@ -762,4 +763,20 @@ FVector Aweapon::rightHandFingerLocation(HandBoneIndexEnum type){
 		}
 	}
 	return rightHandLocation();
+}
+
+
+
+int Aweapon::damageForAmmunitionType(){
+	ammunitionEnum typethis = getAmmunitionType();
+	if(typethis == ammunitionEnum::assaultrifle556){
+		return 18;
+	}
+	if(typethis == ammunitionEnum::pistol9){
+		return 15;
+	}
+	if(typethis == ammunitionEnum::heavy762){
+		return 21;
+	}
+	return 10;
 }

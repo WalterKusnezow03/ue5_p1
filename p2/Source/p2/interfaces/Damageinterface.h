@@ -26,7 +26,7 @@ public:
 
 	//methods
 	virtual void takedamage(int d) = 0; //= 0 schreiben damit sie pure virtual sind
-	virtual void takedamage(int d, FVector &from) = 0;
+	virtual void takedamage(int d, FVector &hitpoint) = 0;
 
 	//virtual void setTeam(int teamIn) = 0;
 	//virtual int getTeam() = 0;

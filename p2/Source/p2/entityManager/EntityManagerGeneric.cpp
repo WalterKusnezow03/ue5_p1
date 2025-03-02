@@ -2,6 +2,7 @@
 
 
 #include "EntityManagerGeneric.h"
+#include "p2/DebugHelper.h"
 
 template <typename T>
 EntityManagerGeneric<T>::EntityManagerGeneric()
@@ -45,7 +46,7 @@ void EntityManagerGeneric<T>::add(T *actor){
         }
         actorVector.push_back(actor);
 
-        DebugHelper::showScreenMessage("released an entity! ", FColor::Yellow);
+        //DebugHelper::showScreenMessage("released an entity! ", FColor::Yellow);
     }
 
     //actorVector.push_back(actor);
@@ -59,7 +60,7 @@ T * EntityManagerGeneric<T>::getFirstActor(){
     if(hasActorsLeft()){
         T *actor = actorVector.back(); //get last elements, first would do shifting elements(bad)
         actorVector.pop_back();
-        DebugHelper::showScreenMessage("popped an entity! ", FColor::Yellow);
+        //DebugHelper::showScreenMessage("popped an entity! ", FColor::Yellow);
         return actor;
     }
     return nullptr;

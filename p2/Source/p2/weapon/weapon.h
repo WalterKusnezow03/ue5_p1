@@ -176,6 +176,8 @@ protected:
 	/// @brief saves all sights of the weapon find from actor to enable disable them by selected type
 	std::map<weaponSightEnum, AActor *> sightMap;
 
+	int damageForAmmunitionType();
+
 public:
 	void applySight(weaponSightEnum sight);
 

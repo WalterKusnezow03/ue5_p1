@@ -3,7 +3,6 @@
 
 #include "p2/gamestart/assetManager.h"
 #include "CoreMinimal.h"
-#include "p2/gamestart/assetEnums/rooms/roomAssetEnum.h"
 
 assetManager *assetManager::instancePointer = nullptr;
 
@@ -24,18 +23,6 @@ assetManager::~assetManager()
 {
 }
 
-// --- room intern assets ---
-UClass *assetManager::findBp(roomAssetEnum type){
-    UClass *found = roomAssets.getBp(type);
-    if(found != nullptr){
-        return found;
-    }
-    return nullptr;
-}
-
-void assetManager::addBp(roomAssetEnum type, UClass *uclass){
-    roomAssets.addBp(type, uclass);
-}
 
 // --- entity ---
 UClass *assetManager::findBp(entityEnum type){

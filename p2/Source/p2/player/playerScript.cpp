@@ -265,7 +265,7 @@ void AplayerScript::takedamage(int d)
 	}
 }
 
-void AplayerScript::takedamage(int d, FVector &from){
+void AplayerScript::takedamage(int d, FVector &hitpoint){
     takedamage(d);
 }
 

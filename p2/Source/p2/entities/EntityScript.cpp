@@ -262,10 +262,10 @@ void AEntityScript::takedamage(int d){
 		die();
 	}
 }
-/// @brief grenade damage is not specified here directly, will only damage as default
+/// @brief hitpoint processing not specified, will only damage as default
 /// @param d 
-/// @param from 
-void AEntityScript::takedamage(int d, FVector &from){
+/// @param hitpoint 
+void AEntityScript::takedamage(int d, FVector &hitpoint){
 	takedamage(d);
 }
 

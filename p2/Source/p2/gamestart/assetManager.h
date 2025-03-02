@@ -15,9 +15,6 @@ public:
 	static assetManager *instance();
 	~assetManager();
 
-	//all asset map get methods
-	UClass *findBp(roomAssetEnum type);
-	void addBp(roomAssetEnum type, UClass *asset);
 
 	//entity
 	UClass *findBp(entityEnum type);
@@ -49,7 +46,7 @@ private:
 	//all asset maps
 	class assetManagerGeneric<entityEnum, UClass> entityAssets;
 
-	class assetManagerGeneric<roomAssetEnum, UClass> roomAssets;
+	
 	class assetManagerGeneric<weaponEnum, UClass> weaponAssets;
 	class assetManagerGeneric<throwableEnum, UClass> throwableAssets;
 	class assetManagerGeneric<particleEnum, UClass> particleAssets;

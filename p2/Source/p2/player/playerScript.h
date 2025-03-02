@@ -24,7 +24,7 @@ public:
 	// Sets default values for this character's properties
 	AplayerScript();
 	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &from) override;
+	virtual void takedamage(int d, FVector &hitpoint) override;
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 
