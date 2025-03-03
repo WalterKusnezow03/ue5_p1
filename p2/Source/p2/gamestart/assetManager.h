@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "assetManagerGeneric.h"
+#include "p2/gamestart/TAssetManager/assetManagerGeneric.h"
 #include "p2/gamestart/assetEnums/entityEnum.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/weapon/weaponEnum.h"
@@ -48,13 +48,13 @@ private:
 
 
 	//all asset maps
-	class assetManagerGeneric<entityEnum, UClass> entityAssets;
+	assetManagerGeneric<entityEnum, UClass> entityAssets;
 
 	
-	class assetManagerGeneric<weaponEnum, UClass> weaponAssets;
-	class assetManagerGeneric<throwableEnum, UClass> throwableAssets;
-	class assetManagerGeneric<particleEnum, UClass> particleAssets;
+	assetManagerGeneric<weaponEnum, UClass> weaponAssets;
+	assetManagerGeneric<throwableEnum, UClass> throwableAssets;
+	assetManagerGeneric<particleEnum, UClass> particleAssets;
 
 
-	class assetManagerGeneric<materialEnum, UMaterial> materialAssets;
+	assetManagerGeneric<materialEnum, UMaterial> materialAssets;
 };

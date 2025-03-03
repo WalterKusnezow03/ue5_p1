@@ -21,11 +21,37 @@ class P2_API assetManagerGeneric
 	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
 public:
-	assetManagerGeneric();
-	~assetManagerGeneric();
+	assetManagerGeneric(){
 
-	void addBp(E e, T *t);
-	T *getBp(E e);
+	}
+	~assetManagerGeneric(){
+		
+	}
+
+	void addBp(E e, T *t){
+		if(t != nullptr){
+			//Find returns a pointer to the value (which is a pointer -> making a pointer to a pointer)
+			T **found = map.Find(e);
+			if(found == nullptr){
+				map.Add(e, t);
+			}
+		}
+	}
+
+	/// @brief will try to find the type from the map
+	/// @tparam E key
+	/// @tparam T 
+	/// @param e enum type
+	T *getBp(E e){
+		T **found = map.Find(e); //Find returns a pointer to the value (which is a pointer -> making a pointer to a pointer)
+		if(found != nullptr){
+			T *pt = *found;
+			if(pt != nullptr){
+				return pt;
+			}
+		}
+		return nullptr;
+	}
 
 private:
 	//std::map<E, T*> map;

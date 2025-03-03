@@ -12,7 +12,7 @@ class P2_API FVectorUtil
 public:
 	//very important!
 	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
-
+	static FRotator lookRotation(FVector &other);
 
 	static FVector randomOffset(int range);
 	static FVector calculateNormal(FVector &a, FVector &b, FVector &c);

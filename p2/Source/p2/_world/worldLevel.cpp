@@ -8,6 +8,7 @@
 #include "p2/util/TVector.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/meshgen/customMeshActorBase.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
@@ -99,6 +100,8 @@ void worldLevel::initWorld(UWorld *world){
     debugCreateWater(world);
 
     debugCreateRock(world);
+
+    debugMatrix();
 }
 
 /**
@@ -416,8 +419,9 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 void worldLevel::createGroundPane(UWorld *world){
     if(world != nullptr){
 
-        int size = 100000;
-        FVector location(-size, -size, 100);
+        int onemeter = 100;
+        int size = onemeter * 500;
+        FVector location(0, 0, 100);
         std::vector<FVector> verteciesPane = MeshData::create2DQuadVertecies(size, size);
         if(verteciesPane.size() == 4){
             MeshData ground;
@@ -428,13 +432,14 @@ void worldLevel::createGroundPane(UWorld *world){
             FRotator rotation;
             FActorSpawnParameters params;
             AcustomMeshActorBase *SpawnedActor = world->SpawnActor<AcustomMeshActorBase>(
-                AcustomWaterActor::StaticClass(),
+                AcustomMeshActorBase::StaticClass(),
                 location,
                 FRotator::ZeroRotator,
                 params
             );
             if(SpawnedActor != nullptr){
                 SpawnedActor->replaceMeshData(ground, materialEnum::stoneMaterial);
+                SpawnedActor->ReloadMeshAndApplyAllMaterials();
             }
         }
     }
@@ -483,4 +488,45 @@ void worldLevel::debugCreateRock(UWorld *world){
             }
         }
     }
+}
+
+
+
+
+
+
+void worldLevel::debugMatrix(){
+
+    std::vector<FVector> checkup = {
+        FVector(1, 1, 1),
+        FVector(2, 1, 1),
+        FVector(-4, 3, 1),
+        FVector(2, 10, 1),
+        FVector(1, 1, -1),
+        FVector(2, -1, 1),
+        FVector(4, -3, -1),
+        FVector(-2, 10, 1)
+    };
+    for (int i = 0; i < checkup.size(); i++){
+        FVector &a = checkup[i];
+        a = a.GetSafeNormal();
+
+        MMatrix rot = MMatrix::createRotatorFrom(a);
+        FVector b(1, 0, 0);
+        b = rot * b;
+
+        FString message = FString::Printf(
+            TEXT("debug matrix rotation from vector: (%.2f %.2f %.2f) -> (%.2f %.2f %.2f)"),
+            a.X,
+            a.Y,
+            a.Z,
+            b.X,
+            b.Y,
+            b.Z
+        );
+        DebugHelper::logMessage(message);
+    }
+    
+
+    
 }

@@ -7,6 +7,7 @@
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/player/teamEnum.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/DebugHelper.h"
 #include <cstdlib>
 
 

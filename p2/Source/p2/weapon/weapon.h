@@ -14,6 +14,8 @@
 #include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
 #include "attachmentEnums/weaponSightEnum.h"
 #include "p2/player/teamEnum.h"
+#include "p2/entities/customIk/MMatrix.h"
+#include "p2/weapon/attachment/WeaponAttachment.h"
 #include "p2/util/timer.h"
 
 #include "weapon.generated.h"
@@ -183,4 +185,22 @@ public:
 
 	//get ammuntion type for this weapon
 	virtual ammunitionEnum getAmmunitionType();
+
+
+
+
+
+	/**
+	 * 
+	 * -- new expiremental custom attachment section --
+	 * 
+	 */
+	void attachNewItem(AActor *someActor, MMatrix &offset);
+
+private:
+	bool actorAlreadyAttached(AActor *actorpointer);
+	void TickAttachedActors();
+	std::vector<WeaponAttachment> attachedActors;
+
+	MMatrix currentTransform();
 };

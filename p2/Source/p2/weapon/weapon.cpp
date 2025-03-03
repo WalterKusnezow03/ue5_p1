@@ -11,6 +11,7 @@
 #include "attachmentEnums/weaponSightEnum.h"
 #include "ammunitionEnum.h"
 #include <map>
+#include "p2/entities/customIk/MMatrix.h"
 #include "p2/player/teamEnum.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "carriedItem.h"
@@ -103,8 +104,8 @@ void Aweapon::Tick(float DeltaTime)
 
 	//followPlayer();
 	updateCooltime(DeltaTime);
+	TickAttachedActors();
 }
-
 
 /// @brief Only for player:
 /// returns the offset vector of the sight and hipfire by value
@@ -782,4 +783,74 @@ int Aweapon::damageForAmmunitionType(){
 		return 21;
 	}
 	return 10;
+}
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * --- new attachment section expirmental! ---
+ * 
+ * ---- NOT TESTED!! ----
+ * 
+ */
+void Aweapon::attachNewItem(AActor* actor, MMatrix &other){
+	if(actor == nullptr){
+		return;
+	}
+	if(!actorAlreadyAttached(actor)){
+		WeaponAttachment newAttachment;
+		newAttachment.setup(actor, other);
+		attachedActors.push_back(newAttachment);
+	}
+}
+
+bool Aweapon::actorAlreadyAttached(AActor *actor){
+	for (int i = 0; i < attachedActors.size(); i++){
+		WeaponAttachment &current = attachedActors[i];
+		if(current.attachedActorPointer() == actor){
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+void Aweapon::TickAttachedActors(){
+	for (int i = 0; i < attachedActors.size(); i++){
+		WeaponAttachment &current = attachedActors[i];
+		AActor *actorToMove = current.attachedActorPointer();
+		if(actorToMove != nullptr){
+			//generate matrix
+			MMatrix transform = currentTransform();
+			MMatrix &offset = current.offsetMatrix();
+
+			//M = transform * offset <-- lese richtung --
+			MMatrix mat = transform * offset;
+
+			//convert to unreal 
+			FRotator rotation = mat.extractRotator();
+			FVector location = mat.getTranslation();
+
+			actorToMove->SetActorRotation(rotation);
+			actorToMove->SetActorLocation(location);
+		}
+	}
+}
+
+MMatrix Aweapon::currentTransform(){
+	FVector location = GetActorLocation();
+	FRotator rotation = GetActorRotation();
+
+	//M = T * R <-- lese richtung --
+	MMatrix rotator(rotation);
+	MMatrix translation(location);
+	MMatrix TR = translation * rotator;
+
+	return TR;
 }

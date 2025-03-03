@@ -2,7 +2,16 @@
 
 
 #include "p2/gamestart/assetManager.h"
+#include "p2/gamestart/TAssetManager/assetManagerGeneric.h"
 #include "CoreMinimal.h"
+
+
+template class assetManagerGeneric<entityEnum, UClass>;
+template class assetManagerGeneric<weaponEnum, UClass>;
+template class assetManagerGeneric<throwableEnum, UClass>;
+template class assetManagerGeneric<particleEnum, UClass>;
+template class assetManagerGeneric<materialEnum, UMaterial>;
+
 
 assetManager *assetManager::instancePointer = nullptr;
 

@@ -1040,7 +1040,7 @@ void terrainCreator::randomizeTerrainTypes(UWorld *world){
     int step = 1;
     FVectorShape shape;
 
-    int shapeCount = 3;
+    int shapeCount = map.size() / 3;
 
     for (int i = 0; i < shapeCount; i++){
 
@@ -1049,8 +1049,8 @@ void terrainCreator::randomizeTerrainTypes(UWorld *world){
         int randomIndex = FVectorUtil::randomNumber(0, vector.size());
         randomIndex %= vector.size();
         terraintypeRandom = vector[randomIndex];
-
         
+        terraintypeRandom = ETerrainType::EDesert; //DEBUG!
 
         shape.createRandomNewSmoothedShapeClamped(sizeOfShape, step);
         shape.floorAllCoordinateValues();

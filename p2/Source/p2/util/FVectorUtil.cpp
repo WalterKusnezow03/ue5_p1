@@ -177,7 +177,10 @@ FRotator FVectorUtil::lookAt(FVector ownlocation, FVector TargetLocation)
     return LookAtRotation;
 }
 
-
+FRotator FVectorUtil::lookRotation(FVector &other){
+    FVector zeroVec;
+    return lookAt(zeroVec, other);
+}
 
 /// @brief creates a random rotation
 /// @param ownLocation own location of the object
