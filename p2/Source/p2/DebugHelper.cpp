@@ -184,6 +184,27 @@ void DebugHelper::logMessage(FString printing){
 	UE_LOG(LogTemp, Log, TEXT("%s"), *printing); //for whatever reason the string must be dereferenced
 }
 
+void DebugHelper::logMessage(FString message, FRotator rot){
+	message += FString::Printf(
+		TEXT("roll: %.2f; pitch: %.2f, yaw: %.2f"), rot.Roll, rot.Pitch, rot.Yaw
+	);
+	logMessage(message);
+}
+
+void DebugHelper::logMessage(FString message, FVector a, FVector b){
+	FString message1 = FString::Printf(
+		TEXT("(%.2f %.2f %.2f) -> (%.2f %.2f %.2f)"),
+		a.X,
+		a.Y,
+		a.Z,
+		b.X,
+		b.Y,
+		b.Z
+	);
+	message += message1;
+	logMessage(message);
+}
+
 double DebugHelper::timeSum = 0.0;
 void DebugHelper::addTime(double time)
 {
@@ -194,13 +215,6 @@ void DebugHelper::logTime(FString message){
 	timeSum = 0.0;
 }
 
-
-void DebugHelper::logMessage(FString s, FVector a, FVector b){
-	s += FVectorToString(a);
-	s += TEXT(" compare to ");
-	s += FVectorToString(b);
-	logMessage(s);
-}
 
 void DebugHelper::logMessage(FString s, FVector a){
 	s += TEXT(" ");

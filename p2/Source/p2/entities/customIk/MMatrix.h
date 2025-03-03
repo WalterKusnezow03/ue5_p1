@@ -54,7 +54,7 @@ public:
 	static MMatrix createRotatorFrom(FVector &other);
 	static MMatrix createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZAxis);
 
-	static float pitchAngleTo(FVector &other, FVector2D XAxis, FVector2D ZAxis);
+
 
 	void resetRotation();
 
@@ -101,6 +101,8 @@ public:
 	FVector lookDirXForward();
 
 	void makeIdentity();
+
+	FString toString();
 
 private:
 	void set(int i, int j, float value);

@@ -422,16 +422,11 @@ void MatrixTree::generateCactusSpikes(){
     sampleSpike.appendEfficent(topClose);
     sampleSpike.calculateNormals();
 
-    //debug:
-    /*
-    FVector offset(100, 100, 100);
-    MMatrix offsetMat(offset);
-    leafMeshData.append(sampleSpike);
-    leafMeshData.transformAllVertecies(offsetMat);
-    leafMeshData.calculateNormals();
-    return;
-    */
-    //debug end
+    // orient spike along axis for the placement with extracted rotations from normal
+    // to work correctly!
+    MMatrix rotToXAxis;
+    rotToXAxis.pitchRadAdd(MMatrix::degToRadian(-90)); //clock wise
+    sampleSpike.transformAllVertecies(rotToXAxis);
 
 
     
@@ -443,12 +438,6 @@ void MatrixTree::generateCactusSpikes(){
         MMatrix &currentMatrix = transformMatrices[i];
         MeshData copy = sampleSpike;
         copy.transformAllVertecies(currentMatrix);
-
-        FString message2 = FString::Printf(TEXT("size of vertex array copy spike: %d; normals: %d"),
-            copy.getVerteciesRef().Num(),
-            copy.getNormalsRef().Num()
-        ); // 500
-        DebugHelper::logMessage(message2);
         
         leafMeshData.append(copy);
     }

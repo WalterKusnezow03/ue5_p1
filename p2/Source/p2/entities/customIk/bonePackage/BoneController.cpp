@@ -986,6 +986,8 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 			averageVelocityOfAnimation = legDoubleKeys_2.averageVelocity();
 		}
 
+		averageVelocityOfAnimation *= 2.0f;
+
 		//operator is overloaded
 		*end += garivityVec;
 		ownLocation += garivityVec;

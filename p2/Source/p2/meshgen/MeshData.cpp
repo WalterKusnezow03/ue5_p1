@@ -877,6 +877,11 @@ void MeshData::setTargetMaterial(materialEnum inMaterial){
 
 // NOT TESTED
 
+/// @brief generates the matricies to move an object to the vertex position
+/// and rotate in look dir of normal. CAUTION: X axis is forward! The rotation block is
+/// in yaw and pitch rotation relative to the XAxis! (1,0,0), orient your mesh accordingly
+/// if you are using this methods to place a mesh on a surface for example!
+/// @param output 
 void MeshData::generateMatricesPerFaceAndLookDirOfNormal(
     std::vector<MMatrix> &output
 ){
@@ -894,17 +899,19 @@ void MeshData::generateMatricesPerFaceAndLookDirOfNormal(
             FVector normal = FVector::CrossProduct(v0v1, v0v2);
             normal = normal.GetSafeNormal();
 
-            FRotator lookdir = FVectorUtil::lookRotation(normal);
 
-            //MMatrix rotator(lookdir);
-
-            // debug;
-            //rotator.makeIdentity();
             MMatrix rotator = MMatrix::createRotatorFrom(normal);
+            //debug
+            FVector axis(1, 0, 0);
+            axis = rotator * axis;
+            DebugHelper::logMessage("debug comparenormal", axis, normal);
+            // debug end
 
             MMatrix translation;
             FVector center = (vertex0 + vertex1 + vertex2) / 3;
             translation.setTranslation(center);
+
+            translation.setTranslation(vertex0); //debug
 
             MMatrix TR = translation * rotator; //<-- lese richtung --
 
