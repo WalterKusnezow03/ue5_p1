@@ -478,13 +478,16 @@ void worldLevel::debugCreateRock(UWorld *world){
             RockCreator rock;
             MeshData meshData = rock.createMesh();
 
-            FVector location(-2000, 0, 0);
+            meshData = FVectorShape::createSphere(150, 50, false); //NEW DEBUG
+
+            FVector location(-2000, 0, 100);
             AcustomMeshActor *actor = pointer->spawnAcustomMeshActor(world, location);
 
             if(actor != nullptr){
                 actor->replaceMeshData(meshData, materialEnum::stoneMaterial);
-                actor->enableDebug();
                 actor->ReloadMeshAndApplyAllMaterials();
+
+                actor->enableDebug();
             }
         }
     }

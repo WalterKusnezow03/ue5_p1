@@ -254,6 +254,25 @@ void FVectorShape::createCircleShape(int radius, int detail){
 
 }
 
+void FVectorShape::createHalfCircleShape(int radius, int detail){
+    detail = std::abs(detail);
+    if(detail < 4){
+        detail = 4;
+    }
+
+    FVector baseVector(0, 0, radius);
+    //int part = ((180 / detail) * -1); //0,90,180,270,360
+    float part = -180.0f / detail;
+    for (int i = 0; i <= detail; i++)
+    {
+        MMatrix rot;
+        rot.pitchRadAdd(MMatrix::degToRadian(part * i));
+        FVector current = rot * baseVector;
+        vec.push_back(current);
+    }
+}
+
+
 /// @brief adds a circle to the vector in CLOCKWISE ORDER PIVOT AT CENTER XY
 /// (Important for mesh gen) regardless of the 
 /// current vec, it gets pushed back
@@ -373,12 +392,34 @@ void FVectorShape::sortVerteciesOnXAxis(){
 
 
 
+MeshData FVectorShape::createSphere(int radius, int detail, bool faceOutside){
+    MeshData outMeshData;
+    detail = std::abs(detail);
+    if(detail < 8){
+        detail = 8;
+    }
+
+    int part = ((360) / detail);
+    if(faceOutside){
+        part *= -1;
+    }
+
+    FVectorShape newShape;
+    newShape.createHalfCircleShape(radius, detail); //around pitch
+    for (int i = 0; i < detail; i++)
+    {
+        MMatrix rotatorMat;
+        rotatorMat.yawRadAdd(MMatrix::degToRadian(part * i));
+
+        FVectorShape copy(newShape, rotatorMat);
+        outMeshData.appendVertecies(copy.vec); // face inside
+    }
+    outMeshData.appendVertecies(newShape.vec); //last closing
+
+
+    outMeshData.calculateNormals(); //checkup needed
 
 
 
-
-
-
-
-
-
+    return outMeshData;
+}

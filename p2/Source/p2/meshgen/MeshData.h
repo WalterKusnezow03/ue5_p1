@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <set>
 #include "p2/entities/customIk/MMatrix.h"
 
 
@@ -80,6 +81,7 @@ public:
 	void transformAllVertecies(MMatrix &other);
 
 	void appendVertecies(std::vector<FVector> &vec);
+	
 
 	void closeMeshAtCenter(FVector &center, std::vector<FVector> &vec, bool clockWise);
 	void closeMeshAtCenter(FVector &center, int bufferSizeToConnect, bool clockWise);
@@ -158,17 +160,21 @@ private:
 	FVector createNormal(int v0, int v1, int v2);
 
 	//helper for removing triangles by vertex
-	void cutHole(FVector &vertex, int radius);
-	void removeVertex(int index);
+	void removeVertex(int index, std::vector<int> &connectedvertecies);
 	void removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &connectedvertecies);
+	bool contains(std::vector<int> &ref, int index);
 
-	// helper for foliage:
 public:
+	//helper for removing triangles by vertex
+	void cutHole(FVector &vertex, int radius);
+	void cutHoleWithInnerExtensionOfMesh(FVector &vertex, int radius);
 
 	materialEnum targetMaterial();
 	void setTargetMaterial(materialEnum inMaterial);
 
 	void generateMatricesPerFaceAndLookDirOfNormal(std::vector<MMatrix> &output);
+
+	void flipAllFaces();
 
 private:
 	materialEnum materialPreferred = materialEnum::wallMaterial;

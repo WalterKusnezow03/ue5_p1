@@ -59,8 +59,7 @@ private:
 
 	static void debugCreateRock(UWorld *world);
 
-
-
 	
+
 	static void debugMatrix();
 };
