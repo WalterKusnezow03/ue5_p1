@@ -300,6 +300,7 @@ bool ParallellShapeMerger::findClosestPointToAndMatchDirection(
     if(points.size() <= 0){
         return false;
     }
+    directionToMatch = directionToMatch.GetSafeNormal();
 
     int index = 0;
     FVector closestPoint;
@@ -309,12 +310,22 @@ bool ParallellShapeMerger::findClosestPointToAndMatchDirection(
     {
         if(usedIndices[i] == false){
             FVector &currentPoint = points[i];
-            float newdist = FVector::Dist(currentPoint, closestPointSearchedFor);
-            if(newdist < closestDist){
-                closestDist = newdist;
-                closestPoint = currentPoint;
-                index = i;
+            FVector connectCompare = currentPoint - closestPointSearchedFor; //AB = B - A
+            connectCompare = connectCompare.GetSafeNormal();
+            float dot = FVector::DotProduct(
+                directionToMatch,
+                connectCompare
+            );
+            if(dot > 0.0f){
+                float newdist = FVector::Dist(currentPoint, closestPointSearchedFor);
+                if(newdist < closestDist){
+                    closestDist = newdist;
+                    closestPoint = currentPoint;
+                    index = i;
+                }
             }
+
+            
         }
     }
     usedIndices[index] = true; //copy out
