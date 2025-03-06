@@ -3,6 +3,7 @@
 
 #include "ParallellShapeMerger.h"
 #include <algorithm>
+#include "GrahamScan.h"
 #include "p2/util/FVectorUtil.h"
 #include <limits>
 
@@ -19,16 +20,18 @@ void ParallellShapeMerger::createParallelSortedShape(
     std::vector<FVector> &baseVectorIn,
     std::vector<FVector> &vectorToAlginAndSort
 ){
-    if(baseVectorIn.size() <= 1 || vectorToAlginAndSort.size() <= 1){
+    if(baseVectorIn.size() <= 2 || vectorToAlginAndSort.size() <= 2){
         return;
     } 
     
     baseVector = baseVectorIn;
     sortedInFlag = std::vector<bool>(baseVectorIn.size(), false);
-    vectorAligned = std::vector<FVector>(vectorToAlginAndSort.size(), FVector(0,0,0));
+    vectorAligned = vectorToAlginAndSort;
 
-    fillMissingAlignedVertecies(vectorToAlginAndSort);
-    sortIn(vectorToAlginAndSort);
+    sortPointsByDistance(baseVector); //scheint zu funktionieren
+    sortPointsByDistance(vectorAligned, baseVector[0], baseVector[1]); //sortieren nach erster pos von base[0]
+
+    //sortIn(vectorToAlginAndSort); //might be DEPRCATED since is sorted previously
     generateTriangleBuffer();
 }
 
@@ -127,32 +130,6 @@ std::vector<FVector> &ParallellShapeMerger::alignedVectorReference(){
 
 
 
-/**
- * 
- * helper function extra
- * 
- */
-
-
-void ParallellShapeMerger::appendTrianglesWith(
-    std::vector<FVector> &other
-){
-    for (int i = 1; i < other.size(); i+=2){
-        FVector &prevVec = other[i-1];
-        FVector &currentVec = other[i];
-        int closestA = findClosestIndex(prevVec, false); //false-> dont listen for lock
-        int closestB = findClosestIndex(currentVec, false);
-
-        triangleBuffer.push_back(baseVector[closestA]); //0
-        triangleBuffer.push_back(baseVector[closestB]); //1
-        triangleBuffer.push_back(currentVec); //2
-
-        triangleBuffer.push_back(baseVector[closestA]); //0
-        triangleBuffer.push_back(currentVec); //2
-        triangleBuffer.push_back(prevVec); //3
-
-    }
-}
 
 
 
@@ -197,4 +174,150 @@ void ParallellShapeMerger::generateTriangleBuffer(){
 /// create a double sided mesh if needed
 std::vector<FVector> &ParallellShapeMerger::triangleBufferReference(){
     return triangleBuffer;
+}
+
+
+
+
+void ParallellShapeMerger::sortPointsByDistance(
+    std::vector<FVector> &points
+){
+    if(points.size() <= 0){
+        return;
+    }
+    sortPointsByDistance(
+        points,
+        points[0],
+        points[0] //Erstmal so lassen
+    );
+}
+
+
+void ParallellShapeMerger::sortPointsByDistance(
+    std::vector<FVector> &points,
+    FVector startingPoint,
+    FVector nextToStartingPoint
+){
+    if(points.size() <= 0){
+        return;
+    }
+
+    std::vector<FVector> output;
+    std::vector<bool> wasPushed(points.size(), false);
+    FVector prevPoint = startingPoint;
+
+    //find starting point if was part of sorted array
+    for (int i = 0; i < points.size(); i++){
+        if(points[i] == startingPoint){
+            wasPushed[i] = true;
+            output.push_back(startingPoint);
+            break;
+        }
+    }
+
+    bool checkDir = false;
+    FVector dir;
+    if(startingPoint != nextToStartingPoint){
+        dir = nextToStartingPoint - startingPoint; //AB = B - A
+        checkDir = true;
+    }
+
+    //start sorting until output vector is full, then override 
+    while(output.size() < points.size()){
+        FVector found;
+
+        if(output.size() == 1 && checkDir){
+            //CHECK DIR ON START
+            if(findClosestPointToAndMatchDirection(
+                points,
+                wasPushed,
+                prevPoint,
+                found,
+                dir
+            )){
+                output.push_back(found);
+                prevPoint = found;
+                checkDir = false;
+            }
+        }else{
+            //DEFAULT SEARCH
+            if (findClosestPointTo(
+                    points,
+                    wasPushed,
+                    prevPoint,
+                    found
+            )){
+                output.push_back(found);
+                prevPoint = found; 
+            }
+        }
+    }
+    //override
+    points = output;
+}
+
+bool ParallellShapeMerger::findClosestPointTo(
+    std::vector<FVector> &points,
+    std::vector<bool> &usedIndices,
+    FVector &closestPointSearchedFor,
+    FVector &outpoint
+){
+    if(points.size() <= 0){
+        return false;
+    }
+
+    int index = 0;
+    FVector closestPoint;
+    float closestDist = std::numeric_limits<float>::max();
+
+    for (int i = 1; i < points.size(); i++)
+    {
+        if(usedIndices[i] == false){
+            FVector &currentPoint = points[i];
+            float newdist = FVector::Dist(currentPoint, closestPointSearchedFor);
+            if(newdist < closestDist){
+                closestDist = newdist;
+                closestPoint = currentPoint;
+                index = i;
+            }
+        }
+    }
+    usedIndices[index] = true; //copy out
+    outpoint = closestPoint; //copy out
+    return true;
+}
+
+
+
+
+bool ParallellShapeMerger::findClosestPointToAndMatchDirection(
+    std::vector<FVector> &points,
+    std::vector<bool> &usedIndices,
+    FVector &closestPointSearchedFor,
+    FVector &outpoint,
+    FVector &directionToMatch
+){
+    if(points.size() <= 0){
+        return false;
+    }
+
+    int index = 0;
+    FVector closestPoint;
+    float closestDist = std::numeric_limits<float>::max();
+
+    for (int i = 1; i < points.size(); i++)
+    {
+        if(usedIndices[i] == false){
+            FVector &currentPoint = points[i];
+            float newdist = FVector::Dist(currentPoint, closestPointSearchedFor);
+            if(newdist < closestDist){
+                closestDist = newdist;
+                closestPoint = currentPoint;
+                index = i;
+            }
+        }
+    }
+    usedIndices[index] = true; //copy out
+    outpoint = closestPoint; //copy out
+    return true;
 }

@@ -85,6 +85,29 @@ void GrahamScan::ComputeConvexHullAutoProjection(std::vector<FVector> &points){
 
 
 
+void GrahamScan::ComputeConvexHullAutoProjection(
+    std::vector<FVector> &points,
+    std::vector<FVector> &eliminated
+){
+    if(points.size() > 1){
+        FVector front = points[0];
+        FVector completeNormal;
+        for (int i = 1; i < points.size(); i++){
+
+            // only positive normals if set is unordered;
+            FVector normal = FVector::CrossProduct(front, points[i]);
+            if(normal.Z < 0.0f){
+                normal *= -1.0f;
+            }
+            completeNormal += normal;
+        }
+        completeNormal = completeNormal.GetSafeNormal();
+        ComputeConvexHull(points, completeNormal, eliminated);
+    }
+}
+
+
+
 
 
 

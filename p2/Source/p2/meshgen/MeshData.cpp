@@ -825,13 +825,6 @@ void MeshData::cutHoleWithInnerExtensionOfMesh(
         return;
     }
 
-    FVector centerOfMesh = center();
-    FVector connect = centerOfMesh - vertex;
-
-    std::vector<FVector> eliminatedVertecies;
-    GrahamScan scan;
-    scan.ComputeConvexHull(outOfRangeVertecies, connect, eliminatedVertecies);
-
     //achtung: vertecies müssen durch 2 teilbar sein sodass der helbkreis korrekt
     //gespaltet wird (?)
     if(outOfRangeVertecies.size() % 2 != 0){
@@ -839,12 +832,16 @@ void MeshData::cutHoleWithInnerExtensionOfMesh(
         outOfRangeVertecies.push_back(ownBack);
     }
 
+    //find rotation of direction to rotate the halfsphere as needed
+    FVector centerOfMesh = center();
+    FVector connect = centerOfMesh - vertex;
+
     std::vector<FVector> outlineOfHalfSphere; //online of open side!
     int detailPerCircle = outOfRangeVertecies.size();
     MeshData sphere = FVectorShape::createHalfSphereCuttedOff(
         radius,
         detailPerCircle, //detail per full circle
-        false,
+        false, //false for face inside
         connect, // normal inwards to rotate half sphere / align with it
         outlineOfHalfSphere,
         MMatrix(vertex) // move to vertex pos
@@ -859,23 +856,15 @@ void MeshData::cutHoleWithInnerExtensionOfMesh(
         outOfRangeVertecies
     );
 
-    //eliminated must be appended too...
-    if(eliminatedVertecies.size() > 0){
-        FString message = FString::Printf(TEXT("eliminatedCount %d"), eliminatedVertecies.size());
-        DebugHelper::logMessage(message);
-
-        merger.appendTrianglesWith(eliminatedVertecies);
-    }
 
     std::vector<FVector> &bufferReference = merger.triangleBufferReference();
     appendDoubleSidedTriangleBuffer(bufferReference);
 
-    //debug logging
-    FString message = FString::Printf(TEXT("trianglebuffersize %d"), bufferReference.size());
-    DebugHelper::logMessage(message);
+    
 
     //append sphere
-    appendEfficent(sphere);
+    //appendEfficent(sphere);
+    append(sphere);
 
     calculateNormals();
     

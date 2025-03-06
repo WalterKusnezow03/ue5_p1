@@ -23,6 +23,10 @@ public:
 	void ComputeConvexHull(std::vector<FVector> &points, std::vector<FVector> &eliminated, bool findEliminated);
 
 	void ComputeConvexHullAutoProjection(std::vector<FVector> &points);
+	void ComputeConvexHullAutoProjection(
+		std::vector<FVector> &points,
+		std::vector<FVector> &eliminated
+	);
 
 private:
 	bool IsClockwise(const FVector &a, const FVector &b, const FVector &c);
