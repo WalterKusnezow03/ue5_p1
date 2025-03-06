@@ -11,8 +11,13 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/meshgen/customMeshActorBase.h"
+#include "p2/pathFinding/EdgeCollector.h"
+#include "p2/pathFinding/PathFinder.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
 #include "p2/meshgen/water/customWaterActor.h"
+#include "p2/rooms/testing/roomProcedural.h"
+#include "p2/DebugHelper.h"
+#include "CoreMinimal.h"
 
 worldLevel::worldLevel()
 {
@@ -256,44 +261,6 @@ void worldLevel::DebugCreateRooms(UWorld *world){
 
 
 
-void worldLevel::debugBezier(UWorld *world){
-    if(world == nullptr){
-        return;
-    }
-
-    std::vector<FVector2D> anchors;
-    TVector<FVector2D> outputCurve;
-    float oneMeter = 100;
-
-    anchors.push_back(FVector2D(0, 300));
-    anchors.push_back(FVector2D(500, 100));
-    anchors.push_back(FVector2D(1000, 200));
-    anchors.push_back(FVector2D(1500, 100));
-    anchors.push_back(FVector2D(2000, 200));
-
-    bezierCurve b;
-    b.calculatecurve(
-		anchors,
-		outputCurve,
-		oneMeter
-	);
-
-    std::vector<FVector> d3Vec;
-    for (int i = 0; i < outputCurve.size(); i++){
-        FVector2D copy = outputCurve[i];
-        FVector projected(copy.X, 0, copy.Y);
-        d3Vec.push_back(projected);
-    }
-
-    DebugHelper::showLine(world, d3Vec, FColor::Black);
-
-    for (int i = 0; i < d3Vec.size(); i++){
-        FVector current = d3Vec.at(i);
-        FVector offset = current + FVector(0, 0, 100);
-        DebugHelper::showLineBetween(world, current, offset, FColor::Black);
-    }
-}
-
 
 
 
@@ -478,7 +445,7 @@ void worldLevel::debugCreateRock(UWorld *world){
             RockCreator rock;
             MeshData meshData = rock.createMesh();
 
-            meshData = FVectorShape::createSphere(150, 50, false); //NEW DEBUG
+            meshData = FVectorShape::createSphere(150, 50, true); //NEW DEBUG, fac outside
 
             FVector location(-2000, 0, 100);
             AcustomMeshActor *actor = pointer->spawnAcustomMeshActor(world, location);
