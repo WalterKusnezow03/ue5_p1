@@ -37,20 +37,13 @@ playerInventory::wslot::wslot(Aweapon *in){
 
 playerInventory::wslot::~wslot(){
     if(weaponPointer != nullptr){
-        if (IsValid(weaponPointer)) { // Ensure the weapon is still valid
+        if (IsValid(weaponPointer)) { // Ensure the weapon is still valid 
             weaponPointer->drop();
         }
         weaponPointer = nullptr;
     }
 }
-		
-//debug
-void playerInventory::showScreenMessage(FString s){
-	if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
-    }
-}
+	
 
 
 //inventory methods

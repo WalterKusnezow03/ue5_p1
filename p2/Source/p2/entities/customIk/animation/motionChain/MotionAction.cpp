@@ -65,3 +65,7 @@ void MotionAction::setLocationAndRotation(MMatrix &transformMat){
     FRotator rotator = transformMat.extractRotator();
     setLocationAndRotation(pos, rotator);
 }
+
+
+
+

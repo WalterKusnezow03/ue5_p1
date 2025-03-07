@@ -208,6 +208,14 @@ void PathFinder::addNewNodeVector(std::vector<FVector> &vec, FVector &offset){
 }
 
 
+void PathFinder::addNewNodeVector(std::vector<FVector> &vec, std::vector<FVector> &offsets){
+    for (int i = 0; i < offsets.size(); i++){
+        FVector current = offsets[i];
+        addNewNodeVector(vec, current);
+    }
+}
+
+
 
 /// @brief add nodes to the graph, all independant
 /// @param vec vector to push completly

@@ -39,6 +39,7 @@ public:
 	void clear(); //clears ALL NODES
 
 	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
+	void addNewNodeVector(std::vector<FVector> &vec, std::vector<FVector> &offsets);
 	void addNewNodeVector(std::vector<FVector> &vec);
 	void addNewNode(FVector a);
 

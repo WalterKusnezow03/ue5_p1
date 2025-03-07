@@ -10,6 +10,10 @@
 #include "p2/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "teamEnum.h"
+#include <cmath>
+#include "p2/DebugHelper.h"
+#include "GameFramework/Character.h" // Falls noch nicht inkludiert
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
@@ -57,7 +61,6 @@ AplayerScript::AplayerScript()
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "found skeletal mesh");
     }
 
-    timeleft = 0;
 
     //FString JumpAnimPath = TEXT("/Game/Animations/JumpAnim.JumpAnim");
 
@@ -200,15 +203,12 @@ void AplayerScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-    shoot(); //shoot the weapon if needed or release. Method handles automatically
-
-    updateAnimTime(DeltaTime);
-
+    shoot(); //shoot the weapon if needed or release. Method handles both automatically
     
     TickBoneController(DeltaTime);
     resetFlagsOnTick();
+    TickWingsuitTimer(DeltaTime);
 }
-
 
 void AplayerScript::TickBoneController(float DeltaTime){
 
@@ -248,6 +248,25 @@ void AplayerScript::TickBoneController(float DeltaTime){
     //boneController.debugDrawHeadForward(GetWorld(), DeltaTime);
 }
 
+
+
+void AplayerScript::changeGravityDefault(){
+    if(GetCharacterMovement()){
+        GetCharacterMovement()->GravityScale = 1.0f; //defaul gravity
+    }
+    
+}
+
+void AplayerScript::changeGravityWingSuit(){
+    if(GetCharacterMovement()){
+        GetCharacterMovement()->GravityScale = 0.5f; //half gravity
+    }
+
+    
+}
+
+
+
 void AplayerScript::resetFlagsOnTick(){
     isWalking = false;
 }
@@ -257,8 +276,6 @@ void AplayerScript::resetFlagsOnTick(){
  */
 void AplayerScript::takedamage(int d)
 {
-    //DebugHelper::showScreenMessage("Player Damage", FColor::Yellow);
-    // Implementierung der Methode
     health -= d;
 	if(health <= 0){
 		health = 0;
@@ -293,7 +310,12 @@ void AplayerScript::MoveForward(float Value)
         }
         
 
+    
         isWalking = true;
+
+
+        //new
+        setWingsuitTimerOnMovement();
     }
 }
 
@@ -306,6 +328,9 @@ void AplayerScript::MoveRight(float Value)
 
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
         AddMovementInput(Direction, Value);
+
+        //new
+        setWingsuitTimerOnMovement();
     }
 }
 
@@ -327,29 +352,12 @@ void AplayerScript::Jump(){
     if (CanJump())
     {
         ACharacter::Jump(); // Calls the base class jump function
-
-
-
-        if (EntityManager *e = worldLevel::entityManager()){
-            FVector location = GetActorLocation();
-            //e->createALayout(GetWorld(), location, 20, 20);
-
-            //int meters = 50;
-            //e->createTerrain(GetWorld(), meters);
-        }
-
-        //new testing
-        
-
-
     }
 
     //debug
     switchCamera();
 
-    //TESTING of layout creator, works as expected
-    
-    
+    tryOpenWingsuit(); //debug, might be another key
 }
 
 void AplayerScript::sprint(){
@@ -357,7 +365,7 @@ void AplayerScript::sprint(){
 }
 
 /**
- * allows the player to interact
+ * allows the player to interact (for example picking up a weapon by pressing "E")
  */
 void AplayerScript::interact(){
 	performRaycast();
@@ -470,46 +478,6 @@ void AplayerScript::leftMouseUp(){
 
 
 
-
-
-
-
-//testing needed
-
-void AplayerScript::PlayAnimation(UAnimSequence* AnimSequence)
-{
-    if (AnimSequence && SkeletalMeshComponent)
-    {   
-        float animationlength = AnimSequence->GetPlayLength();
-        resetAnimtime(animationlength);
-
-        SkeletalMeshComponent->PlayAnimation(AnimSequence, false); // false means don't loop
-    }else{
-
-        DebugHelper::showScreenMessage("player animation not found");
-    }
-}
-
-
-
-/// @brief sets the time left to a new time
-/// @param newTime 
-void AplayerScript::resetAnimtime(float newTime){
-    timeleft = newTime;
-}
-
-/// @brief update the animation time delta
-/// @param delta 
-void AplayerScript::updateAnimTime(float delta){
-    if(timeleft > 0){
-        timeleft -= delta;    
-    }
-}
-/// @brief returns if an animation is still playing
-/// @return 
-bool AplayerScript::animationisPlaying(){
-    return timeleft > 0;
-}
 
 
 
@@ -685,4 +653,128 @@ AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 		}
 	}
 	return nullptr;
+}
+
+
+
+
+
+
+/**
+ * 
+ * ---- wingsuit helpers ----
+ * 
+ */
+void AplayerScript::setWingsuitTimerOnMovement(){
+    setWingsuitTimer(wingsuitUpdateInvertall);
+}
+void AplayerScript::setWingsuitTimer(float time){
+    if(!wingsuitTimerWasStarted){
+        wingsuitTimerWasStarted = true;
+        wingsuitTimer.Begin(time, true); // alle 30 sekunden? //vielleicht immer wenn er moved?
+    }
+}
+
+
+void AplayerScript::TickWingsuitTimer(float DeltaTime){
+    /*
+    if(wingsuitIsOpen){
+        wingsuitTimer.Tick(DeltaTime);
+        if(wingsuitTimer.timesUp()){
+            tryOpenWingsuit(); //check for closing wingsuit again
+        }
+    }*/
+    if(wingsuitTimerWasStarted){
+        wingsuitTimer.Tick(DeltaTime);
+        if(wingsuitTimer.timesUp()){
+            tryOpenWingsuit(); //check for closing wingsuit again
+            wingsuitTimerWasStarted = false;
+        }
+    }
+    
+    
+}
+
+float AplayerScript::gravityCmsDown(){
+    UWorld *world = GetWorld();
+    UCharacterMovementComponent *characterMovement = GetCharacterMovement();
+    if (characterMovement != nullptr && world != nullptr)
+    {
+        float WorldGravity = world->GetGravityZ(); // Standard: -980 cm/s2 (x(t) = x0 + v0t + 1/2at^2)
+        float CharacterGravity = characterMovement->GravityScale * WorldGravity;
+        return CharacterGravity;
+    }
+    return -980.0f;
+}
+
+void AplayerScript::tryOpenWingsuit(){
+    float distanceFromGroundMeasured = 0.0f;
+    if (isInAirRaycast(GetActorLocation(), distanceFromGroundMeasured))
+    {
+
+        DebugHelper::showScreenMessage("WINGSUIT PLAYER OPEN", FColor::Red);
+        boneController.openWingsuit();
+        changeGravityWingSuit();
+
+        //x(t) = x0 + v0t + 1/2 a t^2
+        //gesucht: next time gravity check
+        //gesucht also t:
+
+        //x(t) = distanceFromGround + 0*t + 1/2 a * t^2
+        //x(t) = distanceFromGround + 1/2 a * t^2
+        // 0 = distanceFromGround + 1/2 a * t^2
+        // - distanceFromGround = 1/2 a * t^2 | * 2
+        // - 2 * distanceFromGround = a * t^2 | :a
+        // (-2 * distanceFromGround) / a = t^2 | sqrt
+        // sqrt((-2 * distanceFromGround) / a) = t
+        // t = sqrt(abs(distance * 2) / abs(gravity))
+        float gravity = std::abs(gravityCmsDown());
+        if(gravity > 0.01f){
+            float nextTime = std::sqrt(
+                std::abs(distanceFromGroundMeasured * 2) /
+                gravity
+            );
+            /*
+            wingsuitTimer.Begin(nextTime, true); //true(? resets itself, unklar ob korrekt.)
+            wingsuitTimerWasStarted = true;*/
+            wingsuitTimerWasStarted = false;
+            setWingsuitTimer(nextTime);
+        }
+    }
+    else
+    {
+        DebugHelper::showScreenMessage("WINGSUIT PLAYER CLOSE", FColor::Orange);
+        boneController.closeWingsuit();
+        changeGravityDefault();
+
+    }
+}
+
+bool AplayerScript::isInAirRaycast(FVector Start, float &distanceFromGround){
+    
+
+    //100 = 1m
+    //500m = 
+    FVector End = Start + FVector(0,0,-1 * minDistanceGroundForWingsuit); //10 meter runter
+
+    // Perform the raycast
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(this); // Ignore the character itself
+    Params.bTraceComplex = false; //better performance
+
+    UWorld *world = GetWorld();
+    if(world){
+        bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+        if(!bHit){
+
+            FVector hit = HitResult.ImpactPoint;
+            float distOnZ = hit.Z - Start.Z;
+            distanceFromGround = distOnZ;
+
+            return true;
+        }
+    }
+    
+    return false;
 }

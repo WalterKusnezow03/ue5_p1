@@ -349,10 +349,12 @@ void AcustomMeshActorBase::addRandomNodesToNavmesh(TArray<FVectorTouple> &touple
     //find vertical normals
     //second is normal, first is vertex
     std::vector<FVector> positionsPotential;
+    
+    /*
     filterTouplesForVerticalVectors(
         touples,
         positionsPotential
-    );
+    );*/
 
     int count = touples.Num();
     std::set<int> indices;
@@ -361,7 +363,7 @@ void AcustomMeshActorBase::addRandomNodesToNavmesh(TArray<FVectorTouple> &touple
         indices.insert(newIndex);
     }
 
-    int limit = 20;
+    int limit = 30;
     std::vector<FVector> picked;
     for (auto &ref : indices)
     {

@@ -53,7 +53,7 @@ private:
 	int ammunition;
 
 	bool currentIndexIsValid();
-	void showScreenMessage(FString s);
+	
 
 	void addToAmmunition(ammunitionEnum type, int amount);
 	int getFromAmmunition(ammunitionEnum type, int amount);

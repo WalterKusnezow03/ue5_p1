@@ -29,6 +29,8 @@ public:
 	void createWaterPane(int vertexcountXIn, int vertexcountYIn, int detail);
 
 private:
+	int MAX_DISTANCE = 100000; //100000
+
 	teamEnum teamSaved = teamEnum::none;
 
 	int vertexcountX = 3;
@@ -58,6 +60,8 @@ private:
 	void removeRippleAtIndex(int index);
 
 	bool TickBasedOnPlayerDistance();
+
+	bool isInRangeForTick(FVector &vertex, FVector &comparePos);
 
 	//helper for mesh
 	MeshData &findMeshDataReference(

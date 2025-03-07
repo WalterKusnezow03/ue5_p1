@@ -117,7 +117,7 @@ protected:
 	class IDamageinterface *damagedOwner = nullptr;
 
 
-	void createFoliage(TArray<FVectorTouple> &touples);
+	void createFoliageAndPushNodesAroundFoliageToNavMesh(TArray<FVectorTouple> &touples);
 
 	void createTreeAndSaveToMesh(FVector &location);
 

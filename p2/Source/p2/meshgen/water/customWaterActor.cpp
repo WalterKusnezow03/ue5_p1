@@ -25,7 +25,7 @@ void AcustomWaterActor::Tick(float DeltaTime){
     if(meshInited){
         if(TickBasedOnPlayerDistance()){
             updateRunningTime(DeltaTime);
-            TickRipples(DeltaTime);
+            TickRipples(DeltaTime); //tick ripples before vertex shader to already modify
             vertexShader();
         }
 
@@ -131,6 +131,15 @@ void AcustomWaterActor::vertexShader(){
 
     int layer = layerByMaterialEnum(materialEnum::waterMaterial);
 
+
+    FVector locationOfPlayer;
+    referenceManager *manager = referenceManager::instance();
+    if(manager != nullptr){
+        locationOfPlayer = manager->playerLocation();
+    }else{
+        return;
+    }
+
     //raycast is not blocked by water
     UProceduralMeshComponent *thisMesh = meshComponentPointer();
     if(thisMesh){
@@ -140,8 +149,13 @@ void AcustomWaterActor::vertexShader(){
         for (int i = 0; i < vertecies.Num(); i++)
         {
             FVector &vertex = vertecies[i];
-            applyCurve(vertex);
-            applyWaterRippleOffset(vertex, actorLocation);
+            if(isInRangeForTick(vertex, locationOfPlayer)){
+                applyCurve(vertex);
+                applyWaterRippleOffset(vertex, actorLocation);
+            }else{
+                //skip batch amount for efficency
+                i += 10;
+            }
         }
 
         refreshMesh(*thisMesh, waterMesh, layer);
@@ -323,4 +337,21 @@ bool AcustomWaterActor::TickBasedOnPlayerDistance(){
         return true;
     }
     return false;
+}
+
+
+
+
+bool AcustomWaterActor::isInRangeForTick(FVector &vertex, FVector &locationOfPlayer){
+    
+    int xdist = std::abs(vertex.X - locationOfPlayer.X);
+    if(xdist > MAX_DISTANCE){
+        return false;
+    }
+
+    int ydist = std::abs(vertex.Y - locationOfPlayer.Y);
+    if(ydist > MAX_DISTANCE){
+        return false;
+    }
+    return true;
 }

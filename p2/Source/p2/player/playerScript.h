@@ -12,6 +12,7 @@
 #include "teamEnum.h"
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
+#include "p2/util/timer.h"
 
 #include "playerScript.generated.h"
 
@@ -77,10 +78,6 @@ private:
 
 	bool isWalking;
 
-	float timeleft;
-	void resetAnimtime(float newTime);
-	void updateAnimTime(float delta);
-	bool animationisPlaying();
 
 	void MoveForward(float Value);
     void MoveRight(float Value);
@@ -108,7 +105,7 @@ private:
 
 	
 
-	void PlayAnimation(UAnimSequence *AnimSequence);
+	
 
 
 
@@ -119,4 +116,20 @@ private:
 	class BoneController boneController;
 	void setupBoneController();
 	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
+
+	//new wingsuit
+	bool wingsuitTimerWasStarted = false;
+	bool wingsuitIsOpen = false;
+	float wingsuitUpdateInvertall = 2.0f;
+	class timer wingsuitTimer;
+	int minDistanceGroundForWingsuit = 200; //10000
+	void setWingsuitTimerOnMovement();
+	void setWingsuitTimer(float time);
+	void TickWingsuitTimer(float DeltaTime);
+	void tryOpenWingsuit();
+	bool isInAirRaycast(FVector Start, float &distanceMeasured);
+	void changeGravityDefault();
+	void changeGravityWingSuit();
+
+	float gravityCmsDown();
 };

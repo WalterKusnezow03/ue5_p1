@@ -102,10 +102,11 @@ BoneController &BoneController::operator=(BoneController &other){
 
 BoneController::~BoneController()
 {
-
+	attachedTorso = nullptr;
+	attachedHead = nullptr;
+	attachedCarriedItem = nullptr;
+	world = nullptr;
 }
-
-
 
 int BoneController::armScale(){
 	return armScaleCM;
@@ -357,13 +358,22 @@ void BoneController::setupAnimation(){
 
 	MotionAction holsterState;
 	FRotator rotationForTarget3;
-	rotationForTarget2.Pitch = -90; //45 degree to front
+	rotationForTarget3.Pitch = -90; //45 degree to front
 	FVector targetHolsterStateLocation(0, armScaleCM * 0.1f, 0);
 	contactState.setLocationAndRotation(targetHolsterStateLocation, rotationForTarget3);
 	armMotionQueue.addTarget(ArmMotionStates::holsterItem, holsterState);
 
 
-	
+
+	MotionAction wingsuitState;
+	FRotator rotationForTarget4;
+	rotationForTarget4.Roll = -90; //45 degree to front
+	FVector targetArmLocationWingsuit(0, armScaleCM * 0.9f, 0);
+	wingsuitState.setLocationAndRotation(targetArmLocationWingsuit, rotationForTarget4);
+	armMotionQueue.addTarget(ArmMotionStates::wingsuitOpen, wingsuitState);
+
+
+
 }
 
 
@@ -852,6 +862,22 @@ void BoneController::weaponHolsterPosition(){
 void BoneController::dropWeapon(){
 	attachedCarriedItem = nullptr;
 }
+
+void BoneController::openWingsuit(){
+	if(!wingsuitMarkedOpen){
+		armMotionQueue.updateStateIfPossible(ArmMotionStates::wingsuitOpen);
+		wingsuitMarkedOpen = true;
+	}
+}
+
+void BoneController::closeWingsuit(){
+	if(wingsuitMarkedOpen){
+		armMotionQueue.updateStateIfPossible(ArmMotionStates::handsFollowItem);
+		wingsuitMarkedOpen = false;
+	}
+}
+
+
 
 //will be designed for arms
 void BoneController::Tick(float DeltaTime, UWorld *worldIn, FVector overrideLocation){

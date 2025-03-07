@@ -54,6 +54,7 @@ float ripple::waveHeightBasedOnTime(){
     return timeScalar * waveHeight;
 }
 
+///@brief changes the vertex height based on distance to vertex+actor (combined)
 void ripple::changeHeightBasedOnDistance(FVector &vertex, FVector &offsetActor){
     float toCenter = FVector::Dist(vertex + offsetActor, impact);
     if(toCenter > 0.01f){

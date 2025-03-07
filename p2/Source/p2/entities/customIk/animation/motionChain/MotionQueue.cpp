@@ -149,11 +149,20 @@ void MotionQueue::Tick(
 
         FVector rightHandtarget = item->rightHandLocation();
         FVector leftHandtarget = item->leftHandLocation();
-
-        //DebugHelper::showLineBetween(item->GetWorld(), rightHandtarget, rightHandtarget + FVector(0, 0, 50));
-        //DebugHelper::showLineBetween(item->GetWorld(), leftHandtarget, leftHandtarget + FVector(0, 0, 50));
-
         FVector weight(0, 0, -1);
+
+        //NEW
+        if(currentState == ArmMotionStates::wingsuitOpen && !transitioning){
+            MotionAction *currentStatePointer = &statesMap[currentState];
+            if(currentStatePointer != nullptr){
+                FVector copyPos = currentStatePointer->copyPosition();
+                rightHandtarget = transformRightArm * copyPos;
+                copyPos *= -1;
+                leftHandtarget = transformLeftArm * copyPos;
+            }
+        }
+        //NEW END
+
 
         //dont move arms if state is none
         if(handsAtItem()){
@@ -202,10 +211,6 @@ void MotionQueue::Tick(
             world
         );
 
-        /**
-         * TODO HIER: HÄNDE AUCH RENDERN!
-         * 
-         */
 
     }
 

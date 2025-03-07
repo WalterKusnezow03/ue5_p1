@@ -247,7 +247,7 @@ bool FVectorUtil::edgeIsVertical(FVector &A, FVector &B){
 bool FVectorUtil::directionIsVertical(FVector &A){
     FVector aNormalized = A.GetSafeNormal(); //auf einheitskreis normalisieren
     float skalarProduktUp = std::abs(aNormalized.Z); //Up component
-    return skalarProduktUp > 0.7f;  //edge of interest wenn er weit genug nach oben zeigt.
+    return skalarProduktUp >= 0.7f;  //edge of interest wenn er weit genug nach oben zeigt.
 }
 
 
