@@ -12,10 +12,10 @@
 #include "ammunitionEnum.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
-#include "attachmentEnums/weaponSightEnum.h"
 #include "p2/player/teamEnum.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/weapon/attachment/WeaponAttachment.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/util/timer.h"
 
 #include "weapon.generated.h"
@@ -129,7 +129,7 @@ protected:
 	void updateCooltime(float time);
 	void resetCoolTime(float time);
 	float calculateRpm(int rpm);
-	void setupSight();
+	
 
 	/// @brief offset vector if any sight is attached, also: hipfire adjust
 	/// @return vector to add to actor location
@@ -176,12 +176,12 @@ protected:
 	class UChildActorComponent *ironSightChildActor;
 	
 	/// @brief saves all sights of the weapon find from actor to enable disable them by selected type
-	std::map<weaponSightEnum, AActor *> sightMap;
+	std::map<weaponAttachmentEnum, AActor *> sightMap;
 
 	int damageForAmmunitionType();
 
 public:
-	void applySight(weaponSightEnum sight);
+	void applySight(weaponAttachmentEnum sight);
 
 	//get ammuntion type for this weapon
 	virtual ammunitionEnum getAmmunitionType();
@@ -195,12 +195,22 @@ public:
 	 * -- new expiremental custom attachment section --
 	 * 
 	 */
+	void spawnAllAvailableAttachments();
+	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
 	void attachNewItem(AActor *someActor, MMatrix &offset);
 
 private:
 	bool actorAlreadyAttached(AActor *actorpointer);
-	void TickAttachedActors();
-	std::vector<WeaponAttachment> attachedActors;
+	std::vector<AActor *> attachedActors;
 
-	MMatrix currentTransform();
+
+
+	//new implementing animation from bonecontroller class
+	class KeyFrameAnimation actorKickBackAnim;
+	bool kickbackStarted = false;
+	bool recoilCopied = false;
+
+	void setupKickBackAnimation();
+	bool kickbackIsRunning();
+	void TickKickback(float DeltaTime);
 };

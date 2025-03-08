@@ -13,6 +13,7 @@
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "p2/util/timer.h"
+#include "WingsuitInterface.h"
 
 #include "playerScript.generated.h"
 
@@ -54,6 +55,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
     class UAnimInstance* AnimInstance;
 
+	FRotator cameraRotation();
+
 private:
 	bool isCamInPlayer = true;
 	void switchCamera();
@@ -74,7 +77,9 @@ private:
 	bool holding;
 	bool sprinting;
 	void sprint();
-	static const int SPRINT_MULTIPLY = 3;
+	static const int BASE_SPEED = 600;
+	static const int SPRINT_SPEED = 700;
+	static const int WINGSUIT_SPEED = 600; //6ms
 
 	bool isWalking;
 
@@ -117,19 +122,13 @@ private:
 	void setupBoneController();
 	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 
-	//new wingsuit
-	bool wingsuitTimerWasStarted = false;
-	bool wingsuitIsOpen = false;
-	float wingsuitUpdateInvertall = 2.0f;
-	class timer wingsuitTimer;
-	int minDistanceGroundForWingsuit = 200; //10000
-	void setWingsuitTimerOnMovement();
-	void setWingsuitTimer(float time);
-	void TickWingsuitTimer(float DeltaTime);
-	void tryOpenWingsuit();
-	bool isInAirRaycast(FVector Start, float &distanceMeasured);
-	void changeGravityDefault();
-	void changeGravityWingSuit();
 
-	float gravityCmsDown();
+
+	//NEW
+	void addWingsuitVelocity(float DeltaTime);
+	void TickUpdateWingsuit(float DeltaTime);
+	void setWingsuitTimerOnMovement();
+	class WingsuitInterface wingsuitInterface;
+
+
 };

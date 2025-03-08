@@ -14,5 +14,6 @@ enum class materialEnum
     treeMaterial,
     palmLeafMaterial,
     waterMaterial,
-    snowMaterial
+    snowMaterial,
+    _texturedMaterial
 };

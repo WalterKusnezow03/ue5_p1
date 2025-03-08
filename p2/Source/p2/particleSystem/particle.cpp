@@ -69,7 +69,7 @@ void Aparticle::move(float DeltaTime){
 /// @param velocity constant velocity to apply 
 /// @param lifeTime lifetime in seconds before releasing again
 /// @param material material to set if possible
-void Aparticle::applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterial *material){
+void Aparticle::applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterialInterface *material){
 	//apply random scale
 	FVector newScale = FVectorUtil::randomScale(1, 3, true);
 	applyImpulse(directionIn, velocity, lifeTime, material, newScale);
@@ -103,7 +103,7 @@ void Aparticle::applyImpulse(
 	FVector &directionIn, 
 	float velocity, 
 	float lifeTime, 
-	UMaterial *material,
+	UMaterialInterface *material,
 	FVector &scale
 ){
 	if(material != nullptr){

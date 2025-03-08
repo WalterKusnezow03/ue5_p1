@@ -30,6 +30,7 @@ void AssetLoader::loadAssets()
     loadEntities();
 
     loadWeapons();
+    loadWeaponAttachments();
     loadThrower();
     loadParticles();
 
@@ -149,7 +150,25 @@ UMaterial *AssetLoader::loadMaterial(FString path){
 
 
 
-
+void AssetLoader::loadWeaponAttachments(){
+    if(assetManager *a = assetManager::instance()){
+        
+        //pistol
+        FString reddotString = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/Weapons/attachments/reddotBp.reddotBp_C'"
+        ));
+        UClass *bp = loadUClassBluePrint(reddotString);
+        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp);
+        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::reddot, bp);
+    
+        //rifle
+        FString ironsightString = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/Weapons/rifle2/ironsightbp.ironsightbp_C'"
+        ));
+        UClass *bp1 = loadUClassBluePrint(ironsightString);
+        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
+    }
+}
 
 
 
@@ -178,8 +197,6 @@ void AssetLoader::loadWeapons(){
         a->addBp(weaponEnum::thrower, throwerBp);
 
     }
-
-
 
 }
 
@@ -280,6 +297,14 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/snowMaterial.snowMaterial'"))
         );
 
+        //textured material
+        a->addMaterial(
+            materialEnum::_texturedMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/texturedMaterial.texturedMaterial'"))
+        );
+
+
+
         //HOUSE MATERIALS
         //wall material
         a->addMaterial(
@@ -293,10 +318,11 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/rooms/materials/glassMaterial.glassMaterial'"))
         );
 
+        
+
     }
 
 }
-
 
 
 

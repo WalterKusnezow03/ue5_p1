@@ -8,12 +8,18 @@
 #include "carriedItem.h"
 #include "p2/player/playerScript.h"
 #include "sightScript.h"
-#include "attachmentEnums/weaponSightEnum.h"
 #include "ammunitionEnum.h"
 #include <map>
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/player/teamEnum.h"
+#include "p2/entities/HumanEntityScript.h"
+#include "p2/util/AActorUtil.h"
+#include "p2/DebugHelper.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/_world/worldLevel.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/gamestart/assetManager.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "carriedItem.h"
 
 
@@ -54,28 +60,6 @@ Aweapon::Aweapon()
 
 
 
-/// @brief finds the sight component of the weapon if existent
-/// UNCLEAR IF NEEDED ANYMORE
-void Aweapon::setupSight(){
-
-	TArray<AActor*> ChildActors;
-    GetAllChildActors(ChildActors, true);
-    for (AActor* Child : ChildActors)
-    {
-        if (Child)
-        {
-            //FString ChildName = Child->GetName();
-            FString ChildType = Child->GetClass()->GetName();
-
-            // Check if the child is of type AsightScript
-            AsightScript* SightChild = Cast<AsightScript>(Child);
-            if (SightChild){
-				sightPointer = SightChild;
-            }
-        }
-    }
-
-}
 
 /**
  * calculates time to wait for a int of rounds per minute
@@ -89,12 +73,17 @@ float Aweapon::calculateRpm(int rpm){
 void Aweapon::BeginPlay()
 {
 	Super::BeginPlay();
-	setupSight(); //better call in start right
+	
 	setupAnimations(); //sets up the animations
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
 
-	findAttachmentChildActors();
+	findAttachmentChildActors(); //DEPRECATED
+
+	//new testing needed
+	spawnAllAvailableAttachments();
+
+	setupKickBackAnimation();
 }
 
 // Called every frame / UPDATE
@@ -104,7 +93,9 @@ void Aweapon::Tick(float DeltaTime)
 
 	//followPlayer();
 	updateCooltime(DeltaTime);
-	TickAttachedActors();
+
+	//new
+	TickKickback(DeltaTime);
 }
 
 /// @brief Only for player:
@@ -461,8 +452,13 @@ void Aweapon::shootAnimation(){
 	if(verschlussSkeletonPointer != nullptr){
 		//playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
 		playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
-		playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
 
+		if(false){
+			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
+		}else{
+			kickbackStarted = true;
+			recoilCopied = false;
+		}
 
 		//trying gehause anim on mag for shoot?
 		playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
@@ -510,13 +506,24 @@ void Aweapon::playAnimation(
 /// @brief will return a recoil value to apply IF CAN SHOOT
 /// @return value (negative) for camera roatation, or 0 if cant shoot at the moment
 float Aweapon::recoilValue(){
-	if(!canShoot()){
+	/*if(!canShoot()){
 		return 0.0f;
 	}
+	return -0.1f;
+	*/
 	
 
+	if(kickbackStarted && !recoilCopied){
+		recoilCopied = true;
+		return -0.1f;
+	}
+
 	//must be a negative value to properly flip up the camera!
-	return -0.1f;
+	return 0.0f;
+
+
+
+
 }
 
 
@@ -526,6 +533,7 @@ float Aweapon::recoilValue(){
 
 /// @brief finds all the attachments in blueprint for the weapon being DIRECT CHILD ACTOR in the weapon
 void Aweapon::findAttachmentChildActors(){
+	/*
 	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
 	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method
 	if(childs.Num() > 0){
@@ -557,14 +565,14 @@ void Aweapon::findAttachmentChildActors(){
 
 	//default value
 	//applySight(weaponSightEnum::enum_ironsight);
-	applySight(weaponSightEnum::enum_reddot);
+	applySight(weaponAttachmentEnum::reddot);*/
 }
 
 
 
 /// @brief applys a sight if possible
 /// @param sight sight value in to enable
-void Aweapon::applySight(weaponSightEnum sight){
+void Aweapon::applySight(weaponAttachmentEnum sight){
 
 	for (const auto& pair : sightMap){ //map) {
 
@@ -584,6 +592,46 @@ void Aweapon::applySight(weaponSightEnum sight){
 
 
 }
+
+
+//new create sights all on start
+void Aweapon::spawnAllAvailableAttachments(){
+
+	loadAndSaveAttachment(weaponAttachmentEnum::reddot);
+	loadAndSaveAttachment(weaponAttachmentEnum::iron_sight);
+}
+
+void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
+
+	assetManager *manager = assetManager::instance();
+	EntityManager *entityManager = worldLevel::entityManager();
+	if (manager != nullptr && entityManager != nullptr)
+	{
+		weaponEnum ownType = readType();
+
+		//spawn uclass
+		UClass *foundAttachment = manager->findBp(ownType, EattachmentType);
+
+		FVector location;
+		AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
+		if(actor != nullptr){
+			MMatrix locationOffset;
+			locationOffset.setTranslation(30, 0, 0); //will be changed later based on actor bounding box!
+			attachNewItem(actor, locationOffset);
+
+
+			if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+				sightMap[EattachmentType] = actor; //save pointer to map for enable disable
+			}
+
+			
+		}
+	}
+}
+
+
+
+
 
 
 
@@ -803,16 +851,21 @@ void Aweapon::attachNewItem(AActor* actor, MMatrix &other){
 		return;
 	}
 	if(!actorAlreadyAttached(actor)){
-		WeaponAttachment newAttachment;
-		newAttachment.setup(actor, other);
-		attachedActors.push_back(newAttachment);
+		
+		attachedActors.push_back(actor);
+
+		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
+		if (gehauseSkeletonPointer)
+		{
+			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
+			actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
+		}
 	}
 }
 
 bool Aweapon::actorAlreadyAttached(AActor *actor){
 	for (int i = 0; i < attachedActors.size(); i++){
-		WeaponAttachment &current = attachedActors[i];
-		if(current.attachedActorPointer() == actor){
+		if(actor == attachedActors[i]){
 			return true;
 		}
 	}
@@ -821,36 +874,69 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
 
 
 
-void Aweapon::TickAttachedActors(){
-	for (int i = 0; i < attachedActors.size(); i++){
-		WeaponAttachment &current = attachedActors[i];
-		AActor *actorToMove = current.attachedActorPointer();
-		if(actorToMove != nullptr){
-			//generate matrix
-			MMatrix transform = currentTransform();
-			MMatrix &offset = current.offsetMatrix();
 
-			//M = transform * offset <-- lese richtung --
-			MMatrix mat = transform * offset;
 
-			//convert to unreal 
-			FRotator rotation = mat.extractRotator();
-			FVector location = mat.getTranslation();
 
-			actorToMove->SetActorRotation(rotation);
-			actorToMove->SetActorLocation(location);
+
+
+/**
+ * 
+ * 
+ * --- new testing keyframe anim on actor ---
+ * 
+ */
+void Aweapon::setupKickBackAnimation(){
+	int kickBackDistance = 3; //3cm
+
+	actorKickBackAnim = KeyFrameAnimation(false); // instant flip animation, dont loop at end to start
+	actorKickBackAnim.useHermiteSplineInterpolation(false); //linear default
+
+	actorKickBackAnim.addFrame(
+		FVector(0, 0, 0),
+		0.0f, // time to prev frame
+		false);
+	actorKickBackAnim.addFrame(
+		FVector(-kickBackDistance, 0, 0), //x forward
+		cooldownTime * 0.1f, //time to prev frame
+		false
+	);
+	actorKickBackAnim.addFrame(
+		FVector(0, 0, 0),
+		cooldownTime * 0.9f, //time to prev frame
+		false
+	);
+}
+
+bool Aweapon::kickbackIsRunning(){
+	return kickbackStarted;
+}
+
+void Aweapon::TickKickback(float DeltaTime){
+	if(kickbackStarted){
+		FVector newOffset = actorKickBackAnim.interpolate(DeltaTime);
+
+		DebugHelper::showScreenMessage("kickback ", (int) newOffset.X);
+
+		//rotate frame to local rotation of actor, then += apply
+		FRotator rotation = GetActorRotation();
+		MMatrix rotationMatrix(rotation);
+		FVector frameRotated = rotationMatrix * newOffset;
+
+		//FVector actorLocationNew = GetActorLocation();
+		//actorLocationNew += frameRotated;
+		//SetActorLocation(actorLocationNew);
+
+		//bone controller motion queue will handle the anim state
+		Super::updateAnimationOffset(frameRotated);
+
+		if(actorKickBackAnim.reachedLastFrameOfAnimation()){
+			kickbackStarted = false;
 		}
+	}else{
+		//nicht nötig (?)
+		FVector none;
+		Super::updateAnimationOffset(none);
 	}
 }
 
-MMatrix Aweapon::currentTransform(){
-	FVector location = GetActorLocation();
-	FRotator rotation = GetActorRotation();
 
-	//M = T * R <-- lese richtung --
-	MMatrix rotator(rotation);
-	MMatrix translation(location);
-	MMatrix TR = translation * rotator;
-
-	return TR;
-}

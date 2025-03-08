@@ -14,7 +14,6 @@
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/gameStart/assetManager.h"
-#include "p2/entities/skelletons/socketNames.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 

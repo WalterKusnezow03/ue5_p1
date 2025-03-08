@@ -26,25 +26,35 @@ public:
 	virtual void setTeam(teamEnum t) override;
 	virtual teamEnum getTeam() override;
 
-	void createWaterPane(int vertexcountXIn, int vertexcountYIn, int detail);
+	void createWaterPane(int vertexcountXIn, int detail);
 
-private:
-	int MAX_DISTANCE = 100000; //100000
+	bool inBoundsOfPane(FVector &vec);
+
+protected:
+	int MAX_DISTANCE = 10000; // 10000; // 100000;
 
 	teamEnum teamSaved = teamEnum::none;
 
 	int vertexcountX = 3;
 	int vertexcountY = 3;
 
-	void refreshMesh(
+	FVector BottomLeft;
+	FVector BottomRight;
+	FVector TopRight;
+	FVector TopLeft;
+
+	//only update if mesh was inited
+	virtual void refreshMesh(
 		UProceduralMeshComponent &meshComponent,
 		MeshData &other,
-		int layer
-	);
+		int layer) override;
 
 	void updateRunningTime(float deltaTime);
 	void vertexShader();
-	void applyCurve(FVector &vertex);
+	virtual void applyShaderToVertex(FVector &vertex) override;
+
+	FVector playerLocation();
+	bool playerIsInBounds();
 
 	bool meshInited = false;
 	float runningTime = 0.0f;
@@ -69,4 +79,17 @@ private:
 		ELod lod
 	);
 	UProceduralMeshComponent *meshComponentPointer();
+
+
+
+
+
+	int isInRangeForTickOnX(
+		FVector &vertex,
+		FVector &locationOfPlayer);
+	int isInRangeForTickOnY(
+		FVector &vertex,
+		FVector &locationOfPlayer);
+
+
 };

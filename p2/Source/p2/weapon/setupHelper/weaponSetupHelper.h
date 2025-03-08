@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/weapon/weaponEnum.h"
-#include "p2/weapon/attachmentEnums/weaponSightEnum.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 
 /**
  * This class will safe the type and the targeted attachments for a weapon
@@ -27,7 +27,12 @@ public:
 
 	//set types and attachments
 	void setWeaponTypeToCreate(weaponEnum typeIn);
-	void setSightAttachment(weaponSightEnum sightIn);
+	void setSightAttachment(weaponAttachmentEnum sightIn);
+
+	static std::vector<weaponAttachmentEnum> validSights();
+	static std::vector<weaponAttachmentEnum> validGrips();
+
+	static bool isASightAttachment(weaponAttachmentEnum type);
 
 private:
 	weaponEnum typeToCreate;
@@ -35,6 +40,6 @@ private:
 
 
 	//attachments to set
-	weaponSightEnum sightToSet;
+	weaponAttachmentEnum sightToSet;
 
 };

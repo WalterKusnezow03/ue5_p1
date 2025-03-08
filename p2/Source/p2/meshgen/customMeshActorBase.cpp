@@ -52,6 +52,7 @@ void AcustomMeshActorBase::BeginPlay()
 void AcustomMeshActorBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    TickShaderRunningTime(DeltaTime);
     changeLodBasedOnPlayerPosition();
 }
 
@@ -518,6 +519,7 @@ void AcustomMeshActorBase::ReloadMeshAndApplyAllMaterials(){
             MeshData &meshData = findMeshDataReference(materials[i], currentLodLevel, raycastOn);
             updateMesh(*Mesh, meshData, layer, raycastOn);
             ApplyMaterial(materials[i]);
+
         }
     }
 
@@ -580,8 +582,8 @@ void AcustomMeshActorBase::updateMesh(
         true
     );
 
-    //set for spehere overlap
-    meshcomponent.SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    
+    //meshcomponent.SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     meshcomponent.SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
     meshcomponent.SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
@@ -651,7 +653,9 @@ void AcustomMeshActorBase::replaceMeshData(MeshData &meshdata, materialEnum type
 /// @brief applys a material to the whole component (slot 0 by default)
 /// @param ProceduralMeshComponent 
 /// @param Material 
-void AcustomMeshActorBase::ApplyMaterial(UProceduralMeshComponent* ProceduralMeshComponent, UMaterial* Material) {
+void AcustomMeshActorBase::ApplyMaterial(UProceduralMeshComponent* ProceduralMeshComponent, 
+    UMaterialInterface* Material
+) {
     ApplyMaterial(ProceduralMeshComponent, Material, 0);
 }
 
@@ -661,7 +665,7 @@ void AcustomMeshActorBase::ApplyMaterial(UProceduralMeshComponent* ProceduralMes
 /// @param layer layer to apply for / index
 void AcustomMeshActorBase::ApplyMaterial(
     UProceduralMeshComponent* ProceduralMeshComponent, 
-    UMaterial* Material,
+    UMaterialInterface* Material,
     int layer
 ) {
 	if (ProceduralMeshComponent != nullptr && Material != nullptr) {
@@ -831,4 +835,62 @@ bool AcustomMeshActorBase::isInRange(FVector &a, int maxDistance){
     return (std::abs(a.X - thisLocation.X) < maxDistance) &&
            (std::abs(a.Y - thisLocation.Y) < maxDistance) &&
            (std::abs(a.Z - thisLocation.Z) < maxDistance);
+}
+
+
+
+
+
+/**
+ * 
+ * 
+ * --- refresh mesh for dynamic actors like water or other moving meshes ---
+ * 
+ * 
+ */
+void AcustomMeshActorBase::TickShaderRunningTime(float DeltaTime){
+    shaderRunningTime += DeltaTime;
+    if(shaderRunningTime > 2 * M_PI){
+        shaderRunningTime = 0.0f;
+    }
+}
+
+void AcustomMeshActorBase::vertexShaderFor(MeshData &data){
+    TArray<FVector> &vertecies = data.getVerteciesRef();
+    for (int i = 0; i < vertecies.Num(); i++){
+        FVector &current = vertecies[i];
+        applyShaderToVertex(current);
+    }
+}
+
+/// @brief apply vertex shader to the given vertex
+/// @param vertex vertex to move
+void AcustomMeshActorBase::applyShaderToVertex(FVector &vertex){
+    //keep empty, is virtaul here.
+}
+
+void AcustomMeshActorBase::refreshMesh(
+    UProceduralMeshComponent& meshComponent,
+    MeshData &other,
+    int layer
+){
+    if(other.verteciesNum() <= 0){
+        return;
+    }
+
+    meshComponent.UpdateMeshSection(
+        layer, 
+        other.getVerteciesRef(), 
+        other.getNormalsRef(), 
+        other.getUV0Ref(),
+        other.getVertexColorsRef(), 
+        other.getTangentsRef()
+    );
+
+    if(false){
+        meshComponent.SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        meshComponent.SetCollisionResponseToAllChannels(ECR_Ignore);
+        meshComponent.SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+    }
+
 }

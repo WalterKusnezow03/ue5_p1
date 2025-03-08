@@ -368,7 +368,7 @@ void BoneController::setupAnimation(){
 	MotionAction wingsuitState;
 	FRotator rotationForTarget4;
 	rotationForTarget4.Roll = -90; //45 degree to front
-	FVector targetArmLocationWingsuit(0, armScaleCM * 0.9f, 0);
+	FVector targetArmLocationWingsuit(armScaleCM * 0.2f, armScaleCM * 0.8f, armScaleCM); //x is forward
 	wingsuitState.setLocationAndRotation(targetArmLocationWingsuit, rotationForTarget4);
 	armMotionQueue.addTarget(ArmMotionStates::wingsuitOpen, wingsuitState);
 

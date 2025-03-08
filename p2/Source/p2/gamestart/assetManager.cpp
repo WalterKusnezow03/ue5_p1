@@ -3,6 +3,7 @@
 
 #include "p2/gamestart/assetManager.h"
 #include "p2/gamestart/TAssetManager/assetManagerGeneric.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "CoreMinimal.h"
 
 
@@ -11,6 +12,8 @@ template class assetManagerGeneric<weaponEnum, UClass>;
 template class assetManagerGeneric<throwableEnum, UClass>;
 template class assetManagerGeneric<particleEnum, UClass>;
 template class assetManagerGeneric<materialEnum, UMaterial>;
+template class assetManagerGeneric<weaponAttachmentEnum, UClass>;
+
 
 
 assetManager *assetManager::instancePointer = nullptr;
@@ -86,6 +89,29 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
 }
 
 
+// --- weapon assets ---
+UClass *assetManager::findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment){
+    if(weaponAttachmentAssets.find(weapon) != weaponAttachmentAssets.end()){
+        assetManagerGeneric<weaponAttachmentEnum, UClass> &manager = weaponAttachmentAssets[weapon];
+        return manager.getBp(weaponAttachment);
+    }
+    return nullptr;
+}
+
+void assetManager::addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass){
+    if(uclass != nullptr){
+        if(weaponAttachmentAssets.find(weapon) != weaponAttachmentAssets.end()){
+            assetManagerGeneric<weaponAttachmentEnum, UClass> &manager = weaponAttachmentAssets[weapon];
+            manager.addBp(weaponAttachment, uclass);
+        }else{
+            assetManagerGeneric<weaponAttachmentEnum, UClass> newManager;
+            weaponAttachmentAssets[weapon] = newManager;
+            assetManagerGeneric<weaponAttachmentEnum, UClass> &ref = weaponAttachmentAssets[weapon];
+            ref.addBp(weaponAttachment, uclass);
+        }
+    }
+}
+
 
 
 // --- room assets ---
@@ -100,12 +126,12 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
 
 
 // --- material assets ---
-UMaterial *assetManager::findMaterial(materialEnum type){
-    UMaterial* material = materialAssets.getBp(type);
+UMaterialInterface *assetManager::findMaterial(materialEnum type){
+    UMaterialInterface* material = materialAssets.getBp(type);
     return material;
 }
 
-void assetManager::addMaterial(materialEnum type, UMaterial *material){
+void assetManager::addMaterial(materialEnum type, UMaterialInterface *material){
     if(material != nullptr){
         materialAssets.addBp(type, material);
     }

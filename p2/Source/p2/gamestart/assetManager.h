@@ -6,6 +6,7 @@
 #include "p2/gamestart/TAssetManager/assetManagerGeneric.h"
 #include "p2/gamestart/assetEnums/entityEnum.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include <map>
@@ -39,8 +40,12 @@ public:
 
 
 	//all materials
-	UMaterial *findMaterial(materialEnum type);
-	void addMaterial(materialEnum type, UMaterial *material);
+	UMaterialInterface *findMaterial(materialEnum type);
+	void addMaterial(materialEnum type, UMaterialInterface *material);
+
+	//weapon attachments
+	UClass *findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment);
+	void addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass);
 
 private:
 	assetManager();
@@ -56,5 +61,8 @@ private:
 	assetManagerGeneric<particleEnum, UClass> particleAssets;
 
 
-	assetManagerGeneric<materialEnum, UMaterial> materialAssets;
+	assetManagerGeneric<materialEnum, UMaterialInterface> materialAssets;
+
+
+	std::map<weaponEnum, assetManagerGeneric<weaponAttachmentEnum, UClass>> weaponAttachmentAssets;
 };

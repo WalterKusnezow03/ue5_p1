@@ -1147,3 +1147,9 @@ void MeshData::appendCube(
     FVector d1 = d + orthogonalDir;
     appendCube(a, b, c, d, a1, b1, c1, d1);
 }
+
+
+
+int MeshData::verteciesNum(){
+    return vertecies.Num();
+}

@@ -18,6 +18,7 @@
 #include "p2/entityManager/EntityManagerGenericMap.h"
 #include "p2/entityManager/EntityManagerGeneric.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/rooms/roomtypeEnum.h"
 
 
@@ -124,10 +125,17 @@ private:
 	/// @return uclass or nullptr 
 	UClass *getParticleBp(particleEnum type);
 
-	void createParticle(UWorld *world, particleEnum enumtype, FVector &location, FVector &dir, float speed, float lifeTime);
+	void createParticle(
+		UWorld *world, 
+		particleEnum enumtype, 
+		FVector &location, 
+		FVector &dir, 
+		float speed, 
+		float lifeTime
+	);
 	void createParticle(
 		UWorld *world,
-		UMaterial *materialToApply, 
+		UMaterialInterface *materialToApply, 
 		FVector &location,
 		FVector &dir,
 		float speed,

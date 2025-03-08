@@ -68,4 +68,12 @@ void MotionAction::setLocationAndRotation(MMatrix &transformMat){
 
 
 
+void MotionAction::copyPositionSymetricalOnYZPane(
+    FVector &outLeft,
+    FVector &outRight
+){
+    outLeft = copyPosition();
+    outRight = copyPosition();
+    outLeft.Y *= -1.0f;
 
+}

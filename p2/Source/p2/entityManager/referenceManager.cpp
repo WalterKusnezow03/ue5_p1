@@ -59,6 +59,13 @@ FVector referenceManager::playerLookDir(){
     return FVector(0, 0, 0);
 }
 
+FRotator referenceManager::playerRotation(){
+    if(playerPointer != nullptr){
+        return playerPointer->cameraRotation();
+    }
+    return FRotator(0,0,0);
+}
+
 int referenceManager::verifyTeam(int teamIn){
     if(
         teamIn == TEAM_ENEMY ||

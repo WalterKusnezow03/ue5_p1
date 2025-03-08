@@ -135,6 +135,10 @@ void MotionQueue::Tick(
 
                 FVector location = currentStatePointer->copyPosition();
                 FVector posWorld = transform * location;
+
+                //achtung hier neu: actor animation zusätzlich abrufen!
+                posWorld += item->actorAnimationOffsetLocal();
+
                 item->SetActorLocation(posWorld);
                 
             }else{
@@ -151,14 +155,19 @@ void MotionQueue::Tick(
         FVector leftHandtarget = item->leftHandLocation();
         FVector weight(0, 0, -1);
 
-        //NEW
+        //NEW wingsuit section
         if(currentState == ArmMotionStates::wingsuitOpen && !transitioning){
             MotionAction *currentStatePointer = &statesMap[currentState];
             if(currentStatePointer != nullptr){
-                FVector copyPos = currentStatePointer->copyPosition();
-                rightHandtarget = transformRightArm * copyPos;
-                copyPos *= -1;
-                leftHandtarget = transformLeftArm * copyPos;
+
+                currentStatePointer->copyPositionSymetricalOnYZPane(
+                    leftHandtarget,
+                    rightHandtarget
+                );
+                
+                //move to world
+                leftHandtarget = transform * leftHandtarget; //move to world
+                rightHandtarget = transform * rightHandtarget; //move to world
             }
         }
         //NEW END

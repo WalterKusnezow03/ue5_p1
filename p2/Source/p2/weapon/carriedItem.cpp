@@ -327,3 +327,20 @@ MMatrix AcarriedItem::handAlignForwardRotationMatrix(){
 	MMatrix rotMat(rotator);
 	return rotMat;
 }
+
+
+
+
+
+
+//new actor animation internal
+
+///@brief will return the actor internal offset (with rotation) to apply
+/// from the bonecontroller motion queue (to combine)
+FVector AcarriedItem::actorAnimationOffsetLocal(){
+	return actorAnimationOffsetTicked;
+}
+
+void AcarriedItem::updateAnimationOffset(FVector &other){
+	actorAnimationOffsetTicked = other;
+}

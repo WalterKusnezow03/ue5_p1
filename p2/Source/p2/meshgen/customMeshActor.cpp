@@ -35,7 +35,6 @@ void AcustomMeshActor::BeginPlay()
 void AcustomMeshActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AcustomMeshActor::setDamagedOwner(IDamageinterface *damagedOwnerIn){
@@ -481,4 +480,25 @@ void AcustomMeshActor::debugThis(FVector &hitpoint){
     int sizeHole = 50;
     meshdata.cutHoleWithInnerExtensionOfMesh(localHit, sizeHole);
     ReloadMeshAndApplyAllMaterials();
+}
+
+
+
+
+
+
+
+
+/**
+ * 
+ * 
+ * ----- shading function for foliage ------s
+ * 
+ * 
+ */
+std::vector<materialEnum> AcustomMeshActor::foliageMaterials(){
+    std::vector<materialEnum> output = {
+        materialEnum::palmLeafMaterial
+    };
+    return output;
 }

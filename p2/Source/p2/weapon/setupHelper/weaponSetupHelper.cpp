@@ -12,7 +12,7 @@ weaponSetupHelper::weaponSetupHelper()
     typeToCreate = weaponEnum::assaultRifle;
 
     //default value for sights
-    sightToSet = weaponSightEnum::enum_ironsight;
+    sightToSet = weaponAttachmentEnum::iron_sight;
 }
 
 weaponSetupHelper::~weaponSetupHelper()
@@ -29,8 +29,10 @@ void weaponSetupHelper::setWeaponTypeToCreate(weaponEnum typeIn){
 
 /// @brief sets the targeted sight to set to a value
 /// @param sightIn 
-void weaponSetupHelper::setSightAttachment(weaponSightEnum sightIn){
-    sightToSet = sightIn;
+void weaponSetupHelper::setSightAttachment(weaponAttachmentEnum sightIn){
+    if(isASightAttachment(sightIn)){
+        sightToSet = sightIn;
+    }
 }
 
 
@@ -53,4 +55,30 @@ void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
 
         weaponIn->applySight(sightToSet);
     }
+}
+
+
+std::vector<weaponAttachmentEnum> weaponSetupHelper::validSights(){
+    std::vector<weaponAttachmentEnum> output = {
+        weaponAttachmentEnum::iron_sight,
+        weaponAttachmentEnum::reddot
+    };
+    return output;
+}
+std::vector<weaponAttachmentEnum> weaponSetupHelper::validGrips(){
+    std::vector<weaponAttachmentEnum> output = {
+        weaponAttachmentEnum::grip_vertical
+    };
+    return output;
+}
+
+
+bool weaponSetupHelper::isASightAttachment(weaponAttachmentEnum type){
+    std::vector<weaponAttachmentEnum> sights = validSights();
+    for (int i = 0; i < sights.size(); i++){
+        if(sights[i] == type){
+            return true;
+        }
+    }
+    return false;
 }

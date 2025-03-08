@@ -31,7 +31,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void applyImpulse(FVector &directionIn, float speedIn, float lifeTime);
-	void applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterial *material);
+	void applyImpulse(FVector &directionIn, float velocity, float lifeTime, UMaterialInterface *material);
 	void applyImpulse(
 		FVector &directionIn,
 		float velocity,
@@ -43,7 +43,7 @@ public:
 		FVector &directionIn,
 		float velocity,
 		float lifeTime,
-		UMaterial *material,
+		UMaterialInterface *material,
 		FVector &scale
 	);
 

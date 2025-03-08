@@ -302,7 +302,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
             fromManager->showItem(true);
 
             //testing as default sight
-            fromManager->applySight(weaponSightEnum::enum_ironsight);
+            fromManager->applySight(weaponAttachmentEnum::iron_sight);
             return fromManager;
         }
     }
@@ -323,7 +323,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
             w->showItem(true);
 
             //testing as default sight
-            w->applySight(weaponSightEnum::enum_ironsight);
+            w->applySight(weaponAttachmentEnum::iron_sight);
 
             return w;
         }
@@ -513,7 +513,7 @@ void EntityManager::createDebree(UWorld *world, FVector &location, materialEnum 
 
     assetManager *am = assetManager::instance();
     if(am != nullptr){
-        UMaterial *material = am->findMaterial(materialType);
+        UMaterialInterface *material = am->findMaterial(materialType);
         if(material != nullptr){
             FVector dir = FVectorUtil::randomOffset(100);
             float speed = 3000.0f;
@@ -579,7 +579,7 @@ void EntityManager::createParticle(
 /// @param speed speed to apply
 void EntityManager::createParticle(
     UWorld *world, 
-    UMaterial *materialToApply,
+    UMaterialInterface *materialToApply,
     FVector &location, 
     FVector &dir, 
     float speed, 

@@ -14,6 +14,7 @@
 #include "p2/DebugHelper.h"
 #include "GameFramework/Character.h" // Falls noch nicht inkludiert
 #include "GameFramework/CharacterMovementComponent.h"
+#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
@@ -94,7 +95,7 @@ void AplayerScript::BeginPlay()
         
         weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(weapon != nullptr){
-            weapon->applySight(weaponSightEnum::enum_reddot);
+            weapon->applySight(weaponAttachmentEnum::reddot);
             weapon->pickup(CameraComponent);
             playerInventory.addWeapon(weapon);
 
@@ -207,7 +208,9 @@ void AplayerScript::Tick(float DeltaTime)
     
     TickBoneController(DeltaTime);
     resetFlagsOnTick();
-    TickWingsuitTimer(DeltaTime);
+    //TickWingsuitTimer(DeltaTime);
+
+    TickUpdateWingsuit(DeltaTime);
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -250,22 +253,6 @@ void AplayerScript::TickBoneController(float DeltaTime){
 
 
 
-void AplayerScript::changeGravityDefault(){
-    if(GetCharacterMovement()){
-        GetCharacterMovement()->GravityScale = 1.0f; //defaul gravity
-    }
-    
-}
-
-void AplayerScript::changeGravityWingSuit(){
-    if(GetCharacterMovement()){
-        GetCharacterMovement()->GravityScale = 0.5f; //half gravity
-    }
-
-    
-}
-
-
 
 void AplayerScript::resetFlagsOnTick(){
     isWalking = false;
@@ -295,10 +282,23 @@ void AplayerScript::MoveForward(float Value)
     if ((Controller != nullptr) && (Value != 0.0f))
     {
         //testing
+        /*
         if(sprinting){
             //DebugHelper::showScreenMessage("sprint");
             Value *= SPRINT_MULTIPLY;
         }
+        if(wingsuitInterface.wingsuitIsOpenFlag()){
+            Value *= WINGSUIT_MULTIPLY;
+        }
+        DebugHelper::showScreenMessage("value multiply", (float) Value, FColor::Cyan);
+        */
+        GetCharacterMovement()->MaxWalkSpeed = BASE_SPEED;
+        GetCharacterMovement()->MinAnalogWalkSpeed = BASE_SPEED - 1;
+        if (sprinting) {
+            GetCharacterMovement()->MaxWalkSpeed = SPRINT_SPEED;
+            GetCharacterMovement()->MinAnalogWalkSpeed = SPRINT_SPEED - 1;
+        } 
+        
 
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -315,7 +315,7 @@ void AplayerScript::MoveForward(float Value)
 
 
         //new
-        setWingsuitTimerOnMovement();
+        wingsuitInterface.setWingsuitTimerOnMovement();
     }
 }
 
@@ -330,7 +330,7 @@ void AplayerScript::MoveRight(float Value)
         AddMovementInput(Direction, Value);
 
         //new
-        setWingsuitTimerOnMovement();
+        wingsuitInterface.setWingsuitTimerOnMovement();
     }
 }
 
@@ -348,20 +348,30 @@ void AplayerScript::LookUpAtRate(float Rate)
 	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
 }
 
+
+
+
+
 void AplayerScript::Jump(){
-    if (CanJump())
-    {
+    if (CanJump()){
         ACharacter::Jump(); // Calls the base class jump function
+
+        if(!wingsuitInterface.wingsuitIsOpenFlag()){
+            wingsuitInterface.setWingsuitTimerOnJump();
+        }
     }
 
     //debug
     switchCamera();
-
-    tryOpenWingsuit(); //debug, might be another key
+    
+    
 }
+
+
 
 void AplayerScript::sprint(){
     sprinting = !sprinting;
+    
 }
 
 /**
@@ -660,121 +670,45 @@ AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 
 
 
+
 /**
  * 
- * ---- wingsuit helpers ----
+ * ---- wingsuit helpers new ----
  * 
  */
-void AplayerScript::setWingsuitTimerOnMovement(){
-    setWingsuitTimer(wingsuitUpdateInvertall);
-}
-void AplayerScript::setWingsuitTimer(float time){
-    if(!wingsuitTimerWasStarted){
-        wingsuitTimerWasStarted = true;
-        wingsuitTimer.Begin(time, true); // alle 30 sekunden? //vielleicht immer wenn er moved?
+void AplayerScript::TickUpdateWingsuit(float DeltaTime){
+    wingsuitInterface.Tick(GetWorld(), *this, DeltaTime);
+
+    //update gravity in any case from wingsuit class
+    if(GetCharacterMovement()){
+        //gravity based on inner state
+        GetCharacterMovement()->GravityScale = wingsuitInterface.currentGravityMultiplier(); 
     }
-}
 
-
-void AplayerScript::TickWingsuitTimer(float DeltaTime){
-    /*
-    if(wingsuitIsOpen){
-        wingsuitTimer.Tick(DeltaTime);
-        if(wingsuitTimer.timesUp()){
-            tryOpenWingsuit(); //check for closing wingsuit again
-        }
-    }*/
-    if(wingsuitTimerWasStarted){
-        wingsuitTimer.Tick(DeltaTime);
-        if(wingsuitTimer.timesUp()){
-            tryOpenWingsuit(); //check for closing wingsuit again
-            wingsuitTimerWasStarted = false;
-        }
-    }
-    
-    
-}
-
-float AplayerScript::gravityCmsDown(){
-    UWorld *world = GetWorld();
-    UCharacterMovementComponent *characterMovement = GetCharacterMovement();
-    if (characterMovement != nullptr && world != nullptr)
-    {
-        float WorldGravity = world->GetGravityZ(); // Standard: -980 cm/s2 (x(t) = x0 + v0t + 1/2at^2)
-        float CharacterGravity = characterMovement->GravityScale * WorldGravity;
-        return CharacterGravity;
-    }
-    return -980.0f;
-}
-
-void AplayerScript::tryOpenWingsuit(){
-    float distanceFromGroundMeasured = 0.0f;
-    if (isInAirRaycast(GetActorLocation(), distanceFromGroundMeasured))
-    {
-
-        DebugHelper::showScreenMessage("WINGSUIT PLAYER OPEN", FColor::Red);
+    if(wingsuitInterface.wingsuitIsOpenFlag()){
         boneController.openWingsuit();
-        changeGravityWingSuit();
-
-        //x(t) = x0 + v0t + 1/2 a t^2
-        //gesucht: next time gravity check
-        //gesucht also t:
-
-        //x(t) = distanceFromGround + 0*t + 1/2 a * t^2
-        //x(t) = distanceFromGround + 1/2 a * t^2
-        // 0 = distanceFromGround + 1/2 a * t^2
-        // - distanceFromGround = 1/2 a * t^2 | * 2
-        // - 2 * distanceFromGround = a * t^2 | :a
-        // (-2 * distanceFromGround) / a = t^2 | sqrt
-        // sqrt((-2 * distanceFromGround) / a) = t
-        // t = sqrt(abs(distance * 2) / abs(gravity))
-        float gravity = std::abs(gravityCmsDown());
-        if(gravity > 0.01f){
-            float nextTime = std::sqrt(
-                std::abs(distanceFromGroundMeasured * 2) /
-                gravity
-            );
-            /*
-            wingsuitTimer.Begin(nextTime, true); //true(? resets itself, unklar ob korrekt.)
-            wingsuitTimerWasStarted = true;*/
-            wingsuitTimerWasStarted = false;
-            setWingsuitTimer(nextTime);
-        }
-    }
-    else
-    {
-        DebugHelper::showScreenMessage("WINGSUIT PLAYER CLOSE", FColor::Orange);
+        addWingsuitVelocity(DeltaTime);
+    }else{
         boneController.closeWingsuit();
-        changeGravityDefault();
-
     }
 }
 
-bool AplayerScript::isInAirRaycast(FVector Start, float &distanceFromGround){
-    
+void AplayerScript::addWingsuitVelocity(float DeltaTime){
+    if(CameraComponent){
+        FVector CameraForward = CameraComponent->GetForwardVector();
+        CameraForward.Z = 0.0f;
 
-    //100 = 1m
-    //500m = 
-    FVector End = Start + FVector(0,0,-1 * minDistanceGroundForWingsuit); //10 meter runter
-
-    // Perform the raycast
-    FHitResult HitResult;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this); // Ignore the character itself
-    Params.bTraceComplex = false; //better performance
-
-    UWorld *world = GetWorld();
-    if(world){
-        bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-        if(!bHit){
-
-            FVector hit = HitResult.ImpactPoint;
-            float distOnZ = hit.Z - Start.Z;
-            distanceFromGround = distOnZ;
-
-            return true;
-        }
+        FVector location = GetActorLocation();
+        location += CameraForward * WINGSUIT_SPEED * DeltaTime;
+        SetActorLocation(location);
     }
-    
-    return false;
+}
+
+
+FRotator AplayerScript::cameraRotation(){
+    FRotator rotator;
+    if(CameraComponent){
+        return CameraComponent->GetComponentRotation();
+    }
+    return rotator;
 }

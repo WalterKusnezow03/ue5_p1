@@ -76,4 +76,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+
+	virtual FVector actorAnimationOffsetLocal();
+	
+protected:
+	FVector actorAnimationOffsetTicked;
+	void updateAnimationOffset(FVector &other);
 };

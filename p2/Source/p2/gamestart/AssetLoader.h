@@ -27,9 +27,7 @@ private:
 	FString buildPath(FString path, FString bluePrintName);
 	void cleanUpPath(FString &s);
 
-
-
-
+	void loadWeaponAttachments();
 	void loadWeapons();
 	void loadEntities();
 	void loadThrower();

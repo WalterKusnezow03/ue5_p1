@@ -123,4 +123,8 @@ protected:
 
 	materialEnum materialtypeSet = materialEnum::grassMaterial;
 
+
+	//shader
+	std::vector<materialEnum> foliageMaterials();
+	
 };

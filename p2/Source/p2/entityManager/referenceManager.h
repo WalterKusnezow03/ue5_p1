@@ -29,6 +29,7 @@ public:
 
 	FVector playerLocation();
 	FVector playerLookDir();
+	FRotator playerRotation();
 
 private:
 	// private constructor for singleton
