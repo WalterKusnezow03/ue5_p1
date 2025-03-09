@@ -387,7 +387,7 @@ void worldLevel::createGroundPane(UWorld *world){
     if(world != nullptr){
 
         int onemeter = 100;
-        int size = onemeter * 500;
+        int size = onemeter * 100;
         FVector location(0, 0, 100);
         std::vector<FVector> verteciesPane = MeshData::create2DQuadVertecies(size, size);
         if(verteciesPane.size() == 4){
