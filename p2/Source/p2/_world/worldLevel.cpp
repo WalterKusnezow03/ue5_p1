@@ -427,8 +427,8 @@ void worldLevel::debugCreateWater(UWorld *world){
             params
         );
         if(SpawnedActor != nullptr){
-            int distanceeBetweenVertecies = 40;
-            int vertexcount = 100;
+            int distanceeBetweenVertecies = 50;
+            int vertexcount = 70;
             SpawnedActor->createWaterPane(vertexcount, distanceeBetweenVertecies);
         }
     }

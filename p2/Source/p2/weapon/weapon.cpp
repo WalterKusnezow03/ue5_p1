@@ -456,6 +456,7 @@ void Aweapon::shootAnimation(){
 		if(false){
 			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
 		}else{
+			//new custom animation with target interpolator
 			kickbackStarted = true;
 			recoilCopied = false;
 		}
@@ -915,7 +916,7 @@ void Aweapon::TickKickback(float DeltaTime){
 	if(kickbackStarted){
 		FVector newOffset = actorKickBackAnim.interpolate(DeltaTime);
 
-		DebugHelper::showScreenMessage("kickback ", (int) newOffset.X);
+		//DebugHelper::showScreenMessage("kickback ", (int) newOffset.X);
 
 		//rotate frame to local rotation of actor, then += apply
 		FRotator rotation = GetActorRotation();

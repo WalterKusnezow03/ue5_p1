@@ -21,7 +21,6 @@ public:
 	);
 
 	void setWingsuitTimerOnJump();
-	void setWingsuitTimerOnMovement();
 
 	float currentGravityMultiplier();
 	bool wingsuitIsOpenFlag();
@@ -31,7 +30,8 @@ private:
 	UWorld *world = nullptr;
 
 	float gravityDownAcceleration = -980.0f;
-	
+
+	bool wingsuitJumpTriggered = false;
 	bool wingsuitIsOpen = false;
 	float wingsuitUpdateInvertall = 1.0f;
 	class timer wingsuitTimer;
@@ -47,4 +47,8 @@ private:
 	void changeGravityWingSuit();
 
 	float gravityCmsDown();
+
+
+	//new expiremental
+	float v0 = 0.0f;
 };

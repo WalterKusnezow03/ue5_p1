@@ -56,31 +56,28 @@ void WingsuitInterface::Tick(
 ///@brief ticks the wingsuit timer and try to open / close the wingsuit on times up
 /// with a new raycast
 void WingsuitInterface::TickWingsuitTimer(float DeltaTime){
+    if(wingsuitIsOpen || wingsuitJumpTriggered){
+        wingsuitTimer.Tick(DeltaTime);
+        if(wingsuitTimer.timesUp()){
 
-    wingsuitTimer.Tick(DeltaTime);
-    if(wingsuitTimer.timesUp()){
+            tryOpenWingsuit(); //check for closing wingsuit again
 
-        tryOpenWingsuit(); //check for closing wingsuit again
+            wingsuitJumpTriggered = false;
+        }
     }
+    
     
 }
 
 
 
-///@brief resets the time for a new raycast if the player moves, and the wingsuit is not 
-/// open yet (public api for player)
-void WingsuitInterface::setWingsuitTimerOnMovement(){
-    //DebugHelper::showScreenMessage("wingsuit update on movement --> 1");
-    if (wingsuitIsOpen == false && wingsuitTimer.timesUp())
-    {
-        //DebugHelper::showScreenMessage("wingsuit update on movement --> 2");
-        setWingsuitTimer(wingsuitUpdateInvertall);
-    }
-}
 
 ///@brief has a higher priority of resetting the timer compared to "setWingsuitTimerOnMovement"
 void WingsuitInterface::setWingsuitTimerOnJump(){
-    setWingsuitTimer(wingsuitUpdateInvertall / 2.0f);
+    if (!wingsuitIsOpen){
+        wingsuitJumpTriggered = true; //check time anyways now 
+        setWingsuitTimer(wingsuitUpdateInvertall / 2.0f);
+    }
 }
 
 ///@brief resets the wingsuit timer to a new time, which LOOPS
@@ -108,38 +105,83 @@ void WingsuitInterface::tryOpenWingsuit(){
         DebugHelper::showScreenMessage("WINGSUIT OPEN", FColor::Red);
         
 
-        //x(t) = x0 + v0t + 1/2 a t^2
-        //gesucht: next time gravity check
-        //gesucht also t:
+        
+        if(std::abs(v0) <= 0.1f){
 
-        //x(t) = distanceFromGround + 0*t + 1/2 a * t^2
-        //x(t) = distanceFromGround + 1/2 a * t^2
-        // 0 = distanceFromGround + 1/2 a * t^2
-        // - distanceFromGround = 1/2 a * t^2 | * 2
-        // - 2 * distanceFromGround = a * t^2 | :a
-        // (-2 * distanceFromGround) / a = t^2 | sqrt
-        // sqrt((-2 * distanceFromGround) / a) = t
-        // t = sqrt(abs(distance * 2) / abs(gravity))
-        float gravity = std::abs(gravityCmsDown());
-        if(gravity > 0.01f){
+            //x(t) = x0 + v0t + 1/2 a t^2
+            //gesucht: next time gravity check
+            //gesucht also t:
 
-            float nextTime = std::sqrt(
-                std::abs(distanceFromGroundMeasured * 2) /
-                gravity
-            );
-            
-            changeGravityWingSuit();
-            setWingsuitTimer(nextTime);
-            DebugHelper::showScreenMessage("WINGSUIT OPEN: NEW TIME:", (float) nextTime, FColor::Red);
+            //x(t) = distanceFromGround + 0*t + 1/2 a * t^2
+            //x(t) = distanceFromGround + 1/2 a * t^2
+            // 0 = distanceFromGround + 1/2 a * t^2
+            // - distanceFromGround = 1/2 a * t^2 | * 2
+            // - 2 * distanceFromGround = a * t^2 | :a
+            // (-2 * distanceFromGround) / a = t^2 | sqrt
+            // sqrt((-2 * distanceFromGround) / a) = t
+            // t = sqrt(abs(distance * 2) / abs(gravity))
+
+            float gravity = std::abs(gravityCmsDown());
+            if(gravity > 0.01f){
+
+                float nextTime = std::sqrt(
+                    std::abs(distanceFromGroundMeasured * 2) /
+                    gravity
+                );
+                
+                changeGravityWingSuit();
+                setWingsuitTimer(nextTime);
+                DebugHelper::showScreenMessage("WINGSUIT OPEN: NEW TIME:", (float) nextTime, FColor::Red);
+
+                //v(t) = v0 + at
+                v0 += gravity * nextTime;
+            }
+        }else{
+
+            //x(t) = distanceFromGround + vt + 1/2 a * t^2
+            // 0 = 1/2 a * t^2 + vt + distanceFromGround | * 2
+            // 0 = a * t^2 + 2*vt + 2*distanceFromGround | : a
+            // 0 = t^2 + (2*vt)/a + (2*distanceFromGround)/a | ax^2 + px + q = 0, a = 1 !
+
+            //(x0, x1) = -(p/2) +- sqrt((p/2)^2-q)
+
+            // p = ((2*v)/a) / 2 <=> ((2*v)/a) * 1/2 <=> v / a
+            // (x0, x1) = -(v / a) +- sqrt((v / a)^2 - ((2*distanceFromGround)/a))
+
+            float gravity = std::abs(gravityCmsDown());
+            if(gravity > 0.01f){
+                float p2 = (v0 / gravity);
+
+                float innerSqrt = (p2 * p2) - 2 * ((distanceFromGroundMeasured) / gravity);
+                if (innerSqrt >= 0) {
+                    float nextTime = std::abs(-1 * p2 + std::sqrt(innerSqrt));
+
+                    changeGravityWingSuit();
+                    setWingsuitTimer(nextTime);
+                    v0 += gravity * nextTime;
+
+                    DebugHelper::showScreenMessage("WINGSUIT OPEN: NEW TIME:", (float) nextTime, FColor::Red);
+                }else{
+                    
+                    changeGravityDefault();
+                    v0 = 0.0f;
+                    
+                }
+
+                
+            }
         }
+        
+
+
     }
     else
     {
         DebugHelper::showScreenMessage("WINGSUIT CLOSE: distance:",distanceFromGroundMeasured, FColor::Orange);
         //boneController.closeWingsuit();
         changeGravityDefault();
-        setWingsuitTimer(wingsuitUpdateInvertall);
-
+        //setWingsuitTimer(wingsuitUpdateInvertall);
+        v0 = 0.0f;
     }
 }
 

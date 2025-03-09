@@ -314,8 +314,6 @@ void AplayerScript::MoveForward(float Value)
         isWalking = true;
 
 
-        //new
-        wingsuitInterface.setWingsuitTimerOnMovement();
     }
 }
 
@@ -329,8 +327,6 @@ void AplayerScript::MoveRight(float Value)
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
         AddMovementInput(Direction, Value);
 
-        //new
-        wingsuitInterface.setWingsuitTimerOnMovement();
     }
 }
 
