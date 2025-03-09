@@ -207,10 +207,18 @@ private:
 
 	//new implementing animation from bonecontroller class
 	class KeyFrameAnimation actorKickBackAnim;
+	void flagKickbackStart();
 	bool kickbackStarted = false;
+	bool verschlussKickBackStarted = false;
 	bool recoilCopied = false;
 
+	
 	void setupKickBackAnimation();
 	bool kickbackIsRunning();
 	void TickKickback(float DeltaTime);
+
+	class KeyFrameAnimation verschlussKickBackAnimation;
+	void setupVerschlussAnimation();
+	void TickVerschlussKickBack(float DeltaTime);
+
 };

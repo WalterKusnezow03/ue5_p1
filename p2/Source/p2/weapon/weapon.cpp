@@ -84,6 +84,7 @@ void Aweapon::BeginPlay()
 	spawnAllAvailableAttachments();
 
 	setupKickBackAnimation();
+	setupVerschlussAnimation();
 }
 
 // Called every frame / UPDATE
@@ -96,6 +97,7 @@ void Aweapon::Tick(float DeltaTime)
 
 	//new
 	TickKickback(DeltaTime);
+	TickVerschlussKickBack(DeltaTime);
 }
 
 /// @brief Only for player:
@@ -323,8 +325,9 @@ void Aweapon::resetCoolTime(float time){
  * will return if the weapon is cooling at the moment
  */
 bool Aweapon::isCooling(){
-	return (timer.timesUp() == false);
-	//return timeleft > 0.05f;
+	//return (timer.timesUp() == false);
+
+	return kickbackStarted || (timer.timesUp() == false);
 }
 
 /**
@@ -450,19 +453,18 @@ void Aweapon::setupAnimations()
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
 	if(verschlussSkeletonPointer != nullptr){
-		//playAnimation(verschlussPath, verschlussSkeletonPointer, cooldownTime);
-		playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
+		//old anim sequnce (new: custom animator)
+		//playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 
 		if(false){
+			playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
+			playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
+
 		}else{
 			//new custom animation with target interpolator
-			kickbackStarted = true;
-			recoilCopied = false;
+			flagKickbackStart();
 		}
-
-		//trying gehause anim on mag for shoot?
-		playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
 	}
 }
 
@@ -886,6 +888,11 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
  * --- new testing keyframe anim on actor ---
  * 
  */
+void Aweapon::flagKickbackStart(){
+	verschlussKickBackStarted = true;
+	kickbackStarted = true;
+}
+
 void Aweapon::setupKickBackAnimation(){
 	int kickBackDistance = 3; //3cm
 
@@ -913,7 +920,7 @@ bool Aweapon::kickbackIsRunning(){
 }
 
 void Aweapon::TickKickback(float DeltaTime){
-	if(kickbackStarted){
+	if(kickbackIsRunning()){
 		FVector newOffset = actorKickBackAnim.interpolate(DeltaTime);
 
 		//DebugHelper::showScreenMessage("kickback ", (int) newOffset.X);
@@ -940,4 +947,52 @@ void Aweapon::TickKickback(float DeltaTime){
 	}
 }
 
+
+
+
+/**
+ * 
+ * -- verschluss animation --
+ * 
+ */
+void Aweapon::setupVerschlussAnimation(){
+	verschlussKickBackAnimation = KeyFrameAnimation(false);
+	verschlussKickBackAnimation.useHermiteSplineInterpolation(false); //linear default
+
+	FVector currentRelativeLocation;
+	if (verschlussSkeletonPointer != nullptr)
+	{
+		currentRelativeLocation = verschlussSkeletonPointer->GetRelativeLocation();
+	}
+	
+
+	int kickBackDistance = 3;
+	verschlussKickBackAnimation.addFrame(
+		currentRelativeLocation + FVector(0, 0, 0),
+		0.0f, // time to prev frame
+		false);
+	verschlussKickBackAnimation.addFrame(
+		currentRelativeLocation + FVector(-kickBackDistance, 0, 0), //x forward
+		cooldownTime * 0.1f, //time to prev frame
+		false
+	);
+	verschlussKickBackAnimation.addFrame(
+		currentRelativeLocation + FVector(0, 0, 0),
+		cooldownTime * 0.8f, //time to prev frame
+		false
+	);
+}
+
+
+void Aweapon::TickVerschlussKickBack(float DeltaTime){
+	if(verschlussKickBackStarted && verschlussSkeletonPointer != nullptr){
+
+		FVector interpolatedLocal = verschlussKickBackAnimation.interpolate(DeltaTime);
+		verschlussSkeletonPointer->SetRelativeLocation(interpolatedLocal);
+
+		if(verschlussKickBackAnimation.reachedLastFrameOfAnimation()){
+			verschlussKickBackStarted = false;
+		}
+	}
+}
 

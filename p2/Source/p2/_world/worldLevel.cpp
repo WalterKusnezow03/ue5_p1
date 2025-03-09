@@ -417,20 +417,12 @@ void worldLevel::debugCreateWater(UWorld *world){
     //return;
 
     if(world != nullptr){
-        FVector location(-2000, -2000, 100);
-        FRotator rotation;
-        FActorSpawnParameters params;
-        AcustomWaterActor *SpawnedActor = world->SpawnActor<AcustomWaterActor>(
-            AcustomWaterActor::StaticClass(),
-            location,
-            FRotator::ZeroRotator,
-            params
+
+        int vertexcount = 100;
+        AcustomWaterActor::createWaterPane(
+            world,
+            vertexcount
         );
-        if(SpawnedActor != nullptr){
-            int distanceeBetweenVertecies = 50;
-            int vertexcount = 70;
-            SpawnedActor->createWaterPane(vertexcount, distanceeBetweenVertecies);
-        }
     }
 }
 
