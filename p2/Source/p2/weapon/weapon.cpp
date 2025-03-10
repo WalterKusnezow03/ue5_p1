@@ -923,19 +923,8 @@ void Aweapon::TickKickback(float DeltaTime){
 	if(kickbackIsRunning()){
 		FVector newOffset = actorKickBackAnim.interpolate(DeltaTime);
 
-		//DebugHelper::showScreenMessage("kickback ", (int) newOffset.X);
-
-		//rotate frame to local rotation of actor, then += apply
-		FRotator rotation = GetActorRotation();
-		MMatrix rotationMatrix(rotation);
-		FVector frameRotated = rotationMatrix * newOffset;
-
-		//FVector actorLocationNew = GetActorLocation();
-		//actorLocationNew += frameRotated;
-		//SetActorLocation(actorLocationNew);
-
 		//bone controller motion queue will handle the anim state
-		Super::updateAnimationOffset(frameRotated);
+		Super::updateAnimationOffset(newOffset);
 
 		if(actorKickBackAnim.reachedLastFrameOfAnimation()){
 			kickbackStarted = false;

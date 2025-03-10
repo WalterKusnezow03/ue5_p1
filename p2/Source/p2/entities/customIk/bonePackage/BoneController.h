@@ -12,6 +12,7 @@
 #include "p2/entities/customIk/bonePackage/handPackage/HandController.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
 #include "p2/entities/customIk/animation/FrameProjectContainer.h"
+#include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 
 /**
  * This class will manage Bones of itself
@@ -161,6 +162,7 @@ private:
 	MMatrix shoulder2MatrixOffset;
 	MMatrix ownLocationHand1; //real world location end hand 1
 	MMatrix ownLocationHand2; //real world location end hand 2
+
 
 	//head
 	MMatrix headMatrixOffset;
@@ -331,4 +333,17 @@ private:
 
 	//new
 	FrameProjectContainer generateFrameProjectContainer(int limbindex);
+
+
+
+
+
+	//wingsuit section
+public:
+	void setupWings(UWorld *worldin);
+
+private:
+	class AwingsuitMeshActor *wingsuitMeshActorPointer = nullptr;
+	void TickWingsuitUpdate();
+	void transformToLocalKeepingRotation(std::vector<FVector> &vec);
 };

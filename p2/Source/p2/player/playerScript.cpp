@@ -144,7 +144,7 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 
 void AplayerScript::switchCamera(){
-    return;
+    //return;
 
     if(isCamInPlayer){
         cameraDebugFpv();
@@ -167,7 +167,7 @@ void AplayerScript::cameraDefaultFpv(){
 
 void AplayerScript::cameraDebugFpv(){
     if(CameraComponent){
-        CameraComponent->SetRelativeLocation(FVector(0, 0, 2000.0f)); // Position the camera
+        CameraComponent->SetRelativeLocation(FVector(0, 0, 400.0f)); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
         CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
     }
@@ -358,7 +358,10 @@ void AplayerScript::Jump(){
     }
 
     //debug
-    switchCamera();
+    if(false){
+        switchCamera();
+    }
+    
     
     
 }
@@ -516,7 +519,9 @@ void AplayerScript::setupBoneController(){
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
 
-	// debug testing meshes
+    boneController.setupWings(GetWorld());
+
+    // debug testing meshes
 	float legScaleCM = boneController.legScale();
 	float armScaleCM = boneController.armScale();
 	float legHalfScale = legScaleCM / 2.0f;
@@ -684,8 +689,14 @@ void AplayerScript::TickUpdateWingsuit(float DeltaTime){
     if(wingsuitInterface.wingsuitIsOpenFlag()){
         boneController.openWingsuit();
         addWingsuitVelocity(DeltaTime);
+        if(isCamInPlayer){
+            switchCamera();
+        }
     }else{
         boneController.closeWingsuit();
+        if(!isCamInPlayer){
+            switchCamera();
+        }
     }
 }
 

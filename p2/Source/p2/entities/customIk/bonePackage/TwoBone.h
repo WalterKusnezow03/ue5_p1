@@ -81,6 +81,7 @@ public:
 	FVector copyLatestStartLimbPosition();
 	FVector copyLatestEndLimbPosition();
 
+	void copyLatestPositions(FVector &hipOut, FVector &kneeOut, FVector &endOut);
 
 	void resetAllRotations();
 
@@ -195,8 +196,12 @@ private:
 		std::vector<MMatrix *> &matrizen // must not be empty
 	);
 
-	
-	void copyCurrentMatricies();
+	void copyCurrentMatricies(
+		MMatrix &hipToCopy,
+		MMatrix &kneeToCopy,
+		MMatrix &footToCopy
+	);
 
+	//deprecated
 	bool pitchTooLow(float pitchAngle);
 };

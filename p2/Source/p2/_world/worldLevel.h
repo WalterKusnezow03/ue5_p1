@@ -59,7 +59,7 @@ private:
 
 	static void debugCreateRock(UWorld *world);
 
-	
+	static void debugCreateWingsuitMesh(UWorld *world);
 
 	static void debugMatrix();
 };

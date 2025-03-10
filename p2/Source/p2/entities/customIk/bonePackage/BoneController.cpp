@@ -9,6 +9,7 @@
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
 #include "p2/entities/customIk/animation/motionChain/MotionAction.h"
+#include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "CoreMinimal.h"
 
 
@@ -16,7 +17,7 @@ BoneController::BoneController()
 {
 	attachedTorso = nullptr;
 	attachedCarriedItem = nullptr;
-	
+	wingsuitMeshActorPointer = nullptr;
 
 	currentMotionState = BoneControllerStates::none; //by default
 
@@ -34,6 +35,7 @@ BoneController::BoneController()
 BoneController::BoneController(float legScaleCmIn, float armScaleCmIn, int fingerScaleCmIn){
 	attachedTorso = nullptr;
 	attachedCarriedItem = nullptr;
+	wingsuitMeshActorPointer = nullptr;
 	legScaleCM = std::abs(legScaleCmIn);
 	armScaleCM = std::abs(armScaleCmIn);
 	fingerScaleCmSetup = std::abs(fingerScaleCmIn);
@@ -43,12 +45,15 @@ BoneController::BoneController(float legScaleCmIn, float armScaleCmIn, int finge
 	currentMotionState = BoneControllerStates::none;
 
 	ALIGNHIP_FLAG = false;
+
 }
 
 BoneController::BoneController(BoneController &other){
 	attachedCarriedItem = nullptr;
 	attachedTorso = nullptr;
-	if (&other != this){
+	wingsuitMeshActorPointer = nullptr;
+	if (&other != this)
+	{
 		*this = other;
 	}
 
@@ -358,7 +363,7 @@ void BoneController::setupAnimation(){
 
 	MotionAction holsterState;
 	FRotator rotationForTarget3;
-	rotationForTarget3.Pitch = -90; //45 degree to front
+	rotationForTarget3.Pitch = -90;
 	FVector targetHolsterStateLocation(0, armScaleCM * 0.1f, 0);
 	contactState.setLocationAndRotation(targetHolsterStateLocation, rotationForTarget3);
 	armMotionQueue.addTarget(ArmMotionStates::holsterItem, holsterState);
@@ -367,14 +372,38 @@ void BoneController::setupAnimation(){
 
 	MotionAction wingsuitState;
 	FRotator rotationForTarget4;
-	rotationForTarget4.Roll = -90; //45 degree to front
-	FVector targetArmLocationWingsuit(armScaleCM * 0.2f, armScaleCM * 0.8f, armScaleCM); //x is forward
+	//rotationForTarget4.Roll = -90; 
+	FVector targetArmLocationWingsuit(armScaleCM * 0.5f, armScaleCM * 0.5f, armScaleCM); //x is forward
 	wingsuitState.setLocationAndRotation(targetArmLocationWingsuit, rotationForTarget4);
 	armMotionQueue.addTarget(ArmMotionStates::wingsuitOpen, wingsuitState);
 
 
 
 }
+
+void BoneController::setupWings(UWorld *worldin){
+	if(worldin != nullptr && wingsuitMeshActorPointer == nullptr){
+		
+		FVector location(0, 0, 0);
+        FRotator rotation;
+        FActorSpawnParameters params;
+        AwingsuitMeshActor *SpawnedActor = worldin->SpawnActor<AwingsuitMeshActor>(
+            AwingsuitMeshActor::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        if(SpawnedActor != nullptr){
+            int detail = 20;
+            SpawnedActor->initWingsuitMesh(detail);
+
+			wingsuitMeshActorPointer = SpawnedActor;
+		}
+	}
+	
+}
+
+
 
 
 /// @brief attach limb meshes: top and bottom part of bone
@@ -909,6 +938,7 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 		TickLocomotionClimbAll(DeltaTime);
 	}
 
+	TickWingsuitUpdate();
 }
 
 
@@ -1735,4 +1765,77 @@ void BoneController::debugDrawHeadForward(UWorld *worldPointer, float DeltaTime)
  */
 void BoneController::TickHandsNone(float DeltaTime){
 
+}
+
+
+
+
+
+/**
+ * 
+ * 
+ * ---- wingsuit update ----
+ * 
+ * 
+ */
+void BoneController::TickWingsuitUpdate(){
+	if(wingsuitMeshActorPointer != nullptr){
+		if(wingsuitMarkedOpen){
+			wingsuitMeshActorPointer->showMesh(true);
+			/*
+			a---b---c
+					|
+					d
+					|
+					e
+			*/
+			//transform all coordinates to local, but with rotation
+
+			//ownLocationFoot1,ownLocationFoot2,ownLocationHand1,ownLocationHand2
+
+	
+			//leftside
+			FVector a;
+			FVector b;
+			FVector c;
+			arm1.copyLatestPositions(c, b, a);
+
+			FVector a1;
+			FVector b1;
+			FVector c1;
+			arm2.copyLatestPositions(c1, b1, a1);
+
+
+
+			//hip und foot erstmal so. DEBUG 
+			MMatrix transform = currentTransform();
+			FVector d(-legScaleCM, 0, 0);
+			d = transform * d;
+			FVector e(-legScaleCM * 2, 0, 0); // debug wise vector
+			e = transform * e;
+
+			wingsuitMeshActorPointer->refreshVerteciesForBothWings(
+				a, b, c, d, e, a1, b1, c1, d, e
+			);
+
+			//debug draw
+			std::vector<FVector> debugDrawVec = {
+				a, b, c, d, e, a
+			};
+			DebugHelper::showLine(world, debugDrawVec, FColor::Orange, 0.5f);
+
+
+
+
+		}else{
+			wingsuitMeshActorPointer->showMesh(false);
+		}
+	}
+}
+
+void BoneController::transformToLocalKeepingRotation(std::vector<FVector> &vec){
+	MMatrix locationInverse = ownLocation.createInverse();
+	for (int i = 0; i < vec.size(); i++){
+		vec[i] = locationInverse * vec[i];
+	}
 }

@@ -13,6 +13,7 @@
 #include "p2/meshgen/customMeshActorBase.h"
 #include "p2/pathFinding/EdgeCollector.h"
 #include "p2/pathFinding/PathFinder.h"
+#include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/rooms/testing/roomProcedural.h"
@@ -105,6 +106,8 @@ void worldLevel::initWorld(UWorld *world){
     debugCreateWater(world);
 
     debugCreateRock(world);
+
+    debugCreateWingsuitMesh(world);
 
     debugMatrix();
 }
@@ -452,6 +455,25 @@ void worldLevel::debugCreateRock(UWorld *world){
     }
 }
 
+
+
+void worldLevel::debugCreateWingsuitMesh(UWorld *world){
+    if(world != nullptr){
+        FVector location(0, 0, 0);
+        FRotator rotation;
+        FActorSpawnParameters params;
+        AwingsuitMeshActor *SpawnedActor = world->SpawnActor<AwingsuitMeshActor>(
+            AwingsuitMeshActor::StaticClass(),
+            location,
+            FRotator::ZeroRotator,
+            params
+        );
+        if(SpawnedActor != nullptr){
+            int detail = 20;
+            SpawnedActor->initWingsuitMesh(detail);
+        }
+    }
+}
 
 
 

@@ -77,7 +77,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-
+	
 	virtual FVector actorAnimationOffsetLocal();
 	
 protected:
