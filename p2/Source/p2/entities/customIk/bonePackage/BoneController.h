@@ -342,8 +342,25 @@ private:
 public:
 	void setupWings(UWorld *worldin);
 
+	void setAsPlayerOwnedController();
+
 private:
+	bool playerOwnedController = false;
+
 	class AwingsuitMeshActor *wingsuitMeshActorPointer = nullptr;
-	void TickWingsuitUpdate();
+	void TickWingsuitUpdate(float DeltaTime);
 	void transformToLocalKeepingRotation(std::vector<FVector> &vec);
+
+	MMatrix wingsuitExtraRotation;
+
+	//player leg move new expiremental
+	class KeyFrameAnimation singleLegAnimation;
+
+	void setupSingleLegPlayerAnimation();
+	void TickAsPlayerOwnedController(float DeltaTime);
+	void playAnimationLegForPlayer(KeyFrameAnimation &frames, float DeltaTime, int index);
+	bool abnormalLegPosition();
+	bool playerHasMovedFlag();
+
+	bool playerMoved = false;
 };

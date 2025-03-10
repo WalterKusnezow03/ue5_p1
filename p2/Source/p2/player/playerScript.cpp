@@ -519,6 +519,7 @@ void AplayerScript::setupBoneController(){
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
 
+    boneController.setAsPlayerOwnedController();
     boneController.setupWings(GetWorld());
 
     // debug testing meshes

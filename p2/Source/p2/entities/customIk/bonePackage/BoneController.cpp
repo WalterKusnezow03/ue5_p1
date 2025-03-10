@@ -400,6 +400,9 @@ void BoneController::setupWings(UWorld *worldin){
 			wingsuitMeshActorPointer = SpawnedActor;
 		}
 	}
+
+	wingsuitExtraRotation.makeIdentity();
+	wingsuitExtraRotation.pitchRadAdd(MMatrix::degToRadian(90));
 	
 }
 
@@ -471,7 +474,7 @@ void BoneController::attachFinger(
 
 
 void BoneController::drawBody(float DeltaTime){
-	return;
+	//return;
 
 	MMatrix current = currentTransform();
 	MMatrix shoulder1 = currentTransform(SHOULDER_1);
@@ -483,12 +486,12 @@ void BoneController::drawBody(float DeltaTime){
 
 	DeltaTime *= 1.1f;
 
-	/*
+	
 	DebugHelper::showLineBetween(GetWorld(), com, shoulder1.getTranslation(), FColor::Red, DeltaTime);
 	DebugHelper::showLineBetween(GetWorld(), com, shoulder2.getTranslation(), FColor::Red, DeltaTime);
 	DebugHelper::showLineBetween(GetWorld(), com, foot1.getTranslation(), FColor::Red, DeltaTime);
 	DebugHelper::showLineBetween(GetWorld(), com, foot2.getTranslation(), FColor::Red, DeltaTime);
-	*/
+	
 }
 
 
@@ -644,10 +647,14 @@ MMatrix BoneController::currentTransform(){ //might be renamed to hip pivot
 
 
 MMatrix BoneController::currentTransform(MMatrix &offset){
+
+
+	
 	//M = T * R * Toffset <-- lese richtung --
-    MMatrix RT = ownOrientation * offset; //erst schulter offset z.b.
-    MMatrix rotationTransform = ownLocation * RT; //rotiert fuss das es übereinstimmt mit actor
-    return rotationTransform;
+	MMatrix RT = ownOrientation * offset; //erst schulter offset z.b.
+	MMatrix rotationTransform = ownLocation * RT; //rotiert fuss das es übereinstimmt mit actor
+	return rotationTransform;
+	
 }
 
 
@@ -700,6 +707,7 @@ MMatrix BoneController::offsetInverseMatrixByLimb(int limb){
 	
 	return offset.createInverse();
 }
+
 
 
 
@@ -836,13 +844,13 @@ void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
 		camPitched.Pitch = cameraRot.Pitch * -1.0f; //must be flipped.
 
 		
-		//ADS
+		//ADS OVERRIDE
 		MotionAction action;
 		action.setLocationAndRotation(camLocation, camPitched); //local matrix now
 		armMotionQueue.addTarget(ArmMotionStates::handsFollowItem, action);
 
 
-		//HIP
+		//HIP FIRE OVERRIDE
 		camLocation += FVector(-armScaleCM * 0.2f,0,0) + 
 					  FVector(0, armScaleCM * 0.2f, 0);
 		MotionAction hipaction;
@@ -896,6 +904,8 @@ void BoneController::openWingsuit(){
 	if(!wingsuitMarkedOpen){
 		armMotionQueue.updateStateIfPossible(ArmMotionStates::wingsuitOpen);
 		wingsuitMarkedOpen = true;
+		currentMotionState = BoneControllerStates::wingsuitOpenState;
+
 	}
 }
 
@@ -903,6 +913,8 @@ void BoneController::closeWingsuit(){
 	if(wingsuitMarkedOpen){
 		armMotionQueue.updateStateIfPossible(ArmMotionStates::handsFollowItem);
 		wingsuitMarkedOpen = false;
+		currentMotionState = BoneControllerStates::none;
+
 	}
 }
 
@@ -926,6 +938,13 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 	TickUpdateTorso();
 	TickUpdateHead();
 
+	if(playerOwnedController){
+		TickArms(DeltaTime);
+		TickAsPlayerOwnedController(DeltaTime);
+		TickWingsuitUpdate(DeltaTime);
+		return;
+	}
+
 	if(currentMotionState == BoneControllerStates::none){
         TickBuildNone(DeltaTime);
     }
@@ -938,7 +957,13 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 		TickLocomotionClimbAll(DeltaTime);
 	}
 
-	TickWingsuitUpdate();
+
+	if(currentMotionState == BoneControllerStates::wingsuitOpenState){
+		TickArms(DeltaTime);
+		TickWingsuitUpdate(DeltaTime);
+	}
+
+	
 }
 
 
@@ -966,6 +991,7 @@ void BoneController::TickLocomotion(float DeltaTime){
 		}
 	}
 
+	
 
 	//default player
 	if (leg1isPlaying)
@@ -1704,11 +1730,28 @@ FrameProjectContainer BoneController::generateFrameProjectContainer(int limbinde
 
 
 /**
- * new debug
+ * new debug ONLY PLAYER TICK
  */
 void BoneController::debugUpdateTransform(FVector location, FRotator rotation){
+
+	if(playerOwnedController){
+		float distMade = FVector::Dist(location, ownLocation.getTranslation());
+		if(std::abs(distMade) >= 0.1f){
+			playerMoved = true;
+			DebugHelper::showScreenMessage("PLAYER MOVED!", FColor::Green);
+		}
+		else
+		{
+			playerMoved = false;
+		}
+	}
+
 	ownLocation.setTranslation(location);
 	ownOrientation.setRotation(rotation);
+
+	if(currentMotionState == BoneControllerStates::wingsuitOpenState){
+		ownOrientation = ownOrientation * wingsuitExtraRotation;
+	}
 }
 
 
@@ -1778,10 +1821,14 @@ void BoneController::TickHandsNone(float DeltaTime){
  * 
  * 
  */
-void BoneController::TickWingsuitUpdate(){
+void BoneController::TickWingsuitUpdate(float DeltaTime){
 	if(wingsuitMeshActorPointer != nullptr){
 		if(wingsuitMarkedOpen){
 			wingsuitMeshActorPointer->showMesh(true);
+
+			TickLegsNone(DeltaTime);
+
+
 			/*
 			a---b---c
 					|
@@ -1809,10 +1856,15 @@ void BoneController::TickWingsuitUpdate(){
 
 			//hip und foot erstmal so. DEBUG 
 			MMatrix transform = currentTransform();
+			/*
 			FVector d(-legScaleCM, 0, 0);
 			d = transform * d;
 			FVector e(-legScaleCM * 2, 0, 0); // debug wise vector
 			e = transform * e;
+			*/
+			FVector d = transform.getTranslation();
+			FVector e = ownLocationFoot1.getTranslation();
+
 
 			wingsuitMeshActorPointer->refreshVerteciesForBothWings(
 				a, b, c, d, e, a1, b1, c1, d, e
@@ -1838,4 +1890,146 @@ void BoneController::transformToLocalKeepingRotation(std::vector<FVector> &vec){
 	for (int i = 0; i < vec.size(); i++){
 		vec[i] = locationInverse * vec[i];
 	}
+}
+
+
+
+
+/**
+ * 
+ * 
+ * ---- new foot auto align expiremntal section ----
+ * 
+ * 
+ */
+void BoneController::setAsPlayerOwnedController(){
+	playerOwnedController = true;
+	setupSingleLegPlayerAnimation();
+}
+
+//NOT TESTED
+void BoneController::setupSingleLegPlayerAnimation(){
+
+	singleLegAnimation = KeyFrameAnimation(false);
+
+	singleLegAnimation.addFrame(
+		FVector(0, 0, -legScaleCM),
+		0.0f, //time to prev frame
+		false,
+		legScaleCM
+	);
+	singleLegAnimation.addFrame(
+		FVector(25, 0, -legScaleCM * 0.9),
+		0.5f,
+		false,
+		legScaleCM
+	);
+	singleLegAnimation.addFrame(
+		FVector(50, 0, -legScaleCM),
+		0.5f,
+		true, //GROUNDED
+		legScaleCM
+	);
+
+	int velocityOfAnimation = 200.0f; //100(?)
+	singleLegAnimation.scaleToVelocityInCms(velocityOfAnimation); 
+}
+
+
+//NOT TESTED
+void BoneController::TickAsPlayerOwnedController(float DeltaTime){
+
+	if(wingsuitMarkedOpen){
+		return;
+	}
+
+	/*
+	if(!abnormalLegPosition()){
+		TickLegsNone(DeltaTime);
+		return;
+	}*/
+
+	if(!playerHasMovedFlag()){
+		TickLegsNone(DeltaTime);
+		return;
+	}
+
+	if (leg1isPlaying)
+	{
+		playAnimationLegForPlayer(singleLegAnimation, DeltaTime, FOOT_1);
+		buildRawAndKeepEndInPlace(leg2, ownLocationFoot2, DeltaTime, leg2Color, FOOT_2);
+		if (singleLegAnimation.reachedLastFrameOfAnimation())
+		{
+			//singleLegAnimation.reset();
+
+			FVector footPos = ownLocationFoot2.getTranslation(); //wurde bewegt nach hinten quasi, jetzt refresh
+			transformFromWorldToLocalCoordinates(footPos, FOOT_2);
+			singleLegAnimation.overrideCurrentStartingFrame(footPos);
+			leg1isPlaying = !leg1isPlaying;
+		}
+	}else{
+
+
+		playAnimationLegForPlayer(singleLegAnimation, DeltaTime, FOOT_2);
+		buildRawAndKeepEndInPlace(leg1, ownLocationFoot1, DeltaTime, leg2Color, FOOT_1);
+		if (singleLegAnimation.reachedLastFrameOfAnimation())
+		{
+			FVector footPos = ownLocationFoot1.getTranslation(); //wurde bewegt nach hinten quasi, jetzt refresh
+			transformFromWorldToLocalCoordinates(footPos, FOOT_1);
+			singleLegAnimation.overrideCurrentStartingFrame(footPos);
+			leg1isPlaying = !leg1isPlaying;
+		}
+	}
+
+	
+	
+
+}
+
+//NOT TESTED
+void BoneController::playAnimationLegForPlayer(KeyFrameAnimation &frames, float DeltaTime, int index){
+	
+	//project to ground if needed
+	FrameProjectContainer container = generateFrameProjectContainer(index);
+	bool projected = frames.projectNextFrameToGroundIfNeeded(container);
+
+
+	//tick
+	playForwardKinematicAnim(
+		frames,
+		DeltaTime,
+		index
+	);
+}
+
+
+bool BoneController::playerHasMovedFlag(){
+	return playerMoved;
+}
+
+bool BoneController::abnormalLegPosition(){
+	FVector locationFoot1Local = ownLocationFoot1.getTranslation();
+	transformFromWorldToLocalCoordinates(locationFoot1Local, FOOT_1);
+
+	//checkup
+	if(locationFoot1Local.X <= -50){
+		return true;
+	}
+
+	FVector locationFoot2Local = ownLocationFoot2.getTranslation();
+	transformFromWorldToLocalCoordinates(locationFoot2Local, FOOT_2);
+
+	if(locationFoot2Local.X <= -50){
+		return true;
+	}
+
+	//oder beide vorne
+	if(
+		(std::abs(locationFoot1Local.X) >= 50) ||
+		(std::abs(locationFoot2Local.X) >= 50)
+	){
+		return false;
+	}
+
+	return false;
 }
