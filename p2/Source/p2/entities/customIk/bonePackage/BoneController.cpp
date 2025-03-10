@@ -1855,19 +1855,17 @@ void BoneController::TickWingsuitUpdate(float DeltaTime){
 
 
 			//hip und foot erstmal so. DEBUG 
-			MMatrix transform = currentTransform();
-			/*
-			FVector d(-legScaleCM, 0, 0);
-			d = transform * d;
-			FVector e(-legScaleCM * 2, 0, 0); // debug wise vector
-			e = transform * e;
-			*/
-			FVector d = transform.getTranslation();
+			MMatrix dtransform = currentTransform(FOOT_1);
+			FVector d = dtransform.getTranslation();
 			FVector e = ownLocationFoot1.getTranslation();
+
+			MMatrix d1transform = currentTransform(FOOT_2);
+			FVector d1 = d1transform.getTranslation();
+			FVector e1 = ownLocationFoot2.getTranslation();
 
 
 			wingsuitMeshActorPointer->refreshVerteciesForBothWings(
-				a, b, c, d, e, a1, b1, c1, d, e
+				a, b, c, d, e, a1, b1, c1, d1, e1
 			);
 
 			//debug draw
@@ -1904,8 +1902,13 @@ void BoneController::transformToLocalKeepingRotation(std::vector<FVector> &vec){
  */
 
 //ONLY FOR PLAYER
-void BoneController::setAsPlayerOwnedController(){
+void BoneController::setAsPlayerOwnedController(float playerMotionVelocityDefaultIn){
 	playerOwnedController = true;
+	playerMotionVelocityDefault = std::abs(playerMotionVelocityDefaultIn);
+	if(playerMotionVelocityDefault < 100.0f){
+		playerMotionVelocityDefault = 100.0f;
+	}
+
 	setupSingleLegPlayerAnimation();
 }
 
@@ -1933,10 +1936,11 @@ void BoneController::setupSingleLegPlayerAnimation(){
 		legScaleCM
 	);
 
-	int velocityOfAnimation = 200.0f; //100(?)
-	singleLegAnimation.scaleToVelocityInCms(velocityOfAnimation); 
-}
+	
+	singleLegAnimation.scaleToVelocityInCms(playerMotionVelocityDefault);
 
+	singleLegAnimation.useHermiteSplineInterpolation(true);
+}
 
 //ONLY FOR PLAYER
 void BoneController::TickAsPlayerOwnedController(float DeltaTime){

@@ -130,5 +130,5 @@ private:
 	void setWingsuitTimerOnMovement();
 	class WingsuitInterface wingsuitInterface;
 
-
+	float playerMaxMovementVelocity = 500.0f;
 };

@@ -167,9 +167,9 @@ void AplayerScript::cameraDefaultFpv(){
 
 void AplayerScript::cameraDebugFpv(){
     if(CameraComponent){
-        CameraComponent->SetRelativeLocation(FVector(0, 0, 400.0f)); // Position the camera
+        CameraComponent->SetRelativeLocation(FVector(-200.0f, 0, 400.0f)); // Position the camera
 	    CameraComponent->bUsePawnControlRotation = true;
-        CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0)); // Look downward
+        CameraComponent->SetRelativeRotation(FRotator(-70, 0, 0)); // Look downward
     }
 }
 
@@ -519,7 +519,7 @@ void AplayerScript::setupBoneController(){
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
 
-    boneController.setAsPlayerOwnedController();
+    boneController.setAsPlayerOwnedController(BASE_SPEED);
     boneController.setupWings(GetWorld());
 
     // debug testing meshes

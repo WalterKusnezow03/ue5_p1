@@ -342,10 +342,11 @@ private:
 public:
 	void setupWings(UWorld *worldin);
 
-	void setAsPlayerOwnedController();
+	void setAsPlayerOwnedController(float PlayerDefaultMotionSpeed);
 
 private:
 	bool playerOwnedController = false;
+	float playerMotionVelocityDefault = 500.0f; //will be overriden!
 
 	class AwingsuitMeshActor *wingsuitMeshActorPointer = nullptr;
 	void TickWingsuitUpdate(float DeltaTime);
