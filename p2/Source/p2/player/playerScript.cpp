@@ -533,7 +533,9 @@ void AplayerScript::setupBoneController(){
         float allScale = legScaleCM + armScaleCM;
         float allHalf = allScale / 2.0f;
         allHalf += 5.0f; //add up
-        cameraReltiveLocationOriginal = FVector(0, 0, allHalf);
+
+        int pushForward = 10;
+        cameraReltiveLocationOriginal = FVector(pushForward, 0, allHalf);
         CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
     }
     
@@ -587,7 +589,7 @@ void AplayerScript::setupBoneController(){
         );
     }
 
-    return;
+    //return;
 
 
 	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
@@ -607,8 +609,9 @@ void AplayerScript::setupBoneController(){
 	AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
 	boneController.attachPedalFoots(foot1, foot2);
 
+    return;
 
-	//head
+    //head
 	AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
 	boneController.attachHead(headPointer);
 

@@ -1902,12 +1902,14 @@ void BoneController::transformToLocalKeepingRotation(std::vector<FVector> &vec){
  * 
  * 
  */
+
+//ONLY FOR PLAYER
 void BoneController::setAsPlayerOwnedController(){
 	playerOwnedController = true;
 	setupSingleLegPlayerAnimation();
 }
 
-//NOT TESTED
+//ONLY FOR PLAYER
 void BoneController::setupSingleLegPlayerAnimation(){
 
 	singleLegAnimation = KeyFrameAnimation(false);
@@ -1936,18 +1938,13 @@ void BoneController::setupSingleLegPlayerAnimation(){
 }
 
 
-//NOT TESTED
+//ONLY FOR PLAYER
 void BoneController::TickAsPlayerOwnedController(float DeltaTime){
 
 	if(wingsuitMarkedOpen){
 		return;
 	}
 
-	/*
-	if(!abnormalLegPosition()){
-		TickLegsNone(DeltaTime);
-		return;
-	}*/
 
 	if(!playerHasMovedFlag()){
 		TickLegsNone(DeltaTime);
@@ -1986,7 +1983,7 @@ void BoneController::TickAsPlayerOwnedController(float DeltaTime){
 
 }
 
-//NOT TESTED
+//ONLY FOR PLAYER
 void BoneController::playAnimationLegForPlayer(KeyFrameAnimation &frames, float DeltaTime, int index){
 	
 	//project to ground if needed
@@ -2002,34 +1999,7 @@ void BoneController::playAnimationLegForPlayer(KeyFrameAnimation &frames, float 
 	);
 }
 
-
+//ONLY FOR PLAYER
 bool BoneController::playerHasMovedFlag(){
 	return playerMoved;
-}
-
-bool BoneController::abnormalLegPosition(){
-	FVector locationFoot1Local = ownLocationFoot1.getTranslation();
-	transformFromWorldToLocalCoordinates(locationFoot1Local, FOOT_1);
-
-	//checkup
-	if(locationFoot1Local.X <= -50){
-		return true;
-	}
-
-	FVector locationFoot2Local = ownLocationFoot2.getTranslation();
-	transformFromWorldToLocalCoordinates(locationFoot2Local, FOOT_2);
-
-	if(locationFoot2Local.X <= -50){
-		return true;
-	}
-
-	//oder beide vorne
-	if(
-		(std::abs(locationFoot1Local.X) >= 50) ||
-		(std::abs(locationFoot2Local.X) >= 50)
-	){
-		return false;
-	}
-
-	return false;
 }

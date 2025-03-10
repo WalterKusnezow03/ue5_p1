@@ -359,7 +359,7 @@ private:
 	void setupSingleLegPlayerAnimation();
 	void TickAsPlayerOwnedController(float DeltaTime);
 	void playAnimationLegForPlayer(KeyFrameAnimation &frames, float DeltaTime, int index);
-	bool abnormalLegPosition();
+	
 	bool playerHasMovedFlag();
 
 	bool playerMoved = false;
