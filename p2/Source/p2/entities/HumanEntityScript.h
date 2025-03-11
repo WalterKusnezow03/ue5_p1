@@ -57,5 +57,6 @@ public:
 
 	virtual void despawn() override;
 
-	
+protected:
+	virtual void requestNewPathTo(FVector &location, bool towardsPlayer) override;
 };

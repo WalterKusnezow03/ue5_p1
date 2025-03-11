@@ -2,8 +2,10 @@
 
 
 #include "roomProcedural.h"
+#include "p2/util/TTouple.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 
+template class TTouple<FVector, FVector>;
 
 // Sets default values
 AroomProcedural::AroomProcedural()

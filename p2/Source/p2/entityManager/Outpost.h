@@ -50,7 +50,6 @@ private:
 
 
 	//entities
-	std::vector<AHumanEntityScript *> myEntities;
 	void createEntity(teamEnum t);
 	void createEntity(int count, teamEnum t);
 
@@ -79,4 +78,18 @@ public:
 	//alert / alarm all entites
 	void alertAll();
 	void alarmAll();
+
+
+	//team leader section
+	void validatePlayerTargetMovingPosition(
+		AHumanEntityScript *botPointer,
+		FVector &position
+	);
+
+private:
+	std::map<teamEnum, AHumanEntityScript *> teamLeaders;
+	bool isTeamLeader(AHumanEntityScript *bot);
+	void replaceTeamLeaderIfNeededOnRemoveOf(AHumanEntityScript *botPointer);
+	void pickTeamLeaderIfNeeded(teamEnum team);
+	bool newTeamLeaderNeeded(teamEnum team);
 };

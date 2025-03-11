@@ -6,11 +6,21 @@ template <typename T, typename U>
 class P2_API TTouple{
 
 public:
-    TTouple(T t, U u);
-    ~TTouple();
+    TTouple(T t, U u){
+        this->_first = t;
+        this->_last = u;
+    }
+    ~TTouple(){
 
-    T& first();
-    U& last();
+    }
+
+    T& first(){
+        return _first;
+    }
+    
+    U& last(){
+        return _last;
+    }
 
 private:
     T _first;

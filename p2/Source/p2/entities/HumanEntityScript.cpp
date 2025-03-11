@@ -277,3 +277,19 @@ void AHumanEntityScript::findOutPostNearby(){
     }
 }
 
+
+
+/// OVERRIDEN
+void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
+    if(towardsPlayer){
+        if(outpost != nullptr){
+            //will modify the target based on team leader or not
+            outpost->validatePlayerTargetMovingPosition(
+                this,
+                targetLocation
+            );
+        }
+    }
+    //any case if not allowed:
+    Super::requestNewPathTo(targetLocation, towardsPlayer);
+}

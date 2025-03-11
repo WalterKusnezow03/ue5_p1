@@ -7,6 +7,7 @@
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/player/teamEnum.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/util/FVectorUtil.h"
 #include "p2/DebugHelper.h"
 #include <cstdlib>
 
@@ -112,9 +113,6 @@ void AOutpost::releaseEntity(AHumanEntityScript *entity){
 
 		//new team based
 		removeFromMap(entity);
-		//teamEnum team = entity->getTeam();
-		//removeFromVec(entity, getVectorFor(team));
-
 
 		if(EntityManager *e = worldLevel::entityManager()){
 			e->add(entity);
@@ -139,7 +137,8 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 		//myEntities.push_back(entity); //weil instanz variable mit .punkt
 		entity->setOutpost(this);
 
-		//DebugHelper::showScreenMessage("subscribed an entity!", FColor::Red);
+		//pick a new team leader if needed yet
+		pickTeamLeaderIfNeeded(team);
 	}
 }
 
@@ -283,6 +282,7 @@ void AOutpost::releaseAll(){
 void AOutpost::removeFromMap(AHumanEntityScript *human){
 	if(human != nullptr){
 		teamEnum team = human->getTeam();
+		replaceTeamLeaderIfNeededOnRemoveOf(human);
 		removeFromVec(human, getVectorReferenceFor(team));
 	}
 }
@@ -323,4 +323,82 @@ std::vector<AHumanEntityScript *>& AOutpost::getVectorReferenceFor(teamEnum team
 
 	std::vector<AHumanEntityScript *> &ref = teamMap[team];
 	return ref;
+}
+
+
+
+
+
+/**
+ * 
+ * --- team leader section ---
+ * 
+ */
+
+///@brief offsets the target position if the bot is not the team leader
+void AOutpost::validatePlayerTargetMovingPosition(
+	AHumanEntityScript *botPointer, 
+	FVector &position
+){
+	if(!isTeamLeader(botPointer)){
+		//random offset
+		int range = 500; //3m
+		FVector randomOffset = FVectorUtil::randomOffset(range);
+		position += randomOffset;
+		DebugHelper::logMessage("debugOutpost - was NOT team leader!");
+	}else{
+		DebugHelper::logMessage("debugOutpost - was team leader!");
+	}
+}
+
+///@brief will tell if a bot is the current team leader of a team
+bool AOutpost::isTeamLeader(AHumanEntityScript *bot){
+	if(bot != nullptr){
+		teamEnum team = bot->getTeam();
+		if(teamLeaders.find(team) != teamLeaders.end()){
+			return teamLeaders[team] == bot;
+		}
+	}
+	return false;
+}
+
+///@brief replace the team leader before removing this bot!
+void AOutpost::replaceTeamLeaderIfNeededOnRemoveOf(AHumanEntityScript *botPointer){
+	if(botPointer != nullptr){
+		teamEnum botTeam = botPointer->getTeam();
+		if (isTeamLeader(botPointer))
+		{
+			teamLeaders[botTeam] = nullptr;
+		}
+		pickTeamLeaderIfNeeded(botTeam);
+	}
+}
+
+///@brief tries to pick a new team leader if the current is nullptr or not found
+void AOutpost::pickTeamLeaderIfNeeded(teamEnum team){
+	if(newTeamLeaderNeeded(team)){
+
+		//pick new random from team
+		if(teamMap.find(team) != teamMap.end()){
+			std::vector<AHumanEntityScript *> &vec = teamMap[team];
+			if(vec.size() > 0){
+				int index = FVectorUtil::randomNumber(0, vec.size()) % vec.size();
+				AHumanEntityScript *pointer = vec[index];
+				if(pointer != nullptr){
+					teamLeaders[team] = pointer;
+				}
+			}
+		}
+	}
+}
+
+///@brief tells if there is no team leader or the pointer is nullptr (not valid anymore)
+bool AOutpost::newTeamLeaderNeeded(teamEnum team){
+	if(teamLeaders.find(team) == teamLeaders.end()){
+		return true;
+	}
+	if(teamLeaders[team] == nullptr){
+		return true;
+	}
+	return false;
 }

@@ -453,31 +453,9 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 		if (!hasNodesInPathLeft() && !pathDelayRunning())
 		{
 			//ask for path
-			UWorld *world = GetWorld();
-			if(world != nullptr){
-				//get or create pathfinder
-				PathFinder *p = PathFinder::instance(world);
-
-				//ask for path
-				if(p != nullptr && playerPointer != nullptr ){
-
-					
-
-					FVector a = GetActorLocation();
-
-					a = boneController.GetLocation();
-					FVector b = playerPointer->GetActorLocation();
-					this->path = p->getPath(a,b);
-
-					//no path was found
-					if(this->path.size() <= 0){
-						DebugHelper::showScreenMessage("Entity path empty", FColor::Yellow);
-
-						resetPathDelay(3.0f); //wait 3 seconds before asking for next path, allows player to move, 
-						//better path finding and saving resources because if an issue with the pathfinding occurs,
-						//it wont be solved unless the target moves. 
-					}
-				}
+			if(playerPointer != nullptr ){
+				FVector target = playerPointer->GetActorLocation();
+				requestNewPathTo(target, true);
 			}
 		}
 
@@ -486,6 +464,37 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 		followpath(deltaTime); //testing
 	}
 }
+
+void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
+	UWorld *world = GetWorld();
+	if(world != nullptr){
+		PathFinder *p = PathFinder::instance(world);
+
+		//ask for path
+		if(p != nullptr){
+
+						
+			FVector a = boneController.GetLocation();
+					
+			this->path = p->getPath(a,targetLocation);
+
+			//no path was found
+			if(this->path.size() <= 0){
+				DebugHelper::showScreenMessage("Entity path empty", FColor::Yellow);
+
+				resetPathDelay(3.0f); 
+				//wait 3 seconds before asking for next path, allows player to move, 
+				//better path finding and saving resources because if an issue with the pathfinding occurs,
+				//it wont be solved unless the target moves. 
+			}
+		}
+	}
+}
+
+
+
+
+
 
 /// @brief will allow the entity to follw the path if nodes in path left
 /// @param deltaTime for calculating the movement speed

@@ -80,6 +80,8 @@ protected:
 	//path section
 	std::vector<FVector> path;
 	void moveTowardsPlayer(float deltaTime);
+	virtual void requestNewPathTo(FVector &location, bool towardsPlayer);
+
 	void resetpath();
 	void followpath(float deltaTime);
 	bool hasNodesInPathLeft();
