@@ -215,6 +215,13 @@ void DebugHelper::logTime(FString message){
 	timeSum = 0.0;
 }
 
+void DebugHelper::logMessage(FString s, int a){
+	s += TEXT(" ");
+	FString iTostring = FString::Printf(TEXT("%d"), a);
+	s += iTostring;
+
+	logMessage(s);
+}
 
 void DebugHelper::logMessage(FString s, FVector a){
 	s += TEXT(" ");

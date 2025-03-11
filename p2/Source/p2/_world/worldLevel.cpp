@@ -435,14 +435,15 @@ void worldLevel::createGroundPane(UWorld *world){
 
 
 void worldLevel::debugCreateWater(UWorld *world){
-    //return;
+    return; //DEBUG
 
     if(world != nullptr){
 
-        int vertexcount = 100;
+        int scaleMeters = 50 * 100;
         AcustomWaterActor::createWaterPane(
             world,
-            vertexcount
+            FVector(-1000,-1000,0),
+            scaleMeters
         );
     }
 }
