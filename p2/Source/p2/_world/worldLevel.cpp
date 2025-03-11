@@ -18,6 +18,7 @@
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/rooms/testing/roomProcedural.h"
 #include "p2/DebugHelper.h"
+#include "p2/entityManager/referenceManager.h"
 #include "CoreMinimal.h"
 
 worldLevel::worldLevel()
@@ -209,6 +210,23 @@ int worldLevel::getGroundHeight(FVector &pos){
     return pos.Z;
 }
 
+
+/**
+ * 
+ * 
+ * ----- PLAYER TICK TERRAIN ASYNC CREATION ------
+ * 
+ * 
+ */
+void worldLevel::Tick(float DeltaTime){
+    referenceManager *referenceManagerPointer = referenceManager::instance();
+    if(referenceManagerPointer != nullptr){
+        if(terrainPointer != nullptr){
+            FVector playerLocationCopy = referenceManagerPointer->playerLocation();
+            terrainPointer->Tick(playerLocationCopy);
+        }
+    }
+}
 
 /** 
  * 

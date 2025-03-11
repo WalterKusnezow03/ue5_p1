@@ -153,7 +153,7 @@ void WingsuitInterface::tryOpenWingsuit(){
                 float p2 = (v0 / gravity);
 
                 float innerSqrt = (p2 * p2) - 2 * ((distanceFromGroundMeasured) / gravity);
-                if (innerSqrt >= 0) {
+                if (innerSqrt >= 0.0f) {
                     float nextTime = std::abs(-1 * p2 + std::sqrt(innerSqrt));
 
                     changeGravityWingSuit();
@@ -165,7 +165,7 @@ void WingsuitInterface::tryOpenWingsuit(){
                     
                     changeGravityDefault();
                     v0 = 0.0f;
-                    
+
                 }
 
                 

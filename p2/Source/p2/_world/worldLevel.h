@@ -23,12 +23,17 @@ public:
 
 	static void initWorld(UWorld *world);
 
-	static void createTerrain(UWorld *world, int meters);
 	static int getGroundHeight(FVector &pos);
 
+	static void Tick(float DeltaTime);
+
 private:
+	static void createTerrain(UWorld *world, int meters);
+
 	worldLevel();
 	~worldLevel();
+
+	
 
 	//pathfinder init edge collection
 	static void createPathFinder(UWorld *WorldIn);

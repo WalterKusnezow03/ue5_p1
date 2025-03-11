@@ -204,6 +204,9 @@ void AplayerScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    //world level chunkTick
+    worldLevel::Tick(DeltaTime);
+
     shoot(); //shoot the weapon if needed or release. Method handles both automatically
     
     TickBoneController(DeltaTime);
