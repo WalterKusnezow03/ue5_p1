@@ -88,6 +88,7 @@ public:
 	);
 	
 protected:
+	int chunkScaleOneAxisLengthCm = 1; //ONE AXIS LENGTH
 
 	void addRandomNodesToNavmesh(TArray<FVectorTouple> &touples);
 	void filterTouplesForVerticalVectors(

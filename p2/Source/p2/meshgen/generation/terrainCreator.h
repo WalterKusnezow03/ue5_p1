@@ -21,7 +21,7 @@ public:
 	static const bool PLOTTING_ENABLED = false; // false;
 	
 	/// @brief saves the number of vertecies in one chunk (m^2)
-	static const int CHUNKSIZE = 10;
+	static const int CHUNKSIZE = 20; //10
 	static const int ONEMETER = 100; //one meter constant
 	static const int fractureHeightStep = 3;
 

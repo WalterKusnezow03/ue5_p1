@@ -188,17 +188,6 @@ void worldLevel::createTerrain(UWorld *world, int meters){
 
         terrainPointer->debugCreateTerrain(world); //new test
         isTerrainInited = true;
-        return;
-
-        //create terrain
-        EntityManager *e = entityManager();
-        if(e != nullptr){
-
-            terrainPointer->createTerrainAndSpawnMeshActors(world, meters);
-
-            // finally set created to true
-            isTerrainInited = true;
-        }
     }
 }
 
@@ -214,7 +203,7 @@ int worldLevel::getGroundHeight(FVector &pos){
 /**
  * 
  * 
- * ----- PLAYER TICK TERRAIN ASYNC CREATION ------
+ * ----- PLAYER TICK TERRAIN ASYNC CREATION & PATHFINDER TASKS------
  * 
  * 
  */
@@ -225,6 +214,12 @@ void worldLevel::Tick(float DeltaTime){
             FVector playerLocationCopy = referenceManagerPointer->playerLocation();
             terrainPointer->Tick(playerLocationCopy);
         }
+    }
+
+    //tick sync tick tasks from pathfinder
+    PathFinder *p = PathFinder::instance();
+    if(p != nullptr){
+        p->Tick();
     }
 }
 

@@ -6,7 +6,7 @@
 
 /**
  * Entity Manager -> this class is an individual object pool for a type parameter <T>
- * T must be derived from AActor
+ * T must be derived from AActor and will only accept pointers in and out
  */
 template <typename T>
 class P2_API EntityManagerGeneric{

@@ -27,6 +27,10 @@ public:
 
 	static void Tick(float DeltaTime);
 
+	static bool terrainIsInitedFlag(){
+		return isTerrainInited;
+	}
+
 private:
 	static void createTerrain(UWorld *world, int meters);
 

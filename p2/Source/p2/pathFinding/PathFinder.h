@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+class raycastTask;
+
 /**
  * a modified a* version 
  * 
@@ -95,11 +97,13 @@ public:
 
 	void draw(FVector &pos);
 
+	bool passTangentailCheck(Node *a, Node *b);
+
 private:
 	std::vector<FVector> prevPath;
 
 	bool reached(PathFinder::Node *a, PathFinder::Node *b);
-	bool passTangentailCheck(Node *a, Node *b);
+	
 
 	static constexpr int CHUNKSIZE = 2000; // 1m = 100, 20m = 2000
 	static constexpr int ONE_METER = 70; //distance to keep between nodes
@@ -242,4 +246,12 @@ private:
 
 public:
 	void freeDelegate(FTraceDelegate *d);
+
+
+
+	//NEW
+	void Tick();
+private:
+	void addNewRaytask(Node *a, Node *b);
+	std::vector<raycastTask> rayTasksVec;
 };
