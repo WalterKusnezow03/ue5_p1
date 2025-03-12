@@ -7,6 +7,7 @@
 #include "p2/interfaces/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "p2/DebugHelper.h"
 
 
 AlertManager::AlertManager()

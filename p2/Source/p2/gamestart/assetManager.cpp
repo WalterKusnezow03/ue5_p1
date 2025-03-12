@@ -136,3 +136,14 @@ void assetManager::addMaterial(materialEnum type, UMaterialInterface *material){
         materialAssets.addBp(type, material);
     }
 }
+
+
+
+// --- ui ---
+UClass *assetManager::uiBp(){
+    return uiBpPointer;
+}
+
+void assetManager::addUiBp(UClass *uclassin){
+    uiBpPointer = uclassin;
+}

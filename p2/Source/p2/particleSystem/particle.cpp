@@ -3,6 +3,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/util/FVectorUtil.h"
 #include "p2/particleSystem/particleEnum.h"
+#include "p2/util/AActorUtil.h"
 #include "particle.h"
 
 // Sets default values
@@ -190,7 +191,7 @@ particleEnum Aparticle::getType(){
 void Aparticle::findStaticMesh(){
 	if(staticMeshComponent == nullptr){
 		std::vector<UStaticMeshComponent*> out;
-		AActorUtil::findAllComponentsByType(*this, out);
+		AActorUtil::findAllComponentsByType<UStaticMeshComponent>(*this, out);
 
 		for (int i = 0; i < out.size(); i++){
 			UStaticMeshComponent *s = out.at(i);

@@ -7,6 +7,7 @@
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/weapon/weaponEnum.h"
+#include "p2/weapon/throwerWeapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"

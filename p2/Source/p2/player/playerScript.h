@@ -15,6 +15,9 @@
 #include "p2/util/timer.h"
 #include "WingsuitInterface.h"
 
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
+
 #include "playerScript.generated.h"
 
 UCLASS()
@@ -108,13 +111,8 @@ private:
 
 	int health;
 
-	
 
-	
-
-
-
-	//new
+	//BONE CONTROLLER
 	void TickBoneController(float DeltaTime);
 	void resetFlagsOnTick();
 
@@ -124,11 +122,15 @@ private:
 
 
 
-	//NEW
+	//WINGSUIT
 	void addWingsuitVelocity(float DeltaTime);
 	void TickUpdateWingsuit(float DeltaTime);
 	void setWingsuitTimerOnMovement();
 	class WingsuitInterface wingsuitInterface;
 
 	float playerMaxMovementVelocity = 500.0f;
+
+
+	//UI
+	void createUserInterface();
 };

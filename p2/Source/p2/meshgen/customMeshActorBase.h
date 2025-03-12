@@ -170,4 +170,7 @@ public:
 	static std::vector<ETerrainType> terrainVector();
 
 	static materialEnum groundMaterialFor(ETerrainType terraintype);
+
+
+
 };

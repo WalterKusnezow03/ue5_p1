@@ -34,7 +34,7 @@ void AssetLoader::loadAssets()
     loadThrower();
     loadParticles();
 
-
+    loadUI();
 }
 
 /// @brief passin your path and prefab blueprint name
@@ -325,5 +325,16 @@ void AssetLoader::loadMaterials(){
 }
 
 
+
+
+void AssetLoader::loadUI(){
+    if(assetManager *am = assetManager::instance()){
+
+        am->addUiBp(
+            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/ui/playerUiBaseBp.playerUiBaseBp_C'"))
+        );
+
+    }
+}
 
 

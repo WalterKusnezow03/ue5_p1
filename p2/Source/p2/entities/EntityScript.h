@@ -8,6 +8,8 @@
 #include "p2/player/playerScript.h"
 #include "p2/player/teamEnum.h"
 #include "p2/util/timer.h"
+
+#include "ActionManager.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 
 #include "EntityScript.generated.h"
@@ -131,5 +133,8 @@ protected:
 	void setupBoneController();
 	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 
-	
+
+	//NEW
+	void actUponCurrentAction(float DeltaTime);
+	ActionManager actionManager;
 };

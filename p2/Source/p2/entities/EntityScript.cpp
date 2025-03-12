@@ -7,6 +7,7 @@
 #include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
+
 #include "p2/player/teamEnum.h"
 #include "EntityScript.h"
 
@@ -211,11 +212,9 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	canSeePlayer = false; //reset if not reserved for frane update
-	
 	bool withinAngle = withinVisionAngle(playerPointer);
 	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
 
-	
 	// if not spotted yet, check angle, if angle ok, check vision
 	if(withinAngle && withinRange){
 		canSeePlayer = performRaycast(playerPointer);
@@ -225,12 +224,6 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 
-	//look at player when spotted and within angle
-	/*
-	if(canSeePlayer && spottedPlayer && withinAngle){
-		LookAt(playerPointer);
-	}
-	*/
 
 	//act based on vision
 	if(canSeePlayer){
@@ -247,7 +240,8 @@ void AEntityScript::Tick(float DeltaTime)
 
 
 	//moves towards player is spotted and cant see player
-	moveTowardsPlayer(DeltaTime);
+	//moveTowardsPlayer(DeltaTime);
+	actUponCurrentAction(DeltaTime);
 
 	updatePathDelay(DeltaTime);
 }
@@ -446,6 +440,32 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 
 
 
+
+
+void AEntityScript::actUponCurrentAction(float DeltaTime){
+	if(spottedPlayer && !canSeePlayer){
+		actionManager.changeToAction(EActionType::EMoveToPlayer);
+	}
+
+	EntityAction &currentAction = actionManager.currentAction();
+	if(currentAction.actionType() == EActionType::EMoveToPlayer){
+		DebugHelper::showScreenMessage("MOVE TO PLAYER");
+		moveTowardsPlayer(DeltaTime);
+	}
+
+	if(currentAction.actionType() == EActionType::ERoam){
+		
+	}
+	if(currentAction.actionType() == EActionType::EMoveToSpecialPosition){
+		if(currentAction.hasTargetPosition() && !hasNodesInPathLeft()){
+			FVector targetSpecialPos = currentAction.targetPosition();
+			requestNewPathTo(targetSpecialPos, false);
+		}
+		followpath(DeltaTime);
+	}
+
+}
+
 /// @brief will allow the entity to move towards the player
 /// @param deltaTime to calculate the movement speed
 void AEntityScript::moveTowardsPlayer(float deltaTime){
@@ -460,8 +480,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 		}
 
 		//move path
-		//DebugHelper::showScreenMessage("move to player path!");
-		followpath(deltaTime); //testing
+		followpath(deltaTime); 
 	}
 }
 

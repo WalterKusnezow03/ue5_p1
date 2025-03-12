@@ -3,6 +3,11 @@
 
 #include "roomProcedural.h"
 #include "p2/util/TTouple.h"
+#include "p2/DebugHelper.h"
+#include "p2/util/FVectorUtil.h"
+#include "p2/gamestart/assetManager.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 
 template class TTouple<FVector, FVector>;

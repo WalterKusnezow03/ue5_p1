@@ -34,6 +34,5 @@ private:
 	void loadParticles();
 	void loadRooms(EntityManager *entityManager);
 	void loadMaterials();
-
-	
+	void loadUI();
 };

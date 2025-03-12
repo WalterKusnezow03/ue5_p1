@@ -14,7 +14,9 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64",
             "configurationProvider": "epic.ue",
-            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_p2.json"
+            "compileCommands": [
+                "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_p2.json"
+            ]
         },
         {
             "name": "Mac",
@@ -30,7 +32,9 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64",
             "configurationProvider": "epic.ue",
-            "compileCommands": "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default.json"
+            "compileCommands": [
+                "/Users/walterkusnezow/Documents/Unreal Projects/p2/.vscode/compileCommands_Default.json"
+            ]
         }
     ],
     "version": 4

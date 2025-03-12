@@ -4,6 +4,8 @@
 #include "p2/throwableItems/throwableItem.h"
 #include "throwableEnum.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/util/AActorUtil.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values

@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "EntityScript.h"
 #include "p2/weapon/weapon.h"
+#include "p2/entities/botActionHelper/EAttackType.h"
 #include "HumanEntityScript.generated.h"
 
 
@@ -51,6 +52,10 @@ private:
 	virtual bool isWithinMaxRange(FVector vec) override;
 
 	void reloadOwnWeaponIfNeeded();
+
+	//bot extra actions
+	EAttackType attackTypeOfBot = EAttackType::EAssault;
+	bool attackTypeIs(EAttackType type);
 
 public:
 	void setOutpost(AOutpost *outpostIn);

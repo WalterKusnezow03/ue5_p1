@@ -14,6 +14,8 @@
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/gameStart/assetManager.h"
+#include "p2/entities/botActionHelper/EAttackType.h"
+#include "p2/DebugHelper.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
@@ -47,13 +49,13 @@ void AHumanEntityScript::init(){
     {
 
         //testing new helper (works as expected)
-        weaponSetupHelper *setuphelper = new weaponSetupHelper();
-        
-        setuphelper->setWeaponTypeToCreate(weaponEnum::pistol);
-        //setuphelper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
-        //setuphelper->setSightAttachment(weaponSightEnum::enum_reddot);
+        weaponSetupHelper setuphelper;
 
-        Aweapon *w = e->spawnAweapon(GetWorld(), setuphelper);
+        setuphelper.setWeaponTypeToCreate(weaponEnum::pistol);
+        //setuphelper->setWeaponTypeToCreate(weaponEnum::assaultRifle);
+
+
+        Aweapon *w = e->spawnAweapon(GetWorld(), &setuphelper);
 		//showScreenMessage("begin weapon");
 		if (w != nullptr){
 			//showScreenMessage("human pickup weapon");
@@ -66,11 +68,6 @@ void AHumanEntityScript::init(){
 
             e->addActorToIgnoreRaycastParams(weaponPointer, teamEnum::neutralTeam);
         }
-
-        
-
-        delete setuphelper; //immer löschen nicht vergessen!
-        setuphelper = nullptr;
     }
 
     //spotting
@@ -281,6 +278,15 @@ void AHumanEntityScript::findOutPostNearby(){
 
 /// OVERRIDEN
 void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
+    if(attackTypeIs(EAttackType::ESniper) && towardsPlayer){
+        PathFinder *p = PathFinder::instance(GetWorld());
+        if(p != nullptr){
+            FVector newTarget = p->findFurthestConnectedNodeFrom(targetLocation);
+            Super::requestNewPathTo(newTarget, towardsPlayer);
+            return;
+        }
+    }
+
     if(towardsPlayer){
         if(outpost != nullptr){
             //will modify the target based on team leader or not
@@ -292,4 +298,8 @@ void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsP
     }
     //any case if not allowed:
     Super::requestNewPathTo(targetLocation, towardsPlayer);
+}
+
+bool AHumanEntityScript::attackTypeIs(EAttackType type){
+    return type == attackTypeOfBot;
 }

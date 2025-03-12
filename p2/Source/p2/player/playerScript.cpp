@@ -18,6 +18,8 @@
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 
+#include "p2/ui/PlayerUi.h"
+
 
 // Sets default values
 AplayerScript::AplayerScript()
@@ -62,10 +64,11 @@ AplayerScript::AplayerScript()
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "found skeletal mesh");
     }
 
-
-    //FString JumpAnimPath = TEXT("/Game/Animations/JumpAnim.JumpAnim");
-
     sprinting = false;
+
+
+    
+
 }
 
 // Called when the game starts or when spawned
@@ -76,8 +79,7 @@ void AplayerScript::BeginPlay()
 	if(i){
 		i->setPlayerReference(this);
 	}
-
-
+    
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
@@ -104,6 +106,8 @@ void AplayerScript::BeginPlay()
 
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
+
+    createUserInterface();
 }
 
 // Called to bind functionality to input
@@ -725,4 +729,22 @@ FRotator AplayerScript::cameraRotation(){
         return CameraComponent->GetComponentRotation();
     }
     return rotator;
+}
+
+
+
+
+
+
+
+/**
+ * 
+ * --- ui ---
+ * 
+ */
+void AplayerScript::createUserInterface(){
+    UPlayerUi *newUiInstance = UPlayerUi::createNewInstance(GetWorld());
+    if(newUiInstance != nullptr){
+        newUiInstance->AddToViewport();  // Fügt das UI zur Anzeige hinzu
+    }
 }

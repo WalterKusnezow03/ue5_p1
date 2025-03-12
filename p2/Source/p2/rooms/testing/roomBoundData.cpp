@@ -155,7 +155,7 @@ void roomBoundData::defineOverlap(
             otherXmax,
             thisX
         );
-        DebugHelper::logMessage(printing);
+        //DebugHelper::logMessage(printing);
 
         return;
     }else{

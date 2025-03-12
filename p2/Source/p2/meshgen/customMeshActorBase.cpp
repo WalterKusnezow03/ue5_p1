@@ -56,6 +56,8 @@ void AcustomMeshActorBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
     TickShaderRunningTime(DeltaTime);
     changeLodBasedOnPlayerPosition();
+
+    
 }
 
 void AcustomMeshActorBase::disablePhysicscollision(){
@@ -806,3 +808,6 @@ void AcustomMeshActorBase::refreshMesh(
     }
 
 }
+
+
+

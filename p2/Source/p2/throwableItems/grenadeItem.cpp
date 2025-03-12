@@ -4,6 +4,9 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/grenadeItem.h"
 #include "p2/entityManager/AlertManager.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
+#include "p2/DebugHelper.h"
 #include "p2/util/timer.h"
 
 AgrenadeItem::AgrenadeItem(){

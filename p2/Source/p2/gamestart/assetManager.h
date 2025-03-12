@@ -8,6 +8,7 @@
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/weaponEnum.h"
+#include "p2/particleSystem/particleEnum.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include <map>
 
@@ -47,6 +48,11 @@ public:
 	UClass *findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment);
 	void addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass);
 
+
+	//ui
+	UClass *uiBp();
+	void addUiBp(UClass *uclassin);
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
@@ -63,6 +69,7 @@ private:
 
 	assetManagerGeneric<materialEnum, UMaterialInterface> materialAssets;
 
-
 	std::map<weaponEnum, assetManagerGeneric<weaponAttachmentEnum, UClass>> weaponAttachmentAssets;
+
+	UClass *uiBpPointer = nullptr;
 };

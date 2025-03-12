@@ -71,4 +71,5 @@ private:
 	static void debugCreateWingsuitMesh(UWorld *world);
 
 	static void debugMatrix();
+
 };

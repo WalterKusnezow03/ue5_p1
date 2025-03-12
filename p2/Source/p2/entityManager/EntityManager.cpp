@@ -18,6 +18,8 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/DebugHelper.h"
+#include "p2/weapon/throwerWeapon.h"
 
 #include <map>
 
