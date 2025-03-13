@@ -147,3 +147,17 @@ UClass *assetManager::uiBp(){
 void assetManager::addUiBp(UClass *uclassin){
     uiBpPointer = uclassin;
 }
+
+
+UTexture2D *assetManager::findTexture(textureEnum type){
+    UTexture2D *found = textureAssets.getBp(type);
+    if(found != nullptr){
+        return found;
+    }
+    return nullptr;
+}
+void assetManager::addTexture(textureEnum type, UTexture2D *texture){
+    if(texture != nullptr){
+        textureAssets.addBp(type, texture);
+    }
+}

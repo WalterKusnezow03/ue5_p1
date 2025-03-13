@@ -3,6 +3,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "p2/gameStart/assetEnums/textureEnum.h"
 
 class UPlayerUi;
 
@@ -14,6 +15,8 @@ public:
     ~TextAndImage();
 
     void setText(FString textIn);
+
+    void setImage(textureEnum type);
     void setImage(FString path);
 
 private:

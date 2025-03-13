@@ -17,9 +17,10 @@ public:
 
 	void loadAssets();
 
-
-
 	///@brief Example path: TEXT("Blueprint'/Game/Prefabs/terrain/materials/texturedMaterial.texturedMaterial'")
+	/// or
+	/// TEXT("Texture2D'/Game/Prefabs/textures/partone'");
+	/// TEXT("<DT>"'path/to/asset'");
 	template <typename T>
 	static T* loadAsset(FString path){
 		T* bpObject = LoadObject<T>(nullptr, *path);
@@ -54,4 +55,5 @@ private:
 	void loadRooms(EntityManager *entityManager);
 	void loadMaterials();
 	void loadUI();
+	void loadTextures();
 };

@@ -1,6 +1,6 @@
 
-#pragma once
 
+#include "UMG.h"
 #include "CoreMinimal.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -9,6 +9,8 @@
 #include "p2/gameStart/AssetLoader.h"
 #include "p2/DebugHelper.h"
 #include "p2/ui/PlayerUi.h"
+#include "p2/DebugHelper.h"
+#include "p2/gameStart/assetEnums/textureEnum.h"
 
 #include "TextAndImage.h"
 
@@ -35,7 +37,7 @@ TextAndImage::TextAndImage(UPlayerUi &parentIn){
 
     createText();
     setText("new text box image");
-    //createImage();
+    createImage();
 
 
 
@@ -79,13 +81,32 @@ void TextAndImage::setText(FString textIn){
 }
 
 
-void TextAndImage::setImage(FString path){
-    if(Image != nullptr){
-
-        UTexture2D* loadedTexture = AssetLoader::loadAsset<UTexture2D>(path);
+void TextAndImage::setImage(textureEnum type){
+    assetManager *pointer = assetManager::instance();
+    if(pointer != nullptr){
+        UTexture2D *loadedTexture = pointer->findTexture(type);
         if (loadedTexture != nullptr)
         {
             Image->SetBrushFromTexture(loadedTexture);
+            FVector2D scale(0.5f, 0.5f); // Example scale to 50% of the original size
+            Image->SetRenderScale(scale);
+        }
+    }
+
+}
+
+void TextAndImage::setImage(FString path){
+    if(Image != nullptr){
+
+        DebugHelper::logMessage("ammuntionDebug try load texture");
+        UTexture2D* loadedTexture = AssetLoader::loadAsset<UTexture2D>(path);
+        if (loadedTexture != nullptr)
+        {
+            DebugHelper::logMessage("ammuntionDebug loaded texture");
+
+            Image->SetBrushFromTexture(loadedTexture);
+            FVector2D scale(0.5f, 0.5f); // Example scale to 50% of the original size
+            Image->SetRenderScale(scale);
         }
 
     }

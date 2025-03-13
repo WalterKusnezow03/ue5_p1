@@ -5,6 +5,7 @@
 #include "p2/gameStart/assetManager.h"
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
+#include "p2/gameStart/assetEnums/textureEnum.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 
 //instance maker with init call!
@@ -111,6 +112,9 @@ void UPlayerUi::createAmmoShower(){
         ammunitionTextAndImage = TextAndImage(*this);
         updateAmmunitionText(100);
         
+        ammunitionTextAndImage.setImage(
+            textureEnum::patroneIcon
+        );
     }
 }
 

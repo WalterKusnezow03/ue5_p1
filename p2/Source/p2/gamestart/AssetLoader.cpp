@@ -33,8 +33,10 @@ void AssetLoader::loadAssets()
     loadWeaponAttachments();
     loadThrower();
     loadParticles();
-
+    
+    loadTextures();
     loadUI();
+    
 }
 
 /// @brief passin your path and prefab blueprint name
@@ -337,6 +339,18 @@ void AssetLoader::loadUI(){
             loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/ui/playerUiBaseBp.playerUiBaseBp_C'"))
         );
 
+    }
+}
+
+void AssetLoader::loadTextures(){
+    if(assetManager *am = assetManager::instance()){
+
+        am->addTexture(
+            textureEnum::patroneIcon,
+            AssetLoader::loadAsset<UTexture2D>(TEXT(
+                "Texture2D'/Game/Prefabs/icons/patroneIcon.patroneIcon'")
+            )
+        );
     }
 }
 

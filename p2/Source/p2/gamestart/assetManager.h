@@ -10,6 +10,7 @@
 #include "p2/weapon/weaponEnum.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/throwableItems/throwableEnum.h"
+#include "p2/gamestart/assetEnums/textureEnum.h"
 #include <map>
 
 /**
@@ -53,6 +54,9 @@ public:
 	UClass *uiBp();
 	void addUiBp(UClass *uclassin);
 
+	UTexture2D *findTexture(textureEnum type);
+	void addTexture(textureEnum type, UTexture2D *texture);
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
@@ -66,8 +70,8 @@ private:
 	assetManagerGeneric<throwableEnum, UClass> throwableAssets;
 	assetManagerGeneric<particleEnum, UClass> particleAssets;
 
-
 	assetManagerGeneric<materialEnum, UMaterialInterface> materialAssets;
+	assetManagerGeneric<textureEnum, UTexture2D> textureAssets;
 
 	std::map<weaponEnum, assetManagerGeneric<weaponAttachmentEnum, UClass>> weaponAttachmentAssets;
 
