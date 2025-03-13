@@ -64,4 +64,8 @@ public:
 
 protected:
 	virtual void requestNewPathTo(FVector &location, bool towardsPlayer) override;
+
+
+	
+	bool playerIsInLookDir();
 };

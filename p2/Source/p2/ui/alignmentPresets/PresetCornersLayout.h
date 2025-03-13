@@ -12,15 +12,15 @@ class P2_API PresetCornersLayout : public customUiComponentBase{
 
 public:
     PresetCornersLayout();
-    PresetCornersLayout(UPlayerUi &parent);
+    PresetCornersLayout(UPlayerUi &parent, UCanvasPanel &parentPanelIn);
     ~PresetCornersLayout();
 
     void addChildToTopLeft(UWidget *any);
     void addChildToTopRight(UWidget *any);
     void addChildToBottomLeft(UWidget *any);
     void addChildToBottomRight(UWidget *any);
+    void addChildToTopCenter(UWidget *any);
 
-    
 private:
     void resetAllPointers();
     void createSubLayouts();
@@ -31,6 +31,7 @@ private:
     UVerticalBox *bottomLeft = nullptr;
     UVerticalBox *bottomRight = nullptr;
     
+    UVerticalBox *topCenter = nullptr;
 
-
+    UCanvasPanel *parentPanel = nullptr;
 };

@@ -220,14 +220,14 @@ void AcustomWaterActor::vertexShader(){
                     applyWaterRippleOffset(vertex, actorLocation);
                 }else{
                     //debug draw shows it should be fine, somewhere the flag gets resettet
-                    
+                    /*
                     DebugHelper::showLineBetween(
                         GetWorld(),
                         GetActorLocation() + vertex,
                         GetActorLocation() + vertex + FVector(0, 0, 1000),
                         FColor::Orange,
                         0.1f
-                    );
+                    );*/
                     resetVertexShadignFor(vertex);
                 }
             }

@@ -31,6 +31,9 @@ public:
 		return isTerrainInited;
 	}
 
+	static bool gamePausedByPlayer();
+	static void setGamePaused(bool in);
+
 private:
 	static void createTerrain(UWorld *world, int meters);
 
@@ -72,4 +75,5 @@ private:
 
 	static void debugMatrix();
 
+	static bool gamePausedFlag;
 };

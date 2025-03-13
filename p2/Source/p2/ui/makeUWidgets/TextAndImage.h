@@ -8,14 +8,16 @@
 
 class UPlayerUi;
 
+/**
+ * label with image like class in an horizontal layout
+ */
 class P2_API TextAndImage : public customUiComponentBase{
 
 public:
     TextAndImage();
     TextAndImage(UPlayerUi &parent);
     ~TextAndImage();
-
-    UWidget *layoutPointer();
+    virtual UWidget *baseLayoutPointer() override;
 
     void setText(FString textIn);
 

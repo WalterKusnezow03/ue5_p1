@@ -93,6 +93,9 @@ void AHumanEntityScript::init(){
 
 void AHumanEntityScript::Tick(float DeltaTime){
     Super::Tick(DeltaTime); //entity tick (spotting, path)
+    if(worldLevel::gamePausedByPlayer()){
+		return;
+	}
 
     //only tick if wanted
     if(Super::isActivatedForUpdate()){
@@ -149,7 +152,9 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
 /// @brief attack the player if playerpointer not nullptr
 void AHumanEntityScript::attackPlayer(){
     if(playerPointer != nullptr){
-        shootAt(playerPointer->GetActorLocation());
+        if(playerIsInLookDir()){
+            shootAt(playerPointer->GetActorLocation());
+        }
     }
 }
 
@@ -305,4 +310,23 @@ void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsP
 
 bool AHumanEntityScript::attackTypeIs(EAttackType type){
     return type == attackTypeOfBot;
+}
+
+
+
+bool AHumanEntityScript::playerIsInLookDir(){
+    referenceManager *pointer = referenceManager::instance();
+    if(pointer != nullptr){
+        FVector playerLocation = pointer->playerLocation();
+        FVector connectToPlayer = playerLocation - boneController.GetLocation(); // AB = B - A
+        connectToPlayer.Z = 0.0f;
+
+        connectToPlayer = connectToPlayer.GetSafeNormal();
+        FVector forward = boneController.lookDirection();
+        forward.Z = 0.0f;
+        forward = forward.GetSafeNormal();
+
+        return FVector::DotProduct(connectToPlayer, forward) >= 0.6f; //0 orthogonal, 1 parallell
+    }
+    return false;
 }

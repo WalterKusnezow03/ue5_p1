@@ -5,14 +5,19 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
-#include "Components/VerticalBox.h"
-#include "p2/ui/makeUWidgets/TextAndImage.h"
-#include "p2/ui/alignmentPresets/PresetCornersLayout.h"
+#include "p2/ui/screens/PlayerHud.h"
+#include "p2/ui/screens/PauseScreen.h"
+
 #include "PlayerUi.generated.h"
 
 /**
  * will be the base class for any ui, based on a blueprint with a single canvas inside,
  * because i couldnt create it from c++ :)
+ * 
+ * Will be the only owner of ALL ui screens, 
+ * all classes, which you can find here by value, which provide panels, etc.
+ * need an instance of THIS class, to bind all ui elements to this
+ * class for proper unreal garbage collection
  * 
  * 
  * Derivative hierachy
@@ -61,24 +66,23 @@ public:
 
 	UCanvasPanel *canvasPanelPointer();
 
+
+	void addToCanvas(UWidget *any);
+	
+
 protected:
 	bool isInited = false;
 	UCanvasPanel *baseCanvas = nullptr;
-
 	
 
 	void findBaseCanvasFromBluePrint();
-	
-
-
-	//HUD SECTION
-	PresetCornersLayout playerHudCornerLayout;
-	TextAndImage ammunitionTextAndImage;
-	TextAndImage healthTextAndImage;
-
 	void createBasePlayerHud();
-	void createAmmunitionHudElement();
-	void createHealthHudElement();
+	void createPauseScreen();
 
+	//screens
+	PlayerHud playerHud;
+	PauseScreen pauseScreen;
+
+	//todo: aktives element speichern, und alle pointer in einem vektor
 
 };

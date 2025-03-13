@@ -40,6 +40,8 @@ terrainCreator *worldLevel::terrainPointer = nullptr;
 
 bool worldLevel::areBotsInited = false;
 
+bool worldLevel::gamePausedFlag = false;
+
 /// IS RESET FROM GAME MODE SUBCLASS, MUST BE CALLED ON END PLAY!
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
@@ -77,9 +79,9 @@ void worldLevel::resetWorld(){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
-
-    bool debugCreate = true; //dont create terrain for debugging 
-    //disabled for debugging
+    gamePausedFlag = false;
+    bool debugCreate = true; // dont create terrain for debugging
+    // disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
             int meters = 100;
@@ -535,3 +537,11 @@ void worldLevel::debugMatrix(){
 
 
 
+bool worldLevel::gamePausedByPlayer(){
+    return worldLevel::gamePausedFlag;
+}
+
+
+void worldLevel::setGamePaused(bool in){
+    worldLevel::gamePausedFlag = in;
+}

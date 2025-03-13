@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "p2/gameStart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
+#include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 
 //instance maker with init call!
@@ -47,10 +48,8 @@ void UPlayerUi::init(){
     //the root widget must be a canvas panel in bp!
     findBaseCanvasFromBluePrint();
 
-    // Jetzt kannst du mit dem CanvasPanel arbeiten
     createBasePlayerHud();
-    createAmmunitionHudElement();
-    createHealthHudElement();
+    //createPauseScreen();
 }
 
 void UPlayerUi::findBaseCanvasFromBluePrint(){
@@ -66,56 +65,35 @@ void UPlayerUi::findBaseCanvasFromBluePrint(){
 }
 
 
+/// ----- add to own ------
+
+///@brief will add any widget to the base canvas, if not nullptr!
+void UPlayerUi::addToCanvas(UWidget *any){
+    if(any != nullptr && baseCanvas != nullptr){
+        baseCanvas->AddChild(any);
+    }
+}
 
 
-/// ----- PLAYER HUD SECTION ----- START
+///@brief creates the player hud
 void UPlayerUi::createBasePlayerHud(){
-    playerHudCornerLayout = PresetCornersLayout(*this);
+    playerHud = PlayerHud(*this); //will add itself.
 }
 
-
-void UPlayerUi::createAmmunitionHudElement(){
-
-    ammunitionTextAndImage = TextAndImage(*this);
-    ammunitionTextAndImage.setImage(
-        textureEnum::patroneIcon,
-        FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
-    );
-
-    UWidget *pointerOfTextImageLayout = ammunitionTextAndImage.layoutPointer();
-    if(pointerOfTextImageLayout != nullptr){
-        playerHudCornerLayout.addChildToBottomRight(pointerOfTextImageLayout);
-    }
+void UPlayerUi::createPauseScreen(){
+    /*pauseScreen = PauseScreen(*this);*/
 }
 
-void UPlayerUi::createHealthHudElement(){
-    healthTextAndImage = TextAndImage(*this);
-    healthTextAndImage.setImage(
-        textureEnum::healthIcon,
-        FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
-    );
-
-    UWidget *pointerOfTextImageLayout = healthTextAndImage.layoutPointer();
-    if(pointerOfTextImageLayout != nullptr){
-        playerHudCornerLayout.addChildToBottomLeft(pointerOfTextImageLayout);
-    }
-}
-
-
-
+//public api
 
 void UPlayerUi::updateAmmunitionText(int number){
-    FString message = FString::Printf(TEXT("%d"), number);
-    updateAmmunitionText(message);
+    playerHud.updateAmmunitionText(number);
 }
 
 void UPlayerUi::updateAmmunitionText(FString message){
-    ammunitionTextAndImage.setText(message);
+    playerHud.updateAmmunitionText(message);
 }
 
 void UPlayerUi::updateHealthText(int health){
-    FString toText = FString::Printf(TEXT("%d"), health);
-    healthTextAndImage.setText(toText);
+    playerHud.updateHealthText(health);
 }
-
-/// ----- PLAYER HUD SECTION ----- END

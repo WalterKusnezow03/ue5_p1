@@ -15,7 +15,7 @@
 #include "TextAndImage.h"
 
 ///@brief get the pointer of this layout and add it to an owning parent canvas for example!
-UWidget *TextAndImage::layoutPointer(){
+UWidget *TextAndImage::baseLayoutPointer(){
     return baseHorizontalBox;
 }
 

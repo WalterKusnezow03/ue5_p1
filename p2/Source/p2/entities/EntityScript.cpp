@@ -7,6 +7,7 @@
 #include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 #include "p2/player/teamEnum.h"
 #include "EntityScript.h"
@@ -185,6 +186,9 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 void AEntityScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(worldLevel::gamePausedByPlayer()){
+		return;
+	}
 
 	//only update if activated
 	if(!isActivatedForUpdate()){

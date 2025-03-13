@@ -7,9 +7,11 @@
 PresetCornersLayout::PresetCornersLayout(){
     resetAllPointers();
 }
-PresetCornersLayout::PresetCornersLayout(UPlayerUi &parent){
+PresetCornersLayout::PresetCornersLayout(UPlayerUi &parent, UCanvasPanel &canvasIn){
     resetAllPointers();
-    playerUiParent = &parent;
+    parentPanel = &canvasIn;
+    saveParent(parent);
+    //playerUiParent = &parent;
     createSubLayouts();
 }
 PresetCornersLayout::~PresetCornersLayout(){
@@ -22,21 +24,19 @@ void PresetCornersLayout::resetAllPointers(){
     topRight = nullptr;
     bottomLeft = nullptr;
     bottomRight = nullptr;
+    topCenter = nullptr;
+    parentPanel = nullptr;
 }
-
-
 
 void PresetCornersLayout::createSubLayouts(){
     if(customUiComponentBase::correctInitialized()){
 
-
-        UCanvasPanel *baseCanvas = playerUiParent->canvasPanelPointer();
-        if(baseCanvas != nullptr){
+        if(parentPanel != nullptr){
 
             //create all sublayouts at corners
 
             topLeft = NewObject<UVerticalBox>(playerUiParent);
-            UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(topLeft));
+            UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topLeft));
             if (CanvasSlot){
                 CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f));  // oben links
                 CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f)); // An die Ecke ausrichten
@@ -45,7 +45,7 @@ void PresetCornersLayout::createSubLayouts(){
 
 
             topRight = NewObject<UVerticalBox>(playerUiParent);
-            CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(topRight));
+            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topRight));
             if (CanvasSlot){
                 CanvasSlot->SetAnchors(FAnchors(1.0f, 0.0f));  // oben rechts
                 CanvasSlot->SetAlignment(FVector2D(1.0f, 0.0f)); // An die Ecke ausrichten
@@ -53,7 +53,7 @@ void PresetCornersLayout::createSubLayouts(){
             }
 
             bottomRight = NewObject<UVerticalBox>(playerUiParent);
-            CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(bottomRight));
+            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(bottomRight));
             if (CanvasSlot){
                 CanvasSlot->SetAnchors(FAnchors(1.0f, 1.0f));  // unten rechts
                 CanvasSlot->SetAlignment(FVector2D(1.0f, 1.0f)); // An die uEcke ausrichten
@@ -61,21 +61,27 @@ void PresetCornersLayout::createSubLayouts(){
             }
 
             bottomLeft = NewObject<UVerticalBox>(playerUiParent);
-            CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(bottomLeft));
+            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(bottomLeft));
             if (CanvasSlot){
                 CanvasSlot->SetAnchors(FAnchors(0.0f, 1.0f));  // unten rechts
                 CanvasSlot->SetAlignment(FVector2D(0.0f, 1.0f)); // An die uEcke ausrichten
                 CanvasSlot->SetAutoSize(true); // Automatische Größe anpassen
             }
 
-
+            topCenter = NewObject<UVerticalBox>(playerUiParent);
+            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topCenter));
+            if(CanvasSlot != nullptr){
+                CanvasSlot->SetAnchors(FAnchors(0.5f, 0.0f));  //mitte(?)
+                CanvasSlot->SetAlignment(FVector2D(0.5f, 0.0f)); //content center aligned (?)
+                CanvasSlot->SetAutoSize(true);
+            }
         }
         
     }
 }
 
 
-//public api adding childs
+///@brief will try to add a child to any vertical box, if both not nullptr
 void PresetCornersLayout::addChildTo(UVerticalBox *box, UWidget *any){
     if(any != nullptr && box != nullptr){
         if(correctInitialized()){
@@ -84,6 +90,8 @@ void PresetCornersLayout::addChildTo(UVerticalBox *box, UWidget *any){
     }
 }
 
+
+//public api adding childs
 void PresetCornersLayout::addChildToTopLeft(UWidget *any){
     addChildTo(topLeft, any);
 }
@@ -95,4 +103,9 @@ void PresetCornersLayout::addChildToBottomLeft(UWidget *any){
 }
 void PresetCornersLayout::addChildToBottomRight(UWidget *any){
     addChildTo(bottomRight, any);
+}
+
+
+void PresetCornersLayout::addChildToTopCenter(UWidget *any){
+    addChildTo(topCenter, any);
 }
