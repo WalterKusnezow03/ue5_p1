@@ -351,6 +351,13 @@ void AssetLoader::loadTextures(){
                 "Texture2D'/Game/Prefabs/icons/patroneIcon.patroneIcon'")
             )
         );
+
+        am->addTexture(
+            textureEnum::healthIcon,
+            AssetLoader::loadAsset<UTexture2D>(TEXT(
+                "Texture2D'/Game/Prefabs/icons/healthIcon.healthIcon'")
+            )
+        );
     }
 }
 

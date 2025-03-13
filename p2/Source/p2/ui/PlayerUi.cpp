@@ -6,6 +6,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
 #include "p2/gameStart/assetEnums/textureEnum.h"
+#include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 
 //instance maker with init call!
@@ -30,13 +31,10 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
 }
 
 
-void UPlayerUi::addSelfToVerticalBox(UWidget *any){
-    if(any != nullptr && baseVerticalBox != nullptr){
-        baseVerticalBox->AddChildToVerticalBox(any);
-    }
+///@brief do not delete, only for ui components!
+UCanvasPanel *UPlayerUi::canvasPanelPointer(){
+    return baseCanvas;
 }
-
-
 
 //constructor like
 void UPlayerUi::init(){
@@ -50,9 +48,9 @@ void UPlayerUi::init(){
     findBaseCanvasFromBluePrint();
 
     // Jetzt kannst du mit dem CanvasPanel arbeiten
-    createBaseBoxForCanvas();
-    createNewText();
-    createAmmoShower();
+    createBasePlayerHud();
+    createAmmunitionHudElement();
+    createHealthHudElement();
 }
 
 void UPlayerUi::findBaseCanvasFromBluePrint(){
@@ -67,59 +65,57 @@ void UPlayerUi::findBaseCanvasFromBluePrint(){
     }
 }
 
-/*
-void UPlayerUi::addToBaseCanvas(UWidget *widget){
-    if(widget != nullptr){
-        if(baseCanvas != nullptr){
-            baseCanvas->AddChild(widget);
-        }
+
+
+
+/// ----- PLAYER HUD SECTION ----- START
+void UPlayerUi::createBasePlayerHud(){
+    playerHudCornerLayout = PresetCornersLayout(*this);
+}
+
+
+void UPlayerUi::createAmmunitionHudElement(){
+
+    ammunitionTextAndImage = TextAndImage(*this);
+    ammunitionTextAndImage.setImage(
+        textureEnum::patroneIcon,
+        FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
+    );
+
+    UWidget *pointerOfTextImageLayout = ammunitionTextAndImage.layoutPointer();
+    if(pointerOfTextImageLayout != nullptr){
+        playerHudCornerLayout.addChildToBottomRight(pointerOfTextImageLayout);
     }
-}*/
+}
 
+void UPlayerUi::createHealthHudElement(){
+    healthTextAndImage = TextAndImage(*this);
+    healthTextAndImage.setImage(
+        textureEnum::healthIcon,
+        FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
+    );
 
-void UPlayerUi::createBaseBoxForCanvas(){
-    if(baseCanvas != nullptr){
-        // Erstelle ein UVerticalBox-Widget
-        baseVerticalBox = NewObject<UVerticalBox>(this);
-        if (baseVerticalBox)
-        {
-            // Füge das VerticalBox zum CanvasPanel hinzu
-            baseCanvas->AddChild(baseVerticalBox);
-        }
+    UWidget *pointerOfTextImageLayout = healthTextAndImage.layoutPointer();
+    if(pointerOfTextImageLayout != nullptr){
+        playerHudCornerLayout.addChildToBottomLeft(pointerOfTextImageLayout);
     }
 }
 
 
-//DEBUG
 
-void UPlayerUi::createNewText(){
-    if(baseVerticalBox != nullptr){
-        // Erstelle ein UTextBlock-Widget als Beispiel
-        UTextBlock* TextBlock1 = NewObject<UTextBlock>(this);
-        if (TextBlock1)
-        {
-            TextBlock1->SetText(FText::FromString(TEXT("ui text")));
-            baseVerticalBox->AddChildToVerticalBox(TextBlock1);
-        }
-    }
-}
-
-
-
-
-void UPlayerUi::createAmmoShower(){
-    if(baseVerticalBox != nullptr){
-        ammunitionTextAndImage = TextAndImage(*this);
-        updateAmmunitionText(100);
-        
-        ammunitionTextAndImage.setImage(
-            textureEnum::patroneIcon
-        );
-    }
-}
 
 void UPlayerUi::updateAmmunitionText(int number){
     FString message = FString::Printf(TEXT("%d"), number);
+    updateAmmunitionText(message);
+}
+
+void UPlayerUi::updateAmmunitionText(FString message){
     ammunitionTextAndImage.setText(message);
 }
 
+void UPlayerUi::updateHealthText(int health){
+    FString toText = FString::Printf(TEXT("%d"), health);
+    healthTextAndImage.setText(toText);
+}
+
+/// ----- PLAYER HUD SECTION ----- END

@@ -20,7 +20,7 @@ class P2_API AEntityScript : public AActor, public IDamageinterface
 	GENERATED_BODY()
 	
 public:
-	
+	const bool DRAW_PATH = true;
 
 	// Sets default values for this actor's properties
 	AEntityScript();
@@ -31,7 +31,7 @@ public:
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 
 	//max distance to follow
-	static const int MAXDISTANCE = 5000; //50m --> 50 * 100 = 5000
+	static const int MAXDISTANCE = 10000; //100m --> 100 * 100 = 5000
 
 public:	
 	// Called every frame
@@ -89,9 +89,8 @@ protected:
 	bool hasNodesInPathLeft();
 	bool reachedPosition(FVector pos);
 
-	/// @brief saves the time left for delay, if no path is found the timer should be reset
-	/// allows the player to move and better path to be found, saves performance
-	float pathDelay;
+
+
 	/// @brief reset the path delay time to a number of seconds
 	/// @param time time in deconds
 	void resetPathDelay(float time);
@@ -102,10 +101,11 @@ protected:
 	bool pathDelayRunning();
 	//path section end
 
+	void drawPath();
 
 	int health;
 	float defaultSpottingTime;
-	float spottingTimeLeft;
+	
 
 	bool spottedPlayer;
 	bool canSeePlayer;
@@ -121,13 +121,13 @@ protected:
 	bool activated;
 	
 	void enableCollider(bool enable);
-	
 
 
 
+	int pathDelayTime = 10;
+	class timer pathDelayTimer;
 
-
-
+	class timer spottingTimer;
 
 	class BoneController boneController;
 	void setupBoneController();

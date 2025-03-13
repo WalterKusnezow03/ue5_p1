@@ -5,5 +5,6 @@
 UENUM()
 enum class textureEnum
 {
-    patroneIcon
+    patroneIcon,
+    healthIcon
 };

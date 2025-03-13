@@ -190,8 +190,8 @@ void AEntityScript::Tick(float DeltaTime)
 	if(!isActivatedForUpdate()){
 		return;
 	}
+	drawPath(); //debug
 
-	
 	//tick bone controller
 	if(true){
 		boneController.Tick(DeltaTime, GetWorld());
@@ -217,6 +217,7 @@ void AEntityScript::Tick(float DeltaTime)
 
 	// if not spotted yet, check angle, if angle ok, check vision
 	if(withinAngle && withinRange){
+		//DebugHelper::showScreenMessage("player vision check");
 		canSeePlayer = performRaycast(playerPointer);
 		if(canSeePlayer){
 			//DebugHelper::showScreenMessage("player vision check", FColor::Red);
@@ -241,9 +242,10 @@ void AEntityScript::Tick(float DeltaTime)
 
 	//moves towards player is spotted and cant see player
 	//moveTowardsPlayer(DeltaTime);
+	updatePathDelay(DeltaTime);
 	actUponCurrentAction(DeltaTime);
 
-	updatePathDelay(DeltaTime);
+	
 }
 
 //allows the entity to take damage
@@ -396,6 +398,7 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
 	}
+	ignoreParams.bTraceComplex = false;
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
 	
@@ -422,17 +425,19 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
  * sets the spotting time a given value
  */
 void AEntityScript::setSpottingTime(float time){
-	spottingTimeLeft = time;
+	//spottingTimeLeft = time;
+	spottingTimer.Begin(time);
 }
 
 /**
  * update the spotting time
  */
 void AEntityScript::updateSpottingTime(float deltaTime){
-	if(spottingTimeLeft > 0.0f){
-		spottingTimeLeft -= deltaTime;
-	}else{
-		spottingTimeLeft = 0.0f;
+	if(spottedPlayer){
+		return;
+	}
+	spottingTimer.Tick(deltaTime);
+	if(spottingTimer.timesUp()){
 		spottedPlayer = true;
 	}
 }
@@ -449,12 +454,15 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 
 	EntityAction &currentAction = actionManager.currentAction();
 	if(currentAction.actionType() == EActionType::EMoveToPlayer){
-		DebugHelper::showScreenMessage("MOVE TO PLAYER");
+		
+		//DebugHelper::showScreenMessage("MOVE TO PLAYER");
+
 		moveTowardsPlayer(DeltaTime);
+		return;
 	}
 
 	if(currentAction.actionType() == EActionType::ERoam){
-		
+		return;
 	}
 	if(currentAction.actionType() == EActionType::EMoveToSpecialPosition){
 		if(currentAction.hasTargetPosition() && !hasNodesInPathLeft()){
@@ -462,6 +470,7 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 			requestNewPathTo(targetSpecialPos, false);
 		}
 		followpath(DeltaTime);
+		return;
 	}
 
 }
@@ -647,27 +656,18 @@ void AEntityScript::showScreenMessage(FString s){
 /// @brief reset the path delay time, allow the player to move to find better path
 /// @param time time in seconds to set
 void AEntityScript::resetPathDelay(float time){
-	pathDelay = time;
+	pathDelayTimer.Begin(time);
 }
 
 /// @brief call this mesthod from tick for update
 /// @param DeltaTime 
 void AEntityScript::updatePathDelay(float DeltaTime){
-	if(pathDelayRunning()){
-		pathDelay -= DeltaTime;
-	}
+	pathDelayTimer.Tick(DeltaTime);
 }
 
-/// @brief returns if the delay is still running
-/// @return 
 bool AEntityScript::pathDelayRunning(){
-	return pathDelay > 0.01f;
+	return !pathDelayTimer.timesUp(); //if not times up: running
 }
-
-
-
-
-
 
 //-- activate methods --
 
@@ -711,7 +711,7 @@ void AEntityScript::alert(){
 		defaultSpottingTime /= 2;
 
 		//update time if lower
-		if(defaultSpottingTime < spottingTimeLeft){
+		if(defaultSpottingTime < spottingTimer.currentTimeLeft()){
 			setSpottingTime(defaultSpottingTime);
 		}
 	}
@@ -741,4 +741,29 @@ void AEntityScript::setTeam(teamEnum teamIn){
 
 teamEnum AEntityScript::getTeam(){
     return team;
+}
+
+
+
+
+//DEBUG
+void AEntityScript::drawPath(){
+	if(DRAW_PATH){
+		if(hasNodesInPathLeft()){
+			FVector prev = GetActorLocation();
+			for (int i = 0; i < path.size(); i++)
+			{
+				FVector &current = path[i];
+				DebugHelper::showLineBetween(
+					GetWorld(),
+					prev,
+					current,
+					FColor::Red,
+					0.1f
+				);
+
+				prev = current;
+			}
+		}
+	}
 }

@@ -40,6 +40,8 @@ void AHumanEntityScript::BeginPlay(){
 void AHumanEntityScript::init(){
     Super::init();
 
+    attackTypeOfBot = EAttackType::EAssault;
+
     //DebugHelper::showScreenMessage("human init");
     
     //weapon currently hidden
@@ -297,6 +299,7 @@ void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsP
         }
     }
     //any case if not allowed:
+    DebugHelper::showScreenMessage("NEW PATH REQUEST", FColor::Red);
     Super::requestNewPathTo(targetLocation, towardsPlayer);
 }
 

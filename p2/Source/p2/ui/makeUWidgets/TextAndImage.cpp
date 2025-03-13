@@ -14,6 +14,11 @@
 
 #include "TextAndImage.h"
 
+///@brief get the pointer of this layout and add it to an owning parent canvas for example!
+UWidget *TextAndImage::layoutPointer(){
+    return baseHorizontalBox;
+}
+
 TextAndImage::TextAndImage(){
     playerUiParent = nullptr;
     baseHorizontalBox = nullptr;
@@ -30,10 +35,6 @@ TextAndImage::TextAndImage(UPlayerUi &parentIn){
     playerUiParent = &parentIn;
 
     baseHorizontalBox = NewObject<UHorizontalBox>(playerUiParent);
-    if(baseHorizontalBox != nullptr){
-        playerUiParent->addSelfToVerticalBox(baseHorizontalBox);
-    }
-
 
     createText();
     setText("new text box image");
@@ -50,12 +51,12 @@ TextAndImage::~TextAndImage(){
     Image = nullptr;
 }
 
-bool TextAndImage::correctInitiliazed(){
-    return playerUiParent != nullptr && baseHorizontalBox != nullptr;
+bool TextAndImage::correctInitialized(){
+    return customUiComponentBase::correctInitialized() && baseHorizontalBox != nullptr;
 }
 
 void TextAndImage::createText(){
-    if(TextBlock == nullptr && correctInitiliazed()){
+    if(TextBlock == nullptr && correctInitialized()){
         TextBlock = NewObject<UTextBlock>(playerUiParent);
         if (TextBlock){
             baseHorizontalBox->AddChildToHorizontalBox(TextBlock);
@@ -64,7 +65,7 @@ void TextAndImage::createText(){
 }
 
 void TextAndImage::createImage(){
-    if(Image == nullptr && correctInitiliazed()){
+    if(Image == nullptr && correctInitialized()){
         Image = NewObject<UImage>(playerUiParent);
         if (Image){
             baseHorizontalBox->AddChildToHorizontalBox(Image);
@@ -82,18 +83,26 @@ void TextAndImage::setText(FString textIn){
 
 
 void TextAndImage::setImage(textureEnum type){
+    setImage(type, FVector2D(0.5f, 0.5f));
+}
+
+///@brief sets an icon for the image
+///@param type - enum type of texture 
+///@param scale value each component between 0.0 and 1.0 
+void TextAndImage::setImage(textureEnum type, FVector2D scale){
     assetManager *pointer = assetManager::instance();
     if(pointer != nullptr){
         UTexture2D *loadedTexture = pointer->findTexture(type);
         if (loadedTexture != nullptr)
         {
             Image->SetBrushFromTexture(loadedTexture);
-            FVector2D scale(0.5f, 0.5f); // Example scale to 50% of the original size
             Image->SetRenderScale(scale);
         }
     }
-
 }
+
+
+
 
 void TextAndImage::setImage(FString path){
     if(Image != nullptr){

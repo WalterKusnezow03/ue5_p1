@@ -30,6 +30,8 @@ public:
 
 	Aweapon *getItemPointer();
 
+	FString ammuntionUiStringOfWeapon();
+
 private:
 	class wslot{
 		public:

@@ -17,6 +17,7 @@
 
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "p2/ui/PlayerUi.h"
 
 #include "playerScript.generated.h"
 
@@ -132,5 +133,9 @@ private:
 
 
 	//UI
+	UPlayerUi *uiInstance = nullptr;
 	void createUserInterface();
+	void updateUi();
+	void updateAmmunitionUi();
+	void updateHealthUi();
 };

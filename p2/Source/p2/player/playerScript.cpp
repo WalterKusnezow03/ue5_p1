@@ -218,6 +218,8 @@ void AplayerScript::Tick(float DeltaTime)
     //TickWingsuitTimer(DeltaTime);
 
     TickUpdateWingsuit(DeltaTime);
+
+    updateUi();
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -468,6 +470,8 @@ void AplayerScript::shoot(){
         LookUpAtRate(recoil);
 
         playerInventory.shoot();
+
+
 
     }else{
         playerInventory.releaseShoot(); //abzug loslassen
@@ -743,8 +747,33 @@ FRotator AplayerScript::cameraRotation(){
  * 
  */
 void AplayerScript::createUserInterface(){
-    UPlayerUi *newUiInstance = UPlayerUi::createNewInstance(GetWorld());
-    if(newUiInstance != nullptr){
-        newUiInstance->AddToViewport();  // Fügt das UI zur Anzeige hinzu
+    if(uiInstance == nullptr){
+        uiInstance = UPlayerUi::createNewInstance(GetWorld());
+        if(uiInstance != nullptr){
+            uiInstance->AddToViewport();  // Fügt das UI zur Anzeige hinzu
+        }
+    }
+}
+
+void AplayerScript::updateUi(){
+    updateAmmunitionUi();
+    updateHealthUi();
+}
+
+void AplayerScript::updateAmmunitionUi(){
+    if(uiInstance != nullptr){
+        //ammunition of weapon
+        FString ammunitionText = playerInventory.ammuntionUiStringOfWeapon();
+        uiInstance->updateAmmunitionText(ammunitionText);
+
+        //mags left
+
+    }
+}
+
+
+void AplayerScript::updateHealthUi(){
+    if(uiInstance != nullptr){
+        uiInstance->updateHealthText(health);
     }
 }

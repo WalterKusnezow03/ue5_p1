@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/VerticalBox.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
+#include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "PlayerUi.generated.h"
 
 /**
@@ -51,23 +52,33 @@ public:
 	static UPlayerUi *createNewInstance(UWorld *world);
 	virtual void init();
 
-	void addSelfToVerticalBox(UWidget *any);
-
-	//void addToBaseCanvas(UWidget *widget); //not needed...
+	
 
 	void updateAmmunitionText(int number);
+	void updateAmmunitionText(FString message);
+
+	void updateHealthText(int health);
+
+	UCanvasPanel *canvasPanelPointer();
 
 protected:
 	bool isInited = false;
 	UCanvasPanel *baseCanvas = nullptr;
 
-	UVerticalBox *baseVerticalBox = nullptr;
+	
 
-
-	void createAmmoShower();
 	void findBaseCanvasFromBluePrint();
-	void createBaseBoxForCanvas();
-	void createNewText(); //debug
+	
 
+
+	//HUD SECTION
+	PresetCornersLayout playerHudCornerLayout;
 	TextAndImage ammunitionTextAndImage;
+	TextAndImage healthTextAndImage;
+
+	void createBasePlayerHud();
+	void createAmmunitionHudElement();
+	void createHealthHudElement();
+
+
 };

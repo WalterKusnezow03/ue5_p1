@@ -52,8 +52,6 @@ Aweapon::Aweapon()
 	reloadTime = 1.5f;
 
 
-
-	bulletsInMag = 30;
 }
 
 
@@ -85,6 +83,10 @@ void Aweapon::BeginPlay()
 
 	setupKickBackAnimation();
 	setupVerschlussAnimation();
+
+
+
+	bulletsInMag = getMagSize();
 }
 
 // Called every frame / UPDATE
@@ -341,7 +343,7 @@ bool Aweapon::enoughBulletsInMag(){
 /// @brief will return if the weapon can perform a reload now
 /// @return 
 bool Aweapon::canReload(){
-	return !isCooling() && isActive();
+	return !isCooling() && isActive() && (getMagSize() > bulletsInMag);
 }
 
 /**
@@ -358,6 +360,13 @@ void Aweapon::reload(int amount){
 }
 
 int Aweapon::getMagSize(){
+	//return 30;
+	if(Type == weaponEnum::assaultRifle){
+		return 30;
+	}
+	if(Type == weaponEnum::pistol){
+		return 12;
+	}
 	return 30;
 }
 
@@ -891,6 +900,7 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
 void Aweapon::flagKickbackStart(){
 	verschlussKickBackStarted = true;
 	kickbackStarted = true;
+	recoilCopied = false;
 }
 
 void Aweapon::setupKickBackAnimation(){

@@ -102,16 +102,7 @@ void playerInventory::reloadWeapon(){
                 int leftInMag = current->getBulletsInMag();
                 addToAmmunition(aType, leftInMag);
 
-                //debug messages
-                /*
-                if(aType == ammunitionEnum::assaultrifle556){
-                    DebugHelper::showScreenMessage("ar bullet");
-                }
-                if(aType == ammunitionEnum::pistol9){
-                    DebugHelper::showScreenMessage("pistol bullet");
-                }*/
-
-                int magSize = current->getMagSize();
+                int magSize = current->getMagSize() - leftInMag; //werden in waffe nicht entfernt, aufstocken auf voll
                 weaponVector.at(currentIndex)->reload(getFromAmmunition(aType, magSize));
 
 
@@ -316,4 +307,30 @@ Aweapon *playerInventory::getItemPointer(){
         
     }
     return nullptr;
+}
+
+
+
+
+/**
+ * 
+ * API FOR UI
+ * 
+ */
+FString playerInventory::ammuntionUiStringOfWeapon(){
+    FString message = "";
+    if(currentIndexIsValid()){
+        Aweapon *current = weaponVector.at(currentIndex)->weaponPointer;
+        if(current){
+            int leftInMag = current->getBulletsInMag();
+            int magSize = current->getMagSize();
+
+            message += FString::Printf(
+                TEXT("%d | %d"),
+                leftInMag,
+                magSize
+            );
+        }
+    }
+    return message;
 }

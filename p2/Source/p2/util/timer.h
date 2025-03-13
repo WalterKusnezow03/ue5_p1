@@ -18,7 +18,10 @@ public:
 	void Begin(float time, bool resetsItselfIn);
 	void Tick(float deltaTime);
 	bool timesUp();
-	
+
+	float currentTimeLeft(){
+		return timeLeft;
+	}
 
 private:
 	float initialTime;
