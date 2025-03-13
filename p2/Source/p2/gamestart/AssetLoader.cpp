@@ -150,6 +150,9 @@ UMaterial *AssetLoader::loadMaterial(FString path){
 
 
 
+
+
+
 void AssetLoader::loadWeaponAttachments(){
     if(assetManager *a = assetManager::instance()){
         

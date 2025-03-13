@@ -5,8 +5,9 @@
 #include "p2/gameStart/assetManager.h"
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
+#include "p2/ui/makeUWidgets/TextAndImage.h"
 
-//instance maker with init!
+//instance maker with init call!
 UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
     if(world != nullptr){
         assetManager *pointer = assetManager::instance();
@@ -28,6 +29,13 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
 }
 
 
+void UPlayerUi::addSelfToVerticalBox(UWidget *any){
+    if(any != nullptr && baseVerticalBox != nullptr){
+        baseVerticalBox->AddChildToVerticalBox(any);
+    }
+}
+
+
 
 //constructor like
 void UPlayerUi::init(){
@@ -37,7 +45,16 @@ void UPlayerUi::init(){
     isInited = true;
 
 
-    // Hole das Root-Widget (CanvasPanel oder andere Panel-Elemente)
+    //the root widget must be a canvas panel in bp!
+    findBaseCanvasFromBluePrint();
+
+    // Jetzt kannst du mit dem CanvasPanel arbeiten
+    createBaseBoxForCanvas();
+    createNewText();
+    createAmmoShower();
+}
+
+void UPlayerUi::findBaseCanvasFromBluePrint(){
     UWidget* RootWidget = GetRootWidget();
     if (RootWidget)
     {
@@ -45,12 +62,19 @@ void UPlayerUi::init(){
         if (CanvasPanel)
         {
             baseCanvas = CanvasPanel;
-            // Jetzt kannst du mit dem CanvasPanel arbeiten
-            createBaseBoxForCanvas();
-            createNewText();
         }
     }
 }
+
+/*
+void UPlayerUi::addToBaseCanvas(UWidget *widget){
+    if(widget != nullptr){
+        if(baseCanvas != nullptr){
+            baseCanvas->AddChild(widget);
+        }
+    }
+}*/
+
 
 void UPlayerUi::createBaseBoxForCanvas(){
     if(baseCanvas != nullptr){
@@ -65,14 +89,33 @@ void UPlayerUi::createBaseBoxForCanvas(){
 }
 
 
+//DEBUG
+
 void UPlayerUi::createNewText(){
     if(baseVerticalBox != nullptr){
         // Erstelle ein UTextBlock-Widget als Beispiel
         UTextBlock* TextBlock1 = NewObject<UTextBlock>(this);
         if (TextBlock1)
         {
-            TextBlock1->SetText(FText::FromString(TEXT("Text 1")));
+            TextBlock1->SetText(FText::FromString(TEXT("ui text")));
             baseVerticalBox->AddChildToVerticalBox(TextBlock1);
         }
     }
 }
+
+
+
+
+void UPlayerUi::createAmmoShower(){
+    if(baseVerticalBox != nullptr){
+        ammunitionTextAndImage = TextAndImage(*this);
+        updateAmmunitionText(100);
+        
+    }
+}
+
+void UPlayerUi::updateAmmunitionText(int number){
+    FString message = FString::Printf(TEXT("%d"), number);
+    ammunitionTextAndImage.setText(message);
+}
+

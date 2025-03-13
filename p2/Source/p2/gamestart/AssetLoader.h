@@ -17,6 +17,25 @@ public:
 
 	void loadAssets();
 
+
+
+	///@brief Example path: TEXT("Blueprint'/Game/Prefabs/terrain/materials/texturedMaterial.texturedMaterial'")
+	template <typename T>
+	static T* loadAsset(FString path){
+		T* bpObject = LoadObject<T>(nullptr, *path);
+		
+		// Check if the class was loaded successfully
+		if (bpObject != nullptr)
+		{
+			return bpObject;
+		}
+		return nullptr;
+	}
+	
+	
+	
+
+
 private:
 	class UWorld *world;
 
