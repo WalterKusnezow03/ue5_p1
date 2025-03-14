@@ -4,7 +4,7 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 
-
+///@brief will con struct the canvas screen and at itself to the canvas of the UPlayerUi
 CanvasScreen::CanvasScreen(UPlayerUi &uiIn){
     saveParent(uiIn);
     createBaseCanvas();

@@ -3,6 +3,9 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "CanvasScreen.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Button.h"
+#include "Components/BackgroundBlur.h"
+#include "p2/ui/makeUWidgets/TextButton.h"
 #include "Components/VerticalBox.h"
 
 class UPlayerUi;
@@ -15,9 +18,15 @@ public:
     ~PauseScreen();
 
 private:
-    UCanvasPanel *baseCanvas = nullptr;
     UVerticalBox *menu = nullptr;
+    UBackgroundBlur *backgroundBlur = nullptr;
 
-    void createBaseCanvas();
+    void createBackgroundBlur();
     void createMenu();
+    void createButtons();
+    void createExitButton();
+
+    TextButton exitButton;
+
+
 };

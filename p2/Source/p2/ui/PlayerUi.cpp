@@ -8,6 +8,7 @@
 #include "p2/gameStart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/screens/PlayerHud.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 
 //instance maker with init call!
@@ -49,7 +50,7 @@ void UPlayerUi::init(){
     findBaseCanvasFromBluePrint();
 
     createBasePlayerHud();
-    //createPauseScreen();
+    createPauseScreen();
 }
 
 void UPlayerUi::findBaseCanvasFromBluePrint(){
@@ -77,11 +78,12 @@ void UPlayerUi::addToCanvas(UWidget *any){
 
 ///@brief creates the player hud
 void UPlayerUi::createBasePlayerHud(){
-    playerHud = PlayerHud(*this); //will add itself.
+    playerHud = PlayerHud(*this); //will add itself to this. Its Canvas.
 }
 
 void UPlayerUi::createPauseScreen(){
-    /*pauseScreen = PauseScreen(*this);*/
+    pauseScreen = PauseScreen(*this); //will add itself to this canvas
+    pauseScreen.setVisible(false);
 }
 
 //public api
@@ -96,4 +98,35 @@ void UPlayerUi::updateAmmunitionText(FString message){
 
 void UPlayerUi::updateHealthText(int health){
     playerHud.updateHealthText(health);
+}
+
+
+
+
+
+
+//api for calling pause 
+void UPlayerUi::PauseKeyPressed(){
+    pauseMenuOpened = !pauseMenuOpened;
+    if(pauseMenuOpened){
+        openPauseScreen();
+    }else{
+        openGameScreen();
+    }
+}
+
+void UPlayerUi::openPauseScreen(){
+    playerHud.setVisible(false);
+    pauseScreen.setVisible(true);
+    showPlayerCursor(true);
+}
+
+void UPlayerUi::openGameScreen(){
+    playerHud.setVisible(true);
+    pauseScreen.setVisible(false);
+    showPlayerCursor(false);
+}
+
+void UPlayerUi::showPlayerCursor(bool show){
+    referenceManager::showPlayerCursor(show);
 }

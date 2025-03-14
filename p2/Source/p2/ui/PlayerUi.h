@@ -57,17 +57,20 @@ public:
 	static UPlayerUi *createNewInstance(UWorld *world);
 	virtual void init();
 
-	
+	void PauseKeyPressed();
+	void openPauseScreen();
+
+	UFUNCTION()
+	void openGameScreen();
 
 	void updateAmmunitionText(int number);
 	void updateAmmunitionText(FString message);
-
 	void updateHealthText(int health);
 
 	UCanvasPanel *canvasPanelPointer();
 
-
 	void addToCanvas(UWidget *any);
+
 	
 
 protected:
@@ -79,7 +82,10 @@ protected:
 	void createBasePlayerHud();
 	void createPauseScreen();
 
+	void showPlayerCursor(bool show);
+
 	//screens
+	bool pauseMenuOpened = false;
 	PlayerHud playerHud;
 	PauseScreen pauseScreen;
 

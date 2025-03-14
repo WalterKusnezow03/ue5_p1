@@ -76,3 +76,18 @@ int referenceManager::verifyTeam(int teamIn){
     }
     return TEAM_NEUTRAL;
 }
+
+
+
+/**
+ * ui helper
+ */
+void referenceManager::showPlayerCursor(bool show){
+    referenceManager *pointer = instance();
+    if(pointer != nullptr){
+        AplayerScript *p = pointer->getPlayerPointer();
+        if(p != nullptr){
+            p->showCursor(show);
+        }
+    }
+}

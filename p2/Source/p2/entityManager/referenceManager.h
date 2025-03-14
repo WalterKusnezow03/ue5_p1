@@ -31,6 +31,8 @@ public:
 	FVector playerLookDir();
 	FRotator playerRotation();
 
+	static void showPlayerCursor(bool show);
+
 private:
 	// private constructor for singleton
 	referenceManager();

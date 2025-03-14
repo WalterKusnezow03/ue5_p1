@@ -36,6 +36,8 @@ public:
 
 	void debugPathFinder();
 
+	void showCursor(bool show);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -135,7 +137,10 @@ private:
 	//UI
 	UPlayerUi *uiInstance = nullptr;
 	void createUserInterface();
+	void openPauseMenu();
 	void updateUi();
 	void updateAmmunitionUi();
 	void updateHealthUi();
+
+	bool isPaused = false;
 };

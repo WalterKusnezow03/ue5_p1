@@ -79,7 +79,6 @@ void AplayerScript::BeginPlay()
 	if(i){
 		i->setPlayerReference(this);
 	}
-    
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
@@ -115,17 +114,15 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-
-	// Bind input actions
+    // Bind input actions
     PlayerInputComponent->BindAxis("MoveForward", this, &AplayerScript::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AplayerScript::MoveRight);
     PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
     PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("TurnRate", this, &AplayerScript::TurnAtRate);
     PlayerInputComponent->BindAxis("LookUpRate", this, &AplayerScript::LookUpAtRate);
-	
-	
-	
+
+    PlayerInputComponent->BindAction("openPauseKey", IE_Pressed, this, &AplayerScript::openPauseMenu);
 
     PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AplayerScript::interact);
 	PlayerInputComponent->BindAction("ReloadKey", IE_Pressed, this, &AplayerScript::reload);
@@ -208,6 +205,7 @@ void AplayerScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
     //world level chunkTick
     worldLevel::Tick(DeltaTime);
 
@@ -288,6 +286,7 @@ void AplayerScript::takedamage(int d, FVector &hitpoint){
  */
 void AplayerScript::MoveForward(float Value)
 {
+
     if ((Controller != nullptr) && (Value != 0.0f))
     {
         //testing
@@ -341,6 +340,7 @@ void AplayerScript::MoveRight(float Value)
 
 void AplayerScript::TurnAtRate(float Rate)
 {
+
     float yawRate = Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds();
     AddControllerYawInput(yawRate);
     //AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
@@ -348,7 +348,9 @@ void AplayerScript::TurnAtRate(float Rate)
 
 void AplayerScript::LookUpAtRate(float Rate)
 {
-	
+    if(isPaused){
+        return;
+    }
 	AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
 	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
 }
@@ -358,6 +360,10 @@ void AplayerScript::LookUpAtRate(float Rate)
 
 
 void AplayerScript::Jump(){
+    if(isPaused){
+        return;
+    }
+
     if (CanJump()){
         ACharacter::Jump(); // Calls the base class jump function
 
@@ -379,7 +385,6 @@ void AplayerScript::Jump(){
 
 void AplayerScript::sprint(){
     sprinting = !sprinting;
-    
 }
 
 /**
@@ -481,6 +486,11 @@ void AplayerScript::shoot(){
 /// @brief sets the left mouse holding status for the weapon
 /// @param h 
 void AplayerScript::setHolding(bool h){
+    if(isPaused){
+        holding = false;
+        return;
+    }
+
     holding = h;
 }
 
@@ -738,8 +748,19 @@ FRotator AplayerScript::cameraRotation(){
 
 
 
-
-
+/**
+ * --- helper ---
+ */
+void AplayerScript::showCursor(bool show){
+    // Assuming you're inside your ACharacter or subclass (e.g., AMyCharacter)
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if (PlayerController)
+    {
+        // Toggle mouse cursor visibility
+        PlayerController->bShowMouseCursor = !PlayerController->bShowMouseCursor;
+    }
+    isPaused = show;
+}
 
 /**
  * 
@@ -752,6 +773,12 @@ void AplayerScript::createUserInterface(){
         if(uiInstance != nullptr){
             uiInstance->AddToViewport();  // Fügt das UI zur Anzeige hinzu
         }
+    }
+}
+
+void AplayerScript::openPauseMenu(){
+    if(uiInstance != nullptr){
+        uiInstance->PauseKeyPressed();
     }
 }
 
