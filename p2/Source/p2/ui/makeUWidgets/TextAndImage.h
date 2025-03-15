@@ -26,8 +26,11 @@ public:
     void setImage(FString path);
 
 private:
+    bool isHorizontal = false;
 
     UHorizontalBox *baseHorizontalBox = nullptr;
+    UVerticalBox *baseVerticalBox = nullptr;
+
     UTextBlock *TextBlock;
     UImage *Image;
 

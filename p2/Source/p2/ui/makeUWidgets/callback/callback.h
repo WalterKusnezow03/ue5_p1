@@ -9,8 +9,6 @@ class P2_API UCallback : public UObject
     GENERATED_BODY()
 
 public:
-    // Delegate declaration
-    FSimpleDelegate CallbackPassed;
 
     // Set the delegate (bind a function or lambda)
     void SetCallback(FSimpleDelegate Callback)
@@ -18,7 +16,7 @@ public:
         CallbackPassed = Callback;
     }
 
-    // none of this is called...
+    //works fine, button sometimes buggy
     UFUNCTION()
     void UCallbackFunction()
     {
@@ -31,4 +29,8 @@ public:
             DebugHelper::showScreenMessage("debugCallback CALLBACK NOT BOUND"); //printed
         }
     }
+
+private:
+    FSimpleDelegate CallbackPassed;
+
 };

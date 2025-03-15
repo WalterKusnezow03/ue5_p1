@@ -5,7 +5,9 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "p2/ui/makeUWidgets/TextButton.h"
+#include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
+#include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
+
 #include "Components/VerticalBox.h"
 
 class UPlayerUi;
@@ -21,12 +23,15 @@ private:
     UVerticalBox *menu = nullptr;
     UBackgroundBlur *backgroundBlur = nullptr;
 
+    TextButton exitButton;
+    ImageOverlayedButton imageButton; //debug
+
     void createBackgroundBlur();
     void createMenu();
     void createButtons();
     void createExitButton();
 
-    TextButton exitButton;
+    void debugCreateImageButton();
 
-
+    
 };
