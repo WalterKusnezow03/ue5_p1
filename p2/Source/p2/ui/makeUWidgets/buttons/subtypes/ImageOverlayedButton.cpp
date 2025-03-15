@@ -4,31 +4,21 @@
 #include "Components/Button.h"
 
 
-ImageOverlayedButton::ImageOverlayedButton(){
 
-}
-ImageOverlayedButton::ImageOverlayedButton(UPlayerUi &uiRef){
-    saveParent(uiRef);
-    createButton();
+void UImageOverlayedButton::init(){
+    Super::init();
     createImageOverlayedBackground();
 
 }
 
-ImageOverlayedButton::~ImageOverlayedButton(){
+void UImageOverlayedButton::createImageOverlayedBackground(){
+    background = NewObject<UImageOverlayed>(this);
 
-}
-
-
-void ImageOverlayedButton::createImageOverlayedBackground(){
-    if(playerUiParent != nullptr){
-        background = ImageOverlayed(*playerUiParent);
-
-        if(button){
-            UWidget *base = background.baseLayoutPointer();
-            if(base != nullptr){
-                //button->AddChild(base); //old
-                scalebox->AddChild(base);
-            }
+    if(button){
+        UWidget *base = background->baseLayoutPointer();
+        if(base != nullptr){
+            //button->AddChild(base); //old
+            scalebox->AddChild(base);
         }
     }
 }
@@ -39,17 +29,20 @@ void ImageOverlayedButton::createImageOverlayedBackground(){
 
 //public api wrappers
 
-void ImageOverlayedButton::setText(FString textIn){
-    background.setText(textIn);
+void UImageOverlayedButton::setText(FString textIn){
+    if(background)
+        background->setText(textIn);
 }
 
-void ImageOverlayedButton::setImage(textureEnum type){
-    background.setImage(type);
+void UImageOverlayedButton::setImage(textureEnum type){
+    if(background)
+        background->setImage(type);
 }
 
 ///@brief sets an icon for the image
 ///@param type - enum type of texture 
 ///@param scale value each component between 0.0 and 1.0 
-void ImageOverlayedButton::setImage(textureEnum type, FVector2D scale){
-    background.setImage(type, scale);
+void UImageOverlayedButton::setImage(textureEnum type, FVector2D scale){
+    if(background)
+        background->setImage(type, scale);
 }

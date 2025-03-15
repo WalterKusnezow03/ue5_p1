@@ -5,16 +5,15 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 
-///@brief will con struct the canvas screen and at itself to the canvas of the UPlayerUi
-CanvasScreen::CanvasScreen(UPlayerUi &uiIn){
-    saveParent(uiIn);
+void UCanvasScreen::init(UPlayerUi &refin){
+    playerUiParent = &refin;
     createBaseCanvas();
 }
 
-void CanvasScreen::createBaseCanvas(){
+void UCanvasScreen::createBaseCanvas(){
     if(playerUiParent != nullptr){
         if(baseCanvas == nullptr){
-            baseCanvas = NewObject<UCanvasPanel>(playerUiParent);
+            baseCanvas = NewObject<UCanvasPanel>(this);
             playerUiParent->addToCanvas(baseCanvas);
             updateCanvasScale(playerUiParent->GetWorld());
         }
@@ -22,7 +21,7 @@ void CanvasScreen::createBaseCanvas(){
 }
 
 
-void CanvasScreen::updateCanvasScale(UWorld *world){
+void UCanvasScreen::updateCanvasScale(UWorld *world){
     if(world != nullptr && baseCanvas != nullptr){
 
         FVector2D ViewportSize;
@@ -44,11 +43,11 @@ void CanvasScreen::updateCanvasScale(UWorld *world){
 
 
 
-void CanvasScreen::setVisible(bool visible){
-    customUiComponentBase::setVisible(baseCanvas, visible);
+void UCanvasScreen::setVisible(bool visible){
+    UcustomUiComponentBase::setVisible(baseCanvas, visible);
 }
 
-UWidget *CanvasScreen::baseLayoutPointer(){
+UWidget *UCanvasScreen::baseLayoutPointer(){
     return baseCanvas;
 }
 
@@ -56,9 +55,9 @@ UWidget *CanvasScreen::baseLayoutPointer(){
 
 
 
-void CanvasScreen::createBackgroundBlur(){
+void UCanvasScreen::createBackgroundBlur(){
     if(backgroundBlur == nullptr){
-        backgroundBlur = NewObject<UBackgroundBlur>(playerUiParent);
+        backgroundBlur = NewObject<UBackgroundBlur>(this);
         backgroundBlur->SetBlurStrength(30.0f); // Stärke des Weichzeichners
         backgroundBlur->SetBlurRadius(5);
 

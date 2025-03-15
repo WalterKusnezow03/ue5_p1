@@ -11,11 +11,11 @@ ScreenOpenStack::~ScreenOpenStack(){
 }
 
 
-void ScreenOpenStack::open(customUiComponentBase *item){
+void ScreenOpenStack::open(UcustomUiComponentBase *item){
     if(item){
         for (int i = 0; i < opened.size(); i++){
-            customUiComponentBase *current = opened[i];
-            if(current != nullptr && current != item){
+            UcustomUiComponentBase *current = opened[i];
+            if(current != nullptr){
                 current->setVisible(false);
             }
         }
@@ -27,11 +27,20 @@ void ScreenOpenStack::open(customUiComponentBase *item){
 
 void ScreenOpenStack::closeBack(){
     if(opened.size() > 0){
-        customUiComponentBase *back = opened.back();
+        UcustomUiComponentBase *back = opened.back();
         opened.pop_back();
         if(back != nullptr){
             back->setVisible(false);
         }
+
+        //set latest visible again
+        if(opened.size() > 0){
+            UcustomUiComponentBase *backNew = opened.back();
+            if(backNew != nullptr){
+                backNew->setVisible(true);
+            }
+        }
+
     }
 }
 
@@ -43,5 +52,5 @@ void ScreenOpenStack::closeAll(){
 
 
 bool ScreenOpenStack::isEmpty(){
-    return opened.size() == 0;
+    return opened.size() <= 0;
 }

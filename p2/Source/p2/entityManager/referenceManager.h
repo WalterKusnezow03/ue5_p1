@@ -32,6 +32,7 @@ public:
 	FRotator playerRotation();
 
 	static void showPlayerCursor(bool show);
+	static void setPlayerPaused(bool in);
 
 private:
 	// private constructor for singleton

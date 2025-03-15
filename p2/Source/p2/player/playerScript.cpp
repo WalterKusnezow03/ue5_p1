@@ -340,7 +340,9 @@ void AplayerScript::MoveRight(float Value)
 
 void AplayerScript::TurnAtRate(float Rate)
 {
-
+    if(isPaused){
+        return;
+    }
     float yawRate = Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds();
     AddControllerYawInput(yawRate);
     //AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
@@ -466,7 +468,10 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    
+    if(isPaused){
+        return;
+    }
+
     if(holding){ //checks if holding mouse down
         
 
@@ -758,8 +763,13 @@ void AplayerScript::showCursor(bool show){
     {
         // Toggle mouse cursor visibility
         PlayerController->bShowMouseCursor = !PlayerController->bShowMouseCursor;
+
+        //PlayerController->SetInputMode(FInputModeGameAndUI());
     }
-    isPaused = show;
+}
+
+void AplayerScript::setPaused(bool in){
+    isPaused = in;
 }
 
 /**
@@ -777,9 +787,15 @@ void AplayerScript::createUserInterface(){
 }
 
 void AplayerScript::openPauseMenu(){
-    if(uiInstance != nullptr){
-        uiInstance->PauseKeyPressed();
+    if (uiInstance != nullptr)
+    {
+        if(isPaused){
+            uiInstance->openGameScreen();
+        }else{
+            uiInstance->openPauseScreen();
+        }
     }
+    isPaused = !isPaused;
 }
 
 void AplayerScript::updateUi(){

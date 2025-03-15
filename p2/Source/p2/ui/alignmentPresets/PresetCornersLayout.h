@@ -3,17 +3,23 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/VerticalBox.h"
 
+#include "PresetCornersLayout.generated.h"
+
+
 class UPlayerUi;
 
 /**
  * preset corners layout with vertical boxes
  */
-class P2_API PresetCornersLayout : public customUiComponentBase{
+
+UCLASS()
+class P2_API UPresetCornersLayout : public UcustomUiComponentBase{
+
+    GENERATED_BODY()
 
 public:
-    PresetCornersLayout();
-    PresetCornersLayout(UPlayerUi &parent, UCanvasPanel &parentPanelIn);
-    ~PresetCornersLayout();
+    using UcustomUiComponentBase::init;
+    void init(UCanvasPanel &parentPanelIn);
 
     void addChildToTopLeft(UWidget *any);
     void addChildToTopRight(UWidget *any);
@@ -22,7 +28,6 @@ public:
     void addChildToTopCenter(UWidget *any);
 
 private:
-    void resetAllPointers();
     void createSubLayouts();
     void addChildTo(UVerticalBox *box, UWidget *any);
 

@@ -2,26 +2,34 @@
 
 #include "Components/Widget.h"
 
+#include "customUiComponentBase.generated.h"
+
 class UPlayerUi;
 
 /**
  * base functionality each custom ui element should have 
  * (the pointer to the main owning UPlayerUi instance)
  */
-class P2_API customUiComponentBase{
+UCLASS()
+class P2_API UcustomUiComponentBase : public UObject{
+
+    GENERATED_BODY()
 
 public:
-    customUiComponentBase(){}
-    ~customUiComponentBase(){
-        playerUiParent = nullptr;
+    virtual void init(){
+        WAS_INIT_FLAG = true;
     }
-
-    virtual void setVisible(bool visible){}
+    virtual void init(UPlayerUi &refin){
+        saveParent(refin);
+        WAS_INIT_FLAG = true;
+    }
+    virtual void setVisible(bool visible) {}
 
     void saveParent(UPlayerUi &ref){
         playerUiParent = &ref;
     }
 
+    //MUST BE OVERRIDEN!
     virtual UWidget *baseLayoutPointer(){
         return nullptr;
     }
@@ -29,14 +37,17 @@ public:
 protected:
     UPlayerUi *playerUiParent = nullptr;
 
-    virtual bool correctInitialized(){
-        return playerUiParent != nullptr;
-    }
+    bool WAS_INIT_FLAG = false;
 
     void setVisible(UWidget *any, bool visible){
         if(any != nullptr){
+            //ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+            
             ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
             any->SetVisibility(newStatus);
+
+            //test
+            any->SetIsEnabled(visible);
         }
     }
 

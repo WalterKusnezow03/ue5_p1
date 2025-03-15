@@ -60,7 +60,7 @@ public:
 	static UPlayerUi *createNewInstance(UWorld *world);
 	virtual void init();
 
-	void PauseKeyPressed();
+	
 	void openPauseScreen();
 
 	UFUNCTION()
@@ -97,9 +97,9 @@ protected:
 
 	//screens
 	bool pauseMenuOpened = false;
-	PlayerHud playerHud;
-	PauseScreen pauseScreen;
-	LoadoutScreen loadoutScreen;
+	UPlayerHud *playerHud;
+	UPauseScreen *pauseScreen;
+	ULoadoutScreen *loadoutScreen;
 
 	//todo: aktives element speichern, und alle pointer in einem vektor
 

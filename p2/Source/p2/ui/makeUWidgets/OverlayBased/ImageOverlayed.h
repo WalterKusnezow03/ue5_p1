@@ -6,17 +6,22 @@
 #include "p2/gameStart/assetEnums/textureEnum.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
+#include "ImageOverlayed.generated.h"
+
 class UPlayerUi;
 
 /**
  * will display an image in background and a text at the top
  */
-class P2_API ImageOverlayed : public customUiComponentBase{
+
+UCLASS()
+class P2_API UImageOverlayed : public UcustomUiComponentBase{
+
+    GENERATED_BODY()
 
 public:
-    ImageOverlayed();
-    ImageOverlayed(UPlayerUi &parentIn);
-    ~ImageOverlayed();
+    using UcustomUiComponentBase::init;
+    virtual void init() override;
 
     virtual UWidget *baseLayoutPointer() override {
         return baseOverlay;

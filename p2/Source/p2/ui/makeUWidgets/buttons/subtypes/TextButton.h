@@ -8,14 +8,18 @@
 #include "p2/ui/makeUWidgets/buttons/ButtonBase.h"
 #include "Components/TextBlock.h"
 
+#include "TextButton.generated.h"
+
 class UPlayerUi;
 
-class TextButton : public ButtonBase
+
+UCLASS()
+class UTextButton : public UButtonBase
 {
+    GENERATED_BODY()
+
 public:
-    TextButton();
-    TextButton(UPlayerUi &uiRef);
-    ~TextButton();
+    virtual void init() override;
 
     void setText(FString textIn);
 

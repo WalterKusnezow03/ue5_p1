@@ -37,6 +37,7 @@ public:
 	void debugPathFinder();
 
 	void showCursor(bool show);
+	void setPaused(bool in);
 
 protected:
 	// Called when the game starts or when spawned

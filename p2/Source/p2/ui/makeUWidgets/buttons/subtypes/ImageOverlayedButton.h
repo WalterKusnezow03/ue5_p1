@@ -4,24 +4,28 @@
 #include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"
 #include "Components/Button.h"
 
+#include "ImageOverlayedButton.generated.h"
+
 class UPlayerUi;
 
 /**
  * is an button with an text and an image, wraps an imageOverlay class object
  */
-class P2_API ImageOverlayedButton : public ButtonBase{
+
+UCLASS()
+class P2_API UImageOverlayedButton : public UButtonBase{
+
+    GENERATED_BODY()
 
 public:
-    ImageOverlayedButton();
-    ImageOverlayedButton(UPlayerUi &inref);
-    ~ImageOverlayedButton();
+    virtual void init() override;
 
     void setText(FString message);
     void setImage(textureEnum type);
     void setImage(textureEnum type, FVector2D scale);
 
 private:
-    ImageOverlayed background;
+    UImageOverlayed *background;
 
     void createImageOverlayedBackground();
 

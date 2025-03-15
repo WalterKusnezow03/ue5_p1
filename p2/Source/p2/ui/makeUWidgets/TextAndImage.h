@@ -6,17 +6,21 @@
 #include "p2/gameStart/assetEnums/textureEnum.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
+#include "TextAndImage.generated.h"
+
 class UPlayerUi;
 
 /**
  * label with image like class in an horizontal layout
  */
-class P2_API TextAndImage : public customUiComponentBase{
+
+UCLASS()
+class P2_API UTextAndImage : public UcustomUiComponentBase{
+    GENERATED_BODY()
 
 public:
-    TextAndImage();
-    TextAndImage(UPlayerUi &parent);
-    ~TextAndImage();
+    virtual void init() override;
+
     virtual UWidget *baseLayoutPointer() override;
 
     void setText(FString textIn);
@@ -36,5 +40,5 @@ private:
 
     void createImage();
     void createText();
-    virtual bool correctInitialized() override;
+    bool correctInitialized();
 };

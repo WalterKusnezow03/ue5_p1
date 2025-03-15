@@ -9,6 +9,8 @@
 #include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 
+#include "ButtonBase.generated.h"
+
 class UPlayerUi;
 
 /**
@@ -19,12 +21,14 @@ class UPlayerUi;
  * --->content inside scale box
  * 
  */
-class ButtonBase : public customUiComponentBase
+
+UCLASS()
+class UButtonBase : public UcustomUiComponentBase
 {
+    GENERATED_BODY()
+
 public:
-    ButtonBase();
-    ButtonBase(UPlayerUi &uiRef);
-    ~ButtonBase();
+    virtual void init() override;
 
     virtual UWidget *baseLayoutPointer() override{
         return button; //button //scalebox(wrong)
@@ -32,8 +36,10 @@ public:
 
     void SetCallBack(FSimpleDelegate callbackIn);
 
+    void reloadCallback();
 
 protected:
+    
     UButton *button = nullptr;
     UScaleBox *scalebox = nullptr; //inside button. Use to add your childs
 

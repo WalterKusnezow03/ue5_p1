@@ -91,3 +91,13 @@ void referenceManager::showPlayerCursor(bool show){
         }
     }
 }
+
+void referenceManager::setPlayerPaused(bool in){
+    referenceManager *pointer = instance();
+    if(pointer != nullptr){
+        AplayerScript *p = pointer->getPlayerPointer();
+        if(p != nullptr){
+            p->setPaused(in);
+        }
+    }
+}

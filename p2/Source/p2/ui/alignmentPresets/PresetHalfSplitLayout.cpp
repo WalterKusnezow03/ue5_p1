@@ -1,0 +1,96 @@
+
+
+#include "Components/HorizontalBox.h"
+#include "Components/VerticalBox.h"
+#include "p2/ui/PlayerUi.h"
+#include "p2/ui/_baseClass/customUiComponentBase.h"
+#include <map>
+
+#include "PresetHalfSplitLayout.h"
+
+
+void UPresetHalfSplitLayout::init(){
+
+    createSubLayouts();
+}
+
+
+
+void UPresetHalfSplitLayout::createSubLayouts(){
+    baseVertical = NewObject<UVerticalBox>(this);
+
+    headLineHorizontal = NewObject<UHorizontalBox>(this);
+    baseVertical->AddChildToVerticalBox(headLineHorizontal);
+
+    rightLeftContainer = NewObject<UHorizontalBox>(this);
+    baseVertical->AddChildToVerticalBox(rightLeftContainer);
+
+    leftVertical = NewObject<UVerticalBox>(this);
+    rightLeftContainer->AddChildToHorizontalBox(leftVertical);
+
+    //old right
+    rightVertical = NewObject<UVerticalBox>(this);
+    rightLeftContainer->AddChildToHorizontalBox(rightVertical);
+    rightPanels[0] = rightVertical;
+}
+
+
+void UPresetHalfSplitLayout::showRightSideLayoutAtIndex(int i){
+    for(auto &pair : rightPanels){
+        int key = pair.first;
+        bool visible = (key == i);
+        ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+
+        UWidget *second = pair.second;
+        if(second != nullptr){
+            second->SetVisibility(newStatus);
+        }
+    }
+}
+
+
+//public api
+
+
+
+/*void PresetHalfSplitLayout::addChildToRightVertical(UWidget *any){
+    if(rightVertical != nullptr && any != nullptr){
+        rightVertical->AddChildToVerticalBox(any);
+    }
+}*/
+void UPresetHalfSplitLayout::addChildToRightVertical(UWidget *any, int index){
+    if(any != nullptr){
+        //create and add if needed
+        if(rightPanels.find(index) == rightPanels.end()){
+            rightPanels[index] = NewObject<UVerticalBox>(this);
+            rightLeftContainer->AddChildToHorizontalBox(rightPanels[index]);
+        }
+        //add item.
+        UVerticalBox *targetedLayout = rightPanels[index];
+        if(targetedLayout != nullptr){
+            targetedLayout->AddChildToVerticalBox(any);
+        }
+
+        
+    }
+}
+
+
+
+
+
+
+
+void UPresetHalfSplitLayout::addChildToHeadLine(UWidget *any){
+    if(headLineHorizontal != nullptr && any != nullptr){
+        headLineHorizontal->AddChildToHorizontalBox(any);
+    }
+}
+
+void UPresetHalfSplitLayout::addChildToLeftVertical(UWidget *any){
+    if(leftVertical != nullptr && any != nullptr){
+        leftVertical->AddChildToVerticalBox(any);
+    }
+}
+    
+    

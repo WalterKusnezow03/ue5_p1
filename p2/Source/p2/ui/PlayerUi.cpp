@@ -80,17 +80,27 @@ void UPlayerUi::addToCanvas(UWidget *any){
 
 ///@brief creates the player hud
 void UPlayerUi::createBasePlayerHud(){
-    playerHud = PlayerHud(*this); //will add itself to this. Its Canvas.
+    playerHud = NewObject<UPlayerHud>(this);
+    if(playerHud){
+        playerHud->init(*this);
+    }
+    
 }
 
 void UPlayerUi::createPauseScreen(){
-    pauseScreen = PauseScreen(*this); //will add itself to this canvas
-    pauseScreen.setVisible(false);
+    pauseScreen = NewObject<UPauseScreen>(this);
+    if(pauseScreen){
+        pauseScreen->init(*this);
+        pauseScreen->setVisible(false);
+    }
+    
 }
 
 void UPlayerUi::createLoadoutScreen(){
-    loadoutScreen = LoadoutScreen(*this); //will add itself to this canvas
-    loadoutScreen.setVisible(false);
+    loadoutScreen = NewObject<ULoadoutScreen>(this);
+    loadoutScreen->init(*this);
+
+    loadoutScreen->setVisible(false);
 }
 
 
@@ -98,55 +108,41 @@ void UPlayerUi::createLoadoutScreen(){
 //public api
 
 void UPlayerUi::updateAmmunitionText(int number){
-    playerHud.updateAmmunitionText(number);
+    playerHud->updateAmmunitionText(number);
 }
 
 void UPlayerUi::updateAmmunitionText(FString message){
-    playerHud.updateAmmunitionText(message);
+    playerHud->updateAmmunitionText(message);
 }
 
 void UPlayerUi::updateHealthText(int health){
-    playerHud.updateHealthText(health);
+    playerHud->updateHealthText(health);
 }
 
 
 
 
 
-
-//api for calling pause 
-void UPlayerUi::PauseKeyPressed(){
-    pauseMenuOpened = !pauseMenuOpened;
-    if(pauseMenuOpened){
-        openPauseScreen();
-    }else{
-        openGameScreen();
-    }
-}
 
 void UPlayerUi::openPauseScreen(){
-    playerHud.setVisible(false);
-
-    openedScreenStack.open(&pauseScreen);
-    
+    playerHud->setVisible(false);
+    openedScreenStack.open(pauseScreen);
     showPlayerCursor(true);
 }
 
 void UPlayerUi::openGameScreen(){
     openedScreenStack.closeAll();
-    playerHud.setVisible(true);
-
-    //pauseScreen.setVisible(false);
+    playerHud->setVisible(true);
     showPlayerCursor(false);
 }
 
 void UPlayerUi::openLoadoutScreen(){
-    playerHud.setVisible(false);
-    showPlayerCursor(true);
-    openedScreenStack.open(&loadoutScreen);
+    playerHud->setVisible(false);
+    openedScreenStack.open(loadoutScreen);
 }
 
 void UPlayerUi::closeLatestScreen(){
+    DebugHelper::logMessage("debugClose screen");
     openedScreenStack.closeBack();
     if(openedScreenStack.isEmpty()){
         openGameScreen();

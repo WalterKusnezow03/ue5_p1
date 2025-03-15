@@ -9,7 +9,7 @@ public:
     ScreenOpenStack();
     ~ScreenOpenStack();
 
-    void open(customUiComponentBase *item);
+    void open(UcustomUiComponentBase *item);
     void closeBack();
 
     void closeAll();
@@ -17,6 +17,6 @@ public:
     bool isEmpty();
 
 private:
-    std::vector<customUiComponentBase *> opened;
+    std::vector<UcustomUiComponentBase *> opened;
     
 };

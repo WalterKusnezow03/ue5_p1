@@ -10,11 +10,8 @@
 #include "p2/DebugHelper.h"
 
 
-PlayerHud::PlayerHud(){
-}
-
-PlayerHud::PlayerHud(UPlayerUi &playerUiOwner){
-    playerUiParent = &playerUiOwner;
+void UPlayerHud::init(UPlayerUi &refin){
+    saveParent(refin);
 
     createBaseCanvas(); //super.
 
@@ -23,61 +20,81 @@ PlayerHud::PlayerHud(UPlayerUi &playerUiOwner){
     createHealthHudElement();
 }
 
-PlayerHud::~PlayerHud(){
-
-}
-
 
 /// ----- PLAYER HUD SECTION ----- START
-void PlayerHud::createBasePlayerHud(){
-    if(baseCanvas != nullptr){
-        playerHudCornerLayout = PresetCornersLayout(*playerUiParent, *baseCanvas);
+void UPlayerHud::createBasePlayerHud(){
+    if(baseCanvas){
+        playerHudCornerLayout = NewObject<UPresetCornersLayout>(this);
+        if(playerHudCornerLayout){
+            playerHudCornerLayout->init(*baseCanvas);
+        }
     }
 }
 
 
-void PlayerHud::createAmmunitionHudElement(){
+void UPlayerHud::createAmmunitionHudElement(){
 
-    ammunitionTextAndImage = TextAndImage(*playerUiParent);
-    ammunitionTextAndImage.setImage(
-        textureEnum::patroneIcon,
-        FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
-    );
+    ammunitionTextAndImage = NewObject<UTextAndImage>(this);
 
-    UWidget *pointerOfTextImageLayout = ammunitionTextAndImage.baseLayoutPointer();
-    if(pointerOfTextImageLayout != nullptr){
-        playerHudCornerLayout.addChildToBottomRight(pointerOfTextImageLayout);
+    if(ammunitionTextAndImage){
+        ammunitionTextAndImage->init();
+
+        ammunitionTextAndImage->setImage(
+            textureEnum::patroneIcon,
+            FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
+        );
+
+        UWidget *pointerOfTextImageLayout = ammunitionTextAndImage->baseLayoutPointer();
+        if(pointerOfTextImageLayout != nullptr){
+            if(playerHudCornerLayout){
+                playerHudCornerLayout->addChildToBottomRight(pointerOfTextImageLayout);
+            }
+        }
     }
+    
 }
 
-void PlayerHud::createHealthHudElement(){
-    healthTextAndImage = TextAndImage(*playerUiParent);
-    healthTextAndImage.setImage(
-        textureEnum::healthIcon,
-        FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
-    );
+void UPlayerHud::createHealthHudElement(){
+    healthTextAndImage = NewObject<UTextAndImage>(this);
+    
+    if(healthTextAndImage){
+        healthTextAndImage->init();
+        healthTextAndImage->setImage(
+            textureEnum::healthIcon,
+            FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
+        );
 
-    UWidget *pointerOfTextImageLayout = healthTextAndImage.baseLayoutPointer();
-    if(pointerOfTextImageLayout != nullptr){
-        playerHudCornerLayout.addChildToBottomLeft(pointerOfTextImageLayout);
+        UWidget *pointerOfTextImageLayout = healthTextAndImage->baseLayoutPointer();
+        if(pointerOfTextImageLayout != nullptr){
+            if(playerHudCornerLayout){
+                playerHudCornerLayout->addChildToBottomLeft(pointerOfTextImageLayout);
+            }
+        }
     }
+    
 }
 
 
 //PUBLIC API
 
-void PlayerHud::updateAmmunitionText(int number){
+void UPlayerHud::updateAmmunitionText(int number){
     FString message = FString::Printf(TEXT("%d"), number);
     updateAmmunitionText(message);
 }
 
-void PlayerHud::updateAmmunitionText(FString message){
-    ammunitionTextAndImage.setText(message);
+void UPlayerHud::updateAmmunitionText(FString message){
+    if(ammunitionTextAndImage){
+        ammunitionTextAndImage->setText(message);
+    }
+    
 }
 
-void PlayerHud::updateHealthText(int health){
-    FString toText = FString::Printf(TEXT("%d"), health);
-    healthTextAndImage.setText(toText);
+void UPlayerHud::updateHealthText(int health){
+    if(healthTextAndImage){
+        FString toText = FString::Printf(TEXT("%d"), health);
+        healthTextAndImage->setText(toText);
+    }
+    
 }
 
 /// ----- PLAYER HUD SECTION ----- END

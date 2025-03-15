@@ -13,83 +13,82 @@
 #include "PauseScreen.h"
 
 
-PauseScreen::PauseScreen(){
-    baseCanvas = nullptr;
-    menu = nullptr;
-    backgroundBlur = nullptr;
-}
 
-PauseScreen::PauseScreen(UPlayerUi &parentOwner){
-    baseCanvas = nullptr;
-    menu = nullptr;
-    backgroundBlur = nullptr;
+void UPauseScreen::init(UPlayerUi &playerUiParentref){
+    Super::init(playerUiParentref);
 
-    playerUiParent = &parentOwner;
-    createBaseCanvas(); //super
     createBackgroundBlur();
-
     createMenu();
     createButtons();
 }
 
-PauseScreen::~PauseScreen(){
-    baseCanvas = nullptr;
-    menu = nullptr;
-    backgroundBlur = nullptr;
-}
 
 
 
-void PauseScreen::createMenu(){
+void UPauseScreen::createMenu(){
     if(menu == nullptr && baseCanvas != nullptr){
-        menu = NewObject<UVerticalBox>(playerUiParent);
-        baseCanvas->AddChild(menu);
+        menu = NewObject<UVerticalBox>(this);
 
-        UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(menu->Slot);
-        if(slot != nullptr){
-            slot->SetPosition(FVector2D(100, 100)); //kleiner test, nach innen schieben
+        if(menu){
+            baseCanvas->AddChild(menu);
+
+            UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(menu->Slot);
+            if(slot != nullptr){
+                slot->SetPosition(FVector2D(100, 100)); //kleiner test, nach innen schieben
+            }
         }
+        
     }
 }
 
 
-void PauseScreen::createButtons(){
+void UPauseScreen::createButtons(){
     createExitButton();
     createLoadoutScreenButton();
 }
 
-void PauseScreen::createExitButton(){
+void UPauseScreen::createExitButton(){
     if(menu != nullptr && playerUiParent != nullptr){
-        exitButton = TextButton(*playerUiParent);
-        exitButton.setText("exit"); //exit
+        exitButton = NewObject<UTextButton>(this);
 
-        //set callback here
-        exitButton.SetCallBack(
-            FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::PauseKeyPressed)
-        );
+        if(exitButton){
+            exitButton->init();
+            exitButton->setText("exit"); //exit
 
-        AddChildToMenu(exitButton);
+            //set callback here
+            exitButton->SetCallBack(
+                FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openGameScreen)
+            );
+
+            AddChildToMenu(*exitButton);
+        }
+       
     }
 }
 
 
-void PauseScreen::createLoadoutScreenButton(){
+void UPauseScreen::createLoadoutScreenButton(){
     if(menu != nullptr && playerUiParent != nullptr){
-        loadoutScreenButton = TextButton(*playerUiParent);
-        loadoutScreenButton.setText("Loadout"); //exit
+        loadoutScreenButton = NewObject<UTextButton>(this);
 
-        //set callback here
-        loadoutScreenButton.SetCallBack(
-            FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openLoadoutScreen)
-        );
+        if(loadoutScreenButton){
+            loadoutScreenButton->init();
+            loadoutScreenButton->setText("Loadout"); //exit
 
-        AddChildToMenu(loadoutScreenButton);
+            //set callback here
+            loadoutScreenButton->SetCallBack(
+                FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openLoadoutScreen)
+            );
+
+            AddChildToMenu(*loadoutScreenButton);
+        }
+        
     }
 }
 
 
 ///@brief adds a custom ui component to the menu.
-void PauseScreen::AddChildToMenu(customUiComponentBase &item){
+void UPauseScreen::AddChildToMenu(UcustomUiComponentBase &item){
     if(menu != nullptr){
         UWidget *baseLayout = item.baseLayoutPointer();
         if(baseLayout != nullptr){

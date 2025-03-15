@@ -10,25 +10,31 @@
 
 #include "Components/VerticalBox.h"
 
+#include "PauseScreen.generated.h"
+
 class UPlayerUi;
 
-class P2_API PauseScreen : public CanvasScreen {
+UCLASS()
+class P2_API UPauseScreen : public UCanvasScreen {
+
+    GENERATED_BODY()
 
 public:
-    PauseScreen();
-    PauseScreen(UPlayerUi &owningParent);
-    ~PauseScreen();
+    using UcustomUiComponentBase::init;
+    virtual void init(UPlayerUi &playerUiParentref) override;
+    
+    
 
 private:
     UVerticalBox *menu = nullptr;
     
-    TextButton exitButton;
-    TextButton loadoutScreenButton;
+    UTextButton *exitButton = nullptr;
+    UTextButton *loadoutScreenButton = nullptr;
 
     void createMenu();
     void createButtons();
     void createExitButton();
     void createLoadoutScreenButton();
 
-    void AddChildToMenu(customUiComponentBase &item);
+    void AddChildToMenu(UcustomUiComponentBase &item);
 };

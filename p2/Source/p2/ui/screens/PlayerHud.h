@@ -7,18 +7,17 @@
 #include "CanvasScreen.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
+#include "PlayerHud.generated.h"
 
 class UPlayerUi;
 
-class P2_API PlayerHud : public CanvasScreen {
-
+UCLASS()
+class P2_API UPlayerHud : public UCanvasScreen {
+    GENERATED_BODY()
 public:
+    
+    virtual void init(UPlayerUi &refin) override;
 
-    PlayerHud();
-    PlayerHud(UPlayerUi &playerui);
-    ~PlayerHud();
-
-   
     void updateAmmunitionText(int number);
     void updateAmmunitionText(FString message);
     void updateHealthText(int health);
@@ -27,9 +26,9 @@ public:
 private:
 
     //HUD SECTION
-	PresetCornersLayout playerHudCornerLayout;
-	TextAndImage ammunitionTextAndImage;
-	TextAndImage healthTextAndImage;
+    UPresetCornersLayout *playerHudCornerLayout;
+    UTextAndImage *ammunitionTextAndImage;
+    UTextAndImage *healthTextAndImage;
 
     
     void createBasePlayerHud();

@@ -5,22 +5,17 @@
 #include "Components/BackgroundBlur.h"
 #include "Components/VerticalBox.h"
 
+#include "CanvasScreen.generated.h"
+
 class UPlayerUi;
 
-class P2_API CanvasScreen : public customUiComponentBase {
+UCLASS()
 
+class P2_API UCanvasScreen : public UcustomUiComponentBase {
+    GENERATED_BODY()
 public:
-    CanvasScreen(){
-        baseCanvas = nullptr;
-    }
-    ~CanvasScreen(){
-        baseCanvas = nullptr;
-    }
 
-    CanvasScreen(UPlayerUi &uiIn);
-
-    
-
+    virtual void init(UPlayerUi &refin);
 
     virtual void setVisible(bool visible) override;
     virtual UWidget *baseLayoutPointer() override;

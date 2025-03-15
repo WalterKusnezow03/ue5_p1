@@ -15,26 +15,17 @@
 #include "TextAndImage.h"
 
 ///@brief get the pointer of this layout and add it to an owning parent canvas for example!
-UWidget *TextAndImage::baseLayoutPointer(){
+UWidget *UTextAndImage::baseLayoutPointer(){
     return baseHorizontalBox;
 }
 
-TextAndImage::TextAndImage(){
-    playerUiParent = nullptr;
+void UTextAndImage::init(){
     baseHorizontalBox = nullptr;
     TextBlock = nullptr;
     Image = nullptr;
-}
+   
 
-TextAndImage::TextAndImage(UPlayerUi &parentIn){
-    playerUiParent = nullptr;
-    baseHorizontalBox = nullptr;
-    TextBlock = nullptr;
-    Image = nullptr;
-    
-    playerUiParent = &parentIn;
-
-    baseHorizontalBox = NewObject<UHorizontalBox>(playerUiParent);
+    baseHorizontalBox = NewObject<UHorizontalBox>(this);
 
     createText();
     setText("new text box image");
@@ -44,29 +35,22 @@ TextAndImage::TextAndImage(UPlayerUi &parentIn){
 
 }
 
-TextAndImage::~TextAndImage(){
-    playerUiParent = nullptr;
-    baseHorizontalBox = nullptr;
-    TextBlock = nullptr;
-    Image = nullptr;
+bool UTextAndImage::correctInitialized(){
+    return baseHorizontalBox != nullptr;
 }
 
-bool TextAndImage::correctInitialized(){
-    return customUiComponentBase::correctInitialized() && baseHorizontalBox != nullptr;
-}
-
-void TextAndImage::createText(){
+void UTextAndImage::createText(){
     if(TextBlock == nullptr && correctInitialized()){
-        TextBlock = NewObject<UTextBlock>(playerUiParent);
+        TextBlock = NewObject<UTextBlock>(this);
         if (TextBlock){
             baseHorizontalBox->AddChildToHorizontalBox(TextBlock);
         }
     }
 }
 
-void TextAndImage::createImage(){
+void UTextAndImage::createImage(){
     if(Image == nullptr && correctInitialized()){
-        Image = NewObject<UImage>(playerUiParent);
+        Image = NewObject<UImage>(this);
         if (Image){
             baseHorizontalBox->AddChildToHorizontalBox(Image);
         }
@@ -75,25 +59,25 @@ void TextAndImage::createImage(){
 
 
 
-void TextAndImage::setText(FString textIn){
+void UTextAndImage::setText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }
 }
 
 
-void TextAndImage::setImage(textureEnum type){
+void UTextAndImage::setImage(textureEnum type){
     setImage(type, FVector2D(0.5f, 0.5f));
 }
 
 ///@brief sets an icon for the image
 ///@param type - enum type of texture 
 ///@param scale value each component between 0.0 and 1.0 
-void TextAndImage::setImage(textureEnum type, FVector2D scale){
+void UTextAndImage::setImage(textureEnum type, FVector2D scale){
     assetManager *pointer = assetManager::instance();
     if(pointer != nullptr){
         UTexture2D *loadedTexture = pointer->findTexture(type);
-        if (loadedTexture != nullptr)
+        if (loadedTexture != nullptr && Image != nullptr)
         {
             Image->SetBrushFromTexture(loadedTexture);
             Image->SetRenderScale(scale);
@@ -104,7 +88,7 @@ void TextAndImage::setImage(textureEnum type, FVector2D scale){
 
 
 
-void TextAndImage::setImage(FString path){
+void UTextAndImage::setImage(FString path){
     if(Image != nullptr){
 
         DebugHelper::logMessage("ammuntionDebug try load texture");

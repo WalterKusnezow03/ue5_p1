@@ -9,28 +9,16 @@
 #include "TextButton.h"
 
 
-TextButton::TextButton(){
-    TextBlock = nullptr;
-}
 
-TextButton::TextButton(UPlayerUi &uiRef){
-    TextBlock = nullptr;
-    saveParent(uiRef);
-    createButton(); //super
+void UTextButton::init(){
+    Super::init();
     createTextAndAddToButton();
-
-
-}
-
-TextButton::~TextButton(){
-    button = nullptr;
-    TextBlock = nullptr;
 }
 
 
-void TextButton::createTextAndAddToButton(){
-    if(playerUiParent != nullptr && button != nullptr){
-        TextBlock = NewObject<UTextBlock>(playerUiParent);
+void UTextButton::createTextAndAddToButton(){
+    if(button != nullptr){
+        TextBlock = NewObject<UTextBlock>(this);
         TextBlock->SetAutoWrapText(true);
 
         /*
@@ -45,7 +33,7 @@ void TextButton::createTextAndAddToButton(){
     }
 }
 
-void TextButton::setText(FString textIn){
+void UTextButton::setText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }

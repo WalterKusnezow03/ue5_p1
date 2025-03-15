@@ -12,56 +12,52 @@
 #include "ButtonBase.h"
 
 
-ButtonBase::ButtonBase(){
-    button = nullptr;
-}
 
-ButtonBase::ButtonBase(UPlayerUi &uiRef){
-    button = nullptr;
-    saveParent(uiRef);
+void UButtonBase::init(){
     createButton();
 }
 
-ButtonBase::~ButtonBase(){
-    button = nullptr;
+
+
+
+void UButtonBase::createButton(){
+    button = NewObject<UButton>(this); 
+    
+    scalebox = NewObject<UScaleBox>(this);
+    scalebox->SetStretch(EStretch::ScaleToFit); // Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
+
+    button->AddChild(scalebox); //so button unsichtbar
+    //scalebox->AddChild(button); //kleiner test, sichtbar aber anderer inhalt von scale box nicht mehr
+
 }
 
-
-void ButtonBase::createButton(){
-    if(playerUiParent != nullptr){
-        button = NewObject<UButton>(playerUiParent);
-        
-        scalebox = NewObject<UScaleBox>(playerUiParent);
-        scalebox->SetStretch(EStretch::ScaleToFit); // Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
-
-        button->AddChild(scalebox); //so button unsichtbar
-        //scalebox->AddChild(button); //kleiner test, sichtbar aber anderer inhalt von scale box nicht mehr
-    }
-}
-
-void ButtonBase::SetCallBack(FSimpleDelegate callbackIn){
-    //create callback object
-    callbackPointer = NewObject<UCallback>(playerUiParent);
-
-    //DebugHelper::logMessage("debugCallback try create"); //printed
-
-    if(callbackPointer != nullptr){
-        callbackPointer->SetCallback(callbackIn);
-
-        if(button != nullptr){
-
-            //reagiert besser
-            button->SetClickMethod(EButtonClickMethod::MouseDown);
-            button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
-
-            //schlechter
-            //button->SetClickMethod(EButtonClickMethod::DownAndUp);//button reagiert ohne schlecht...
-            //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
-
-            DebugHelper::logMessage("debugCallback created"); //printed
+void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
+    if(button != nullptr){
+        //create callback object
+        callbackPointer = NewObject<UCallback>(button);
+        if(callbackPointer != nullptr){
+            callbackPointer->SetCallback(callbackIn);
         }
+
+        //reagiert besser
+        button->SetClickMethod(EButtonClickMethod::MouseDown);
+        //button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
+
+        button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
+
+        button->SetIsEnabled(true);
+
+        //schlechter
+        //button->SetClickMethod(EButtonClickMethod::DownAndUp);//button reagiert ohne schlecht...
+        //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
+
+        DebugHelper::logMessage("debugCallback created"); //printed
     }
 }
 
 
-
+void UButtonBase::reloadCallback(){
+    if(callbackPointer != nullptr && button != nullptr){
+        button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
+    }
+}

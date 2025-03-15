@@ -5,38 +5,28 @@
 #include "p2/ui/PlayerUi.h"
 
 
-ImageOverlayed::ImageOverlayed(){
+void UImageOverlayed::init(){
     resetAllPointers();
-}
-ImageOverlayed::ImageOverlayed(UPlayerUi &refin){
-    resetAllPointers();
-    saveParent(refin);
     createOverlay();
     createImage();
     createText();
 }
 
-ImageOverlayed::~ImageOverlayed(){
-    resetAllPointers();
-}
 
-void ImageOverlayed::resetAllPointers(){
+void UImageOverlayed::resetAllPointers(){
     baseOverlay = nullptr;
     TextBlock = nullptr;
     Image = nullptr;
 }
 
 
-void ImageOverlayed::createOverlay(){
-    if(playerUiParent){
-        baseOverlay = NewObject<UOverlay>(playerUiParent);
-    }
+void UImageOverlayed::createOverlay(){
+    baseOverlay = NewObject<UOverlay>(this);
 }
 
-
-void ImageOverlayed::createImage(){
-    if(playerUiParent != nullptr && baseOverlay != nullptr){
-        Image = NewObject<UImage>(playerUiParent);
+void UImageOverlayed::createImage(){
+    if(baseOverlay != nullptr){
+        Image = NewObject<UImage>(this);
         if (Image){
             baseOverlay->AddChildToOverlay(Image);
         }
@@ -44,9 +34,9 @@ void ImageOverlayed::createImage(){
 }
 
 
-void ImageOverlayed::createText(){
-    if(playerUiParent != nullptr && baseOverlay != nullptr){
-        TextBlock = NewObject<UTextBlock>(playerUiParent);
+void UImageOverlayed::createText(){
+    if(baseOverlay != nullptr){
+        TextBlock = NewObject<UTextBlock>(this);
         if (TextBlock){
             baseOverlay->AddChildToOverlay(TextBlock);
         }
@@ -58,21 +48,21 @@ void ImageOverlayed::createText(){
 
 
 
-void ImageOverlayed::setText(FString textIn){
+void UImageOverlayed::setText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }
 }
 
 
-void ImageOverlayed::setImage(textureEnum type){
+void UImageOverlayed::setImage(textureEnum type){
     setImage(type, FVector2D(0.5f, 0.5f));
 }
 
 ///@brief sets an icon for the image
 ///@param type - enum type of texture 
 ///@param scale value each component between 0.0 and 1.0 
-void ImageOverlayed::setImage(textureEnum type, FVector2D scale){
+void UImageOverlayed::setImage(textureEnum type, FVector2D scale){
     assetManager *pointer = assetManager::instance();
     if(pointer != nullptr){
         UTexture2D *loadedTexture = pointer->findTexture(type);

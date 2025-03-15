@@ -25,8 +25,6 @@ public:
             CallbackPassed.Execute();  // Executes the bound function or lambda
 
             DebugHelper::showScreenMessage("debugCallback CALLBACK");
-        }else{
-            DebugHelper::showScreenMessage("debugCallback CALLBACK NOT BOUND"); //printed
         }
     }
 
