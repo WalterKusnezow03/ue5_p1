@@ -12,8 +12,9 @@ public:
     ~LoadoutScreen();
 
 private:
+    void createExitButton();
+    void createSideMenu();
 
 
-
-
+    
 };

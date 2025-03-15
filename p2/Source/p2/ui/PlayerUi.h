@@ -7,6 +7,9 @@
 #include "Components/CanvasPanel.h"
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/screens/PauseScreen.h"
+#include "p2/ui/screens/enum/EScreenEnum.h"
+#include "p2/ui/helper/ScreenOpenStack.h"
+#include "p2/ui/screens/loadout/LoadoutScreen.h"
 
 #include "PlayerUi.generated.h"
 
@@ -63,6 +66,12 @@ public:
 	UFUNCTION()
 	void openGameScreen();
 
+	UFUNCTION()
+	void openLoadoutScreen();
+
+	UFUNCTION()
+	void closeLatestScreen();
+
 	void updateAmmunitionText(int number);
 	void updateAmmunitionText(FString message);
 	void updateHealthText(int health);
@@ -74,6 +83,7 @@ public:
 	
 
 protected:
+
 	bool isInited = false;
 	UCanvasPanel *baseCanvas = nullptr;
 	
@@ -81,6 +91,7 @@ protected:
 	void findBaseCanvasFromBluePrint();
 	void createBasePlayerHud();
 	void createPauseScreen();
+	void createLoadoutScreen();
 
 	void showPlayerCursor(bool show);
 
@@ -88,7 +99,9 @@ protected:
 	bool pauseMenuOpened = false;
 	PlayerHud playerHud;
 	PauseScreen pauseScreen;
+	LoadoutScreen loadoutScreen;
 
 	//todo: aktives element speichern, und alle pointer in einem vektor
 
+	ScreenOpenStack openedScreenStack;
 };

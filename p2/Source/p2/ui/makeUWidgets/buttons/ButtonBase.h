@@ -15,7 +15,7 @@ class UPlayerUi;
  * button with scaled content
  * 
  * button (base)
- * -->scale box
+ * -->scale box (scales content to parent)
  * --->content inside scale box
  * 
  */

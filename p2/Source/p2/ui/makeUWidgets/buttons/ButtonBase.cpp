@@ -49,11 +49,14 @@ void ButtonBase::SetCallBack(FSimpleDelegate callbackIn){
         callbackPointer->SetCallback(callbackIn);
 
         if(button != nullptr){
-            //button->SetClickMethod(EButtonClickMethod::DownAndUp);//button reagiert ohne schlecht...
 
+            //reagiert besser
             button->SetClickMethod(EButtonClickMethod::MouseDown);
-            //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
             button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
+
+            //schlechter
+            //button->SetClickMethod(EButtonClickMethod::DownAndUp);//button reagiert ohne schlecht...
+            //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
 
             DebugHelper::logMessage("debugCallback created"); //printed
         }

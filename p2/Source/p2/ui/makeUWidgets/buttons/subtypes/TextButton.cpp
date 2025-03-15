@@ -33,12 +33,14 @@ void TextButton::createTextAndAddToButton(){
         TextBlock = NewObject<UTextBlock>(playerUiParent);
         TextBlock->SetAutoWrapText(true);
 
-        //scalebox = NewObject<UScaleBox>(playerUiParent);
-        //scalebox->SetStretch(EStretch::ScaleToFit); // Skaliert den Text automatisch
+        /*
+        button
+        --- scalebox
+        ------ text
+        */
 
         scalebox->AddChild(TextBlock);
-        //button->AddChild(scalebox);
-        //button->AddChild(TextBlock); //old
+
         setText("button");
     }
 }

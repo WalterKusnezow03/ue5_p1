@@ -2,6 +2,7 @@
 
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/CanvasPanel.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/VerticalBox.h"
 
 class UPlayerUi;
@@ -30,5 +31,9 @@ protected:
     void createBaseCanvas();
     void updateCanvasScale(UWorld *world);
 
+
+
+    UBackgroundBlur *backgroundBlur = nullptr;
+    void createBackgroundBlur();
 
 };

@@ -5,15 +5,31 @@
 #include "LoadoutScreen.h"
 
 LoadoutScreen::LoadoutScreen(){
-
+    baseCanvas = nullptr;
+    backgroundBlur = nullptr;
 }
 
 LoadoutScreen::LoadoutScreen(UPlayerUi &refin){
-    saveParent(refin);
-    createBaseCanvas();
+    baseCanvas = nullptr;
+    backgroundBlur = nullptr;
+
+    playerUiParent = &refin;
+    createBaseCanvas(); //super
+    createBackgroundBlur(); 
+
+    createSideMenu();
+}
+
+LoadoutScreen::~LoadoutScreen(){
+    baseCanvas = nullptr;
+    backgroundBlur = nullptr;
 }
 
 
-LoadoutScreen::~LoadoutScreen(){
+void LoadoutScreen::createSideMenu(){
+
+}
+
+void LoadoutScreen::createExitButton(){
 
 }

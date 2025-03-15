@@ -21,17 +21,14 @@ public:
 
 private:
     UVerticalBox *menu = nullptr;
-    UBackgroundBlur *backgroundBlur = nullptr;
-
+    
     TextButton exitButton;
-    ImageOverlayedButton imageButton; //debug
+    TextButton loadoutScreenButton;
 
-    void createBackgroundBlur();
     void createMenu();
     void createButtons();
     void createExitButton();
+    void createLoadoutScreenButton();
 
-    void debugCreateImageButton();
-
-    
+    void AddChildToMenu(customUiComponentBase &item);
 };

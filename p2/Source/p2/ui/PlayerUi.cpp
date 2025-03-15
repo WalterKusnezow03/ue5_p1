@@ -10,6 +10,7 @@
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
+#include "p2/ui/screens/loadout/LoadoutScreen.h"
 
 //instance maker with init call!
 UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
@@ -51,6 +52,7 @@ void UPlayerUi::init(){
 
     createBasePlayerHud();
     createPauseScreen();
+    createLoadoutScreen();
 }
 
 void UPlayerUi::findBaseCanvasFromBluePrint(){
@@ -86,6 +88,13 @@ void UPlayerUi::createPauseScreen(){
     pauseScreen.setVisible(false);
 }
 
+void UPlayerUi::createLoadoutScreen(){
+    loadoutScreen = LoadoutScreen(*this); //will add itself to this canvas
+    loadoutScreen.setVisible(false);
+}
+
+
+
 //public api
 
 void UPlayerUi::updateAmmunitionText(int number){
@@ -117,14 +126,31 @@ void UPlayerUi::PauseKeyPressed(){
 
 void UPlayerUi::openPauseScreen(){
     playerHud.setVisible(false);
-    pauseScreen.setVisible(true);
+
+    openedScreenStack.open(&pauseScreen);
+    
     showPlayerCursor(true);
 }
 
 void UPlayerUi::openGameScreen(){
+    openedScreenStack.closeAll();
     playerHud.setVisible(true);
-    pauseScreen.setVisible(false);
+
+    //pauseScreen.setVisible(false);
     showPlayerCursor(false);
+}
+
+void UPlayerUi::openLoadoutScreen(){
+    playerHud.setVisible(false);
+    showPlayerCursor(true);
+    openedScreenStack.open(&loadoutScreen);
+}
+
+void UPlayerUi::closeLatestScreen(){
+    openedScreenStack.closeBack();
+    if(openedScreenStack.isEmpty()){
+        openGameScreen();
+    }
 }
 
 void UPlayerUi::showPlayerCursor(bool show){
