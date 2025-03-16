@@ -27,6 +27,9 @@ public:
     void setTextWeapon(FString s);
     void SetCallBackWeapon(FSimpleDelegate callbackIn);
 
+    void setTextSight(FString s);
+    void SetCallBackSight(FSimpleDelegate callbackIn);
+
     /*
     hier muss intern der waffen typ und attachments gespeichert werden
     um dann andere buttons hier drauf zu binden funktional, das der

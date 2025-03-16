@@ -23,7 +23,7 @@ void ULoadoutScreen::init(UPlayerUi &ref){
     createBaseLayout();
     createHeadline();
 
-
+    LoadoutContainersCreated = false;
     createRightSideLoadoutMenuItems();
     createRigthListPickers();
 }
@@ -91,6 +91,8 @@ void ULoadoutScreen::createRightSideLoadoutMenuItems(){
         //on click: open weapon picker (1-3) oder attachment pickers..
         //merken an welchem index das aktuelle item gespeichert ist
 
+        //SINGLE WEAPON
+        /*
         weaponContainer1 = NewObject<UWeaponContainer>(this);
         if(weaponContainer1){
             weaponContainer1->init(); //immer init nicht vergessen
@@ -101,28 +103,48 @@ void ULoadoutScreen::createRightSideLoadoutMenuItems(){
                 FSimpleDelegate::CreateLambda([this]()
                 {
                     if(this){
-                        //bei 0 zum beispiel weapon picker zeigen
                         this->openPickerCallBack(
-                            this->WEAPON_PICKER_IDENTIFIER,  // Sollte eine gültige Konstante sein
-                            this->weaponContainer1 // Direkt aus `this` holen
+                            this->WEAPON_PICKER_IDENTIFIER,  
+                            this->weaponContainer1
                         );
                     } 
                 })
             );
 
             //sight button setup folgt hier..
+            weaponContainer1->setTextSight("sight 1"); //SIGHT_PICKER_IDENTIFIER
+            weaponContainer1->SetCallBackSight(
+                FSimpleDelegate::CreateLambda([this]()
+                {
+                    if(this){
+                        this->openPickerCallBack(
+                            this->SIGHT_PICKER_IDENTIFIER,  
+                            this->weaponContainer1
+                        );
+                    } 
+                })
+            );
 
 
             halfSplitBase->addChildToLeftVertical(*weaponContainer1);
+        }*/
+
+
+        if(LoadoutContainersCreated){ //lock after creation
+            return;
         }
 
+        //WEAPON CONTAINER MUST NOT BE CHANGED AFTER INIT!
+        weaponContainers.push_back(weaponContainer1);
+        weaponContainers.push_back(weaponContainer2);
+        for (int i = 0; i < weaponContainers.size(); i++)
+        {
+            createLoadoutWeaponContainerForValidIndex(i);
+        }
+        LoadoutContainersCreated = true; //lock after creation
 
-
-
-
-
-        //VERY IMPORTANT!
-        //on create show first
+        // VERY IMPORTANT!
+        // on create show first
         openPickerCallBack(WEAPON_PICKER_IDENTIFIER, weaponContainer1);
 
     }
@@ -164,6 +186,16 @@ void ULoadoutScreen::createRigthListPickers(){
     
 
 
+    UWeaponPickButton *weaponItem2 = NewObject<UWeaponPickButton>(this);
+    if(weaponItem2){
+        weaponItem2->init();
+        weaponItem2->setText("pick > pistol");
+        weaponItem2->setType(weaponEnum::pistol);
+        pickableWeaponsVertical->AddChildToVerticalBox(weaponItem2->baseLayoutPointer());
+        pickableWeaponsButtonVector.push_back(weaponItem2);
+    }
+
+
 }
 
 
@@ -172,7 +204,9 @@ void ULoadoutScreen::createRigthListPickers(){
 
 ///@brief on click of any container on the left side, rebind
 void ULoadoutScreen::rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed){
-    //UWeaponContainer *currentWeaponContainerFocussed; //muss noch onclick gespeichert werden!
+    if(currentWeaponContainerFocussed == nullptr){
+        return;
+    }
 
     for (int i = 0; i < pickableWeaponsButtonVector.size(); i++){
         UWeaponPickButton *button = pickableWeaponsButtonVector[i];
@@ -194,12 +228,70 @@ void ULoadoutScreen::setCallBackForSelection(
             {
                 if(bindedContainer != nullptr && buttonFromPickers != nullptr){
                     bindedContainer->updateWeaponType(buttonFromPickers->getType());
-                    //UE_LOG(LogTemp, Warning, TEXT("DEBUGCALLBACK picker clicked"));
                     DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
                 } 
             })
         );
         DebugHelper::logMessage("DEBUGCALLBACK picker rebound callback");
 
+    }
+}
+
+
+
+
+
+
+
+
+
+//new
+
+
+void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
+    int index
+){
+    if(LoadoutContainersCreated){
+        return;
+    }
+    if(index < 0 || index >= weaponContainers.size()){
+        return;
+    }
+
+    weaponContainers[index] = NewObject<UWeaponContainer>(this);
+    if(weaponContainers[index]){
+        weaponContainers[index]->init(); //immer init nicht vergessen
+
+        //weapon button setup
+        FString sampleText = FString::Printf(TEXT("slot %d"), index);
+        weaponContainers[index]->setTextWeapon(sampleText);
+        weaponContainers[index]->SetCallBackWeapon(
+            FSimpleDelegate::CreateLambda([this, index]()
+            {
+                if(this){
+                    this->openPickerCallBack(
+                        this->WEAPON_PICKER_IDENTIFIER,  
+                        this->weaponContainers[index]
+                    );
+                } 
+            })
+        );
+
+        //sight button setup folgt hier..
+        weaponContainers[index]->setTextSight("sight"); //SIGHT_PICKER_IDENTIFIER
+        weaponContainers[index]->SetCallBackSight(
+            FSimpleDelegate::CreateLambda([this, index]()
+            {
+                if(this){
+                    this->openPickerCallBack(
+                        this->SIGHT_PICKER_IDENTIFIER,  
+                        this->weaponContainers[index]
+                    );
+                } 
+            })
+        );
+
+
+        halfSplitBase->addChildToLeftVertical(*weaponContainers[index]);
     }
 }

@@ -74,6 +74,21 @@ void UWeaponContainer::SetCallBackWeapon(FSimpleDelegate callbackIn){
 }
 
 
+void UWeaponContainer::setTextSight(FString s){
+    if(attachmentSightImageButton){
+        attachmentSightImageButton->setText(s);
+    }
+}
+
+void UWeaponContainer::SetCallBackSight(FSimpleDelegate callbackIn){
+    if(attachmentSightImageButton){
+        attachmentSightImageButton->SetCallBack(callbackIn);
+    }
+}
+
+
+
+
 /**
  * 
  * ----- CALLBACK API ------

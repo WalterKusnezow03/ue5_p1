@@ -34,11 +34,13 @@ void UButtonBase::createButton(){
 
 }
 
-///@brief sets the callback for onlick
+///@brief sets the callback for onlick, REMOVES the old callback!
 void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
     if(button != nullptr){
         //create callback object
-        callbackPointer = NewObject<UCallback>(button);
+        if(callbackPointer == nullptr){
+            callbackPointer = NewObject<UCallback>(button); //only a new one if needed
+        }
         if(callbackPointer != nullptr){
             callbackPointer->SetCallback(callbackIn);
         }
@@ -47,6 +49,7 @@ void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
         button->SetClickMethod(EButtonClickMethod::MouseDown);
         //button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
 
+        button->OnClicked.RemoveDynamic(callbackPointer, &UCallback::UCallbackFunction); //delete old, replace!
         button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
 
         button->SetIsEnabled(true);

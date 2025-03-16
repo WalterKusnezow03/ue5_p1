@@ -11,6 +11,7 @@ class P2_API UCallback : public UObject
 public:
 
     // Set the delegate (bind a function or lambda)
+    ///@brief OVERRIDES the current callback delegate!
     void SetCallback(FSimpleDelegate Callback)
     {
         CallbackPassed = Callback;

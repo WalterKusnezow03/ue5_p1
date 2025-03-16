@@ -38,12 +38,17 @@ private:
     void openPickerCallBack(int index, UWeaponContainer *clickComingFrom);
 
     //left containers(4 in total)
+    std::vector<UWeaponContainer *> weaponContainers; //MUST NOT BE CHANGED AFTER INIT!
     UWeaponContainer *weaponContainer1;
-    
+    UWeaponContainer *weaponContainer2;
+    bool LoadoutContainersCreated = false;
+
+    void createLoadoutWeaponContainerForValidIndex(int index);
 
     //right, pickside interaction
     void createRigthListPickers();
     const int WEAPON_PICKER_IDENTIFIER = 0;
+    const int SIGHT_PICKER_IDENTIFIER = 1;
 
     //internal saving of the layout
     UVerticalBox *pickableWeaponsVertical;
