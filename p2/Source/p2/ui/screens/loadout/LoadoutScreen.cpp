@@ -11,6 +11,7 @@
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
+#include "p2/DebugHelper.h"
 
 #include "LoadoutScreen.h"
 
@@ -114,6 +115,16 @@ void ULoadoutScreen::createRightSideLoadoutMenuItems(){
 
             halfSplitBase->addChildToLeftVertical(*weaponContainer1);
         }
+
+
+
+
+
+
+        //VERY IMPORTANT!
+        //on create show first
+        openPickerCallBack(WEAPON_PICKER_IDENTIFIER, weaponContainer1);
+
     }
     
 }
@@ -183,10 +194,12 @@ void ULoadoutScreen::setCallBackForSelection(
             {
                 if(bindedContainer != nullptr && buttonFromPickers != nullptr){
                     bindedContainer->updateWeaponType(buttonFromPickers->getType());
+                    //UE_LOG(LogTemp, Warning, TEXT("DEBUGCALLBACK picker clicked"));
+                    DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
                 } 
             })
         );
-
+        DebugHelper::logMessage("DEBUGCALLBACK picker rebound callback");
 
     }
 }

@@ -16,8 +16,9 @@ void UImageOverlayedButton::init(){
 
 void UImageOverlayedButton::createImageOverlayedBackground(){
     background = NewObject<UImageOverlayed>(this);
-
-    if(button){
+    background->init();
+    if (button)
+    {
         UWidget *base = background->baseLayoutPointer();
         if(base != nullptr){
             //button->AddChild(base); //old

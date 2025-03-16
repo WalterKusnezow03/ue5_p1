@@ -15,6 +15,7 @@ void UWeaponContainer::createLayout(){
         weaponPreviewImageButton = NewObject<UImageOverlayedButton>(this);
         if(weaponPreviewImageButton){
             weaponPreviewImageButton->init();
+            weaponPreviewImageButton->setText("weapon image");
 
             //set on click later, weapon must know LoadoutScreen class to show weapon picker
 
@@ -24,6 +25,7 @@ void UWeaponContainer::createLayout(){
         attachmentSightImageButton = NewObject<UImageOverlayedButton>(this);
         if(attachmentSightImageButton){
             attachmentSightImageButton->init();
+            weaponPreviewImageButton->setText("sight image");
 
             //set on click later, weapon must know LoadoutScreen class to show attachment picker
 
