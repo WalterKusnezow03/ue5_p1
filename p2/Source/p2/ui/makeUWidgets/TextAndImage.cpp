@@ -20,6 +20,9 @@ UWidget *UTextAndImage::baseLayoutPointer(){
 }
 
 void UTextAndImage::init(){
+    if(WAS_INIT_FLAG){
+        return;
+    }
     baseHorizontalBox = nullptr;
     TextBlock = nullptr;
     Image = nullptr;

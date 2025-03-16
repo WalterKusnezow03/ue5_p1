@@ -11,6 +11,9 @@
 
 
 void UTextButton::init(){
+    if(WAS_INIT_FLAG){
+        return;
+    }
     Super::init();
     createTextAndAddToButton();
 }

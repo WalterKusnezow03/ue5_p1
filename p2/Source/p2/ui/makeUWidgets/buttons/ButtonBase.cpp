@@ -14,6 +14,9 @@
 
 
 void UButtonBase::init(){
+    if(WAS_INIT_FLAG){
+        return;
+    }
     createButton();
 }
 
@@ -22,7 +25,7 @@ void UButtonBase::init(){
 
 void UButtonBase::createButton(){
     button = NewObject<UButton>(this); 
-    
+
     scalebox = NewObject<UScaleBox>(this);
     scalebox->SetStretch(EStretch::ScaleToFit); // Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
 
@@ -31,6 +34,7 @@ void UButtonBase::createButton(){
 
 }
 
+///@brief sets the callback for onlick
 void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
     if(button != nullptr){
         //create callback object
@@ -61,3 +65,6 @@ void UButtonBase::reloadCallback(){
         button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
     }
 }
+
+
+

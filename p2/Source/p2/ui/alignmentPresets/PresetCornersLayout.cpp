@@ -6,6 +6,10 @@
 
 
 void UPresetCornersLayout::init(UCanvasPanel &canvasIn){
+    if(WAS_INIT_FLAG){
+        return;
+    }
+
     parentPanel = &canvasIn;
     createSubLayouts();
 }

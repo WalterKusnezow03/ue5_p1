@@ -762,7 +762,8 @@ void AplayerScript::showCursor(bool show){
     if (PlayerController)
     {
         // Toggle mouse cursor visibility
-        PlayerController->bShowMouseCursor = !PlayerController->bShowMouseCursor;
+        PlayerController->bShowMouseCursor = show;
+        //! PlayerController->bShowMouseCursor;
 
         //PlayerController->SetInputMode(FInputModeGameAndUI());
     }

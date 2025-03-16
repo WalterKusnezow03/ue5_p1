@@ -6,6 +6,9 @@
 
 
 void UImageOverlayed::init(){
+    if(WAS_INIT_FLAG){
+        return;
+    }
     resetAllPointers();
     createOverlay();
     createImage();

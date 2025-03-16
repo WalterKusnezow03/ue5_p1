@@ -4,7 +4,8 @@
 #include "p2/ui/screens/CanvasScreen.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
-
+#include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
+#include "WeaponContainer.h"
 #include "Components/HorizontalBox.h"
 
 #include "LoadoutScreen.generated.h"
@@ -29,15 +30,27 @@ private:
     UPresetHalfSplitLayout *halfSplitBase;
 
     void createBaseLayout();
-
     void createHeadline();
-    void createSideMenu();
 
 
+    //left side interaction
+    void createRightSideLoadoutMenuItems();
+    void openPickerCallBack(int index, UWeaponContainer *clickComingFrom);
 
+    //left containers(4 in total)
+    UWeaponContainer *weaponContainer1;
+    
 
+    //right, pickside interaction
+    void createRigthListPickers();
+    const int WEAPON_PICKER_IDENTIFIER = 0;
 
-    void debugAddSomeItems();
-
-    UTextButton *firstSlotButton;
+    //internal saving of the layout
+    UVerticalBox *pickableWeaponsVertical;
+    std::vector<UWeaponPickButton *> pickableWeaponsButtonVector;
+    void rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed);
+    void setCallBackForSelection(
+        UWeaponPickButton *buttonFromPickers, // another method for attachments later
+        UWeaponContainer *bindedContainer     // may be rebound trought this method!
+    );
 };

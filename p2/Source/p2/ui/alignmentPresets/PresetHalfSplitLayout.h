@@ -35,8 +35,12 @@ public:
     void addChildToHeadLine(UWidget *any);
     //void addChildToRightVertical(UWidget *any);
     void addChildToLeftVertical(UWidget *any);
-
     void addChildToRightVertical(UWidget *any, int index);
+
+    void addChildToLeftVertical(UcustomUiComponentBase &any);
+    void addChildToRightVertical(UcustomUiComponentBase &any, int index);
+
+
     void showRightSideLayoutAtIndex(int i);
 
 private:

@@ -10,7 +10,9 @@
 
 
 void UPresetHalfSplitLayout::init(){
-
+    if(WAS_INIT_FLAG){
+        return;
+    }
     createSubLayouts();
 }
 
@@ -94,3 +96,14 @@ void UPresetHalfSplitLayout::addChildToLeftVertical(UWidget *any){
 }
     
     
+
+
+
+void UPresetHalfSplitLayout::addChildToLeftVertical(UcustomUiComponentBase &any){
+    addChildToLeftVertical(any.baseLayoutPointer());
+}
+
+void UPresetHalfSplitLayout::addChildToRightVertical(UcustomUiComponentBase &any, int index){
+    addChildToRightVertical(any.baseLayoutPointer(), index);
+}
+

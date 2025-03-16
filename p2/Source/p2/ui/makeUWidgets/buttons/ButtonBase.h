@@ -38,6 +38,7 @@ public:
 
     void reloadCallback();
 
+
 protected:
     
     UButton *button = nullptr;
@@ -48,6 +49,4 @@ protected:
     void createButton();
 
 
-
-    
 };
