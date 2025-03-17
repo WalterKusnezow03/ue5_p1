@@ -471,6 +471,7 @@ void AplayerScript::aim(){
  */
 void AplayerScript::shoot(){
     if(isPaused){
+        DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange);
         return;
     }
 
@@ -493,11 +494,6 @@ void AplayerScript::shoot(){
 /// @brief sets the left mouse holding status for the weapon
 /// @param h 
 void AplayerScript::setHolding(bool h){
-    if(isPaused){
-        holding = false;
-        return;
-    }
-
     holding = h;
 }
 
@@ -794,11 +790,16 @@ void AplayerScript::openPauseMenu(){
     {
         if(isPaused){
             uiInstance->openGameScreen();
-        }else{
-            uiInstance->openPauseScreen();
+            isPaused = false;
         }
+        else
+        {
+            uiInstance->openPauseScreen();
+            isPaused = true;
+        }
+    }else{
+        isPaused = false;
     }
-    isPaused = !isPaused;
 }
 
 void AplayerScript::updateUi(){
@@ -846,7 +847,8 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
         for (int i = 0; i < newWeapons.size(); i++){
             Aweapon *current = newWeapons[i]; 
             if(current != nullptr){
-                playerInventory.addWeaponIfNotInInventory(current);
+                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
+                //playerInventory.addWeaponIfNotInInventory(current);
             }
         }
 
@@ -864,6 +866,7 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
     if(weapon != nullptr){
         playerInventory.addWeaponIfNotInInventory(weapon);
         weapon->pickup(CameraComponent);
+        boneController.dropWeapon(); //drop old weapon(?)
         boneController.attachCarriedItem(weapon);
     }
 }

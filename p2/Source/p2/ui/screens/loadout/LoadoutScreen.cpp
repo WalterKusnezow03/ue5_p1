@@ -7,6 +7,7 @@
 #include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "Components/CanvasPanelSlot.h"
 #include "p2/weapon/weaponEnum.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
@@ -288,4 +289,16 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
 
         halfSplitBase->addChildToLeftVertical(*weaponContainers[index]);
     }
+}
+
+
+
+
+
+
+/**
+ * reload api from player ui
+ */
+void ULoadoutScreen::reloadPlayerLoadoutOnUiLeaveIfNeeded(){
+    referenceManager::reloadPlayerLoadoutIfNeeded(loadoutinternal);
 }

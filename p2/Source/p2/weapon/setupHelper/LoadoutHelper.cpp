@@ -19,6 +19,10 @@ LoadoutHelper::~LoadoutHelper(){
 
 }
 
+bool LoadoutHelper::loadOutWasModified(){
+    return loadoutWasModifedFlag;
+}
+
 ///@brief clears the vector.
 void LoadoutHelper::clear(){
     vec.clear();
@@ -38,11 +42,13 @@ void LoadoutHelper::replace(int index, weaponSetupHelper &other){
     {
         if(!vec[index].isSame(other)){
             vec[index] = other;
+            loadoutWasModifedFlag = true;
         }
     }
     else
     {
         push_back(other);
+        loadoutWasModifedFlag = true;
     }
 }
 
@@ -51,6 +57,7 @@ bool LoadoutHelper::indexIsValid(int i){
 }
 
 std::vector<Aweapon *> LoadoutHelper::spawnAllWeaponsAndApplyAttachments(UWorld *world){
+    loadoutWasModifedFlag = false;
     std::vector<Aweapon *> outweapons;
     if(world){
         EntityManager *entityManagerPointer = worldLevel::entityManager();

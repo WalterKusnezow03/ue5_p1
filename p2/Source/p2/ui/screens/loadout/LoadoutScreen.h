@@ -24,7 +24,7 @@ public:
     
     virtual void init(UPlayerUi &ref);
 
-
+    void reloadPlayerLoadoutOnUiLeaveIfNeeded();
 
 private:
 

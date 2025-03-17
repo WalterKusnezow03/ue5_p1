@@ -20,7 +20,10 @@ public:
 
     std::vector<Aweapon *> spawnAllWeaponsAndApplyAttachments(UWorld *world);
 
+    bool loadOutWasModified();
+
 private:
+    bool loadoutWasModifedFlag = false;
     std::vector<weaponSetupHelper> vec;
     //std::vector<bool> wasModifiedFlag;
 

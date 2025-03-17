@@ -5,6 +5,7 @@
 #include "p2/player/playerScript.h"
 #include "p2/entities/EntityScript.h"
 #include "Engine/World.h"
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "UObject/ConstructorHelpers.h"
 
 
@@ -92,12 +93,26 @@ void referenceManager::showPlayerCursor(bool show){
     }
 }
 
-void referenceManager::setPlayerPaused(bool in){
+void referenceManager::forceSetPlayerPaused(bool in){
     referenceManager *pointer = instance();
     if(pointer != nullptr){
         AplayerScript *p = pointer->getPlayerPointer();
         if(p != nullptr){
             p->setPaused(in);
+        }
+    }
+}
+
+///@brief reloads the player loadout if the player pointer is available and the loadout was
+///modified
+void referenceManager::reloadPlayerLoadoutIfNeeded(LoadoutHelper &loadout){
+    referenceManager *pointer = instance();
+    if(pointer != nullptr){
+        AplayerScript *player = pointer->getPlayerPointer();
+        if(player != nullptr){
+            if(loadout.loadOutWasModified()){
+                player->reloadLoadout(loadout);
+            }
         }
     }
 }
