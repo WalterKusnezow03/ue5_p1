@@ -1,12 +1,29 @@
 
 
 #include "Components/HorizontalBox.h"
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "p2/ui/PlayerUi.h"
 #include "CoreMinimal.h"
 #include "WeaponContainer.h"
+
+void UWeaponContainer::init(UPlayerUi &ref){
+    //ref is not needed
+    init();
+}
 
 void UWeaponContainer::init(){
     createLayout();
 }
+
+///@brief inits the container, reference must not get invalid! - use this method to have the proper
+///loadout updates!
+void UWeaponContainer::init(int index, LoadoutHelper &parentLoadout){
+    ownIndexInLoadoutHelperParent = index;
+    loadoutParent = &parentLoadout;
+    createLayout();
+}
+
 
 void UWeaponContainer::createLayout(){
     baseHorizontalBox = NewObject<UHorizontalBox>(this);
@@ -44,10 +61,9 @@ void UWeaponContainer::addToHorizontalBox(UcustomUiComponentBase *any){
 }
 
 /**
- * internal image and text updates
+ * static methods
  */
-void UWeaponContainer::updateWeaponName(){
-    weaponEnum type = setupinternal.getWeaponTypeToCreate();
+FString UWeaponContainer::toString(weaponEnum type){
     FString name = FString::Printf(TEXT("<weapon name>"));
     if (type == weaponEnum::assaultRifle){
         name = FString::Printf(TEXT("assault rifle"));
@@ -55,8 +71,42 @@ void UWeaponContainer::updateWeaponName(){
     if(type == weaponEnum::pistol){
         name = FString::Printf(TEXT("pistol"));
     }
+    return name;
+}
+
+FString UWeaponContainer::toString(weaponAttachmentEnum type){
+    FString name = FString::Printf(TEXT("<attachment name>"));
+    
+    if (type == weaponAttachmentEnum::iron_sight){
+        name = FString::Printf(TEXT("iron sight"));
+    }
+    if (type == weaponAttachmentEnum::reddot){
+        name = FString::Printf(TEXT("reddot sight"));
+    }
+    if (type == weaponAttachmentEnum::grip_vertical){
+        name = FString::Printf(TEXT("grip vertical"));
+    }
+    
+    return name;
+} 
+
+
+
+/**
+ * internal image and text updates
+ */
+void UWeaponContainer::updateWeaponName(){
+    weaponEnum type = setupinternal.getWeaponTypeToCreate();
+    FString name = toString(type);
     setTextWeapon(name);
 }
+
+void UWeaponContainer::updateSightName(){
+    weaponAttachmentEnum type = setupinternal.getSightTypeToCreate();
+    FString name = toString(type);
+    setTextSight(name);
+}
+
 
 /**
  * ----- set text and images api -----
@@ -97,15 +147,33 @@ void UWeaponContainer::SetCallBackSight(FSimpleDelegate callbackIn){
 void UWeaponContainer::updateWeaponType(weaponEnum typeIn){
     setupinternal.setWeaponTypeToCreate(typeIn);
     updateWeaponName();
+    updateLoadoutParent();
 }
 
 void UWeaponContainer::updateWeaponSight(weaponAttachmentEnum sightIn){
     setupinternal.setSightAttachment(sightIn);
+    updateSightName();
+    updateLoadoutParent();
 }
 
+void UWeaponContainer::updateFrom(weaponSetupHelper &other){
+    setupinternal = other;
+    updateWeaponName();
+    updateSightName();
+    updateLoadoutParent();
+}
 
+/**
+ * update parent
+ */
+weaponSetupHelper UWeaponContainer::setupHelperCopy(){
+    return setupinternal;
+}
 
+void UWeaponContainer::updateLoadoutParent(){
+    if(loadoutParent != nullptr){
 
-
-
-
+        //internal copy is made anyway
+        loadoutParent->replace(ownIndexInLoadoutHelperParent, setupinternal);
+    }
+}

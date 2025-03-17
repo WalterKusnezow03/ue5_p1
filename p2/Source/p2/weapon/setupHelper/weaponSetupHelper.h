@@ -16,10 +16,15 @@ class P2_API weaponSetupHelper
 {
 public:
 	weaponSetupHelper();
+	weaponSetupHelper(const weaponSetupHelper &other);
+	weaponSetupHelper& operator=(const weaponSetupHelper &other);
 	~weaponSetupHelper();
+
+	bool isSame(weaponSetupHelper &other);
 
 	//get the targeted weapon type
 	weaponEnum getWeaponTypeToCreate();
+	weaponAttachmentEnum getSightTypeToCreate();
 
 	//apply attachments to a weapon
 	void applyAttachments(Aweapon *weaponIn);

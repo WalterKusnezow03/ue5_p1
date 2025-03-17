@@ -24,7 +24,7 @@ void ULoadoutScreen::init(UPlayerUi &ref){
     createHeadline();
 
     LoadoutContainersCreated = false;
-    createRightSideLoadoutMenuItems();
+    createLeftSideLoadoutMenuItems();
     createRigthListPickers();
 }
 
@@ -83,7 +83,7 @@ void ULoadoutScreen::createHeadline(){
 
 
 
-void ULoadoutScreen::createRightSideLoadoutMenuItems(){
+void ULoadoutScreen::createLeftSideLoadoutMenuItems(){
 
     if(halfSplitBase){
         //slot 1 - 3
@@ -165,9 +165,8 @@ void ULoadoutScreen::openPickerCallBack(int index, UWeaponContainer *clickComing
 
 
 
-
-//RIGHT SIDE PICKER BUTTONS
-
+///@brief creates the selectable lists and adds them to the right side of the halfsplit preset
+///by index, for example a list for the pickable weapons, sights, etc...
 void ULoadoutScreen::createRigthListPickers(){
     
 
@@ -178,8 +177,7 @@ void ULoadoutScreen::createRigthListPickers(){
     UWeaponPickButton *weaponItem1 = NewObject<UWeaponPickButton>(this);
     if(weaponItem1){
         weaponItem1->init();
-        weaponItem1->setText("pick > assault rifle");
-        weaponItem1->setType(weaponEnum::assaultRifle);
+        weaponItem1->setType(weaponEnum::assaultRifle); //sets text automatically
         pickableWeaponsVertical->AddChildToVerticalBox(weaponItem1->baseLayoutPointer());
         pickableWeaponsButtonVector.push_back(weaponItem1);
     }
@@ -189,8 +187,7 @@ void ULoadoutScreen::createRigthListPickers(){
     UWeaponPickButton *weaponItem2 = NewObject<UWeaponPickButton>(this);
     if(weaponItem2){
         weaponItem2->init();
-        weaponItem2->setText("pick > pistol");
-        weaponItem2->setType(weaponEnum::pistol);
+        weaponItem2->setType(weaponEnum::pistol); // sets text automatically
         pickableWeaponsVertical->AddChildToVerticalBox(weaponItem2->baseLayoutPointer());
         pickableWeaponsButtonVector.push_back(weaponItem2);
     }
@@ -216,13 +213,15 @@ void ULoadoutScreen::rebindAllPickers(UWeaponContainer *currentWeaponContainerFo
     }
 }
 
-
+///@brief sets the callback for a pick button from right side, to a container of the
+/// left side (picked loadout item) --> call this on click of a pick container to
+/// update the binding since the pickables are in n:m relation to the loadout items
 void ULoadoutScreen::setCallBackForSelection(
     UWeaponPickButton *buttonFromPickers, //another method for attachments later
     UWeaponContainer *bindedContainer //may be rebound trought this method!
 ){
     if(buttonFromPickers != nullptr && bindedContainer != nullptr){
-        
+
         buttonFromPickers->SetCallBack(
             FSimpleDelegate::CreateLambda([bindedContainer, buttonFromPickers]()
             {
@@ -230,8 +229,7 @@ void ULoadoutScreen::setCallBackForSelection(
                     bindedContainer->updateWeaponType(buttonFromPickers->getType());
                     DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
                 } 
-            })
-        );
+            }));
         DebugHelper::logMessage("DEBUGCALLBACK picker rebound callback");
 
     }
@@ -241,13 +239,8 @@ void ULoadoutScreen::setCallBackForSelection(
 
 
 
-
-
-
-
-//new
-
-
+///@brief setup a loadout item functionality from the weaponContainers by index, only setup once!
+/// call once on construct only for every index
 void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
     int index
 ){
@@ -260,7 +253,8 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
 
     weaponContainers[index] = NewObject<UWeaponContainer>(this);
     if(weaponContainers[index]){
-        weaponContainers[index]->init(); //immer init nicht vergessen
+        //weaponContainers[index]->init(); //immer init nicht vergessen
+        weaponContainers[index]->init(index, loadoutinternal);
 
         //weapon button setup
         FString sampleText = FString::Printf(TEXT("slot %d"), index);

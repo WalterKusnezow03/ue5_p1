@@ -4,11 +4,13 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "WeaponContainer.generated.h"
 
+class UPlayerUi;
 /**
  * container to hold spawn information and provide weapoSetup class by value (generation)
  */
@@ -17,7 +19,10 @@ class UWeaponContainer : public UcustomUiComponentBase{
     GENERATED_BODY()
 
 public:
+
     virtual void init() override;
+    void init(UPlayerUi &refin) override;
+    void init(int index, LoadoutHelper &parentLoadout);
 
     virtual UWidget *baseLayoutPointer(){
         return baseHorizontalBox;
@@ -38,9 +43,12 @@ public:
     void updateWeaponType(weaponEnum typeIn);
     void updateWeaponSight(weaponAttachmentEnum sightIn);
 
-    weaponSetupHelper setupHelperCopy(){
-        return setupinternal;
-    }
+    void updateFrom(weaponSetupHelper &other);
+
+    weaponSetupHelper setupHelperCopy();
+
+    static FString toString(weaponEnum type);
+    static FString toString(weaponAttachmentEnum type);
 
 private:
     UHorizontalBox *baseHorizontalBox;
@@ -55,7 +63,12 @@ private:
     //internal weapon setup object
     weaponSetupHelper setupinternal;
 
+    //loadout helper parent to update
+    int ownIndexInLoadoutHelperParent = 0;
+    LoadoutHelper *loadoutParent = nullptr;
+    void updateLoadoutParent();
 
     //internal updates
     void updateWeaponName();
+    void updateSightName();
 };

@@ -54,7 +54,7 @@ void playerInventory::selectIndex(int index){
     if(weaponVector.size() > 0){
 
         //set the index
-        if(index > weaponVector.size() || index < 0){
+        if(index >= weaponVector.size() || index < 0){
             index = 0;
         }
         currentIndex = index;
@@ -74,16 +74,35 @@ void playerInventory::selectIndex(int index){
     }
 }
 
-/// @brief adds a weapon to the inventory and selects it
+/// @brief adds a weapon to the inventory and selects it, if not contained yet
 /// @param weaponIn new weapon to pickup
-void playerInventory::addWeapon(Aweapon *weaponIn){
+void playerInventory::addWeaponIfNotInInventory(Aweapon *weaponIn){
     if(weaponIn != nullptr){
-        weaponVector.push_back(new playerInventory::wslot(weaponIn));
-        currentIndex = weaponVector.size() - 1;
-        selectIndex(currentIndex);
-
-
+        if(!alreadyInInventory(weaponIn)){
+            weaponVector.push_back(new playerInventory::wslot(weaponIn));
+            currentIndex = weaponVector.size() - 1;
+            selectIndex(currentIndex);
+        }
     }
+}
+
+///@brief checks if a weapon is already in inventory
+bool playerInventory::alreadyInInventory(Aweapon *weaponIn){
+    if(weaponIn != nullptr){
+        for (int i = 0; i < weaponVector.size(); i++)
+        {
+            playerInventory::wslot *currentSlot = weaponVector[i];
+            if(currentSlot != nullptr){
+                Aweapon *weaponOfSlot = currentSlot->weaponPointer;
+                if(weaponOfSlot != nullptr){
+                    if(weaponOfSlot == weaponIn){
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
 }
 
 /// @brief reloads the current weapon if possible
@@ -148,7 +167,23 @@ void playerInventory::addAmmunition(int ammunitionIn, int type){
     ammunition += ammunitionIn;
 }
 
+/// @brief will return if the current weapon index is valid and not nullptr,
+/// and if any items are in the list 
+/// @return 
+bool playerInventory::currentIndexIsValid(){
+    return indexIsValid(currentIndex);
+}
 
+bool playerInventory::indexIsValid(int index){
+    if(index >= 0 && index < weaponVector.size()){
+        return (weaponVector.at(index) != nullptr);
+    }
+    return false;
+}
+
+/**
+ * player api
+ */
 
 
 /// @brief drops the current weapon if possible
@@ -161,6 +196,33 @@ void playerInventory::dropWeapon(){
         currentIndex -= 1;
         selectIndex(currentIndex);
     }
+}
+
+
+void playerInventory::dropAllWeaponsToObjectPool(){
+    if(weaponVector.size() <= 0){
+        return;
+    }
+
+    int i = weaponVector.size() - 1;
+    while(i >= 0){
+        if(indexIsValid(i)){
+            playerInventory::wslot *slot = weaponVector[i];
+            Aweapon *weaponPointerFromSlot = slot->weaponPointer;
+            if(weaponPointerFromSlot != nullptr){
+                weaponPointerFromSlot->dropToObjectPool();
+            }
+            slot->weaponPointer = nullptr; //dont drop again on slot destruct
+
+            delete slot; //dont access index after that anymore!
+            weaponVector[i] = nullptr;
+        }
+        i--;
+    }
+    if(weaponVector.size() > 0){
+        weaponVector.clear(); //remove all dangling pointers
+    }
+    
 }
 
 /// @brief shoots the current weapon if possible
@@ -199,23 +261,6 @@ void playerInventory::releaseShoot(){
         weaponVector.at(currentIndex)->releaseShoot();
     }
 }
-
-/// @brief will return if the current weapon index is valid and not nullptr,
-/// and if any items are in the list 
-/// @return 
-bool playerInventory::currentIndexIsValid(){
-    if(currentIndex < weaponVector.size() && (weaponVector.size() > 0) && currentIndex >= 0){
-        if(weaponVector.at(currentIndex) != nullptr){
-            return true;
-        }
-    }
-    return false;
-}
-
-
-
-
-
 
 
 //slot methods
@@ -295,7 +340,8 @@ float playerInventory::wslot::recoilValue(){
 
 
 
-/// @brief you are NOT allowed to delete this!
+/// @brief current weapon by index, if an issue occured, nullptr is
+/// returned. You are NOT allowed to delete this!
 /// @return pointer or nullptr if none found
 Aweapon *playerInventory::getItemPointer(){
     //return weaponPointer;
@@ -308,6 +354,7 @@ Aweapon *playerInventory::getItemPointer(){
     }
     return nullptr;
 }
+
 
 
 

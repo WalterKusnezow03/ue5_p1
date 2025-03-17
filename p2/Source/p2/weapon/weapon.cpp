@@ -78,7 +78,7 @@ void Aweapon::BeginPlay()
 
 	findAttachmentChildActors(); //DEPRECATED
 
-	//new testing needed
+	//only on begin play!
 	spawnAllAvailableAttachments();
 
 	setupKickBackAnimation();
@@ -166,6 +166,14 @@ bool Aweapon::singleFireMode(){
 /// will enable the collider
 void Aweapon::drop(){
 	Super::drop();
+}
+
+void Aweapon::dropToObjectPool(){
+	drop();
+	EntityManager *entityManager = worldLevel::entityManager();
+	if(entityManager != nullptr){
+		entityManager->add(this);
+	}
 }
 
 /// @brief releases the shot (mouse up)

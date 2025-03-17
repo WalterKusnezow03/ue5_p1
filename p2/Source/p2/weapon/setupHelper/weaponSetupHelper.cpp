@@ -15,8 +15,26 @@ weaponSetupHelper::weaponSetupHelper()
     sightToSet = weaponAttachmentEnum::iron_sight;
 }
 
+weaponSetupHelper::weaponSetupHelper(const weaponSetupHelper &other){
+    if(this != &other){
+        *this = other;
+    }
+}
+weaponSetupHelper& weaponSetupHelper::operator=(const weaponSetupHelper &other){
+    if(this == &other){
+        return *this;
+    }
+    typeToCreate = other.typeToCreate;
+    sightToSet = other.sightToSet;
+    return *this;
+}
+
 weaponSetupHelper::~weaponSetupHelper()
 {
+}
+
+bool weaponSetupHelper::isSame(weaponSetupHelper &other){
+    return (other.typeToCreate == typeToCreate) && (sightToSet == other.sightToSet);
 }
 
 //SET ATTACHMENT SECTION
@@ -45,6 +63,10 @@ void weaponSetupHelper::setSightAttachment(weaponAttachmentEnum sightIn){
 /// @return type of the weapon from enum
 weaponEnum weaponSetupHelper::getWeaponTypeToCreate(){
     return typeToCreate;
+}
+
+weaponAttachmentEnum weaponSetupHelper::getSightTypeToCreate(){
+    return sightToSet;
 }
 
 /// @brief will apply seelcted attachment to a weapon if not null

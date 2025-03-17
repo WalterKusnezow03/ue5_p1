@@ -10,6 +10,8 @@
 #include "p2/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "teamEnum.h"
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include <cmath>
 #include "p2/DebugHelper.h"
 #include "GameFramework/Character.h" // Falls noch nicht inkludiert
@@ -98,7 +100,7 @@ void AplayerScript::BeginPlay()
         if(weapon != nullptr){
             weapon->applySight(weaponAttachmentEnum::reddot);
             weapon->pickup(CameraComponent);
-            playerInventory.addWeapon(weapon);
+            playerInventory.addWeaponIfNotInInventory(weapon);
 
             boneController.attachCarriedItem(weapon);
         }
@@ -429,7 +431,7 @@ void AplayerScript::performRaycast()
 			Aweapon *weapon = Cast<Aweapon>(actor);
 			if(weapon){
 				weapon->pickup(CameraComponent);
-                playerInventory.addWeapon(weapon);
+                playerInventory.addWeaponIfNotInInventory(weapon);
 
                 boneController.attachCarriedItem(weapon);
             }
@@ -819,5 +821,49 @@ void AplayerScript::updateAmmunitionUi(){
 void AplayerScript::updateHealthUi(){
     if(uiInstance != nullptr){
         uiInstance->updateHealthText(health);
+    }
+}
+
+
+
+
+
+/**
+ * player ui reload loadout api
+ */
+void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
+
+    //drop current weapon from bone controller
+    boneController.dropWeapon(); 
+    
+    //clear inventory
+    playerInventory.dropAllWeaponsToObjectPool();
+
+    //get all new
+    std::vector<Aweapon *> newWeapons = loadout.spawnAllWeaponsAndApplyAttachments(GetWorld());
+    // push all to inventory
+    if(newWeapons.size() > 0){
+        for (int i = 0; i < newWeapons.size(); i++){
+            Aweapon *current = newWeapons[i]; 
+            if(current != nullptr){
+                playerInventory.addWeaponIfNotInInventory(current);
+            }
+        }
+
+        //select first for inventory and bone controller
+        playerInventory.selectIndex(0);
+        Aweapon *firstWeapon = playerInventory.getItemPointer();
+        pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(firstWeapon);
+    }
+}
+
+
+void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
+    Aweapon *weapon
+){
+    if(weapon != nullptr){
+        playerInventory.addWeaponIfNotInInventory(weapon);
+        weapon->pickup(CameraComponent);
+        boneController.attachCarriedItem(weapon);
     }
 }

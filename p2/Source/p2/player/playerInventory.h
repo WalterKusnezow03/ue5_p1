@@ -22,7 +22,9 @@ public:
 	void dropWeapon();
 	void selectIndex(int index);
 
-	void addWeapon(Aweapon *weaponIn);
+	void dropAllWeaponsToObjectPool();
+
+	void addWeaponIfNotInInventory(Aweapon *weaponIn);
 	void reloadWeapon();
 	void addAmmunition(int ammunition, int type);
 
@@ -55,10 +57,14 @@ private:
 	int ammunition;
 
 	bool currentIndexIsValid();
-	
+	bool indexIsValid(int index);
 
 	void addToAmmunition(ammunitionEnum type, int amount);
 	int getFromAmmunition(ammunitionEnum type, int amount);
 
 	std::map<ammunitionEnum, int> ammunitionMap;
+
+	
+
+	bool alreadyInInventory(Aweapon *weaponIn);
 };

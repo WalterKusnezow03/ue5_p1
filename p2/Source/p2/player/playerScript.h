@@ -8,7 +8,7 @@
 #include "playerInventory.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "teamEnum.h"
 #include "p2/interfaces/Damageinterface.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
@@ -38,6 +38,8 @@ public:
 
 	void showCursor(bool show);
 	void setPaused(bool in);
+
+	void reloadLoadout(LoadoutHelper &loadout);
 
 protected:
 	// Called when the game starts or when spawned
@@ -144,4 +146,10 @@ private:
 	void updateHealthUi();
 
 	bool isPaused = false;
+
+
+	//Loadout setup
+	void pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
+		Aweapon *weapon
+	);
 };

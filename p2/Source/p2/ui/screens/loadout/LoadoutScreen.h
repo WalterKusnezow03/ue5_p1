@@ -7,6 +7,7 @@
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "WeaponContainer.h"
 #include "Components/HorizontalBox.h"
+#include "p2/weapon/setupHelper/LoadoutHelper.h"
 
 #include "LoadoutScreen.generated.h"
 
@@ -26,6 +27,8 @@ public:
 
 
 private:
+
+
     UTextButton *exitButton;
     UPresetHalfSplitLayout *halfSplitBase;
 
@@ -34,8 +37,13 @@ private:
 
 
     //left side interaction
-    void createRightSideLoadoutMenuItems();
+    void createLeftSideLoadoutMenuItems();
     void openPickerCallBack(int index, UWeaponContainer *clickComingFrom);
+
+    ///@brief saves all loadout data from the weaponContainers and their updates
+    ///which push them to this container on their own because of owning a reference
+    ///this object will later be used by the player to update its own inventory 
+    LoadoutHelper loadoutinternal;
 
     //left containers(4 in total)
     std::vector<UWeaponContainer *> weaponContainers; //MUST NOT BE CHANGED AFTER INIT!
@@ -58,4 +66,6 @@ private:
         UWeaponPickButton *buttonFromPickers, // another method for attachments later
         UWeaponContainer *bindedContainer     // may be rebound trought this method!
     );
+
+    
 };
