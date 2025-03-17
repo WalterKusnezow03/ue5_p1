@@ -270,7 +270,9 @@ void HandController::Tick(
 void HandController::Tick(float DeltaTime, UWorld *worldin, FVector &newLocation, AcarriedItem *item){
     if(item == nullptr){
         Tick(DeltaTime, worldin, newLocation);
+        return;
     }
+
     setTranslation(newLocation);
     world = worldin;
 
