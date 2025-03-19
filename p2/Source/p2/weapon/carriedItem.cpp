@@ -344,3 +344,12 @@ FVector AcarriedItem::actorAnimationOffsetLocal(){
 void AcarriedItem::updateAnimationOffset(FVector &other){
 	actorAnimationOffsetTicked = other;
 }
+
+
+
+
+
+//api bone controller sight offset
+FVector AcarriedItem::sightOffsetNoRotation(){
+	return verticalSightOffset;
+}

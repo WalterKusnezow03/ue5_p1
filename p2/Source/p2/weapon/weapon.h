@@ -138,6 +138,7 @@ protected:
 
 	//saves the current sight attachment
 	class AsightScript *sightPointer;
+	class AActor *sightActorPointer;
 
 	//animations
 	void shootAnimation();
@@ -200,6 +201,9 @@ public:
 	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
 	void attachNewItem(AActor *someActor);
 
+	//api bone controller
+	FVector sightOffsetNoRotation();
+
 private:
 	bool actorAlreadyAttached(AActor *actorpointer);
 	std::vector<AActor *> attachedActors;
@@ -222,4 +226,9 @@ private:
 	void setupVerschlussAnimation();
 	void TickVerschlussKickBack(float DeltaTime);
 
+
+
+
+	//sight offset
+	void findSightOffset();
 };

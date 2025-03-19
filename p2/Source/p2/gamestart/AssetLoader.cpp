@@ -173,13 +173,13 @@ void AssetLoader::loadWeaponAttachments(){
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
 
 
-        /*
+        
         FString reddotStringPistol = FString::Printf(TEXT(
             "Blueprint'/Game/Prefabs/Weapons/attachments/reddotPistolBp.reddotPistolBp_C'"
         ));
         UClass *bp2 = loadUClassBluePrint(reddotStringPistol);
         a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp2);
-        */
+        
     }
 }
 

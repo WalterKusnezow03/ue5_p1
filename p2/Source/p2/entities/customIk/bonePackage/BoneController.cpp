@@ -843,7 +843,16 @@ void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
 		FRotator camPitched;
 		camPitched.Pitch = cameraRot.Pitch * -1.0f; //must be flipped.
 
-		
+		//sight offset vector
+		if(attachedCarriedItem){
+			FVector offsetSight = attachedCarriedItem->sightOffsetNoRotation();
+			MMatrix rotMat(camPitched);
+			offsetSight = rotMat * offsetSight;
+
+			//ads location of weapon
+			camLocation += offsetSight;
+		}
+
 		//ADS OVERRIDE
 		MotionAction action;
 		action.setLocationAndRotation(camLocation, camPitched); //local matrix now

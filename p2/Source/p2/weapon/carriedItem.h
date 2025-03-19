@@ -83,4 +83,11 @@ public:
 protected:
 	FVector actorAnimationOffsetTicked;
 	void updateAnimationOffset(FVector &other);
+
+
+	//sight offset for weapons
+	FVector verticalSightOffset;
+
+public:
+	FVector sightOffsetNoRotation();
 };

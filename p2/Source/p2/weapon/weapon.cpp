@@ -589,7 +589,9 @@ void Aweapon::findAttachmentChildActors(){
 }
 
 
-
+/**
+ * weapon setup helper api!
+ */
 /// @brief applys a sight if possible
 /// @param sight sight value in to enable
 void Aweapon::applySight(weaponAttachmentEnum sight){
@@ -606,6 +608,11 @@ void Aweapon::applySight(weaponAttachmentEnum sight){
 		if(a != nullptr){
 			DebugHelper::showScreenMessage("show sight try", FColor::Green);
 			AActorUtil::showActor(*a, show);
+
+
+			//update sight offset
+			sightActorPointer = a;
+			findSightOffset();
 		}
 	}
 
@@ -614,6 +621,9 @@ void Aweapon::applySight(weaponAttachmentEnum sight){
 }
 
 
+/**
+ * spawning all attachments
+ */
 //new create sights all on start
 void Aweapon::spawnAllAvailableAttachments(){
 
@@ -1001,3 +1011,21 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 	}
 }
 
+
+
+
+/**
+ * sight offset - is tested!
+ */
+void Aweapon::findSightOffset(){
+	if(sightActorPointer){
+		FVector A = sightActorPointer->GetActorLocation(); //is world(?)
+		FVector B = GetActorLocation();
+
+		float verticalDistance = B.Z - A.Z; //AB = B - A
+
+		verticalSightOffset = FVector(0.0f, 0.0f, verticalDistance);
+
+		DebugHelper::logMessage("debugsight offset: ", verticalDistance);
+	}
+}
