@@ -198,7 +198,7 @@ public:
 	 */
 	void spawnAllAvailableAttachments();
 	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
-	void attachNewItem(AActor *someActor, MMatrix &offset);
+	void attachNewItem(AActor *someActor);
 
 private:
 	bool actorAlreadyAttached(AActor *actorpointer);

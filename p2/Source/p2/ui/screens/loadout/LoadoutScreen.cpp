@@ -10,6 +10,7 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
+#include "p2/ui/screens/loadout/buttons/SightPickButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "p2/DebugHelper.h"
@@ -172,9 +173,27 @@ void ULoadoutScreen::createRigthListPickers(){
     
 
     //erste layout definieren und hier füllen
+
+    /// ---- PICKABLE WEAPONS ----
     pickableWeaponsVertical = NewObject<UVerticalBox>(this);
     halfSplitBase->addChildToRightVertical(pickableWeaponsVertical, WEAPON_PICKER_IDENTIFIER); //ins 0te layout
+    std::vector<weaponEnum> typesToHave = {
+        weaponEnum::assaultRifle,
+        weaponEnum::pistol
+    };
+    for (int i = 0; i < typesToHave.size(); i++)
+    {
+        UWeaponPickButton *weaponItem = NewObject<UWeaponPickButton>(this);
+        if(weaponItem){
+            weaponEnum currentweaponType = typesToHave[i];
+            weaponItem->init();
+            weaponItem->setType(currentweaponType);
+            pickableWeaponsVertical->AddChildToVerticalBox(weaponItem->baseLayoutPointer());
+            pickableWeaponsButtonVector.push_back(weaponItem);
+        }
+    }
 
+    /*
     UWeaponPickButton *weaponItem1 = NewObject<UWeaponPickButton>(this);
     if(weaponItem1){
         weaponItem1->init();
@@ -191,6 +210,26 @@ void ULoadoutScreen::createRigthListPickers(){
         weaponItem2->setType(weaponEnum::pistol); // sets text automatically
         pickableWeaponsVertical->AddChildToVerticalBox(weaponItem2->baseLayoutPointer());
         pickableWeaponsButtonVector.push_back(weaponItem2);
+    }*/
+
+
+
+    /// ---- PICKABLE SIGHTS ----
+    pickableSightsVertical = NewObject<UVerticalBox>(this);
+    halfSplitBase->addChildToRightVertical(pickableSightsVertical, SIGHT_PICKER_IDENTIFIER); //ins 1te layout
+    std::vector<weaponAttachmentEnum> sightTypesToHave = {
+        weaponAttachmentEnum::iron_sight,
+        weaponAttachmentEnum::reddot
+    };
+    for (int i = 0; i < sightTypesToHave.size(); i++){
+        USightPickButton *sightItem = NewObject<USightPickButton>(this);
+        if(sightItem){
+            weaponAttachmentEnum currentSightType = sightTypesToHave[i];
+            sightItem->init();
+            sightItem->setType(currentSightType);
+            pickableSightsVertical->AddChildToVerticalBox(sightItem->baseLayoutPointer());
+            pickableSightsButtonVector.push_back(sightItem);
+        }
     }
 
 
@@ -206,33 +245,20 @@ void ULoadoutScreen::rebindAllPickers(UWeaponContainer *currentWeaponContainerFo
         return;
     }
 
+    //weapon pickers
     for (int i = 0; i < pickableWeaponsButtonVector.size(); i++){
         UWeaponPickButton *button = pickableWeaponsButtonVector[i];
         if(button){
-            setCallBackForSelection(button, currentWeaponContainerFocussed);
+            button->updateCallbackBind(currentWeaponContainerFocussed); //UPDATES CALLBACK INTERNALLY
         }
     }
-}
 
-///@brief sets the callback for a pick button from right side, to a container of the
-/// left side (picked loadout item) --> call this on click of a pick container to
-/// update the binding since the pickables are in n:m relation to the loadout items
-void ULoadoutScreen::setCallBackForSelection(
-    UWeaponPickButton *buttonFromPickers, //another method for attachments later
-    UWeaponContainer *bindedContainer //may be rebound trought this method!
-){
-    if(buttonFromPickers != nullptr && bindedContainer != nullptr){
-
-        buttonFromPickers->SetCallBack(
-            FSimpleDelegate::CreateLambda([bindedContainer, buttonFromPickers]()
-            {
-                if(bindedContainer != nullptr && buttonFromPickers != nullptr){
-                    bindedContainer->updateWeaponType(buttonFromPickers->getType());
-                    DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
-                } 
-            }));
-        DebugHelper::logMessage("DEBUGCALLBACK picker rebound callback");
-
+    //sight pickers
+    for (int i = 0; i < pickableSightsButtonVector.size(); i++){
+        USightPickButton *button = pickableSightsButtonVector[i];
+        if(button){
+            button->updateCallbackBind(currentWeaponContainerFocussed); //UPDATES CALLBACK INTERNALLY
+        }
     }
 }
 

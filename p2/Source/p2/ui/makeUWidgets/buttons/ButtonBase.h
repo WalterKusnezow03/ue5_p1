@@ -37,7 +37,12 @@ public:
     void SetCallBack(FSimpleDelegate callbackIn);
 
     void reloadCallback();
+    void makeTransparent();
 
+    void SetCallBackOnHovered(
+        FSimpleDelegate onHoveredDelegate,
+        FSimpleDelegate onUnHoveredDelegate
+    );
 
 protected:
     
@@ -46,7 +51,11 @@ protected:
 
     UCallback *callbackPointer = nullptr;
 
+
+    UCallback *callbackPointerOnHovered = nullptr;
+    UCallback *callbackPointerOnUnHovered = nullptr;
+
     void createButton();
-
-
+    void createPressedCallbackIfNeeded();
+    void createHoveredAndUnHoveredCallbackIfNeeded();
 };

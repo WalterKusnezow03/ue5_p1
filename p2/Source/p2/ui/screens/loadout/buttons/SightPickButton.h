@@ -1,27 +1,27 @@
 #pragma once
 
 
-#include "p2/weapon/weaponEnum.h"
+
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/WeaponContainer.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 
-#include "WeaponPickButton.generated.h"
+#include "SightPickButton.generated.h"
 
 UCLASS()
-class P2_API UWeaponPickButton : public UTextButton{
+class P2_API USightPickButton : public UTextButton{
 
     GENERATED_BODY()
 
 public:
 
     ///@brief will set the type and updat the string automatically from weaponContainer static method
-    void setType(weaponEnum typein){
+    void setType(weaponAttachmentEnum typein){
         typeSaved = typein;
         updateName();
     }
 
-    weaponEnum getType(){
+    weaponAttachmentEnum getType(){
         return typeSaved;
     }
 
@@ -35,7 +35,7 @@ public:
                 FSimpleDelegate::CreateLambda([this, bindedContainer]()
                 {
                     if(bindedContainer != nullptr && this){
-                        bindedContainer->updateWeaponType(this->getType());
+                        bindedContainer->updateWeaponSight(this->getType());
                         DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
                     } 
                 })
@@ -46,7 +46,7 @@ public:
 
 
 private:
-    weaponEnum typeSaved;
+    weaponAttachmentEnum typeSaved;
 
     void updateName(){
         FString name = UWeaponContainer::toString(typeSaved);

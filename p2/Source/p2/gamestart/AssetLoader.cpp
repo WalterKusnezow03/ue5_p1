@@ -158,20 +158,28 @@ UMaterial *AssetLoader::loadMaterial(FString path){
 void AssetLoader::loadWeaponAttachments(){
     if(assetManager *a = assetManager::instance()){
         
-        //pistol
+        
         FString reddotString = FString::Printf(TEXT(
             "Blueprint'/Game/Prefabs/Weapons/attachments/reddotBp.reddotBp_C'"
         ));
         UClass *bp = loadUClassBluePrint(reddotString);
-        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp);
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::reddot, bp);
     
-        //rifle
+        
         FString ironsightString = FString::Printf(TEXT(
             "Blueprint'/Game/Prefabs/Weapons/rifle2/ironsightbp.ironsightbp_C'"
         ));
         UClass *bp1 = loadUClassBluePrint(ironsightString);
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
+
+
+        /*
+        FString reddotStringPistol = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/Weapons/attachments/reddotPistolBp.reddotPistolBp_C'"
+        ));
+        UClass *bp2 = loadUClassBluePrint(reddotStringPistol);
+        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp2);
+        */
     }
 }
 

@@ -2,7 +2,10 @@
 
 #include "Components/HorizontalBox.h"
 #include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
+#include "Components/Spacer.h"
 #include "p2/ui/PlayerUi.h"
+#include "p2/DebugHelper.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include <map>
 
@@ -24,24 +27,46 @@ void UPresetHalfSplitLayout::createSubLayouts(){
     headLineHorizontal = NewObject<UHorizontalBox>(this);
     baseVertical->AddChildToVerticalBox(headLineHorizontal);
 
+    USpacer *Spacer = createMarginSpacer(20, 20);
+    if (Spacer){
+        baseVertical->AddChildToVerticalBox(Spacer);
+    }
+
     rightLeftContainer = NewObject<UHorizontalBox>(this);
     baseVertical->AddChildToVerticalBox(rightLeftContainer);
 
     leftVertical = NewObject<UVerticalBox>(this);
     rightLeftContainer->AddChildToHorizontalBox(leftVertical);
 
-    //old right
+
+    USpacer *Spacer1 = createMarginSpacer(20, 20);
+    if (Spacer1){
+        rightLeftContainer->AddChildToHorizontalBox(Spacer1);
+    }
+
+    //rigth side, iterable
     rightVertical = NewObject<UVerticalBox>(this);
     rightLeftContainer->AddChildToHorizontalBox(rightVertical);
-    rightPanels[0] = rightVertical;
+    rightPanels[0] = rightVertical; //erstes panel speichern
 }
 
+
+USpacer *UPresetHalfSplitLayout::createMarginSpacer(int x, int y){
+    // Spacer als "echter" Margin
+    USpacer* Spacer = NewObject<USpacer>(this);
+    if(Spacer){
+        Spacer->SetSize(FVector2D(x, y)); // 20px Abstand
+        return Spacer;
+    }
+    return nullptr;
+}
 
 void UPresetHalfSplitLayout::showRightSideLayoutAtIndex(int i){
     for(auto &pair : rightPanels){
         int key = pair.first;
         bool visible = (key == i);
-        ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+        ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+        //ESlateVisibility::Hidden;
 
         UWidget *second = pair.second;
         if(second != nullptr){

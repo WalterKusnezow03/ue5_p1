@@ -31,6 +31,8 @@ public:
     void setImage(textureEnum type);
     void setImage(textureEnum type, FVector2D scale);
 
+    void showImage(bool hide);
+
 protected:
     UOverlay *baseOverlay = nullptr;
     UTextBlock *TextBlock = nullptr;

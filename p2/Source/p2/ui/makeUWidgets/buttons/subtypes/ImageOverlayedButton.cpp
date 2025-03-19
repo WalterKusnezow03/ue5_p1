@@ -22,8 +22,10 @@ void UImageOverlayedButton::createImageOverlayedBackground(){
         UWidget *base = background->baseLayoutPointer();
         if(base != nullptr){
             //button->AddChild(base); //old
-            scalebox->AddChild(base);
+            scalebox->AddChild(base); //add to scalebox instead
         }
+
+        makeTransparent(); //super
     }
 }
 

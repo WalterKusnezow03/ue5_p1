@@ -471,7 +471,7 @@ void AplayerScript::aim(){
  */
 void AplayerScript::shoot(){
     if(isPaused){
-        DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange);
+        //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange);
         return;
     }
 
@@ -843,10 +843,13 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
     //get all new
     std::vector<Aweapon *> newWeapons = loadout.spawnAllWeaponsAndApplyAttachments(GetWorld());
     // push all to inventory
-    if(newWeapons.size() > 0){
+    FVector playerLocation = GetActorLocation();
+    if (newWeapons.size() > 0)
+    {
         for (int i = 0; i < newWeapons.size(); i++){
             Aweapon *current = newWeapons[i]; 
             if(current != nullptr){
+                current->SetActorLocation(playerLocation);
                 pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
                 //playerInventory.addWeaponIfNotInInventory(current);
             }

@@ -29,5 +29,7 @@ private:
     UTextBlock *TextBlock = nullptr;
     void createTextAndAddToButton();
 
-    
+    void setUpCallbackHover();
+    void setDesignHovered();
+    void setDesignDefault();
 };

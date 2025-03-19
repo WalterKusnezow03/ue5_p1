@@ -5,6 +5,7 @@
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
+#include "p2/ui/screens/loadout/buttons/SightPickButton.h"
 #include "WeaponContainer.h"
 #include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
@@ -58,14 +59,20 @@ private:
     const int WEAPON_PICKER_IDENTIFIER = 0;
     const int SIGHT_PICKER_IDENTIFIER = 1;
 
-    //internal saving of the layout
+
+
+    //PICKER BIND SECTION
+    void rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed);
+
+    //internal saving of the weapon pick layout
     UVerticalBox *pickableWeaponsVertical;
     std::vector<UWeaponPickButton *> pickableWeaponsButtonVector;
-    void rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed);
-    void setCallBackForSelection(
-        UWeaponPickButton *buttonFromPickers, // another method for attachments later
-        UWeaponContainer *bindedContainer     // may be rebound trought this method!
-    );
+
+    //internal saving of the sight pick layout
+    UVerticalBox *pickableSightsVertical;
+    std::vector<USightPickButton *> pickableSightsButtonVector;
+    
+    
 
     
 };

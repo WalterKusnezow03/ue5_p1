@@ -4,6 +4,7 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/HorizontalBox.h"
 #include <map>
+#include "Components/Spacer.h"
 #include "Components/VerticalBox.h"
 
 #include "PresetHalfSplitLayout.generated.h"
@@ -44,7 +45,7 @@ public:
     void showRightSideLayoutAtIndex(int i);
 
 private:
-
+    USpacer *createMarginSpacer(int x, int y);
     void createSubLayouts();
 
     UVerticalBox *baseVertical = nullptr; //base layout for all sublayouts

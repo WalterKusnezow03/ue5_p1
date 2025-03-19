@@ -631,20 +631,18 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 
 		//spawn uclass
 		UClass *foundAttachment = manager->findBp(ownType, EattachmentType);
+		if(foundAttachment != nullptr){
+			FVector location;
+			AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
+			if(actor != nullptr){
+				
+				attachNewItem(actor);
+				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
+				}
 
-		FVector location;
-		AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
-		if(actor != nullptr){
-			MMatrix locationOffset;
-			locationOffset.setTranslation(30, 0, 0); //will be changed later based on actor bounding box!
-			attachNewItem(actor, locationOffset);
-
-
-			if(weaponSetupHelper::isASightAttachment(EattachmentType)){
-				sightMap[EattachmentType] = actor; //save pointer to map for enable disable
+				
 			}
-
-			
 		}
 	}
 }
@@ -861,12 +859,12 @@ int Aweapon::damageForAmmunitionType(){
 /**
  * 
  * 
- * --- new attachment section expirmental! ---
- * 
- * ---- NOT TESTED!! ----
+ * --- new attachment section ---
  * 
  */
-void Aweapon::attachNewItem(AActor* actor, MMatrix &other){
+
+///@brief will attach new item IF the gehauseSkelleton pointer exists!
+void Aweapon::attachNewItem(AActor* actor){
 	if(actor == nullptr){
 		return;
 	}

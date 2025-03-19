@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ScaleBox.h"
 #include "p2/DebugHelper.h"
+#include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
 #include "p2/ui/makeUWidgets/callback/callback.h"
 #include "TextButton.h"
 
@@ -16,8 +17,8 @@ void UTextButton::init(){
     }
     Super::init();
     createTextAndAddToButton();
+    setUpCallbackHover();
 }
-
 
 void UTextButton::createTextAndAddToButton(){
     if(button != nullptr){
@@ -45,3 +46,47 @@ void UTextButton::setText(FString textIn){
 
 
 
+
+/**
+ * callback api
+ */
+void UTextButton::setDesignHovered(){
+    if(button){
+        button->SetBackgroundColor(UiColors::buttonWhite);
+    }
+    if(TextBlock){
+        TextBlock->SetColorAndOpacity(FSlateColor(UiColors::buttonBlack));
+    }
+}
+
+
+void UTextButton::setDesignDefault(){
+    if(button){
+        makeTransparent(); //super
+    }
+    if(TextBlock){
+        TextBlock->SetColorAndOpacity(FSlateColor(UiColors::buttonWhite));
+    }
+}
+
+
+void UTextButton::setUpCallbackHover(){
+
+    SetCallBackOnHovered(
+        // on hover
+        FSimpleDelegate::CreateLambda([this](){
+            if(this){
+                this->setDesignHovered();
+            } 
+        }),
+
+        // on unhover
+        FSimpleDelegate::CreateLambda([this](){
+            if(this){
+                this->setDesignDefault();
+            } 
+        })
+    );
+
+    setDesignDefault();
+}

@@ -32,6 +32,7 @@ void UImageOverlayed::createImage(){
         Image = NewObject<UImage>(this);
         if (Image){
             baseOverlay->AddChildToOverlay(Image);
+            showImage(false);
         }
     }
 }
@@ -66,13 +67,32 @@ void UImageOverlayed::setImage(textureEnum type){
 ///@param type - enum type of texture 
 ///@param scale value each component between 0.0 and 1.0 
 void UImageOverlayed::setImage(textureEnum type, FVector2D scale){
-    assetManager *pointer = assetManager::instance();
-    if(pointer != nullptr){
-        UTexture2D *loadedTexture = pointer->findTexture(type);
-        if (loadedTexture != nullptr)
-        {
-            Image->SetBrushFromTexture(loadedTexture);
-            Image->SetRenderScale(scale);
+    if(Image){
+        assetManager *pointer = assetManager::instance();
+        if(pointer != nullptr){
+            UTexture2D *loadedTexture = pointer->findTexture(type);
+            if (loadedTexture != nullptr)
+            {
+                Image->SetBrushFromTexture(loadedTexture);
+                Image->SetRenderScale(scale);
+                showImage(true);
+            }else{
+                showImage(false);
+            }
         }
     }
+    
+}
+
+
+
+///@brief shows or hides the image
+void UImageOverlayed::showImage(bool show){
+    
+    if(Image){
+        ESlateVisibility newStatus = show ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+        //ESlateVisibility::Collapsed;
+        Image->SetVisibility(newStatus);
+    }
+
 }
