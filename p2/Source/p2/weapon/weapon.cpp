@@ -613,8 +613,21 @@ void Aweapon::applySight(weaponAttachmentEnum sight){
 
 
 			//update sight offset
-			sightActorPointer = a;
-			findSightOffset();
+			//sightActorPointer = a;
+
+			//found correct sight, calculate offset only then!
+			if(show){
+				//sightActorPointer = a;
+				AsightScript *tryCast = Cast<AsightScript>(a);
+
+				if(tryCast){
+					sightPointer = tryCast;
+					findSightOffset();
+				}else{
+					resetSightOffset();
+				}
+			}			
+			
 		}
 	}
 
@@ -1020,8 +1033,11 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
  * sight offset - is tested!
  */
 void Aweapon::findSightOffset(){
-	if(sightActorPointer){
-		FVector A = sightActorPointer->GetActorLocation(); //is world(?)
+	
+	if(sightPointer){
+	//if(sightActorPointer){
+		FVector A = sightPointer->GetActorLocation();
+		//FVector A = sightActorPointer->GetActorLocation(); //is world(?)
 		FVector B = GetActorLocation();
 
 		float verticalDistance = B.Z - A.Z; //AB = B - A
@@ -1030,4 +1046,8 @@ void Aweapon::findSightOffset(){
 
 		DebugHelper::logMessage("debugsight offset: ", verticalDistance);
 	}
+}
+
+void Aweapon::resetSightOffset(){
+	verticalSightOffset = FVector(0.0f, 0.0f, 0.0f);
 }

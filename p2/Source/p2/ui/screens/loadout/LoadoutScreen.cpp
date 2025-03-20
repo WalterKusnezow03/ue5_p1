@@ -21,7 +21,8 @@
 
 void ULoadoutScreen::init(UPlayerUi &ref){
     Super::init(ref);
-    createBackgroundBlur();
+    //createBackgroundBlur();
+    createBackgroundBlurAndDefaultColor();
     createBaseLayout();
     createHeadline();
 

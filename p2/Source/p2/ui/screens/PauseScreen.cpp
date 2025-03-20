@@ -17,7 +17,8 @@
 void UPauseScreen::init(UPlayerUi &playerUiParentref){
     Super::init(playerUiParentref);
 
-    createBackgroundBlur();
+    //createBackgroundBlur();
+    createBackgroundBlurAndDefaultColor();
     createMenu();
     createButtons();
 }

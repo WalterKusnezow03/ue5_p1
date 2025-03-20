@@ -231,4 +231,5 @@ private:
 
 	//sight offset
 	void findSightOffset();
+	void resetSightOffset();
 };

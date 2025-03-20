@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "p2/gameStart/assetEnums/weaponAttachmentEnum.h"
 #include "sightScript.generated.h"
 
 UCLASS()
@@ -15,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	AsightScript();
 
+	void setType(weaponAttachmentEnum type);
+	weaponAttachmentEnum GetSightType();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -24,4 +28,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	FVector getSightCenter();
+
+	weaponAttachmentEnum sightType = weaponAttachmentEnum::iron_sight;
 };

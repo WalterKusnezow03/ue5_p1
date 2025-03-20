@@ -2,12 +2,16 @@
 
 #include "CanvasScreen.h"
 #include "Components/BackgroundBlur.h"
+#include "Components/Overlay.h"
+#include "Components/Border.h"
+#include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 
 void UCanvasScreen::init(UPlayerUi &refin){
     playerUiParent = &refin;
     createBaseCanvas();
+
 }
 
 void UCanvasScreen::createBaseCanvas(){
@@ -55,22 +59,90 @@ UWidget *UCanvasScreen::baseLayoutPointer(){
 
 
 
+
+void UCanvasScreen::createBackgroundOverlay(){
+    if(baseCanvas != nullptr){
+        if(baseOverlay == nullptr){
+            baseOverlay = NewObject<UOverlay>(this);
+            baseCanvas->AddChild(baseOverlay);
+
+            UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(baseOverlay));
+            if(CanvasSlot){
+                CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+                CanvasSlot->SetPosition(FVector2D(0, 0));
+            }
+        }
+    }
+    
+}
+
+
 void UCanvasScreen::createBackgroundBlur(){
+    if(baseOverlay == nullptr){
+        createBackgroundOverlay();
+    }
+
     if(backgroundBlur == nullptr){
         backgroundBlur = NewObject<UBackgroundBlur>(this);
         backgroundBlur->SetBlurStrength(30.0f); // Stärke des Weichzeichners
         backgroundBlur->SetBlurRadius(5);
 
-        if(baseCanvas != nullptr){
-            baseCanvas->AddChild(backgroundBlur);
+        if(baseOverlay != nullptr){
+        //if(baseCanvas != nullptr){
+            //new
+            //baseOverlay->AddChild(backgroundBlur);
+            UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(baseOverlay->AddChild(backgroundBlur));
+            if (OverlaySlot) {
+                OverlaySlot->SetHorizontalAlignment(HAlign_Fill); //fill setzten damit es nicht unsichtbar ist
+                OverlaySlot->SetVerticalAlignment(VAlign_Fill);
+            }
 
+            //old
+            /*
             UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(backgroundBlur));
             if(CanvasSlot){
                 CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
                 CanvasSlot->SetPosition(FVector2D(0, 0));
                 //CanvasSlot->SetSize(FVector2D(1920, 1080)); // Adjust to viewport
-            }
+            }*/
         }
     }
 }
-    
+
+
+
+
+
+void UCanvasScreen::createColoredBackground(){
+    if(baseOverlay == nullptr){
+        createBackgroundOverlay();   
+    }
+    if(backgroundColor == nullptr && baseOverlay != nullptr){
+        backgroundColor = NewObject<UBorder>(this);
+        UOverlaySlot *overlaySlot = Cast<UOverlaySlot>(baseOverlay->AddChild(backgroundColor));
+        if(overlaySlot){
+            overlaySlot->SetHorizontalAlignment(HAlign_Fill); //fill setzten damit es nicht unsichtbar ist
+            overlaySlot->SetVerticalAlignment(VAlign_Fill);
+        }
+    }
+}
+
+void UCanvasScreen::setBackgroundColor(FLinearColor color){
+    if(backgroundColor == nullptr){
+        createColoredBackground();
+    }
+    if(backgroundColor != nullptr){
+        backgroundColor->SetBrushColor(color);  // Blue with 50% opacity
+        //backgroundColor->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+    }
+}
+
+void UCanvasScreen::setDefaultBackgroundColor(){
+    setBackgroundColor(UiColors::backgroundBlackTransculent);
+}
+
+
+void UCanvasScreen::createBackgroundBlurAndDefaultColor(){
+    createBackgroundBlur();
+    setDefaultBackgroundColor();
+}

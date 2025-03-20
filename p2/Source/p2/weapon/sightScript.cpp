@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "p2/gameStart/assetEnums/weaponAttachmentEnum.h"
+#include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "sightScript.h"
 
 // Sets default values
@@ -29,4 +30,15 @@ void AsightScript::Tick(float DeltaTime)
 /// @return position of the sight
 FVector AsightScript::getSightCenter(){
 	return GetActorLocation();
+}
+
+
+void AsightScript::setType(weaponAttachmentEnum type){
+	if(weaponSetupHelper::isASightAttachment(type)){
+		sightType = type;
+	}
+}
+
+weaponAttachmentEnum AsightScript::GetSightType(){
+	return sightType;
 }

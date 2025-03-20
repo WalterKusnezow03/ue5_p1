@@ -42,8 +42,9 @@ protected:
     void setVisible(UWidget *any, bool visible){
         if(any != nullptr){
             //ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-            
-            ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+
+            ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+            // ESlateVisibility::Hidden;
             any->SetVisibility(newStatus);
 
             //test

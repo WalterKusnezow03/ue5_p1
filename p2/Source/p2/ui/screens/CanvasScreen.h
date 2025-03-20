@@ -4,6 +4,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/VerticalBox.h"
+#include "Components/Border.h"
+#include "Components/Overlay.h"
 
 #include "CanvasScreen.generated.h"
 
@@ -19,6 +21,9 @@ public:
 
     virtual void setVisible(bool visible) override;
     virtual UWidget *baseLayoutPointer() override;
+    
+    void setBackgroundColor(FLinearColor color);
+    void setDefaultBackgroundColor();
 
 protected:
     UCanvasPanel *baseCanvas = nullptr;
@@ -27,8 +32,13 @@ protected:
     void updateCanvasScale(UWorld *world);
 
 
-
+    UOverlay *baseOverlay = nullptr;
     UBackgroundBlur *backgroundBlur = nullptr;
-    void createBackgroundBlur();
+    UBorder *backgroundColor = nullptr;
 
+    void createBackgroundBlur();
+    void createBackgroundBlurAndDefaultColor();
+
+    void createBackgroundOverlay();
+    void createColoredBackground();
 };

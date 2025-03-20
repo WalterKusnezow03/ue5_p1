@@ -20,4 +20,9 @@ public:
     static constexpr FLinearColor buttonBlack = FLinearColor(
         10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 1.0f
     );
+
+
+    static constexpr FLinearColor backgroundBlackTransculent = FLinearColor(
+        10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 0.5f
+    );
 };
