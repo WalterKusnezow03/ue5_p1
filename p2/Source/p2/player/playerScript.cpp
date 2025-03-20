@@ -99,10 +99,7 @@ void AplayerScript::BeginPlay()
         weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(weapon != nullptr){
             weapon->applySight(weaponAttachmentEnum::reddot);
-            weapon->pickup(CameraComponent);
-            playerInventory.addWeaponIfNotInInventory(weapon);
-
-            boneController.attachCarriedItem(weapon);
+            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
         }
 
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
@@ -307,7 +304,11 @@ void AplayerScript::MoveForward(float Value)
         if (sprinting) {
             GetCharacterMovement()->MaxWalkSpeed = SPRINT_SPEED;
             GetCharacterMovement()->MinAnalogWalkSpeed = SPRINT_SPEED - 1;
-        } 
+
+            boneController.weaponRaisedReadyPosition(); //testing needed
+        }else{
+            boneController.weaponContactPosition();
+        }
         
 
         const FRotator Rotation = Controller->GetControlRotation();
@@ -355,7 +356,17 @@ void AplayerScript::LookUpAtRate(float Rate)
     if(isPaused){
         return;
     }
-	AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
+    
+    if(Controller){
+        float DeltaPitch = Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds();
+        FRotator currentRotaion = Controller->GetControlRotation();
+        float newPichAbs = std::abs(currentRotaion.Pitch + DeltaPitch);
+        if(newPichAbs < 89.0f){
+            AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
+        }    
+    }
+    
+	//AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
 	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
 }
 
@@ -850,8 +861,8 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
             Aweapon *current = newWeapons[i]; 
             if(current != nullptr){
                 current->SetActorLocation(playerLocation);
-                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
-                //playerInventory.addWeaponIfNotInInventory(current);
+                //pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
+                playerInventory.addWeaponIfNotInInventory(current);
             }
         }
 

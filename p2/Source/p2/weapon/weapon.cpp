@@ -474,6 +474,7 @@ void Aweapon::shootAnimation(){
 		//playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 
 		if(false){
+			//deprecated
 			playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
 			playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
@@ -497,6 +498,7 @@ void Aweapon::reloadAnimation(){
 
 
 
+// CAUTION: not in use anymore!
 
 /// @brief plays an animation for an skeleton pointer and the anim sequence
 /// @param AnimSequence 

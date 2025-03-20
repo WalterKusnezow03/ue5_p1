@@ -36,7 +36,7 @@ void AcarriedItem::BeginPlay()
 void AcarriedItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	followPlayer();
+	//followPlayer();
 
 }
 
@@ -52,7 +52,7 @@ void AcarriedItem::showScreenMessage(FString s){
 
 /// @brief follows the player or bot around when picked up
 void AcarriedItem::followPlayer(){
-
+/*
 	if(cameraPointer == nullptr && botPointer == nullptr){
 		return;
 	}
@@ -82,7 +82,7 @@ void AcarriedItem::followPlayer(){
 	}
 
 	//bot follow if bot picked up ----> will be attached instead! ----> New: attached by skelletal mesh!
-	/*
+	
 	if(botPointer != nullptr){
 		FVector targetPos = botPointer->GetActorLocation() +
 							botPointer->GetActorForwardVector() * 100.0f;
@@ -98,8 +98,8 @@ void AcarriedItem::followPlayer(){
 		//SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
         SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
 
-	}*/
-
+	}
+*/
 	
 }
 
@@ -198,18 +198,18 @@ bool AcarriedItem::isActive(){
 
 /// @brief drops the item and enables the collider, removes all owners
 void AcarriedItem::drop(){
-
+	/*
 	if(cameraPointer != nullptr){
 		//detach from camera
-		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false)); 
+		//this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false)); 
 		//false for detaching complete physcics? / designed to uncouple everything
 	}
 	if(botPointer != nullptr){
 		//detach from bot
 		//ChildActor->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-		this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
+		//this->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 	}
-
+	*/
 
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
