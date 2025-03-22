@@ -20,6 +20,12 @@ void UCanvasScreen::createBaseCanvas(){
             baseCanvas = NewObject<UCanvasPanel>(this);
             playerUiParent->addToCanvas(baseCanvas);
             updateCanvasScale(playerUiParent->GetWorld());
+
+            if(baseCanvas){
+                //disbale collsion
+                baseCanvas->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+            }
         }
     }
 }
@@ -48,7 +54,8 @@ void UCanvasScreen::updateCanvasScale(UWorld *world){
 
 
 void UCanvasScreen::setVisible(bool visible){
-    UcustomUiComponentBase::setVisible(baseCanvas, visible);
+    //UcustomUiComponentBase::setVisible(baseCanvas, visible);
+    UcustomUiComponentBase::setVisibleNoCollsion(baseCanvas, visible);
 }
 
 UWidget *UCanvasScreen::baseLayoutPointer(){
@@ -64,13 +71,17 @@ void UCanvasScreen::createBackgroundOverlay(){
     if(baseCanvas != nullptr){
         if(baseOverlay == nullptr){
             baseOverlay = NewObject<UOverlay>(this);
-            baseCanvas->AddChild(baseOverlay);
 
-            UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(baseOverlay));
-            if(CanvasSlot){
-                CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
-                CanvasSlot->SetPosition(FVector2D(0, 0));
+            if(baseOverlay){
+                baseCanvas->AddChild(baseOverlay);
+
+                UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(baseOverlay));
+                if(CanvasSlot){
+                    CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+                    CanvasSlot->SetPosition(FVector2D(0, 0));
+                }
             }
+            
         }
     }
     

@@ -53,16 +53,41 @@ private:
 
 	float lenghtOf(FVector &vec);
 
+	/*
 	void spawnWindowMeshFromBounds(
 		std::vector<TTouple<FVector, FVector>> &windowTouples,
 		FVector &offset
+	);*/
+	void spawnWindowMeshFromBounds(
+		std::vector<FVector> &windowTouples,
+		float scaleZCm,
+		float width, // 5cm
+		FVector &offset
 	);
 
+	void createGapsFor(
+		FVector &start,
+		FVector &end,
+		float width,
+		std::vector<FVector> &inputPositions,
+		std::vector<FVector> &output
+	);
 
+	void createGapAt(
+		FVector &start,
+		FVector &end,
+		FVector &locationStart,
+		float width,
+		std::vector<FVector> &output
+	);
 
-
-
-
+	void appendCubeTo(
+		MeshData &outputData,
+		FVector &start,
+		FVector &end,
+		float height,
+		float width
+	);
 
 	void createRoom(
 		FVector location,

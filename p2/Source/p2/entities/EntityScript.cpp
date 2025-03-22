@@ -25,8 +25,8 @@ AEntityScript::AEntityScript()
 void AEntityScript::BeginPlay()
 {
 	Super::BeginPlay();
-	init();
 	setupBoneController();
+	init();
 }
 
 /// @brief will enable the entity for tick
@@ -223,9 +223,6 @@ void AEntityScript::Tick(float DeltaTime)
 	if(withinAngle && withinRange){
 		//DebugHelper::showScreenMessage("player vision check");
 		canSeePlayer = performRaycast(playerPointer);
-		if(canSeePlayer){
-			//DebugHelper::showScreenMessage("player vision check", FColor::Red);
-		}
 	}
 
 
@@ -514,7 +511,7 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 			if(this->path.size() <= 0){
 				DebugHelper::showScreenMessage("Entity path empty", FColor::Yellow);
 
-				resetPathDelay(3.0f); 
+				resetPathDelay(5.0f); 
 				//wait 3 seconds before asking for next path, allows player to move, 
 				//better path finding and saving resources because if an issue with the pathfinding occurs,
 				//it wont be solved unless the target moves. 
@@ -660,7 +657,7 @@ void AEntityScript::showScreenMessage(FString s){
 /// @brief reset the path delay time, allow the player to move to find better path
 /// @param time time in seconds to set
 void AEntityScript::resetPathDelay(float time){
-	pathDelayTimer.Begin(time);
+	pathDelayTimer.Begin(time, false);
 }
 
 /// @brief call this mesthod from tick for update

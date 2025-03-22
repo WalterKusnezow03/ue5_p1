@@ -231,23 +231,10 @@ void AplayerScript::TickBoneController(float DeltaTime){
     boneController.debugUpdateTransform(pos, rot);
     //boneController.overrideRotationYaw(rot.Yaw);
 
-    //new testing needed
-    SetActorLocation(boneController.stabilizedHipLocation());
 
     //update some of the states based on the camera
     if(CameraComponent != nullptr){
         boneController.updateStatesBasedOnCamera(*CameraComponent);
-    }
-
-
-    //debug
-    isWalking = false;
-
-    //wenn walking, auch locomotion an
-    if(isWalking){
-        boneController.setStateWalking();
-    }else{
-        boneController.stopLocomotion();
     }
 
     boneController.Tick(DeltaTime, GetWorld());
@@ -288,17 +275,6 @@ void AplayerScript::MoveForward(float Value)
 
     if ((Controller != nullptr) && (Value != 0.0f))
     {
-        //testing
-        /*
-        if(sprinting){
-            //DebugHelper::showScreenMessage("sprint");
-            Value *= SPRINT_MULTIPLY;
-        }
-        if(wingsuitInterface.wingsuitIsOpenFlag()){
-            Value *= WINGSUIT_MULTIPLY;
-        }
-        DebugHelper::showScreenMessage("value multiply", (float) Value, FColor::Cyan);
-        */
         GetCharacterMovement()->MaxWalkSpeed = BASE_SPEED;
         GetCharacterMovement()->MinAnalogWalkSpeed = BASE_SPEED - 1;
         if (sprinting) {
@@ -319,8 +295,6 @@ void AplayerScript::MoveForward(float Value)
         if(true){
             AddMovementInput(Direction, Value);
         }
-        
-
     
         isWalking = true;
 
@@ -441,10 +415,7 @@ void AplayerScript::performRaycast()
 
 			Aweapon *weapon = Cast<Aweapon>(actor);
 			if(weapon){
-				weapon->pickup(CameraComponent);
-                playerInventory.addWeaponIfNotInInventory(weapon);
-
-                boneController.attachCarriedItem(weapon);
+                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
             }
         }
 
@@ -512,6 +483,12 @@ void AplayerScript::setHolding(bool h){
 void AplayerScript::leftMouseDown(){
     setHolding(true);
 
+    /*
+    DebugHelper::showScreenMessage("----> player mouse down!");
+    if(!isPaused){
+        DebugHelper::showScreenMessage("----> player mouse down! NO PAUSE");
+    }*/
+
     //debug
     //debugPathFinder();
 }
@@ -554,7 +531,7 @@ void AplayerScript::setupBoneController(){
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
 
-    boneController.setAsPlayerOwnedController(BASE_SPEED);
+    boneController.setAsPlayerOwnedController(BASE_SPEED); //sehr wichtig!
     boneController.setupWings(GetWorld());
 
     // debug testing meshes
@@ -861,8 +838,9 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
             Aweapon *current = newWeapons[i]; 
             if(current != nullptr){
                 current->SetActorLocation(playerLocation);
-                //pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
-                playerInventory.addWeaponIfNotInInventory(current);
+                //MUST BE PICKED UP WITH PLAYER CAM TO INTERACT!
+                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
+                //playerInventory.addWeaponIfNotInInventory(current);
             }
         }
 

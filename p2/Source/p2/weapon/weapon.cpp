@@ -55,6 +55,13 @@ Aweapon::Aweapon()
 }
 
 
+void Aweapon::resetFlags(){
+	kickbackStarted = false;
+	verschlussKickBackStarted = false;
+	recoilCopied = false;
+	abzugHinten = false; 
+	isReloading = false;
+}
 
 
 
@@ -166,6 +173,7 @@ bool Aweapon::singleFireMode(){
 /// will enable the collider
 void Aweapon::drop(){
 	Super::drop();
+	resetFlags();
 }
 
 void Aweapon::dropToObjectPool(){

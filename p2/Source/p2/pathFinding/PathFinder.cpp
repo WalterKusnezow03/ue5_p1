@@ -1055,13 +1055,15 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
         PathFinder::Node *current = nodes.at(i);
         if (current != nullptr)
         {
+            if(current->visible_tangential_Neighbors.size() > 0){ //no neighbors makes no sense.
+                float Difference = FVector::Dist(pos, current->pos);
 
-            float Difference = FVector::Dist(pos, current->pos);
-
-            if(Difference < closest){
-                closest = Difference;
-                closestNode = current;
+                if(Difference < closest){
+                    closest = Difference;
+                    closestNode = current;
+                }
             }
+            
         }
     }
 

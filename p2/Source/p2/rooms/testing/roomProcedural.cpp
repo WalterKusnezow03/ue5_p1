@@ -5,6 +5,7 @@
 #include "p2/util/TTouple.h"
 #include "p2/DebugHelper.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "p2/gamestart/assetManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
@@ -88,7 +89,8 @@ void AroomProcedural::createRoom(
 	MeshData floorAndRoof;
 	MeshData walls;
 
-	//locale positionen, später verschieben
+	
+	//floor
 	std::vector<FVector> quad = MeshData::create2DQuadVertecies(scaleMetersX * onemeter, scaleMetersY * onemeter);
 	floorAndRoof.appendDoublesided(quad[0], quad[1], quad[2], quad[3]);
 
@@ -196,144 +198,48 @@ MeshData AroomProcedural::createWall(
 
 	
 	// create gaps for wall
-	FVector direction_to = (to - from).GetSafeNormal() * doorWidthCm;
-	direction_to.Z = 0;
-
-	//
-	for (int i = 0; i < windowsFiltered.size(); i++){
-		//doorsFiltered.push_back(windowsFiltered[i]);
-		FVector &current = windowsFiltered[i];
-		FVector A = current;
-		FVector B = current + direction_to;
-		oneDimWall.push_back(A);
-		oneDimWall.push_back(B);
-	}
-	//sortVectorsBetween(from, to, doorsFiltered);
-
-
-
-	//iterate over filtered doors, make them "2" anchored
-	//when the wall will be created, each second pair will be filled
-	int doorWidthIncrease = 2;
-	for (int i = 0; i < doorsFiltered.size(); i++)
-	{
-		FVector &current = doorsFiltered[i];
-		FVector A = current;
-		FVector B = current + direction_to * doorWidthIncrease; //türen breiter machen
-		oneDimWall.push_back(A);
-		oneDimWall.push_back(B);
-	}
+	createGapsFor(from, to, doorWidthCm, windowsFiltered, oneDimWall);
+	createGapsFor(from, to, doorWidthCm * 2.0f, doorsFiltered, oneDimWall);
 	//last part added here, wall "complete", lower ceiling 
 	oneDimWall.push_back(to); //FINAL POSITION
 	sortVectorsBetween(from, to, oneDimWall);
-
 	
 
-	FVector toTop(0, 0, std::abs(scaleZCm)); //direction to top
-	//CREATE WALL WITH GAPS
-	std::vector<TTouple<FVector, FVector>> twoDimWall;
-	for (int i = 0; i < oneDimWall.size(); i++){
-		FVector bottom = oneDimWall[i];
-		FVector top = bottom + toTop;
-
-		TTouple<FVector, FVector> touple(bottom, top);
-		twoDimWall.push_back(touple);
-
-	}
-
+	//walls new
 	MeshData output;
-	
-	//weil jede hinzugefügte tür 2 teile hinzufügt, wird nur jede 2 vertecies eine wand erstellt,
-	//wand, wenn lücke, lücke, ansonsten wand. Quasi.
-	for (int i = 1; i < twoDimWall.size(); i += 2){
-		TTouple<FVector, FVector> &first = twoDimWall[i - 1];
-		TTouple<FVector, FVector> &second = twoDimWall[i];
-		FVector a = first.first(); //bottom
-		FVector b = first.last(); //top
-		FVector c = second.last(); //top1
-		FVector d = second.first(); //bottom1
 
-		//draw wall
-		DebugHelper::showLineBetween(
-			GetWorld(),
-			a + locationOffset,
-			c + locationOffset,
-			FColor::Green
-		);
-		DebugHelper::showLineBetween(
-			GetWorld(),
-			b + locationOffset,
-			d + locationOffset,
-			FColor::Green
-		);
+	int widthCmWall = 20;
+	for (int i = 1; i < oneDimWall.size(); i += 2){ //immer one skip das die läcken der fenster auch da sind.
+		FVector &currentStart = oneDimWall[i - 1];
+		FVector &currentEnd = oneDimWall[i];
 
-		//debug draw door
-		if(i + 1 < twoDimWall.size()){
-			TTouple<FVector, FVector> &next = twoDimWall[i + 1];
-			FVector e = next.first(); //bottom
-			FVector f = next.last(); //top
-			DebugHelper::showLineBetween(
-				GetWorld(),
-				c + locationOffset,
-				d + locationOffset,
-				FColor::Yellow
+		if(FVector::Dist(currentStart, currentEnd) > 10){
+			appendCubeTo(
+				output,
+				currentStart,
+				currentEnd,
+				std::abs(scaleZCm),
+				widthCmWall
 			);
-			DebugHelper::showLineBetween(
-				GetWorld(),
-				e + locationOffset,
-				f + locationOffset,
-				FColor::Yellow
-			);
-
 		}
-
-
-		//flat wall for now
-		//createTwoSidedQuad(a, b, c, d, output);
-
-		//new extruded wall	
-		//testdir
-		FVector sideDir = (d - a); //AB = B - A
-
-		//um einen vektor um 90 grad zu drehen, einen comp negieren,
-		//und x und y vertauschen
-		FVector orthogonalDir(
-			sideDir.Y * -1,
-			sideDir.X,
-			sideDir.Z
-		);
-
-		//nach innen drehen
-		FVector aToCenter = centerOfRoom - a; //AB = B - A
-		float dotProduct = (orthogonalDir.X * aToCenter.X) * (orthogonalDir.Y * aToCenter.Y);
-		if(dotProduct < 0.0f){ //orthogonal zeigt weg von raum, drehen nach innen
-			orthogonalDir *= -1;
-		}
-
-		int widthCm = 20;
-		output.appendCube(
-			a,
-			b,
-			c,
-			d,
-			orthogonalDir.GetSafeNormal() * widthCm
-		);
-
 	}
-
+	
 
 	// --- CREATE WINDOWS ---
 	
 	//COPY WINDOW POSITIONS
-	for (int i = 0; i < windowsFiltered.size(); i++){
-		FVector &current = windowsFiltered[i];
-		FVector A = current;
-		FVector B = current + direction_to;
-		oneDimWindows.push_back(A);
-		oneDimWindows.push_back(B);
-	}
+	createGapsFor(
+		from,
+		to,
+		doorWidthCm,
+		windowsFiltered,
+		oneDimWindows
+	);
 
+
+	/*
 	//PREPARE WINDOWS FOR WINDOW CREATION
+	FVector toTop(0, 0, std::abs(scaleZCm));
 	std::vector<TTouple<FVector, FVector>> twoDimWindows;
 	for (int i = 0; i < oneDimWindows.size(); i++){
 		FVector bottom = oneDimWindows[i];
@@ -341,11 +247,14 @@ MeshData AroomProcedural::createWall(
 
 		TTouple<FVector, FVector> touple(bottom, top);
 		twoDimWindows.push_back(touple);
-	}
+	}*/
 
 	//spawn windows seperately
 	spawnWindowMeshFromBounds(
-		twoDimWindows,
+		//twoDimWindows,
+		oneDimWindows,
+		scaleZCm,
+		5.0f, //5cm
 		locationOffset
 	);
 
@@ -356,14 +265,106 @@ MeshData AroomProcedural::createWall(
 
 
 
+
+
+
+
+
+
+
+void AroomProcedural::createGapsFor(
+	FVector &start,
+	FVector &end,
+	float width,
+	std::vector<FVector> &inputPositions,
+	std::vector<FVector> &output
+){
+	for (int i = 0; i < inputPositions.size(); i++){
+		FVector &current = inputPositions[i];
+
+		createGapAt(
+			start,
+			end,
+			current,
+			width,
+			output
+		);
+	}
+}
+
+
+
+
+
+
+void AroomProcedural::createGapAt(
+	FVector &start,
+	FVector &end,
+	FVector &locationStart,
+	float width,
+	std::vector<FVector> &output
+){
+	// create gaps for wall
+	FVector direction_to = (end - start).GetSafeNormal() * width; //verlängerungs skalar
+	direction_to.Z = 0;
+
+	FVector A = locationStart;
+	FVector B = locationStart + direction_to;
+	output.push_back(A);
+	output.push_back(B);
+}
+
+
+
+void AroomProcedural::appendCubeTo(
+	MeshData &outputData,
+	FVector &start,
+	FVector &end,
+	float height,
+	float width
+){
+	FVector offsetZ(0, 0, height);
+	FVector offsetWidth(width, 0, 0); //x is forward in MMatrix, create rotator from start to end
+
+	FVector start2D = start;
+	start2D.Z = 0.0f;
+	FVector end2D = end;
+	end2D.Z = 0.0f;
+	FVector connect = end2D - start2D;
+
+	MMatrix rotator = MMatrix::createRotatorFrom(connect);
+	rotator.yawRadAdd(MMatrix::degToRadian(90.0f));
+
+	offsetWidth = rotator * offsetWidth; //eindrehen
+
+	/*
+	1->2
+	0<-3
+	*/
+	FVector a = start;
+	FVector b = end;
+	FVector c = end + offsetWidth;
+	FVector d = start + offsetWidth;
+
+	FVector a1 = a + offsetZ;
+	FVector b1 = b + offsetZ;
+	FVector c1 = c + offsetZ;
+	FVector d1 = d + offsetZ;
+
+
+	outputData.appendCube(a, b, c, d, a1, b1, c1, d1);
+
+}
+
 /// @brief creates a new mesh from touples representing the vertical edges of an window
 /// @param windowTouples 
 /// @param offset 
 void AroomProcedural::spawnWindowMeshFromBounds(
-	std::vector<TTouple<FVector, FVector>> &windowTouples,
+	std::vector<FVector> &windowTouples,
+	float scaleZCm,
+	float width, //5cm
 	FVector &offset
 ){
-
 	assetManager *assetManagerPointer = assetManager::instance();
 	EntityManager *e = worldLevel::entityManager();
 	if(assetManagerPointer != nullptr && e != nullptr){
@@ -371,52 +372,32 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 
 			AcustomMeshActor *newActor = e->spawnAcustomMeshActor(GetWorld(), offset);
 			if(newActor != nullptr){
-				
-				TTouple<FVector, FVector> &first = windowTouples[i - 1];
-				TTouple<FVector, FVector> &second = windowTouples[i];
-				FVector a = first.first(); //bottom
-				FVector b = first.last(); //top
-				FVector c = second.last(); //top1
-				FVector d = second.first(); //bottom1
-				//newActor->SetActorLocation(offset);
-				
-				//fix offset for mesh, move pivot to bottom center of window, move local coors to "0,0,0"
-
-				FVector center = (d + a) / 2;
-				FVector fromOffset = offset + center;
-				
-				a -= center; //nur an den ursprung mit dem offset weil a bis d local space vom raum sind
-				b -= center;
-				c -= center;
-				d -= center;
-				
-				newActor->SetActorLocation(fromOffset); //apply offset
-
-				FVector zeroVec(0, 0, 0);
-				fromOffset += FVector(0, 0, 10);
-				//DebugHelper::showLineBetween(GetWorld(), zeroVec, fromOffset, FColor::Red);
-
-				// create mesh
+				//testing needed
 
 				MeshData &glassMesh = newActor->findMeshDataReference(
 					materialEnum::glassMaterial,
 					ELod::lodNear,
 					true
 				);
-				glassMesh.appendDoublesided(a, b, c, d);
-				newActor->ReloadMeshAndApplyAllMaterials();
-				/*
-				newActor->createTwoSidedQuad(
-					a, b, c, d,
-					materialEnum::glassMaterial
-				);*/
 
-				//set splitting on death to true
+				FVector currentStart = windowTouples[i - 1];
+				FVector currentEnd = windowTouples[i];
+
+				appendCubeTo(
+					glassMesh, //output
+					currentStart,
+					currentEnd,
+					std::abs(scaleZCm),
+					width
+				);
+				
+
+				newActor->ReloadMeshAndApplyAllMaterials();
+
 				bool splitGlass = true;
 				newActor->setMaterialBehaiviour(materialEnum::glassMaterial, splitGlass);
 			}
 		}
-		
 	}
 
 }

@@ -53,4 +53,15 @@ protected:
     }
 
 
+    void setVisibleNoCollsion(UWidget *any, bool visible){
+        if(any){
+
+            //disbale collsion
+            ESlateVisibility visiblity = visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed;
+            any->SetVisibility(visiblity);
+        }
+    }
+
+
+
 };

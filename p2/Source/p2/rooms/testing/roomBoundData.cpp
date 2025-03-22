@@ -2,6 +2,7 @@
 
 
 #include <algorithm>
+#include "p2/meshgen/MeshData.h"
 #include "p2/rooms/testing/roomBoundData.h"
 
 roomBoundData::roomBoundData(int xin, int yin, int xscalein, int yscalein, int numberIn)
@@ -290,3 +291,15 @@ bool roomBoundData::hasNeighbor(roomBoundData *other){
     }
     return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+

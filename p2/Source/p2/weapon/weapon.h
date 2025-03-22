@@ -50,6 +50,7 @@ public:
 	//void dropweapon();
 	virtual void drop() override;
 	void dropToObjectPool();
+	void resetFlags();
 	bool isPickedup();
 	virtual void reload(int amount); //might be override from other classes (for example thrower weapon)
 	int getMagSize();

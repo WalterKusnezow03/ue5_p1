@@ -415,7 +415,7 @@ bool TwoBone::flipAngleForBoneNeeded(FVector &target, FVector &weight, float hip
 
     bool flipByWeight = (weight.X < 0.0f || weight.Z < 0.0f); //wenn gewicht negativ
     bool negativeHip = hipAngle < 0.0f; //angle zeigt grade nach vorne
-    if(flipByWeight && negativeHip){
+    if(flipByWeight && negativeHip){    //if(flipByWeight && negativeHip){
         return true;
     }
 

@@ -18,8 +18,8 @@ void UPlayerHud::init(UPlayerUi &refin){
     createBasePlayerHud();
     createAmmunitionHudElement();
     createHealthHudElement();
+    createTopWarningElement();
 }
-
 
 /// ----- PLAYER HUD SECTION ----- START
 void UPlayerHud::createBasePlayerHud(){
@@ -74,6 +74,13 @@ void UPlayerHud::createHealthHudElement(){
     
 }
 
+void UPlayerHud::createTopWarningElement(){
+
+}
+
+
+
+/// ----- PLAYER HUD SECTION ----- END
 
 //PUBLIC API
 
@@ -97,4 +104,3 @@ void UPlayerHud::updateHealthText(int health){
     
 }
 
-/// ----- PLAYER HUD SECTION ----- END

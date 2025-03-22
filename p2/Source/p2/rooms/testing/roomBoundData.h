@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/meshgen/MeshData.h"
 
 /**
  * 

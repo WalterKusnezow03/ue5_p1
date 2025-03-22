@@ -42,6 +42,9 @@ void AHumanEntityScript::init(){
 
     attackTypeOfBot = EAttackType::EAssault;
 
+    FVector location = GetActorLocation();
+    boneController.SetLocation(location);
+
     //DebugHelper::showScreenMessage("human init");
     
     //weapon currently hidden
@@ -60,7 +63,9 @@ void AHumanEntityScript::init(){
         Aweapon *w = e->spawnAweapon(GetWorld(), &setuphelper);
 		//showScreenMessage("begin weapon");
 		if (w != nullptr){
-			//showScreenMessage("human pickup weapon");
+
+
+            //showScreenMessage("human pickup weapon");
 			w->pickupBot(this); //saves the pointer inside the weapon. Weapon is further managed by custom skelleton
 
             boneController.attachCarriedItem(w); //NEW!
@@ -135,7 +140,8 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer && spottedPlayer){
         boneController.weaponAimDownSight();
         attackPlayer();
-        Super::resetpath(); //clear path, might change!
+        
+        //Super::resetpath(); //clear path, might change!
     }
     if(!canSeePlayer){
         if(!spottedPlayer){

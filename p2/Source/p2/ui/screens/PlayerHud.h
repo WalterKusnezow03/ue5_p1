@@ -34,4 +34,6 @@ private:
     void createBasePlayerHud();
     void createAmmunitionHudElement();
     void createHealthHudElement();
+
+    void createTopWarningElement();
 };
