@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "terrainHillSetup.h"
+#include <set>
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/util/TVector.h"
 
@@ -32,7 +33,10 @@ public:
 	int chunkNum();
 	
 	void createTerrainAndSpawnMeshActors(UWorld *world, int meters);
-	void setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY);
+	void createTerrainAndSpawnMeshActorsAndCreateBuildings(
+		UWorld *world, int meters
+	);
+	
 
 	//apply terrain
 	void applyTerrainDataToMeshActors();
@@ -47,6 +51,8 @@ public:
 	const int CHUNKSTOCREATEATONCE = 10;
 
 private:
+	void setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY);
+
 	void applyTerrainDataToMeshActors(
 		int lowerX,
 		int xLimit,
@@ -59,7 +65,11 @@ private:
 	static const int HEIGHT_MAX_OCEAN = 300; //10 * 100 meter
 
 	void createTerrain(UWorld *world, int meters);
-
+	void createTerrain(
+		UWorld *world,
+		int meters,
+		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea // flat area
+	);
 
 	class chunk{
 		public:
@@ -168,9 +178,9 @@ private:
 	void createRandomHeightMapChunkWide(int layers);
 
 	terrainHillSetup createRandomHillData();
+	terrainHillSetup createRandomHillData(int sizeX, int sizeY);
 	void applyHillData(terrainHillSetup &hillData);
-
-
+	void applyHillData(std::vector<terrainHillSetup> &hillDataVec);
 
 	void createChunkAtIfNotCreatedYet(int x, int y);
 
@@ -178,7 +188,30 @@ private:
 	void randomizeTerrainTypes(UWorld *world);
 	void applyTerrainTypeBetween(FVector &a, FVector &b, ETerrainType typeIn);
 	terrainCreator::chunk *chunkAt(int x, int y);
+	terrainCreator::chunk *chunkAt(terrainHillSetup &setup);
 	ETerrainType selectTerrainTypeExcluding(ETerrainType typeToExclude);
 
 	void applySpecialTerrainTypesByHeight();
+
+
+	//--- flat outpost helper ---
+	void createFlatAreas(
+		int count,
+		int minsizeChunks,
+		int maxsizeChunks,
+		std::vector<terrainHillSetup> &output
+	);
+	void createFlatArea(
+		int minsizeChunks,
+		int maxsizeChunks,
+		std::vector<terrainHillSetup> &output
+	);
+
+	void findChunksEnclosedBy(
+		std::vector<terrainHillSetup> &hills,
+		std::vector<terrainCreator::chunk *> &output
+	);
+	void findChunksEnclosedBy(
+		terrainHillSetup &hillData,
+		std::set<terrainCreator::chunk *> &output);
 };

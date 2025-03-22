@@ -7,6 +7,7 @@
 #include "p2/util/TVector.h"
 #include "HAL/PlatformTime.h"
 #include <algorithm>
+#include <set>
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/EntityManager.h"
@@ -494,6 +495,20 @@ void terrainCreator::chunk::updateTerrainTypeBySpecialHeights(){
 /// @param world world to spawn in / debug draw in
 /// @param meters size in meters
 void terrainCreator::createTerrain(UWorld *world, int meters){
+    std::vector<terrainHillSetup> none;
+    createTerrain(world, meters, none);
+}
+
+/// @brief will always create a qudratic terrain
+/// @param world world to spawn in / debug draw in
+/// @param meters size in meters
+/// @param predefinedHillDataVecFlatArea chunks to keep a certain height forced, may vary because of
+/// bezier smoothening.
+void terrainCreator::createTerrain(
+    UWorld *world,
+    int meters,
+    std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea //flat area
+){
     worldPointer = world;
 
     int chunks = floor(meters / terrainCreator::CHUNKSIZE); //to chunks
@@ -515,10 +530,16 @@ void terrainCreator::createTerrain(UWorld *world, int meters){
     //random height and smooth
     int layers = 20; //20
     createRandomHeightMapChunkWide(layers);
-    smooth3dMap();
 
-    //plotAllChunks(world);
+    applyHillData(predefinedHillDataVecFlatArea); //override
+
+    smooth3dMap();
 }
+
+
+
+
+
 
 
 
@@ -1066,20 +1087,41 @@ void terrainCreator::createRandomHeightMapChunkWide(int layers){
 terrainHillSetup terrainCreator::createRandomHillData(){
     int scaleX = FVectorUtil::randomNumber(MINCHUNK_HILL, map.size()); //random hardcoded for now.
     int scaleY = FVectorUtil::randomNumber(MINCHUNK_HILL, map.size());
+    return createRandomHillData(scaleX, scaleY);
+}
+
+terrainHillSetup terrainCreator::createRandomHillData(
+    int sizeX, int sizeY
+){
+    sizeX = std::abs(sizeX);
+    sizeY = std::abs(sizeY);
+    if(sizeX <= 0){
+        sizeX = 1;
+    }
+    if(sizeY <= 0){
+        sizeY = 1;
+    }
+
+
     int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
     int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
-
     int heightMin = terrainCreator::ONEMETER;
     int heightMax = heightMin * 2; //2
 
     return terrainHillSetup(
         startX,
         startY,
-        scaleX,
-        scaleY,
+        sizeX,
+        sizeY,
         heightMin,
         heightMax
     );
+}
+
+void terrainCreator::applyHillData(std::vector<terrainHillSetup> &hillDataVec){
+    for (int i = 0; i < hillDataVec.size(); i++){
+        applyHillData(hillDataVec[i]);
+    }
 }
 
 
@@ -1089,7 +1131,7 @@ void terrainCreator::applyHillData(terrainHillSetup &hillData){
     for (int i = clampIndex(hillData.xPosCopy()); i < clampIndex(hillData.xTargetCopy()); i++){
         for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
             if(verifyIndex(i) && verifyIndex(j)){
-                map.at(i).at(j).addheightForAll(hillData.getRandomHeightFromRange());
+                map.at(i).at(j).addheightForAll(hillData.getHeightIfSetOrRandomHeight());
             }
         }
     }
@@ -1213,6 +1255,8 @@ terrainCreator::chunk *terrainCreator::chunkAt(int x, int y){
 }
 
 
+
+
 /// @brief applies the ESnowhill terrain type to chunks matching the minheight requirement
 void terrainCreator::applySpecialTerrainTypesByHeight(){
     for (int i = 0; i < map.size(); i++){
@@ -1263,7 +1307,9 @@ void terrainCreator::debugCreateTerrain(UWorld *world){
 /// @brief creates a terrain and brand new mesh actors without using the entity manager
 /// @param world world to spawn in, must not be nullptr
 /// @param meters meters xy of terrain
-void terrainCreator::createTerrainAndSpawnMeshActors(UWorld *world, int meters){
+void terrainCreator::createTerrainAndSpawnMeshActors(
+    UWorld *world, int meters
+){
     meters = std::abs(meters);
     if(meters < 100){
         meters = 100;
@@ -1278,5 +1324,92 @@ void terrainCreator::createTerrainAndSpawnMeshActors(UWorld *world, int meters){
         randomizeTerrainTypes(world);
         applySpecialTerrainTypesByHeight();
         applyTerrainDataToMeshActors();
+    }
+}
+
+
+
+/**
+ * create outposts section / buildings
+ */
+void terrainCreator::createTerrainAndSpawnMeshActorsAndCreateBuildings(
+    UWorld *world, int meters
+){
+    int count = 2;
+    int minsizeChunks = 2;
+    int maxsizeChunks = 4;
+    std::vector<terrainHillSetup> predefinedHillDataVecFlatArea;
+    createFlatAreas(count, minsizeChunks, maxsizeChunks, predefinedHillDataVecFlatArea);
+    createTerrain(world, meters, predefinedHillDataVecFlatArea);
+
+
+    //use this data to create the buildings
+    //predefinedHillDataVecFlatArea
+    //based also on terrain type!
+    
+
+}
+
+void terrainCreator::createFlatAreas(
+    int count, 
+    int minsizeChunks, 
+    int maxsizeChunks,
+    std::vector<terrainHillSetup> &output
+){
+    for (int i = 0; i < count; i++){
+        createFlatArea(minsizeChunks, maxsizeChunks, output);
+    }
+}
+
+void terrainCreator::createFlatArea(
+    int minsizeChunks, 
+    int maxsizeChunks,
+    std::vector<terrainHillSetup> &output
+){
+    int scaleX = FVectorUtil::randomNumber(minsizeChunks, maxsizeChunks);
+    int scaleY = FVectorUtil::randomNumber(minsizeChunks, maxsizeChunks);
+
+    terrainHillSetup newHillSetup = createRandomHillData(scaleX, scaleY);
+
+    newHillSetup.forceSetHeight(200); //debug
+
+    output.push_back(newHillSetup);
+}
+
+
+
+
+
+///@brief helps to find all chunks enclosed by the hill setup passed
+//use only temporary, pointers might get invalid if you change the map!
+void terrainCreator::findChunksEnclosedBy(
+    std::vector<terrainHillSetup> &hills,
+    std::vector<terrainCreator::chunk *> &output
+){
+    std::set<terrainCreator::chunk *> outset;
+    for (int i = 0; i < hills.size(); i++){
+        findChunksEnclosedBy(hills[i], outset);
+    }
+
+    for(auto &current : outset){
+        output.push_back(current);
+    }
+}
+
+
+///@brief helps to find all chunks enclosed by the hill setup passed
+//use only temporary, pointers might get invalid if you change the map!
+void terrainCreator::findChunksEnclosedBy(
+    terrainHillSetup &hillData,
+    std::set<terrainCreator::chunk *> &output
+){
+    for (int i = clampIndex(hillData.xPosCopy()); i < clampIndex(hillData.xTargetCopy()); i++){
+        for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
+            if(verifyIndex(i) && verifyIndex(j)){
+
+                //if not contained yet, add
+                output.insert(&map.at(i).at(j));
+            }
+        }
     }
 }
