@@ -139,6 +139,14 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
     PlayerInputComponent->BindAction("rightMouse", IE_Pressed, this, &AplayerScript::aim);
     PlayerInputComponent->BindAction("rightMouse", IE_Released, this, &AplayerScript::aim);
+
+
+
+    PlayerInputComponent->BindAction("key1", IE_Pressed, this, &AplayerScript::keydown1);
+    PlayerInputComponent->BindAction("key2", IE_Pressed, this, &AplayerScript::keydown2);
+    PlayerInputComponent->BindAction("key3", IE_Pressed, this, &AplayerScript::keydown3);
+    PlayerInputComponent->BindAction("key4", IE_Pressed, this, &AplayerScript::keydown4);
+
 }
 
 
@@ -499,7 +507,32 @@ void AplayerScript::leftMouseUp(){
 
 
 
+void AplayerScript::keydown1(){
+    switchToIndex(0);
+}
+void AplayerScript::keydown2(){
+    switchToIndex(1);
+}
+void AplayerScript::keydown3(){
+    switchToIndex(2);
+}
+void AplayerScript::keydown4(){
+    switchToIndex(3);
+}
 
+void AplayerScript::switchToIndex(int index){
+    if(playerInventory.currentIndexNum() != index){
+        //find index weapon in inventory, pickup
+
+        Aweapon *targetedWeapon = playerInventory.getItemPointerAtIndex(index);
+        if(targetedWeapon != nullptr){
+            //bone controller pickup
+            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
+                targetedWeapon
+            );
+        }
+    }
+}
 
 
 

@@ -78,16 +78,20 @@ void playerInventory::selectIndex(int index){
 /// @param weaponIn new weapon to pickup
 void playerInventory::addWeaponIfNotInInventory(Aweapon *weaponIn){
     if(weaponIn != nullptr){
-        if(!alreadyInInventory(weaponIn)){
+        int foundIndexToSelect = 0;
+        if (!alreadyInInventory(weaponIn, foundIndexToSelect))
+        {
             weaponVector.push_back(new playerInventory::wslot(weaponIn));
             currentIndex = weaponVector.size() - 1;
             selectIndex(currentIndex);
+        }else{
+            selectIndex(foundIndexToSelect);
         }
     }
 }
 
 ///@brief checks if a weapon is already in inventory
-bool playerInventory::alreadyInInventory(Aweapon *weaponIn){
+bool playerInventory::alreadyInInventory(Aweapon *weaponIn, int &foundindex){
     if(weaponIn != nullptr){
         for (int i = 0; i < weaponVector.size(); i++)
         {
@@ -96,6 +100,7 @@ bool playerInventory::alreadyInInventory(Aweapon *weaponIn){
                 Aweapon *weaponOfSlot = currentSlot->weaponPointer;
                 if(weaponOfSlot != nullptr){
                     if(weaponOfSlot == weaponIn){
+                        foundindex = i;
                         return true;
                     }
                 }
@@ -355,9 +360,20 @@ Aweapon *playerInventory::getItemPointer(){
     return nullptr;
 }
 
+///@brief returns the weapon pointer at an index, if its valid, nullptr if not
+Aweapon *playerInventory::getItemPointerAtIndex(int index){
+    if(indexIsValid(index)){
+        playerInventory::wslot *currentSolt = weaponVector[index];
+        if(currentSolt != nullptr){
+            return currentSolt->weaponPointer;
+        }
+    }
+    return nullptr;
+}
 
-
-
+int playerInventory::currentIndexNum(){
+    return currentIndex;
+}
 
 /**
  * 

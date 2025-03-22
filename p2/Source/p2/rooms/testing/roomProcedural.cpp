@@ -108,14 +108,6 @@ void AroomProcedural::createRoom(
 	//std::vector<FVector> corners = {bl, tl, tr, br, bl};
 	std::vector<FVector> corners = {quad[0], quad[1], quad[2], quad[3], quad[0]};
 
-	
-	//debug draw doors
-	/*
-	for(int i = 0; i < doorPositions.size(); i++){
-		FVector transformed = location + doorPositions[i];
-		FVector upV = transformed + FVector(0, 0, zCm);
-		DebugHelper::showLineBetween(GetWorld(), transformed, upV, FColor::Green);
-	}*/
 
 	FVector centerOfRoom = FVectorUtil::calculateCenter(quad[0], quad[1], quad[2], quad[3]);
 
@@ -236,22 +228,8 @@ MeshData AroomProcedural::createWall(
 		oneDimWindows
 	);
 
-
-	/*
-	//PREPARE WINDOWS FOR WINDOW CREATION
-	FVector toTop(0, 0, std::abs(scaleZCm));
-	std::vector<TTouple<FVector, FVector>> twoDimWindows;
-	for (int i = 0; i < oneDimWindows.size(); i++){
-		FVector bottom = oneDimWindows[i];
-		FVector top = bottom + toTop;
-
-		TTouple<FVector, FVector> touple(bottom, top);
-		twoDimWindows.push_back(touple);
-	}*/
-
 	//spawn windows seperately
 	spawnWindowMeshFromBounds(
-		//twoDimWindows,
 		oneDimWindows,
 		scaleZCm,
 		5.0f, //5cm
@@ -591,7 +569,7 @@ void AroomProcedural::generate(UWorld *world, int sizeXMeters, int sizeYMeters, 
 
     std::vector<roomBoundData> outputRooms;
     layoutMaker l;
-    l.makeLayout(20, 20, sizesPossible, outputRooms);
+    l.makeLayout(sizeXMeters, sizeYMeters, sizesPossible, outputRooms);
     AroomProcedural::spawnRooms(world, location, outputRooms);
 	
 }

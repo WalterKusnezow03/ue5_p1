@@ -31,8 +31,11 @@ public:
 	float recoilValue();
 
 	Aweapon *getItemPointer();
+	Aweapon *getItemPointerAtIndex(int index);
 
 	FString ammuntionUiStringOfWeapon();
+
+	int currentIndexNum();
 
 private:
 	class wslot{
@@ -66,5 +69,5 @@ private:
 
 	
 
-	bool alreadyInInventory(Aweapon *weaponIn);
+	bool alreadyInInventory(Aweapon *weaponIn, int &foundindex);
 };

@@ -107,6 +107,12 @@ private:
 	void leftMouseUp();
 	void leftMouseDown();
 
+	void keydown1();
+	void keydown2();
+	void keydown3();
+	void keydown4();
+	void switchToIndex(int index);
+
 	void performRaycast();
 
 	UPROPERTY(EditAnywhere)
