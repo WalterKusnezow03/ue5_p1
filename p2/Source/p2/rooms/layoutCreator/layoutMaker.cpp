@@ -52,7 +52,7 @@ void layoutMaker::makeLayout(
 
     clearAndFill(xMeters, yMeters);
 
-    int maxIterations = 100000;
+    int maxIterations = 10000;
     while(!fieldIsFilled() && maxIterations > 0){
         
 

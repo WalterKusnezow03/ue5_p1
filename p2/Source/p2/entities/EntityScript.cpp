@@ -57,7 +57,7 @@ void AEntityScript::init(){
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
 
-	
+	projectActorToGround();
 }
 
 void AEntityScript::setupBoneController(){
@@ -378,7 +378,7 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 /// @param output output to save hitpoint in
 /// @param cmLength max length in cm
 /// @return hit or not at max distance
-bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLength) //because a reference is expected it must be valid
+bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLength) 
 {
 	
 	// Define the start and end vectors for the raycast
@@ -412,6 +412,34 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 	return bHit;
 }
 
+
+
+void AEntityScript::projectActorToGround(){
+	FVector Start = boneController.GetLocation() + FVector(0,0,1000);
+
+	// Get the camera location and rotation
+	FVector End = boneController.GetLocation() - FVector (0,0,1000);
+
+	// Perform the raycast
+	FHitResult HitResult;
+
+	if (EntityManager *e = worldLevel::entityManager())
+	{
+		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
+		ignoreParams = e->getIgnoredRaycastParams();
+	}
+	ignoreParams.bTraceComplex = false;
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
+	
+	// If the raycast hit something, log the hit actor's name
+	if (bHit)
+	{
+		FVector output = HitResult.ImpactPoint;
+		SetActorLocation(output);
+		boneController.SetLocation(output);
+	}
+}
 
 
 

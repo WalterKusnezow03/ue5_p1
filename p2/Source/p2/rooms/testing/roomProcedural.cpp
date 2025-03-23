@@ -164,8 +164,6 @@ MeshData AroomProcedural::createWall(
 	std::vector<FVector> oneDimWall;
 	oneDimWall.push_back(from); //FIRST WALL POSITION
 
-	//will save the 1d window representation
-	std::vector<FVector> oneDimWindows;
 
 	std::vector<FVector> doorsFiltered;
 	filterForVectorsBetween(
@@ -220,13 +218,19 @@ MeshData AroomProcedural::createWall(
 	// --- CREATE WINDOWS ---
 	
 	//COPY WINDOW POSITIONS
+	//will save the 1d window representation
+	std::vector<FVector> oneDimWindows;
+
 	createGapsFor(
 		from,
 		to,
 		doorWidthCm,
 		windowsFiltered,
-		oneDimWindows
+		oneDimWindows //output
 	);
+
+	//simplify windows
+	removeCloseTouples(oneDimWindows);
 
 	//spawn windows seperately
 	spawnWindowMeshFromBounds(
@@ -343,6 +347,8 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 	float width, //5cm
 	FVector &offset
 ){
+
+
 	assetManager *assetManagerPointer = assetManager::instance();
 	EntityManager *e = worldLevel::entityManager();
 	if(assetManagerPointer != nullptr && e != nullptr){
@@ -380,11 +386,44 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 
 }
 
+///@brief expects the passed vector to be in touples of bounds M := {(a,b),(a,b)...}
+/// generates a minimized vector and replaces the passed reference data!
+void AroomProcedural::removeCloseTouples(
+	std::vector<FVector> &vec
+){
+	//TESTING NEEDED
+	std::vector<FVector> simplified;
+	if(vec.size() > 0){
+		simplified.push_back(vec[0]);
+	}
 
+	std::vector<bool> flaggedSkip(vec.size(), false);
+	for (int i = 1; i < vec.size(); i++)
+	{
+		FVector &prev = vec[i-1];
+		FVector &current = vec[i];
+		
+		//if too close, remove both!
+		float dist = FVector::Dist(prev, current);
+		if(dist <= 1.0f){
+			flaggedSkip[i - 1] = true;
+			flaggedSkip[i] = true;
+		}
+	}
+	if(vec.size() > 0){
+		simplified.push_back(vec.back());
+	}
 
+	for (int i = 0; i < flaggedSkip.size(); i++){
+		if(flaggedSkip[i] == false){
+			if(i >= 0 && i < vec.size()){
+				simplified.push_back(vec[i]);
+			}
+		}
+	}
 
-
-
+	vec = simplified; //copy
+}
 
 /// @brief will filter positions from the positions to filter vector
 /// and add the positions which meet the requirement into the filtered list
@@ -561,6 +600,8 @@ AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
  * 
  * 
  */
+
+///@brief generates a room. CAUTION: size in is METERS
 void AroomProcedural::generate(UWorld *world, int sizeXMeters, int sizeYMeters, FVector location){
 	std::vector<TTouple<int, int>> sizesPossible;
     sizesPossible.push_back(TTouple<int, int>(sizeXMeters / 2, sizeYMeters / 2));

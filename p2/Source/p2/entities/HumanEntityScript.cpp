@@ -68,7 +68,8 @@ void AHumanEntityScript::init(){
             //showScreenMessage("human pickup weapon");
 			w->pickupBot(this); //saves the pointer inside the weapon. Weapon is further managed by custom skelleton
 
-            boneController.attachCarriedItem(w); //NEW!
+            boneController.dropWeapon();
+            boneController.attachCarriedItem(w); // NEW!
 
             //save pointer
             weaponPointer = w;

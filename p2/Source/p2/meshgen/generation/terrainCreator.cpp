@@ -12,6 +12,7 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/rooms/testing/roomProcedural.h"
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
 #include "terrainCreator.h"
@@ -200,6 +201,21 @@ void terrainCreator::chunk::setheightForAll(float value){
     }
 }
 
+void terrainCreator::chunk::clampheightForAllUpperLimit(float value){
+    for (int i = 0; i < innerMap.size(); i++)
+    {
+        for (int j = 0; j < innerMap.at(i).size(); j++){
+            //du musst hier eine referenz erzeugen weil er sonst nicht reinschreibt?
+            FVector &ref = innerMap.at(i).at(j);
+            if(ref.Z > value){
+                ref.Z = value;
+            }
+        }
+    }
+}
+
+
+
 
 
 
@@ -246,6 +262,17 @@ FVector terrainCreator::chunk::position(){
     );
 
     return v;
+}
+
+FVector terrainCreator::chunk::positionPivotBottomLeft(){
+    FVector newPos = position();
+
+    //fix offset to be anchor at bottom left and not center of the mesh,
+    //so the coordinate in mesh (0,0) is (0,0) and not (chunksize /2, chunksize/2)
+    float offsetCenter = terrainCreator::ONEMETER * (terrainCreator::CHUNKSIZE / 2);
+    newPos.X -= offsetCenter;
+    newPos.Y -= offsetCenter;
+    return newPos;
 }
 
 int terrainCreator::chunk::xPositionInCm(){
@@ -415,8 +442,23 @@ float terrainCreator::chunk::heightAverage(){
         }
     }
     int vertexCountAll = innerMap.size() * innerMap[0].size();
-    sum /= vertexCountAll;
+    if(vertexCountAll > 0){
+        sum /= vertexCountAll;
+    }
     return sum;
+}
+
+float terrainCreator::chunk::maxHeight(){
+    float output = 0.0f;
+    for (int i = 0; i < innerMap.size(); i++){
+        for (int j = 0; j < innerMap[i].size(); j++){
+            float current = innerMap[i][j].Z;
+            if(current > output){
+                output = current;
+            }
+        }
+    }
+    return output;
 }
 
 // --- chunk plotting functions ---
@@ -530,10 +572,10 @@ void terrainCreator::createTerrain(
     //random height and smooth
     int layers = 20; //20
     createRandomHeightMapChunkWide(layers);
-
-    applyHillData(predefinedHillDataVecFlatArea); //override
-
     smooth3dMap();
+
+
+    flattenChunksForHillData(predefinedHillDataVecFlatArea); //override after smooth height, clamp upper limit
 }
 
 
@@ -999,15 +1041,8 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         currentChunk->setWasCreatedTrue();
 
         // apply position
-        FVector newPos = currentChunk->position();
-
-        //fix offset to be anchor at bottom left and not center of the mesh,
-        //so the coordinate in mesh (0,0) is (0,0) and not (chunksize /2, chunksize/2)
-        float offsetCenter = terrainCreator::ONEMETER * (terrainCreator::CHUNKSIZE / 2);
-        newPos.X -= offsetCenter;
-        newPos.Y -= offsetCenter;
-        currentActor->SetActorLocation(newPos); 
-
+        FVector newPos = currentChunk->positionPivotBottomLeft();
+        currentActor->SetActorLocation(newPos);
 
         //apply data
         //readAndMerge (connect to next in map)
@@ -1103,8 +1138,8 @@ terrainHillSetup terrainCreator::createRandomHillData(
     }
 
 
-    int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
-    int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() / 2));
+    int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() - sizeX));
+    int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() - sizeY));
     int heightMin = terrainCreator::ONEMETER;
     int heightMax = heightMin * 2; //2
 
@@ -1136,6 +1171,27 @@ void terrainCreator::applyHillData(terrainHillSetup &hillData){
         }
     }
 }
+
+
+
+
+void terrainCreator::flattenChunksForHillData(std::vector<terrainHillSetup> &hillDataVec){
+    for (int i = 0; i < hillDataVec.size(); i++){
+        flattenChunksForHillData(hillDataVec[i]);
+    }
+}
+
+///@brief clamps an area to a max height defined by the passed hilldata object
+void terrainCreator::flattenChunksForHillData(terrainHillSetup &hillData){
+    for (int i = clampIndex(hillData.xPosCopy()); i < clampIndex(hillData.xTargetCopy()); i++){
+        for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
+            if(verifyIndex(i) && verifyIndex(j)){
+                map.at(i).at(j).clampheightForAllUpperLimit(hillData.getForcedSetHeight());
+            }
+        }
+    }
+}
+
 
 
 
@@ -1301,8 +1357,10 @@ void terrainCreator::Tick(FVector &playerLocation){
  */
 void terrainCreator::debugCreateTerrain(UWorld *world){
     createTerrainAndSpawnMeshActors(world, 200);
-}
 
+    //new
+    //createTerrainAndSpawnMeshActorsAndCreateBuildings(world, 200);
+}
 
 /// @brief creates a terrain and brand new mesh actors without using the entity manager
 /// @param world world to spawn in, must not be nullptr
@@ -1342,12 +1400,30 @@ void terrainCreator::createTerrainAndSpawnMeshActorsAndCreateBuildings(
     createFlatAreas(count, minsizeChunks, maxsizeChunks, predefinedHillDataVecFlatArea);
     createTerrain(world, meters, predefinedHillDataVecFlatArea);
 
-
+    
+    //recursion issue ? 
     //use this data to create the buildings
     //predefinedHillDataVecFlatArea
     //based also on terrain type!
-    
+    std::vector<terrainCreator::chunk *> chunksFound;
+    findChunksEnclosedBy(
+        predefinedHillDataVecFlatArea,
+        chunksFound
+    );
 
+    
+    for (int i = 0; i < chunksFound.size(); i++){
+        terrainCreator::chunk *currentPointer = chunksFound[i];
+        if(currentPointer != nullptr){
+            FVector posPivot = currentPointer->positionPivotBottomLeft();
+            posPivot.Z = currentPointer->maxHeight();
+
+            //create building there.
+            int sizeMaxMeters = CHUNKSIZE;
+            sizeMaxMeters -= 3;
+            AroomProcedural::generate(world, sizeMaxMeters, sizeMaxMeters, posPivot); //in size is METERS
+        }
+    }
 }
 
 void terrainCreator::createFlatAreas(
@@ -1371,7 +1447,7 @@ void terrainCreator::createFlatArea(
 
     terrainHillSetup newHillSetup = createRandomHillData(scaleX, scaleY);
 
-    newHillSetup.forceSetHeight(200); //debug
+    newHillSetup.forceSetHeight(100); //debug
 
     output.push_back(newHillSetup);
 }
@@ -1408,7 +1484,11 @@ void terrainCreator::findChunksEnclosedBy(
             if(verifyIndex(i) && verifyIndex(j)){
 
                 //if not contained yet, add
-                output.insert(&map.at(i).at(j));
+                terrainCreator::chunk *ptr = chunkAt(i,j);
+                if(ptr != nullptr){
+                    output.insert(ptr);
+                }
+                
             }
         }
     }

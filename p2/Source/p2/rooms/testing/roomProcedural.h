@@ -53,11 +53,11 @@ private:
 
 	float lenghtOf(FVector &vec);
 
-	/*
-	void spawnWindowMeshFromBounds(
-		std::vector<TTouple<FVector, FVector>> &windowTouples,
-		FVector &offset
-	);*/
+	void removeCloseTouples(
+		std::vector<FVector> &vec
+	);
+
+	
 	void spawnWindowMeshFromBounds(
 		std::vector<FVector> &windowTouples,
 		float scaleZCm,

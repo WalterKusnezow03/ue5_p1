@@ -78,11 +78,12 @@ private:
 
 			int getHeightFor(FVector &a);
 			FVector position();
-
+			FVector positionPivotBottomLeft();
 
 			void addheightForAll(int value);
 			void scaleheightForAll(float value);
 			void setheightForAll(float value);
+			void clampheightForAllUpperLimit(float value);
 
 			FVector2D getFirstXColumnAnchor(int xColumn);
 			FVector2D getFirstYRowAnchor(int yRow);
@@ -114,6 +115,7 @@ private:
 			void updateTerraintype(ETerrainType typeIn);
 
 			float heightAverage();
+			float maxHeight();
 
 			void setWasCreatedTrue();
 			bool wasAlreadyCreated();
@@ -181,6 +183,9 @@ private:
 	terrainHillSetup createRandomHillData(int sizeX, int sizeY);
 	void applyHillData(terrainHillSetup &hillData);
 	void applyHillData(std::vector<terrainHillSetup> &hillDataVec);
+
+	void flattenChunksForHillData(std::vector<terrainHillSetup> &hillDataVec);
+	void flattenChunksForHillData(terrainHillSetup &hillData);
 
 	void createChunkAtIfNotCreatedYet(int x, int y);
 
