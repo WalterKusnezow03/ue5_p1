@@ -16,6 +16,7 @@ roomBoundData::roomBoundData(int xin, int yin, int xscalein, int yscalein, int n
 
 roomBoundData::~roomBoundData()
 {
+    connectedNeighbors.clear();
 }
 
 int roomBoundData::xpos(){
@@ -295,7 +296,18 @@ bool roomBoundData::hasNeighbor(roomBoundData *other){
 
 
 
+void roomBoundData::addStairCaseAtFreeEdge(int metersLength){
 
+    /*
+    find staircase positions from door positions
+    
+    door position reveals direction, staircase is orthogonal at door start
+    
+    */
+
+
+
+}
 
 
 

@@ -204,11 +204,13 @@ private:
 		int count,
 		int minsizeChunks,
 		int maxsizeChunks,
+		int chunkRange,
 		std::vector<terrainHillSetup> &output
 	);
 	void createFlatArea(
 		int minsizeChunks,
 		int maxsizeChunks,
+		int chunkRange,
 		std::vector<terrainHillSetup> &output
 	);
 

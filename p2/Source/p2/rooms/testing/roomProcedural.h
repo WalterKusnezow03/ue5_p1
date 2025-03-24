@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "p2/util/TTouple.h"
 #include "p2/rooms/testing/roomBoundData.h"
+#include "p2/meshgen/foliage/ETerrainType.h"
 #include "roomProcedural.generated.h"
 
 UCLASS()
@@ -27,9 +28,18 @@ public:
 
 	static void generate(UWorld *world, int sizeXMeters, int sizeYMeters, FVector location);
 
-	
+	static void generate(
+		UWorld *world,
+		int sizeXMeters,
+		int sizeYMeters,
+		FVector location,
+		ETerrainType terraintype
+	);
 
 private:
+	ETerrainType locatedInTerrainType;
+	void updateTerrainTypeLocatedIn(ETerrainType input);
+
 	MeshData createWall(
 		FVector from,
 		FVector to,
@@ -81,6 +91,13 @@ private:
 		std::vector<FVector> &output
 	);
 
+	void appendWallsFromMeshBounds(
+		MeshData &output,
+		std::vector<FVector> &vec,
+		int widthCmWall,
+		int scaleZCm
+	);
+
 	void appendCubeTo(
 		MeshData &outputData,
 		FVector &start,
@@ -106,5 +123,15 @@ private:
 	);
 
 	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
-	static void spawnRooms(UWorld *world, FVector location, std::vector<roomBoundData> &vec);
+	static void spawnRooms(
+		UWorld *world, 
+		FVector location, 
+		std::vector<roomBoundData> &vec,
+		ETerrainType terraintype
+	);
+
+
+
+
+	void DebugCreateStairs(MeshData &appendTo);
 };

@@ -32,6 +32,8 @@ public:
 
 	FVector positionInMeterSpace(int onemeter);
 
+	void addStairCaseAtFreeEdge(int metersLength);
+
 private:
 	int x = 0;
 	int y = 0;
@@ -40,6 +42,7 @@ private:
 
 	std::vector<FVector> doorPositions;
 	std::vector<FVector> windowPositions;
+	std::vector<FVector> staircasePositions;
 
 	bool contains(std::vector<FVector> &other, int xin, int yin);
 	bool contains(std::vector<FVector> &other, FVector pos);

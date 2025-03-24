@@ -136,6 +136,11 @@ FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(teamEnum team){
 /// @param actor actor reference to be ignored in own team and all ignored actors (they are seperate params)
 void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
     if(actor != nullptr){
+
+        if(collisionMap.find(team) == collisionMap.end()){
+            collisionMap[team] = FCollisionQueryParams();
+        }
+
         //add to correct map
         FCollisionQueryParams *ref = &collisionMap[team];
         ref->AddIgnoredActor(actor);
@@ -144,8 +149,16 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
 
         //add to player and enemy team if neutral to create a proper filter
         if(team == teamEnum::neutralTeam || team == teamEnum::none){
+
+            if(collisionMap.find(teamEnum::playerTeam) == collisionMap.end()){
+                collisionMap[teamEnum::playerTeam] = FCollisionQueryParams();
+            }
             ref = &collisionMap[teamEnum::playerTeam];
             ref->AddIgnoredActor(actor);
+
+            if(collisionMap.find(teamEnum::enemyTeam) == collisionMap.end()){
+                collisionMap[teamEnum::enemyTeam] =  FCollisionQueryParams();
+            }
             ref = &collisionMap[teamEnum::enemyTeam];
             ref->AddIgnoredActor(actor);
         }

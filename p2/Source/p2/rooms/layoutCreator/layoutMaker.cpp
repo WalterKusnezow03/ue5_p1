@@ -76,7 +76,7 @@ void layoutMaker::makeLayout(
 
 
     //debugPrint
-    bool printLog = true;
+    bool printLog = false;
     if(printLog){
         int counted = owningRoomsVec.size();
         FString printOut = FString::Printf(TEXT("room PRINT: %d, %d \n"), counted, (int) pointerField.at(0).size());

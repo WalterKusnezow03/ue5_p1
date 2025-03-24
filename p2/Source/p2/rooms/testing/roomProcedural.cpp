@@ -9,6 +9,8 @@
 #include "p2/gamestart/assetManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/rooms/testing/helper/staircaseBoundData.h"
+#include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 
 template class TTouple<FVector, FVector>;
@@ -129,11 +131,17 @@ void AroomProcedural::createRoom(
 	}
 
 
+	//stairs debug
+	DebugCreateStairs(floorAndRoof);
+
 	//testing from here needed to spawn the room / apply mesh(es)
 	floorAndRoof.calculateNormals();
 	walls.calculateNormals();
+
 	replaceMeshData(floorAndRoof, materialEnum::stoneMaterial);
 	replaceMeshData(walls, materialEnum::wallMaterial);
+
+	//very important to reload the mesh
 	ReloadMeshAndApplyAllMaterials();
 }
 
@@ -182,10 +190,6 @@ MeshData AroomProcedural::createWall(
 		windows,
 		windowsFiltered //output
 	);
-
-	
-	
-
 	
 	// create gaps for wall
 	createGapsFor(from, to, doorWidthCm, windowsFiltered, oneDimWall);
@@ -199,21 +203,12 @@ MeshData AroomProcedural::createWall(
 	MeshData output;
 
 	int widthCmWall = 20;
-	for (int i = 1; i < oneDimWall.size(); i += 2){ //immer one skip das die läcken der fenster auch da sind.
-		FVector &currentStart = oneDimWall[i - 1];
-		FVector &currentEnd = oneDimWall[i];
-
-		if(FVector::Dist(currentStart, currentEnd) > 10){
-			appendCubeTo(
-				output,
-				currentStart,
-				currentEnd,
-				std::abs(scaleZCm),
-				widthCmWall
-			);
-		}
-	}
-	
+	appendWallsFromMeshBounds(
+		output,
+		oneDimWall,
+		widthCmWall,
+		scaleZCm
+	);
 
 	// --- CREATE WINDOWS ---
 	
@@ -297,6 +292,32 @@ void AroomProcedural::createGapAt(
 }
 
 
+void AroomProcedural::appendWallsFromMeshBounds(
+	MeshData &output,
+	std::vector<FVector> &vec,
+	int widthCmWall,
+	int scaleZCm
+){
+	for (int i = 1; i < vec.size(); i += 2){ //immer one skip das die läcken der fenster auch da sind.
+		FVector &currentStart = vec[i - 1];
+		FVector &currentEnd = vec[i];
+
+		if(FVector::Dist(currentStart, currentEnd) > 10){
+			appendCubeTo(
+				output,
+				currentStart,
+				currentEnd,
+				std::abs(scaleZCm),
+				widthCmWall
+			);
+		}
+	}
+
+}
+
+
+
+
 
 void AroomProcedural::appendCubeTo(
 	MeshData &outputData,
@@ -344,7 +365,7 @@ void AroomProcedural::appendCubeTo(
 void AroomProcedural::spawnWindowMeshFromBounds(
 	std::vector<FVector> &windowTouples,
 	float scaleZCm,
-	float width, //5cm
+	float width,
 	FVector &offset
 ){
 
@@ -540,7 +561,12 @@ void AroomProcedural::sortVectorsBetween(FVector &A, FVector &B, std::vector<FVe
 /// @param worldIn world to spawn in
 /// @param location location to spawn at
 /// @param vec vector of rooms
-void AroomProcedural::spawnRooms(UWorld* worldIn, FVector location, std::vector<roomBoundData> &vec){
+void AroomProcedural::spawnRooms(
+	UWorld* worldIn, 
+	FVector location, 
+	std::vector<roomBoundData> &vec,
+	ETerrainType terraintype
+){
 	if(worldIn == nullptr){
 		return;
 	}
@@ -554,6 +580,8 @@ void AroomProcedural::spawnRooms(UWorld* worldIn, FVector location, std::vector<
 		AroomProcedural *newRoom = spawnRoom(worldIn, fullOffset);
 		if(newRoom != nullptr){
 
+			newRoom->updateTerrainTypeLocatedIn(terraintype);
+
 			newRoom->createRoom(
 				fullOffset,
 				currentRoom,
@@ -563,6 +591,10 @@ void AroomProcedural::spawnRooms(UWorld* worldIn, FVector location, std::vector<
 		}
 
 	}
+}
+
+void AroomProcedural::updateTerrainTypeLocatedIn(ETerrainType input){
+	locatedInTerrainType = input;
 }
 
 
@@ -603,6 +635,25 @@ AroomProcedural* AroomProcedural::spawnRoom(UWorld *world, FVector location){
 
 ///@brief generates a room. CAUTION: size in is METERS
 void AroomProcedural::generate(UWorld *world, int sizeXMeters, int sizeYMeters, FVector location){
+	generate(
+		world,
+		sizeXMeters,
+		sizeYMeters,
+		location,
+		ETerrainType::ETropical
+	);
+}
+
+
+
+void AroomProcedural::generate(
+	UWorld *world, 
+	int sizeXMeters, 
+	int sizeYMeters, 
+	FVector location,
+	ETerrainType terraintype
+){
+
 	std::vector<TTouple<int, int>> sizesPossible;
     sizesPossible.push_back(TTouple<int, int>(sizeXMeters / 2, sizeYMeters / 2));
     sizesPossible.push_back(TTouple<int, int>(sizeXMeters / 3, sizeYMeters / 3));
@@ -611,6 +662,29 @@ void AroomProcedural::generate(UWorld *world, int sizeXMeters, int sizeYMeters, 
     std::vector<roomBoundData> outputRooms;
     layoutMaker l;
     l.makeLayout(sizeXMeters, sizeYMeters, sizesPossible, outputRooms);
-    AroomProcedural::spawnRooms(world, location, outputRooms);
-	
+    AroomProcedural::spawnRooms(world, location, outputRooms, terraintype);
+
+}
+
+
+
+
+
+
+
+//new expiremental
+void AroomProcedural::DebugCreateStairs(MeshData &appendTo){
+	int size = 3;
+	StaircaseBoundData stairs;
+	stairs.createLayout(size, size);
+
+	//generate(int oneMeter, int heightMeters, int maxSlopeMeters)
+	MeshData stairData = stairs.generate(100, 300, 100);
+
+	//debug transform
+	FVector move(-1000, 0, 0);
+	MMatrix transform(move);
+	stairData.transformAllVertecies(transform);
+
+	appendTo.appendEfficent(stairData);
 }

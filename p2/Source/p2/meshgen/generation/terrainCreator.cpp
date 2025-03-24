@@ -1356,10 +1356,10 @@ void terrainCreator::Tick(FVector &playerLocation){
  * 
  */
 void terrainCreator::debugCreateTerrain(UWorld *world){
-    createTerrainAndSpawnMeshActors(world, 200);
+    //createTerrainAndSpawnMeshActors(world, 200);
 
     //new
-    //createTerrainAndSpawnMeshActorsAndCreateBuildings(world, 200);
+    createTerrainAndSpawnMeshActorsAndCreateBuildings(world, 200);
 }
 
 /// @brief creates a terrain and brand new mesh actors without using the entity manager
@@ -1393,11 +1393,13 @@ void terrainCreator::createTerrainAndSpawnMeshActors(
 void terrainCreator::createTerrainAndSpawnMeshActorsAndCreateBuildings(
     UWorld *world, int meters
 ){
-    int count = 2;
+    int chunkRange = meters / CHUNKSIZE;
+
+    int count = 3;
     int minsizeChunks = 2;
     int maxsizeChunks = 4;
     std::vector<terrainHillSetup> predefinedHillDataVecFlatArea;
-    createFlatAreas(count, minsizeChunks, maxsizeChunks, predefinedHillDataVecFlatArea);
+    createFlatAreas(count, minsizeChunks, maxsizeChunks, chunkRange, predefinedHillDataVecFlatArea);
     createTerrain(world, meters, predefinedHillDataVecFlatArea);
 
     
@@ -1430,24 +1432,41 @@ void terrainCreator::createFlatAreas(
     int count, 
     int minsizeChunks, 
     int maxsizeChunks,
+    int chunkRange,
     std::vector<terrainHillSetup> &output
 ){
     for (int i = 0; i < count; i++){
-        createFlatArea(minsizeChunks, maxsizeChunks, output);
+        createFlatArea(minsizeChunks, maxsizeChunks, chunkRange, output);
     }
 }
 
 void terrainCreator::createFlatArea(
     int minsizeChunks, 
     int maxsizeChunks,
+    int chunkRange,
     std::vector<terrainHillSetup> &output
 ){
     int scaleX = FVectorUtil::randomNumber(minsizeChunks, maxsizeChunks);
     int scaleY = FVectorUtil::randomNumber(minsizeChunks, maxsizeChunks);
 
-    terrainHillSetup newHillSetup = createRandomHillData(scaleX, scaleY);
+    int startX = clampIndex(FVectorUtil::randomNumber(1, chunkRange - scaleX));
+    int startY = clampIndex(FVectorUtil::randomNumber(1, chunkRange - scaleY));
+    int heightMin = 0;
+    int heightMax = 0;
 
+    terrainHillSetup newHillSetup(
+        startX,
+        startY,
+        scaleX,
+        scaleY,
+        heightMin,
+        heightMax
+    );
     newHillSetup.forceSetHeight(100); //debug
+
+    //terrainHillSetup newHillSetup = createRandomHillData(scaleX, scaleY);
+
+    
 
     output.push_back(newHillSetup);
 }

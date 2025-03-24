@@ -162,7 +162,8 @@ AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 			);
 
 			entitymanagerPointer->addActorToIgnoreRaycastParams(
-				this, getTeam()
+				//this, getTeam()
+				oberschenkel, getTeam()
 			);
 
 			oberschenkel->setDamagedOwner(this);
