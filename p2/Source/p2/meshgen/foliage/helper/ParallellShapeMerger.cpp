@@ -65,12 +65,6 @@ void ParallellShapeMerger::fillMissingAlignedVertecies(std::vector<FVector> &oth
 
 
 
-std::vector<FVector> &ParallellShapeMerger::baseVectorReference(){
-    return baseVector;
-}
-std::vector<FVector> &ParallellShapeMerger::alignedVectorReference(){
-    return vectorAligned;
-}
 
 ///@brief will return a triangle buffer where the face look dir is not defined,
 /// use "appendDoubleSided" in the meshdata class

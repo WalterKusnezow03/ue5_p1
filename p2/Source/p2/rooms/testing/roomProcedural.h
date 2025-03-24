@@ -113,13 +113,10 @@ private:
 	);
 
 	void createRoom(
-		FVector &location, // bottom left corner
-		int scaleMetersX,
-		int scaleMetersY,
-		int scaleMetersZ,
-		std::vector<FVector> &doorPositions,
-		std::vector<FVector> &windowPositions,
-		int onemeter
+		FVector &location, //bottom left corner
+		roomBoundData &currentRoom,
+		int onemeter,
+		bool openForStaircase
 	);
 
 	static AroomProcedural *spawnRoom(UWorld *world, FVector location);
@@ -134,4 +131,9 @@ private:
 
 
 	void DebugCreateStairs(MeshData &appendTo);
+
+	void createStairs(
+		MeshData &data,
+		roomBoundData &room,
+		int oneMeter);
 };

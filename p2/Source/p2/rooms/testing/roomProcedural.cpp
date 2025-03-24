@@ -52,12 +52,9 @@ void AroomProcedural::createRoom(
 
 	createRoom(
 		fullOffset,
-		currentRoom.xScale(),
-		currentRoom.yScale(),
-		3, //3 meters height
-		doorPositionsRelativeInMeters,
-		windowPositionsRelativeInMeters, 
-		oneMeter
+		currentRoom,
+		oneMeter,
+		true //open for stairs
 	);
 
 }
@@ -65,24 +62,27 @@ void AroomProcedural::createRoom(
 
 
 
-/// @brief creates the room and mesh and applies it
-/// @param location location to spawn at (Bottom left corner of bounds)
-/// @param scaleMetersX meters on x
-/// @param scaleMetersY meters on y
-/// @param scaleMetersZ meters height
-/// @param doorPositions door positions 
-/// @param doorWidthCm door width (should be ideally 1m as the layout, will be scaled up)
-/// @param windowPositions relative positions to have windows at
-/// @param windowWidthCm window width: should be just as room layout, 1m (100cm)
+
+
+
+
+
+
+
+
 void AroomProcedural::createRoom(
 	FVector &location, //bottom left corner
-	int scaleMetersX, 
-	int scaleMetersY,
-	int scaleMetersZ,
-	std::vector<FVector> &doorPositions, //in local space to bottom left corner
-	std::vector<FVector> &windowPositions, //in local space to bottom left corner
-	int onemeter
+	roomBoundData &currentRoom,
+	int onemeter,
+	bool openForStaircase
 ){
+
+	int scaleMetersX = currentRoom.xScale();
+	int scaleMetersY = currentRoom.yScale();
+	int scaleMetersZ = 3;
+	std::vector<FVector> doorPositions = currentRoom.relativeDoorPositionsCm(); // in local space to bottom left corner
+	std::vector<FVector> windowPositions = currentRoom.relativeWindowPositionsCm(); // in local space to bottom left corner
+
 	int zCm = scaleMetersZ * 100;
 	int windowWidthCm = onemeter;
 	int doorWidthCm = onemeter;
@@ -91,18 +91,49 @@ void AroomProcedural::createRoom(
 	MeshData floorAndRoof;
 	MeshData walls;
 
-	
+	FVector bottomLeftAnchor;
+
+	currentRoom.appendBottomOrTopClosed(
+		floorAndRoof,
+		openForStaircase,
+		onemeter,
+		0.0f //zCm
+	);
+	if(openForStaircase){
+
+		createStairs(
+			floorAndRoof,
+			currentRoom,
+			onemeter
+		);
+	}
+
+	currentRoom.appendBottomOrTopClosed(
+		floorAndRoof,
+		openForStaircase,
+		onemeter,
+		zCm//zCm
+	);
+
+
+
+
+
 	//floor
 	std::vector<FVector> quad = MeshData::create2DQuadVertecies(scaleMetersX * onemeter, scaleMetersY * onemeter);
-	floorAndRoof.appendDoublesided(quad[0], quad[1], quad[2], quad[3]);
+	if(false){ //deprecated
+		//floor
+		floorAndRoof.appendDoublesided(quad[0], quad[1], quad[2], quad[3]);
 
-	//roof
-	std::vector<FVector> quadcopy = quad;
-	FVector offset(0, 0, zCm);
-	for (int i = 0; i < quadcopy.size(); i++){
-		quadcopy[i] += offset;
+		//roof
+		std::vector<FVector> quadcopy = quad;
+		FVector offset(0, 0, zCm);
+		for (int i = 0; i < quadcopy.size(); i++){
+			quadcopy[i] += offset;
+		}
+		floorAndRoof.appendDoublesided(quadcopy[0], quadcopy[1], quadcopy[2], quadcopy[3]);
 	}
-	floorAndRoof.appendDoublesided(quadcopy[0], quadcopy[1], quadcopy[2], quadcopy[3]);
+	
 
 
 	//dann wände --> die man mit einer methode schreibt
@@ -132,7 +163,7 @@ void AroomProcedural::createRoom(
 
 
 	//stairs debug
-	DebugCreateStairs(floorAndRoof);
+	//DebugCreateStairs(floorAndRoof);
 
 	//testing from here needed to spawn the room / apply mesh(es)
 	floorAndRoof.calculateNormals();
@@ -679,12 +710,40 @@ void AroomProcedural::DebugCreateStairs(MeshData &appendTo){
 	stairs.createLayout(size, size);
 
 	//generate(int oneMeter, int heightMeters, int maxSlopeMeters)
-	MeshData stairData = stairs.generate(100, 300, 100);
+	MeshData stairData = stairs.generate(120, 300, 100);
 
-	//debug transform
-	FVector move(-1000, 0, 0);
-	MMatrix transform(move);
-	stairData.transformAllVertecies(transform);
 
 	appendTo.appendEfficent(stairData);
+}
+
+
+
+
+void AroomProcedural::createStairs(
+	MeshData &data,
+	roomBoundData &room,
+	int onemeter
+){
+	//"returns the bounds in INDEX space"
+	std::vector<FVector> &ref = room.stairBoundsQuadRef(onemeter);
+	if(ref.size() == 4){
+		/*
+		1 2 
+		0 3 
+		*/
+		int distX = std::abs(ref[3].X - ref[0].X);
+		int distY = std::abs(ref[1].Y - ref[0].Y);
+
+		StaircaseBoundData stairs;
+		stairs.createLayout(distX, distY);
+
+		//generate(int oneMeter, int heightMeters, int maxSlopeMeters)
+		MeshData stairData = stairs.generate(onemeter, 300, 90);
+
+		FVector tinMeter = ref[0] * onemeter;
+		MMatrix translate(tinMeter);
+		stairData.transformAllVertecies(translate);
+
+		data.appendEfficent(stairData);
+	}
 }

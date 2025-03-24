@@ -32,9 +32,36 @@ public:
 
 	FVector positionInMeterSpace(int onemeter);
 
-	void addStairCaseAtFreeEdge(int metersLength);
+	void staircasePossibleBounds(FVector2D &start, FVector2D &end);
+	void staircasePossbileBoundsInMeters(FVector2D &start, FVector2D &end, int onemeter);
+	void staircasePossbileBoundsInMetersQuad(
+		std::vector<FVector> &verteciesOut,
+		int onemeter
+	);
+
+	void appendBottomOrTopClosed(
+		MeshData &appendTo, 
+		bool gapForStairs, 
+		int oneMeter,
+		float heightOffset
+	);
+
+	std::vector<FVector> &stairBoundsQuadRef(int onemeter);
 
 private:
+	bool stairBoundsFound = false;
+	FVector2D startStairBounds;
+	FVector2D endStairBounds;
+	void findStairBounds(int scaleX, int scaleY);
+	bool doorIndexIsValid(int index);
+	bool exceedsBounds(FVector &other);
+	std::vector<FVector> stairBoundsQuad;
+
+	void processFoundStairBounds(
+		std::vector<FVector> &ref,
+		int onemeter
+	);
+
 	int x = 0;
 	int y = 0;
 	int xscale = 0;
@@ -42,7 +69,6 @@ private:
 
 	std::vector<FVector> doorPositions;
 	std::vector<FVector> windowPositions;
-	std::vector<FVector> staircasePositions;
 
 	bool contains(std::vector<FVector> &other, int xin, int yin);
 	bool contains(std::vector<FVector> &other, FVector pos);

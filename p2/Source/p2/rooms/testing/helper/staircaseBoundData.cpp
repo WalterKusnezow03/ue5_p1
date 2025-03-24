@@ -181,7 +181,7 @@ MMatrix StaircaseBoundData::Stair::rotation(){
 }
 
 
-MeshData StaircaseBoundData::generate(int oneMeter, int heightMeters, int maxSlopeMeters){
+MeshData StaircaseBoundData::generate(int oneMeter, int heightMetersUpperLimit, int maxSlopeMeters){
 
     //run trought the array and find the next connected part to determine the direction of the slope
     //or extend the flat area in
@@ -199,10 +199,23 @@ MeshData StaircaseBoundData::generate(int oneMeter, int heightMeters, int maxSlo
         int jcopy = indices[i].last();
         if(indexIsValid(icopy, jcopy)){
             Stair &current = layout[icopy][jcopy];
+
+            //make all flat after reached.
+            if(maxHeightSave.Z >= heightMetersUpperLimit){
+                current.isFlat = true;
+            }
+
+            //align to targeted height
+            int nextSlope = maxHeightSave.Z + maxSlopeMeters;
+            if (nextSlope > heightMetersUpperLimit)
+            {
+                maxSlopeMeters -= (nextSlope - heightMetersUpperLimit);
+            }
+
             current.appendData(oneMeter, maxSlopeMeters, outData, maxHeightSave);
         }   
     }
-    
+
     outData.calculateNormals();
 
     return outData;

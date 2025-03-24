@@ -2,7 +2,9 @@
 
 
 #include <algorithm>
+#include <map>
 #include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/foliage/helper/ParallellShapeMerger.h"
 #include "p2/rooms/testing/roomBoundData.h"
 
 roomBoundData::roomBoundData(int xin, int yin, int xscalein, int yscalein, int numberIn)
@@ -296,22 +298,163 @@ bool roomBoundData::hasNeighbor(roomBoundData *other){
 
 
 
-void roomBoundData::addStairCaseAtFreeEdge(int metersLength){
+//new 
 
-    /*
-    find staircase positions from door positions
-    
-    door position reveals direction, staircase is orthogonal at door start
-    
-    */
+///@brief finds the largest possible bounding box bl and tr 
+void roomBoundData::staircasePossibleBounds(FVector2D &start, FVector2D &end){
+    if(!stairBoundsFound){
+        stairBoundsFound = true;
+        findStairBounds(3,3);
+    }
+    start = startStairBounds;
+    end = endStairBounds;
+}
 
+void roomBoundData::staircasePossbileBoundsInMeters(FVector2D &start, FVector2D &end, int onemeter){
+    staircasePossibleBounds(start, end);
+    start *= onemeter;
+    end *= onemeter;
+}
 
+void roomBoundData::staircasePossbileBoundsInMetersQuad(
+    std::vector<FVector> &verteciesOut,
+    int onemeter
+){
+    FVector2D bl;
+    FVector2D tr;
+    staircasePossbileBoundsInMeters(bl, tr, onemeter);
 
+    float xmin = bl.X < tr.X ? bl.X : tr.X;
+    float xmax = bl.X > tr.X ? bl.X : tr.X;
+    float ymin = bl.Y < tr.Y ? bl.Y : tr.Y;
+    float ymax = bl.Y > tr.Y ? bl.Y : tr.Y;
+
+    FVector v0(xmin, ymin, 0);
+    FVector v1(xmin, ymax, 0);
+    FVector v2(xmax, ymax, 0);
+    FVector v3(xmax, ymin, 0);
+
+    verteciesOut.push_back(v0);
+    verteciesOut.push_back(v1);
+    verteciesOut.push_back(v2);
+    verteciesOut.push_back(v3);
+}
+
+void roomBoundData::findStairBounds(int scaleX, int scaleY){
+    //startStairBounds , endStairBounds
+
+    //simple case
+    if(doorPositions.size() <= 0){
+        startStairBounds = FVector2D(0, 0);
+        endStairBounds = FVector2D(xscale, yscale);
+    }
+
+    std::vector<FVector> boundsToCheck = {
+        FVector(scaleX, scaleY, 0),
+        FVector(scaleX, -scaleY, 0),
+        FVector(-scaleX, scaleY, 0),
+        FVector(-scaleX, -scaleY, 0)
+    };
+
+    float largestArea = 0.0f;
+    for (int i = 0; i < doorPositions.size(); i++){
+        //distanz zum rand
+        FVector &current = doorPositions[i];
+        for (int j = 0; j < boundsToCheck.size(); j++){
+            FVector check = current + boundsToCheck[j];
+            if(!exceedsBounds(check)){
+                startStairBounds = FVector2D(current.X, current.Y);
+                endStairBounds = FVector2D(check.X, check.Y);
+                return;
+            }
+        }
+    }
+}
+
+bool roomBoundData::exceedsBounds(FVector &other){
+    return other.X < 0.0f || other.Y < 0.0f ||
+           other.X > xscale || other.Y > yscale;
 }
 
 
 
 
 
+bool roomBoundData::doorIndexIsValid(int index){
+    return index >= 0 && index < doorPositions.size();
+}
 
 
+
+
+
+/// ---- helper for mesh gen ----
+void roomBoundData::appendBottomOrTopClosed(
+    MeshData &appendTo, 
+    bool gapForStairs, 
+    int onemeter,
+    float heightOffset
+){
+    std::vector<FVector> quad = MeshData::create2DQuadVertecies(xScale() * onemeter, yScale() * onemeter);
+    FVector offset(0, 0, heightOffset);
+	for (int i = 0; i < quad.size(); i++){
+		quad[i] += offset;
+	}
+    
+    if(!gapForStairs){
+        appendTo.appendDoublesided(quad[0], quad[1], quad[2], quad[3]);
+        return;
+    }else{
+
+        std::vector<FVector> innerQuad;
+        staircasePossbileBoundsInMetersQuad(
+            innerQuad,
+            onemeter
+        );
+        for (int i = 0; i < innerQuad.size(); i++){
+            innerQuad[i] += offset;
+        }
+
+        for (int i = 0; i < quad.size(); i++){
+            int next = (i + 1) % quad.size();
+
+            FVector &v0 = quad[i];
+            FVector &v1 = quad[next];
+            FVector &v2 = innerQuad[next];
+            FVector &v3 = innerQuad[i];
+
+            appendTo.appendDoublesided(v0, v1, v2);
+            appendTo.appendDoublesided(v0, v2, v3);
+
+        }
+
+
+        processFoundStairBounds(innerQuad, onemeter);
+    }
+}
+
+void roomBoundData::processFoundStairBounds(
+    std::vector<FVector> &ref,
+    int onemeter
+){
+    stairBoundsQuad = ref;
+    for (int i = 0; i < stairBoundsQuad.size(); i++){
+        stairBoundsQuad[i] /= onemeter;
+    }
+}
+
+
+///@brief returns the bounds in INDEX space
+std::vector<FVector> &roomBoundData::stairBoundsQuadRef(int onemeter){
+
+    if (stairBoundsQuad.size() == 0)
+    {
+        std::vector<FVector> innerQuad;
+        staircasePossbileBoundsInMetersQuad(
+            innerQuad,
+            onemeter
+        );
+        processFoundStairBounds(innerQuad, onemeter);
+    }
+    return stairBoundsQuad;
+}

@@ -21,8 +21,6 @@ public:
 
 
 
-	std::vector<FVector> &baseVectorReference();
-	std::vector<FVector> &alignedVectorReference();
 	std::vector<FVector> &triangleBufferReference();
 
 private:

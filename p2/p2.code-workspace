@@ -12,7 +12,8 @@
 	"settings": {
 		"typescript.tsc.autoDetect": "off",
 		"files.associations": {
-			"__config": "cpp"
+			"__config": "cpp",
+			"map": "cpp"
 		}
 	},
 	"extensions": {
