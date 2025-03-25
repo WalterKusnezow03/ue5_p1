@@ -69,6 +69,10 @@ void AcustomMeshActor::setMaterialAndHealthAndSplitOnDeath(materialEnum mat, int
     materialtypeSet = mat;
     setHealth(std::max(1, healthIn));
     splitOnDeath = split;
+
+    if(split){
+        enableDebug();
+    }
 }
 
 
@@ -96,10 +100,9 @@ void AcustomMeshActor::takedamage(int d){
                 damagedOwner = nullptr;
 
                 health = 100;
-                if(splitOnDeath){
+                if(splitOnDeath && false){ //OLD 
 
                     splitIntoAllTriangles();
-                    // splitAndreplace(this, originPoint, 50, materialtypeSet);
                 }
 
                 SetActorLocation(FVector(0, 0, -10000));
@@ -119,9 +122,8 @@ void AcustomMeshActor::takedamage(int d){
 /// @param d 
 /// @param hitpoint hitpoint from weapon  
 void AcustomMeshActor::takedamage(int d, FVector &hitpoint){
-    takedamage(d);
-
     debugThis(hitpoint);
+    takedamage(d);
 
 
     EntityManager *entityManager = worldLevel::entityManager();
@@ -366,9 +368,6 @@ void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
 
 
 
-
-
-
 void AcustomMeshActor::splitIntoAllTriangles(){
     
     std::vector<MeshDataLod> newLodMeshes;
@@ -501,11 +500,30 @@ void AcustomMeshActor::debugThis(FVector &hitpoint){
     meshdata.pushInwards(meshHit, sizeHole, direction);*/
 
     ReloadMeshAndApplyAllMaterials();
+
+
+
+
+    //GLASS REACT
+    glassreactionToHit(localHit);
 }
 
+void AcustomMeshActor::glassreactionToHit(FVector &hitlocal){
+    if(splitOnDeath){
+        health = 100;
 
+        MeshData &meshFound = findMeshDataReference(
+            materialEnum::glassMaterial,
+            ELod::lodNear,
+            true//raycastFlag
+        );
 
+        meshFound.splitAndRemoveTriangleAt(hitlocal);
+        ReloadMeshAndApplyAllMaterials();
 
+        DebugHelper::showScreenMessage("glass hit!");
+    }
+}
 
 
 

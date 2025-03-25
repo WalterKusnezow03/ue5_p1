@@ -126,5 +126,6 @@ protected:
 
 	//shader
 	std::vector<materialEnum> foliageMaterials();
-	
+
+	void glassreactionToHit(FVector &hitlocal);
 };

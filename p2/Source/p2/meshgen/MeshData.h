@@ -100,6 +100,8 @@ public:
 		std::vector<MeshData> &meshDataVectorOutput
 	);
 
+	void splitAndRemoveTriangleAt(FVector &localHitPoint);
+
 	FVector center();
 	void centerMesh();
 
@@ -124,7 +126,11 @@ public:
 
 protected:
 	float MIN_SPLITDISTANCE = 50.0f;
+
+	bool canSplit(int v0, int v1, int v2);
 	bool canSplit(FVector &a, FVector &b, FVector &c);
+	bool canSplit(FVector &a, FVector &b, FVector &c, float mindistanceKept);
+	bool canSplit(int v0, int v1, int v2, float mindistanceKept);
 
 	float EPSILON = 5.0f;
 	bool isCloseSame(FVector &a, FVector &b);
@@ -166,13 +172,23 @@ protected:
 	bool isValidNormalIndex(int index);
 	FVector createNormal(int v0, int v1, int v2);
 
+	void findTrianglesInvolvedWith(int index, std::vector<int> &trianglesFound);
+	bool isPartOfTraingle(int target, int v0, int v1, int v2);
+
+	bool solveIsInTriangle(
+		int v0, int v1, int v2, FVector &target
+	);
+
+	void addTriangle(int v0, int v1, int v2);
+	void splitTriangleInHalf(int v0, int v1, int v2);
+
 	//helper for removing triangles by vertex
 	void removeVertex(int index);
 	void removeVertex(int index, std::vector<int> &connectedvertecies);
 	void removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &connectedvertecies);
 	bool contains(std::vector<int> &ref, int index);
 
-	
+	void removeTriangle(int v0, int v1, int v2);
 
 public:
 	//helper for removing triangles by vertex

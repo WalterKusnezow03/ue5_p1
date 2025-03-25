@@ -49,8 +49,7 @@ private:
 		std::vector<FVector> &windows,
 		int doorWidthCm,
 		int scaleZCm,
-		FVector &locationOffset,
-		FVector &centerOfRoom
+		FVector &locationOffset
 	);
 
 	void filterForVectorsBetween(
