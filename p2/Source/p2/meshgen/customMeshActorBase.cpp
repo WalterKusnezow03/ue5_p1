@@ -393,10 +393,17 @@ MeshData &AcustomMeshActorBase::findMeshDataReference(
 }
 
 
-
-
-
-
+///@brief will append the meshdata AND RELOAD THE MESH
+void AcustomMeshActorBase::appendMeshDataAndReload(
+    MeshData &meshdata,
+    materialEnum type,
+    ELod lodLevel,
+    bool raycastOnLayer
+){
+    MeshData &found = findMeshDataReference(type, lodLevel, raycastOnLayer);
+    found.append(meshdata);
+    ReloadMeshAndApplyAllMaterials();
+}
 
 void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
     /*if(!LISTEN_FOR_LOD_PLAYER){

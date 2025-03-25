@@ -11,6 +11,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/rooms/testing/helper/staircaseBoundData.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
+#include "p2/util/FVectorUtil.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 
 template class TTouple<FVector, FVector>;
@@ -46,17 +47,29 @@ void AroomProcedural::createRoom(
 ){
 	FVector fullOffset = location; //+ currentRoom.positionInMeterSpace(oneMeter);
 	SetActorLocation(fullOffset);
-	
-	std::vector<FVector> doorPositionsRelativeInMeters = currentRoom.relativeDoorPositionsCm();
-	std::vector<FVector> windowPositionsRelativeInMeters = currentRoom.relativeWindowPositionsCm();
 
+	/*
 	createRoom(
 		fullOffset,
 		currentRoom,
 		oneMeter,
-		true //open for stairs
-	);
+		false, //open for stairs
+		true
+	);*/
 
+	int layers = FVectorUtil::randomNumber(1, 3);
+	for (int i = 0; i < layers; i++){
+		bool openForStaircaseBottom = (i != 0);
+		bool openForStaircaseTop = (i != layers - 1);
+
+		createRoom(
+			fullOffset,
+			currentRoom,
+			oneMeter,
+			openForStaircaseBottom,
+			openForStaircaseTop
+		);
+	}
 }
 
 
@@ -65,25 +78,30 @@ void AroomProcedural::createRoom(
 
 
 
+int AroomProcedural::zScaleInCentimeters(){
+	return 3 * 100;
+}
 
 
-
-
-
+///@brief creates the room and automatically adjusts @param location for the next layer, adds
+///zcm to the vector! All meshes are transformed as expected in the next layer if calling the function again!
 void AroomProcedural::createRoom(
-	FVector &location, //bottom left corner
+	FVector &location, //bottom left corner, with heightOffset
 	roomBoundData &currentRoom,
 	int onemeter,
-	bool openForStaircase
+	bool openForStaircaseBottom,
+	bool openForStaircaseTop
 ){
 
 	int scaleMetersX = currentRoom.xScale();
 	int scaleMetersY = currentRoom.yScale();
-	int scaleMetersZ = 3;
-	std::vector<FVector> doorPositions = currentRoom.relativeDoorPositionsCm(); // in local space to bottom left corner
-	std::vector<FVector> windowPositions = currentRoom.relativeWindowPositionsCm(); // in local space to bottom left corner
+	
+	std::vector<FVector> doorPositions = currentRoom.relativeDoorPositionsCm(
+		onemeter); // in local space to bottom left corner
+	std::vector<FVector> windowPositions = currentRoom.relativeWindowPositionsCm(
+		onemeter); // in local space to bottom left corner
 
-	int zCm = scaleMetersZ * 100;
+	int zCm = zScaleInCentimeters();
 	int windowWidthCm = onemeter;
 	int doorWidthCm = onemeter;
 
@@ -95,12 +113,18 @@ void AroomProcedural::createRoom(
 
 	currentRoom.appendBottomOrTopClosed(
 		floorAndRoof,
-		openForStaircase,
+		openForStaircaseBottom,
 		onemeter,
 		0.0f //zCm
 	);
-	if(openForStaircase){
-
+	currentRoom.appendBottomOrTopClosed(
+		floorAndRoof,
+		openForStaircaseTop,
+		onemeter,
+		zCm//zCm
+	);
+	//create staircase if to top needed.
+	if(openForStaircaseTop){
 		createStairs(
 			floorAndRoof,
 			currentRoom,
@@ -108,12 +132,6 @@ void AroomProcedural::createRoom(
 		);
 	}
 
-	currentRoom.appendBottomOrTopClosed(
-		floorAndRoof,
-		openForStaircase,
-		onemeter,
-		zCm//zCm
-	);
 
 
 
@@ -169,16 +187,52 @@ void AroomProcedural::createRoom(
 	floorAndRoof.calculateNormals();
 	walls.calculateNormals();
 
-	replaceMeshData(floorAndRoof, materialEnum::stoneMaterial);
-	replaceMeshData(walls, materialEnum::wallMaterial);
+	//offset
+	FVector goUp(0, 0, location.Z);
+	MMatrix translateOffset(goUp);
+	floorAndRoof.transformAllVertecies(translateOffset);
+	walls.transformAllVertecies(translateOffset);
+
+	//deprecated, instead find and append!
+	//replaceMeshData(floorAndRoof, materialEnum::stoneMaterial);
+	//replaceMeshData(walls, materialEnum::wallMaterial);
+
+	/*
+	MeshData &findMeshDataReference(
+		materialEnum type,
+		ELod lodLevel,
+		bool raycastOnLayer
+	);*/
+	/*
+	void appendMeshDataAndReload(
+		MeshData &meshdata,
+		materialEnum type,
+		ELod lodLevel,
+		bool raycastOnLayer
+	);
+	*/
+
+	bool raycastOnLayer = true;
+	appendMeshDataAndReload(
+		floorAndRoof,
+		materialEnum::stoneMaterial,
+		ELod::lodNear,
+		raycastOnLayer
+	);
+	appendMeshDataAndReload(
+		walls,
+		materialEnum::wallMaterial,
+		ELod::lodNear,
+		raycastOnLayer
+	);
 
 	//very important to reload the mesh
 	ReloadMeshAndApplyAllMaterials();
+
+
+	//go to next layer
+	location.Z += zCm;
 }
-
-
-
-
 
 MeshData AroomProcedural::createWall(
 	FVector from, 
@@ -607,7 +661,9 @@ void AroomProcedural::spawnRooms(
 		roomBoundData &currentRoom = vec.at(i);
 		//create proper offset in xpos and ypos as needed
 
-		FVector fullOffset = location + currentRoom.positionInMeterSpace(100);
+		int onemeter = 100;
+
+		FVector fullOffset = location + currentRoom.positionInMeterSpace(onemeter);
 		AroomProcedural *newRoom = spawnRoom(worldIn, fullOffset);
 		if(newRoom != nullptr){
 
@@ -616,7 +672,7 @@ void AroomProcedural::spawnRooms(
 			newRoom->createRoom(
 				fullOffset,
 				currentRoom,
-				100
+				onemeter
 			);
 
 		}
@@ -725,17 +781,17 @@ void AroomProcedural::createStairs(
 	int onemeter
 ){
 	//"returns the bounds in INDEX space"
-	std::vector<FVector> &ref = room.stairBoundsQuadRef(onemeter);
+	std::vector<FVector> &ref = room.stairBoundsQuadInIndexSpaceRef(onemeter);
 	if(ref.size() == 4){
 		/*
 		1 2 
 		0 3 
 		*/
-		int distX = std::abs(ref[3].X - ref[0].X);
-		int distY = std::abs(ref[1].Y - ref[0].Y);
+		int indexDistX = std::abs(ref[3].X - ref[0].X);
+		int indexDistY = std::abs(ref[1].Y - ref[0].Y);
 
 		StaircaseBoundData stairs;
-		stairs.createLayout(distX, distY);
+		stairs.createLayout(indexDistX, indexDistY);
 
 		//generate(int oneMeter, int heightMeters, int maxSlopeMeters)
 		MeshData stairData = stairs.generate(onemeter, 300, 90);

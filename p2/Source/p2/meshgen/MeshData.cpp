@@ -1265,10 +1265,12 @@ void MeshData::appendCube(
 ){
     appendEfficent(a, d, c, b);
     appendEfficent(a1, b1, c1, d1);
+
     appendEfficent(b, b1, a1, a);
     appendEfficent(c, c1, b1, b);
     appendEfficent(d, d1, c1, c);
     appendEfficent(a, a1, d1, d);
+    
     calculateNormals();
 }
 

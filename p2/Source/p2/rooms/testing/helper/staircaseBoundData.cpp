@@ -105,6 +105,9 @@ void StaircaseBoundData::setSlope(int i, int j, FVector2D &dir){
 /**
  * helper for creating the vertecies
  */
+
+///@brief creates staircase subpart and appends it into the meshdata,
+///updates the passed height offset
 void StaircaseBoundData::Stair::appendData(
     int oneMeter, 
     int slopeMeter, 
@@ -136,7 +139,8 @@ void StaircaseBoundData::Stair::appendData(
     }
 }
 
-
+///@brief creates the quad in the given meter size and correct orientation
+///aswell as the local transform in the array, scaled up to the given meter scale
 std::vector<FVector> StaircaseBoundData::Stair::orientedAndMovedQuad(int oneMeter){
     std::vector<FVector> quad = {
         FVector(0, 0, 0),               // v0
@@ -221,7 +225,8 @@ MeshData StaircaseBoundData::generate(int oneMeter, int heightMetersUpperLimit, 
     return outData;
 }
 
-
+///@brief gets the indicies where the staircase is placed in clockwise order for
+///building the mesh
 void StaircaseBoundData::getIndicesClockwise(
     std::vector<TTouple<int,int>> &output
 ){
@@ -253,6 +258,9 @@ void StaircaseBoundData::getIndicesClockwise(
             output.push_back(TTouple<int, int>(i, j));
             j--;
         }
+
+        //close
+        output.push_back(output.front());
     }
 }
 

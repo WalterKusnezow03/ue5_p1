@@ -259,20 +259,20 @@ void roomBoundData::clamp(FVector &other){
     other.Y = yLocal;
 }
 
-std::vector<FVector> roomBoundData::relativeDoorPositionsCm(){
+std::vector<FVector> roomBoundData::relativeDoorPositionsCm(int onemeter){
     std::vector<FVector> output;
     for (int i = 0; i < doorPositions.size(); i++){
         FVector copy = doorPositions.at(i);
-        output.push_back(copy * 100);
+        output.push_back(copy * onemeter);
     }
     return output;
 }
 
-std::vector<FVector> roomBoundData::relativeWindowPositionsCm(){
+std::vector<FVector> roomBoundData::relativeWindowPositionsCm(int onemeter){
     std::vector<FVector> output;
     for (int i = 0; i < windowPositions.size(); i++){
         FVector copy = windowPositions.at(i);
-        output.push_back(copy * 100);
+        output.push_back(copy * onemeter);
     }
     return output;
 }
@@ -440,12 +440,13 @@ void roomBoundData::processFoundStairBounds(
     stairBoundsQuad = ref;
     for (int i = 0; i < stairBoundsQuad.size(); i++){
         stairBoundsQuad[i] /= onemeter;
+        stairBoundsQuad[i].Z = 0.0f;
     }
 }
 
 
-///@brief returns the bounds in INDEX space
-std::vector<FVector> &roomBoundData::stairBoundsQuadRef(int onemeter){
+///@brief returns the bounds in INDEX space, Z height removed!
+std::vector<FVector> &roomBoundData::stairBoundsQuadInIndexSpaceRef(int onemeter){
 
     if (stairBoundsQuad.size() == 0)
     {

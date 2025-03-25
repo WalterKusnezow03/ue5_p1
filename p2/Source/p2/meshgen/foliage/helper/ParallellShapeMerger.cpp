@@ -160,7 +160,7 @@ void ParallellShapeMerger::sortPointsByDistance(
 
     bool checkDir = false;
     FVector dir;
-    if(startingPoint != nextToStartingPoint){
+    if(isSame(startingPoint, nextToStartingPoint)){
         dir = nextToStartingPoint - startingPoint; //AB = B - A
         checkDir = true;
     }
@@ -197,6 +197,10 @@ void ParallellShapeMerger::sortPointsByDistance(
     }
     //override
     points = output;
+}
+
+bool ParallellShapeMerger::isSame(FVector &a, FVector &b){
+    return std::abs(FVector::Dist(a, b)) < 1.0f;
 }
 
 bool ParallellShapeMerger::findClosestPointTo(

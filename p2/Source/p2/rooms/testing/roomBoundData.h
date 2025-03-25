@@ -20,8 +20,8 @@ public:
 	void addDoorPosition(int xIn, int yIn);
 	void addWindowPosition(int xIn, int yIn);
 
-	std::vector<FVector> relativeWindowPositionsCm();
-	std::vector<FVector> relativeDoorPositionsCm();
+	std::vector<FVector> relativeWindowPositionsCm(int onemeter);
+	std::vector<FVector> relativeDoorPositionsCm(int onemeter);
 
 	int xpos();
 	int ypos();
@@ -46,7 +46,7 @@ public:
 		float heightOffset
 	);
 
-	std::vector<FVector> &stairBoundsQuadRef(int onemeter);
+	std::vector<FVector> &stairBoundsQuadInIndexSpaceRef(int onemeter);
 
 private:
 	bool stairBoundsFound = false;

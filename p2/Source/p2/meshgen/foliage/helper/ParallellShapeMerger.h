@@ -45,8 +45,7 @@ private:
 		return index >= 0 && index < vec.size();
 	}
 
-
-
+	bool isSame(FVector &a, FVector &b);
 
 	//new sorting
 	void sortPointsByDistance(

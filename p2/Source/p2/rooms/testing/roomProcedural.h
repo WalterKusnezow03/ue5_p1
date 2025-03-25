@@ -40,6 +40,8 @@ private:
 	ETerrainType locatedInTerrainType;
 	void updateTerrainTypeLocatedIn(ETerrainType input);
 
+	int zScaleInCentimeters();
+
 	MeshData createWall(
 		FVector from,
 		FVector to,
@@ -116,7 +118,8 @@ private:
 		FVector &location, //bottom left corner
 		roomBoundData &currentRoom,
 		int onemeter,
-		bool openForStaircase
+		bool openForStaircaseBottom,
+		bool openForStaircaseTop
 	);
 
 	static AroomProcedural *spawnRoom(UWorld *world, FVector location);

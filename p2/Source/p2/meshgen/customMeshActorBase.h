@@ -86,7 +86,14 @@ public:
 		ELod lodLevel,
 		bool raycastOnLayer
 	);
-	
+
+	void appendMeshDataAndReload(
+		MeshData &meshdata,
+		materialEnum type,
+		ELod lodLevel,
+		bool raycastOnLayer
+	);
+
 protected:
 	int chunkScaleOneAxisLengthCm = 1; //ONE AXIS LENGTH
 
