@@ -481,6 +481,33 @@ void MeshData::closeMeshAtCenter(FVector &center, int bufferSizeToConnect, bool 
 /**
  * --- helper function ---
  */
+
+///@brief searches for the closest index to a vertex and explicitly looks for duplcate vertecies
+std::vector<int> MeshData::findClosestIndexWithVertexDuplicatesTo(
+    FVector &vertex
+){
+    std::vector<int> output;
+
+    int indexFound = findClosestIndexTo(vertex);
+    if(isValidVertexIndex(indexFound)){
+        output.push_back(indexFound);
+
+        FVector comparePos = vertecies[indexFound];
+
+        //search vertex buffer for similar vertecies
+        for (int v = 0; v < vertecies.Num(); v++){
+            if(
+                v != indexFound && 
+                FVector::Dist(comparePos, vertecies[v]) <= 1.0f
+            ){
+                output.push_back(v);
+            }
+        }
+    }
+
+    return output;
+}
+
 /// @brief finds the closest index to a vertex, -1 if the vertex buffer is clear
 /// @param vertex position to find
 /// @return index in vertecies array
@@ -830,41 +857,52 @@ void MeshData::addTriangle(int v0, int v1, int v2){
     }
 }
 
+void MeshData::addTriangleDoublesided(int v0, int v1, int v2){
+    addTriangle(v0, v1, v2);
+    addTriangle(v0, v2, v1);
+}
 
 ///@brief removes the triangle targeted and splits it if possible
 void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
     if(isValidVertexIndex(v0,v1,v2)){
         //remove triangle
-        removeTriangle(v0, v1, v2);
+        int removedTriangles = removeTriangleSimilarTo(v0, v1, v2);
+        //DebugHelper::logMessage("debugTriangle -> triangles removed: ", removedTriangles);
 
         //create new triangles
-        float maxDistance = 50.0f;
-        if (canSplit(v0, v1, v2, maxDistance) && false)
+        float maxDistance = 100.0f;
+        if (canSplit(v0, v1, v2, maxDistance))
         {
         
-            FVector A = vertecies[v0];
-            FVector B = vertecies[v1];
-            FVector C = vertecies[v2];
+            FVector &A = vertecies[v0];
+            FVector &B = vertecies[v1];
+            FVector &C = vertecies[v2];
 
-            FVector Dnew = (A + B) / 2;
+            FVector middle = A + 0.5f * (B - A); // gx = A + r(B-A)
 
-            //append new vertex
+            //append new vertex and normal
             int newIndex = vertecies.Num();
             if(normals.Num() == vertecies.Num()){
-                FVector cross = FVector::CrossProduct((Dnew - A), (C - A));
+                FVector cross = FVector::CrossProduct((middle - A), (C - A));
                 cross = cross.GetSafeNormal();
                 normals.Add(cross);
             }
-            vertecies.Add(Dnew);
+            vertecies.Add(middle);
 
 
-            //append sub triangles
-            addTriangle(v0, newIndex, v2);
-            //addTriangle(v0, v2, newIndex);
-            addTriangle(newIndex, v1, v2);
-            //addTriangle(newIndex, v2, v1);
+            if(removedTriangles == 1){
+                //append sub triangles
+                addTriangle(v0, newIndex, v2);
+                addTriangle(newIndex, v1, v2);
+            }else{
 
-            DebugHelper::logMessage("debugTriangle added");
+                //not needed basically. But if a triangle was double sided the splittet
+                //will be too.
+                addTriangleDoublesided(v0, newIndex, v2);
+                addTriangleDoublesided(newIndex, v1, v2);
+            }
+
+            //DebugHelper::logMessage("debugTriangle added");
 
             //calculateNormals();
         }
@@ -873,38 +911,47 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
 
 
 //new split function, update mesh, do not rip apart
-void MeshData::splitAndRemoveTriangleAt(FVector &localHitPoint){
+void MeshData::splitAndRemoveTrianglesAt(FVector &localHitPoint){
     //find closest vertex
     //enclosing the point
-    int index = findClosestIndexTo(localHitPoint);
-    if(isValidVertexIndex(index)){
 
-        //wenn die eckpunkte des dreiecks
-        //A * r + B * s + C * t = F, und r + s + t = 1.0f ist, dann ist es im dreieck
+    std::vector<int> indices = findClosestIndexWithVertexDuplicatesTo(localHitPoint);
+    for (int indexCurrent = 0; indexCurrent < indices.size(); indexCurrent++){
+        //int index = findClosestIndexTo(localHitPoint);
 
-        std::vector<int> foundTriangles;
-        findTrianglesInvolvedWith(index, foundTriangles);
-        DebugHelper::logMessage("debugTriangle check triangles", (foundTriangles.size() / 3));
+        int index = indices[indexCurrent];
+        if(isValidVertexIndex(index)){
 
-        for (int i = 2; i < foundTriangles.size(); i+=3){
-            int v0 = foundTriangles[i - 2];
-            int v1 = foundTriangles[i - 1];
-            int v2 = foundTriangles[i];
+            //wenn die eckpunkte des dreiecks
+            //A * r + B * s + C * t = F, und r + s + t = 1.0f ist, dann ist es im dreieck
 
-            //check if inside
-            DebugHelper::logMessage("debugTriangle try solve");
-            if(solveIsInTriangle(v0,v1,v2, localHitPoint)){
+            std::vector<int> foundTriangles;
+            findTrianglesInvolvedWith(index, foundTriangles);
+            //DebugHelper::logMessage("debugTriangle -> check triangles", (foundTriangles.size() / 3));
 
-                DebugHelper::logMessage("debugTriangle is in triangle");
+            for (int i = 2; i < foundTriangles.size(); i += 3)
+            {
+                int v0 = foundTriangles[i - 2];
+                int v1 = foundTriangles[i - 1];
+                int v2 = foundTriangles[i];
 
-                //try split
-                splitTriangleInHalf(v0, v1, v2);
+                //check if inside
+                //DebugHelper::logMessage("debugTriangle -> try solve");
+                if(solveIsInTriangle(v0,v1,v2, localHitPoint)){
 
-                //split still needed!!!
-                //new vertecies must be added internally to make a hole for example.
+                    //DebugHelper::logMessage("debugTriangle -> is in triangle");
+
+                    //try split
+                    splitTriangleInHalf(v0, v1, v2);
+
+                    //split still needed!!!
+                    //new vertecies must be added internally to make a hole for example.
+                }
             }
         }
     }
+
+    
 }
 
 void MeshData::findTrianglesInvolvedWith(
@@ -953,7 +1000,7 @@ bool MeshData::solveIsInTriangle(
 
         FVector normal = FVector::CrossProduct(AC, AB);
         normal = normal.GetSafeNormal();
-        // create rotator, x is forward, yz pane projected
+        // create rotator, x is forward, yz pane projected so we can use the 2D normal correctly.
         MMatrix rotInv = MMatrix::createRotatorFrom(normal); //R
         rotInv.transpose(); //R^-1 = R^T
 
@@ -997,12 +1044,13 @@ bool MeshData::solveIsInTriangle(
         float dot1 = localB.Y * BCnormal.Y + localB.Z * BCnormal.Z;
         float dot2 = localC.Y * CAnormal.Y + localC.Z * CAnormal.Z;
 
+        /*
         FString message = FString::Printf(
             TEXT("debugTriangle dot products {%.2f, %.2f, %2.f}"),
             dot0, dot1, dot2
         );
 
-        DebugHelper::logMessage(message);
+        DebugHelper::logMessage(message);*/
 
         //check dot products 
         //-1 * 1 = -1 und 1 * 1 = 1 und -1 * -1 = 1
@@ -1075,19 +1123,17 @@ bool MeshData::solveIsInTriangle(
 
 
 
-///@brief removed triangle must be in correct order!
-void MeshData::removeTriangle(int v0, int v1, int v2){
-    if(isValidVertexIndex(v0,v1,v2)){
+///@brief removed triangle can be in incorrect order
+int MeshData::removeTriangleSimilarTo(int v0, int v1, int v2){
+    int removed = 0;
+    if (isValidVertexIndex(v0, v1, v2))
+    {
         for (int i = 2; i < triangles.Num(); i+=3){
             int &v0Current = triangles[i - 2];
             int &v1Current = triangles[i - 1];
             int &v2Current = triangles[i];
 
-            if(
-                v0 == v0Current &&
-                v1 == v1Current && 
-                v2 == v2Current
-            ){
+            if(trianglesAreSame(v0, v1, v2, v0Current, v1Current, v2Current)){
                 int lastIndex = triangles.Num() - 1;
                 if(lastIndex - 2 >= 0){
                     v2Current = triangles[lastIndex]; //copied into reference.
@@ -1099,20 +1145,27 @@ void MeshData::removeTriangle(int v0, int v1, int v2){
                     triangles.Pop();
 
                     DebugHelper::logMessage("debugTriangle removed, new size: ", triangles.Num());
+
+                    removed++;
                 }
                 //return;
             }
         }
     }
+    return removed;
 }
 
+bool MeshData::trianglesAreSame(int v0, int v1, int v2, int v00, int v01, int v02){
+    std::set<int> set;
+    set.insert(v0);
+    set.insert(v1);
+    set.insert(v2);
+    set.insert(v00);
+    set.insert(v01);
+    set.insert(v02);
 
-
-
-
-
-
-
+    return set.size() == 3;
+}
 
 /// @brief calculates the center of the vertecies
 /// @return center
@@ -1641,4 +1694,37 @@ bool MeshData::isInsideBoundingbox(FVector &other){
            other.X < topRightBound.X &&
            other.Y < topRightBound.Y &&
            other.Z < topRightBound.Z;
+}
+
+
+
+
+
+
+
+
+// ---- debug -----
+void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
+    if(world != nullptr){
+        //durch triangle buffer laufen, alle zeichnen
+        for (int i = 2; i < triangles.Num(); i+=3){
+            int v0 = triangles[i - 2];
+            int v1 = triangles[i - 1];
+            int v2 = triangles[i];
+            if(isValidVertexIndex(v0,v1,v2)){
+                FVector v0Vertex = vertecies[v0]; //is copy
+                FVector v1Vertex = vertecies[v1];
+                FVector v2Vertex = vertecies[v2];
+
+                v0Vertex = transform * v0Vertex;
+                v1Vertex = transform * v1Vertex;
+                v2Vertex = transform * v2Vertex;
+
+                float time = 2.0f;
+                DebugHelper::showLineBetween(world, v0Vertex, v1Vertex, FColor::Red, time);
+                DebugHelper::showLineBetween(world, v1Vertex, v2Vertex, FColor::Red, time);
+                DebugHelper::showLineBetween(world, v2Vertex, v0Vertex, FColor::Red, time);
+            }
+        }
+    }
 }

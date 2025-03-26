@@ -448,6 +448,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 				FVector v2 = currentEnd + FVector(0, 0, std::abs(scaleZCm));
 
 				glassMesh.appendDoublesided(currentStart, v1, v2, currentEnd);
+				//glassMesh.append(currentStart, v2, v1, currentEnd); //debug.
 				/*
 				appendCubeTo(
 					glassMesh, //output

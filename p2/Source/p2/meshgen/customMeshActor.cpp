@@ -10,6 +10,7 @@
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include <set>
 #include "customMeshActor.h"
 
@@ -506,6 +507,8 @@ void AcustomMeshActor::debugThis(FVector &hitpoint){
 
     //GLASS REACT
     glassreactionToHit(localHit);
+
+    ReloadMeshAndApplyAllMaterials();
 }
 
 void AcustomMeshActor::glassreactionToHit(FVector &hitlocal){
@@ -518,15 +521,27 @@ void AcustomMeshActor::glassreactionToHit(FVector &hitlocal){
             true//raycastFlag
         );
 
-        meshFound.splitAndRemoveTriangleAt(hitlocal);
-        ReloadMeshAndApplyAllMaterials();
+        meshFound.splitAndRemoveTrianglesAt(hitlocal);
+        //ReloadMeshAndApplyAllMaterials();
+
+        debugDrawMeshData(meshFound);
 
         DebugHelper::showScreenMessage("glass hit!");
     }
 }
 
+//Debug
+void AcustomMeshActor::debugDrawMeshData(MeshData &meshdata){
+    MMatrix currentTransform;
 
+    FRotator rot = GetActorRotation();
+    currentTransform.setRotation(rot);
 
+    FVector pos = GetActorLocation();
+    currentTransform.setTranslation(pos);
+
+    meshdata.debugDrawMesh(currentTransform, GetWorld());
+}
 
 /**
  * 

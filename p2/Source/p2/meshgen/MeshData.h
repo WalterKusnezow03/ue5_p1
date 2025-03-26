@@ -100,7 +100,7 @@ public:
 		std::vector<MeshData> &meshDataVectorOutput
 	);
 
-	void splitAndRemoveTriangleAt(FVector &localHitPoint);
+	void splitAndRemoveTrianglesAt(FVector &localHitPoint);
 
 	FVector center();
 	void centerMesh();
@@ -135,7 +135,6 @@ protected:
 	float EPSILON = 5.0f;
 	bool isCloseSame(FVector &a, FVector &b);
 	bool isCloseSame(FVector &a, int index);
-	
 
 	void fillUpMissingVertecies(int count);
 
@@ -160,6 +159,7 @@ protected:
 	//what ever these are
 	TArray<FVector2D> UV0;
 
+	std::vector<int> findClosestIndexWithVertexDuplicatesTo(FVector &vertex);
 	int findClosestIndexTo(FVector &vertex);
 	int findClosestIndexToAndAvoid(FVector &vertex, int indexAvoid);
 	int findClosestIndexToAndAvoid(FVector &vertex, std::vector<int> &avoid);
@@ -180,7 +180,10 @@ protected:
 	);
 
 	void addTriangle(int v0, int v1, int v2);
+	void addTriangleDoublesided(int v0, int v1, int v2);
 	void splitTriangleInHalf(int v0, int v1, int v2);
+	bool trianglesAreSame(int v0, int v1, int v2, int v00, int v01, int v02);
+	int removeTriangleSimilarTo(int v0, int v1, int v2);
 
 	//helper for removing triangles by vertex
 	void removeVertex(int index);
@@ -188,7 +191,6 @@ protected:
 	void removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &connectedvertecies);
 	bool contains(std::vector<int> &ref, int index);
 
-	void removeTriangle(int v0, int v1, int v2);
 
 public:
 	//helper for removing triangles by vertex
@@ -211,7 +213,7 @@ public:
 	//helper for displacement
 	void pushInwards(FVector &location, int radius, FVector scaleddirection);
 
-	
+	void debugDrawMesh(MMatrix &transform, UWorld *world);
 
 protected:
 	void findConnectedVerteciesTo(int index, std::vector<int> &output);

@@ -11,7 +11,10 @@
 #include <algorithm>
 #include "CoreMinimal.h"
 #include <limits>
+#include "p2/DebugHelper.h"
 #include "priorityList.h"
+#include "p2/_world/worldLevel.h"
+#include "p2/entityManager/EntityManager.h"
 #include "p2/pathFinding/priorityQueue.h"
 #include "p2/pathFinding/raycastTasks/raycastTask.h"
 

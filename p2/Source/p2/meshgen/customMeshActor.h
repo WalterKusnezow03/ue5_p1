@@ -128,4 +128,5 @@ protected:
 	std::vector<materialEnum> foliageMaterials();
 
 	void glassreactionToHit(FVector &hitlocal);
+	void debugDrawMeshData(MeshData &meshdata);
 };
