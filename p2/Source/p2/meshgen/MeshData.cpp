@@ -935,6 +935,88 @@ bool MeshData::solveIsInTriangle(
 ){
 
     
+    //left/ right off test ----> can work for any polygonal shape, 
+    //the point tested for polygon hit must be moved in the edge relative space though as you can see
+    //below.
+    //O(3) + cos / sin in rotator maker to project the triangle
+    if(isValidVertexIndex(v0,v1,v2)){
+        FVector A = vertecies[v0];
+        FVector B = vertecies[v1];
+        FVector C = vertecies[v2];
+
+        FVector center = (A + B + C) / 3.0f;
+
+        FVector AB = B - A;
+        FVector AC = C - A;
+        FVector BC = C - B;
+        FVector CA = A - C;
+
+        FVector normal = FVector::CrossProduct(AC, AB);
+        normal = normal.GetSafeNormal();
+        // create rotator, x is forward, yz pane projected
+        MMatrix rotInv = MMatrix::createRotatorFrom(normal); //R
+        rotInv.transpose(); //R^-1 = R^T
+
+        FVector local = target - A;
+
+        FVector localA = target - A;
+        FVector localB = target - B;
+        FVector localC = target - C;
+
+        
+
+        //remove rotation, project to yz pane, x is 0.0 after inv usuage
+        local = rotInv * local;
+        localA = rotInv * localA;
+        localB = rotInv * localB;
+        localC = rotInv * localC;
+        AB = rotInv * AB;
+        BC = rotInv * BC;
+        CA = rotInv * CA;
+
+        
+
+        // target = rotInv * target
+        // ab hier nurnoch y-z-pane, x ist default forward in meiner klasse.
+        // wenn das skalar produkt der normalen
+        // überall das selbe vorzeichen hat liegt es im dreieck
+        FVector ABnormal = FVector(0, AB.Z * -1.0f, AB.Y);
+        FVector BCnormal = FVector(0, BC.Z * -1.0f, BC.Y);
+        FVector CAnormal = FVector(0, CA.Z * -1.0f, CA.Y);
+
+        ABnormal = ABnormal.GetSafeNormal();
+        BCnormal = BCnormal.GetSafeNormal();
+        CAnormal = CAnormal.GetSafeNormal();
+        local = local.GetSafeNormal();
+        localA = localA.GetSafeNormal();
+        localB = localB.GetSafeNormal();
+        localC = localC.GetSafeNormal();
+
+        //since the triangle is projected on the yz pane, x is not needed
+        float dot0 = localA.Y * ABnormal.Y + localA.Z * ABnormal.Z;
+        float dot1 = localB.Y * BCnormal.Y + localB.Z * BCnormal.Z;
+        float dot2 = localC.Y * CAnormal.Y + localC.Z * CAnormal.Z;
+
+        FString message = FString::Printf(
+            TEXT("debugTriangle dot products {%.2f, %.2f, %2.f}"),
+            dot0, dot1, dot2
+        );
+
+        DebugHelper::logMessage(message);
+
+        //check dot products 
+        //-1 * 1 = -1 und 1 * 1 = 1 und -1 * -1 = 1
+        if(dot0 * dot1 < 0.0f){
+            return false;
+        }
+        if(dot1 * dot2 < 0.0f){
+            return false;
+        }
+
+        return true;
+    }
+
+    //barycentric solve O(n^2) -> thats horrible.
     /*
     gleichungs system ist unterbestimmt
 

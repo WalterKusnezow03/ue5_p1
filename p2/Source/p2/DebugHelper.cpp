@@ -205,6 +205,9 @@ void DebugHelper::logMessage(FString message, FVector a, FVector b){
 	logMessage(message);
 }
 
+
+
+
 double DebugHelper::timeSum = 0.0;
 void DebugHelper::addTime(double time)
 {
