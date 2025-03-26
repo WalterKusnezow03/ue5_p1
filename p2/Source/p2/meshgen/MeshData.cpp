@@ -870,7 +870,7 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
         //DebugHelper::logMessage("debugTriangle -> triangles removed: ", removedTriangles);
 
         //create new triangles
-        float maxDistance = 100.0f;
+        float maxDistance = 200.0f;
         if (canSplit(v0, v1, v2, maxDistance))
         {
         
@@ -991,20 +991,16 @@ bool MeshData::solveIsInTriangle(
         FVector B = vertecies[v1];
         FVector C = vertecies[v2];
 
-        FVector center = (A + B + C) / 3.0f;
-
         FVector AB = B - A;
         FVector AC = C - A;
         FVector BC = C - B;
         FVector CA = A - C;
 
-        FVector normal = FVector::CrossProduct(AC, AB);
+        FVector normal = FVector::CrossProduct(AB, AC);
         normal = normal.GetSafeNormal();
         // create rotator, x is forward, yz pane projected so we can use the 2D normal correctly.
         MMatrix rotInv = MMatrix::createRotatorFrom(normal); //R
         rotInv.transpose(); //R^-1 = R^T
-
-        FVector local = target - A;
 
         FVector localA = target - A;
         FVector localB = target - B;
@@ -1013,7 +1009,6 @@ bool MeshData::solveIsInTriangle(
         
 
         //remove rotation, project to yz pane, x is 0.0 after inv usuage
-        local = rotInv * local;
         localA = rotInv * localA;
         localB = rotInv * localB;
         localC = rotInv * localC;
@@ -1034,7 +1029,6 @@ bool MeshData::solveIsInTriangle(
         ABnormal = ABnormal.GetSafeNormal();
         BCnormal = BCnormal.GetSafeNormal();
         CAnormal = CAnormal.GetSafeNormal();
-        local = local.GetSafeNormal();
         localA = localA.GetSafeNormal();
         localB = localB.GetSafeNormal();
         localC = localC.GetSafeNormal();
@@ -1062,6 +1056,8 @@ bool MeshData::solveIsInTriangle(
         }
 
         return true;
+    }else{
+        return false;
     }
 
     //barycentric solve O(n^2) -> thats horrible.
@@ -1128,7 +1124,9 @@ int MeshData::removeTriangleSimilarTo(int v0, int v1, int v2){
     int removed = 0;
     if (isValidVertexIndex(v0, v1, v2))
     {
-        for (int i = 2; i < triangles.Num(); i+=3){
+        int i = 2;
+        int limit = triangles.Num();
+        while(i < limit){
             int &v0Current = triangles[i - 2];
             int &v1Current = triangles[i - 1];
             int &v2Current = triangles[i];
@@ -1143,6 +1141,7 @@ int MeshData::removeTriangleSimilarTo(int v0, int v1, int v2){
                     triangles.Pop();
                     triangles.Pop();
                     triangles.Pop();
+                    limit = triangles.Num();
 
                     DebugHelper::logMessage("debugTriangle removed, new size: ", triangles.Num());
 
@@ -1150,6 +1149,7 @@ int MeshData::removeTriangleSimilarTo(int v0, int v1, int v2){
                 }
                 //return;
             }
+            i+=3;
         }
     }
     return removed;
@@ -1631,7 +1631,7 @@ void MeshData::appendCube(
     appendEfficent(d, d1, c1, c);
     appendEfficent(a, a1, d1, d);
 
-    calculateNormals();
+    //calculateNormals();
 }
 
 void MeshData::appendCube(
@@ -1697,11 +1697,9 @@ bool MeshData::isInsideBoundingbox(FVector &other){
 }
 
 
-
-
-
-
-
+bool MeshData::hasAnyVertecies(){
+    return verteciesNum() > 0;
+}
 
 // ---- debug -----
 void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){

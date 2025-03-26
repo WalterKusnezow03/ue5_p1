@@ -124,8 +124,8 @@ void AcustomMeshActor::takedamage(int d){
 /// @param hitpoint hitpoint from weapon  
 void AcustomMeshActor::takedamage(int d, FVector &hitpoint){
     debugThis(hitpoint);
+    glassreactionToHitWorld(hitpoint); 
     takedamage(d);
-
 
     EntityManager *entityManager = worldLevel::entityManager();
     if(entityManager != nullptr){
@@ -488,31 +488,31 @@ void AcustomMeshActor::debugThis(FVector &hitpoint){
         meshdata.pushInwards(meshHit, sizeHole, direction); //error prone!
 
         //meshdata.cutHoleWithInnerExtensionOfMesh(localHit, sizeHole); //cut sphere
+
+        ReloadMeshForMaterial(hitMaterials[i]);
     }
 
-    /*
-    MeshData &meshdata = findMeshDataReference(materialEnum::stoneMaterial, ELod::lodNear, true);
-
-    int sizeHole = 50;
-    //meshdata.cutHoleWithInnerExtensionOfMesh(localHit, sizeHole); //cut sphere
-
-    //cut push in
-    FVector direction(0, 0, -100);
-    meshdata.pushInwards(meshHit, sizeHole, direction);*/
-
-    ReloadMeshAndApplyAllMaterials();
 
 
-
-
-    //GLASS REACT
-    glassreactionToHit(localHit);
-
-    ReloadMeshAndApplyAllMaterials();
 }
 
-void AcustomMeshActor::glassreactionToHit(FVector &hitlocal){
-    if(splitOnDeath){
+
+
+///@brief reacts to hit if has glass mesh
+void AcustomMeshActor::glassreactionToHitWorld(FVector &hitpoint){
+    if(hasGlassMesh()){
+        //world hit to local
+        FVector meshHit = hitpoint - GetActorLocation();
+        FQuat inverseRotation = GetActorQuat().Inverse();
+        FVector localHit = inverseRotation.RotateVector(meshHit);
+        glassreactionToHitLocal(localHit);
+    }
+}
+
+///@brief reacts to hit if has glass mesh
+void AcustomMeshActor::glassreactionToHitLocal(FVector &hitlocal){
+    //if(splitOnDeath){
+    if(hasGlassMesh()){
         health = 100;
 
         MeshData &meshFound = findMeshDataReference(
@@ -522,12 +522,22 @@ void AcustomMeshActor::glassreactionToHit(FVector &hitlocal){
         );
 
         meshFound.splitAndRemoveTrianglesAt(hitlocal);
-        //ReloadMeshAndApplyAllMaterials();
+        ReloadMeshForMaterial(materialEnum::glassMaterial);
+        
 
         debugDrawMeshData(meshFound);
 
         DebugHelper::showScreenMessage("glass hit!");
     }
+}
+
+bool AcustomMeshActor::hasGlassMesh(){
+    MeshData &meshFound = findMeshDataReference(
+        materialEnum::glassMaterial,
+        ELod::lodNear,
+        true//raycastFlag
+    );
+    return meshFound.hasAnyVertecies();
 }
 
 //Debug

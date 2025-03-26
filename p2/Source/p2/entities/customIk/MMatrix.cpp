@@ -430,7 +430,7 @@ MMatrix MMatrix::createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZA
     FVector2D xydir(normalized.X, normalized.Y);
     float yawRad = signedAngleRadBetween(XAxis, xydir); //signiert voll umfänglich notwendig anders als pitch
 
-    //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist!
+    //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist! (das ist richtig so!)
     MMatrix removeYaw;
     removeYaw.yawRadAdd(-yawRad);
     normalized = removeYaw * normalized;

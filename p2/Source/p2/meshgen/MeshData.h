@@ -208,7 +208,7 @@ public:
 	);
 
 	int verteciesNum();
-
+	bool hasAnyVertecies();
 
 	//helper for displacement
 	void pushInwards(FVector &location, int radius, FVector scaleddirection);

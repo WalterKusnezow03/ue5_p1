@@ -42,6 +42,18 @@ private:
 
 	int zScaleInCentimeters();
 
+	void createWall(
+		MeshData &wallMesh,
+		MeshData &windowMesh,
+		FVector from,
+		FVector to,
+		std::vector<FVector> &doors,   // doors in cm local
+		std::vector<FVector> &windows, // windows in cm local
+		int doorWidthCm,
+		int scaleZCm
+	);
+
+	/*
 	MeshData createWall(
 		FVector from,
 		FVector to,
@@ -50,7 +62,7 @@ private:
 		int doorWidthCm,
 		int scaleZCm,
 		FVector &locationOffset
-	);
+	);*/
 
 	void filterForVectorsBetween(
 		FVector &A,
@@ -96,6 +108,13 @@ private:
 		MeshData &output,
 		std::vector<FVector> &vec,
 		int widthCmWall,
+		int scaleZCm
+	);
+
+	//new testing
+	void appendWindowsFromMeshBounds(
+		MeshData &output,
+		std::vector<FVector> &vec,
 		int scaleZCm
 	);
 
