@@ -25,6 +25,7 @@ public:
 	//get the targeted weapon type
 	weaponEnum getWeaponTypeToCreate();
 	weaponAttachmentEnum getSightTypeToCreate();
+	weaponAttachmentEnum getMuzzleTypeToCreate();
 
 	//apply attachments to a weapon
 	void applyAttachments(Aweapon *weaponIn);
@@ -33,11 +34,15 @@ public:
 	//set types and attachments
 	void setWeaponTypeToCreate(weaponEnum typeIn);
 	void setSightAttachment(weaponAttachmentEnum sightIn);
+	void setMuzzleAttachment(weaponAttachmentEnum typein);
 
 	static std::vector<weaponAttachmentEnum> validSights();
 	static std::vector<weaponAttachmentEnum> validGrips();
+	static std::vector<weaponAttachmentEnum> validMuzzleAttachments();
 
 	static bool isASightAttachment(weaponAttachmentEnum type);
+	static bool isAMuzzleAttachment(weaponAttachmentEnum type);
+	static bool isAGripAttachment(weaponAttachmentEnum type);
 
 private:
 	weaponEnum typeToCreate;
@@ -46,5 +51,5 @@ private:
 
 	//attachments to set
 	weaponAttachmentEnum sightToSet;
-
+	weaponAttachmentEnum muzzleToSet;
 };

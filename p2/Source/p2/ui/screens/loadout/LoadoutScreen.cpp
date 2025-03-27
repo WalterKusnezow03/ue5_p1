@@ -89,50 +89,7 @@ void ULoadoutScreen::createHeadline(){
 void ULoadoutScreen::createLeftSideLoadoutMenuItems(){
 
     if(halfSplitBase){
-        //slot 1 - 3
-
-        //on click: open weapon picker (1-3) oder attachment pickers..
-        //merken an welchem index das aktuelle item gespeichert ist
-
-        //SINGLE WEAPON
-        /*
-        weaponContainer1 = NewObject<UWeaponContainer>(this);
-        if(weaponContainer1){
-            weaponContainer1->init(); //immer init nicht vergessen
-
-            //weapon button setup
-            weaponContainer1->setTextWeapon("slot 1");
-            weaponContainer1->SetCallBackWeapon(
-                FSimpleDelegate::CreateLambda([this]()
-                {
-                    if(this){
-                        this->openPickerCallBack(
-                            this->WEAPON_PICKER_IDENTIFIER,  
-                            this->weaponContainer1
-                        );
-                    } 
-                })
-            );
-
-            //sight button setup folgt hier..
-            weaponContainer1->setTextSight("sight 1"); //SIGHT_PICKER_IDENTIFIER
-            weaponContainer1->SetCallBackSight(
-                FSimpleDelegate::CreateLambda([this]()
-                {
-                    if(this){
-                        this->openPickerCallBack(
-                            this->SIGHT_PICKER_IDENTIFIER,  
-                            this->weaponContainer1
-                        );
-                    } 
-                })
-            );
-
-
-            halfSplitBase->addChildToLeftVertical(*weaponContainer1);
-        }*/
-
-
+        
         if(LoadoutContainersCreated){ //lock after creation
             return;
         }
@@ -285,7 +242,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
         weaponContainers[index]->init(index, loadoutinternal);
 
         //weapon button setup
-        FString sampleText = FString::Printf(TEXT("slot %d"), index);
+        FString sampleText = FString::Printf(TEXT("weapon %d"), index);
         weaponContainers[index]->setTextWeapon(sampleText);
         weaponContainers[index]->SetCallBackWeapon(
             FSimpleDelegate::CreateLambda([this, index]()
@@ -312,6 +269,21 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
                 } 
             })
         );
+
+        //muzzle flash surpressor picker button
+        weaponContainers[index]->setTextMuzzle("muzlle");
+        weaponContainers[index]->SetCallBackMuzzle(
+            FSimpleDelegate::CreateLambda([this, index]()
+            {
+                if(this){
+                    this->openPickerCallBack(
+                        this->MUZZLE_PICKER_IDENTIFIER,  
+                        this->weaponContainers[index]
+                    );
+                } 
+            })
+        );
+
 
 
         halfSplitBase->addChildToLeftVertical(*weaponContainers[index]);

@@ -1043,19 +1043,11 @@ bool MeshData::solveIsInTriangle(
             TEXT("debugTriangle dot products {%.2f, %.2f, %2.f}"),
             dot0, dot1, dot2
         );
-
         DebugHelper::logMessage(message);*/
 
-        //check dot products 
-        //-1 * 1 = -1 und 1 * 1 = 1 und -1 * -1 = 1
-        if(dot0 * dot1 < 0.0f){
-            return false;
-        }
-        if(dot1 * dot2 < 0.0f){
-            return false;
-        }
-
-        return true;
+        //check dot products
+        return (dot0 < 0.0f && dot1 < 0.0f && dot2 < 0.0f) ||
+               (dot0 >= 0.0f && dot1 >= 0.0f && dot2 >= 0.0f);
     }else{
         return false;
     }

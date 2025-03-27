@@ -58,8 +58,7 @@ private:
     void createRigthListPickers();
     const int WEAPON_PICKER_IDENTIFIER = 0;
     const int SIGHT_PICKER_IDENTIFIER = 1;
-
-
+    const int MUZZLE_PICKER_IDENTIFIER = 2;
 
     //PICKER BIND SECTION
     void rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed);

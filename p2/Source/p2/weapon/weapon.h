@@ -181,12 +181,24 @@ protected:
 	/// @brief saves all sights of the weapon find from actor to enable disable them by selected type
 	std::map<weaponAttachmentEnum, AActor *> sightMap;
 
+	/// @brief saves all muzzle of the weapon find from actor to enable disable them by selected type
+	std::map<weaponAttachmentEnum, AActor *> muzzleMap;
+
+	std::map<weaponAttachmentEnum, AActor *> gripMap;
+
+	weaponAttachmentEnum pickedSight;
+	weaponAttachmentEnum pickedMuzzle;
+	weaponAttachmentEnum pickedGrip;
+	
+
 	int damageForAmmunitionType();
 
 public:
 	void applySight(weaponAttachmentEnum sight);
+	void applyMuzzle(weaponAttachmentEnum muzzle);
+	void applyGrip(weaponAttachmentEnum type);
 
-	//get ammuntion type for this weapon
+	// get ammuntion type for this weapon
 	virtual ammunitionEnum getAmmunitionType();
 
 
@@ -198,18 +210,27 @@ public:
 	 * -- new expiremental custom attachment section --
 	 * 
 	 */
+private:
 	void spawnAllAvailableAttachments();
 	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
 	void attachNewItem(AActor *someActor);
 
+	void showAllPickedAttachments();
+	void hideAllAttachments();
+	void hideAllAttachments(std::map<weaponAttachmentEnum, AActor *> &map);
+
 	//api bone controller
+public:
 	FVector sightOffsetNoRotation();
 
 private:
 	bool actorAlreadyAttached(AActor *actorpointer);
 	std::vector<AActor *> attachedActors;
 
-
+	AActor *findFromMapAndEnable(
+		std::map<weaponAttachmentEnum, AActor *> &map,
+		weaponAttachmentEnum type
+	);
 
 	//new implementing animation from bonecontroller class
 	class KeyFrameAnimation actorKickBackAnim;

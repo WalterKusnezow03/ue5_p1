@@ -314,6 +314,7 @@ void BoneController::setupAnimation(){
 
 	//setup climbing
 	KeyFrameAnimation climbAnimationKeys = KeyFrameAnimation(false); //instant flip animation
+	climbAnimationKeys.useHermiteSplineInterpolation(false);
 	climbAnimationKeys.addFrame(
 		FVector(0, 0, -armScaleCM),
 		0.0f, //time to prev frame
@@ -333,9 +334,8 @@ void BoneController::setupAnimation(){
 		armScaleCM
 	);
 	armClimbKeys_1.setAnimationA(MoveTemp(climbAnimationKeys));
-	FVector hipTargetFromHand = FVector(0, 0, armScaleCM); //von hand yu hip, was ist der default target wert
+	FVector hipTargetFromHand = FVector(0, 0, armScaleCM); //von hand zu hip, was ist der default target wert
 	armClimbKeys_1.setAnimationBAdjustPermanentTarget(hipTargetFromHand);
-
 	armClimbKeys_1.setRunning(false);
 
 
@@ -1613,8 +1613,11 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 	if(armMotionQueue.isTransitioning()){
 		TickLegsNone(DeltaTime);
 		TickArms(DeltaTime);
+		//DebugHelper::showScreenMessage("climb, arm in transit");
 		return;
 	}
+
+	DebugHelper::showScreenMessage("climb all");
 
 	//switch to next leg but update relative position
 	
@@ -1627,8 +1630,15 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		FVector frame = ownLocationHand1.getTranslation();
 		MMatrix startMat = currentTransform(FOOT_1);
 		legDoubleKeys_1.skipAnimationOnceWorld(startMat, footPos, frame);
-		
 	}
+	//if climb complete: allow leg to finish
+	if(armClimbKeys_1.animationCycleWasComplete()){
+		if(climb_hand1cycleComplete == false){
+			arm1.resetAllRotations();
+		}
+		climb_hand1cycleComplete = true;
+	}
+
 	
 	//END OF ANIMATION ALL
 	//switch to next leg but update relative position
@@ -1642,15 +1652,7 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		return;
 	}
 	
-	//if climb complete: allow leg to finish
-	if(armClimbKeys_1.animationCycleWasComplete()){
-		if(climb_hand1cycleComplete == false){
-			arm1.resetAllRotations();
-		}
-
-		climb_hand1cycleComplete = true;
-
-	}
+	
 
 
 	//build bones
@@ -1755,6 +1757,10 @@ FrameProjectContainer BoneController::generateFrameProjectContainer(int limbinde
 
 	float minHeightClimb = armScaleCM * 1.8f;
 	float maxHeightDoesntAllowClimb = armScaleCM * 2.5f; // max height
+
+	//debug
+	maxHeightDoesntAllowClimb = 9999999.0f;
+
 	container.setup(
 		GetWorld(), 
 		current, 

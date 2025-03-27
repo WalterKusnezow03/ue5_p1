@@ -178,6 +178,7 @@ protected:
 	bool solveIsInTriangle(
 		int v0, int v1, int v2, FVector &target
 	);
+	
 
 	void addTriangle(int v0, int v1, int v2);
 	void addTriangleDoublesided(int v0, int v1, int v2);

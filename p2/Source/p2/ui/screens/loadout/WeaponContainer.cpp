@@ -42,11 +42,20 @@ void UWeaponContainer::createLayout(){
         attachmentSightImageButton = NewObject<UImageOverlayedButton>(this);
         if(attachmentSightImageButton){
             attachmentSightImageButton->init();
-            weaponPreviewImageButton->setText("sight image");
+            attachmentSightImageButton->setText("sight image");
 
             //set on click later, weapon must know LoadoutScreen class to show attachment picker
 
             addToHorizontalBox(attachmentSightImageButton);
+        }
+
+        attachmentMuzzleImageButton = NewObject<UImageOverlayedButton>(this);
+        if(attachmentMuzzleImageButton){
+            attachmentMuzzleImageButton->init();
+            attachmentMuzzleImageButton->setText("muzzle image");
+
+            //set on click later, weapon must know LoadoutScreen class to show attachment picker
+            addToHorizontalBox(attachmentMuzzleImageButton);
         }
     }
 }
@@ -107,6 +116,12 @@ void UWeaponContainer::updateSightName(){
     setTextSight(name);
 }
 
+void UWeaponContainer::updateMuzzleName(){
+    weaponAttachmentEnum type = setupinternal.getMuzzleTypeToCreate();
+    FString name = toString(type);
+    setTextMuzzle(name);
+}
+
 
 /**
  * ----- set text and images api -----
@@ -137,6 +152,18 @@ void UWeaponContainer::SetCallBackSight(FSimpleDelegate callbackIn){
 }
 
 
+void UWeaponContainer::setTextMuzzle(FString s){
+    if(attachmentMuzzleImageButton){
+        attachmentMuzzleImageButton->setText(s);
+    }
+}
+
+void UWeaponContainer::SetCallBackMuzzle(FSimpleDelegate callbackIn){
+    if(attachmentMuzzleImageButton){
+        attachmentMuzzleImageButton->SetCallBack(callbackIn);
+    }
+}
+
 
 
 /**
@@ -152,6 +179,12 @@ void UWeaponContainer::updateWeaponType(weaponEnum typeIn){
 
 void UWeaponContainer::updateWeaponSight(weaponAttachmentEnum sightIn){
     setupinternal.setSightAttachment(sightIn);
+    updateSightName();
+    updateLoadoutParent();
+}
+
+void UWeaponContainer::updateWeaponMuzzle(weaponAttachmentEnum muzzlein){
+    setupinternal.setMuzzleAttachment(muzzlein);
     updateSightName();
     updateLoadoutParent();
 }

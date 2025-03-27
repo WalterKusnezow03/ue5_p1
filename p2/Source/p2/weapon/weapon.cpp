@@ -392,6 +392,11 @@ int Aweapon::getBulletsInMag(){
 
 void Aweapon::showWeapon(bool show){
 	Super::showItem(show);
+	if(show){
+		showAllPickedAttachments();
+	}else{
+		hideAllAttachments();
+	}
 }
 
 weaponEnum Aweapon::readType(){
@@ -599,49 +604,93 @@ void Aweapon::findAttachmentChildActors(){
 }
 
 
+void Aweapon::showAllPickedAttachments(){
+	applySight(pickedSight);
+	applyMuzzle(pickedMuzzle);
+	applyGrip(pickedGrip);
+}
+
+void Aweapon::hideAllAttachments(){
+	hideAllAttachments(sightMap);
+	hideAllAttachments(gripMap);
+	hideAllAttachments(muzzleMap);
+}
+
 /**
  * weapon setup helper api!
  */
 /// @brief applys a sight if possible
 /// @param sight sight value in to enable
 void Aweapon::applySight(weaponAttachmentEnum sight){
+	AActor *actorInMap = findFromMapAndEnable(sightMap, sight);
+	if(actorInMap != nullptr){
+		//sightActorPointer = a;
+		AsightScript *tryCast = Cast<AsightScript>(actorInMap);
 
-	for (const auto& pair : sightMap){ //map) {
-
-		AActor *a = pair.second;
-		bool show = false;
-		if (pair.first == sight)
-		{
-			show = true;
-		}
-
-		if(a != nullptr){
-			DebugHelper::showScreenMessage("show sight try", FColor::Green);
-			AActorUtil::showActor(*a, show);
-
-
-			//update sight offset
-			//sightActorPointer = a;
-
-			//found correct sight, calculate offset only then!
-			if(show){
-				//sightActorPointer = a;
-				AsightScript *tryCast = Cast<AsightScript>(a);
-
-				if(tryCast){
-					sightPointer = tryCast;
-					findSightOffset();
-				}else{
-					resetSightOffset();
-				}
-			}			
-			
+		if(tryCast){
+			sightPointer = tryCast;
+			findSightOffset();
+		}else{
+			resetSightOffset();
 		}
 	}
 
-
-
+	pickedSight = sight;
 }
+
+/// @brief applys a muzzle attachment if possible
+/// @param muzzle muzzle value in to enable
+void Aweapon::applyMuzzle(weaponAttachmentEnum muzzle){
+	AActor *actorInMap = findFromMapAndEnable(muzzleMap, muzzle);
+	if(actorInMap != nullptr){
+		
+	}
+	pickedMuzzle = muzzle;
+}
+
+void Aweapon::applyGrip(weaponAttachmentEnum type){
+	AActor *actorInMap = findFromMapAndEnable(gripMap, type);
+	if(actorInMap != nullptr){
+
+	}
+	pickedGrip = type;
+}
+
+AActor *Aweapon::findFromMapAndEnable(
+	std::map<weaponAttachmentEnum, AActor*> &map,
+	weaponAttachmentEnum type
+){
+	AActor *found = nullptr;
+	for (auto &pair : map)
+	{
+		AActor *actorInMap = pair.second;
+		if(actorInMap != nullptr){
+			weaponAttachmentEnum typeCurrent = pair.first;
+			bool show = (typeCurrent == type);
+			AActorUtil::showActor(*actorInMap, show);
+
+			if(show){
+				found = actorInMap;
+			}
+		}
+	}
+	return found;
+}
+
+void Aweapon::hideAllAttachments(std::map<weaponAttachmentEnum, AActor*> &map){
+	for (auto &pair : map)
+	{
+		AActor *actorInMap = pair.second;
+		if(actorInMap != nullptr){
+			bool show = false;
+			AActorUtil::showActor(*actorInMap, show);
+		}
+	}
+}
+
+
+
+
 
 
 /**
@@ -652,6 +701,10 @@ void Aweapon::spawnAllAvailableAttachments(){
 
 	loadAndSaveAttachment(weaponAttachmentEnum::reddot);
 	loadAndSaveAttachment(weaponAttachmentEnum::iron_sight);
+
+	loadAndSaveAttachment(weaponAttachmentEnum::grip_vertical);
+	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_flashSurpressor);
+	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_SoundSurpressor);
 }
 
 void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
@@ -673,7 +726,12 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
 					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
 				}
-
+				if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+					muzzleMap[EattachmentType] = actor;
+				}
+				if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+					gripMap[EattachmentType] = actor;
+				}
 				
 			}
 		}

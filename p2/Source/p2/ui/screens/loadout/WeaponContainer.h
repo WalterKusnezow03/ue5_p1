@@ -35,6 +35,9 @@ public:
     void setTextSight(FString s);
     void SetCallBackSight(FSimpleDelegate callbackIn);
 
+    void setTextMuzzle(FString s);
+    void SetCallBackMuzzle(FSimpleDelegate callbackIn);
+
     /*
     hier muss intern der waffen typ und attachments gespeichert werden
     um dann andere buttons hier drauf zu binden funktional, das der
@@ -42,6 +45,7 @@ public:
     */
     void updateWeaponType(weaponEnum typeIn);
     void updateWeaponSight(weaponAttachmentEnum sightIn);
+    void updateWeaponMuzzle(weaponAttachmentEnum typeIn);
 
     void updateFrom(weaponSetupHelper &other);
 
@@ -55,6 +59,7 @@ private:
 
     UImageOverlayedButton *weaponPreviewImageButton;
     UImageOverlayedButton *attachmentSightImageButton;
+    UImageOverlayedButton *attachmentMuzzleImageButton;
 
     void createLayout();
     void addToHorizontalBox(UcustomUiComponentBase *any);
@@ -71,4 +76,5 @@ private:
     //internal updates
     void updateWeaponName();
     void updateSightName();
+    void updateMuzzleName();
 };

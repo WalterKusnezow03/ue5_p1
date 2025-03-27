@@ -26,6 +26,7 @@ weaponSetupHelper& weaponSetupHelper::operator=(const weaponSetupHelper &other){
     }
     typeToCreate = other.typeToCreate;
     sightToSet = other.sightToSet;
+    muzzleToSet = other.muzzleToSet;
     return *this;
 }
 
@@ -34,7 +35,9 @@ weaponSetupHelper::~weaponSetupHelper()
 }
 
 bool weaponSetupHelper::isSame(weaponSetupHelper &other){
-    return (other.typeToCreate == typeToCreate) && (sightToSet == other.sightToSet);
+    return (other.typeToCreate == typeToCreate) &&
+           (sightToSet == other.sightToSet) &&
+           (muzzleToSet == other.muzzleToSet);
 }
 
 //SET ATTACHMENT SECTION
@@ -50,6 +53,12 @@ void weaponSetupHelper::setWeaponTypeToCreate(weaponEnum typeIn){
 void weaponSetupHelper::setSightAttachment(weaponAttachmentEnum sightIn){
     if(isASightAttachment(sightIn)){
         sightToSet = sightIn;
+    }
+}
+
+void weaponSetupHelper::setMuzzleAttachment(weaponAttachmentEnum typein){
+    if(isAMuzzleAttachment(typein)){
+        muzzleToSet = typein;
     }
 }
 
@@ -69,6 +78,10 @@ weaponAttachmentEnum weaponSetupHelper::getSightTypeToCreate(){
     return sightToSet;
 }
 
+weaponAttachmentEnum weaponSetupHelper::getMuzzleTypeToCreate(){
+    return muzzleToSet;
+}
+
 /// @brief will apply seelcted attachment to a weapon if not null
 /// @param weaponIn 
 void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
@@ -76,6 +89,8 @@ void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
         //apply attachments such as sights etc...
 
         weaponIn->applySight(sightToSet);
+        weaponIn->applyMuzzle(muzzleToSet);
+        // apply muzzle attachment later too.
     }
 }
 
@@ -93,12 +108,41 @@ std::vector<weaponAttachmentEnum> weaponSetupHelper::validGrips(){
     };
     return output;
 }
+std::vector<weaponAttachmentEnum> weaponSetupHelper::validMuzzleAttachments(){
+    std::vector<weaponAttachmentEnum> output = {
+        weaponAttachmentEnum::muzzle_flashSurpressor,
+        weaponAttachmentEnum::muzzle_SoundSurpressor
+    };
+    return output;
+}
+
 
 
 bool weaponSetupHelper::isASightAttachment(weaponAttachmentEnum type){
     std::vector<weaponAttachmentEnum> sights = validSights();
     for (int i = 0; i < sights.size(); i++){
         if(sights[i] == type){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool weaponSetupHelper::isAMuzzleAttachment(weaponAttachmentEnum type){
+    std::vector<weaponAttachmentEnum> attachments = validMuzzleAttachments();
+    for (int i = 0; i < attachments.size(); i++){
+        if(attachments[i] == type){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool weaponSetupHelper::isAGripAttachment(weaponAttachmentEnum type){
+    std::vector<weaponAttachmentEnum> attachments = validGrips();
+    for (int i = 0; i < attachments.size(); i++){
+        if(attachments[i] == type){
             return true;
         }
     }
