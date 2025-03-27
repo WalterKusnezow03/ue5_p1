@@ -75,6 +75,8 @@ public:
 	void updateAmmunitionText(int number);
 	void updateAmmunitionText(FString message);
 	void updateHealthText(int health);
+	void updateMissionText(FString messgae);
+	void updateMissionTextTimed(FString message);
 
 	UCanvasPanel *canvasPanelPointer();
 

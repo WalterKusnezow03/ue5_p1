@@ -18,6 +18,7 @@
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/rooms/testing/roomProcedural.h"
 #include "p2/DebugHelper.h"
+#include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
 #include "CoreMinimal.h"
@@ -213,6 +214,8 @@ int worldLevel::getGroundHeight(FVector &pos){
  * 
  */
 void worldLevel::Tick(float DeltaTime){
+
+    //tick terrain creation if not done yet by player distance
     referenceManager *referenceManagerPointer = referenceManager::instance();
     if(referenceManagerPointer != nullptr){
         if(terrainPointer != nullptr){
@@ -226,6 +229,9 @@ void worldLevel::Tick(float DeltaTime){
     if(p != nullptr){
         p->Tick();
     }
+
+    //tick player ui timer based actions
+    customUiComponentTickHandler::Tick(DeltaTime);
 }
 
 /** 

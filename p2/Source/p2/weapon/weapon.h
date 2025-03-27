@@ -68,6 +68,7 @@ public:
 	bool enoughBulletsInMag();
 	bool canShoot();
 	bool canReload();
+	virtual bool isSoundSurpressed();
 
 	float recoilValue();
 

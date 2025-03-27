@@ -55,7 +55,7 @@ protected:
 	//follow
 	class UCameraComponent *cameraPointer; // why class, idk, just keep it like that
 	class AActor *botPointer;
-	void followPlayer();
+	
 	FVector offset;
 
 	///offset vector, overriden by weapon script

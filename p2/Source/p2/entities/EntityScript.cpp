@@ -252,7 +252,17 @@ void AEntityScript::Tick(float DeltaTime)
 
 //allows the entity to take damage
 void AEntityScript::takedamage(int d){
+	takedamage(d, false);
+}
+/// @brief hitpoint processing not specified, will only damage as default
+/// @param d 
+/// @param hitpoint 
+void AEntityScript::takedamage(int d, FVector &hitpoint){
+	takedamage(d, hitpoint, false);
+}
 
+
+void AEntityScript::takedamage(int d, bool surpressed){
 	//showScreenMessage("enemy entity damage");
 	health -= d;
 	if(health <= 0){
@@ -260,12 +270,13 @@ void AEntityScript::takedamage(int d){
 		die();
 	}
 }
-/// @brief hitpoint processing not specified, will only damage as default
-/// @param d 
-/// @param hitpoint 
-void AEntityScript::takedamage(int d, FVector &hitpoint){
-	takedamage(d);
+
+void AEntityScript::takedamage(int d, FVector &hitpoint, bool surpressed){
+	takedamage(d, surpressed);
 }
+
+
+
 
 /// @brief checks if an actor is within 180 degree range to own forward vector
 /// @param target 

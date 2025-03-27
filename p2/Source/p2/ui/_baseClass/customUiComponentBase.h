@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Components/Widget.h"
-
+#include "customUiComponentTickHandler.h"
 #include "customUiComponentBase.generated.h"
 
 class UPlayerUi;
@@ -16,6 +16,40 @@ class P2_API UcustomUiComponentBase : public UObject{
     GENERATED_BODY()
 
 public:
+    //--- Ticker section ---
+    //destruct
+    virtual void BeginDestroy() override
+    {
+        //remove tick from tick handler
+        disableTick();
+
+        Super::BeginDestroy();
+    }
+
+    ///@brief is called by tick handler if subscribed
+    virtual void Tick(float DeltaTime){
+
+    }
+
+    void enableTick(){
+        if(!TICK_ENABLED){
+            customUiComponentTickHandler::subscribe(*this);
+            TICK_ENABLED = true;
+        }
+        
+    }
+
+    void disableTick(){
+        if(TICK_ENABLED){
+            customUiComponentTickHandler::unSubscribe(*this);
+            TICK_ENABLED = false;
+        }
+    }
+
+    //--- Ticker section end ---
+
+
+    //construct
     virtual void init(){
         WAS_INIT_FLAG = true;
     }
@@ -62,6 +96,8 @@ protected:
         }
     }
 
+private:
+    bool TICK_ENABLED = false;
 
 
 };

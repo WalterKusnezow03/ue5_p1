@@ -44,6 +44,14 @@ void AdebugEntity::takedamage(int d, FVector &from){
 	takedamage(d);
 }
 
+
+void AdebugEntity::takedamage(int d, bool surpressed){
+	takedamage(d);
+}
+void AdebugEntity::takedamage(int d, FVector &hitpoint, bool surpressed){
+	takedamage(d);
+}
+
 /// @brief sets the team, is empyt here, will not be set
 /// @param team 
 void AdebugEntity::setTeam(teamEnum team){

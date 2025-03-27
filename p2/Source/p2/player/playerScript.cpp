@@ -264,14 +264,22 @@ void AplayerScript::resetFlagsOnTick(){
  */
 void AplayerScript::takedamage(int d)
 {
+    takedamage(d, false);
+}
+
+void AplayerScript::takedamage(int d, FVector &hitpoint){
+    takedamage(d, hitpoint, false);
+}
+
+void AplayerScript::takedamage(int d, bool surpressed){
     health -= d;
 	if(health <= 0){
 		health = 0;
 	}
 }
 
-void AplayerScript::takedamage(int d, FVector &hitpoint){
-    takedamage(d);
+void AplayerScript::takedamage(int d, FVector &hitpoint, bool surpressed){
+    takedamage(d, surpressed);
 }
 
 //Movement
@@ -843,6 +851,18 @@ void AplayerScript::updateAmmunitionUi(){
 void AplayerScript::updateHealthUi(){
     if(uiInstance != nullptr){
         uiInstance->updateHealthText(health);
+    }
+}
+
+void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
+    if(uiInstance != nullptr){
+        FString message = entered ? "Outpost Area Entered" : "Outpost Area left";
+
+        if(entered){
+            uiInstance->updateMissionText(message);
+        }else{
+            uiInstance->updateMissionTextTimed(message);
+        }
     }
 }
 

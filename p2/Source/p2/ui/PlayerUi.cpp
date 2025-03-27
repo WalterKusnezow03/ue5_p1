@@ -98,41 +98,65 @@ void UPlayerUi::createPauseScreen(){
 
 void UPlayerUi::createLoadoutScreen(){
     loadoutScreen = NewObject<ULoadoutScreen>(this);
-    loadoutScreen->init(*this);
-
-    loadoutScreen->setVisible(false);
+    if(loadoutScreen){
+        loadoutScreen->init(*this);
+        loadoutScreen->setVisible(false);
+    }
 }
 
 
 
-//public api
+//public api ui update text
 
 void UPlayerUi::updateAmmunitionText(int number){
-    playerHud->updateAmmunitionText(number);
+    if(playerHud){
+        playerHud->updateAmmunitionText(number);
+    }
 }
 
 void UPlayerUi::updateAmmunitionText(FString message){
-    playerHud->updateAmmunitionText(message);
+    if(playerHud){
+        playerHud->updateAmmunitionText(message);
+    }
 }
 
 void UPlayerUi::updateHealthText(int health){
-    playerHud->updateHealthText(health);
+    if(playerHud){
+        playerHud->updateHealthText(health);
+    }
+}
+
+void UPlayerUi::updateMissionText(FString message){
+    if(playerHud){
+        playerHud->updateTopWaringElement(message);
+    }
+}
+
+void UPlayerUi::updateMissionTextTimed(FString message){
+    if(playerHud){
+        float timetolive = 2.0f;
+        playerHud->updateTopWarningElementTimed(message, timetolive);
+    }
 }
 
 
 
 
-
+//player interact api
 
 void UPlayerUi::openPauseScreen(){
-    playerHud->setVisible(false);
+    if(playerHud){
+        playerHud->setVisible(false);
+    }
     openedScreenStack.open(pauseScreen);
     showPlayerCursor(true);
 }
 
 void UPlayerUi::openGameScreen(){
     openedScreenStack.closeAll();
-    playerHud->setVisible(true);
+    if(playerHud){
+        playerHud->setVisible(true);
+    }
     showPlayerCursor(false);
 
     if(loadoutScreen){
@@ -145,7 +169,9 @@ void UPlayerUi::openGameScreen(){
 }
 
 void UPlayerUi::openLoadoutScreen(){
-    playerHud->setVisible(false);
+    if(playerHud){
+        playerHud->setVisible(false);
+    }
     openedScreenStack.open(loadoutScreen);
 }
 

@@ -109,6 +109,9 @@ void Aweapon::Tick(float DeltaTime)
 	TickVerschlussKickBack(DeltaTime);
 }
 
+
+//depreacted
+
 /// @brief Only for player:
 /// returns the offset vector of the sight and hipfire by value
 /// @return offset vector
@@ -302,8 +305,11 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 		//play animation
 		shootAnimation();
 
-		float distance = 50000; //50 * 100cm = 50m
-		AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
+		if(!isSoundSurpressed()){
+			float distance = 50000; //50 * 100cm = 50m
+			AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
+		}
+		
 	}
 }
 
@@ -321,6 +327,13 @@ bool Aweapon::canShoot(){
 	//here add too for single fire weapons
 	return enoughBulletsInMag() && !isCooling() && isActive(); //cant be show if weapon is not selected
 }
+
+bool Aweapon::isSoundSurpressed(){
+	return pickedMuzzle == weaponAttachmentEnum::muzzle_SoundSurpressor;
+}
+
+
+
 
 
 /// @brief aim method for THE PLAYER -> update each frame.

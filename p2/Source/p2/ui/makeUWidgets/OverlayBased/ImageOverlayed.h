@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "p2/gameStart/assetEnums/textureEnum.h"
+#include "p2/util/timer.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 #include "ImageOverlayed.generated.h"
@@ -28,18 +29,26 @@ public:
     }
 
     void setText(FString message);
+    void setTextTimed(FString message, float time);
     void setImage(textureEnum type);
     void setImage(textureEnum type, FVector2D scale);
 
     void showImage(bool hide);
+
+    virtual void Tick(float DeltaTime) override;
 
 protected:
     UOverlay *baseOverlay = nullptr;
     UTextBlock *TextBlock = nullptr;
     UImage *Image = nullptr;
 
+    class timer textTimer;
+    FString textOnEndTimer;
+
     void resetAllPointers();
     void createOverlay();
     void createImage();
     void createText();
+
+    void TickTextTimer(float deltaTime);
 };

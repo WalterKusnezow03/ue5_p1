@@ -40,37 +40,31 @@ void AOutpost::Tick(float DeltaTime)
 	}
 
 	if(referenceManager *r = referenceManager::instance()){
-		AplayerScript *player = r->getPlayerPointer();
-		if(player != nullptr){
-			FVector location = player->GetActorLocation();
 
-			//float dist = (FVector::Dist(location, GetActorLocation()) / 100);
-			//DebugHelper::showScreenMessage(FString::Printf(TEXT("dist outpost %f"), dist));
-
-			bool inRange = isInRange(location);
-			if(!inRange){
-				//despawn
-				releaseAll();
-				switchPlayerEnteredStatus(false);
-			}
-			else
-			{
-				//spawn if needed
-				initEntitiesIfNeeded();
-				switchPlayerEnteredStatus(true);
-			}
+		FVector location = r->playerLocation();
+		if(isInRange(location)){
+			//spawn if needed
+			initEntitiesIfNeeded();
+			switchPlayerEnteredStatus(true);
+		}else{
+			//despawn if needed
+			releaseAll();
+			switchPlayerEnteredStatus(false);
 		}
 	}
 
 
 	//show 50 meter outline
-	FVector outlineAdd(0, MAXDISTANCE_RADIUS, 0);
-	FVector outlineUp(0, 0, MAXDISTANCE_RADIUS);
-	FVector corner = GetActorLocation();
-	FVector draw = corner + outlineAdd;
-	FVector drawEnd = draw + outlineUp;
-	DebugHelper::showLineBetween(GetWorld(), corner, draw, FColor::Red);
-	DebugHelper::showLineBetween(GetWorld(), draw, drawEnd, FColor::Red);
+	if(false){
+		FVector outlineAdd(0, MAXDISTANCE_RADIUS, 0);
+		FVector outlineUp(0, 0, MAXDISTANCE_RADIUS);
+		FVector corner = GetActorLocation();
+		FVector draw = corner + outlineAdd;
+		FVector drawEnd = draw + outlineUp;
+		DebugHelper::showLineBetween(GetWorld(), corner, draw, FColor::Red);
+		DebugHelper::showLineBetween(GetWorld(), draw, drawEnd, FColor::Red);
+	}
+	
 }
 
 
@@ -80,11 +74,23 @@ void AOutpost::switchPlayerEnteredStatus(bool status){
 
 	if(status != playerEntered){
 		playerEntered = status;
+
+		if(referenceManager *r = referenceManager::instance()){
+			AplayerScript *player = r->getPlayerPointer();
+			if(player != nullptr){
+				player->updatePlayerEnteredAreaUi(playerEntered);
+			}
+		}
+
+		
+
+		//Debug
+		/*
 		if(playerEntered){
 			DebugHelper::showScreenMessage("player entered the area");
 		}else{
 			DebugHelper::showScreenMessage("player left the area");
-		}
+		}*/
 	}
 
 }

@@ -33,20 +33,20 @@ void UPlayerHud::createBasePlayerHud(){
 
 
 void UPlayerHud::createAmmunitionHudElement(){
+    if(playerHudCornerLayout){
+        ammunitionTextAndImage = NewObject<UTextAndImage>(this);
 
-    ammunitionTextAndImage = NewObject<UTextAndImage>(this);
+        if(ammunitionTextAndImage){
+            ammunitionTextAndImage->init();
 
-    if(ammunitionTextAndImage){
-        ammunitionTextAndImage->init();
+            ammunitionTextAndImage->setImage(
+                textureEnum::patroneIcon,
+                FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
+            );
 
-        ammunitionTextAndImage->setImage(
-            textureEnum::patroneIcon,
-            FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
-        );
-
-        UWidget *pointerOfTextImageLayout = ammunitionTextAndImage->baseLayoutPointer();
-        if(pointerOfTextImageLayout != nullptr){
-            if(playerHudCornerLayout){
+            UWidget *pointerOfTextImageLayout = ammunitionTextAndImage->baseLayoutPointer();
+            if(pointerOfTextImageLayout != nullptr){
+                
                 playerHudCornerLayout->addChildToBottomRight(pointerOfTextImageLayout);
             }
         }
@@ -55,18 +55,18 @@ void UPlayerHud::createAmmunitionHudElement(){
 }
 
 void UPlayerHud::createHealthHudElement(){
-    healthTextAndImage = NewObject<UTextAndImage>(this);
-    
-    if(healthTextAndImage){
-        healthTextAndImage->init();
-        healthTextAndImage->setImage(
-            textureEnum::healthIcon,
-            FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
-        );
+    if(playerHudCornerLayout){
 
-        UWidget *pointerOfTextImageLayout = healthTextAndImage->baseLayoutPointer();
-        if(pointerOfTextImageLayout != nullptr){
-            if(playerHudCornerLayout){
+        healthTextAndImage = NewObject<UTextAndImage>(this);
+        if(healthTextAndImage){
+            healthTextAndImage->init();
+            healthTextAndImage->setImage(
+                textureEnum::healthIcon,
+                FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
+            );
+
+            UWidget *pointerOfTextImageLayout = healthTextAndImage->baseLayoutPointer();
+            if(pointerOfTextImageLayout != nullptr){
                 playerHudCornerLayout->addChildToBottomLeft(pointerOfTextImageLayout);
             }
         }
@@ -75,10 +75,20 @@ void UPlayerHud::createHealthHudElement(){
 }
 
 void UPlayerHud::createTopWarningElement(){
+    if(playerHudCornerLayout){
+        topWaringElement = NewObject<UImageOverlayed>(this);
+        if(topWaringElement){
+            topWaringElement->init();
 
+            UWidget *basePointerOfLayout = topWaringElement->baseLayoutPointer();
+            if(basePointerOfLayout != nullptr){
+                playerHudCornerLayout->addChildToTopCenter(basePointerOfLayout);
+            }
+
+            updateTopWaringElement("top element");
+        }
+    }
 }
-
-
 
 /// ----- PLAYER HUD SECTION ----- END
 
@@ -104,3 +114,16 @@ void UPlayerHud::updateHealthText(int health){
     
 }
 
+
+void UPlayerHud::updateTopWaringElement(FString message){
+    if(topWaringElement){
+        topWaringElement->setText(message);
+    }
+}
+
+///@brief updates the top text but will reset it after the time to live has exceeded
+void UPlayerHud::updateTopWarningElementTimed(FString message, float timetolive){
+    if(topWaringElement){
+        topWaringElement->setTextTimed(message, timetolive);
+    }
+}

@@ -51,13 +51,41 @@ void UImageOverlayed::createText(){
 
 
 
-
+///@brief will set the text and kill the text timer if it was enabled
 void UImageOverlayed::setText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
+        Super::disableTick();
     }
 }
 
+void UImageOverlayed::setTextTimed(FString message, float time){
+    if(TextBlock != nullptr){
+        setText(message);
+        textOnEndTimer = FString::Printf(TEXT(""));
+
+        bool resetsItself = false;
+        textTimer.Begin(time, resetsItself);
+        //enable tick if not yet enabled
+        Super::enableTick();
+    }
+}
+
+//tick for text from base class
+void UImageOverlayed::Tick(float DeltaTime){
+    Super::Tick(DeltaTime);
+    TickTextTimer(DeltaTime);
+}
+
+void UImageOverlayed::TickTextTimer(float deltaTime){
+    if(!textTimer.timesUp()){
+        textTimer.Tick(deltaTime);
+        if(textTimer.timesUp()){
+            setText(textOnEndTimer);
+        }
+    }
+    
+}
 
 void UImageOverlayed::setImage(textureEnum type){
     setImage(type, FVector2D(0.5f, 0.5f));

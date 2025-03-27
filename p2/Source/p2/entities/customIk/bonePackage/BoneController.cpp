@@ -586,6 +586,14 @@ void BoneController::LookAt(FVector TargetLocation)
 		//isWaitingForAnimStop = true;
 
 
+		//abort climb(?) //unklar. Bot muss reagieren wenn das
+		//klettern stuck ist, müsste man es abbrechen.
+		/*
+		if(currentMotionState == BoneControllerStates::locomotionClimbAll){
+			currentMotionState = BoneControllerStates::none;
+		}
+		*/
+
 		//walk towards wanted rotation
 		if(currentMotionState == BoneControllerStates::none){
 			rotationWithoutLocomotion = true;

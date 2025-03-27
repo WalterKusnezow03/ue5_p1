@@ -27,6 +27,8 @@ public:
 	//inherited from interface
 	virtual void takedamage(int d) override;
 	virtual void takedamage(int d, FVector &from) override;
+	virtual void takedamage(int d, bool surpressed) override;
+	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
 
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 

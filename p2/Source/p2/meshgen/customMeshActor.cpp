@@ -80,9 +80,9 @@ void AcustomMeshActor::setMaterialAndHealthAndSplitOnDeath(materialEnum mat, int
 
 // --- derived methods from damageinferface ---
 
-/// @brief will allow custom emsh actors such as destructables and terrain react to damage
+/// @brief will allow custom mesh actors such as destructables and terrain react to damage
 /// @param d 
-void AcustomMeshActor::takedamage(int d){
+void AcustomMeshActor::takedamage(int d, bool surpressed){
     //damage owner as this could be a kimb of an actor
     if(damagedOwner != nullptr){
         damagedOwner->takedamage(d);
@@ -116,16 +116,27 @@ void AcustomMeshActor::takedamage(int d){
             }
         }
     }
+}
 
+
+
+void AcustomMeshActor::takedamage(int d){
+    takedamage(d, false);
 }
 
 /// @brief allows tha ctor to react to damage from a origin
 /// @param d 
 /// @param hitpoint hitpoint from weapon  
 void AcustomMeshActor::takedamage(int d, FVector &hitpoint){
+    takedamage(d, hitpoint, false);
+}
+
+
+
+void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
     debugThis(hitpoint);
     glassreactionToHitWorld(hitpoint); 
-    takedamage(d);
+    takedamage(d, surpressed);
 
     EntityManager *entityManager = worldLevel::entityManager();
     if(entityManager != nullptr){
@@ -133,8 +144,10 @@ void AcustomMeshActor::takedamage(int d, FVector &hitpoint){
         FVector originPoint = GetActorLocation();
         entityManager->createDebree(GetWorld(), hitpoint, materialtypeSet);
     }
-
 }
+
+
+
 
 void AcustomMeshActor::setTeam(teamEnum t){
     this->team = t;

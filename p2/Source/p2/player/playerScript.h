@@ -31,6 +31,8 @@ public:
 	AplayerScript();
 	virtual void takedamage(int d) override;
 	virtual void takedamage(int d, FVector &hitpoint) override;
+	virtual void takedamage(int d, bool surpressed) override;
+	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 
@@ -65,6 +67,8 @@ public:
     class UAnimInstance* AnimInstance;
 
 	FRotator cameraRotation();
+
+	void updatePlayerEnteredAreaUi(bool entered);
 
 private:
 	bool isCamInPlayer = true;

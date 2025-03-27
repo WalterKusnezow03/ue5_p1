@@ -36,7 +36,6 @@ void AcarriedItem::BeginPlay()
 void AcarriedItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//followPlayer();
 
 }
 
@@ -50,58 +49,6 @@ void AcarriedItem::showScreenMessage(FString s){
 }
 
 
-/// @brief follows the player or bot around when picked up
-void AcarriedItem::followPlayer(){
-/*
-	if(cameraPointer == nullptr && botPointer == nullptr){
-		return;
-	}
-
-	//DEBUG FOR BONE CONTROLLER:
-	return;
-
-	//player follow if player picked up
-	if (isPickedupByPlayer())
-	{
-		FVector targetPos = cameraPointer->GetComponentLocation() + 
-							cameraPointer->GetForwardVector() * 100.0f +
-							getOffsetVector(); //sight offset and hipfire
-
-        FRotator targetRotation = cameraPointer->GetComponentRotation();
-        
-        // Smoothly interpolate position and rotation
-        FVector currentPos = GetActorLocation();
-        FRotator currentRotation = GetActorRotation();
-
-		//works a bit better than lerping, but still jitters sometimes sadly
-		SetActorLocation(targetPos); 
-        
-        //SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
-        SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-		return; //dont check for bot.
-	}
-
-	//bot follow if bot picked up ----> will be attached instead! ----> New: attached by skelletal mesh!
-	
-	if(botPointer != nullptr){
-		FVector targetPos = botPointer->GetActorLocation() +
-							botPointer->GetActorForwardVector() * 100.0f;
-							//+ getOffsetVector();
-
-		FRotator targetRotation = botPointer->GetActorRotation();
-        
-        // Smoothly interpolate position and rotation
-        FVector currentPos = GetActorLocation();
-        FRotator currentRotation = GetActorRotation();
-		SetActorLocation(targetPos);
-
-		//SetActorLocation(FMath::VInterpTo(currentPos, targetPos, GetWorld()->GetDeltaSeconds(), 50.0f));
-        SetActorRotation(FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 50.0f));
-
-	}
-*/
-	
-}
 
 /// @brief Only for player:
 /// returns the offset vector of the sight and hipfire by value
@@ -134,14 +81,8 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 
 		showItem(true);
 		
-
-		//attachment to actor / component
-		//this->AttachToActor(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
-		
-		
-		
-		
-		//DEBUG HIDDEN FOR BONE CONTROLLER
+	
+		//DEBUG HIDDEN FOR BONE CONTROLLER -- BONE CONTROLLER MANAGES ALL WEAPON POSITIONS IN WORLD
 		/**
 		 * this->AttachToComponent(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 		 * */
@@ -198,6 +139,7 @@ bool AcarriedItem::isActive(){
 
 /// @brief drops the item and enables the collider, removes all owners
 void AcarriedItem::drop(){
+	//deprecated, position managed by bone controller
 	/*
 	if(cameraPointer != nullptr){
 		//detach from camera
