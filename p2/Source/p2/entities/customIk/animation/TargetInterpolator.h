@@ -105,6 +105,5 @@ protected:
 		float t
 	);
 
-
-
+	void updateReachedFlagBasedOnDistance();
 };

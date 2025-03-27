@@ -24,12 +24,13 @@ bool TargetInterpolator::hasTargetSetup(){
 }
 
 void TargetInterpolator::setTarget(FVector fromIn, FVector totarget, float timeToFrameIn){
-    from = fromIn;
-    target = totarget;
-    timeToFrame = timeToFrameIn;
+    setNewTimeToFrame(timeToFrameIn);
     deltaTime = 0.0f;
     reached = false;
     targetSetup = true;
+    overrideStart(fromIn);
+    overrideTarget(totarget);
+    updateReachedFlagBasedOnDistance();
 }
 
 void TargetInterpolator::setTarget(
@@ -99,7 +100,7 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
 
 
     // Aktualisiere Startpunkt
-    from = newStart;
+    overrideStart(newStart);
 
     // Neue Time-to-Frame berechnen
     float newDistance = FVector::Dist(from, target);
@@ -111,6 +112,11 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
     if(timeToFrame < 0.01f){
         reached = true;
     }
+
+    if(!reached){
+        updateReachedFlagBasedOnDistance();
+    }
+    
 }
 
 void TargetInterpolator::overrideStartSpeedRelative(FRotator newRotation){
@@ -145,7 +151,7 @@ void TargetInterpolator::resetDeltaTime(){
 }
 
 void TargetInterpolator::setNewTimeToFrame(float time){
-    timeToFrame = time;
+    timeToFrame = std::abs(time);
     reached = false;
 }
 
@@ -160,21 +166,23 @@ FVector TargetInterpolator::interpolate(float DeltaTime){
         worldtargetSetup = false;
         return target;
     }
-    if(deltaTime >= timeToFrame){
+    deltaTime += DeltaTime;
+    float skalarCurrent = skalar();
+
+    if(deltaTime >= timeToFrame || skalarCurrent >= 1.0f){
         reached = true;
         deltaTime = 0.0f;
         worldtargetSetup = false;
         return target;
     }
 
-    deltaTime += DeltaTime;
-    
+
     
     FVector connect = target - from; // AB = B - A  
     //gx = A + r (B - A)
     //FVector interpolated = from + skalar() * connect;
 
-    float skalarCurrent = skalar();
+    
     
     FVector interpolated = TargetInterpolator::interpolation(from, target, skalarCurrent);
 
@@ -269,7 +277,7 @@ float TargetInterpolator::skalar(){
     //hier muss ein epsilon value sein!
     //1 / 0 = unendlich
     float epsilon = 0.1f;
-    if (timeToFrame <= 0 + epsilon)
+    if (timeToFrame <= 0.0f + epsilon)
     {
         return 1.0f;
     }
@@ -305,7 +313,10 @@ FVector TargetInterpolator::interpolation(FVector fromIn, FVector toIn, float sk
 }
 
 FRotator TargetInterpolator::interpolationRotation(FRotator fromIn, FRotator toIn, float skalar){
-    
+    if(skalar >= 1.0f){
+        return toIn;
+    }
+
     FRotator output;
     output.Roll = fromIn.Roll + skalar * rotationDirectionShorter(fromIn.Roll, toIn.Roll);
     output.Pitch = fromIn.Pitch + skalar * rotationDirectionShorter(fromIn.Pitch, toIn.Pitch);
@@ -478,4 +489,17 @@ FVector TargetInterpolator::HermiteInterpolate(
     float h3 = t3 - t2;
 
     return (p0 * h0) + (p1 * h1) + (m0 * h2) + (m1 * h3);
+}
+
+
+
+
+//new helper
+void TargetInterpolator::updateReachedFlagBasedOnDistance(){
+    //testing
+    if(FVector::Dist(from, target) <= 0.5f){
+        reached = true;
+    }else{
+        reached = false;
+    }
 }

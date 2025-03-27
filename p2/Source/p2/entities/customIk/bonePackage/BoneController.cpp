@@ -313,7 +313,7 @@ void BoneController::setupAnimation(){
 
 
 	//setup climbing
-	KeyFrameAnimation climbAnimationKeys = KeyFrameAnimation(false); //instant flip animation
+	KeyFrameAnimation climbAnimationKeys = KeyFrameAnimation(false); //kein loop
 	climbAnimationKeys.useHermiteSplineInterpolation(false);
 	climbAnimationKeys.addFrame(
 		FVector(0, 0, -armScaleCM),
@@ -328,8 +328,8 @@ void BoneController::setupAnimation(){
 		armScaleCM
 	);
 	climbAnimationKeys.addFrame(
-		FVector(armScaleCM, 0, armScaleCM), //nach oben strecken, so weit wie es geht
-		1.5f, //time to prev frame
+		FVector(10, 0, armScaleCM), //nach oben strecken, so weit wie es geht
+		0.5f, //time to prev frame
 		true, //GROUNDED
 		armScaleCM
 	);
@@ -857,6 +857,10 @@ void BoneController::stopLocomotion(){
 /// @brief needs to be called every frame from the player!
 /// @param camera camera of the player
 void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
+	if(wingsuitMarkedOpen){
+		return;
+	}
+
 	/**
 	 * IS TESTED - should ensure proper weapon location infront of camera
 	 */
@@ -954,7 +958,7 @@ void BoneController::dropWeapon(){
 
 void BoneController::openWingsuit(){
 	if(!wingsuitMarkedOpen){
-		armMotionQueue.updateStateIfPossible(ArmMotionStates::wingsuitOpen);
+		armMotionQueue.updateState(ArmMotionStates::wingsuitOpen);
 		wingsuitMarkedOpen = true;
 		currentMotionState = BoneControllerStates::wingsuitOpenState;
 
@@ -963,7 +967,7 @@ void BoneController::openWingsuit(){
 
 void BoneController::closeWingsuit(){
 	if(wingsuitMarkedOpen){
-		armMotionQueue.updateStateIfPossible(ArmMotionStates::handsFollowItem);
+		armMotionQueue.updateState(ArmMotionStates::handsFollowItem);
 		wingsuitMarkedOpen = false;
 		currentMotionState = BoneControllerStates::none;
 
@@ -1207,7 +1211,7 @@ void BoneController::TickArms(float DeltaTime){
 		}
 	}
 
-
+	//defaul arm movement
 	MMatrix *endEffectorLeft = findEndEffector(SHOULDER_1);
 	MMatrix *endEffectorRight = findEndEffector(SHOULDER_2);
 
@@ -1474,9 +1478,9 @@ void BoneController::playForwardKinematicAnim(
 
 
 	//override motion state if needed
-	//if(switchToClimbLocomotion && currentMotionState == BoneControllerStates::locomotion){
 	if(container.startClimb()){
 		currentMotionState = BoneControllerStates::locomotionClimbAll; //switch to climb motion
+		armClimbKeys_1.resetAnimationToStartAndResetRotation();
 
 		//put item to holster
 		armMotionQueue.updateState(ArmMotionStates::holsterItem);
@@ -1619,14 +1623,63 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 
 	//new: block climbing while arm motion is transitioning
 	if(armMotionQueue.isTransitioning()){
+
+		DebugHelper::showScreenMessage("climb transit", FColor::Orange);
+
 		TickLegsNone(DeltaTime);
 		TickArms(DeltaTime);
 		//DebugHelper::showScreenMessage("climb, arm in transit");
 		return;
 	}
 
-	DebugHelper::showScreenMessage("climb all");
 
+	//new simplified testing
+	std::vector<int> limbs;
+	std::vector<DoubleKeyFrameAnimation *> animations;
+	
+	bool isDone = armClimbKeys_1.animationCycleWasComplete();
+	if (!isDone)
+	{
+		DebugHelper::showScreenMessage("climb move hand");
+		limbs.push_back(SHOULDER_1);
+		animations.push_back(&armClimbKeys_1);
+	
+		playForwardAndBackwardKinematicAnimSynchronized(
+			DeltaTime,
+			limbs,
+			animations
+		);
+	}else{
+		currentMotionState = BoneControllerStates::locomotion;
+
+		//hier ggf noch leg reset
+		if(true){
+			legDoubleKeys_1.resetAnimationToStartAndResetRotation();
+			legDoubleKeys_2.resetAnimationToStartAndResetRotation();
+
+
+			//das hier auszukommentieren, bringt nichts beim bug wo die end limbs so rumglitchen
+			//auf 90 grad dings.
+			//leg 1 reached, 2 update just as default walking
+			if(leg1isPlaying){
+				FVector footPos = ownLocationFoot2.getTranslation();
+				transformFromWorldToLocalCoordinates(footPos, FOOT_2);
+				legDoubleKeys_2.overrideCurrentStartingFrame(footPos);
+			}else{
+				FVector footPos = ownLocationFoot1.getTranslation();
+				transformFromWorldToLocalCoordinates(footPos, FOOT_1);
+				legDoubleKeys_1.overrideCurrentStartingFrame(footPos);
+			}
+		}
+
+
+		return;
+	}
+
+	TickLimbNone(SHOULDER_2, DeltaTime);
+	TickLimbNone(FOOT_2, DeltaTime);
+	//OLD
+	/*
 	//switch to next leg but update relative position
 	
 	//hand reached target, end effector bleibt gelockt für das bein
@@ -1639,6 +1692,7 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 		MMatrix startMat = currentTransform(FOOT_1);
 		legDoubleKeys_1.skipAnimationOnceWorld(startMat, footPos, frame);
 	}
+
 	//if climb complete: allow leg to finish
 	if(armClimbKeys_1.animationCycleWasComplete()){
 		if(climb_hand1cycleComplete == false){
@@ -1670,6 +1724,7 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 
 	//nur anticken wenn man sich hochzieht, und noch nicht fertig war
 	if(!climb_hand1cycleComplete){
+		DebugHelper::showScreenMessage("climb move hand");
 		limbs.push_back(SHOULDER_1);
 		animations.push_back(&armClimbKeys_1);
 	}else{
@@ -1696,7 +1751,7 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 	TickArms(DeltaTime);
 	TickLimbNone(FOOT_2, DeltaTime);
 
-	
+	*/
 }
 
 
