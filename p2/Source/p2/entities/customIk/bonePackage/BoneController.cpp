@@ -1624,7 +1624,7 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 	//new: block climbing while arm motion is transitioning
 	if(armMotionQueue.isTransitioning()){
 
-		DebugHelper::showScreenMessage("climb transit", FColor::Orange);
+		//DebugHelper::showScreenMessage("climb transit", FColor::Orange);
 
 		TickLegsNone(DeltaTime);
 		TickArms(DeltaTime);
@@ -1640,7 +1640,18 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 	bool isDone = armClimbKeys_1.animationCycleWasComplete();
 	if (!isDone)
 	{
-		DebugHelper::showScreenMessage("climb move hand");
+
+		playForwardAndBackwardKinematicAnim(
+			arm1,
+			armClimbKeys_1,
+			ownLocationHand1, // MMatrix foot transform
+			DeltaTime,
+			FColor::Orange,
+			SHOULDER_1
+		);
+
+		/*
+		//DebugHelper::showScreenMessage("climb move hand");
 		limbs.push_back(SHOULDER_1);
 		animations.push_back(&armClimbKeys_1);
 	
@@ -1648,9 +1659,10 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 			DeltaTime,
 			limbs,
 			animations
-		);
+		);*/
 	}else{
 		currentMotionState = BoneControllerStates::locomotion;
+		armMotionQueue.updateState(ArmMotionStates::handsFollowItem);
 
 		//hier ggf noch leg reset
 		if(true){

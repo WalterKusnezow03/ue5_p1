@@ -494,12 +494,16 @@ FVector TargetInterpolator::HermiteInterpolate(
 
 
 
-//new helper
+//new helper - removes useless interpolations. 
 void TargetInterpolator::updateReachedFlagBasedOnDistance(){
     //testing
-    if(FVector::Dist(from, target) <= 0.5f){
+    float epsilon = 0.1f; //0.5f
+    if (FVector::Dist(from, target) <= epsilon)
+    { // 0.5cm
         reached = true;
-    }else{
+    }
+    else
+    {
         reached = false;
     }
 }

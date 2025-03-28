@@ -62,6 +62,13 @@ void weaponSetupHelper::setMuzzleAttachment(weaponAttachmentEnum typein){
     }
 }
 
+void weaponSetupHelper::setGripAttachment(weaponAttachmentEnum typein){
+    if(isAGripAttachment(typein)){
+        gripToSet = typein;
+    }
+}
+
+
 
 
 
@@ -82,6 +89,10 @@ weaponAttachmentEnum weaponSetupHelper::getMuzzleTypeToCreate(){
     return muzzleToSet;
 }
 
+weaponAttachmentEnum weaponSetupHelper::getGripTypeToCreate(){
+    return gripToSet;
+}
+
 /// @brief will apply seelcted attachment to a weapon if not null
 /// @param weaponIn 
 void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
@@ -90,7 +101,7 @@ void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
 
         weaponIn->applySight(sightToSet);
         weaponIn->applyMuzzle(muzzleToSet);
-        // apply muzzle attachment later too.
+        weaponIn->applyGrip(gripToSet);
     }
 }
 
@@ -115,6 +126,7 @@ std::vector<weaponAttachmentEnum> weaponSetupHelper::validMuzzleAttachments(){
     };
     return output;
 }
+
 
 
 

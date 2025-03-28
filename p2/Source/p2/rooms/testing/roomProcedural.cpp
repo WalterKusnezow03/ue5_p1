@@ -56,6 +56,8 @@ void AroomProcedural::createRoom(
 		true
 	);*/
 
+	//reset height because mesh starts at 0 height, world location is set by actor itself
+	location.Z = 0.0f;
 	int layers = FVectorUtil::randomNumber(1, 3);
 	for (int i = 0; i < layers; i++){
 		bool openForStaircaseBottom = (i != 0);
@@ -69,6 +71,9 @@ void AroomProcedural::createRoom(
 			openForStaircaseTop
 		);
 	}
+
+	//very important to reload the mesh
+	ReloadMeshAndApplyAllMaterials();
 }
 
 
@@ -208,8 +213,6 @@ void AroomProcedural::createRoom(
 		raycastOnLayer
 	);
 
-	//very important to reload the mesh
-	ReloadMeshAndApplyAllMaterials();
 
 
 	//go to next layer

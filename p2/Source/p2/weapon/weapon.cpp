@@ -1014,7 +1014,7 @@ void Aweapon::flagKickbackStart(){
 }
 
 void Aweapon::setupKickBackAnimation(){
-	int kickBackDistance = 3; //3cm
+	int kickBackDistance = 10; //3cm
 
 	actorKickBackAnim = KeyFrameAnimation(false); // instant flip animation, dont loop at end to start
 	actorKickBackAnim.useHermiteSplineInterpolation(false); //linear default
