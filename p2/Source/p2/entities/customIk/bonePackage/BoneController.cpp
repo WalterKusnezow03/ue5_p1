@@ -2192,11 +2192,10 @@ void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
 
 void BoneController::TickFalling(float DeltaTime){
 	if(!fallingGravityInterpolator.groundReachedFlag()){
-		//fallingGravityInterpolator.Tick(DeltaTime);
 		TickLegsNone(DeltaTime);
 		TickArms(DeltaTime);
 
-		DebugHelper::showScreenMessage("is falling", FColor::Purple);
+		//DebugHelper::showScreenMessage("is falling", FColor::Purple);
 
 		FVector currentPos = ownLocation.getTranslation();
 		FVector hipLocationAddVector = fallingGravityInterpolator.interpolate(currentPos, DeltaTime);

@@ -85,7 +85,7 @@ private:
 
 	bool DEBUGDRAW_RAYCAST = false;
 
-	float raycastVerticalStartOffsetAdd = 400.0f; //500.0f
+	float raycastVerticalStartOffsetAdd = 250.0f; //400.0f
 	float raycastScaleVector = 5000.0f;
 
 	FVector latestInterpolation;

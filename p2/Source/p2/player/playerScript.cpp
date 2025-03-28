@@ -33,7 +33,7 @@ AplayerScript::AplayerScript()
     aiming = false;
 
     // Set capsule size
-    float radius = 55.0f;
+    float radius = 45.0f;
     float halfHeight = 85.0f; //100cm leg, 70 arms / torso = 170 -> 170 /2 = 85.0f
     GetCapsuleComponent()->InitCapsuleSize(radius, halfHeight);
 
