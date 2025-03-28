@@ -29,6 +29,7 @@ public:
 	static bool directionIsVertical(FVector &A);
 
 	static int randomNumber(int range);
+	static int randomNumberAbs(int range);
 	static int randomNumber(int lower, int higher);
 	static float randomFloatNumber(int lower, int higher);
 	static void fillWithRandomNumbers(std::vector<int> &nums, int count, int lower, int higher);

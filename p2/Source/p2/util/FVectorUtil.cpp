@@ -122,10 +122,21 @@ int FVectorUtil::randomNumber(int lower, int higher){
     }
     if (a < lower) //clamp lower bound
     {
-        return lower;
+        return lower + a;
     }
     return a;
 }
+
+
+
+
+int FVectorUtil::randomNumberAbs(int range){
+    int r = std::rand();
+    r %= range;
+    return r;
+}
+
+
 
 /// @brief generates a random float variable between 2 floats
 /// @param lower lower bound
