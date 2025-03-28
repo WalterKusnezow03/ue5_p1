@@ -852,8 +852,6 @@ void BoneController::stopLocomotion(){
 
 
 
-
-
 /// @brief needs to be called every frame from the player!
 /// @param camera camera of the player
 void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
@@ -1019,7 +1017,9 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 		TickWingsuitUpdate(DeltaTime);
 	}
 
-	
+	if(currentMotionState == BoneControllerStates::falling){
+		TickFalling(DeltaTime);
+	}
 }
 
 
@@ -1478,14 +1478,8 @@ void BoneController::playForwardKinematicAnim(
 
 
 	//override motion state if needed
-	if(container.startClimb()){
-		currentMotionState = BoneControllerStates::locomotionClimbAll; //switch to climb motion
-		armClimbKeys_1.resetAnimationToStartAndResetRotation();
-
-		//put item to holster
-		armMotionQueue.updateState(ArmMotionStates::holsterItem);
-		return;
-	}
+	startClimbingIfNeeded(container);
+	startFallingIfNeeded(container);
 
 	//do movement
 	//nochmal neu rechnen nach offset
@@ -1604,7 +1598,18 @@ float BoneController::addVelocityBasedOnState(){
 
 
 
+void BoneController::startClimbingIfNeeded(FrameProjectContainer &container){
+	if(currentMotionState != BoneControllerStates::locomotionClimbAll){
+		if (container.startClimb()){
+			currentMotionState = BoneControllerStates::locomotionClimbAll; //switch to climb motion
+			armClimbKeys_1.resetAnimationToStartAndResetRotation();
 
+			//put item to holster
+			armMotionQueue.updateState(ArmMotionStates::holsterItem);
+			return;
+		}
+	}
+}
 
 
 
@@ -1832,6 +1837,7 @@ FrameProjectContainer BoneController::generateFrameProjectContainer(int limbinde
 
 	float minHeightClimb = armScaleCM * 1.8f;
 	float maxHeightDoesntAllowClimb = armScaleCM * 2.5f; // max height
+	float minHeightBeforeFalling = -2.0f * legScaleCM;
 
 	//debug
 	maxHeightDoesntAllowClimb = 9999999.0f;
@@ -1843,6 +1849,7 @@ FrameProjectContainer BoneController::generateFrameProjectContainer(int limbinde
 		lookDir, 
 		minHeightClimb, 
 		maxHeightDoesntAllowClimb,
+		minHeightBeforeFalling,
 		currentMotionState
 	);
 
@@ -2133,4 +2140,76 @@ void BoneController::playAnimationLegForPlayer(KeyFrameAnimation &frames, float 
 //ONLY FOR PLAYER
 bool BoneController::playerHasMovedFlag(){
 	return playerMoved;
+}
+
+
+
+
+
+
+
+/*
+ * 
+ * ----- COLLAPSE AND FALLING TESTING SECTION ------ 
+ * 
+ */
+
+void BoneController::collapse(){
+	if(currentMotionState != BoneControllerStates::collapse){
+
+		//nachdenken:
+		//wenn state locomotion war, in die richtung fallen?
+		//es braucht einen interpolator der das fallen handelt
+		//die ground angle kann aus jetzigen aufgesetzten fuß und
+		//raycast bestimmt werden
+
+		currentMotionState = BoneControllerStates::collapse;
+	}
+}
+
+void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
+	if(currentMotionState != BoneControllerStates::falling){
+		if(container.startFalling()){
+			currentMotionState = BoneControllerStates::falling;
+
+			//read frame from container and apply.
+			FVector worldHit = container.getWorldHit(); //ground distance is passed by leg 1 in tick fall
+			
+			//remove leg offset (?)
+			FVector toHip = ownLocation.getTranslation() - ownLocation.getTranslation();
+
+			//debug:
+			toHip = FVector(0, 0, legScaleCM);
+
+			worldHit += toHip;
+
+			fallingGravityInterpolator.updateGroundPosition(worldHit);
+			fallingGravityInterpolator.resetVelocity();
+
+		}
+	}
+}
+
+void BoneController::TickFalling(float DeltaTime){
+	if(!fallingGravityInterpolator.groundReachedFlag()){
+		//fallingGravityInterpolator.Tick(DeltaTime);
+		TickLegsNone(DeltaTime);
+		TickArms(DeltaTime);
+
+		DebugHelper::showScreenMessage("is falling", FColor::Purple);
+
+		FVector currentPos = ownLocation.getTranslation();
+		FVector hipLocationAddVector = fallingGravityInterpolator.interpolate(currentPos, DeltaTime);
+		FVector hipLocationUpdated = hipLocationAddVector + currentPos;
+
+		ownLocation.setTranslation(hipLocationUpdated);
+
+
+	}else{
+		currentMotionState = BoneControllerStates::locomotion;
+	}
+}
+
+void BoneController::TickLanding(float DeltaTime){
+
 }

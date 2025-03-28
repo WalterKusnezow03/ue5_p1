@@ -48,7 +48,7 @@ Aweapon::Aweapon()
 
 	//time
 	
-	cooldownTime = calculateRpm(600);
+	cooldownTime = calculateRpm(500);
 	reloadTime = 1.5f;
 
 
@@ -70,8 +70,8 @@ void Aweapon::resetFlags(){
  * calculates time to wait for a int of rounds per minute
  */
 float Aweapon::calculateRpm(int rpm){
-	float rps = rpm / 60;
-	return 1 / rps; //1s / rps = wait time in seconds
+	float rps = rpm / 60.0f;
+	return 1.0f / rps; //1s / rps = wait time in seconds
 }
 
 // Called when the game starts or when spawned
@@ -358,7 +358,7 @@ void Aweapon::resetCoolTime(float time){
 bool Aweapon::isCooling(){
 	//return (timer.timesUp() == false);
 
-	return kickbackStarted || (timer.timesUp() == false);
+	return kickbackIsRunning() || (timer.timesUp() == false);
 }
 
 /**

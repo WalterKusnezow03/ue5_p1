@@ -7,8 +7,9 @@ FrameProjectContainer::FrameProjectContainer()
 {
     world = nullptr;
     velocity = 0.0f;
-    maxHeightForProjection = 0.0f;
-    minHeightStartClimb = 0.0f;
+    maxHeightStartClimb = 99999999.0f;
+    minHeightStartClimb = 99999999.0f;
+    minHeightStartFalling = -99999999.0f;
 }
 
 FrameProjectContainer::~FrameProjectContainer()
@@ -29,13 +30,18 @@ void FrameProjectContainer::setup(
     FVector lookDirIn,
     float lowerLimitToClimbIn,
     float maxHeightForProjectionIn,
+    float minHeightStartFallingIn,
     BoneControllerStates state
 ){
     updateLocomotionState(state);
     minHeightStartClimb = lowerLimitToClimbIn;
-    maxHeightForProjection = std::abs(maxHeightForProjectionIn);
-    if (worldIn != nullptr)
+    maxHeightStartClimb = std::abs(maxHeightForProjectionIn);
+    minHeightStartFalling = std::abs(minHeightStartFallingIn) * -1.0f;
+
+    if (worldIn != nullptr){
         world = worldIn;
+    }
+        
 
     actorMatrixCopy = currentActorMatrixTemporary;
     velocity = velocityIn;
@@ -81,6 +87,11 @@ bool FrameProjectContainer::startClimbingAndNoExceedingMaxHeight(){
     return startClimb() && !exceedsMaxHeight();
 }
 
+bool FrameProjectContainer::startFalling(){
+    return offsetFromOriginal.Z < minHeightStartFalling;
+}
+
+
 /// @brief updates the projection offset and returns whether the maxheight was exceeded
 /// @param projectionOffset 
 /// @return bool whether max height in respect to offsetFromOriginal was exceeded
@@ -92,7 +103,7 @@ bool FrameProjectContainer::exceedsMaxHeight(FVector &projectionOffset){
 /// @brief updates the projection offset and returns whether the maxheight was exceeded
 /// @return bool whether max height in respect to offsetFromOriginal was exceeded
 bool FrameProjectContainer::exceedsMaxHeight(){
-    return offsetFromOriginal.Z > maxHeightForProjection; // only positive direction!
+    return offsetFromOriginal.Z > maxHeightStartClimb; // only positive direction!
 }
 
 

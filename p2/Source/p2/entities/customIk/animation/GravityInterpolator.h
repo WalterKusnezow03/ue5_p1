@@ -17,10 +17,13 @@ public:
 	FVector interpolate(FVector &currentPos, FVector &velocity, float DeltaTime);
 	void resetVelocity();
 
-	void updateGroundPosition(FVector groundIn);
+	void updateGroundPosition(FVector &groundIn);
+	void updateGroundPositionAndSetInitialVelocity(FVector &groundIn, FVector &initVelocity);
 	bool groundReachedFlag();
 
 	FVector copyGroundPosition();
+
+	void setGravity(float gravityin);
 
 private:
 	FVector groundPosition;

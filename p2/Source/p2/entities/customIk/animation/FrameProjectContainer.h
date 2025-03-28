@@ -25,6 +25,7 @@ public:
 		FVector lookDir, 
 		float lowerLimitToClimb,
 		float maxHeightForProjectionIn,
+		float minHeightStartFallingIn,
 		BoneControllerStates state
 	);
 
@@ -43,6 +44,8 @@ public:
 	bool startClimb();
 	bool startClimbingAndNoExceedingMaxHeight();
 
+	bool startFalling();
+
 	BoneControllerStates locomotionState();
 	void updateLocomotionState(BoneControllerStates state);
 	bool locomotionStateIsClimb();
@@ -59,8 +62,10 @@ private:
 
 	FVector offsetFromOriginal;
 
-	float maxHeightForProjection;
+	float maxHeightStartClimb;
 	float minHeightStartClimb;
+
+	float minHeightStartFalling; //negative value
 
 	BoneControllerStates currentState;
 };

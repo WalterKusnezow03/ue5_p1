@@ -14,5 +14,7 @@ enum class BoneControllerStates
     locomotion,
     locomotionClimbAll,
     locomotionSwimming,
-    wingsuitOpenState
+    wingsuitOpenState,
+    falling,
+    collapse
 };

@@ -17,6 +17,14 @@ GravityInterpolator::~GravityInterpolator()
 /// @brief returns a vector which needs to be added to a position to have gravity based on the
 /// passed parameters!
 /// @param currentPos 
+/// @param DeltaTime 
+FVector GravityInterpolator::interpolate(FVector &currentPos, float DeltaTime){
+    return interpolate(currentPos, velocityVector, DeltaTime);
+}
+
+/// @brief returns a vector which needs to be added to a position to have gravity based on the
+/// passed parameters!
+/// @param currentPos 
 /// @param velocity 
 /// @param DeltaTime 
 /// @return 
@@ -42,13 +50,7 @@ FVector GravityInterpolator::interpolate(FVector &currentPos, FVector &velocity,
     //return interpolatedPos;
 }
 
-/// @brief returns a vector which needs to be added to a position to have gravity based on the
-/// passed parameters!
-/// @param currentPos 
-/// @param DeltaTime 
-FVector GravityInterpolator::interpolate(FVector &currentPos, float DeltaTime){
-    return interpolate(currentPos, velocityVector, DeltaTime);
-}
+
 
 bool GravityInterpolator::groundReached(FVector &compare){
     if(reachedFlag){
@@ -78,12 +80,26 @@ FVector GravityInterpolator::gravityVector(){
 }
 
 
-void GravityInterpolator::updateGroundPosition(FVector groundIn){
+void GravityInterpolator::updateGroundPosition(FVector &groundIn){
     groundPosition = groundIn;
     reachedFlag = false;
 }
 
+void GravityInterpolator::updateGroundPositionAndSetInitialVelocity(
+    FVector &groundIn, 
+    FVector &initVelocity
+){
+    updateGroundPosition(groundIn);
+    velocityVector = initVelocity;
+}
 
 FVector GravityInterpolator::copyGroundPosition(){
     return groundPosition;
+}
+
+
+
+
+void GravityInterpolator::setGravity(float gravityin){
+    gravityA = std::abs(gravityin) * -1.0f;
 }

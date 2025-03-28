@@ -426,7 +426,6 @@ void TargetInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatr
         overrideStartSpeedRelative(startLocal);
         return;
     }else{
-        //DebugHelper::showScreenMessage("OVERRIDE WORLD START TARGET");
         
         //translate start and target to local and override both, target must be available
         FVector targetLocalNew = inverse * targetWorld;
