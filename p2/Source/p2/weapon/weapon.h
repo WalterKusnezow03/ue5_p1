@@ -157,6 +157,7 @@ protected:
 
 	class USkeletalMeshComponent *rightHandTargetSkelletonPointer;
 	class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
+	class USkeletalMeshComponent *muzzleAttachmentSkelletonPointer;
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;
@@ -215,6 +216,8 @@ private:
 	void spawnAllAvailableAttachments();
 	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
 	void attachNewItem(AActor *someActor);
+	void attachNewItem(AActor *actor, weaponAttachmentEnum type);
+	USkeletalMeshComponent *attachmentSkeletalComponentBy(weaponAttachmentEnum type);
 
 	void showAllPickedAttachments();
 	void hideAllAttachments();

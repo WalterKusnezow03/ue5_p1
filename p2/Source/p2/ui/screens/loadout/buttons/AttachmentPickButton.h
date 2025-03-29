@@ -6,10 +6,10 @@
 #include "p2/ui/screens/loadout/WeaponContainer.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 
-#include "SightPickButton.generated.h"
+#include "AttachmentPickButton.generated.h"
 
 UCLASS()
-class P2_API USightPickButton : public UTextButton{
+class P2_API UAttachmentPickButton : public UTextButton{
 
     GENERATED_BODY()
 
@@ -35,7 +35,7 @@ public:
                 FSimpleDelegate::CreateLambda([this, bindedContainer]()
                 {
                     if(bindedContainer != nullptr && this){
-                        bindedContainer->updateWeaponSight(this->getType());
+                        bindedContainer->updateAnyWeaponAttachment(this->getType());
                         DebugHelper::logMessage("DEBUGCALLBACK picker clicked");
                     } 
                 })

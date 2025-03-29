@@ -427,14 +427,17 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 
 
 void AEntityScript::projectActorToGround(){
-	FVector Start = boneController.GetLocation() + FVector(0,0,1000);
+	int meters = 100 * 50;
+	FVector Start = GetActorLocation() + FVector(0, 0, meters);
 
 	// Get the camera location and rotation
-	FVector End = boneController.GetLocation() - FVector (0,0,1000);
+	FVector End = GetActorLocation() - FVector(0, 0, meters);
 
 	// Perform the raycast
 	FHitResult HitResult;
 
+
+	
 	if (EntityManager *e = worldLevel::entityManager())
 	{
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all

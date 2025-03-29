@@ -10,7 +10,7 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
-#include "p2/ui/screens/loadout/buttons/SightPickButton.h"
+#include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "p2/DebugHelper.h"
@@ -151,24 +151,6 @@ void ULoadoutScreen::createRigthListPickers(){
         }
     }
 
-    /*
-    UWeaponPickButton *weaponItem1 = NewObject<UWeaponPickButton>(this);
-    if(weaponItem1){
-        weaponItem1->init();
-        weaponItem1->setType(weaponEnum::assaultRifle); //sets text automatically
-        pickableWeaponsVertical->AddChildToVerticalBox(weaponItem1->baseLayoutPointer());
-        pickableWeaponsButtonVector.push_back(weaponItem1);
-    }
-    
-
-
-    UWeaponPickButton *weaponItem2 = NewObject<UWeaponPickButton>(this);
-    if(weaponItem2){
-        weaponItem2->init();
-        weaponItem2->setType(weaponEnum::pistol); // sets text automatically
-        pickableWeaponsVertical->AddChildToVerticalBox(weaponItem2->baseLayoutPointer());
-        pickableWeaponsButtonVector.push_back(weaponItem2);
-    }*/
 
 
 
@@ -180,13 +162,34 @@ void ULoadoutScreen::createRigthListPickers(){
         weaponAttachmentEnum::reddot
     };
     for (int i = 0; i < sightTypesToHave.size(); i++){
-        USightPickButton *sightItem = NewObject<USightPickButton>(this);
+        UAttachmentPickButton *sightItem = NewObject<UAttachmentPickButton>(this);
         if(sightItem){
             weaponAttachmentEnum currentSightType = sightTypesToHave[i];
             sightItem->init();
             sightItem->setType(currentSightType);
             pickableSightsVertical->AddChildToVerticalBox(sightItem->baseLayoutPointer());
             pickableSightsButtonVector.push_back(sightItem);
+        }
+    }
+
+
+
+
+    /// ---- PICKABLE MUZZLE ATTACHMENTS ----
+    pickableMuzzlesVertical = NewObject<UVerticalBox>(this);
+    halfSplitBase->addChildToRightVertical(pickableMuzzlesVertical, MUZZLE_PICKER_IDENTIFIER); //ins 1te layout
+    std::vector<weaponAttachmentEnum> muzzleTypesToHave = {
+        weaponAttachmentEnum::muzzle_flashSurpressor,
+        weaponAttachmentEnum::muzzle_SoundSurpressor
+    };
+    for (int i = 0; i < muzzleTypesToHave.size(); i++){
+        UAttachmentPickButton *muzzleItem = NewObject<UAttachmentPickButton>(this);
+        if(muzzleItem){
+            weaponAttachmentEnum currentType = muzzleTypesToHave[i];
+            muzzleItem->init();
+            muzzleItem->setType(currentType);
+            pickableMuzzlesVertical->AddChildToVerticalBox(muzzleItem->baseLayoutPointer());
+            pickableMuzzlesButtonVector.push_back(muzzleItem);
         }
     }
 
@@ -213,7 +216,17 @@ void ULoadoutScreen::rebindAllPickers(UWeaponContainer *currentWeaponContainerFo
 
     //sight pickers
     for (int i = 0; i < pickableSightsButtonVector.size(); i++){
-        USightPickButton *button = pickableSightsButtonVector[i];
+        UAttachmentPickButton *button = pickableSightsButtonVector[i];
+        if(button){
+            button->updateCallbackBind(currentWeaponContainerFocussed); //UPDATES CALLBACK INTERNALLY
+        }
+    }
+
+    
+
+    //muzzle pickers
+    for (int i = 0; i < pickableMuzzlesButtonVector.size(); i++){
+        UAttachmentPickButton *button = pickableMuzzlesButtonVector[i];
         if(button){
             button->updateCallbackBind(currentWeaponContainerFocussed); //UPDATES CALLBACK INTERNALLY
         }
@@ -271,7 +284,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
         );
 
         //muzzle flash surpressor picker button
-        weaponContainers[index]->setTextMuzzle("muzlle");
+        weaponContainers[index]->setTextMuzzle("muzzle");
         weaponContainers[index]->SetCallBackMuzzle(
             FSimpleDelegate::CreateLambda([this, index]()
             {

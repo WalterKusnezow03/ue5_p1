@@ -252,9 +252,7 @@ void worldLevel::humanBotsOnStart(UWorld *worldIn, int count){
     if (e != nullptr)
     {
         for (int i = 0; i < count; i++){
-            FVector spawnLocation(-1000, -1000, 20);
-            spawnLocation.Y += 1000;
-            spawnLocation.X += 1000;
+            FVector spawnLocation(-1000, -1000, 100);
             e->spawnHumanEntity(worldIn, spawnLocation, teamEnum::enemyTeam);
         }
 

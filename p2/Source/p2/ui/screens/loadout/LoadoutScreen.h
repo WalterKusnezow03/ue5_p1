@@ -5,7 +5,7 @@
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
-#include "p2/ui/screens/loadout/buttons/SightPickButton.h"
+#include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "WeaponContainer.h"
 #include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
@@ -69,9 +69,11 @@ private:
 
     //internal saving of the sight pick layout
     UVerticalBox *pickableSightsVertical;
-    std::vector<USightPickButton *> pickableSightsButtonVector;
+    std::vector<UAttachmentPickButton *> pickableSightsButtonVector;
     
-    
+
+    UVerticalBox *pickableMuzzlesVertical;
+    std::vector<UAttachmentPickButton *> pickableMuzzlesButtonVector;
 
     
 };

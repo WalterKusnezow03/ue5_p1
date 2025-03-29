@@ -44,8 +44,7 @@ public:
     typ aktualisiert wird
     */
     void updateWeaponType(weaponEnum typeIn);
-    void updateWeaponSight(weaponAttachmentEnum sightIn);
-    void updateWeaponMuzzle(weaponAttachmentEnum typeIn);
+    void updateAnyWeaponAttachment(weaponAttachmentEnum type);
 
     void updateFrom(weaponSetupHelper &other);
 
@@ -77,4 +76,9 @@ private:
     void updateWeaponName();
     void updateSightName();
     void updateMuzzleName();
+    void updateGripName();
+
+    void updateWeaponSight(weaponAttachmentEnum sightIn);
+    void updateWeaponMuzzle(weaponAttachmentEnum typeIn);
+    void updateWeaponGrip(weaponAttachmentEnum typein);
 };

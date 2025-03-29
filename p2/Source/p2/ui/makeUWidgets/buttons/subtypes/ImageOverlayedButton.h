@@ -2,7 +2,7 @@
 #pragma once
 
 #include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"
-#include "Components/Button.h"
+#include "p2/ui/makeUWidgets/buttons/ButtonBase.h"
 
 #include "ImageOverlayedButton.generated.h"
 

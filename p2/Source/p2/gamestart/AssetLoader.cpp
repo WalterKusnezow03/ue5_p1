@@ -179,6 +179,25 @@ void AssetLoader::loadWeaponAttachments(){
         ));
         UClass *bp2 = loadUClassBluePrint(reddotStringPistol);
         a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp2);
+
+
+
+
+        FString surpressorString = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/Weapons/attachments/surpressorBp.surpressorBp_C'"
+        ));
+        UClass *bp3 = loadUClassBluePrint(surpressorString);
+        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::muzzle_SoundSurpressor, bp3);
+        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::muzzle_SoundSurpressor, bp3);
+
+        FString muzzleflashSurpressorString = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/Weapons/attachments/MundungsfeuerdampferBp.MundungsfeuerdampferBp_C'"
+        ));
+        UClass *bp4 = loadUClassBluePrint(muzzleflashSurpressorString);
+        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::muzzle_flashSurpressor, bp4);
+        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::muzzle_flashSurpressor, bp4);
+
+
         
     }
 }

@@ -202,6 +202,10 @@ void terrainCreator::chunk::setheightForAll(float value){
 }
 
 
+void terrainCreator::chunk::setheightForAllToAverage(){
+    setheightForAll(heightAverage());
+}
+
 void terrainCreator::chunk::clampheightForAllUpperLimitByOwnAverageHeight(){
     clampheightForAllUpperLimit(heightAverage());
 }
@@ -575,7 +579,7 @@ void terrainCreator::createTerrain(
 
 
     //random height and smooth
-    int layers = 20; //20
+    int layers = 12; //20
     createRandomHeightMapChunkWide(layers);
     smooth3dMap();
 
@@ -1192,7 +1196,8 @@ void terrainCreator::flattenChunksForHillData(terrainHillSetup &hillData){
         for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
             if(verifyIndex(i) && verifyIndex(j)){
                 //map.at(i).at(j).clampheightForAllUpperLimit(hillData.getForcedSetHeight());
-                map.at(i).at(j).clampheightForAllUpperLimitByOwnAverageHeight();
+                //map.at(i).at(j).clampheightForAllUpperLimitByOwnAverageHeight();
+                map.at(i).at(j).setheightForAllToAverage();
 
                 //disable trees for rooms
                 map.at(i).at(j).setTreesBlocked(true);
@@ -1407,8 +1412,8 @@ void terrainCreator::createTerrainAndCreateBuildings(
     int chunkRange = meters / CHUNKSIZE;
 
     int count = 3;
-    int minsizeChunks = 2;
-    int maxsizeChunks = 4;
+    int minsizeChunks = 1;
+    int maxsizeChunks = 3;
     std::vector<terrainHillSetup> predefinedHillDataVecFlatArea;
     createFlatAreas(count, minsizeChunks, maxsizeChunks, chunkRange, predefinedHillDataVecFlatArea);
     createTerrain(world, meters, predefinedHillDataVecFlatArea);

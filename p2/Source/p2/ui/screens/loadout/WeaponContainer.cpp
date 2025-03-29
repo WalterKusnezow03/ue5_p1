@@ -95,6 +95,12 @@ FString UWeaponContainer::toString(weaponAttachmentEnum type){
     if (type == weaponAttachmentEnum::grip_vertical){
         name = FString::Printf(TEXT("grip vertical"));
     }
+    if(type == weaponAttachmentEnum::muzzle_flashSurpressor){
+        name = FString::Printf(TEXT("flash surpressor"));
+    }
+    if(type == weaponAttachmentEnum::muzzle_SoundSurpressor){
+        name = FString::Printf(TEXT("sound surpressor"));
+    }
     
     return name;
 } 
@@ -118,6 +124,12 @@ void UWeaponContainer::updateSightName(){
 
 void UWeaponContainer::updateMuzzleName(){
     weaponAttachmentEnum type = setupinternal.getMuzzleTypeToCreate();
+    FString name = toString(type);
+    setTextMuzzle(name);
+}
+
+void UWeaponContainer::updateGripName(){
+    weaponAttachmentEnum type = setupinternal.getGripTypeToCreate();
     FString name = toString(type);
     setTextMuzzle(name);
 }
@@ -171,6 +183,29 @@ void UWeaponContainer::SetCallBackMuzzle(FSimpleDelegate callbackIn){
  * ----- CALLBACK API ------
  * 
  */
+///@brief auto finds attachment types and sets it
+void UWeaponContainer::updateAnyWeaponAttachment(weaponAttachmentEnum type){
+    if(weaponSetupHelper::isASightAttachment(type)){
+        updateWeaponSight(type);
+        return;
+    }
+    if(weaponSetupHelper::isAMuzzleAttachment(type)){
+        updateWeaponMuzzle(type);
+        return;
+    }
+    if(weaponSetupHelper::isAGripAttachment(type)){
+        
+    }
+}
+
+
+
+
+/**
+ * 
+ * ---- private callback api filter ----
+ * 
+ */
 void UWeaponContainer::updateWeaponType(weaponEnum typeIn){
     setupinternal.setWeaponTypeToCreate(typeIn);
     updateWeaponName();
@@ -185,9 +220,21 @@ void UWeaponContainer::updateWeaponSight(weaponAttachmentEnum sightIn){
 
 void UWeaponContainer::updateWeaponMuzzle(weaponAttachmentEnum muzzlein){
     setupinternal.setMuzzleAttachment(muzzlein);
-    updateSightName();
+    updateMuzzleName();
     updateLoadoutParent();
 }
+
+void UWeaponContainer::updateWeaponGrip(weaponAttachmentEnum typein){
+    setupinternal.setGripAttachment(typein);
+    updateGripName();
+    updateLoadoutParent();
+}
+
+
+
+
+
+
 
 void UWeaponContainer::updateFrom(weaponSetupHelper &other){
     setupinternal = other;

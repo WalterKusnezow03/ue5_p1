@@ -234,14 +234,12 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     //get from list if any left
     if(humanEntityMap.hasActorsLeft(team)){
 
-    //if(humanEntityList.hasActorsLeft()){
-    //    AHumanEntityScript *human = humanEntityList.getFirstActor();
         AHumanEntityScript *human = humanEntityMap.getFirstActor(team);
         if(human != nullptr){
             //DebugHelper::showScreenMessage("human from list !", FColor::Yellow);
-
-            human->init();
             human->SetActorLocation(Location);
+            human->init();
+            
 
             return human;
         }

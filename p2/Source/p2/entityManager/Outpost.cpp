@@ -74,6 +74,9 @@ void AOutpost::switchPlayerEnteredStatus(bool status){
 
 	if(status != playerEntered){
 		playerEntered = status;
+		if(playerEntered){
+			moveAllEntitiesToGroundOnPlayerEnterArea();
+		}
 
 		if(referenceManager *r = referenceManager::instance()){
 			AplayerScript *player = r->getPlayerPointer();
@@ -94,6 +97,21 @@ void AOutpost::switchPlayerEnteredStatus(bool status){
 	}
 
 }
+
+void AOutpost::moveAllEntitiesToGroundOnPlayerEnterArea(){
+	for(auto &pair : teamMap){
+		std::vector<AHumanEntityScript *> &vec = pair.second;
+		for (int i = 0; i < vec.size(); i++)
+		{
+			AHumanEntityScript *h = vec.at(i);
+			if(h != nullptr){
+				h->projectActorToGround();
+			}
+		}
+	}
+}
+
+
 
 
 
@@ -160,6 +178,9 @@ void AOutpost::createEntity(teamEnum team){
 		if(human != nullptr){
 			//human->setTeam(team);
 			subscribe(human);
+
+			FVector posCopy = human->GetActorLocation();
+
 		}
 	}
 }
@@ -187,8 +208,9 @@ void AOutpost::initEntitiesIfNeeded(){
 	
 	if(getVectorReferenceFor(teamEnum::enemyTeam).size() <= 0){
 		createEntity(5, teamEnum::enemyTeam);
+
+		DebugHelper::showScreenMessage("outpost init!", FColor::Orange);
 	}
-	
 }
 
 

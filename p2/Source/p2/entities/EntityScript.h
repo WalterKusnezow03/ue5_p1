@@ -35,6 +35,8 @@ public:
 	//max distance to follow
 	static const int MAXDISTANCE = 10000; //100m --> 100 * 100 = 5000
 
+	void projectActorToGround();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,7 +63,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void projectActorToGround();
+	
 
 	//int team;
 	teamEnum team;

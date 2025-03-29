@@ -53,7 +53,7 @@ private:
 	void createEntity(teamEnum t);
 	void createEntity(int count, teamEnum t);
 
-	
+	void moveAllEntitiesToGroundOnPlayerEnterArea();
 
 	//alarm
 	bool alertEnabled;

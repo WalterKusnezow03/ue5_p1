@@ -12,6 +12,8 @@
  * and enable all wanted attachments if possible.
  * 
  */
+class Aweapon;
+
 class P2_API weaponSetupHelper
 {
 public:

@@ -83,6 +83,7 @@ private:
 			void addheightForAll(int value);
 			void scaleheightForAll(float value);
 			void setheightForAll(float value);
+			void setheightForAllToAverage();
 			void clampheightForAllUpperLimit(float value);
 			void clampheightForAllUpperLimitByOwnAverageHeight();
 

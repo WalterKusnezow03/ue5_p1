@@ -37,6 +37,10 @@ Aweapon::Aweapon()
 	rightHandTargetSkelletonPointer = nullptr;
 	leftHandTargetSkelletonPointer = nullptr;
 
+	
+	muzzleAttachmentSkelletonPointer = nullptr;
+	gehauseSkeletonPointer = nullptr;
+
 	reddotSightChildActor = nullptr;
 	ironSightChildActor = nullptr;
 
@@ -51,9 +55,8 @@ Aweapon::Aweapon()
 	cooldownTime = calculateRpm(500);
 	reloadTime = 1.5f;
 
-
+	pickedMuzzle = weaponAttachmentEnum::muzzle_flashSurpressor;
 }
-
 
 void Aweapon::resetFlags(){
 	kickbackStarted = false;
@@ -485,6 +488,8 @@ void Aweapon::setupAnimations()
 				magSkeletonPointer = Component;
 			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
 				gehauseSkeletonPointer = Component;
+			}else if(name.Contains("muzzle")){
+				muzzleAttachmentSkelletonPointer = Component;
 			}
 			
 			addIfIsAHandTarget(Component);
@@ -656,17 +661,17 @@ void Aweapon::applySight(weaponAttachmentEnum sight){
 void Aweapon::applyMuzzle(weaponAttachmentEnum muzzle){
 	AActor *actorInMap = findFromMapAndEnable(muzzleMap, muzzle);
 	if(actorInMap != nullptr){
-		
+		pickedMuzzle = muzzle;
 	}
-	pickedMuzzle = muzzle;
+	
 }
 
 void Aweapon::applyGrip(weaponAttachmentEnum type){
 	AActor *actorInMap = findFromMapAndEnable(gripMap, type);
 	if(actorInMap != nullptr){
-
+		pickedGrip = type;
 	}
-	pickedGrip = type;
+	
 }
 
 AActor *Aweapon::findFromMapAndEnable(
@@ -735,7 +740,7 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 			AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
 			if(actor != nullptr){
 				
-				attachNewItem(actor);
+				attachNewItem(actor, EattachmentType);
 				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
 					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
 				}
@@ -976,6 +981,8 @@ void Aweapon::attachNewItem(AActor* actor){
 		
 		attachedActors.push_back(actor);
 
+		AActorUtil::enableColliderOnActor(*actor, false);
+
 		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
 		if (gehauseSkeletonPointer)
 		{
@@ -983,6 +990,45 @@ void Aweapon::attachNewItem(AActor* actor){
 			actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
 		}
 	}
+}
+
+
+
+
+///@brief will attach new item IF the skelleton pointer responsible for the attachment type exists!
+void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
+	if(actor == nullptr){
+		return;
+	}
+	if(!actorAlreadyAttached(actor)){
+		attachedActors.push_back(actor);
+
+		AActorUtil::enableColliderOnActor(*actor, false);
+
+		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
+		USkeletalMeshComponent *ptr = attachmentSkeletalComponentBy(type);
+		if(ptr){
+			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
+			actor->AttachToComponent(ptr, AttachRules);
+		}
+		
+	}
+}
+
+///@brief returns the skeletal mesh component pointer for an given attachment 
+USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
+	weaponAttachmentEnum EattachmentType
+){
+	if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+		return gehauseSkeletonPointer;
+	}
+	if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+		return muzzleAttachmentSkelletonPointer;
+	}
+	if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+		return gehauseSkeletonPointer;
+	}
+	return gehauseSkeletonPointer;
 }
 
 bool Aweapon::actorAlreadyAttached(AActor *actor){
