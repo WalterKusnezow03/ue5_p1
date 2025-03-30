@@ -30,8 +30,7 @@ public:
 	void push_back(std::vector<FVector> &other);
 
 	void moveVerteciesWith(MMatrix &mat);
-	
-
+	void moveVerteciesWithButPivotCenter(MMatrix &mat);
 
 	MeshData createDoubleSidedMesh();
 	MeshData closeMeshAtCenter(bool clockwise);

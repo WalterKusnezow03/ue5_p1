@@ -61,9 +61,10 @@ private:
 	MMatrix &matrixByIndex(int index);
 	void randomRotationForAllMatrices();
 
-	void wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &meshToAddTo);
+	void wrapWithMesh(IndexChain &chainIn, MeshData &meshToAddTo);
 
-	void createSubTrees(MMatrix &offset, TreeProperties &propeties);
+	void createSubTrees(MMatrix &offset, TreeProperties &prop);
+	void createSubTrees(MMatrix &offset, TreeProperties &propeties, int recursionLevel);
 	IndexChain createSubTree(MMatrix &offset, TreeProperties &propeties);
 
 	

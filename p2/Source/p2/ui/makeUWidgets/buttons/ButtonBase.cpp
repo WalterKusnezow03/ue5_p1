@@ -34,6 +34,11 @@ void UButtonBase::createButton(){
 
         WAS_INIT_FLAG = true;
         // scalebox->AddChild(button); //kleiner test, sichtbar aber anderer inhalt von scale box nicht mehr
+        
+
+
+        //debug
+        button->IsFocusable = false;
     }
 
     

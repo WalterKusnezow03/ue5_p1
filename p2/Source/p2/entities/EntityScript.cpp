@@ -261,7 +261,7 @@ void AEntityScript::takedamage(int d, FVector &hitpoint){
 	takedamage(d, hitpoint, false);
 }
 
-
+///@brief main reaction method
 void AEntityScript::takedamage(int d, bool surpressed){
 	//showScreenMessage("enemy entity damage");
 	health -= d;
@@ -269,6 +269,7 @@ void AEntityScript::takedamage(int d, bool surpressed){
 		d = 0;
 		die();
 	}
+	updateToReducedSpottingTimeIfNotSpottedYet();
 }
 
 void AEntityScript::takedamage(int d, FVector &hitpoint, bool surpressed){
@@ -595,19 +596,6 @@ void AEntityScript::followpath(float deltaTime){
 		}
 
 
-		// Direction vector from current location to target location
-		//FVector dir = (nextPos - currentLocation).GetSafeNormal(); // Normalize the direction vector
-
-
-		//x(t) = pos + velocity * dt + 1/2 (accelrattion * dt)^2
-		//x(t) = x0 + v0t + 1/2 at^2
-		//x(t) = x0 + v * speed * deltaTime 
-		// Move from current location towards target location by stepDistance
-		//FVector newLocation = currentLocation + dir * deltaTime * speed;
-		//SetActorLocation(newLocation);
-
-
-
 		//NEW BONE CONTROLLER INTERACTION!
 		if(!canSeePlayer){
 			LookAt(nextPos);
@@ -752,23 +740,32 @@ void AEntityScript::despawn(){
 /// @brief reduces the spotting time of the entity
 void AEntityScript::alert(){
 	if(!spottedPlayer){
-		defaultSpottingTime /= 2;
-
-		//update time if lower
-		if(defaultSpottingTime < spottingTimer.currentTimeLeft()){
-			setSpottingTime(defaultSpottingTime);
-		}
+		updateSpottingTimeOnAlert();
 	}
 }
 
 
 void AEntityScript::alert(FVector lookat){
 	if(!spottedPlayer && !canSeePlayer){
-		defaultSpottingTime /= 2; 
-		setSpottingTime(defaultSpottingTime);
+		updateSpottingTimeOnAlert();
 		LookAt(lookat);
 	}
 }
+
+void AEntityScript::updateSpottingTimeOnAlert(){
+	spottingTime = defaultSpottingTime / 2.0f; 
+	if(spottingTime < spottingTimer.currentTimeLeft()){
+		setSpottingTime(spottingTime);
+	}
+}
+
+void AEntityScript::updateToReducedSpottingTimeIfNotSpottedYet(){
+	if(!spottedPlayer){
+		updateSpottingTimeOnAlert();
+	}
+}
+
+
 
 /// @brief sets the player spotted status to true immidatly
 void AEntityScript::alarm(){

@@ -46,6 +46,7 @@ void MatrixTree::loadProperties(){
     TreeProperties oakProperty(100, ETreeType::Edefault, ETerrainType::ETropical, 30, 10, 3);
     oakProperty.addTerrainType(ETerrainType::EForest);
     oakProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
+    oakProperty.setRecursionLevelMax(2); //debug
     defaultProperty = oakProperty;
     addPropertyToMap(oakProperty);
 
@@ -59,6 +60,7 @@ void MatrixTree::loadProperties(){
     addPropertyToMap(cactus);
 }
 
+///@brief adds a tree property to the vector in the map by its own terrain type
 void MatrixTree::addPropertyToMap(TreeProperties &property){
 
     std::vector<ETerrainType> &typesOfTerrain = property.getTerrainTypes();
@@ -196,14 +198,18 @@ MMatrix &MatrixTree::matrixByIndex(int index){
 void MatrixTree::generateMesh(){
     for (int i = 0; i < indexChains.size(); i++){
         IndexChain &indexChain = indexChains[i];
-        wrapWithMesh(indexChain.matrixChain(), stemMeshData);
+        wrapWithMesh(indexChain, stemMeshData);
     }
 }
 
 /// @brief pass in the vector of INTERPOLATED / concatenated matricies (multiplied), translation will be copied
 /// @param matricesIn matricies which are only translation copies of multiplied once
 /// @param mesh mesh data to append the stem to
-void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
+void MatrixTree::wrapWithMesh(IndexChain &indexChain, MeshData &mesh){
+
+    std::vector<MMatrix> &matricesIn = indexChain.matrixChain();
+    MMatrix recursionScaleMatForShapes = indexChain.scaleXYMatrixFromrecursionLevel();
+
 
     MeshData subMesh;
     if (matricesIn.size() > 1)
@@ -211,18 +217,21 @@ void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
 
         //einfach alle shapes moven und dann connecten nacheinander
         std::vector<FVectorShape> allShapes;
-        
+
+        //STEM DATA MOVE
         for (int i = 0; i < matricesIn.size(); i++)
         {
             MMatrix &currentMatrix = matricesIn[i];
             std::vector<FVectorShape> current = StemShapeByEnum(treeType);
             for (int j = 0; j < current.size(); j++){
                 FVectorShape &currentShape = current[j];
+                currentShape.moveVerteciesWithButPivotCenter(recursionScaleMatForShapes);
                 currentShape.moveVerteciesWith(currentMatrix);
                 allShapes.push_back(currentShape);
             }
         }
 
+        //STEM DATA CONNECT
         if(allShapes.size() > 0){
             
             for (int i = 0; i < allShapes.size(); i++)
@@ -256,21 +265,55 @@ void MatrixTree::wrapWithMesh(std::vector<MMatrix> &matricesIn, MeshData &mesh){
     mesh.appendEfficent(subMesh); //NEW
 }
 
+
+void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop){
+    createSubTrees(offset, prop, 0);
+}
+
 /// @brief creates subtrees for a desired tree property
 /// @param offset offset to have the subtree for
 /// @param prop properties
-void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop){
-    for (int i = 0; i < prop.subTreeCount(); i++){
+void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop, int recursion){
+    //new
+    int maxRecursion = prop.resursionLevelMax();
+    if (recursion >= maxRecursion){
+        return;
+    }
+    /**
+     * FURTHER TESTING NEEDED, bei subtree count 1 macht das keinen sinn, sieht doof aus.
+     */
+    for (int i = 0; i < prop.subTreeCount(); i++)
+    {
         IndexChain subtree = createSubTree(offset, prop);
+        subtree.setRecursionLevel(recursion + 1);
+        indexChains.push_back(subtree);
+
+        //go level deeper, testing needed, might cause stack overflow.
+        MMatrix endMatrixBuildedFromChain = subtree.endMatrixRef();
+        createSubTrees(endMatrixBuildedFromChain, prop, recursion + 1);
+    }
+
+    /*
+    //old
+    for (int i = 0; i < prop.subTreeCount(); i++)
+    {
+        IndexChain subtree = createSubTree(offset, prop);
+        subtree.setRecursionLevel(recursion + 1);
         indexChains.push_back(subtree);
     }
+    */
+
 }
 
 /// @brief creates a subtree (index chain) with the index and matricies build up
 /// @param offset offset to start the sub tree at
 /// @param prop properties of the tree
+/// @param scale value element [0,1]
 /// @return new sub tree
-IndexChain MatrixTree::createSubTree(MMatrix &offset, TreeProperties &prop){
+IndexChain MatrixTree::createSubTree(
+    MMatrix &offset, 
+    TreeProperties &prop
+){
     IndexChain subtree;
     subtree.setOffsetMatrix(offset);
 

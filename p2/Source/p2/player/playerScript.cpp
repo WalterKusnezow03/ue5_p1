@@ -792,7 +792,14 @@ void AplayerScript::showCursor(bool show){
         PlayerController->bShowMouseCursor = show;
         //! PlayerController->bShowMouseCursor;
 
-        //PlayerController->SetInputMode(FInputModeGameAndUI());
+        /*
+        if(show){
+            PlayerController->SetInputMode(FInputModeUIOnly());
+        }else{
+            PlayerController->SetInputMode(FInputModeGameOnly());
+        }*/
+        
+        
     }
 }
 

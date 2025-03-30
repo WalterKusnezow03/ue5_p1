@@ -94,7 +94,8 @@ protected:
 	bool hasNodesInPathLeft();
 	bool reachedPosition(FVector pos);
 
-
+	void updateSpottingTimeOnAlert();
+	void updateToReducedSpottingTimeIfNotSpottedYet();
 
 	/// @brief reset the path delay time to a number of seconds
 	/// @param time time in deconds
@@ -110,7 +111,7 @@ protected:
 
 	int health;
 	float defaultSpottingTime;
-	
+	float spottingTime;
 
 	bool spottedPlayer;
 	bool canSeePlayer;

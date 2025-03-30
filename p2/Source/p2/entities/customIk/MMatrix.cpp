@@ -438,7 +438,7 @@ MMatrix MMatrix::createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZA
 
     //pitch angle
     FVector2D xzdir(normalized.X, normalized.Z);
-    float pitchRad = signedAngleRadBetween(ZAxis, xzdir) * -1.0f; //test 
+    float pitchRad = signedAngleRadBetween(ZAxis, xzdir) * -1.0f; //test (negieren. Aus. Gründen.) 
 
     
 
