@@ -36,7 +36,8 @@ void AssetLoader::loadAssets()
     
     loadTextures();
     loadUI();
-    
+
+    loadDebugCube();
 }
 
 /// @brief passin your path and prefab blueprint name
@@ -385,6 +386,20 @@ void AssetLoader::loadTextures(){
                 "Texture2D'/Game/Prefabs/icons/healthIcon.healthIcon'")
             )
         );
+    }
+}
+
+
+
+
+
+void AssetLoader::loadDebugCube(){
+    if(assetManager *am = assetManager::instance()){
+
+        FString path = FString::Printf(TEXT(
+            "Blueprint'/Game/Prefabs/debug/debugCube.debugCube_C'"
+        ));
+        am->setDebugCubeBp(loadUClassBluePrint(path));
     }
 }
 

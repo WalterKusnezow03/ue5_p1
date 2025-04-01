@@ -7,7 +7,7 @@
 #include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
-
+///@brief sets up the canvas, the player ui parent is 
 void UCanvasScreen::init(UPlayerUi &refin){
     playerUiParent = &refin;
     createBaseCanvas();

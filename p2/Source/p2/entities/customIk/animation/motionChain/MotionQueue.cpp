@@ -58,6 +58,37 @@ void MotionQueue::updateState(ArmMotionStates state){
     );
 }
 
+
+
+
+void MotionQueue::Tick(
+    MMatrix &transform, 
+    MMatrix &transformLeftArm,
+    MMatrix &transformRightArm,
+    MMatrix &endEffectorRight,
+    MMatrix &endEffectorLeft,
+    TwoBone &leftArmOrLeg, 
+    TwoBone &rightArmOrLeg,
+    AcarriedItem *item, 
+    UWorld *world,
+    float DeltaTime
+){
+    Tick(
+        transform,
+        transformLeftArm,
+        transformRightArm,
+        endEffectorRight,
+        endEffectorLeft,
+        leftArmOrLeg,
+        rightArmOrLeg,
+        nullptr,
+        nullptr,
+        nullptr,
+        world,
+        DeltaTime
+    );
+}
+
 /// @brief will build both arms, move the carried item based on the state (or not) relative
 /// to the transform actor matrix, and move the arms accordingly
 /// @param transform transform of the whole actor, hip
@@ -77,8 +108,8 @@ void MotionQueue::Tick(
     MMatrix &endEffectorLeft,
     TwoBone &leftArm, 
     TwoBone &rightArm,
-    HandController &leftHand,
-    HandController &rightHand,
+    HandController *leftHand,
+    HandController *rightHand,
     AcarriedItem *item, 
     UWorld *world,
     float DeltaTime
@@ -233,202 +264,19 @@ void MotionQueue::Tick(
         world
     );
 
+
+
+
     MMatrix rot = transform.extarctRotatorMatrix(); //MIGHT BE WRONG!
-    FVector handLeftNewPos = endEffectorLeft.getTranslation();
-    FVector handRightNewPos = endEffectorRight.getTranslation();
-    leftHand.Tick(DeltaTime, world, handLeftNewPos,rot, item);
-    rightHand.Tick(DeltaTime, world, handRightNewPos,rot, item);
-    
-
-
-
-
-
-    /*
-    //OLD
-    if(item != nullptr){
-
-        FVector transitionFrameLocal;
-        if (transitioning)
-        {
-
-            FVector currentLocationWorldWillBeLocal = item->GetActorLocation();
-            transform.transformFromWorldToLocalCoordinates(currentLocationWorldWillBeLocal);
-
-            //interpolate override start local
-            //dann interpolieren
-            interpolator.overrideStartSpeedRelative(currentLocationWorldWillBeLocal);
-
-            //hier muss interpolator auch noch angetickt werden
-            FRotator rotation;
-            FVector posLocal = interpolator.interpolate(DeltaTime, rotation); //interpoliert immer in local space
-            FVector posWorld = transform * posLocal;
-
-            //copy for later use
-            transitionFrameLocal = posLocal;
-
-            //actor and wanted rotation combined for the carried item
-            MMatrix rotatorMatrix = MMatrix::createRotatorFrom(rotation);
-            MMatrix transformCopy = transform;
-            transformCopy.setTranslation(0, 0, 0);
-            transformCopy = transformCopy * rotatorMatrix; //M = B * A <-- lese richtung --
-
-            FRotator finalRotation = transformCopy.extractRotator();
-
-
-            item->SetActorRotation(finalRotation);
-            item->SetActorLocation(posWorld);
-            
-
-            //wenn fertig interpoliert, abbruch. Klar.
-            if(interpolator.hasReachedTarget()){
-                transitioning = false;
-            }
-        }
-        else
-        {
-
-            //default follow
-            MotionAction *currentStatePointer = &statesMap[currentState];
-            if(currentStatePointer != nullptr){
-
-                
-                //setting up data for the weapon transform
-                MMatrix rotationRein = transform;
-                rotationRein.setTranslation(0, 0, 0); //make pure rotation matrix
-                MMatrix rotation = currentStatePointer->copyRotationAsMMatrix();
-                rotationRein *= rotation; //erst skellet dann target rotation
-
-                FRotator finalRotation = rotationRein.extractRotator();
-                item->SetActorRotation(finalRotation);
-
-                FVector location = currentStatePointer->copyPosition();
-                FVector posWorld = transform * location;
-
-                //achtung hier neu: actor animation zusätzlich abrufen!
-                //posWorld += item->actorAnimationOffsetLocal(); //old
-
-                FVector nonRotated = item->actorAnimationOffsetLocal();
-                nonRotated = rotationRein * nonRotated;
-                posWorld += nonRotated;
-
-                item->SetActorLocation(posWorld);
-                
-            }else{
-                DebugHelper::showScreenMessage("ISSUE!!!", FColor::Red);
-            }
-        }
-
-        
-
-
-
-
-        FVector rightHandtarget = item->rightHandLocation();
-        FVector leftHandtarget = item->leftHandLocation();
-        FVector weight(0, 0, -1);
-
-        //NEW wingsuit section
-        if(currentState == ArmMotionStates::wingsuitOpen){
-            if(!transitioning){
-                MotionAction *currentStatePointer = &statesMap[currentState];
-                if(currentStatePointer != nullptr){
-                    currentStatePointer->copyPositionSymetricalOnYZPane( //x is forward
-                        leftHandtarget,
-                        rightHandtarget
-                    );
-                }
-            }
-            if(transitioning){
-                //move target right to local, flip on yz pane for left arm and move to world again
-                rightHandtarget = transitionFrameLocal;
-                leftHandtarget = transitionFrameLocal;
-                leftHandtarget.Y *= -1.0f;
-            }
-
-            //apply
-            moveBoneAndSnapEndEffectorToTargetLocal(
-                DeltaTime,
-                leftHandtarget,
-                weight,
-                transformLeftArm, // transform limb start
-                endEffectorLeft,
-                leftArm,
-                world
-            );
-
-            moveBoneAndSnapEndEffectorToTargetLocal(
-                DeltaTime,
-                rightHandtarget,
-                weight,
-                transformRightArm, //transform limb start
-                endEffectorRight,
-                rightArm,
-                world
-            );
-            return;
-        }
-        //NEW END
-
-
-        //dont move arms if state is none
-        if(handsAtItem()){
-            moveBoneAndSnapEndEffectorToTargetWorld(
-                DeltaTime,
-                leftHandtarget,
-                weight,
-                transformLeftArm, // transform limb start
-                endEffectorLeft,
-                leftArm,
-                world
-            );
-
-            moveBoneAndSnapEndEffectorToTargetWorld(
-                DeltaTime,
-                rightHandtarget,
-                weight,
-                transformRightArm, //transform limb start
-                endEffectorRight,
-                rightArm,
-                world
-            );
-
-            MMatrix rot = transform.extarctRotatorMatrix(); //MIGHT BE WRONG!
-            FVector handLeftNewPos = endEffectorLeft.getTranslation();
-            FVector handRightNewPos = endEffectorRight.getTranslation();
-            leftHand.Tick(DeltaTime, world, handLeftNewPos,rot, item);
-            rightHand.Tick(DeltaTime, world, handRightNewPos,rot, item);
-        }
-    }else{
-        //default build bones if item is null!
-
-        moveAndBuildBone(
-            DeltaTime,
-            transformLeftArm, // shoulder start
-            endEffectorLeft,
-            leftArm,
-            world
-        );
-
-        moveAndBuildBone(
-            DeltaTime,
-            transformRightArm, // shoulder start
-            endEffectorRight,
-            rightArm,
-            world
-        );
-
-
-        //tick hands too
-        MMatrix rot = transform.extarctRotatorMatrix(); //MIGHT BE WRONG!
+    if(leftHand != nullptr){
         FVector handLeftNewPos = endEffectorLeft.getTranslation();
+        leftHand->Tick(DeltaTime, world, handLeftNewPos,rot, item);
+    }
+    if(rightHand != nullptr){
         FVector handRightNewPos = endEffectorRight.getTranslation();
-        leftHand.Tick(DeltaTime, world, handLeftNewPos,rot, item);
-        rightHand.Tick(DeltaTime, world, handRightNewPos,rot, item);
+        rightHand->Tick(DeltaTime, world, handRightNewPos,rot, item);
+    }
 
-    }*/
-
-    
     
 
 }

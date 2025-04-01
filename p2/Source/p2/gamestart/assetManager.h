@@ -57,6 +57,13 @@ public:
 	UTexture2D *findTexture(textureEnum type);
 	void addTexture(textureEnum type, UTexture2D *texture);
 
+
+
+
+	void setDebugCubeBp(UClass *uclassin);
+	UClass *debugCubeBp();
+
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
@@ -76,4 +83,6 @@ private:
 	std::map<weaponEnum, assetManagerGeneric<weaponAttachmentEnum, UClass>> weaponAttachmentAssets;
 
 	UClass *uiBpPointer = nullptr;
+
+	UClass *debugCubePointer = nullptr;
 };

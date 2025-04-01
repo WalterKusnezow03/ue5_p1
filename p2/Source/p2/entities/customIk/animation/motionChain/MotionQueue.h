@@ -23,8 +23,22 @@ public:
 
 	void updateStateIfPossible(ArmMotionStates state);
 	void updateState(ArmMotionStates state);
-	void Tick(MMatrix &transform, TwoBone &bone, AcarriedItem &item, float DeltaTime);
 
+	//tick for arms no item / legs
+	void Tick(
+		MMatrix &transform,
+		MMatrix &transformLeftArm,
+		MMatrix &transformRightArm,
+		MMatrix &endEffectorRight,
+		MMatrix &endEffectorLeft,
+		TwoBone &leftArmOrLeg,
+		TwoBone &rightArmOrLeg,
+		AcarriedItem *item,
+		UWorld *world,
+		float DeltaTime
+	);
+
+	//tick for arms with item
 	void Tick(
 		MMatrix &transform,
 		MMatrix &transformLeftArm,
@@ -33,8 +47,8 @@ public:
     	MMatrix &endEffectorLeft,
 		TwoBone &leftArm,
 		TwoBone &rightArm,
-		HandController &leftHand,
-    	HandController &rightHand,
+		HandController *leftHand,
+    	HandController *rightHand,
 		AcarriedItem *item,
 		UWorld *world,
 		float DeltaTime

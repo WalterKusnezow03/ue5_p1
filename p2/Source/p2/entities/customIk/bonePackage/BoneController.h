@@ -95,7 +95,7 @@ public:
 	int fingerScale(HandBoneIndexEnum type);
 
 private:
-	void resetPendingRotationStatus();
+	void resetPendingRotationStatusAndFlag();
 	float lookAtPendingAngle = 0.0f;
 	FVector latestLookAtDirection;
 
@@ -377,6 +377,9 @@ private:
 	void startFallingIfNeeded(FrameProjectContainer &container);
 	void TickFalling(float DeltaTime);
 	void TickLanding(float DeltaTime);
+	bool isStillFalling();
+
+	class KeyFrameAnimation landingHipKeysOffset;
 
 	void collapse();
 };

@@ -158,6 +158,7 @@ protected:
 	class USkeletalMeshComponent *rightHandTargetSkelletonPointer;
 	class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
 	class USkeletalMeshComponent *muzzleAttachmentSkelletonPointer;
+	class USkeletalMeshComponent *gripAttachmentSkelletonPointer;
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;

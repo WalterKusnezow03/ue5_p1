@@ -21,6 +21,7 @@
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
+#include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
 #include "CoreMinimal.h"
 
 worldLevel::worldLevel()
@@ -116,7 +117,7 @@ void worldLevel::initWorld(UWorld *world){
 
     debugMatrix();
 
-    
+    debugCreateCustomTextureMesh(world);
 }
 
 /**
@@ -548,4 +549,18 @@ bool worldLevel::gamePausedByPlayer(){
 
 void worldLevel::setGamePaused(bool in){
     worldLevel::gamePausedFlag = in;
+}
+
+
+
+
+
+
+
+
+
+void worldLevel::debugCreateCustomTextureMesh(UWorld *world){
+    if(world != nullptr){
+        DynamicRenderedObjectDebugger::createDebugObject(world);
+    }
 }

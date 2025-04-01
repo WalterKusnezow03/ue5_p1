@@ -282,7 +282,8 @@ void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop, int recur
     /**
      * FURTHER TESTING NEEDED, bei subtree count 1 macht das keinen sinn, sieht doof aus.
      */
-    for (int i = 0; i < prop.subTreeCount(); i++)
+    int count = prop.subTreeCount();
+    for (int i = 0; i < count; i++)
     {
         IndexChain subtree = createSubTree(offset, prop);
         subtree.setRecursionLevel(recursion + 1);

@@ -63,7 +63,7 @@ UTexture2D *DynamicRenderedObject::loadTexture(FString path){
     FString postfix = TEXT("'");
     FString combined = prefix + path + postfix;
 
-    UTexture2D* LoadedTexture = LoadObject<UTexture2D>(nullptr, TEXT("Texture2D'/Game/Textures/MyTexture.MyTexture'"));
+    UTexture2D* LoadedTexture = LoadObject<UTexture2D>(nullptr, *combined);
     return LoadedTexture;
 }
 

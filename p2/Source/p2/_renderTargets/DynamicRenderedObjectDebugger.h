@@ -6,4 +6,5 @@ public:
 
 private:
     static UStaticMeshComponent *findStaticMesh(AActor *actor);
+    static AActor *spawnDebugActor(UWorld *world);
 };

@@ -338,6 +338,36 @@ void BoneController::setupAnimation(){
 	armClimbKeys_1.setAnimationBAdjustPermanentTarget(hipTargetFromHand);
 	armClimbKeys_1.setRunning(false);
 
+	//landing
+	int downOffset = legScaleCM / 4.0f;
+	landingHipKeysOffset = KeyFrameAnimation(false);
+	landingHipKeysOffset.useHermiteSplineInterpolation(false);
+	landingHipKeysOffset.addFrame(
+		FVector(0, 0, 0),
+		0.0f, //time to prev frame
+		false,
+		downOffset
+	);
+	landingHipKeysOffset.addFrame(
+		FVector(0, 0, -downOffset),
+		0.1f, //time to prev frame
+		false,
+		downOffset
+	);
+	landingHipKeysOffset.addFrame(
+		FVector(0, 0, 0),
+		0.1f, //time to prev frame
+		false,
+		downOffset
+	);
+	landingHipKeysOffset.addFrame(
+		FVector(0, 0, downOffset),
+		0.1f, //time to prev frame
+		false,
+		downOffset
+	);
+
+
 
 
 
@@ -401,6 +431,17 @@ void BoneController::setupAnimation(){
 	hochAnschlagState.setLocationAndRotation(targetHochAnschlagStateLocation, rotationForTarget5);
 	stateNoneNoItem.setLocalFrame2ArmsSeperate(true);//nur rechts an waffe
 	armMotionQueue.addTarget(ArmMotionStates::running, hochAnschlagState);
+
+
+
+
+	//extra leg position
+	MotionAction legSlightAnglePosition;
+	FVector targetLegPos(armScaleCM * 0.2f, armScaleCM * 0.2f, armScaleCM * 1.5f);
+	legSlightAnglePosition.setLocation(targetLegPos);
+	legSlightAnglePosition.setLocalFrame2ArmsSeperate(true);
+
+
 
 }
 
@@ -573,7 +614,9 @@ void BoneController::LookAt(FVector TargetLocation)
 	FVector connect = TargetLocation - ownLocation.getTranslation();
 	connect = connect.GetSafeNormal();
 
-	if(isANewLookDirection(connect)){
+	//if(isANewLookDirection(connect)){
+	//ADDED NEW isStillFallingFlagQuestioning 
+	if(isANewLookDirection(connect) && !isStillFalling()){
 		FVector forward = ownOrientation.lookDirXForward().GetSafeNormal();
 		float dotProduct = FVector::DotProduct(forward, connect);
 
@@ -626,8 +669,8 @@ void BoneController::updateRotation(float signedAngle){
 }
 
 
-
-void BoneController::resetPendingRotationStatus(){
+///@brief stops the rotation align process for the bonecontroller
+void BoneController::resetPendingRotationStatusAndFlag(){
 	ALIGNHIP_FLAG = false;
 	lookAtPendingAngle = 0.0f;
 
@@ -1020,6 +1063,9 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 	if(currentMotionState == BoneControllerStates::falling){
 		TickFalling(DeltaTime);
 	}
+	if(currentMotionState == BoneControllerStates::landing){
+		TickLanding(DeltaTime);
+	}
 }
 
 
@@ -1126,7 +1172,7 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 
 		averageVelocityOfAnimation *= 2.0f;
 
-		//operator is overloaded
+		//operator is overloaded on matrix class 
 		*end += garivityVec;
 		ownLocation += garivityVec;
 
@@ -1147,6 +1193,15 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 			averageVelocityOfAnimation 
 		);
 
+		/*
+		Todo hier notwendig: gravitation hier wie es beim falling
+		da ist auch einbinden,
+		es muss vorher noch on top geprüft werden ob
+		der character fallen soll. 
+		*/
+
+
+
 		if(!reachedHipTargetAutoAdjust)
 			updateHipLocationAndRotation(update, index);
 
@@ -1154,9 +1209,8 @@ void BoneController::TickHipAutoAlign(float DeltaTime){
 
 			//DebugHelper::showScreenMessage("new rotation reached");
 
-			//stop anim.
-			//ALIGNHIP_FLAG = false;
-			resetPendingRotationStatus();
+		
+			resetPendingRotationStatusAndFlag();
 
 			legDoubleKeys_1.resetAnimationToStartAndResetRotation();
 			legDoubleKeys_2.resetAnimationToStartAndResetRotation();
@@ -1235,8 +1289,8 @@ void BoneController::TickArms(float DeltaTime){
 			*endEffectorLeft,
 			*leftArm, 
 			*rightArm, 
-			hand1, //left hand new
-			hand2, //right hand new
+			&hand1, //left hand new
+			&hand2, //right hand new
 			attachedCarriedItem, 
 			world,
 			DeltaTime
@@ -2167,6 +2221,7 @@ void BoneController::collapse(){
 	}
 }
 
+///@brief sets the falling interpolator from the given project container if needed
 void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
 	if(currentMotionState != BoneControllerStates::falling){
 		if(container.startFalling()){
@@ -2190,6 +2245,14 @@ void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
 	}
 }
 
+
+bool BoneController::isStillFalling(){
+	return !fallingGravityInterpolator.groundReachedFlag();
+
+	// currentMotionState == BoneControllerStates::falling;
+}
+
+///@brief will tick the falling process of the bone controller
 void BoneController::TickFalling(float DeltaTime){
 	if(!fallingGravityInterpolator.groundReachedFlag()){
 		TickLegsNone(DeltaTime);
@@ -2199,16 +2262,31 @@ void BoneController::TickFalling(float DeltaTime){
 
 		FVector currentPos = ownLocation.getTranslation();
 		FVector hipLocationAddVector = fallingGravityInterpolator.interpolate(currentPos, DeltaTime);
-		FVector hipLocationUpdated = hipLocationAddVector + currentPos;
 
-		ownLocation.setTranslation(hipLocationUpdated);
+		ownLocation += hipLocationAddVector;
 
+		if(fallingGravityInterpolator.groundReachedFlag()){
+			//currentMotionState = BoneControllerStates::locomotion;
+			currentMotionState = BoneControllerStates::landing;
+		}
 
-	}else{
-		currentMotionState = BoneControllerStates::locomotion;
 	}
 }
 
+///@brief ticks the landing keys
 void BoneController::TickLanding(float DeltaTime){
+	//landingHipKeys
+	if(!landingHipKeysOffset.reachedLastFrameOfAnimation()){
+		//tick and apply offset to hipmatrix location
+		FVector offsetForHip = landingHipKeysOffset.interpolate(DeltaTime);
+		ownLocation += offsetForHip; //is overloaded matrix add translation
 
+		//tick legs in place
+		TickLegsNone(DeltaTime);
+		TickArms(DeltaTime);
+
+		if(landingHipKeysOffset.reachedLastFrameOfAnimation()){
+			currentMotionState = BoneControllerStates::locomotion;
+		}
+	}
 }

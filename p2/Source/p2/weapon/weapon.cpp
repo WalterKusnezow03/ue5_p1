@@ -39,6 +39,7 @@ Aweapon::Aweapon()
 
 	
 	muzzleAttachmentSkelletonPointer = nullptr;
+	gripAttachmentSkelletonPointer = nullptr;
 	gehauseSkeletonPointer = nullptr;
 
 	reddotSightChildActor = nullptr;
@@ -490,8 +491,10 @@ void Aweapon::setupAnimations()
 				gehauseSkeletonPointer = Component;
 			}else if(name.Contains("muzzle")){
 				muzzleAttachmentSkelletonPointer = Component;
+			}else if(name.Contains("grip")){
+				gripAttachmentSkelletonPointer = Component;
 			}
-			
+
 			addIfIsAHandTarget(Component);
 		}
 	}
@@ -1026,7 +1029,7 @@ USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
 		return muzzleAttachmentSkelletonPointer;
 	}
 	if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
-		return gehauseSkeletonPointer;
+		return gripAttachmentSkelletonPointer;
 	}
 	return gehauseSkeletonPointer;
 }

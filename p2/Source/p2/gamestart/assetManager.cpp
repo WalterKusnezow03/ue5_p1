@@ -161,3 +161,16 @@ void assetManager::addTexture(textureEnum type, UTexture2D *texture){
         textureAssets.addBp(type, texture);
     }
 }
+
+
+
+
+
+void assetManager::setDebugCubeBp(UClass *uclassin){
+    if(uclassin != nullptr){
+        debugCubePointer = uclassin;
+    }
+}
+UClass *assetManager::debugCubeBp(){
+    return debugCubePointer;
+}

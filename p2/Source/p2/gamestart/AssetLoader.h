@@ -56,4 +56,6 @@ private:
 	void loadMaterials();
 	void loadUI();
 	void loadTextures();
+
+	void loadDebugCube();
 };

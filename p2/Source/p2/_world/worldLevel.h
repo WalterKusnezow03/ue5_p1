@@ -76,4 +76,6 @@ private:
 	static void debugMatrix();
 
 	static bool gamePausedFlag;
+
+	static void debugCreateCustomTextureMesh(UWorld *world);
 };
