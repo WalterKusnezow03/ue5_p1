@@ -32,4 +32,24 @@ private:
 
     int canFindInBuffer(int index, TArray<TArray<int32>> &buffers);
     bool canFind(int index, TArray<int32> &buffer);
+
+    UWorld *worldPointer = nullptr;
+
+    void draw(TArray<TArray<int32>> &subBuffers, TArray<FVector> &vertecies, FColor color);
+    void draw(
+        TArray<int32> &indices,
+        TArray<FVector> &vertecies,
+        FColor color
+    );
+
+    std::vector<FColor> createColorBuffer(int size);
+
+public:
+    static void Test(UWorld *world);
+
+private:
+    static UClass *loadUClassBluePrint(FString path);
+    static UStaticMeshComponent *findStaticMesh(AActor *actor);
+    static AActor *spawnDebugActor(UWorld *world, UClass *toSpawn);
+
 };
