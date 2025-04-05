@@ -501,8 +501,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 
 				newActor->ReloadMeshAndApplyAllMaterials();
 
-				bool splitGlass = true;
-				newActor->setMaterialBehaiviour(materialEnum::glassMaterial, splitGlass);
+				newActor->setMaterialBehaiviour(materialEnum::glassMaterial);
 			}
 		}
 	}

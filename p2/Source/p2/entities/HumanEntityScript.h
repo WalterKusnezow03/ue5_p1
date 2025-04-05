@@ -62,6 +62,9 @@ public:
 
 	virtual void despawn() override;
 
+	using Super::alert; // <- macht alert() aus der Basisklasse wieder sichtbar
+	virtual void alert(FVector lookat) override;
+
 protected:
 	virtual void requestNewPathTo(FVector &location, bool towardsPlayer) override;
 

@@ -3,22 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/entities/EntityScript.h"
 
 /**
  * 
  */
 class P2_API AlertManager
 {
-public:
+private:
 	AlertManager();
 	~AlertManager();
+
+public:
 
 	static void alertInArea(UWorld *world, FVector location, float radius);
 
 	static void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage, float damageRadius);
 
+	static void subscribeToAlert(AEntityScript *pointer);
+	static void unSubscribeFromAlert(AEntityScript *pointer);
+
 private:
 	static float deltaTime(UWorld *world);
 
 	static TArray<AActor *> getAActorsInArea(UWorld *world, FVector location, float radius);
+
+
+	//subrciption
+	static std::vector<int> subscribedActorsInAreaByIndex(FVector &location, float SphereRadius);
+	static int findIndex(AEntityScript *pointer);
+	static std::vector<AEntityScript *> subscribedToAlert;
 };

@@ -29,7 +29,7 @@ private:
 	FVector groundPosition;
 	float epsilonGroundReached = 0.5f;
 
-	bool reachedFlag = false;
+	bool reachedFlag = true;
 
 	FVector gravityVector();
 	bool groundReached(FVector &compare);

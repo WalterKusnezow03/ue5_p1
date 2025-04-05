@@ -85,7 +85,7 @@ public:
 
 	void updateStatesBasedOnCamera(UCameraComponent &camera);
 
-	FVector stabilizedHipLocation();
+	
 
 	void debugDrawHeadForward(UWorld *worldPointer, float DeltaTime);
 	

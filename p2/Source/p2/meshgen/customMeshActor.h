@@ -47,14 +47,12 @@ public:
 
 	//material behaviour to damage 
 	void setMaterialBehaiviour(materialEnum mat);
-	void setMaterialBehaiviour(materialEnum mat, bool split);
-	void setMaterialBehaviourAndHealth(materialEnum mat, int health);
-	void setMaterialAndHealthAndSplitOnDeath(materialEnum mat, int health, bool split);
+	
 
 
 	
 	void splitIntoAllTriangles();
-	void createNewMeshActors(std::vector<MeshData> &meshes, materialEnum material, bool splitondeathin);
+	void createNewMeshActors(std::vector<MeshData> &meshes, materialEnum material);
 
 
 	void createTerrainFrom2DMap(
@@ -109,11 +107,15 @@ protected:
 	bool DEBUG_enabled = false;
 	void debugThis(FVector &hitpoint);
 
+	void createDebreeOnDamage(FVector &worldhit);
+
 	int health = 100;
 	bool destructableBool = false;
 	bool splitOnDeath = false;
 	bool isDestructable();
 	void setHealth(int d);
+
+	FVector worldToLocalHit(FVector &worldhit);
 
 	teamEnum team;
 

@@ -46,35 +46,12 @@ void AcustomMeshActor::setDamagedOwner(IDamageinterface *damagedOwnerIn){
 /// if material is glass it will be split on death
 /// @param mat material to set
 void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat){
-    if(mat == materialEnum::glassMaterial){
-        setMaterialAndHealthAndSplitOnDeath(mat, 1, true);
-    }else{
-        setMaterialBehaviourAndHealth(mat, 100);
-    }
-}
-
-/// @brief sets the material and bool of splitting on death, healt managed automatically
-/// @param mat material to set
-/// @param split split
-void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat, bool split){
-    bool isGlass = (mat == materialEnum::glassMaterial);
-    int healthIn = isGlass ? 1 : 100;
-    setMaterialAndHealthAndSplitOnDeath(mat, healthIn, split);
-}
-
-void AcustomMeshActor::setMaterialBehaviourAndHealth(materialEnum mat, int healthIn){
-    setMaterialAndHealthAndSplitOnDeath(mat, healthIn, false);
-}
-
-void AcustomMeshActor::setMaterialAndHealthAndSplitOnDeath(materialEnum mat, int healthIn, bool split){
     materialtypeSet = mat;
-    setHealth(std::max(1, healthIn));
-    splitOnDeath = split;
-
-    if(split){
+    if(mat == materialEnum::glassMaterial){
         enableDebug();
     }
 }
+
 
 
 
@@ -102,7 +79,6 @@ void AcustomMeshActor::takedamage(int d, bool surpressed){
 
                 health = 100;
                 if(splitOnDeath && false){ //OLD 
-
                     splitIntoAllTriangles();
                 }
 
@@ -138,16 +114,37 @@ void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
     glassreactionToHitWorld(hitpoint); 
     takedamage(d, surpressed);
 
+    /*
     EntityManager *entityManager = worldLevel::entityManager();
     if(entityManager != nullptr){
         //in any case create debree
-        FVector originPoint = GetActorLocation();
         entityManager->createDebree(GetWorld(), hitpoint, materialtypeSet);
-    }
+    }*/
+
+    createDebreeOnDamage(hitpoint);
 }
 
+void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
+    FVector localHit = worldToLocalHit(worldhit);
 
+    //iterate all layers, if hit: create debree
+    EntityManager *entityManager = worldLevel::entityManager();
+    if(entityManager != nullptr){
 
+        //std::map<int, MeshDataLod> meshLayersLodMap;
+        std::vector<materialEnum> materials = materialVector();
+        for (int i = 0; i < materials.size(); i++){
+            MeshData &meshdata = findMeshDataReference(
+                materials[i],
+                ELod::lodNear,
+                true //raycast enabled
+            );
+            if (meshdata.doesHit(localHit)){
+                entityManager->createDebree(GetWorld(), worldhit, materials[i]);
+            }
+        }
+    }
+}
 
 void AcustomMeshActor::setTeam(teamEnum t){
     this->team = t;
@@ -198,7 +195,7 @@ void AcustomMeshActor::createTerrainFrom2DMap(
     Super::createTerrainFrom2DMap(map, touples, typeIn);
 
     //must be called here.
-    setMaterialBehaiviour(materialEnum::grassMaterial, false); //no split
+    setMaterialBehaiviour(materialEnum::grassMaterial); //no split
 
     
     if(createTrees && (typeIn != ETerrainType::EOcean)){ 
@@ -407,7 +404,7 @@ void AcustomMeshActor::splitIntoAllTriangles(){
             std::vector<MeshData> allTrianglesDoubleSided;
             meshFound.splitAllTrianglesInHalfAndSeperateMeshIntoAllTrianglesDoubleSided(allTrianglesDoubleSided);
 
-            createNewMeshActors(allTrianglesDoubleSided, currentMaterial, false);
+            createNewMeshActors(allTrianglesDoubleSided, currentMaterial);
         }
     }
 
@@ -416,8 +413,7 @@ void AcustomMeshActor::splitIntoAllTriangles(){
 
 void AcustomMeshActor::createNewMeshActors(
     std::vector<MeshData> &meshes, 
-    materialEnum material,
-    bool splitOnDeathIn
+    materialEnum material
 ){
 
     FString message = FString::Printf(
@@ -448,11 +444,9 @@ void AcustomMeshActor::createNewMeshActors(
         );
 
         if (newActor != nullptr){
-            newActor->setMaterialBehaiviour(material, splitOnDeath); //split on death so kopieren!
+            newActor->setMaterialBehaiviour(material); //split on death so kopieren!
             newActor->replaceMeshData(currentMeshData, material);
             newActor->ReloadMeshAndApplyAllMaterials();
-
-            newActor->splitOnDeath = splitOnDeathIn;
         }
 
         //debugDraw
@@ -478,15 +472,18 @@ void AcustomMeshActor::enableDebug(){
     DEBUG_enabled = true;
 }
 
+FVector AcustomMeshActor::worldToLocalHit(FVector &worldhit){
+    //world hit to local
+    FTransform worldTransform = GetActorTransform();
+    return worldTransform.InverseTransformPosition(worldhit);
+}
+
 void AcustomMeshActor::debugThis(FVector &hitpoint){
     if(!DEBUG_enabled){
         return;
     }
 
-    //world hit to local
-    FVector meshHit = hitpoint - GetActorLocation();
-    FQuat inverseRotation = GetActorQuat().Inverse();
-    FVector localHit = inverseRotation.RotateVector(meshHit);
+    FVector meshHit = worldToLocalHit(hitpoint);
 
     std::vector<materialEnum> hitMaterials = {
         materialEnum::grassMaterial,
@@ -515,9 +512,7 @@ void AcustomMeshActor::debugThis(FVector &hitpoint){
 void AcustomMeshActor::glassreactionToHitWorld(FVector &hitpoint){
     if(hasGlassMesh()){
         //world hit to local
-        FVector meshHit = hitpoint - GetActorLocation();
-        FQuat inverseRotation = GetActorQuat().Inverse();
-        FVector localHit = inverseRotation.RotateVector(meshHit);
+        FVector localHit = worldToLocalHit(hitpoint);
         glassreactionToHitLocal(localHit);
     }
 }

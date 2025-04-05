@@ -20,7 +20,6 @@
 #include "p2/DebugHelper.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/_renderTargets/meshExtraction/SurfaceFilter.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
 #include "CoreMinimal.h"
@@ -120,7 +119,6 @@ void worldLevel::initWorld(UWorld *world){
 
     debugCreateCustomTextureMesh(world);
 
-    SurfaceFilter::Test(world);
 }
 
 /**

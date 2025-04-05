@@ -288,7 +288,11 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 						}
 
 						FVector hitpoint = HitResult.ImpactPoint;
-						entity->takedamage(damageForAmmunitionType(), hitpoint); // must be changed later
+						entity->takedamage(
+							damageForAmmunitionType(), 
+							hitpoint,
+							isSoundSurpressed()
+						); // must be changed later
 					}else{
 						//own team hit / any other
 						if(DEBUG_DRAW){

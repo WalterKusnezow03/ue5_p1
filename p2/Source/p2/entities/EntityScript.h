@@ -34,6 +34,7 @@ public:
 
 	//max distance to follow
 	static const int MAXDISTANCE = 10000; //100m --> 100 * 100 = 5000
+	static const int MAXDISTANCE_CLOSERANGE = 2000; //20m
 
 	void projectActorToGround();
 
@@ -49,6 +50,7 @@ public:
 	virtual teamEnum getTeam() override;
 
 	virtual bool isWithinMaxRange(FVector vec);
+	bool isWithinCloseRange(FVector &vec);
 
 	//must be public
 	void enableActiveStatus(bool enable);
@@ -57,7 +59,7 @@ public:
 	virtual void despawn();
 
 	void alert();
-	void alert(FVector lookat);
+	virtual void alert(FVector lookat);
 	void alarm(); //sets spotting status to true
 
 protected:

@@ -912,9 +912,10 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
 
 //new split function, update mesh, do not rip apart
 void MeshData::splitAndRemoveTrianglesAt(FVector &localHitPoint){
+    
     //find closest vertex
     //enclosing the point
-
+    //do not check all triangles
     std::vector<int> indices = findClosestIndexWithVertexDuplicatesTo(localHitPoint);
     for (int indexCurrent = 0; indexCurrent < indices.size(); indexCurrent++){
         //int index = findClosestIndexTo(localHitPoint);
@@ -950,10 +951,52 @@ void MeshData::splitAndRemoveTrianglesAt(FVector &localHitPoint){
             }
         }
     }
-
-    
 }
 
+
+
+bool MeshData::doesHit(FVector &localHitPoint){
+    if(vertecies.Num() < 3 || triangles.Num() == 0){
+        return false;
+    }
+
+    if(isInsideBoundingbox(localHitPoint)){
+        //find closest vertex
+        //enclosing the point
+        //do not check all triangles
+        std::vector<int> indices = findClosestIndexWithVertexDuplicatesTo(localHitPoint);
+        for (int indexCurrent = 0; indexCurrent < indices.size(); indexCurrent++){
+            //int index = findClosestIndexTo(localHitPoint);
+
+            int index = indices[indexCurrent];
+            if(isValidVertexIndex(index)){
+
+                //wenn die eckpunkte des dreiecks
+                //A * r + B * s + C * t = F, und r + s + t = 1.0f ist, dann ist es im dreieck
+
+                std::vector<int> foundTriangles;
+                findTrianglesInvolvedWith(index, foundTriangles);
+                //DebugHelper::logMessage("debugTriangle -> check triangles", (foundTriangles.size() / 3));
+
+                for (int i = 2; i < foundTriangles.size(); i += 3)
+                {
+                    int v0 = foundTriangles[i - 2];
+                    int v1 = foundTriangles[i - 1];
+                    int v2 = foundTriangles[i];
+
+                    //check if inside
+                    //DebugHelper::logMessage("debugTriangle -> try solve");
+                    if(solveIsInTriangle(v0,v1,v2, localHitPoint)){
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+///@brief finds all triangles where an index is contained
 void MeshData::findTrianglesInvolvedWith(
     int index,
     std::vector<int> &trianglesFound
@@ -1026,12 +1069,14 @@ bool MeshData::solveIsInTriangle(
         FVector BCnormal = FVector(0, BC.Z * -1.0f, BC.Y);
         FVector CAnormal = FVector(0, CA.Z * -1.0f, CA.Y);
 
+        /*
         ABnormal = ABnormal.GetSafeNormal();
         BCnormal = BCnormal.GetSafeNormal();
         CAnormal = CAnormal.GetSafeNormal();
         localA = localA.GetSafeNormal();
         localB = localB.GetSafeNormal();
         localC = localC.GetSafeNormal();
+        */
 
         //since the triangle is projected on the yz pane, x is not needed
         float dot0 = localA.Y * ABnormal.Y + localA.Z * ABnormal.Z;

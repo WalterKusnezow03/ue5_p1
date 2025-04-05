@@ -13,6 +13,7 @@
 #include "p2/entityManager/Outpost.h"
 #include "p2/weapon/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/entityManager/AlertManager.h"
 #include "p2/gameStart/assetManager.h"
 #include "p2/entities/botActionHelper/EAttackType.h"
 #include "p2/DebugHelper.h"
@@ -211,13 +212,13 @@ bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
     Super::resetpath();
-
+    AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
+
+    boneController.dropWeapon();
 
     //entity manager
     EntityManager *entityManager = worldLevel::entityManager();
-
-    boneController.dropWeapon();
 
     //drop weapon and release
     if (weaponPointer != nullptr)
@@ -252,16 +253,6 @@ void AHumanEntityScript::die(){
 
 /// @brief despawns the entity 
 void AHumanEntityScript::despawn(){
-    //despawn weapon manually to the entity manager too.
-    if(weaponPointer != nullptr){
-        weaponPointer->drop();
-        if (EntityManager *e = worldLevel::entityManager()){
-            e->add(weaponPointer);
-        }
-
-        weaponPointer = nullptr;
-    }
-
     die();
 }
 
@@ -337,4 +328,20 @@ bool AHumanEntityScript::playerIsInLookDir(){
         return FVector::DotProduct(connectToPlayer, forward) >= 0.6f; //0 orthogonal, 1 parallell
     }
     return false;
+}
+
+
+
+
+
+///@brief overriden alert method: if look at is near enough: exit path,
+/// look at! 
+void AHumanEntityScript::alert(FVector lookat){
+    Super::alert(lookat);
+    
+    // special attention needed: clear path, look at
+    if(isWithinCloseRange(lookat)){
+        Super::resetpath();
+        LookAt(lookat);
+    }
 }

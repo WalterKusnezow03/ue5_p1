@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
 
+std::vector<AEntityScript *> AlertManager::subscribedToAlert;
 
 AlertManager::AlertManager()
 {
@@ -23,6 +24,24 @@ AlertManager::~AlertManager()
 ///@param location center of radius
 ///@param SphereRadius collect in radius
 void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadius){
+    
+    
+    std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
+    for (int i = 0; i < indexArray.size(); i++){
+        int currentIndex = indexArray[i];
+        AEntityScript *entity = subscribedToAlert[currentIndex];
+        if(entity){
+            if(entity->isWithinMaxRange(location)){
+                //look at immidiatly
+                entity->alarm();
+            }else{
+                entity->alert(location);
+            }
+        }
+    }
+    
+    
+    /*
     TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
     // Process the results
     for (AActor* Actor : actors){
@@ -40,7 +59,7 @@ void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadi
                 
             }
         }
-    }
+    }*/
 
 }
 
@@ -57,11 +76,28 @@ void AlertManager::damageAndAlertInArea(
     float damageRadius
 ){
 
+    std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
+    for (int i = 0; i < indexArray.size(); i++){
+        int currentIndex = indexArray[i];
+        AEntityScript *entity = subscribedToAlert[currentIndex];
+        if(entity){
+            if(entity->isWithinMaxRange(location)){
+                //look at immidiatly
+                entity->alarm();
+            }else{
+                entity->alert(location);
+            }
+        }
+    }
+
+    //OLD SPHERE CAST
+    
     TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
     // Process the results
     for (AActor* Actor : actors){
         // Notify or process the actor in some way (based on distance)
         if (Actor){
+            /*
             AEntityScript *entity = Cast<AEntityScript>(Actor);
             if(entity){
 
@@ -70,9 +106,8 @@ void AlertManager::damageAndAlertInArea(
                     entity->alarm();
                 }else{
                     entity->alert();
-                }
-                
-            }
+                }   
+            }*/
 
             IDamageinterface *damagable = Cast<IDamageinterface>(Actor);
             if(damagable != nullptr){
@@ -133,9 +168,56 @@ TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location,
 
 
 
+/**
+ * subscription
+ */
+std::vector<int> AlertManager::subscribedActorsInAreaByIndex(FVector &location, float SphereRadius){
+    std::vector<int> entitiesInAreaByIndex;
+    for (int i = 0; i < subscribedToAlert.size(); i++)
+    {
+        AEntityScript *ptr = subscribedToAlert[i];
+        if(ptr){
+            float dist = FVector::Dist(location, ptr->GetActorLocation());
+            if(dist <= SphereRadius){
+                entitiesInAreaByIndex.push_back(i);
+            }
+        }
+    }
+    return entitiesInAreaByIndex;
+}
+
+void AlertManager::subscribeToAlert(AEntityScript *pointer){
+    if(pointer != nullptr){
+        if(findIndex(pointer) == -1){
+            subscribedToAlert.push_back(pointer);
+        }
+    }
+}
 
 
+void AlertManager::unSubscribeFromAlert(AEntityScript *pointer){
+    if(subscribedToAlert.size() > 0){
+        int index = findIndex(pointer);
+        if(index != -1){
+            //swap with end
+            subscribedToAlert[index] = subscribedToAlert[subscribedToAlert.size() - 1];
+            subscribedToAlert.pop_back();
+        }
+    }
+    
+}
 
+int AlertManager::findIndex(AEntityScript *pointer){
+    int index = -1;
+    if(pointer){
+        for (int i = 0; i < subscribedToAlert.size(); i++){
+            if(subscribedToAlert[i] == pointer){
+                return i;
+            }
+        }
+    }
+    return index;
+}
 
 /**
  * returns the world delta time

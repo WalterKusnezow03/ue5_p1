@@ -101,6 +101,7 @@ public:
 	);
 
 	void splitAndRemoveTrianglesAt(FVector &localHitPoint);
+	bool doesHit(FVector &localHitPoint);
 
 	FVector center();
 	void centerMesh();

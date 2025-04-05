@@ -631,11 +631,11 @@ void BoneController::LookAt(FVector TargetLocation)
 
 		//abort climb(?) //unklar. Bot muss reagieren wenn das
 		//klettern stuck ist, müsste man es abbrechen.
-		/*
+		
 		if(currentMotionState == BoneControllerStates::locomotionClimbAll){
-			currentMotionState = BoneControllerStates::none;
+			//currentMotionState = BoneControllerStates::none;
+			return;
 		}
-		*/
 
 		//walk towards wanted rotation
 		if(currentMotionState == BoneControllerStates::none){
@@ -1943,28 +1943,6 @@ void BoneController::debugUpdateTransform(FVector location, FRotator rotation){
 }
 
 
-FVector BoneController::stabilizedHipLocation(){
-	FVector currentLocation = GetLocation();
-	if(currentMotionState == BoneControllerStates::locomotion){
-		if(leg1isPlaying){
-			FVector ground = legDoubleKeys_1.copyGroundPosition();
-			ground += FVector(0, 0, legScaleCM);
-			ground.X = currentLocation.X;
-			ground.Y = currentLocation.Y;
-			return ground;
-		}
-		else
-		{
-			FVector ground = legDoubleKeys_2.copyGroundPosition();
-			ground += FVector(0, 0, legScaleCM);
-			ground.X = currentLocation.X;
-			ground.Y = currentLocation.Y;
-			return ground;
-		}
-	}
-
-	return currentLocation;
-}
 
 void BoneController::debugDrawHeadForward(UWorld *worldPointer, float DeltaTime){
 	MMatrix t = currentTransform(HEAD);

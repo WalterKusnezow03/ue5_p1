@@ -8,7 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/DebugHelper.h"
 #include "p2/entities/customIk/MMatrix.h"
-
+#include "p2/entityManager/AlertManager.h"
 #include "p2/player/teamEnum.h"
 #include "EntityScript.h"
 
@@ -36,6 +36,7 @@ void AEntityScript::BeginPlay()
 void AEntityScript::init(){
 	//DebugHelper::showScreenMessage("entity init");
 	enableActiveStatus(true);
+	AlertManager::subscribeToAlert(this);
 
 	health = 100;
 	spottedPlayer = false;
@@ -328,6 +329,14 @@ bool AEntityScript::isWithinMaxRange(FVector vec){
 	FVector currentLocation = boneController.GetLocation(); //GetActorLocation()
 	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE);
 }
+
+bool AEntityScript::isWithinCloseRange(FVector &vec){
+	FVector currentLocation = boneController.GetLocation();
+	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE_CLOSERANGE);
+}
+
+
+
 
 /// @brief performs a raycast to the target and checks if "can see it"
 /// @param target aactor from the scene
@@ -725,7 +734,10 @@ void AEntityScript::enableCollider(bool enable){
 
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
+	AlertManager::unSubscribeFromAlert(this);
+
 	resetpath();
+	enableActiveStatus(false);
 	if (EntityManager *e = worldLevel::entityManager())
 	{
 		e->add(this);
@@ -739,6 +751,9 @@ void AEntityScript::despawn(){
 
 /// @brief reduces the spotting time of the entity
 void AEntityScript::alert(){
+	if(!isActivatedForUpdate()){
+		return;
+	}
 	if(!spottedPlayer){
 		updateSpottingTimeOnAlert();
 	}
@@ -746,10 +761,17 @@ void AEntityScript::alert(){
 
 
 void AEntityScript::alert(FVector lookat){
+	if(!isActivatedForUpdate()){
+		return;
+	}
 	if(!spottedPlayer && !canSeePlayer){
 		updateSpottingTimeOnAlert();
 		LookAt(lookat);
 	}
+
+
+
+
 }
 
 void AEntityScript::updateSpottingTimeOnAlert(){
@@ -769,6 +791,9 @@ void AEntityScript::updateToReducedSpottingTimeIfNotSpottedYet(){
 
 /// @brief sets the player spotted status to true immidatly
 void AEntityScript::alarm(){
+	if(!isActivatedForUpdate()){
+		return;
+	}
 	spottedPlayer = true;
 	if(playerPointer != nullptr){
 		LookAt(playerPointer->GetActorLocation());

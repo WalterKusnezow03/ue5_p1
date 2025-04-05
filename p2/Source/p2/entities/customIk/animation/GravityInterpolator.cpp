@@ -6,6 +6,7 @@
 GravityInterpolator::GravityInterpolator()
 {
     resetVelocity();
+    reachedFlag = true;
 }
 
 
