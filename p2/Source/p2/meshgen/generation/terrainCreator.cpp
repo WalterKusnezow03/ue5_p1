@@ -1220,12 +1220,38 @@ void terrainCreator::randomizeTerrainTypes(UWorld *world){
     int step = 1;
     FVectorShape shape;
 
-    int shapeCount = map.size() / 3;
+    int shapeCount = map.size();
+
+    std::vector<ETerrainType> terraintypesVector = createRandomTerrainTypes(shapeCount);
 
     for (int i = 0; i < shapeCount; i++){
 
         shape.createRandomNewSmoothedShapeClamped(sizeOfShape, step);
-        shape.floorAllCoordinateValues();
+        shape.floorAllCoordinateValues(); //macht es quasi eckig
+
+        //DEBUG
+        
+        if(true){
+            std::vector<FVector> vertecies = shape.vectorCopy();
+            MMatrix scaleMat;
+            scaleMat.scale(100, 100, 1);
+            MMatrix rot;
+            rot.pitchRadAdd(MMatrix::degToRadian(90.0f));
+            MMatrix translate;
+            translate.setTranslation(0, 0, 300);
+
+            MMatrix result = rot * scaleMat;
+            result = translate * result;
+
+            for (int j = 0; j < vertecies.size(); j++){
+                vertecies[j] = result * vertecies[j];
+            }
+            DebugHelper::showLine(world, vertecies, FColor::Blue);
+        }
+        
+        //DEBUG END
+
+
 
         //random offset into map
         MMatrix moveMatrix;
@@ -1234,23 +1260,10 @@ void terrainCreator::randomizeTerrainTypes(UWorld *world){
             FVectorUtil::randomNumber(0, map.size() - sizeOfShape),
             0
         );
-        shape.moveVerteciesWith(moveMatrix);
+        if(false)
+            shape.moveVerteciesWith(moveMatrix); //debug remove
 
-        //DEBUG
-        /*
-        if(true){
-            std::vector<FVector> vertecies = shape.vectorCopy();
-            MMatrix m;
-            m.scale(-100, -100, 1);
-            for (int j = 0; j < vertecies.size(); j++)
-            {
-                vertecies[j] = m * vertecies[j];
-                vertecies[j].Z = 200.0f;
-            }
-            DebugHelper::showLine(world, vertecies, FColor::Blue);
-        }
-        */
-        //DEBUG END
+        
 
         shape.sortVerteciesOnXAxis();
         std::vector<FVector> vertecies = shape.vectorCopy();
@@ -1260,13 +1273,14 @@ void terrainCreator::randomizeTerrainTypes(UWorld *world){
             FVector &chunkAt = vertecies[0];
             int x = clampIndex(chunkAt.X);
             int y = clampIndex(chunkAt.Y);
-            ETerrainType toExclude = map[x][y].getTerrainType();
-            ETerrainType terraintypeRandom = selectTerrainTypeExcluding(toExclude);
 
             for (int vertex = 1; vertex < vertecies.size(); vertex++){
                 FVector &prevVertex = vertecies[vertex - 1];
                 FVector &currentVertex = vertecies[vertex];
-                applyTerrainTypeBetween(prevVertex, currentVertex, terraintypeRandom);
+
+                applyTerrainTypeBetween(prevVertex, currentVertex, terraintypesVector[i]);
+
+                //DebugHelper::logMessage("terrainDebug apply terrain ");
             }
         }
 
@@ -1282,7 +1296,7 @@ void terrainCreator::applyTerrainTypeBetween(FVector &a, FVector &b, ETerrainTyp
         FVector &smaller = a.Y < b.Y ? a : b;
         FVector &bigger = a.Y > b.Y ? a : b;
 
-        for (int i = smaller.Y; i < bigger.Y; i++){
+        for (int i = smaller.Y; i <= bigger.Y; i++){
             int yIndex = clampIndex(i);
 
             terrainCreator::chunk *currentChunk = chunkAt(xIndex, yIndex);
@@ -1293,13 +1307,26 @@ void terrainCreator::applyTerrainTypeBetween(FVector &a, FVector &b, ETerrainTyp
     }
 }
 
+///@brief creates a random terrain vector in passed count
+///@param count of terrain types
+std::vector<ETerrainType> terrainCreator::createRandomTerrainTypes(int count){
+    std::vector<ETerrainType> outterrain;
+    ETerrainType prev = ETerrainType::ETropical;
+    for (int i = 0; i < count; i++){
+        outterrain.push_back(selectTerrainTypeExcluding(prev));
+        prev = outterrain.back();
+    }
+    return outterrain;
+}
 
+///@brief selects a terrain type excluding a target terrain
 ETerrainType terrainCreator::selectTerrainTypeExcluding(ETerrainType typeToExclude){
     std::vector<ETerrainType> vector = //AcustomMeshActorBase::terrainVector();
     {
         ETerrainType::EDesert,
-        ETerrainType::ETropical,
-        ETerrainType::ESnowHill
+        ETerrainType::EDesertForest,
+        ETerrainType::ETropical
+        //,ETerrainType::ESnowHill
     };
 
     ETerrainType terraintypeRandom = ETerrainType::ETropical;
@@ -1445,21 +1472,6 @@ void terrainCreator::createTerrainAndCreateBuildings(
             sizeMaxMeters -= 3;
             AroomProcedural::generate(world, sizeMaxMeters, sizeMaxMeters, posPivot); //in size is METERS
 
-
-            //debug
-            if(world){
-                for (int line = 0; line < 10; line++){
-                    DebugHelper::showLineBetween(
-                        world, 
-                        posPivot, 
-                        posPivot + FVector(line * 10, 0, 10000), 
-                        FColor::Black,
-                        1000.0f
-                    );
-                }
-
-                DebugHelper::logMessage("debugterrain ", posPivot);
-            }
         }
     }
 }

@@ -297,6 +297,12 @@ void AssetLoader::loadMaterials(){
             materialEnum::stoneMaterial,
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/stoneMaterial.stoneMaterial'"))
         );
+        a->addMaterial(
+            materialEnum::beigeStoneMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/beigeStoneMaterial.beigeStoneMaterial'"))
+        );
+
+
 
         //tree material
         a->addMaterial(

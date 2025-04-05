@@ -358,9 +358,16 @@ void FVectorShape::createRandomNewSmoothedShape(int sizeXYMax, int smoothStep){
 
     int radius = sizeXYMax / 2;
     createCircleShape(radius, 10);
-    randomizeVertecies(sizeXYMax / 10);
 
-    smoothWithBezier(smoothStep);
+    if(vec.size() > 0){
+        randomizeVertecies(sizeXYMax / 3);
+
+        //close
+        vec.push_back(vec[0]);
+        
+        smoothWithBezier(smoothStep);
+    }
+    
 }
 
 

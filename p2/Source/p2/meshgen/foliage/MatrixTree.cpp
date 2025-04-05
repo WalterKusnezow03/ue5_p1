@@ -45,6 +45,7 @@ void MatrixTree::loadProperties(){
 
     TreeProperties oakProperty(100, ETreeType::Edefault, ETerrainType::ETropical, 30, 10, 3);
     oakProperty.addTerrainType(ETerrainType::EForest);
+    oakProperty.addTerrainType(ETerrainType::EDesertForest);
     oakProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
     oakProperty.setRecursionLevelMax(2); //debug
     defaultProperty = oakProperty;
@@ -54,9 +55,9 @@ void MatrixTree::loadProperties(){
     palmBush.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
     addPropertyToMap(palmBush);
 
-
     TreeProperties cactus(100, ETreeType::ECactus, ETerrainType::EDesert, 0, 3, 3);
     cactus.setTargetedMaterials(materialEnum::palmLeafMaterial, materialEnum::palmLeafMaterial);
+    cactus.addTerrainType(ETerrainType::EDesertForest);
     addPropertyToMap(cactus);
 }
 

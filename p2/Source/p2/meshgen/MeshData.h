@@ -99,6 +99,12 @@ public:
 	void splitAllTrianglesInHalfAndSeperateMeshIntoAllTrianglesDoubleSided(
 		std::vector<MeshData> &meshDataVectorOutput
 	);
+	void findLongestSide(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &startOut,
+		FVector &dirOut);
 
 	void splitAndRemoveTrianglesAt(FVector &localHitPoint);
 	bool doesHit(FVector &localHitPoint);

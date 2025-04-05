@@ -878,7 +878,12 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
             FVector &B = vertecies[v1];
             FVector &C = vertecies[v2];
 
-            FVector middle = A + 0.5f * (B - A); // gx = A + r(B-A)
+            //FVector middle = A + 0.5f * (B - A); // gx = A + r(B-A)
+
+            FVector start;
+            FVector dir;
+            findLongestSide(A, B, C, start, dir);
+            FVector middle = start + 0.5f * dir;
 
             //append new vertex and normal
             int newIndex = vertecies.Num();
@@ -909,6 +914,34 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
     }
 }
 
+
+void MeshData::findLongestSide(
+    FVector &a, 
+    FVector &b, 
+    FVector &c,
+    FVector &startOut,
+    FVector &dirOut
+){
+    FVector dirAB = b - a;
+    FVector dirBC = c - b;
+    FVector dirCA = a - c;
+
+    std::vector<FVector> sides = {
+        dirAB,
+        dirBC,
+        dirCA
+    };
+    std::vector<FVector> startPoints = {a, b, c};
+
+    float largestSide = -1.0f; //so the start is set anyway
+    for (int i = 0; i < sides.size(); i++){
+        FVector &current = sides[i];
+        if (current.Size() > largestSide){
+            startOut = startPoints[i];
+            dirOut = current;
+        }
+    }
+}
 
 //new split function, update mesh, do not rip apart
 void MeshData::splitAndRemoveTrianglesAt(FVector &localHitPoint){
@@ -954,7 +987,7 @@ void MeshData::splitAndRemoveTrianglesAt(FVector &localHitPoint){
 }
 
 
-
+///@brief returns whether the mesh is hit or not
 bool MeshData::doesHit(FVector &localHitPoint){
     if(vertecies.Num() < 3 || triangles.Num() == 0){
         return false;

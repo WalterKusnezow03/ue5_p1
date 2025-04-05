@@ -196,6 +196,7 @@ private:
 	void applyTerrainTypeBetween(FVector &a, FVector &b, ETerrainType typeIn);
 	terrainCreator::chunk *chunkAt(int x, int y);
 	terrainCreator::chunk *chunkAt(terrainHillSetup &setup);
+	std::vector<ETerrainType> createRandomTerrainTypes(int count);
 	ETerrainType selectTerrainTypeExcluding(ETerrainType typeToExclude);
 
 	void applySpecialTerrainTypesByHeight();
@@ -222,5 +223,6 @@ private:
 	);
 	void findChunksEnclosedBy(
 		terrainHillSetup &hillData,
-		std::set<terrainCreator::chunk *> &output);
+		std::set<terrainCreator::chunk *> &output
+	);
 };

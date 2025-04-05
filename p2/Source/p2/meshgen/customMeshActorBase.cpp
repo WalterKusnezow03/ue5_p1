@@ -722,6 +722,10 @@ materialEnum AcustomMeshActorBase::groundMaterialFor(ETerrainType terraintype){
     if(terraintype == ETerrainType::ESnowHill){
         return materialEnum::snowMaterial;
     }
+    if(terraintype == ETerrainType::EDesertForest){
+        return materialEnum::beigeStoneMaterial;
+    }
+
     return materialEnum::grassMaterial;
 }
 

@@ -9,6 +9,7 @@ enum class materialEnum
     wallMaterial,
     glassMaterial,
     stoneMaterial,
+    beigeStoneMaterial,
     sandMaterial,
     redsandMaterial,
     treeMaterial,
