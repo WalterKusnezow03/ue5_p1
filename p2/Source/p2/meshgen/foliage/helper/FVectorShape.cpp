@@ -2,7 +2,7 @@
 
 
 #include "FVectorShape.h"
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/generation/bezierCurve.h"
 #include "GrahamScan.h"
 #include "p2/util/TVector.h"

@@ -1,7 +1,7 @@
 
 #include "DynamicRenderedObject.h"
 #include "p2/EntityManager/EntityManager.h"
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/Elod.h"
 #include "DynamicRenderedObjectDebugger.h"
 

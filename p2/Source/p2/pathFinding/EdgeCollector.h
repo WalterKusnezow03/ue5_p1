@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DrawDebugHelpers.h"
+#include <list>
 
 #include "CoreMinimal.h"
 

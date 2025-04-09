@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/DebugHelper.h"
 #include "p2/meshgen/foliage/helper/GrahamScan.h"
@@ -10,6 +10,7 @@
 #include "p2/gameStart/assetEnums/materialEnum.h"
 #include "p2/meshgen/foliage/helper/baryCentricInterpolator.h"
 #include "p2/DebugHelper.h"
+#include "BoundingBox.h"
 
 #include <algorithm>
 #include <set>
@@ -1725,51 +1726,148 @@ int MeshData::verteciesNum(){
 }
 
 void MeshData::updateBoundsIfNeeded(){
-    bottomLeftBound = FVector(0, 0, 0);
-    topRightBound = FVector(0, 0, 0);
-    for (int i = 0; i < vertecies.Num(); i++)
-    {
-        updateBoundsIfNeeded(vertecies[i]);
-    }
+    bounds.updateBoundsIfNeeded(vertecies);
 }
 
-
 void MeshData::updateBoundsIfNeeded(FVector &other){
-    if(other.X < bottomLeftBound.X){
-        bottomLeftBound.X = other.X;
-    }
-    if(other.Y < bottomLeftBound.Y){
-        bottomLeftBound.Y = other.Y;
-    }
-    if(other.Z < bottomLeftBound.Z){
-        bottomLeftBound.Z = other.Z;
-    }
-
-    if(other.X > topRightBound.X){
-        topRightBound.X = other.X;
-    }
-    if(other.Y > topRightBound.Y){
-        topRightBound.Y = other.Y;
-    }
-    if(other.Z > topRightBound.Z){
-        topRightBound.Z = other.Z;
-    }
+    bounds.updateBoundsIfNeeded(other);
 }
 
 ///@brief checks if a vertex is inside the bounding box, NOT allowing edge cases!
 bool MeshData::isInsideBoundingbox(FVector &other){
-    return other.X > bottomLeftBound.X &&
-           other.Y > bottomLeftBound.Y &&
-           other.Z > bottomLeftBound.Z &&
-           other.X < topRightBound.X &&
-           other.Y < topRightBound.Y &&
-           other.Z < topRightBound.Z;
+    return bounds.isInsideBoundingbox(other);
 }
-
 
 bool MeshData::hasAnyVertecies(){
     return verteciesNum() > 0;
 }
+
+
+/**
+ * 
+ * 
+ * ----- 2D DATA -----
+ * 
+ * 
+ */
+
+/// @brief 
+/// @param sizeX 
+/// @param sizeY 
+/// @param distanceXY 
+void MeshData::generate(int sizeX, int sizeY, int distanceXY){
+
+    sizeX = std::abs(sizeX);
+    sizeY = std::abs(sizeY);
+    if(sizeX <= 0 || sizeY <= 0){
+        return;
+    }
+
+    umbruch = sizeX;
+
+    clearMesh();
+
+    //generate array von vertecies mit x,y und abstand, height auf 0
+    for (int i = 0; i < sizeY; i++){
+        for (int j = 0; j < sizeX; j++){
+            FVector newPos(
+                j * distanceXY,
+                i * distanceXY,
+                0.0f
+            );
+            vertecies.Add(newPos);
+        }
+    }
+
+    //generate triangles for 2D grid
+    for (int i = 0; i < sizeY; i++){
+        for (int j = 0; j < sizeX; j++){
+            //create 2 triangles
+            int nextI = i + 1;
+            int nextJ = j + 1;
+            if(nextI < sizeY && nextJ < sizeX){
+
+                /*
+                1>2
+                | |
+                0<3
+
+                i = y
+                j = x
+                */
+
+                int v0 = indexFor(i, j);
+                int v1 = indexFor(nextI, j);
+                int v2 = indexFor(nextI, nextJ);
+                int v3 = indexFor(i, nextJ);
+
+                /*
+                
+                1 2
+                0
+                  2
+                0 3
+                */
+                if(
+                    isValidVertexIndex(v0) && 
+                    isValidVertexIndex(v1) && 
+                    isValidVertexIndex(v2) && 
+                    isValidVertexIndex(v3)
+                ){
+                    triangles.Add(v0);
+                    triangles.Add(v1);
+                    triangles.Add(v2);
+
+                    triangles.Add(v0);
+                    triangles.Add(v2);
+                    triangles.Add(v3);
+                }
+
+            }
+
+            
+
+        }
+    }
+
+}
+
+
+int MeshData::indexFor(int i, int j){
+    i = std::abs(i);
+    j = std::abs(j);
+
+    int oneD = j * umbruch + i;
+    return oneD;
+}
+
+
+FVector &MeshData::findIndex(int i, int j){
+    int oneD = indexFor(i, j);
+    if (oneD < vertecies.Num()){
+        return vertecies[oneD];
+    }
+    return noneVertex;
+}
+
+
+void MeshData::replaceAt(int i, int j, FVector &other){
+    int oneD = indexFor(i, j);
+    if (oneD < vertecies.Num()){
+        vertecies[oneD] = other;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // ---- debug -----
 void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
@@ -1796,3 +1894,5 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
         }
     }
 }
+
+

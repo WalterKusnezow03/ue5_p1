@@ -423,13 +423,20 @@ void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
 
         FVector connect = ownLocation - locationOfPlayer;
         FVector playerLook = manager->playerLookDir();
-        if(connect.X * playerLook.X + connect.Y * playerLook.Y > 0.0f){ //in blickrichtung auf 180 grad ebene
+        float dotLookDir = connect.X * playerLook.X + connect.Y * playerLook.Y;
+
+
+        this->SetActorHiddenInGame(false);  // macht den Actor unsichtbar
+        if(dotLookDir > 0.0f){ //in blickrichtung auf 180 grad ebene
             ELod lod = lodLevelByDistanceTo(locationOfPlayer);
             if(lod == ELod::lodFar){
+                this->SetActorHiddenInGame(true); 
                 return;
             }else{
                 updateLodLevelAndReloadMesh(lod);
             }
+
+            
         }
         
     }

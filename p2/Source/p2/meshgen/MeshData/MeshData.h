@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include <set>
+#include "BoundingBox.h"
 #include "p2/gameStart/assetEnums/materialEnum.h"
 #include "p2/entities/customIk/MMatrix.h"
 
@@ -231,10 +232,36 @@ protected:
 
 
 	//bound
+	BoundingBox bounds;
+
 	void updateBoundsIfNeeded();
 	void updateBoundsIfNeeded(FVector &other);
-	FVector bottomLeftBound;
-	FVector topRightBound;
 
 	bool isInsideBoundingbox(FVector &other);
+
+
+
+
+
+
+
+/**
+ * 2D section
+ */
+public:
+	void generate(int sizeX, int sizeY, int distanceXY);
+
+	FVector &findIndex(int i, int j);
+	void replaceAt(int i, int j, FVector &other);
+
+private:
+	int indexFor(int i, int j);
+
+	FVector noneVertex;
+	int umbruch = 0;
+
+
+
+
+
 };

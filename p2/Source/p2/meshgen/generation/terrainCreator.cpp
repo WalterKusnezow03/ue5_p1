@@ -579,7 +579,11 @@ void terrainCreator::createTerrain(
 
 
     //random height and smooth
-    int layers = 12; //20
+    int layers = 12; //20 (12 waren auf 10x10)
+
+    int layersPerTen = 12;
+    layers = (chunks / 10.0f) * layersPerTen;
+
     createRandomHeightMapChunkWide(layers);
     smooth3dMap();
 
@@ -1029,14 +1033,16 @@ void terrainCreator::applyTerrainDataToMeshActors(
 
 void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
 
-    int xLimit = map.size();
-    int yLimit = map.size();
-
     terrainCreator::chunk *currentChunk = chunkAt(x,y);
     if(
         (currentChunk != nullptr) && 
         (currentChunk->wasAlreadyCreated() == false)
     ){
+        currentChunk->setWasCreatedTrue();
+
+        int xLimit = map.size();
+        int yLimit = map.size();
+
         AcustomMeshActor *currentActor = nullptr;
         EntityManager *entityManagerPointer = worldLevel::entityManager();
         if(entityManagerPointer != nullptr){
@@ -1047,7 +1053,7 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
             return;
         }
 
-        currentChunk->setWasCreatedTrue();
+        
 
         // apply position
         FVector newPos = currentChunk->positionPivotBottomLeft();
@@ -1080,6 +1086,8 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
             newPos.Z = HEIGHT_MAX_OCEAN * 0.8f;
             createWaterPaneAt(newPos);
         }
+
+        DebugHelper::showScreenMessage("CREATED NEW CHUNK", FColor::Purple);
     }
 }
 
@@ -1381,9 +1389,16 @@ void terrainCreator::Tick(FVector &playerLocation){
     int x = cmToChunkIndex(playerLocation.X);
     int y = cmToChunkIndex(playerLocation.Y);
 
+    FVector location(x, y, 0);
+    //DebugHelper::showScreenMessage("terrain tick chunk", location, FColor::Green);
+
     //25 mesh actors
 
     int half = CHUNKSTOCREATEATONCE / 2;
+    half = 2;
+
+    //debug
+    half = map.size();
 
     applyTerrainDataToMeshActors(
         x - CHUNKSTOCREATEATONCE,
@@ -1401,8 +1416,17 @@ void terrainCreator::Tick(FVector &playerLocation){
 void terrainCreator::debugCreateTerrain(UWorld *world){
     //createTerrainAndSpawnMeshActors(world, 200);
 
-    //new
-    createTerrainAndCreateBuildings(world, 200);
+    //new with player tick needed
+    //createTerrainAndCreateBuildings(world, 200);
+    debugCreateTerrain(world, 200);
+}
+
+void terrainCreator::debugCreateTerrain(UWorld *world, int meters){
+    //createTerrainAndSpawnMeshActors(world, 200); //old
+
+    meters = std::abs(meters);
+    meters = std::max(meters, CHUNKSIZE * 2);
+    createTerrainAndCreateBuildings(world, meters); //new
 }
 
 /// @brief creates a terrain and brand new mesh actors without using the entity manager
@@ -1433,10 +1457,16 @@ void terrainCreator::createTerrainAndSpawnMeshActors(
 /**
  * create outposts section / buildings
  */
+
+///@brief creates the buildings and the terrain, but only will spawn terrain if the player is
+///near enough on tick
 void terrainCreator::createTerrainAndCreateBuildings(
     UWorld *world, int meters
 ){
     int chunkRange = meters / CHUNKSIZE;
+
+    DebugHelper::logMessage("debugterrain METERS ", meters);
+    DebugHelper::logMessage("debugterrain CHUNKS ", chunkRange);
 
     int count = 3;
     int minsizeChunks = 1;
@@ -1474,6 +1504,9 @@ void terrainCreator::createTerrainAndCreateBuildings(
 
         }
     }
+
+    //spawn all.
+    //applyTerrainDataToMeshActors();
 }
 
 void terrainCreator::createFlatAreas(

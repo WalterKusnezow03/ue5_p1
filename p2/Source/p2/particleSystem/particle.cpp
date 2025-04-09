@@ -4,6 +4,7 @@
 #include "p2/util/FVectorUtil.h"
 #include "p2/particleSystem/particleEnum.h"
 #include "p2/util/AActorUtil.h"
+#include "p2/_world/worldLevel.h"
 #include "particle.h"
 
 // Sets default values

@@ -1,6 +1,6 @@
 
 #include "staircaseBoundData.h"
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/DebugHelper.h"
 #include "p2/util/TTouple.h"
 #include "p2/entities/customIk/MMatrix.h"

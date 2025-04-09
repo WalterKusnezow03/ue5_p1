@@ -18,6 +18,7 @@ public:
 	~terrainCreator();
 
 	void debugCreateTerrain(UWorld *world);
+	void debugCreateTerrain(UWorld *world, int meters);
 
 	static const bool PLOTTING_ENABLED = false; // false;
 	

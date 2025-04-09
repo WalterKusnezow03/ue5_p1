@@ -11,7 +11,10 @@
 MatrixTree::MatrixTree()
 {
     loadProperties();
-    //erstmal matrizen generieren
+    generateStemShapes();
+    generateLeafShapes();
+    
+    // erstmal matrizen generieren
     int count = 40;
     for (int i = 0; i < count; i++)
     {
@@ -513,6 +516,23 @@ void MatrixTree::generateCactusSpikes(){
 std::vector<FVectorShape> MatrixTree::StemShapeByEnum(ETreeType type){
     std::vector<FVectorShape> output;
 
+    if(stemMap.find(type) != stemMap.end()){
+        output = stemMap[type];
+    }
+    return output;
+}
+
+
+void MatrixTree::generateStemShapes(){
+    std::vector<ETreeType> treeTypes = allTreeTypes();
+    for (int i = 0; i < treeTypes.size(); i++){
+        generateStemShapeFor(treeTypes[i]);
+    }
+}
+
+void MatrixTree::generateStemShapeFor(ETreeType type){
+
+    std::vector<FVectorShape> output;
     int size = 100;
     if(type == ETreeType::Edefault){
         size = 50;
@@ -567,8 +587,12 @@ std::vector<FVectorShape> MatrixTree::StemShapeByEnum(ETreeType type){
         output.push_back(shapeCircle);
     }
 
-    return output; //for vertecies sorroundign the shape
+    //add to map here
+    stemMap[type] = output;
 }
+
+
+
 
 
 
@@ -576,6 +600,25 @@ std::vector<FVectorShape> MatrixTree::StemShapeByEnum(ETreeType type){
 /// @param type 
 /// @return 
 FVectorShape MatrixTree::leafShapeByEnum(ETreeType type){
+    FVectorShape output;
+    if(leafMap.find(type) != leafMap.end()){
+        output = leafMap[type];
+    }
+    return output;
+}
+
+
+
+
+
+void MatrixTree::generateLeafShapes(){
+    std::vector<ETreeType> treeTypes = allTreeTypes();
+    for (int i = 0; i < treeTypes.size(); i++){
+        generateLeafShape(treeTypes[i]);
+    }
+}
+
+void MatrixTree::generateLeafShape(ETreeType type){
     FVectorShape output;
 
     if(type == ETreeType::Edefault){
@@ -632,7 +675,17 @@ FVectorShape MatrixTree::leafShapeByEnum(ETreeType type){
         scaleUp.scaleUniform(4.0f);
         output.moveVerteciesWith(scaleUp);
     }
-    
+    leafMap[type] = output;
+}
 
-    return output;
+
+
+std::vector<ETreeType> MatrixTree::allTreeTypes(){
+    std::vector<ETreeType> outvec = {
+        ETreeType::Edefault,
+        ETreeType::EPalmTree,
+        ETreeType::EPalmBush,
+        ETreeType::ECactus //TODO
+    };
+    return outvec;
 }

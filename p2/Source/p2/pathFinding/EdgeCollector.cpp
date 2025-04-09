@@ -9,6 +9,8 @@
 #include "p2/interfaces/Damageinterface.h"
 #include "Engine/StaticMeshActor.h"
 #include "MeshDescription.h"
+#include "p2/entities/EntityScript.h"
+#include "PathFinder.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "DrawDebugHelpers.h"

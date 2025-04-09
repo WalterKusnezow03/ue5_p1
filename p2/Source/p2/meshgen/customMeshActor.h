@@ -10,7 +10,7 @@
 #include "p2/player/teamEnum.h"
 #include "Components/BoxComponent.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/meshgen/customMeshActorBase.h"
 #include <map>

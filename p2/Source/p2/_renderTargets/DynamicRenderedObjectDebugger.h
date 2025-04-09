@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CoreMinimal.h"
+
 class P2_API DynamicRenderedObjectDebugger{
 public:
     static void createDebugObject(UWorld *world);

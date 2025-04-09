@@ -18,6 +18,7 @@
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/rooms/testing/roomProcedural.h"
 #include "p2/DebugHelper.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
@@ -86,8 +87,7 @@ void worldLevel::initWorld(UWorld *world){
     // disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
-            int meters = 100;
-            meters = 1000;
+            int meters = 200;
             createTerrain(world, meters); // 100m
         }
     }
@@ -186,7 +186,6 @@ void worldLevel::createTerrain(UWorld *world, int meters){
     if(isTerrainInited){
         return;
     }
-    DebugHelper::showScreenMessage("try init terrain", FColor::Purple);
 
     if(world != nullptr){
         //create new terrain pointer if needed
@@ -194,7 +193,7 @@ void worldLevel::createTerrain(UWorld *world, int meters){
             terrainPointer = new terrainCreator();
         }
 
-        terrainPointer->debugCreateTerrain(world); //new test
+        terrainPointer->debugCreateTerrain(world, meters); //new test
         isTerrainInited = true;
     }
 }
@@ -216,21 +215,24 @@ int worldLevel::getGroundHeight(FVector &pos){
  * 
  */
 void worldLevel::Tick(float DeltaTime){
+    if(isTerrainInited){
+        //tick terrain creation if not done yet by player distance
+        referenceManager *referenceManagerPointer = referenceManager::instance();
+        if(referenceManagerPointer != nullptr){
+            if(terrainPointer != nullptr){
+                FVector playerLocationCopy = referenceManagerPointer->playerLocation();
+                terrainPointer->Tick(playerLocationCopy);
 
-    //tick terrain creation if not done yet by player distance
-    referenceManager *referenceManagerPointer = referenceManager::instance();
-    if(referenceManagerPointer != nullptr){
-        if(terrainPointer != nullptr){
-            FVector playerLocationCopy = referenceManagerPointer->playerLocation();
-            terrainPointer->Tick(playerLocationCopy);
+            }
+        }
+
+        //tick sync tick tasks from pathfinder
+        PathFinder *p = PathFinder::instance();
+        if(p != nullptr){
+            p->Tick();
         }
     }
 
-    //tick sync tick tasks from pathfinder
-    PathFinder *p = PathFinder::instance();
-    if(p != nullptr){
-        p->Tick();
-    }
 
     //tick player ui timer based actions
     customUiComponentTickHandler::Tick(DeltaTime);

@@ -1263,10 +1263,17 @@ void PathFinder::connect(Node *node){
 
                     if(PathFinder::ASYNC_EDGE_PREBUILDING){
                         //OLD ASYNC TRACE:
-                        asyncCanSee(node, enclosedByMaxDistance.at(i));
+                        
+                        if(false){
+                            asyncCanSee(node, enclosedByMaxDistance.at(i));
+                        }else{
+                            //Sync raycast trace, works worse than async
+                            addNewRaytask(node, enclosedByMaxDistance.at(i));
+                        }
+                        
+                        
 
-                        //Sync raycast trace, works worse than async
-                        //ddNewRaytask(node, enclosedByMaxDistance.at(i));
+                        
 
                     }else{
                         
@@ -1307,18 +1314,18 @@ void PathFinder::asyncCanSee(Node *a, Node *b){
 
         if(worldPointer){
 
-            FHitResult HitResult;
-            FCollisionQueryParams Params = collsionParamsLowDetailAndFast();
-
-            //add params from entity manager (contains all bots for example, which can be ignored)
-            //part of a bigger context im working on, comment out or provide your own params
-            if(EntityManager *e = worldLevel::entityManager()){
-                Params = e->getIgnoredRaycastParams();
-            }
-            Params.bTraceComplex = false;
-
             //async cast if prebuild
             if(PREBUILD_EDGES_ENABLED){
+
+                FHitResult HitResult;
+                FCollisionQueryParams Params = collsionParamsLowDetailAndFast();
+
+                //add params from entity manager (contains all bots for example, which can be ignored)
+                //part of a bigger context im working on, comment out or provide your own params
+                if(EntityManager *e = worldLevel::entityManager()){
+                    Params = e->getIgnoredRaycastParams();
+                }
+                Params.bTraceComplex = false;
 
                 //bool result = false;
                 FVector start = a->pos;
@@ -1375,7 +1382,7 @@ FTraceDelegate *PathFinder::requestDelegate(Node *a, Node *b){
         }
         if(delegate != nullptr){
             delegate->BindLambda(
-                [a, b, delegate, this]
+                [a, b, delegate]
                 (const FTraceHandle &TraceHandle, FTraceDatum &TraceData){
 
                 // Lambda logic for handling the trace result
@@ -1399,7 +1406,7 @@ FTraceDelegate *PathFinder::requestDelegate(Node *a, Node *b){
                     a->addTangentialNeighbor(b);
                     b->addTangentialNeighbor(a);
 
-                    DebugHelper::showScreenMessage("async trace made new", FColor::Yellow);
+                    //DebugHelper::showScreenMessage("async trace made new", FColor::Yellow);
                     /*
                     if(this->worldPointer ){
                         DebugHelper::showLineBetween(
@@ -1852,26 +1859,26 @@ FVector PathFinder::findFurthestConnectedNodeFrom(FVector &other){
  * 
  */
 void PathFinder::Tick(){
-    return;
-    int tasksPerTick = 10000;
-
-    for (int i = 0; i < tasksPerTick; i++){
-        if(rayTasksVec.size() > 0){
+    
+    if(rayTasksVec.size() > 0){
+        int tasksPerTick = 10000;
+        for (int i = 0; i < tasksPerTick; i++){
+            if(rayTasksVec.size() <= 0){
+                return;
+            }
             raycastTask &current = rayTasksVec.back();
             current.execute();
             rayTasksVec.pop_back();
-
             if(i == tasksPerTick-1){
-                DebugHelper::showScreenMessage("NEW SYNC TRACE!",rayTasksVec.size(), FColor::Orange);
+                DebugHelper::showScreenMessage("NEW SYNC TRACE BATCH MADE!",rayTasksVec.size(), FColor::Orange);
             }
-            
         }
     }
 
 }
 
 void PathFinder::addNewRaytask(Node *a, Node *b){
-    return;
+    
     if(a != nullptr && b != nullptr){
         raycastTask newTask;
         newTask.setup(worldPointer, a, b);

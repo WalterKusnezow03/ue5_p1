@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <map>
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/foliage/helper/ParallellShapeMerger.h"
 #include "p2/rooms/testing/roomBoundData.h"
 

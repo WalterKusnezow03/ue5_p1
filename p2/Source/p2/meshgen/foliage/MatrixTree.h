@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/meshgen/MeshData.h"
+#include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/foliage/helper/IndexChain.h"
 #include "p2/meshgen/foliage/helper/TreeProperties.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
+#include <map>
 #include "ETreeType.h"
 
 /**
@@ -85,5 +86,19 @@ private:
 	TreeProperties defaultProperty;
 	
 	TreeProperties &findProperty(ETerrainType type);
-	
+
+	std::vector<ETreeType> allTreeTypes();
+
+
+
+
+
+	void generateLeafShapes();
+	void generateLeafShape(ETreeType type);
+	void generateStemShapes();
+	void generateStemShapeFor(ETreeType type);
+
+	std::map<ETreeType, std::vector<FVectorShape>> stemMap;
+	std::map<ETreeType, FVectorShape> leafMap;
+
 };
