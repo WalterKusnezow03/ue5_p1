@@ -1064,6 +1064,8 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         terrainCreator::chunk *top = nullptr;
         terrainCreator::chunk *right = nullptr;
         terrainCreator::chunk *topright = nullptr;
+
+        
         if(y + 1 < yLimit){
             top = &map.at(x).at(y+1);
         }
@@ -1073,7 +1075,9 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         if(x + 1 < xLimit && y + 1 < yLimit){
             topright = &map.at(x+1).at(y+1);
         }
-
+        
+        
+        //references the map and removes the gaps where the next chunk was found in bezier curve
         std::vector<std::vector<FVector>> &mapReference = currentChunk->readAndMerge(top, right, topright);
 
         bool createTrees = currentChunk->createTrees();

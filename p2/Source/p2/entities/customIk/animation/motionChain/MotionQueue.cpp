@@ -267,7 +267,7 @@ void MotionQueue::Tick(
 
 
 
-    MMatrix rot = transform.extarctRotatorMatrix(); //MIGHT BE WRONG!
+    MMatrix rot = transform.extarctRotatorMatrix(); //orientation of actor
     if(leftHand != nullptr){
         FVector handLeftNewPos = endEffectorLeft.getTranslation();
         leftHand->Tick(DeltaTime, world, handLeftNewPos,rot, item);

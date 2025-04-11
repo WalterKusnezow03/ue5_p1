@@ -34,7 +34,7 @@ public:
 
 	//max distance to follow
 	static const int MAXDISTANCE = 10000; //100m --> 100 * 100 = 5000
-	static const int MAXDISTANCE_CLOSERANGE = 2000; //20m
+	static const int MAXDISTANCE_CLOSERANGE = 5000; //50m
 
 	void projectActorToGround();
 

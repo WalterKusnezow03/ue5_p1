@@ -89,7 +89,9 @@
 			"algorithm": "cpp",
 			"type_traits": "cpp",
 			"hash_map": "cpp",
-			"hash_set": "cpp"
+			"hash_set": "cpp",
+			"iterator": "cpp",
+			"scoped_allocator": "cpp"
 		}
 	},
 	"extensions": {

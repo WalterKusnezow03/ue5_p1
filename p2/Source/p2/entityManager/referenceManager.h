@@ -35,6 +35,8 @@ public:
 	static void forceSetPlayerPaused(bool in);
 	static void reloadPlayerLoadoutIfNeeded(LoadoutHelper &other);
 
+	static UWorld *GetWorld();
+
 private:
 	// private constructor for singleton
 	referenceManager();

@@ -58,6 +58,21 @@ PathFinder::Node::Node(FVector posIn){
     nA = nullptr;
     nB = nullptr;
 }
+PathFinder::Node::Node(Node &other){
+    *this = other;
+}
+PathFinder::Node &PathFinder::Node::operator=(Node &other){
+    if(this != &other){
+        gx = other.gx; //set to max for unknown status by default
+        fx = other.fx;
+        pos = other.pos;
+        camefrom = other.camefrom;
+        closedFlag = other.closedFlag;
+        nA = other.nA;
+        nB = other.nB;
+    }
+    return *this;
+}
 
 PathFinder::Node::~Node(){
     camefrom = nullptr;
@@ -779,17 +794,7 @@ void PathFinder::Quadrant::add(FVector n){
     int x = std::abs(n.X / CHUNKSIZE); //create new chunks?
     int y = std::abs(n.Y / CHUNKSIZE);
     
-    /*
-    while(map.size() <= x) {
-        map.push_back(std::vector<PathFinder::Chunk * >());
-    }
 
-    // Ensure all lists up to map.Count have enough chunks
-    for (int i = 0; i < map.size(); i++) {
-        while (map[i].size() <= y) {
-            map[i].push_back(new PathFinder::Chunk());
-        }
-    }*/
     fillMapTo(x, y);
 
     // Add the node to the appropriate chunk
@@ -804,17 +809,7 @@ void PathFinder::Quadrant::add(Node *n){
         //std::abs for flipping negatives obviosuly
         int x = std::abs(n->pos.X / CHUNKSIZE); //create new chunks?
         int y = std::abs(n->pos.Y / CHUNKSIZE);
-        /*
-        while(map.size() <= x) {
-            map.push_back(std::vector<PathFinder::Chunk * >());
-        }
-
-        // Ensure all lists up to map.Count have enough chunks
-        for (int i = 0; i < map.size(); i++) {
-            while (map[i].size() <= y) {
-                map[i].push_back(new PathFinder::Chunk());
-            }
-        }*/
+        
         fillMapTo(x, y);
 
         // Add the node to the appropriate chunk
@@ -993,7 +988,7 @@ void PathFinder::Chunk::add(FVector vec){
     //find closest node near by
     
 
-    if(hasNode(vec) == false){
+    if(!hasNode(vec)){
         Node *node = new Node(vec);
         nodes.push_back(node);
         //connects to all nodes if enabled in header
@@ -1110,7 +1105,7 @@ bool PathFinder::Chunk::hasNode(FVector pos){
         return false;
     }
 
-    float closest = std::numeric_limits<float>::max();
+    float closest = ONE_METER * 2.0f;
     PathFinder::Node *closestNode = nodes.at(0);
 
     for (int i = 0; i < nodes.size(); i++)
@@ -1127,7 +1122,7 @@ bool PathFinder::Chunk::hasNode(FVector pos){
             }
         }
     }
-    if(closest <= (ONE_METER)){
+    if(closest <= (ONE_METER / 3.0f)){
         return true;
     }
     return false;
@@ -1261,33 +1256,24 @@ void PathFinder::connect(Node *node){
                 // includes tangential check if possible!
                 if(PathFinder *p = PathFinder::instance()){
 
-                    if(PathFinder::ASYNC_EDGE_PREBUILDING){
-                        //OLD ASYNC TRACE:
-                        
-                        if(false){
-                            asyncCanSee(node, enclosedByMaxDistance.at(i));
-                        }else{
-                            //Sync raycast trace, works worse than async
-                            addNewRaytask(node, enclosedByMaxDistance.at(i));
-                        }
-                        
-                        
+                    
 
-                        
-
-                    }else{
-                        
+                    if(traceMode == PathFinder::PathTraceMode::AsyncTrace){
+                        asyncCanSee(node, enclosedByMaxDistance.at(i));
+                    }
+                    if(traceMode == PathFinder::PathTraceMode::SyncTraceByTick){
+                        addNewRaytask(node, enclosedByMaxDistance.at(i));
+                    }
+                    if(traceMode == PathFinder::PathTraceMode::SyncTrace){
                         if (p->canSeeTangential(node, enclosedByMaxDistance.at(i))) 
                         {
                             node->addTangentialNeighbor(compare);
                             compare->addTangentialNeighbor(node);
-
-                            //DebugHelper::showLineBetween(worldPointer, node->pos, compare->pos);
-
-                            //DebugHelper::showScreenMessage("connected!");
-                            
                         }
                     }
+
+
+
                     
                 }
             }
@@ -1883,5 +1869,77 @@ void PathFinder::addNewRaytask(Node *a, Node *b){
         raycastTask newTask;
         newTask.setup(worldPointer, a, b);
         rayTasksVec.push_back(newTask);
+    }
+}
+
+
+
+
+
+//debug
+void PathFinder::debugShowAllNodes(UWorld *world){
+    int count = 0;
+    if (TopRight)
+    {
+        TopRight->debugShowAllNodes(world);
+        count += TopRight->chunkCount();
+    }
+    if(BottomRight){
+        BottomRight->debugShowAllNodes(world);
+        count += TopRight->chunkCount();
+    }
+    if(TopLeft){
+        TopLeft->debugShowAllNodes(world);
+        count += TopRight->chunkCount();
+    }
+    if(BottomLeft){
+        BottomLeft->debugShowAllNodes(world);
+        count += TopRight->chunkCount();
+    }
+
+    DebugHelper::logMessage("debugPathfinder chunk count", count);
+}
+
+void PathFinder::Quadrant::debugShowAllNodes(UWorld *world){
+    for (int i = 0; i < map.size(); i++){
+        std::vector<Chunk *> &current = map[i];
+        for (int j = 0; j < current.size(); j++){
+            Chunk *currentChunk = current[j];
+            if(currentChunk){
+                currentChunk->debugShowAllNodes(world);
+            }
+        }
+    }
+}
+
+int PathFinder::Quadrant::chunkCount(){
+    int count = 0;
+    for (int i = 0; i < map.size(); i++)
+    {
+        std::vector<Chunk *> &current = map[i];
+        for (int j = 0; j < current.size(); j++){
+            Chunk *currentChunk = current[j];
+            if(currentChunk){
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+void PathFinder::Chunk::debugShowAllNodes(UWorld *world){
+    for (int i = 0; i < nodes.size(); i++){
+        PathFinder::Node *node = nodes[i];
+        if(node){
+            node->show(world);
+        }
+    }
+}
+
+void PathFinder::Node::show(UWorld *world){
+    if(world){
+        FVector posCopy = pos;
+        FVector offset = posCopy + FVector(0, 0, 10000);
+        DebugHelper::showLineBetween(world, posCopy, offset, FColor::Red, 100.0f);
     }
 }

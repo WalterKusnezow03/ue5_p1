@@ -40,6 +40,7 @@ bool worldLevel::isTerrainInited = false;
 EntityManager *worldLevel::entityManagerPointer = nullptr;
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
+bool worldLevel::nodesWereShown = false;
 
 bool worldLevel::areBotsInited = false;
 
@@ -118,6 +119,7 @@ void worldLevel::initWorld(UWorld *world){
     debugMatrix();
 
     debugCreateCustomTextureMesh(world);
+
 
 }
 
@@ -230,12 +232,24 @@ void worldLevel::Tick(float DeltaTime){
         PathFinder *p = PathFinder::instance();
         if(p != nullptr){
             p->Tick();
+
+            if(UWorld *world = GetWorld()){
+                if(!nodesWereShown){
+                    p->debugShowAllNodes(world);
+                    nodesWereShown = true;
+                }
+            }
+            
         }
     }
 
 
     //tick player ui timer based actions
     customUiComponentTickHandler::Tick(DeltaTime);
+}
+
+UWorld *worldLevel::GetWorld(){
+    return referenceManager::GetWorld();
 }
 
 /** 

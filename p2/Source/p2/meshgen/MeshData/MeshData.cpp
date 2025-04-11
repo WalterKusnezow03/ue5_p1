@@ -108,18 +108,22 @@ void MeshData::calculateNormals(){
     
     clearNormals();
     normals.SetNum(vertecies.Num());
-    for (int i = 0; i < triangles.Num() - 3; i += 3) {
-        int32 Index0 = triangles[i];
-        int32 Index1 = triangles[i + 1];
-        int32 Index2 = triangles[i + 2];
+    for (int i = 2; i < triangles.Num(); i += 3) {
+        int32 Index0 = triangles[i - 2];
+        int32 Index1 = triangles[i - 1];
+        int32 Index2 = triangles[i];
 
-        FVector Edge1 = vertecies[Index1] - vertecies[Index0];
-        FVector Edge2 = vertecies[Index2] - vertecies[Index0];
-        FVector Normal = FVector::CrossProduct(Edge1, Edge2).GetSafeNormal();
+        if(isValidVertexIndex(Index0, Index1, Index2)){
+            FVector Edge1 = vertecies[Index1] - vertecies[Index0];
+            FVector Edge2 = vertecies[Index2] - vertecies[Index0];
+            FVector Normal = FVector::CrossProduct(Edge1, Edge2).GetSafeNormal();
 
-        normals[Index0] = Normal;
-        normals[Index1] = Normal;
-        normals[Index2] = Normal;
+            normals[Index0] = Normal;
+            normals[Index1] = Normal;
+            normals[Index2] = Normal;
+        }
+
+        
     }
 
     UKismetProceduralMeshLibrary::CalculateTangentsForMesh(vertecies, triangles, UV0, normals, Tangents);

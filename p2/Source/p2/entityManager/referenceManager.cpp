@@ -78,7 +78,16 @@ int referenceManager::verifyTeam(int teamIn){
     return TEAM_NEUTRAL;
 }
 
-
+UWorld *referenceManager::GetWorld(){
+    referenceManager *pointer = instance();
+    if(pointer != nullptr){
+        AplayerScript *p = pointer->getPlayerPointer();
+        if(p != nullptr){
+            return p->GetWorld();
+        }
+    }
+    return nullptr;
+}
 
 /**
  * ui helper

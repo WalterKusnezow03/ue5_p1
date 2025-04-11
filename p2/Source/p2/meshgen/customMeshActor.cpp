@@ -339,10 +339,22 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
             FVector(-100, -100, 70),
         };
     
-        f->addNewNodeVector(pickedLocationsForNavmesh, offsets);
+        //f->addNewNodeVector(pickedLocationsForNavmesh, offsets);
+        FVector ownLocationOffset = GetActorLocation();
+        for (int i = 0; i < pickedLocationsForNavmesh.size(); i++)
+        {
+            std::vector<FVector> convexHull;
+            FVector &currentLocation = pickedLocationsForNavmesh[i];
+            for (int j = 0; j < offsets.size(); j++)
+            {
+                convexHull.push_back(offsets[j] + currentLocation + ownLocationOffset);
+            }
+            f->addConvexHull(convexHull);
+        }
+
+        DebugHelper::logMessage("debugPathfinder added nodes to mesh", pickedLocationsForNavmesh.size() * 4);
     }
-    
-    
+
     ReloadMeshAndApplyAllMaterials();
 
 }

@@ -38,6 +38,8 @@ public:
 	static PathFinder *instance();
 	static void deleteInstance();
 
+	void debugShowAllNodes(UWorld *world);
+
 	void clear(); //clears ALL NODES
 
 	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
@@ -50,6 +52,13 @@ public:
 	std::vector<FVector> getPath(FVector a, FVector b);
 
 	FVector findFurthestConnectedNodeFrom(FVector &other);
+
+	enum class PathTraceMode
+	{
+		SyncTrace,
+		SyncTraceByTick,
+		AsyncTrace
+	};
 
 	class Node
 	{
@@ -64,6 +73,9 @@ public:
 			float gx;
 			FVector pos;
 			Node(FVector posIn);
+			Node(Node &other);
+			Node &operator=(Node &other);
+
 			~Node();
 			void reset();
 			void updateCameFrom(float gxIn, float hxEnd, Node &came);
@@ -87,6 +99,8 @@ public:
 			// new: hull index
 			int hullindex = -1;
 			bool sameHull(Node *other);
+
+			void show(UWorld *world);
 
 		private:
 			FCriticalSection CriticalSection;
@@ -137,6 +151,8 @@ private:
 
 			PathFinder::Node *lateadd(FVector pos);
 
+			void debugShowAllNodes(UWorld *world);
+
 			// new:
 			//std::vector<PathFinder::ConvexPolygon *> polygons;
 	};
@@ -162,6 +178,10 @@ private:
 			void clear();
 
 			void fillMapTo(int xIndex, int yIndex);
+
+			void debugShowAllNodes(UWorld *world);
+
+			int chunkCount();
 	};
 
 	class Quadrant *TopRight;
@@ -248,7 +268,7 @@ private:
 public:
 	void freeDelegate(FTraceDelegate *d);
 
-
+	PathTraceMode traceMode = PathTraceMode::AsyncTrace;
 
 	//NEW
 	void Tick();

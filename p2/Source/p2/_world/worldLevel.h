@@ -36,6 +36,7 @@ public:
 
 private:
 	static void createTerrain(UWorld *world, int meters);
+	static UWorld *GetWorld();
 
 	worldLevel();
 	~worldLevel();
@@ -57,6 +58,7 @@ private:
 
 	//bots
 	static bool areBotsInited;
+	static bool nodesWereShown;
 
 	static void DebugCreateRooms(UWorld *world);
 

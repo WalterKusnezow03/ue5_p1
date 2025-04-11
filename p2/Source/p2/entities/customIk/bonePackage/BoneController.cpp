@@ -1692,9 +1692,12 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 	}
 
 
+
+
+
+
 	//new simplified testing
-	std::vector<int> limbs;
-	std::vector<DoubleKeyFrameAnimation *> animations;
+	
 	
 	bool isDone = armClimbKeys_1.animationCycleWasComplete();
 	if (!isDone)
@@ -1709,16 +1712,6 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 			SHOULDER_1
 		);
 
-		/*
-		//DebugHelper::showScreenMessage("climb move hand");
-		limbs.push_back(SHOULDER_1);
-		animations.push_back(&armClimbKeys_1);
-	
-		playForwardAndBackwardKinematicAnimSynchronized(
-			DeltaTime,
-			limbs,
-			animations
-		);*/
 	}else{
 		currentMotionState = BoneControllerStates::locomotion;
 		armMotionQueue.updateState(ArmMotionStates::handsFollowItem);
@@ -1749,8 +1742,14 @@ void BoneController::TickLocomotionClimbAll(float DeltaTime){
 
 	TickLimbNone(SHOULDER_2, DeltaTime);
 	TickLimbNone(FOOT_2, DeltaTime);
-	//OLD
+	
+	
+	
+	
+	//OLD 2
 	/*
+	std::vector<int> limbs;
+	std::vector<DoubleKeyFrameAnimation *> animations;
 	//switch to next leg but update relative position
 	
 	//hand reached target, end effector bleibt gelockt für das bein
@@ -1862,9 +1861,6 @@ void BoneController::playForwardAndBackwardKinematicAnimSynchronized(
 					// ---- HIP ADJUST BUILD ----
 					playBackwardKinematicAnim(*bone, *frames, *effectorMat, DeltaTime, color, limbIndex);
 					backwardKinematicIsBlocked = true;
-
-					//FString text = FString::Printf(TEXT("blocked backward adjust by  %d"), limbIndex);
-					//DebugHelper::logMessage(text);
 				}
 			}
 		}
