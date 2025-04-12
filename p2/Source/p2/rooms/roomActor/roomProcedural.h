@@ -38,6 +38,9 @@ public:
 
 private:
 	ETerrainType locatedInTerrainType;
+
+
+
 	void updateTerrainTypeLocatedIn(ETerrainType input);
 
 	int zScaleInCentimeters();
@@ -50,7 +53,8 @@ private:
 		std::vector<FVector> &doors,   // doors in cm local
 		std::vector<FVector> &windows, // windows in cm local
 		int doorWidthCm,
-		int scaleZCm
+		int scaleZCm,
+		std::vector<FVector> &doorPositionsFilteredOut
 	);
 
 
@@ -93,6 +97,23 @@ private:
 		FVector &locationStart,
 		float width,
 		std::vector<FVector> &output
+	);
+
+	void createDoorsAt(
+		std::vector<FVector> &doorPositions,
+		FVector &start,
+		FVector &end,
+		int width,
+		int height
+	);
+
+	void createDoorsAt(
+		std::vector<FVector> &doorPositions,
+		FVector &start,
+		FVector &end,
+		int width,
+		int height,
+		FVector &offset
 	);
 
 	void appendWallsFromMeshBounds(

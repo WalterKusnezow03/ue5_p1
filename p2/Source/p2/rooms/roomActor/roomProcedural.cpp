@@ -153,6 +153,7 @@ void AroomProcedural::createRoom(
 
 	for (int i = 1; i < corners.size(); i++)
 	{
+		std::vector<FVector> doorPositionsFilteredOut;
 		FVector &from = corners[i - 1];
 		FVector &to = corners[i];
 		createWall(
@@ -163,12 +164,22 @@ void AroomProcedural::createRoom(
 			doorPositions,
 			windowPositions, 
 			doorWidthCm, 
-			zCm
+			zCm,
+			doorPositionsFilteredOut
 			//,
 			//location
 		);
-	}
 
+		FVector offset(0, 0, location.Z);
+		createDoorsAt(
+			doorPositionsFilteredOut,
+			from,
+			to,
+			doorWidthCm,
+			zCm,
+			offset
+		);
+	}
 
 	//stairs debug
 	//DebugCreateStairs(floorAndRoof);
@@ -183,6 +194,12 @@ void AroomProcedural::createRoom(
 	floorAndRoof.transformAllVertecies(translateOffset);
 	walls.transformAllVertecies(translateOffset);
 	windows.transformAllVertecies(translateOffset);
+
+
+
+
+
+
 
 	/*
 	void appendMeshDataAndReload(
@@ -227,7 +244,8 @@ void AroomProcedural::createWall(
 	std::vector<FVector> &doors, //doors in cm local
 	std::vector<FVector> &windows, //windows in cm local
 	int doorWidthCm,
-	int scaleZCm
+	int scaleZCm,
+	std::vector<FVector> &doorPositionsFiltered
 ){
 	//sort vectors for consistent door placement, otherwise overlap issues occur
 	//very important!
@@ -243,13 +261,13 @@ void AroomProcedural::createWall(
 	oneDimWall.push_back(from); //FIRST WALL POSITION
 
 
-	std::vector<FVector> doorsFiltered;
+	//std::vector<FVector> doorsFiltered;
 	filterForVectorsBetween(
 		from,
 		to,
 		doorWidthCm,
 		doors,
-		doorsFiltered //output
+		doorPositionsFiltered //output
 	);
 
 	std::vector<FVector> windowsFiltered;
@@ -263,7 +281,7 @@ void AroomProcedural::createWall(
 	
 	// create gaps for wall
 	createGapsFor(from, to, doorWidthCm, windowsFiltered, oneDimWall);
-	createGapsFor(from, to, doorWidthCm, doorsFiltered, oneDimWall);
+	createGapsFor(from, to, doorWidthCm, doorPositionsFiltered, oneDimWall);
 	//last part added here, wall "complete", lower ceiling 
 	oneDimWall.push_back(to); //FINAL POSITION
 	sortVectorsBetween(from, to, oneDimWall);
@@ -328,7 +346,7 @@ void AroomProcedural::createGapsFor(
 	FVector &start,
 	FVector &end,
 	float width,
-	std::vector<FVector> &inputPositions,
+	std::vector<FVector> &inputPositions, //create gaps here
 	std::vector<FVector> &output
 ){
 	for (int i = 0; i < inputPositions.size(); i++){
@@ -508,6 +526,7 @@ void AroomProcedural::spawnWindowMeshFromBounds(
 
 }
 
+
 ///@brief expects the passed vector to be in touples of bounds M := {(a,b),(a,b)...}
 /// generates a minimized vector and replaces the passed reference data!
 void AroomProcedural::removeCloseTouples(
@@ -550,6 +569,57 @@ void AroomProcedural::removeCloseTouples(
 
 
 	vec = simplified; //copy
+}
+
+
+
+
+
+
+
+void AroomProcedural::createDoorsAt(
+	std::vector<FVector> &doorPositions,
+	FVector &start,
+	FVector &end,
+	int width,
+	int height,
+	FVector &offset
+){
+	FVector dir = end - start;
+	dir.Z = 0.0f;
+	dir = dir.GetSafeNormal();
+	FRotator rotation = dir.Rotation();
+
+	//x forward, y side
+	rotation.Yaw += 90.0f;
+
+	for (int i = 0; i < doorPositions.size(); i++){
+		FVector currentPos = doorPositions[i];
+		currentPos += GetActorLocation();
+		currentPos += offset;
+
+		//erstmal so
+		ADoorBase *door = ADoorBase::Construct(
+			GetWorld(),
+			currentPos
+		);
+
+		if(door){
+			door->SetActorRotation(rotation);
+		}
+	}
+}
+
+
+void AroomProcedural::createDoorsAt(
+	std::vector<FVector> &doorPositions,
+	FVector &start,
+	FVector &end,
+	int width,
+	int height
+){
+	FVector offset(0, 0, 0);
+	createDoorsAt(doorPositions, start, end, width, height, offset);
 }
 
 /// @brief will filter positions from the positions to filter vector
