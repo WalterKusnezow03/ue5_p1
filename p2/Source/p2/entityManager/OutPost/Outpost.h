@@ -10,6 +10,7 @@
 
 //forward declaration
 class AHumanEntityScript;
+class AOutpostAlarmPole;
 
 UCLASS()
 class P2_API AOutpost : public AActor
@@ -26,9 +27,13 @@ public:
 
 	bool isInRange(FVector &vec);
 
+	void createAlarmPolesIfNeeded();
+	void init();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 
 public:	
 	// Called every frame
@@ -37,8 +42,8 @@ public:
 
 private:
 	//distance
-	static const int MAXDISTANCE_RADIUS = 10000; //50meters * 100 = 5000
-	static const int MAXDISTANCE_METERS = 100;
+	static const int MAXDISTANCE_RADIUS = 5000; //50meters * 100 = 5000
+	
 
 	//will save for each team the entites. Needed for dynamic targets
 	std::map<teamEnum, std::vector<AHumanEntityScript *>> teamMap;
@@ -69,7 +74,7 @@ private:
 	void initEntitiesIfNeeded();
 
 	FVector randomOffset(int range);
-
+	FVector randomOffsetFromActorLocation(int range);
 
 	bool playerEntered = false;
 	void switchPlayerEnteredStatus(bool status);
@@ -92,4 +97,10 @@ private:
 	void replaceTeamLeaderIfNeededOnRemoveOf(AHumanEntityScript *botPointer);
 	void pickTeamLeaderIfNeeded(teamEnum team);
 	bool newTeamLeaderNeeded(teamEnum team);
+
+
+
+
+	std::vector<AOutpostAlarmPole *> alarmPoles;
+	void resetAlarmPoles();
 };

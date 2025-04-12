@@ -16,5 +16,6 @@ enum class materialEnum
     palmLeafMaterial,
     waterMaterial,
     snowMaterial,
+    prop_alarmBoxMaterial,
     _texturedMaterial
 };

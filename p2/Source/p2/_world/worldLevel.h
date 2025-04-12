@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/entityManager/OutpostManager.h"
+#include "p2/entityManager/OutPost/OutpostManager.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 
 /**

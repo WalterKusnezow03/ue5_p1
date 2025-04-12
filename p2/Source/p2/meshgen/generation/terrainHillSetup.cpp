@@ -127,3 +127,15 @@ void terrainHillSetup::extendInEveryDirectionBy(int count){
     xTarget += count;
     yTarget += count;
 }
+
+
+
+
+FVector terrainHillSetup::center(){
+    FVector centerVec(
+        (xPos + xTarget) / 2.0f,
+        (yPos + yTarget) / 2.0f,
+        0.0f
+    );
+    return centerVec;
+}

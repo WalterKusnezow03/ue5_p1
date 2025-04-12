@@ -8,6 +8,7 @@
 #include "p2/player/teamEnum.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/util/FVectorUtil.h"
+#include "OutpostAlarmPole.h"
 #include "p2/DebugHelper.h"
 #include <cstdlib>
 
@@ -19,6 +20,10 @@ AOutpost::AOutpost()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//so dass es sich bewegen kann
+	USceneComponent* SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("outpostRoot"));
+	RootComponent = SceneRoot;
+
 	isLiberated = false;
 }
 
@@ -27,8 +32,14 @@ AOutpost::AOutpost()
 void AOutpost::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+void AOutpost::init(){
 	createEntity(5, teamEnum::enemyTeam);
 }
+
+
 
 // Called every frame
 void AOutpost::Tick(float DeltaTime)
@@ -41,8 +52,8 @@ void AOutpost::Tick(float DeltaTime)
 
 	if(referenceManager *r = referenceManager::instance()){
 
-		FVector location = r->playerLocation();
-		if(isInRange(location)){
+		FVector playerlocation = r->playerLocation();
+		if(isInRange(playerlocation)){
 			//spawn if needed
 			initEntitiesIfNeeded();
 			switchPlayerEnteredStatus(true);
@@ -124,8 +135,6 @@ void AOutpost::moveAllEntitiesToGroundOnPlayerEnterArea(){
 bool AOutpost::isInRange(FVector &vec){
 	FVector ownLocation = GetActorLocation();
 
-	//return ((FVector::Dist(vec, ownLocation) / 100) <= MAXDISTANCE_METERS);
-
 	return (FVector::Dist(vec, ownLocation) <= MAXDISTANCE_RADIUS);
 }
 
@@ -171,9 +180,10 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 /// @param team team of the entity to set
 void AOutpost::createEntity(teamEnum team){
 	if(EntityManager *e = worldLevel::entityManager()){
-		FVector pos = GetActorLocation();
+	
+		FVector pos = randomOffsetFromActorLocation(400);
 		pos.Z += 100;
-		pos += randomOffset(400);
+
 		AHumanEntityScript *human = e->spawnHumanEntity(GetWorld(), pos, team);
 		if(human != nullptr){
 			//human->setTeam(team);
@@ -191,6 +201,10 @@ FVector AOutpost::randomOffset(int range){
 	x = x % range;
 	y = y % range;
 	return FVector(x, y, 0);
+}
+
+FVector AOutpost::randomOffsetFromActorLocation(int range){
+	return GetActorLocation() + randomOffset(range);
 }
 
 /// @brief creates entities with a count
@@ -430,3 +444,39 @@ bool AOutpost::newTeamLeaderNeeded(teamEnum team){
 	}
 	return false;
 }
+
+
+
+
+
+
+/**
+ * alarm poles section
+ */
+void AOutpost::createAlarmPolesIfNeeded(){
+	if(alarmPoles.size() == 0){
+		int num = 3;
+		for (int i = 0; i < num; i++){
+			FVector location = randomOffsetFromActorLocation(10000);
+
+			AOutpostAlarmPole *pole = AOutpostAlarmPole::Construct(GetWorld(), location);
+			if (pole)
+			{
+				pole->enableAlarmFunction();
+			}
+		}
+	}
+}
+
+
+void AOutpost::resetAlarmPoles(){
+	if(alarmPoles.size() > 0){
+		for (int i = 0; i < alarmPoles.size(); i++){
+			AOutpostAlarmPole *pole = alarmPoles[i];
+			if(pole){
+				pole->enableAlarmFunction();
+			}
+		}
+	}
+}
+

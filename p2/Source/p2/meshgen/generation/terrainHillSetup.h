@@ -10,6 +10,14 @@
 class P2_API terrainHillSetup
 {
 public:
+
+	/// @brief pass in the parameters as chunk index space!
+	/// @param posX 
+	/// @param posY 
+	/// @param scaleX 
+	/// @param scaleY 
+	/// @param minHeightAdd 
+	/// @param maxHeightAdd 
 	terrainHillSetup(int posX, int posY, int scaleX, int scaleY, int minHeightAdd, int maxHeightAdd);
 	terrainHillSetup(const terrainHillSetup &other);
 	terrainHillSetup &operator=(const terrainHillSetup &other);
@@ -21,6 +29,9 @@ public:
 	int xTargetCopy();
 	int yTargetCopy();
 
+	FVector center();
+	
+
 	int getHeightIfSetOrRandomHeight();
 
 	void forceSetHeight(int heightIn); //forceHeight
@@ -31,6 +42,8 @@ public:
 	void extendInEveryDirectionBy(int count);
 
 private:
+
+	//(x,y) in chunk index space
 	int xPos = 0;
 	int yPos = 0;
 	int xTarget = 1;

@@ -11,6 +11,7 @@
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/util/FVectorUtil.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include <set>
 #include "customMeshActor.h"
 
@@ -181,31 +182,32 @@ bool AcustomMeshActor::isDestructable(){
 
 
 
-/// @brief process a 2D map of local coordinates
-/// correct position of the chunk must be set before!
-/// @param map 2D vector of LOCAL coordinates!
-void AcustomMeshActor::createTerrainFrom2DMap(
-    std::vector<std::vector<FVector>> &map,
-    bool createTrees,
-    ETerrainType typeIn
-){ //nach dem entity manager stirbt die refenz hier!
-    thisTerrainType = typeIn;
 
+void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
+
+    thisTerrainType = package.getTerrainType(); //must be set before mesh gen!
     TArray<FVectorTouple> touples;
-    Super::createTerrainFrom2DMap(map, touples, typeIn);
 
-    //must be called here.
+    Super::createTerrainFrom2DMap(
+        package.mapReference(), 
+        touples, 
+        thisTerrainType
+    );
     setMaterialBehaiviour(materialEnum::grassMaterial); //no split
 
-    
-    if(createTrees && (typeIn != ETerrainType::EOcean)){ 
+    if(package.createTrees() && (thisTerrainType != ETerrainType::EOcean)){ 
         createFoliageAndPushNodesAroundFoliageToNavMesh(touples);
     }else{
         Super::addRandomNodesToNavmesh(touples);
     }
 
     enableDebug(); //DEBUG WISE FOR MESH DESTRUCTION!
+
+    package.createOutPostIfFlagged(GetWorld());
 }
+
+
+
 
 
 
@@ -333,10 +335,10 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
         //um um 90 grad zu drehen, x und y tauschen, einen negieren
         //(a,b) (-b,a) (-a,-b) (b, -a)
         std::vector<FVector> offsets = {
-            FVector(100, 100, 70),
-            FVector(-100, 100, 70),
-            FVector(100, -100, 70),
-            FVector(-100, -100, 70),
+            FVector(50, 50, 70),
+            FVector(-50, 50, 70),
+            FVector(50, -50, 70),
+            FVector(-50, -50, 70),
         };
     
         //f->addNewNodeVector(pickedLocationsForNavmesh, offsets);
@@ -484,11 +486,7 @@ void AcustomMeshActor::enableDebug(){
     DEBUG_enabled = true;
 }
 
-FVector AcustomMeshActor::worldToLocalHit(FVector &worldhit){
-    //world hit to local
-    FTransform worldTransform = GetActorTransform();
-    return worldTransform.InverseTransformPosition(worldhit);
-}
+
 
 void AcustomMeshActor::debugThis(FVector &hitpoint){
     if(!DEBUG_enabled){
@@ -550,6 +548,12 @@ void AcustomMeshActor::glassreactionToHitLocal(FVector &hitlocal){
         DebugHelper::showScreenMessage("glass hit!");
     }
 }
+
+
+
+
+
+
 
 bool AcustomMeshActor::hasGlassMesh(){
     MeshData &meshFound = findMeshDataReference(

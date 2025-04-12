@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "p2/entityManager/Outpost.h"
-#include "p2/entityManager/OutpostManager.h"
+#include "Outpost.h"
+#include "p2/DebugHelper.h"
+#include "OutpostManager.h"
 
 OutpostManager::OutpostManager()
 {
@@ -14,7 +15,10 @@ OutpostManager::~OutpostManager()
 }
 
 
-
+/// @brief finds or creates a new outpost 
+/// @param world 
+/// @param ownLocation 
+/// @return 
 AOutpost *OutpostManager::requestOutpost(UWorld *world, FVector &ownLocation){
     if(world != nullptr){
 
@@ -92,15 +96,22 @@ AOutpost *OutpostManager::createOutpost(UWorld *world, FVector &Location){
             FActorSpawnParameters SpawnParams;
             AActor* SpawnedOutpost = world->SpawnActor<AActor>(
                 OutpostClass, 
-                FVector::ZeroVector, 
+                Location, 
                 FRotator::ZeroRotator, 
                 SpawnParams
             );
 
+            
+
             if(SpawnedOutpost != nullptr){
-                SpawnedOutpost->SetActorLocation(Location);
                 AOutpost *p = Cast<AOutpost>(SpawnedOutpost);
                 if(p != nullptr){
+
+                    DebugHelper::logMessage("debugcreatedoutpost ", Location);
+                    p->SetActorLocation(Location);
+                    p->init();
+
+                    DebugHelper::logMessage("debugcreatedoutpost at locaiton ", p->GetActorLocation());
                     return p;
                 }
             }

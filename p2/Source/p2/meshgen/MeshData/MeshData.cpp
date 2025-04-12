@@ -1724,6 +1724,26 @@ void MeshData::appendCube(
 }
 
 
+void MeshData::appendCubeAt(
+    FVector &pivot,
+    int scaleX,
+    int scaleY,
+    int scaleZ
+){
+    /*
+    1->2
+    |  |
+    0<-3
+    */
+    FVector a = pivot;
+    FVector b = pivot + FVector(0, scaleY, 0);
+    FVector c = pivot + FVector(scaleX, scaleY, 0);
+    FVector d = pivot + FVector(scaleX, 0, 0);
+
+    FVector updir(0, 0, scaleZ);
+
+    appendCube(a,b,c,d,updir);
+}
 
 int MeshData::verteciesNum(){
     return vertecies.Num();

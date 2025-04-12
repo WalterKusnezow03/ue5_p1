@@ -13,8 +13,10 @@
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/meshgen/customMeshActorBase.h"
+#include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include <map>
 #include "customMeshActor.generated.h"
+
 
 UCLASS()
 class P2_API AcustomMeshActor : public AcustomMeshActorBase, public IDamageinterface
@@ -55,13 +57,11 @@ public:
 	void createNewMeshActors(std::vector<MeshData> &meshes, materialEnum material);
 
 
-	void createTerrainFrom2DMap(
-		std::vector<std::vector<FVector>> &map,
-		bool createTrees,
-		ETerrainType typeIn
-	) override;
 
-	
+
+	void createTerrainFrom2DMap(TerrainChunkSetup &package);
+
+
 
 
 	void createCube(
@@ -112,10 +112,9 @@ protected:
 	int health = 100;
 	bool destructableBool = false;
 	bool splitOnDeath = false;
-	bool isDestructable();
+	virtual bool isDestructable();
 	void setHealth(int d);
 
-	FVector worldToLocalHit(FVector &worldhit);
 
 	teamEnum team;
 

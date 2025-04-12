@@ -9,6 +9,7 @@
 #include "MeshDataLod.h"
 #include "ELod.h"
 #include "p2/util/FVectorTouple.h"
+#include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "customMeshActorBase.generated.h"
 
@@ -50,23 +51,20 @@ public:
 
 
 
-	virtual void createTerrainFrom2DMap(
+
+protected:
+	void createTerrainFrom2DMap(
 		std::vector<std::vector<FVector>> &map,
 		ETerrainType typeIn
 	);
-	//to be overriden by subclass
-	virtual void createTerrainFrom2DMap(
-		std::vector<std::vector<FVector>> &map,
-		bool createTrees,
-		ETerrainType typeIn
-	);
+	
 	void createTerrainFrom2DMap(
 		std::vector<std::vector<FVector>> &map,
 		TArray<FVectorTouple> &touples,
 		ETerrainType typeIn
 	);
 
-
+public:
 
 	void createTwoSidedQuad(
 		FVector &a,
@@ -96,6 +94,12 @@ public:
 		ELod lodLevel,
 		bool raycastOnLayer
 	);
+
+
+	//HIT REACT MATERIALS
+	FVector worldToLocalHit(FVector &worldhit);
+	bool doesHitWorld(FVector &hitWorld, materialEnum mat);
+	bool doesHitLocal(FVector &hitLocal, materialEnum mat);
 
 protected:
 	int chunkScaleOneAxisLengthCm = 1; //ONE AXIS LENGTH
@@ -172,6 +176,7 @@ protected:
 	virtual void applyShaderToVertex(FVector &vertex);
 
 	int maxDistanceForLod(ELod lodLevel);
+
 
 public:
 	static int layerByMaterialEnum(materialEnum type);

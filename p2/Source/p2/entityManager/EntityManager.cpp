@@ -196,8 +196,8 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
     if(entityList.hasActorsLeft()){
         AEntityScript *entity = entityList.getFirstActor();
         if(entity != nullptr){
-            entity->init();
             entity->SetActorLocation(Location);
+            entity->init();
             return entity;
         }
     }
@@ -211,6 +211,7 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
                 addActorToIgnoreRaycastParams(actor, teamEnum::neutralTeam);
                 AEntityScript *casted = Cast<AEntityScript>(actor);
                 if(casted != nullptr){
+                    casted->init();
                     return casted;
                 }
             }
@@ -254,6 +255,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
                 addActorToIgnoreRaycastParams(actor, team);
                 AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
                 if(casted != nullptr){
+                    casted->SetActorLocation(Location);
                     casted->init();
                     casted->setTeam(team);
                     return casted;

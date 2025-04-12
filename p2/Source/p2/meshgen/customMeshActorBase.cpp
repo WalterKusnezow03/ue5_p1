@@ -11,6 +11,7 @@
 #include "p2/meshgen/lodHelper/LodCheckContainer.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/util/FVectorUtil.h"
+#include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/customMeshActorBase.h"
 
 // Sets default values
@@ -67,6 +68,23 @@ void AcustomMeshActorBase::disablePhysicscollision(){
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void AcustomMeshActorBase::createTerrainFrom2DMap(
     std::vector<std::vector<FVector>> &map,
     ETerrainType typeIn
@@ -78,14 +96,7 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
     addRandomNodesToNavmesh(touples);
 }
 
-void AcustomMeshActorBase::createTerrainFrom2DMap(
-    std::vector<std::vector<FVector>> &map,
-    bool foliageFlag,
-    ETerrainType typeIn
-){
-    thisTerrainType = typeIn;
-    createTerrainFrom2DMap(map, typeIn);
-}
+
 
 /// @brief process a 2D map of local coordinates
 /// correct position of the chunk must be set before!
@@ -714,7 +725,8 @@ std::vector<materialEnum> AcustomMeshActorBase::materialVector(){
         materialEnum::treeMaterial,
         materialEnum::palmLeafMaterial,
         materialEnum::waterMaterial,
-        materialEnum::snowMaterial
+        materialEnum::snowMaterial,
+        materialEnum::beigeStoneMaterial
     };
     return types;
 }
@@ -748,7 +760,8 @@ std::vector<ETerrainType> AcustomMeshActorBase::terrainVector(){
         ETerrainType::EOcean,
         ETerrainType::EForest,
         ETerrainType::ETropical,
-        ETerrainType::ESnowHill
+        ETerrainType::ESnowHill,
+        ETerrainType::EDesertForest
     };
     return vector;
 }
@@ -838,4 +851,35 @@ void AcustomMeshActorBase::refreshMesh(
 }
 
 
+
+
+
+/**
+ * 
+ * 
+ * mesh hit test
+ * 
+ * 
+ */
+
+FVector AcustomMeshActorBase::worldToLocalHit(FVector &worldhit){
+    //world hit to local
+    FTransform worldTransform = GetActorTransform();
+    return worldTransform.InverseTransformPosition(worldhit);
+}
+
+
+bool AcustomMeshActorBase::doesHitWorld(FVector &hitWorld, materialEnum mat){
+    FVector hitLocal = worldToLocalHit(hitWorld);
+    return doesHitLocal(hitLocal, mat);
+}
+
+bool AcustomMeshActorBase::doesHitLocal(FVector &hitLocal, materialEnum mat){
+    MeshData &meshFound = findMeshDataReference(
+        mat,
+        ELod::lodNear,
+        true//raycastFlag
+    );
+    return meshFound.doesHit(hitLocal);
+}
 

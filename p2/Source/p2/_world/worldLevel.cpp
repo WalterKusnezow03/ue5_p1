@@ -3,7 +3,7 @@
 
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/entityManager/OutpostManager.h"
+#include "p2/entityManager/OutPost/OutpostManager.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 #include "p2/util/TVector.h"
 #include "p2/meshgen/generation/terrainCreator.h"
@@ -233,12 +233,16 @@ void worldLevel::Tick(float DeltaTime){
         if(p != nullptr){
             p->Tick();
 
-            if(UWorld *world = GetWorld()){
-                if(!nodesWereShown){
-                    p->debugShowAllNodes(world);
-                    nodesWereShown = true;
+
+            if(false){
+                if(UWorld *world = GetWorld()){
+                    if(!nodesWereShown){
+                        p->debugShowAllNodes(world);
+                        nodesWereShown = true;
+                    }
                 }
             }
+            
             
         }
     }

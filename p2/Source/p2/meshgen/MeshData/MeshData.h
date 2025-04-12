@@ -132,6 +132,13 @@ public:
 		FVector orthogonalDir
 	);
 
+	void appendCubeAt(
+		FVector &pivot,
+		int scaleX,
+		int scaleY,
+		int scaleZ
+	);
+
 protected:
 	float MIN_SPLITDISTANCE = 50.0f;
 

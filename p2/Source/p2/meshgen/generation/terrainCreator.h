@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "terrainHillSetup.h"
 #include <set>
+#include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/util/TVector.h"
 
@@ -62,6 +63,10 @@ private:
 	);
 	void createWaterPaneAt(FVector &location);
 
+	void markCreateOutpostsAt(
+		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea
+	);
+
 	static const int HEIGH_AVG_SNOWHILL_LOWERBOUND = 200000; //200 * 100cm
 	static const int HEIGHT_MAX_OCEAN = 300; //10 * 100 meter
 
@@ -76,6 +81,13 @@ private:
 		public:
 			chunk(int xPos, int yPos);
 			~chunk();
+
+			TerrainChunkSetup makeSetupPackage();
+			TerrainChunkSetup makeSetupPackage(
+				chunk *top,
+				chunk *right,
+				chunk *topRight
+			);
 
 			int getHeightFor(FVector &a);
 			FVector position();
@@ -125,10 +137,12 @@ private:
 
 			void updateTerrainTypeBySpecialHeights();
 
+			void markCreateOutpostTrue();
 
 		private:
 			bool wasCreated = false;
 			ETerrainType savedTerrainType = ETerrainType::ETropical;
+			bool createOutpost = false;
 
 			std::vector<std::vector<FVector>> innerMap;
 			int x;

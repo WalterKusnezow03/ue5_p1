@@ -15,6 +15,8 @@
 #include "p2/rooms/testing/roomProcedural.h"
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
+#include "p2/entityManager/OutPost/OutpostManager.h"
+#include "p2/entityManager/OutPost/Outpost.h"
 #include "terrainCreator.h"
 
 terrainCreator::terrainCreator()
@@ -70,6 +72,28 @@ terrainCreator::chunk::~chunk()
 }
 
 // ---- chunk methods ----
+TerrainChunkSetup terrainCreator::chunk::makeSetupPackage(){
+    FVector locationWorld = position();
+
+    TerrainChunkSetup package(
+        innerMap,
+        savedTerrainType,
+        createOutpost,
+        locationWorld,
+        blockTrees
+    );
+    return package;
+}
+
+TerrainChunkSetup terrainCreator::chunk::makeSetupPackage(
+    chunk *top,
+    chunk *right,
+    chunk *topRight
+){
+    readAndMerge(top, right, topRight);
+    return makeSetupPackage();
+}
+
 void terrainCreator::chunk::setWasCreatedTrue(){
     wasCreated = true;
 }
@@ -83,6 +107,11 @@ void terrainCreator::chunk::setTreesBlocked(bool b){
 bool terrainCreator::chunk::createTrees(){
     return !blockTrees;
 }
+
+void terrainCreator::chunk::markCreateOutpostTrue(){
+    createOutpost = true;
+}
+
 
 /// @brief will return the inner map as reference, is not deisnged to be modified
 /// @return map by reference, do not modify
@@ -1075,14 +1104,11 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         if(x + 1 < xLimit && y + 1 < yLimit){
             topright = &map.at(x+1).at(y+1);
         }
-        
-        
-        //references the map and removes the gaps where the next chunk was found in bezier curve
-        std::vector<std::vector<FVector>> &mapReference = currentChunk->readAndMerge(top, right, topright);
 
-        bool createTrees = currentChunk->createTrees();
-        ETerrainType terrainType = currentChunk->getTerrainType();
-        currentActor->createTerrainFrom2DMap(mapReference, createTrees, terrainType);
+        TerrainChunkSetup package = currentChunk->makeSetupPackage(top, right, topright);
+        bool createTrees = package.createTrees();
+        ETerrainType terrainType = package.getTerrainType();
+        currentActor->createTerrainFrom2DMap(package);
 
 
 
@@ -1349,6 +1375,7 @@ ETerrainType terrainCreator::selectTerrainTypeExcluding(ETerrainType typeToExclu
         randomIndex = (randomIndex + 1) % vector.size();
         terraintypeRandom = vector[randomIndex];
     }
+
     return terraintypeRandom;
 }
 
@@ -1475,6 +1502,7 @@ void terrainCreator::createTerrainAndCreateBuildings(
     int count = 3;
     int minsizeChunks = 1;
     int maxsizeChunks = 3;
+
     std::vector<terrainHillSetup> predefinedHillDataVecFlatArea;
     createFlatAreas(count, minsizeChunks, maxsizeChunks, chunkRange, predefinedHillDataVecFlatArea);
     createTerrain(world, meters, predefinedHillDataVecFlatArea);
@@ -1511,8 +1539,16 @@ void terrainCreator::createTerrainAndCreateBuildings(
 
     //spawn all.
     //applyTerrainDataToMeshActors();
+
+    markCreateOutpostsAt(predefinedHillDataVecFlatArea);
 }
 
+/// @brief creates a output vector of terrainHillsetup in chunk index boundign boxes
+/// @param count 
+/// @param minsizeChunks 
+/// @param maxsizeChunks 
+/// @param chunkRange 
+/// @param output 
 void terrainCreator::createFlatAreas(
     int count, 
     int minsizeChunks, 
@@ -1525,6 +1561,12 @@ void terrainCreator::createFlatAreas(
     }
 }
 
+
+/// @brief creates a terrainHillsetup in chunk index boundign box space
+/// @param minsizeChunks 
+/// @param maxsizeChunks 
+/// @param chunkRange 
+/// @param output 
 void terrainCreator::createFlatArea(
     int minsizeChunks, 
     int maxsizeChunks,
@@ -1617,6 +1659,35 @@ void terrainCreator::findChunksEnclosedBy(
                     output.insert(ptr);
                 }
                 
+            }
+        }
+    }
+}
+
+
+
+
+void terrainCreator::markCreateOutpostsAt(
+    std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea
+){
+    if(worldPointer != nullptr){
+        float scaleUpFactor = CHUNKSIZE * ONEMETER;
+
+        std::vector<FVector> worldCoordinates;
+        for (int i = 0; i < predefinedHillDataVecFlatArea.size(); i++){
+            terrainHillSetup &current = predefinedHillDataVecFlatArea[i];
+
+            FVector center = current.center();
+            int x = center.X;
+            int y = center.Y;
+
+            if(verifyIndex(x) && verifyIndex(y)){
+
+                //if not contained yet, add
+                terrainCreator::chunk *ptr = chunkAt(x,y);
+                if(ptr != nullptr){
+                    ptr->markCreateOutpostTrue();
+                }
             }
         }
     }
