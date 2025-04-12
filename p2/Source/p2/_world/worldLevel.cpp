@@ -16,13 +16,14 @@
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
 #include "p2/meshgen/water/customWaterActor.h"
-#include "p2/rooms/testing/roomProcedural.h"
+#include "p2/rooms/roomActor/roomProcedural.h"
 #include "p2/DebugHelper.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
+#include "p2/rooms/doorLike/DoorBase.h"
 #include "CoreMinimal.h"
 
 worldLevel::worldLevel()
@@ -120,7 +121,7 @@ void worldLevel::initWorld(UWorld *world){
 
     debugCreateCustomTextureMesh(world);
 
-
+    DebugCreatedoor(world);
 }
 
 /**
@@ -583,5 +584,16 @@ void worldLevel::setGamePaused(bool in){
 void worldLevel::debugCreateCustomTextureMesh(UWorld *world){
     if(world != nullptr){
         DynamicRenderedObjectDebugger::createDebugObject(world);
+    }
+}
+
+
+void worldLevel::DebugCreatedoor(UWorld *world){
+    if(world){
+        FVector location(0, -1000, 0);
+        ADoorBase *door = ADoorBase::Construct(world, location);
+        if(door){
+            //
+        }
     }
 }

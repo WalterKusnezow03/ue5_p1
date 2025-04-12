@@ -150,6 +150,8 @@ void TargetInterpolator::resetDeltaTime(){
     reached = false;
 }
 
+/// @brief sets the time to frame and reached flag is set to false
+/// @param time 
 void TargetInterpolator::setNewTimeToFrame(float time){
     timeToFrame = std::abs(time);
     reached = false;
@@ -505,4 +507,14 @@ void TargetInterpolator::updateReachedFlagBasedOnDistance(){
     {
         reached = false;
     }
+}
+
+
+
+
+
+
+//for door
+void TargetInterpolator::resetReachedflag(){
+    reached = false;
 }

@@ -13,6 +13,7 @@
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include <cmath>
+#include "p2/interfaces/Interactinterface.h"
 #include "p2/DebugHelper.h"
 #include "GameFramework/Character.h" // Falls noch nicht inkludiert
 #include "GameFramework/CharacterMovementComponent.h"
@@ -432,6 +433,12 @@ void AplayerScript::performRaycast()
 			Aweapon *weapon = Cast<Aweapon>(actor);
 			if(weapon){
                 pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
+                return;
+            }
+
+            IInteractinterface *interactable = Cast<IInteractinterface>(actor);
+            if(interactable){
+                interactable->interact();
             }
         }
 

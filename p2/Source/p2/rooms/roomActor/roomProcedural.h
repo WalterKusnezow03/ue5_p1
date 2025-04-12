@@ -6,7 +6,7 @@
 #include "p2/meshgen/customMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "p2/util/TTouple.h"
-#include "p2/rooms/testing/roomBoundData.h"
+#include "p2/rooms/roomActor/roomBoundData.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "roomProcedural.generated.h"
 
@@ -53,16 +53,7 @@ private:
 		int scaleZCm
 	);
 
-	/*
-	MeshData createWall(
-		FVector from,
-		FVector to,
-		std::vector<FVector> &doors,
-		std::vector<FVector> &windows,
-		int doorWidthCm,
-		int scaleZCm,
-		FVector &locationOffset
-	);*/
+
 
 	void filterForVectorsBetween(
 		FVector &A,

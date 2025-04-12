@@ -342,7 +342,10 @@ void AssetLoader::loadMaterials(){
             loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/texturedMaterial.texturedMaterial'"))
         );
 
-
+        a->addMaterial(
+            materialEnum::prop_alarmBoxMaterial,
+            loadMaterial(TEXT("Blueprint'/Game/Prefabs/terrain/materials/prop_alarmBoxMaterial.prop_alarmBoxMaterial'"))
+        );
 
         //HOUSE MATERIALS
         //wall material

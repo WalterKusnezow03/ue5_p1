@@ -2,7 +2,7 @@
 
 
 #include "p2/util/TTouple.h"
-#include "p2/rooms/testing/roomBoundData.h"
+#include "p2/rooms/roomActor/roomBoundData.h"
 #include "p2/util/FVectorUtil.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
 

@@ -12,7 +12,7 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/rooms/testing/roomProcedural.h"
+#include "p2/rooms/roomActor/roomProcedural.h"
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"

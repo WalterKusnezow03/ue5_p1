@@ -455,9 +455,9 @@ bool AOutpost::newTeamLeaderNeeded(teamEnum team){
  */
 void AOutpost::createAlarmPolesIfNeeded(){
 	if(alarmPoles.size() == 0){
-		int num = 3;
+		int num = 1;
 		for (int i = 0; i < num; i++){
-			FVector location = randomOffsetFromActorLocation(10000);
+			FVector location = randomOffsetFromActorLocation(500);
 
 			AOutpostAlarmPole *pole = AOutpostAlarmPole::Construct(GetWorld(), location);
 			if (pole)

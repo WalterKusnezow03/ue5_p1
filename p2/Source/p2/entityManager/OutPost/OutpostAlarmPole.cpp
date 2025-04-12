@@ -3,13 +3,12 @@
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/DebugHelper.h"
 #include "p2/meshgen/ELod.h"
 #include "OutpostAlarmPole.h"
 
 
 AOutpostAlarmPole::AOutpostAlarmPole() : AcustomMeshActor(){
-
-
 
 }
 
@@ -33,7 +32,7 @@ AOutpostAlarmPole *AOutpostAlarmPole::Construct(UWorld *world, FVector &location
 
 
 void AOutpostAlarmPole::projectActorToGround(){
-	FVector Start = GetActorLocation() + FVector(0, 0, -1);
+	FVector Start = GetActorLocation() + FVector(0, 0, 50000);
 	FVector End = GetActorLocation() - FVector(0, 0, 50000);
 
 	FHitResult HitResult;
@@ -73,6 +72,15 @@ void AOutpostAlarmPole::init(){
     bAlarmFunctionEnabled = false;
     projectActorToGround();
     createMesh();
+
+    DebugHelper::logMessage("debugalarmpole init");
+
+    DebugHelper::showLineBetween(
+        GetWorld(),
+        GetActorLocation(),
+        GetActorLocation() + FVector(0, 0, 10000),
+        FColor::Black
+    );
 }
 
 bool AOutpostAlarmPole::isDestructable(){
@@ -133,7 +141,7 @@ void AOutpostAlarmPole::createMesh(){
 
     //alarmbox
     int alarmBoxZscale = 30;
-    FVector pivotAlarmBox(0, 0, 150);
+    FVector pivotAlarmBox(20, 0, 150);
     MeshData &alarmBoxMesh = findMeshDataReference(
         materialEnum::prop_alarmBoxMaterial, 
         ELod::lodNear, 

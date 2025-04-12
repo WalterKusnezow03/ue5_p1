@@ -5,7 +5,7 @@
 #include <map>
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/foliage/helper/ParallellShapeMerger.h"
-#include "p2/rooms/testing/roomBoundData.h"
+#include "p2/rooms/roomActor/roomBoundData.h"
 
 roomBoundData::roomBoundData(int xin, int yin, int xscalein, int yscalein, int numberIn)
 {

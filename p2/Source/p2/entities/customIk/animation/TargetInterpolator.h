@@ -41,6 +41,7 @@ public:
 
 	bool hasReachedTarget();
 	bool hasTargetSetup();
+	void resetReachedflag();
 
 	float TimeToFrame();
 	void resetDeltaTime();

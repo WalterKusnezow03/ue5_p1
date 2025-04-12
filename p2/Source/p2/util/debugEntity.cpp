@@ -6,7 +6,6 @@
 #include "p2/entities/HumanEntityScript.h"
 
 #include "p2/entities/customIk/IkActor.h"
-#include "p2/rooms/testing/roomProcedural.h"
 #include "p2/util/debugEntity.h"
 
 // Sets default values

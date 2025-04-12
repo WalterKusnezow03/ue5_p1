@@ -9,7 +9,7 @@
 #include "p2/gamestart/assetManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/rooms/testing/helper/staircaseBoundData.h"
+#include "p2/rooms/roomActor/helper/staircaseBoundData.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/util/FVectorUtil.h"
 #include "p2/rooms/layoutCreator/layoutMaker.h"
