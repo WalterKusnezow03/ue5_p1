@@ -25,16 +25,22 @@ public:
 
 	void setGravity(float gravityin);
 
+	float skalar(FVector &currentPos);
+
 private:
 	FVector groundPosition;
 	float epsilonGroundReached = 0.5f;
 
 	bool reachedFlag = true;
 
+	float DeltaTimeSum = 0.0f;
+
 	FVector gravityVector();
 	bool groundReached(FVector &compare);
-	
+	float gravityCmsDown();
 
 	float gravityA = -981.0f; //9.81 meter
 	FVector velocityVector;
+
+	float timeUntilGroundContact(FVector &currentPos);
 };

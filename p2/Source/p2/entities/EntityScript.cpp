@@ -57,6 +57,7 @@ void AEntityScript::init(){
 
 	FVector offset = GetActorLocation();
 	boneController.SetLocation(offset);
+	boneController.resetRotation();
 
 	projectActorToGround();
 }
@@ -192,17 +193,19 @@ void AEntityScript::Tick(float DeltaTime)
 		return;
 	}
 
+	//tick bone controller
+	if(true){
+		boneController.Tick(DeltaTime, GetWorld());
+		SetActorLocation(boneController.GetLocation());
+	}
+
 	//only update if activated
 	if(!isActivatedForUpdate()){
 		return;
 	}
 	drawPath(); //debug
 
-	//tick bone controller
-	if(true){
-		boneController.Tick(DeltaTime, GetWorld());
-		SetActorLocation(boneController.GetLocation());
-	}
+	
 	
 
 
@@ -735,6 +738,9 @@ void AEntityScript::enableCollider(bool enable){
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
+
+	boneController.collapse();
+	
 
 	resetpath();
 	enableActiveStatus(false);

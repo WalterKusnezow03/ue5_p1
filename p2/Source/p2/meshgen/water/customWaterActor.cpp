@@ -5,6 +5,7 @@
 #include "p2/gamestart/assetManager.h"
 #include "p2/meshgen/lodHelper/LodCheckContainer.h"
 #include "p2/entities/customIk/MMatrix.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/_world/worldLevel.h"
 #include "ripple.h"
 

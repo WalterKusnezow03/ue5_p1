@@ -13,6 +13,7 @@
 #include "p2/entities/customIk/bonePackage/handPackage/HandController.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
 #include "p2/entities/customIk/animation/FrameProjectContainer.h"
+#include "p2/entities/customIk/animation/motionChain/RotationQueue.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 
 /**
@@ -141,7 +142,7 @@ private:
 	const int HEAD = 5;
 
 	//motion state
-	BoneControllerStates currentMotionState;
+	BoneControllerStates currentMotionState = BoneControllerStates::none;
 
 
 	bool leg1isPlaying;
@@ -234,17 +235,14 @@ private:
 	UWorld* GetWorld();
 
 
+	void buildRawAndKeepEndInPlace(int limbIndex, float DeltaTime);
+
 	void buildRawAndKeepEndInPlace(
 		TwoBone &boneIk,
 		MMatrix &legTransform,
 		float deltaTime,
 		FColor color,
-		int leg
-	);
-
-	
-
-	
+		int leg);
 
 	MMatrix currentTransform(int leg);
 	MMatrix currentTransform(MMatrix &offset);
@@ -381,5 +379,12 @@ private:
 
 	class KeyFrameAnimation landingHipKeysOffset;
 
+public:
 	void collapse();
+
+	void resetRotation();
+
+private:
+	void TickCollapse(float DeltaTime);
+	RotationQueue rotationQueue;
 };

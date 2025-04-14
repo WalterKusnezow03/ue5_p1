@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include <set>
 #include "BoundingBox.h"
+#include "KismetProceduralMeshLibrary.h"
 #include "p2/gameStart/assetEnums/materialEnum.h"
 #include "p2/entities/customIk/MMatrix.h"
 

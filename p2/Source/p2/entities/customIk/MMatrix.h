@@ -34,6 +34,8 @@ public:
 
 	FString asString();
 
+	
+
 	void pitchRad(float angle);
 	void rollRad(float angle);
 	void yawRad(float angle);
@@ -54,7 +56,7 @@ public:
 	static MMatrix createRotatorFrom(FVector &other);
 	static MMatrix createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZAxis);
 
-
+	
 
 	void resetRotation();
 
@@ -67,6 +69,7 @@ public:
 
 	FRotator extractRotator();
 	MMatrix extarctRotatorMatrix();
+	float extractYawAngleRad();
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
 

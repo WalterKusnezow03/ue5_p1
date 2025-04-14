@@ -144,6 +144,7 @@ private:
 			void add(Node *node);
 			std::vector<PathFinder::Node *> &getNodes();
 			PathFinder::Node *findNode(FVector pos);
+			PathFinder::Node *findNodeInDirection(FVector &node, FVector &dir);
 
 			bool hasNode(FVector pos);
 
@@ -168,6 +169,7 @@ private:
 			~Quadrant();
 
 			Node *findNode(FVector pos);
+			Node *findNodeInDirection(FVector &node, FVector &dir);
 			std::vector<PathFinder::Node *> nodesEnClosedBy(float xA, float zA, float xB, float zB);
 
 			std::vector<PathFinder::Node *> askForArea(FVector a, FVector b);
@@ -191,6 +193,7 @@ private:
 
 	Quadrant *askforQuadrant(int xIndex, int zIndex);
 	Node *findNode(FVector pos);
+	Node *findNodeInDirection(FVector &node, FVector &dir);
 
 	void showPos(FVector e);
 	void showPos(FVector e, FColor c);
@@ -269,6 +272,8 @@ public:
 	void freeDelegate(FTraceDelegate *d);
 
 	PathTraceMode traceMode = PathTraceMode::AsyncTrace;
+
+	//::AsyncTrace;
 
 	//NEW
 	void Tick();

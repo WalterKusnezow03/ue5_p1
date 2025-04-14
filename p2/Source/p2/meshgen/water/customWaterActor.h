@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/meshgen/customMeshActorBase.h"
+#include "p2/interfaces/DamageInterface.h"
 #include "ripple.h"
 #include "customWaterActor.generated.h"
 

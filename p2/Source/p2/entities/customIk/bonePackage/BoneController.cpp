@@ -9,6 +9,8 @@
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
 #include "p2/entities/customIk/animation/motionChain/MotionAction.h"
+#include "p2/entities/customIk/animation/motionChain/RotationQueue.h"
+#include "p2/entities/customIk/animation/motionChain/RotationStates.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "CoreMinimal.h"
 
@@ -1066,6 +1068,11 @@ void BoneController::Tick(float DeltaTime, UWorld *worldIn){
 	if(currentMotionState == BoneControllerStates::landing){
 		TickLanding(DeltaTime);
 	}
+
+
+	if(currentMotionState == BoneControllerStates::collapse){
+		TickCollapse(DeltaTime);
+	}
 }
 
 
@@ -1423,6 +1430,25 @@ void BoneController::playForwardKinematicAnim(
  * 
  * 
  */
+void BoneController::buildRawAndKeepEndInPlace(int limbIndex, float DeltaTime){
+	TwoBone *bone = findBone(limbIndex);
+	MMatrix *mat = findEndEffector(limbIndex);
+
+	if(bone && mat){
+		buildRawAndKeepEndInPlace(
+			*bone, 
+			*mat, 
+			DeltaTime, 
+			FColor::Red,
+			limbIndex
+		);
+	}
+	
+	
+}
+
+
+
 
 /// @brief renders the leg raw if the hip is moved!
 /// @param boneIk bone to render which foot stays in place
@@ -2182,18 +2208,7 @@ bool BoneController::playerHasMovedFlag(){
  * 
  */
 
-void BoneController::collapse(){
-	if(currentMotionState != BoneControllerStates::collapse){
 
-		//nachdenken:
-		//wenn state locomotion war, in die richtung fallen?
-		//es braucht einen interpolator der das fallen handelt
-		//die ground angle kann aus jetzigen aufgesetzten fuß und
-		//raycast bestimmt werden
-
-		currentMotionState = BoneControllerStates::collapse;
-	}
-}
 
 ///@brief sets the falling interpolator from the given project container if needed
 void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
@@ -2207,7 +2222,7 @@ void BoneController::startFallingIfNeeded(FrameProjectContainer &container){
 			//remove leg offset (?)
 			FVector toHip = ownLocation.getTranslation() - ownLocation.getTranslation();
 
-			//debug:
+			//add offset for hip location
 			toHip = FVector(0, 0, legScaleCM);
 
 			worldHit += toHip;
@@ -2262,5 +2277,88 @@ void BoneController::TickLanding(float DeltaTime){
 		if(landingHipKeysOffset.reachedLastFrameOfAnimation()){
 			currentMotionState = BoneControllerStates::locomotion;
 		}
+	}
+}
+
+
+
+
+
+
+/// @brief call this method on entity init to clear old states of dying / collapse!
+void BoneController::resetRotation(){
+	//return;
+	rotationQueue.forceSetState(RotationStates::ENone);
+	FRotator none;
+	ownOrientation.setRotation(none);
+}
+
+void BoneController::collapse(){
+	if(currentMotionState != BoneControllerStates::collapse){
+		
+		currentMotionState = BoneControllerStates::collapse;
+
+		rotationQueue.updateState(RotationStates::E90Front, 0.5f);
+		
+		//die ground angle kann aus jetzigen aufgesetzten fuß und
+		//raycast bestimmt werden
+
+
+		//was soll hier passieren: tick hip until hit floor
+
+		//if still falling: copy ground pos
+
+		//else: copy lower foot pos
+
+		//use gravity interpolator here too (?)
+
+
+		if(!isStillFalling()){
+
+			FVector legPosA = ownLocationFoot1.getTranslation();
+			FVector legPosB = ownLocationFoot2.getTranslation();
+			FVector lowerPos = legPosA.Z < legPosB.Z ? legPosA : legPosB;
+
+			fallingGravityInterpolator.resetVelocity();
+			fallingGravityInterpolator.updateGroundPosition(lowerPos);
+		}else{
+			//remove old hipoffset
+			FVector groundForHip = fallingGravityInterpolator.copyGroundPosition();
+			groundForHip -= FVector(0, 0, legScaleCM); //remove offset from default,
+			//sollte man ggf ändern
+
+			fallingGravityInterpolator.updateGroundPosition(groundForHip);
+
+		}
+	}
+}
+
+void BoneController::TickCollapse(float DeltaTime){
+	if(currentMotionState != BoneControllerStates::collapse){
+		return;
+	}
+
+	if(!fallingGravityInterpolator.groundReachedFlag()){
+
+		buildRawAndKeepEndInPlace(FOOT_1, DeltaTime);
+		buildRawAndKeepEndInPlace(FOOT_2, DeltaTime);
+		buildRawAndKeepEndInPlace(SHOULDER_1, DeltaTime);
+		buildRawAndKeepEndInPlace(SHOULDER_2, DeltaTime);
+
+		//TickLegsNone(DeltaTime);
+		//TickArms(DeltaTime);
+		FVector currentPos = ownLocation.getTranslation();
+		FVector hipLocationAddVector = fallingGravityInterpolator.interpolate(currentPos, DeltaTime);
+		ownLocation += hipLocationAddVector;
+
+
+		//rotation queue
+		rotationQueue.TickRollPitch(ownOrientation, DeltaTime); //testing needed
+
+		if(fallingGravityInterpolator.groundReachedFlag()){
+			currentMotionState = BoneControllerStates::none;
+		}
+	}else{
+		currentMotionState = BoneControllerStates::none;
 	}
 }

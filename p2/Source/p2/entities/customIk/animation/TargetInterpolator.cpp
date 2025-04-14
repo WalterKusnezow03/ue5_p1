@@ -45,6 +45,18 @@ void TargetInterpolator::setTarget(
     toRotation = toRotationIn;
 }
 
+void TargetInterpolator::setTarget(
+    FRotator fromRotationIn, 
+    FRotator toRotationIn, 
+    float timeToFrameIn
+){
+    setNewTimeToFrame(timeToFrameIn);
+    reached = false;
+    targetSetup = true;
+    fromRotation = fromRotationIn;
+    toRotation = toRotationIn;
+}
+
 /// @brief override target of a RUNNING ANIMATION!
 /// @param totarget 
 void TargetInterpolator::overrideTarget(FVector totarget){
@@ -324,9 +336,42 @@ FRotator TargetInterpolator::interpolationRotation(FRotator fromIn, FRotator toI
     output.Pitch = fromIn.Pitch + skalar * rotationDirectionShorter(fromIn.Pitch, toIn.Pitch);
     output.Yaw = fromIn.Yaw + skalar * rotationDirectionShorter(fromIn.Yaw, toIn.Yaw);
 
+    if(FMath::IsNaN(output.Roll)){
+        output.Roll = 0.0f;
+    }
+    if(FMath::IsNaN(output.Pitch)){
+        output.Pitch = 0.0f;
+    }
+    if(FMath::IsNaN(output.Yaw)){
+        output.Yaw = 0.0f;
+    }
+
+
     return output;
 }
 
+
+float TargetInterpolator::wrapAngle180(float angle) {
+    angle = std::fmod(angle + 180.0f, 360.0f);
+    if (angle < 0.0f)
+        angle += 360.0f;
+    return angle - 180.0f;
+}
+
+float TargetInterpolator::rotationDirectionShorter(float a, float b){
+    a = wrapAngle180(a);
+    b = wrapAngle180(b);
+
+    float diff = b - a;
+
+    if (diff > 180.0f) diff -= 360.0f;
+    if (diff < -180.0f) diff += 360.0f;
+
+    return diff;
+}
+
+
+/*
 /// @brief creates the shorter rotation direction between two angles a and b which can be signed
 /// but will be clamped from -180 to 180 degrees
 /// @param a 
@@ -349,18 +394,8 @@ float TargetInterpolator::rotationDirectionShorter(float a, float b){
     return diff;
 
 
-    //old
-    //a = std::clamp(a, -180.0f, 180.0f);
-    //b = std::clamp(b, -180.0f, 180.0f);
-    /*
-    float diffA = a - b;
-    float diffB = b - a;
-    if(std::abs(diffA) <= std::abs(diffB)){
-        return diffA;
-    }
-    return diffB;*/
 }
-
+*/
 
 
 float TargetInterpolator::shorterAngleSum(FRotator &a, FRotator &b){

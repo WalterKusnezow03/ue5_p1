@@ -15,6 +15,8 @@ MMatrix::~MMatrix()
 
 }
 
+
+
 void MMatrix::makeIdentity(){
     for (int i = 0; i < 16; i++){
         array[i] = 0.0f;
@@ -526,6 +528,15 @@ void MMatrix::rotate(MMatrix &other){
 /// @param other rotation to rotate in
 void MMatrix::setRotation(FRotator &other){
     resetRotation();
+    if(FMath::IsNaN(other.Roll)){
+        other.Roll = 0.0f;
+    }
+    if(FMath::IsNaN(other.Pitch)){
+        other.Pitch = 0.0f;
+    }
+    if(FMath::IsNaN(other.Yaw)){
+        other.Yaw = 0.0f;
+    }
     rollRadAdd(MMatrix::degToRadian(other.Roll));
     pitchRadAdd(MMatrix::degToRadian(other.Pitch));
     yawRadAdd(MMatrix::degToRadian(other.Yaw));
@@ -673,11 +684,6 @@ FRotator MMatrix::extractRotator(){
 
 
 
-
-
-
-
-
 MMatrix MMatrix::extarctRotatorMatrix(){
     MMatrix out;
     for (int i = 0; i < 3; i++){
@@ -687,6 +693,18 @@ MMatrix MMatrix::extarctRotatorMatrix(){
     }
 
     return out;
+}
+
+float MMatrix::extractYawAngleRad(){
+    FVector forward(1, 0, 0); //x is forward by default
+    FVector normalized = *this * forward;
+    normalized = normalized.GetSafeNormal();
+
+    FVector2D Xaxis(1.0f, 0); //default axis, x nach vorne schauend
+    FVector2D xydir(normalized.X, normalized.Y);
+    float yawRad = signedAngleRadBetween(Xaxis, xydir); //signiert voll umfänglich notwendig anders als pitch
+
+    return yawRad;
 }
 
 /// @brief converts a position to relative this matrix by using the jordan inverse

@@ -377,6 +377,26 @@ PathFinder::Node* PathFinder::findNode(FVector node){
     return nullptr;
 }
 
+PathFinder::Node* PathFinder::findNodeInDirection(FVector &node, FVector &dir){
+    int x = (int) node.X;
+    int y = (int) node.Y;
+    PathFinder::Quadrant *q = askforQuadrant(x, y);
+    if(q != nullptr){
+        PathFinder::Node *nodeFound = q->findNodeInDirection(node, dir);
+        if(nodeFound != nullptr){
+            DebugHelper::showScreenMessage("node found path finder", FColor::Green);
+            return nodeFound;
+        }
+    }else{
+        DebugHelper::showScreenMessage("QUADRANT IS NULL!!!!!", FColor::Red);
+    }
+    
+    return nullptr;
+}
+
+
+
+
 
 std::vector<PathFinder::Node *> PathFinder::getSubGraph(FVector a, FVector b){
 
@@ -468,6 +488,9 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
 
     PathFinder::Node *start = nullptr;
     PathFinder::Node *end = nullptr;
+
+    FVector dir = b - a;
+    //start = findNodeInDirection(a, dir);
     start = findNode(a);
     if(start == nullptr){
         DebugHelper::showScreenMessage("START NODE NOT FOUND", FColor::Red);
@@ -863,6 +886,26 @@ PathFinder::Node* PathFinder::Quadrant::findNode(FVector pos){
 
 
 
+PathFinder::Node *PathFinder::Quadrant::findNodeInDirection(FVector &pos, FVector &dir){
+    int x1 = std::abs(pos.X / CHUNKSIZE);
+    int y1 = std::abs(pos.Y / CHUNKSIZE);
+
+    if(map.size() > x1 && map.at(x1).size() > y1){
+        if(map.at(x1).at(y1) != nullptr){
+            PathFinder::Node* n = map.at(x1).at(y1)->findNodeInDirection(pos, dir);
+            if(n != nullptr){
+                //DebugHelper::showScreenMessage("quadrant found node return!", FColor::Green);
+                return n;
+            }
+        }
+    }
+    //DebugHelper::showScreenMessage("quadrant not found node return!", FColor::Red);
+    return nullptr;
+}
+
+
+
+
 /// @brief returns all lists from all chunks enclosed by an area
 /// @param xA x value of first pos
 /// @param yA z value of first pos
@@ -1037,8 +1080,17 @@ std::vector<PathFinder::Node*> &PathFinder::Chunk::getNodes(){
 /// @param pos position of the targetet node
 /// @return returns the closest node near by
 PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
+    FVector dir(0.0f, 0.0f, 0.0f); //none
+    return findNodeInDirection(pos, dir); //will be ignored
+}
 
-    
+PathFinder::Node* PathFinder::Chunk::findNodeInDirection(FVector &pos, FVector &dir){
+    dir.Z = 0.0f;
+    dir = dir.GetSafeNormal();
+
+    bool checkDirNone = dir.X == 0.0f && dir.Y == 0.0f;
+    bool checkDir = !checkDirNone;
+
     //add node if didnt had any yet
     if(nodes.size() <= 0){
         DebugHelper::showScreenMessage("RETURNED ASYNC CONNECT NODE ", FColor::Yellow);
@@ -1048,6 +1100,8 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
     //find the closest node 
     float closest = std::numeric_limits<float>::max();
     PathFinder::Node *closestNode = nullptr;
+    float prevDotProduct = -1.0f; //worst
+
     for (int i = 0; i < nodes.size(); i++)
     {
         PathFinder::Node *current = nodes.at(i);
@@ -1057,8 +1111,28 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
                 float Difference = FVector::Dist(pos, current->pos);
 
                 if(Difference < closest){
-                    closest = Difference;
-                    closestNode = current;
+
+                    //direction check
+                    if(checkDir){
+                        FVector dirFromBotLocation = current->pos - pos; // AB = B - A
+                        dirFromBotLocation.Z = 0.0f;
+                        dirFromBotLocation = dirFromBotLocation.GetSafeNormal();
+
+                        //dot product similar: ok
+                        float dotProduct = FVector::DotProduct(dir, dirFromBotLocation);
+                        //wenn das skalarprodukt zweier normalisierter
+                        //vektoren 1 ergibt sind sie paralell zu einander
+                        if(dotProduct > prevDotProduct){
+                            closest = Difference;
+                            closestNode = current;
+                            prevDotProduct = dotProduct;
+                        }
+                    }else{
+                        closest = Difference;
+                        closestNode = current;
+                    }
+
+                    
                 }
             }
             
@@ -1074,8 +1148,19 @@ PathFinder::Node* PathFinder::Chunk::findNode(FVector pos){
     return closestNode;
 
 
-    
+
+
+
 }
+
+
+
+
+
+
+
+
+
 
 
 /// @brief will add a new node to the chunk and connect the edges if the prebuild mode is enabled / forced

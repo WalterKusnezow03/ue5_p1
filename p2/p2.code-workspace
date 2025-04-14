@@ -91,7 +91,10 @@
 			"hash_map": "cpp",
 			"hash_set": "cpp",
 			"iterator": "cpp",
-			"scoped_allocator": "cpp"
+			"scoped_allocator": "cpp",
+			"alignedvector3": "cpp",
+			"__memory": "cpp",
+			"mprealsupport": "cpp"
 		}
 	},
 	"extensions": {

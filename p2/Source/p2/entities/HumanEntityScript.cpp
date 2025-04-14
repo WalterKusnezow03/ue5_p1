@@ -45,6 +45,7 @@ void AHumanEntityScript::init(){
 
     FVector location = GetActorLocation();
     boneController.SetLocation(location);
+    boneController.resetRotation();
 
     //DebugHelper::showScreenMessage("human init");
     
@@ -216,6 +217,7 @@ void AHumanEntityScript::die(){
     enableActiveStatus(false); //disable?
 
     boneController.dropWeapon();
+    boneController.collapse(); //must call!
 
     //entity manager
     EntityManager *entityManager = worldLevel::entityManager();

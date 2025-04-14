@@ -22,6 +22,12 @@ public:
 		FRotator toRotationIn, 
 		float timeToFrameIn
 	);
+
+	void setTarget(
+		FRotator fromRotationIn, 
+		FRotator toRotationIn, 
+		float timeToFrameIn
+	);
 	
 	void overrideTarget(FVector totarget);
 	void overrideTarget(FRotator toRotationIn);
@@ -92,6 +98,7 @@ protected:
 	bool worldtargetSetup = false;
 
 	static float rotationDirectionShorter(float a, float b);
+	static float wrapAngle180(float angle);
 
 	float shorterAngleSum(FRotator &a, FRotator &b);
 

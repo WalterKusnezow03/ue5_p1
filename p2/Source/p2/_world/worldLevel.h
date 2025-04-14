@@ -80,4 +80,6 @@ private:
 	static bool gamePausedFlag;
 
 	static void debugCreateCustomTextureMesh(UWorld *world);
+
+	static void Debug6x6BoneActor(UWorld *world);
 };

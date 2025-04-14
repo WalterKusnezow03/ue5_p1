@@ -4,6 +4,7 @@
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/DebugHelper.h"
+#include "KismetProceduralMeshLibrary.h"
 #include "p2/meshgen/foliage/helper/GrahamScan.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
 #include "p2/meshgen/foliage/helper/ParallellShapeMerger.h"
