@@ -25,10 +25,8 @@ void StaticMeshSimplifier::append(
             );
         }
     }
+    cleanupTriangleBuffer();
 }
-
-
-
 
 void StaticMeshSimplifier::appendEfficent(
     FVector3f &a,
@@ -104,4 +102,40 @@ bool StaticMeshSimplifier::isValidVertexIndex(
     return isValidVertexIndex(v0, verteciesIn) &&
            isValidVertexIndex(v1, verteciesIn) &&
            isValidVertexIndex(v2, verteciesIn);
+}
+
+
+
+void StaticMeshSimplifier::cleanupTriangleBuffer(){
+
+    for (int i = 2; i < triangles.Num(); i+=3){
+        int32 v0 = triangles[i - 2];
+        int32 v1 = triangles[i - 1];
+        int32 v2 = triangles[i];
+
+        int j = i + 3;
+        int size = triangles.Num();
+        while(j < size){
+            if(j >= 2 && j < triangles.Num()){
+                int32 &t0 = triangles[j - 2];
+                int32 &t1 = triangles[j - 1];
+                int32 &t2 = triangles[j];
+
+                if(t0 == v0 && t1 == v2 && t2 == v2){
+                    int sizeBuffer = triangles.Num();
+                    t0 = triangles[sizeBuffer - 3];
+                    t1 = triangles[sizeBuffer - 2];
+                    t2 = triangles[sizeBuffer - 1];
+
+                    triangles.Pop();
+                    triangles.Pop();
+                    triangles.Pop();
+                    size = triangles.Num();
+                    j -= 3;
+                }
+            }
+
+            j += 3;
+        }
+    }
 }

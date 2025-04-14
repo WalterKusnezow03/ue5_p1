@@ -18,6 +18,14 @@ public:
         FVector3f &b,
         FVector3f &c);
 
+    TArray<FVector3f> &verteciesRef(){
+        return vertecies;
+    }
+    
+    TArray<int32> &trianglesRef(){
+        return triangles;
+    }
+
 private:
     float epsilon = 5.0f;
     TArray<FVector3f> vertecies;
@@ -27,4 +35,6 @@ private:
     bool isValidVertexIndex(int index);
     bool isValidVertexIndex(int index, TArray<FVector3f> &verteciesIn);
     bool isValidVertexIndex(int v0, int v1, int v2, TArray<FVector3f> &verteciesIn);
+
+    void cleanupTriangleBuffer();
 };
