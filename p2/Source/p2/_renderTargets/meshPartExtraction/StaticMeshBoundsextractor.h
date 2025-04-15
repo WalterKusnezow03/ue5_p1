@@ -28,7 +28,8 @@ private:
         FVector2D &a,
         FVector2D &b,
         TArray<FVector> &verteciesIn,
-        TArray<int32> &verteciesOut
+        TArray<int32> &verteciesOut,
+        FVector rotatedNormal
     );
 
     TArray<FVector> vertecies;

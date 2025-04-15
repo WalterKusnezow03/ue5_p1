@@ -25,6 +25,8 @@ void AMeshExtractiondebugActor::BeginPlay(){
     );
 
     FVector paneLocalLocation = paneMesh->GetRelativeLocation();
+    DebugHelper::logMessage("extracted relative location ", paneLocalLocation);
+
     StaticMeshBoundsextractor extractor;
     extractor.CopyInBounds(
         a,

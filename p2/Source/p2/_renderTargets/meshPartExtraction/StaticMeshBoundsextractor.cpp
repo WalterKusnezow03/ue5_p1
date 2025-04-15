@@ -35,7 +35,10 @@ void StaticMeshBoundsextractor::CopyInBounds(
     //dafür vertecies projezieren auf xy ebene
     normal = normal.GetSafeNormal();
     FRotator rotation = normal.Rotation();
-    //rotation.Pitch += 90.0f; //sodass Z = 0.0f wird, xy pane only
+    
+    //DBUEG
+    rotation.Pitch += 90.0f; //sodass Z = 1.0f wird, xy pane only
+    //Z schaut nach -1.0f
 
     FMatrix RotationMatrix = FRotationMatrix(rotation);
     FMatrix InverseMatrix = RotationMatrix.Inverse();
@@ -48,46 +51,60 @@ void StaticMeshBoundsextractor::CopyInBounds(
         FVector copy(verteciesIn[i]);
         rawBuffer[i] = copy;
 
-        copy -= paneLocalLocation; //translate to relative 0,0,0
-        bufferOnXYPane[i] = InverseMatrix.TransformPosition(copy);
-
         //actung: ganzer buffer muss noch in bezug auf pane geschoben werden, abstand pane vom lokalen
         //ursprung!
         //translation wird auf zurückgesetzt
+
+        copy -= paneLocalLocation; //translate to relative 0,0,0
+        bufferOnXYPane[i] = InverseMatrix.TransformPosition(copy);
 
 
 
         DebugHelper::logMessage("extracted rotated ", bufferOnXYPane[i]);
     }
 
+
+    //debug draw normal
+    normal = InverseMatrix.TransformPosition(normal);
+    DebugHelper::logMessage("extracted normal rotated ", normal); //looks up: OK!
+
     TArray<int32> inBoundsVertecies;
-    FindInBounds(a, b, bufferOnXYPane, inBoundsVertecies);
+    FindInBounds(a, b, bufferOnXYPane, inBoundsVertecies, normal);
 
     //found vertecies in bounds: copy corrosponding triangles
     copy(rawBuffer, inBoundsVertecies, trianglesIn, actorLocation);
 
 
 
-    //debug draw normal
-    normal = InverseMatrix.TransformPosition(normal);
-    DebugHelper::logMessage("extracted normal rotated ", normal); //looks up: OK!
     
 
-
-
-
+    for (int i = 1; i < bufferOnXYPane.Num(); i++){
+        DebugHelper::showLineBetween(
+            world,
+            bufferOnXYPane[i] + actorLocation + paneLocalLocation,
+            bufferOnXYPane[i - 1] + actorLocation + paneLocalLocation,
+            FColor::Green,
+            100.0f
+        );
+    }
 }
 
 void StaticMeshBoundsextractor::FindInBounds(
     FVector2D &a,
     FVector2D &b,
     TArray<FVector> &verteciesIn,
-    TArray<int32> &verteciesOut
+    TArray<int32> &verteciesOut,
+    FVector rotatedNormal
 ){
-    double nearestVertexZ = -9999999999.0;
+    double nearestVertexZ = rotatedNormal.Z > 0.0f ? -9999999999.0 : 9999999999.0;
     for (int i = 0; i < verteciesIn.Num(); i++){
         FVector &vertex = verteciesIn[i];
-        nearestVertexZ = std::max(nearestVertexZ, vertex.Z);
+
+        if(rotatedNormal.Z > 0.0f){
+            nearestVertexZ = std::max(nearestVertexZ, vertex.Z); //weil z nach -1 zeigt.
+        }else{
+            nearestVertexZ = std::min(nearestVertexZ, vertex.Z); //weil z nach -1 zeigt.
+        }
     }
 
     float aval = nearestVertexZ;
@@ -112,7 +129,7 @@ bool StaticMeshBoundsextractor::isInBounds(
            a.Y <= vertex.Y &&
            b.X >= vertex.X &&
            b.Y >= vertex.Y &&
-           vertex.Z >= nearestVertexZ -50.0f; //zu prüfen, das der abstand quasi reicht
+           vertex.Z >= nearestVertexZ -50.0f && vertex.Z < nearestVertexZ + 50.0f; //zu prüfen, das der abstand quasi reicht
 }
 
 
@@ -140,7 +157,7 @@ void StaticMeshBoundsextractor::copy(
         if(index >= 0 && index < rawBuffer.Num()){
             DebugHelper::showLineBetween(
                 world,
-                actorLocation + rawBuffer[index] * 1.1f,
+                actorLocation + rawBuffer[index] * 1.1f + FVector(0, 300,20),
                 actorLocation,
                 FColor::Orange,
                 100.0f
