@@ -21,10 +21,18 @@ public:
     TArray<FVector3f> &verteciesRef(){
         return vertecies;
     }
-    
+
     TArray<int32> &trianglesRef(){
         return triangles;
     }
+
+    void CopyInBounds(
+        FVector2D a,
+        FVector2D b,
+        FVector3f normal,
+        TArray<FVector3f> &verteciesIn,
+        TArray<int32> &trianglesIn
+    );
 
 private:
     float epsilon = 5.0f;
@@ -36,5 +44,5 @@ private:
     bool isValidVertexIndex(int index, TArray<FVector3f> &verteciesIn);
     bool isValidVertexIndex(int v0, int v1, int v2, TArray<FVector3f> &verteciesIn);
 
-    void cleanupTriangleBuffer();
+
 };

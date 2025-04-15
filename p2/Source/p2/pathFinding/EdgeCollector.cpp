@@ -212,7 +212,6 @@ void EdgeCollector::getEdgesFromSingleMesh(
     UStaticMesh* StaticMesh, 
     FVector debugPos, 
     FTransform LocalToWorldTransform
-    //,std::vector<edgeData> &vector
 ){
     if (!StaticMesh)
     {

@@ -8,6 +8,7 @@ class P2_API BoundingBox{
 public:
     BoundingBox();
     BoundingBox(TArray<FVector> &vertecies);
+    BoundingBox(TArray<FVector3f> &vertecies);
     ~BoundingBox();
 
     FVector bottomLeftNearVertex();

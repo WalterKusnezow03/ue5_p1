@@ -490,8 +490,8 @@ std::vector<FVector> PathFinder::getPath(FVector a, FVector b){
     PathFinder::Node *end = nullptr;
 
     FVector dir = b - a;
-    //start = findNodeInDirection(a, dir);
-    start = findNode(a);
+    start = findNodeInDirection(a, dir);
+    //start = findNode(a);
     if(start == nullptr){
         DebugHelper::showScreenMessage("START NODE NOT FOUND", FColor::Red);
     }
@@ -1100,7 +1100,7 @@ PathFinder::Node* PathFinder::Chunk::findNodeInDirection(FVector &pos, FVector &
     //find the closest node 
     float closest = std::numeric_limits<float>::max();
     PathFinder::Node *closestNode = nullptr;
-    float prevDotProduct = -1.0f; //worst
+    float prevDotProduct = -2.0f; //worst is -1.0f
 
     for (int i = 0; i < nodes.size(); i++)
     {
