@@ -45,8 +45,7 @@ private:
     bool isInBounds(
         FVector2D &a,
         FVector2D &b,
-        FVector &vertex,
-        double nearestVertexZ
+        FVector &vertex
     );
 
     

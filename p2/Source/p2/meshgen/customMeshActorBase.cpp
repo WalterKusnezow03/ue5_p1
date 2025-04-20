@@ -34,6 +34,26 @@ AcustomMeshActorBase::AcustomMeshActorBase()
     currentLodLevel = ELod::lodNear;
 }
 
+std::vector<materialEnum> AcustomMeshActorBase::materialVector(){
+    std::vector<materialEnum> types = {
+        materialEnum::grassMaterial,
+        materialEnum::wallMaterial,
+        materialEnum::glassMaterial,
+        materialEnum::stoneMaterial,
+        materialEnum::sandMaterial,
+        materialEnum::redsandMaterial,
+        materialEnum::treeMaterial,
+        materialEnum::palmLeafMaterial,
+        materialEnum::waterMaterial,
+        materialEnum::snowMaterial,
+        materialEnum::beigeStoneMaterial,
+        materialEnum::prop_alarmBoxMaterial,
+        materialEnum::_texturedMaterial,
+        materialEnum::wingMaterial
+    };
+    return types;
+}
+
 void AcustomMeshActorBase::enableLodListening(){
     LISTEN_FOR_LOD_PLAYER = true;
 
@@ -376,8 +396,17 @@ void AcustomMeshActorBase::filterTouplesForVerticalVectors(
  * 
  * 
  */
-
-
+MeshData &AcustomMeshActorBase::findMeshDataReference(
+    materialEnum type,
+    bool raycastOnLayer
+){
+    
+    return findMeshDataReference(
+        type,
+        ELod::lodNear,
+        raycastOnLayer
+    );
+}
 
 MeshData &AcustomMeshActorBase::findMeshDataReference(
     materialEnum type,
@@ -439,13 +468,17 @@ void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
 
         this->SetActorHiddenInGame(false);  // macht den Actor unsichtbar
         if(dotLookDir > 0.0f){ //in blickrichtung auf 180 grad ebene
+
+            //set invisble
             ELod lod = lodLevelByDistanceTo(locationOfPlayer);
+            
+            /*
             if(lod == ELod::lodFar){
                 this->SetActorHiddenInGame(true); 
                 return;
             }else{
                 updateLodLevelAndReloadMesh(lod);
-            }
+            }*/
 
             
         }
@@ -714,22 +747,7 @@ int AcustomMeshActorBase::layerByMaterialEnum(materialEnum type){
     return 0;
 }
 
-std::vector<materialEnum> AcustomMeshActorBase::materialVector(){
-    std::vector<materialEnum> types = {
-        materialEnum::grassMaterial,
-        materialEnum::wallMaterial,
-        materialEnum::glassMaterial,
-        materialEnum::stoneMaterial,
-        materialEnum::sandMaterial,
-        materialEnum::redsandMaterial,
-        materialEnum::treeMaterial,
-        materialEnum::palmLeafMaterial,
-        materialEnum::waterMaterial,
-        materialEnum::snowMaterial,
-        materialEnum::beigeStoneMaterial
-    };
-    return types;
-}
+
 
 materialEnum AcustomMeshActorBase::groundMaterialFor(ETerrainType terraintype){
     if(terraintype == ETerrainType::EOcean){
@@ -779,7 +797,6 @@ std::vector<ETerrainType> AcustomMeshActorBase::terrainVector(){
 std::vector<ELod> AcustomMeshActorBase::lodVector(){
     std::vector<ELod> types = {
         ELod::lodNear,
-        ELod::lodMiddle,
         ELod::lodFar
     };
     return types;

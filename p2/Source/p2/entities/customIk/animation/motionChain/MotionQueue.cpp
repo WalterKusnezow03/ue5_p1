@@ -214,6 +214,7 @@ void MotionQueue::Tick(
                 FVector localLeft = transitionFrameLocal;
                 localLeft.Y *= -1.0f;
 
+                rightHandtarget = transform * localRight;
                 leftHandtarget = transform * localLeft;
             }
         }

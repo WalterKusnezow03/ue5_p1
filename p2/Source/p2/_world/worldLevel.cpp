@@ -19,13 +19,11 @@
 #include "p2/rooms/roomActor/roomProcedural.h"
 #include "p2/DebugHelper.h"
 #include "p2/meshgen/MeshData/MeshData.h"
-#include "p2/entities/customIk/_spatial/debug/debugActor6x6.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
 #include "p2/rooms/doorLike/DoorBase.h"
-#include "p2/entities/customIk/_spatial/MMatrix3x3.h"
 #include "CoreMinimal.h"
 
 worldLevel::worldLevel()
@@ -125,7 +123,6 @@ void worldLevel::initWorld(UWorld *world){
 
     DebugCreatedoor(world);
 
-    Debug6x6BoneActor(world);
 }
 
 /**
@@ -602,20 +599,3 @@ void worldLevel::DebugCreatedoor(UWorld *world){
     }
 }
 
-
-void worldLevel::Debug6x6BoneActor(UWorld *world){
-    AdebugActor6x6 *ptr = AdebugActor6x6::Construct(world);
-
-
-
-    FVector t(1, 0, 0);
-    MMatrix3x3 R;
-
-    MMatrix3x3 skewT = MMatrix3x3::skewMatrix(t); // ergibt (siehe oben)
-    MMatrix3x3 tskewR = skewT * R;
-
-    FVector omega(0, 0, 1);
-    FVector v = tskewR * omega;
-
-    DebugHelper::logMessage("omega x t = ", v); // Erwartet: (0, 1, 0)
-}

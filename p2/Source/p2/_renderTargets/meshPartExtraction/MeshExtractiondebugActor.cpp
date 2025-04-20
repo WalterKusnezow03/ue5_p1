@@ -158,10 +158,10 @@ FVector AMeshExtractiondebugActor::findNormal(
     UStaticMeshComponent *comp
 ){
     //OK
-    FVector outNormal(1, 0, 0);
+    FVector outNormal(0, 0, 1); //looks up by default
     if(comp){
         FRotator Rotation = comp->GetComponentRotation();
-        Rotation.Pitch += 90.0f;
+        //Rotation.Pitch += 90.0f;
         FMatrix RotationMatrix = FRotationMatrix(Rotation);
         outNormal = RotationMatrix.TransformPosition(outNormal);
     }

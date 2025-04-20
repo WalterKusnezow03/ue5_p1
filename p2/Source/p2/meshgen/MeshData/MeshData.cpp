@@ -714,13 +714,9 @@ bool MeshData::isValidNormalIndex(int i){
     return i >= 0 && i < normals.Num();
 }
 
-
-
-
-
-
-
-
+bool MeshData::isValidNormalIndex(int i, int j, int k){
+    return isValidNormalIndex(i) && isValidNormalIndex(j) && isValidNormalIndex(k);
+}
 
 /**
  * --- Data references ---
@@ -1135,65 +1131,8 @@ bool MeshData::solveIsInTriangle(
     }else{
         return false;
     }
-
-    //barycentric solve O(n^2) -> thats horrible.
-    /*
-    gleichungs system ist unterbestimmt
-
-    A * r + B * s + C * t = F
-                r + s + t = 1
-    
-    r = 1 - t - s
-
-
-    A * (1-t-s) + B * s + C * t = F
-    A - At - As + Bs + Ct = F
-
-    
-    s*(B - A) + t*(C-A) + A = F
-    s*(B - A) + t*(C-A) = F - A //F-A ist eigentlich AF,
-    
-    //es muss s oder t fixiert werden aber t und s müssen beide grösser als 0 sein
-    //und zusammen 1 ergeben
-    //damit es im dreieck liegt
-    */
-    
-    if(isValidVertexIndex(v0,v1,v2)){
-        FVector A = vertecies[v0];
-        FVector B = vertecies[v1];
-        FVector C = vertecies[v2];
-
-        FVector AB = B - A;
-        FVector AC = C - A;
-        FVector AF = target - A;
-
-
-        float distLimit = 100.0f;
-
-        float step = 0.01f;
-        for (float s = 0.0f; s <= 1.0f; s+=step){
-
-            for (float t = 0.0f; t <= 1.0f; t+=step){
-                FVector ABmodified = AB * s;
-                FVector ACmodified = AC * t;
-
-                //s*(B - A) + t*(C-A) = F - A //F-A ist eigentlich AF,
-                //die gleichung heisst folgendess
-                //xVec + yVec = AF
-                FVector combined = ABmodified + ACmodified;
-                if(FVector::Dist(combined, AF) <= distLimit){
-                    return true;
-                }
-            
-            }
-            
-        }
-    }
     return false;
 }
-
-
-
 
 ///@brief removed triangle can be in incorrect order
 int MeshData::removeTriangleSimilarTo(int v0, int v1, int v2){
@@ -1274,144 +1213,6 @@ void MeshData::centerMesh(){
  * 
  */
 
-//not tested
-void MeshData::cutHoleWithInnerExtensionOfMesh(
-    FVector &vertex, int radius
-){
-
-    //ERST cut, dann append(?)
-    std::vector<FVector> outOfRangeVertecies;
-    cutHole(vertex, radius, outOfRangeVertecies);
-    if(outOfRangeVertecies.size() == 0){
-        return;
-    }
-
-    //achtung: vertecies müssen durch 2 teilbar sein sodass der helbkreis korrekt
-    //gespaltet wird (?)
-    if(outOfRangeVertecies.size() % 2 != 0){
-        FVector &ownBack = outOfRangeVertecies.back();
-        outOfRangeVertecies.push_back(ownBack);
-    }
-
-    //find rotation of direction to rotate the halfsphere as needed
-    FVector centerOfMesh = center();
-    //FVector connect = centerOfMesh - vertex; //AB = B - A ---> vertex to center inside
-    FVector connect(0, 0, 1);
-    int indexClose = findClosestIndexTo(vertex);
-    if (isValidNormalIndex(indexClose))
-    {
-        connect = normals[indexClose] * -1; //inward
-    }
-
-    std::vector<FVector> outlineOfHalfSphere; //online of open side!
-    int detailPerCircle = outOfRangeVertecies.size();
-
-    //fill missing detial (temporary solution)
-    if(detailPerCircle < 8){
-        int missing = 8 - detailPerCircle;
-        int betweenExtra = missing / detailPerCircle;
-        if(betweenExtra == 0){
-            betweenExtra = 1;
-        }
-        betweenExtra += 1; //dass bei 1 extra, auch einer dazukommt.
-
-        std::vector<FVector> modifiedOutOfRange;
-        for (int i = 0; i < outOfRangeVertecies.size(); i++)
-        {
-            FVector &start = outOfRangeVertecies[i];
-            FVector &end = outOfRangeVertecies[(i+1) % outOfRangeVertecies.size()];
-            FVector connectScaled = end - start;
-            connectScaled /= betweenExtra;
-            for (int j = 0; j < betweenExtra; j++){
-                FVector interpolated = start + connectScaled * j;
-                modifiedOutOfRange.push_back(interpolated);
-            }
-        }
-        outOfRangeVertecies = modifiedOutOfRange;
-    }
-    //fill missing detial (temporary solution) end
-
-
-    MeshData sphere = FVectorShape::createHalfSphereCuttedOff(
-        radius,
-        detailPerCircle, //detail per full circle
-        false, //false for face inside
-        connect, // normal inwards to rotate half sphere / align with it
-        outlineOfHalfSphere,
-        MMatrix(vertex) // move to vertex pos
-    );
-
-
-
-    //mergen und anhängen den gefüllten kreis
-    ParallellShapeMerger merger;
-    merger.createParallelSortedShape(
-        outlineOfHalfSphere,
-        outOfRangeVertecies
-    );
-    std::vector<FVector> &bufferReference = merger.triangleBufferReference();
-    appendDoubleSidedTriangleBuffer(bufferReference);
-
-
-
-    //append sphere
-    //appendEfficent(sphere);
-    append(sphere);
-
-    calculateNormals();
-    
-    
-}
-
-
-
-///@brief will cut a hole in a radius at a vertex position
-///@param outOfRangeVertecies will save vertecies which were not cutted out
-///but were connected to the cutted out vertecies
-void MeshData::cutHole(FVector &vertex, int radius, std::vector<FVector> &outOfRangeVertecies) //connected out of range
-{
-    radius = std::abs(radius);
-    int index = findClosestIndexTo(vertex);
-    if (isValidVertexIndex(index))
-    {
-        FVector removedVertex = vertecies[index];
-
-        //delete connected triangles, does change the triangle buffer but not the
-        //vertex buffer
-        //remove vertex by swapping with end and change the triangle buffer as needed
-        //(update the indices in the triangle buffer)
-        std::vector<int> connectedvertecies;
-        removeVertex(index, connectedvertecies);
-
-        int debugCount = 1;
-
-        //cut recursivly until distance reached
-        int i = 0;
-        int size = connectedvertecies.size();
-        while(i < size){
-            int currentVertexIndex = connectedvertecies[i];
-            if(isValidVertexIndex(currentVertexIndex)){
-                FVector &currentVertex = vertecies[currentVertexIndex];
-                float dist = FVector::Dist(currentVertex, removedVertex);
-
-                if(dist < radius){
-                    removeVertex(currentVertexIndex, connectedvertecies);
-                    debugCount++;
-
-                    //update size
-                    size = connectedvertecies.size();
-                }else{
-                    //for appending some shape
-                    outOfRangeVertecies.push_back(currentVertex);
-                }
-            }
-            i++;
-        }
-
-        //FString message = FString::Printf(TEXT("debugremoved vertecies %d"), debugCount);
-        //DebugHelper::logMessage(message);
-    }
-}
 
 ///@brief removes out a vertex from the mesh
 void MeshData::removeVertex(int index){
@@ -1474,6 +1275,7 @@ void MeshData::removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &co
             triangleBufferCopy.Add(v1);
             triangleBufferCopy.Add(v2);
         }else{
+            //connected vertecies are added to the buffer
             //dont copy the vertex which is removed
             if(v0ok && !contains(connectedvertecies, v0)){
                 connectedvertecies.push_back(v0);
@@ -1919,5 +1721,8 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
         }
     }
 }
+
+
+
 
 

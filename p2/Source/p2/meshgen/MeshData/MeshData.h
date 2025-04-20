@@ -186,6 +186,7 @@ protected:
 	bool isValidVertexIndex(int i, int j, int n);
 	bool isValidTriangleIndex(int i);
 	bool isValidNormalIndex(int index);
+	bool isValidNormalIndex(int i, int j, int k);
 	FVector createNormal(int v0, int v1, int v2);
 
 	void findTrianglesInvolvedWith(int index, std::vector<int> &trianglesFound);
@@ -204,16 +205,13 @@ protected:
 
 	//helper for removing triangles by vertex
 	void removeVertex(int index);
-	void removeVertex(int index, std::vector<int> &connectedvertecies);
+	virtual void removeVertex(int index, std::vector<int> &connectedvertecies);
 	void removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &connectedvertecies);
 	bool contains(std::vector<int> &ref, int index);
 
 
 public:
-	//helper for removing triangles by vertex
-	void cutHole(FVector &vertex, int radius, std::vector<FVector> &outOfRangeVertecies);
-	void cutHoleWithInnerExtensionOfMesh(FVector &vertex, int radius);
-
+	
 	materialEnum targetMaterial();
 	void setTargetMaterial(materialEnum inMaterial);
 
@@ -262,12 +260,11 @@ public:
 	FVector &findIndex(int i, int j);
 	void replaceAt(int i, int j, FVector &other);
 
-private:
+protected:
 	int indexFor(int i, int j);
 
 	FVector noneVertex;
 	int umbruch = 0;
-
 
 
 

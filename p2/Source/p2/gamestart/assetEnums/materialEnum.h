@@ -17,5 +17,6 @@ enum class materialEnum
     waterMaterial,
     snowMaterial,
     prop_alarmBoxMaterial,
-    _texturedMaterial
+    _texturedMaterial,
+    wingMaterial
 };

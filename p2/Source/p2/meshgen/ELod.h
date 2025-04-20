@@ -5,6 +5,5 @@ UENUM()
 enum class ELod
 {
     lodNear,
-    lodMiddle,
     lodFar
 };

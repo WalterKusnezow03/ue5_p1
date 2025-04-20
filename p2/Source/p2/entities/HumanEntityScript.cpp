@@ -340,7 +340,10 @@ bool AHumanEntityScript::playerIsInLookDir(){
 /// look at! 
 void AHumanEntityScript::alert(FVector lookat){
     Super::alert(lookat);
-    
+    if (!isActivatedForUpdate()){
+		return;
+	}
+
     // special attention needed: clear path, look at
     if(isWithinCloseRange(lookat)){
         Super::resetpath();

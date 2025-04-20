@@ -76,8 +76,6 @@ void StaticMeshBoundsextractor::CopyInBounds(
 
 
 
-    
-
     for (int i = 1; i < bufferOnXYPane.Num(); i++){
         DebugHelper::showLineBetween(
             world,
@@ -96,9 +94,23 @@ void StaticMeshBoundsextractor::FindInBounds(
     TArray<int32> &verteciesOut,
     FVector rotatedNormal
 ){
-    double nearestVertexZ = rotatedNormal.Z > 0.0f ? -9999999999.0 : 9999999999.0;
+
+    //ERST XY BOUNDS
+
+
+    //DANN DEPTH CHECK
+    TArray<int32> inBoundsXY;
     for (int i = 0; i < verteciesIn.Num(); i++){
         FVector &vertex = verteciesIn[i];
+        if(isInBounds(a,b,vertex)){
+            inBoundsXY.Add(i);
+        }
+    }
+
+
+    double nearestVertexZ = rotatedNormal.Z > 0.0f ? -9999999999.0 : 9999999999.0;
+    for (int i = 0; i < inBoundsXY.Num(); i++){
+        FVector &vertex = verteciesIn[inBoundsXY[i]];
 
         if(rotatedNormal.Z > 0.0f){
             nearestVertexZ = std::max(nearestVertexZ, vertex.Z); //weil z nach -1 zeigt.
@@ -107,31 +119,28 @@ void StaticMeshBoundsextractor::FindInBounds(
         }
     }
 
-    float aval = nearestVertexZ;
-    DebugHelper::logMessage(FString::Printf(TEXT("extracted nearestValue %.2f"), aval));
 
-    for (int i = 0; i < verteciesIn.Num(); i++)
-    {
-        FVector &vertex = verteciesIn[i];
-        if(isInBounds(a,b,vertex, nearestVertexZ)){
-            verteciesOut.Add(i);
+    //DEPTH CHECK
+    for (int i = 0; i < inBoundsXY.Num(); i++){
+        int index = inBoundsXY[i];
+        FVector &vertex = verteciesIn[index];
+        if(vertex.Z >= nearestVertexZ -50.0f && vertex.Z < nearestVertexZ + 50.0f){
+            verteciesOut.Add(index);
         }
     }
+
 }
 
 bool StaticMeshBoundsextractor::isInBounds(
     FVector2D &a,
     FVector2D &b,
-    FVector &vertex,
-    double nearestVertexZ
+    FVector &vertex
 ){
     return a.X <= vertex.X &&
            a.Y <= vertex.Y &&
            b.X >= vertex.X &&
-           b.Y >= vertex.Y &&
-           vertex.Z >= nearestVertexZ -50.0f && vertex.Z < nearestVertexZ + 50.0f; //zu prüfen, das der abstand quasi reicht
+           b.Y >= vertex.Y;
 }
-
 
 void StaticMeshBoundsextractor::copy(
     TArray<FVector> &rawBuffer,

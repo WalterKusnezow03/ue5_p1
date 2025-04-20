@@ -767,7 +767,8 @@ void AEntityScript::alert(){
 
 
 void AEntityScript::alert(FVector lookat){
-	if(!isActivatedForUpdate()){
+	if (!isActivatedForUpdate())
+	{
 		return;
 	}
 	if(!spottedPlayer && !canSeePlayer){

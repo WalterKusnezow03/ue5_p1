@@ -86,6 +86,12 @@ public:
 		bool raycastOnLayer
 	);
 
+	MeshData &findMeshDataReference(
+		materialEnum type,
+		bool raycastOnLayer
+	);
+
+
 	
 
 	void appendMeshDataAndReload(
@@ -129,12 +135,22 @@ protected:
 	// std::map<int, MeshData> meshLayersMap;
 	// std::map<int, MeshData> meshLayersMapNoRaycast;
 
+	UPROPERTY(VisibleAnywhere)
+	class UProceduralMeshComponent *Mesh;
+
+	UPROPERTY(VisibleAnywhere)
+	class UProceduralMeshComponent *MeshNoRaycast;
+
 	//new!
 	std::map<int, MeshDataLod> meshLayersLodMap;
 	std::map<int, MeshDataLod> meshLayersLodMapNoRaycast;
 
 	
+
+	
 	void updateLodLevelAndReloadMesh(ELod level);
+
+	//allows custom mesh without Lod
 	void updateMesh(
 		UProceduralMeshComponent &meshcomponent,
 		MeshData &otherMesh,
@@ -142,11 +158,7 @@ protected:
 		bool enableCollision
 	);
 
-	UPROPERTY(VisibleAnywhere)
-	class UProceduralMeshComponent *Mesh;
-
-	UPROPERTY(VisibleAnywhere)
-	class UProceduralMeshComponent *MeshNoRaycast;
+	
 
 
 

@@ -25,18 +25,20 @@ AlertManager::~AlertManager()
 ///@param SphereRadius collect in radius
 void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadius){
     
-    
     std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
+    //DebugHelper::showScreenMessage("ALERT MANAGER: ", indexArray.size(), FColor::Orange);
     for (int i = 0; i < indexArray.size(); i++){
         int currentIndex = indexArray[i];
+        
         AEntityScript *entity = subscribedToAlert[currentIndex];
         if(entity){
+            //DebugHelper::showScreenMessage("ALERT ", FColor::Orange);
             if(entity->isWithinMaxRange(location)){
                 //look at immidiatly
                 entity->alarm();
-            }else{
-                entity->alert(location);
             }
+
+            entity->alert(location);
         }
     }
     

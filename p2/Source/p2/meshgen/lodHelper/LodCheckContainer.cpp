@@ -7,13 +7,11 @@
 
 LodCheckContainer::LodCheckContainer(){
     modifyUpperDistanceLimitFor(ELod::lodNear, 100 * 100);
-    modifyUpperDistanceLimitFor(ELod::lodMiddle, 200 * 100);
     modifyUpperDistanceLimitFor(ELod::lodFar, 300 * 100);
 }
 
 LodCheckContainer::LodCheckContainer(FVector &a, FVector &b){
     modifyUpperDistanceLimitFor(ELod::lodNear, 100 * 100);
-    modifyUpperDistanceLimitFor(ELod::lodMiddle, 200 * 100);
     modifyUpperDistanceLimitFor(ELod::lodFar, 300 * 100);
 
     checkLod(a, b);

@@ -444,7 +444,6 @@ bool AcustomWaterActor::playerIsInRenderRange(){
         FVector actorLocation = GetActorLocation();
         LodCheckContainer checkContainer;
         checkContainer.modifyUpperDistanceLimitFor(ELod::lodNear, 50*100); //50
-        checkContainer.modifyUpperDistanceLimitFor(ELod::lodMiddle, 200*100);
         checkContainer.checkLod(actorLocation, locationOfPlayer);
         SetActorHiddenInGame(checkContainer.hideActorByLod()); //if far, hide
 
@@ -454,7 +453,7 @@ bool AcustomWaterActor::playerIsInRenderRange(){
         ELod prevLod = latestLodMeasured;
         latestLodMeasured = lodResult;
 
-        if(lodResult == ELod::lodMiddle || lodResult == ELod::lodFar){
+        if(lodResult == ELod::lodFar){
             if(prevLod != lodResult){
                 resetAllShaderOffsets(); //remove vertex displacement ONCE
             }
