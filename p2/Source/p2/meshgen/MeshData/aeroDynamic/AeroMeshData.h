@@ -31,8 +31,8 @@ public:
 	/// and triangle scales with SUM(pressure * normal * areaOfTriangle)
 	/// @param pressure 
 	/// @return 
-	FVector forceFrom(FVector &windDir);
-    FVector forceFrom(FVector &windDir, float airDensity);
+	FVector forceFrom(FVector &windDirectionAndScaledSpeed);
+    //FVector forceFrom(FVector &windDir, float airDensity);
 
     FVector torqueVector(
         FVector &force

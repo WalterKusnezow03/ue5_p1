@@ -13,6 +13,8 @@ class AAeroActor : public AcustomMeshActorBase {
 public:
     AAeroActor();
 
+    static AAeroActor *Construct(UWorld *world, FVector &location);
+
     virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
 
@@ -20,10 +22,15 @@ protected:
     virtual void initMesh();
     UMaterialInterface *wingMaterialPointer();
 
+    void processTroqueAcceleration(FVector &torque, float deltaTime);
+
 private:
     AeroMeshData meshDataMain;
-    FVector velocity;
+
+    FVector linearVelocity;
+    FVector angularVelocity;
 
     FVector transformVektorToLocalSpace(FVector &dir);
-    
+
+    void drawForce(FVector &force, float deltatime);
 };

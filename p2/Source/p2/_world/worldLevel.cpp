@@ -24,6 +24,7 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
 #include "p2/rooms/doorLike/DoorBase.h"
+#include "p2/aeroDynamics/AeroActor.h"
 #include "CoreMinimal.h"
 
 worldLevel::worldLevel()
@@ -123,6 +124,7 @@ void worldLevel::initWorld(UWorld *world){
 
     DebugCreatedoor(world);
 
+   createAeroActor(world);
 }
 
 /**
@@ -599,3 +601,28 @@ void worldLevel::DebugCreatedoor(UWorld *world){
     }
 }
 
+
+
+
+void worldLevel::createAeroActor(UWorld *world){
+    if(world){
+        FVector location(500, -1000, 200);
+
+        DebugHelper::showLineBetween(
+            world,
+            location,
+            location + FVector(0, 0, 10000),
+            FColor::Red,
+            100.0f
+        );
+        DebugHelper::showLineBetween(
+            world,
+            location,
+            FVector(0,0,0),
+            FColor::Red,
+            100.0f
+        );
+
+        AAeroActor *ptr = AAeroActor::Construct(world, location);
+    }
+}

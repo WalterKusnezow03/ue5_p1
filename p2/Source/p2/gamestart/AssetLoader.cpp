@@ -310,6 +310,7 @@ void AssetLoader::loadMaterials(){
 
 
 
+
         //tree material
         a->addMaterial(
             materialEnum::treeMaterial,

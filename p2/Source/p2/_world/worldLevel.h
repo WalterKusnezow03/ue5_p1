@@ -81,4 +81,5 @@ private:
 
 	static void debugCreateCustomTextureMesh(UWorld *world);
 
+	static void createAeroActor(UWorld *world);
 };

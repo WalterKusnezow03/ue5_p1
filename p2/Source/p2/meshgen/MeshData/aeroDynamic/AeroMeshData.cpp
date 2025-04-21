@@ -83,10 +83,10 @@ AeroMeshData::~AeroMeshData(){
  */
 
 /// @brief wind direction must be relative to the object AND its movement!
-/// @param windDirection 
+/// @param windDirectionAndScaledSpeed 
 /// @return 
-FVector AeroMeshData::forceFrom(FVector &windDirection){
-    FVector flow = windDirection * -1.0f; //auftreff punkt wind ist aus entgegengesetzer richtung, wie normale wegschaut.
+FVector AeroMeshData::forceFrom(FVector &windDirectionAndScaledSpeed){
+    FVector flow = windDirectionAndScaledSpeed * -1.0f; //auftreff punkt wind ist aus entgegengesetzer richtung, wie normale wegschaut.
     float windSpeed = flow.Size();
 
     FVector flowDir = flow.GetSafeNormal();
@@ -117,6 +117,7 @@ FVector AeroMeshData::forceVector(
 ){
     FVector normal = normalFor(v0, v1, v2);
     float areaOfTriangleFound = areaOfTriangle(v0, v1, v2);
+    //DebugHelper::logMessage("areaOftriangle ", areaOfTriangleFound); //ok
 
     return forceVector(flowDir, normal, areaOfTriangleFound, windSpeed);
 }
@@ -196,7 +197,13 @@ FVector AeroMeshData::torqueVector(
 ){
     FVector centerOfMass = center();
     FVector totalDrehMoment(0, 0, 0);
+
+    // zu jedem auftreff punkt der kraft wird ein moment berechnet
+    // aus M = r x F
+    // wobei r = targetHit - centerOfMass; ist 
+
     for (int i = 2; i < triangles.Num(); i+=3){
+        //der total dreh moment ist die summe aus allen momentums
         totalDrehMoment += torqueVector(
             force,
             centerOfMass,
@@ -231,9 +238,9 @@ FVector AeroMeshData::torqueVector(
 /// @param v0 
 /// @param v1 
 /// @param v2 
-/// @return 
+/// @return normal for the given triangle
 FVector AeroMeshData::normalFor(int v0, int v1, int v2){
-    FVector normal;
+    FVector normal(0,0,1);
     if(isValidNormalIndex(v0,v1,v2)){
         FVector sumNormal = normals[v0] + normals[v1] + normals[v2];
         normal = sumNormal.GetSafeNormal();
