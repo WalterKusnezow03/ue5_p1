@@ -230,6 +230,8 @@ public:
 
 	void debugDrawMesh(MMatrix &transform, UWorld *world);
 
+	void flipAllTriangles();
+
 protected:
 	void findConnectedVerteciesTo(int index, std::vector<int> &output);
 

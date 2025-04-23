@@ -12,6 +12,7 @@
 #include "p2/entities/customIk/animation/motionChain/RotationQueue.h"
 #include "p2/entities/customIk/animation/motionChain/RotationStates.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
+#include "p2/DebugHelper.h"
 #include "CoreMinimal.h"
 
 

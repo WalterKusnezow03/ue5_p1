@@ -1205,6 +1205,19 @@ void MeshData::centerMesh(){
     }
 }
 
+/// @brief flips all triangle surfaces but doesnt refresh the normals!
+void MeshData::flipAllTriangles(){
+    for (int i = 2; i < triangles.Num(); i += 3){
+        //int32 v0 = triangles[i - 2];
+        int32 v1 = triangles[i - 1];
+        int32 v2 = triangles[i];
+
+        //spaw
+        triangles[i] = v1;
+        triangles[i - 1] = v2;
+    }
+}
+
 
 
 /**

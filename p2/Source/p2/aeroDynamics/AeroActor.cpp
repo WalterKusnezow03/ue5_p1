@@ -3,6 +3,7 @@
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/gamestart/assetManager.h"
 #include <algorithm>
+#include "p2/entities/customIk/MMatrix.h"
 #include "p2/DebugHelper.h"
 #include "p2/meshgen/MeshData/aeroDynamic/AeroMeshData.h"
 #include "p2/meshgen/MeshData/MeshData.h"
@@ -23,6 +24,7 @@ AAeroActor* AAeroActor::Construct(UWorld *world, FVector &location){
                 FRotator::ZeroRotator, 
                 SpawnParams
             );
+
             return spawned;
         }
     }
@@ -35,6 +37,12 @@ AAeroActor* AAeroActor::Construct(UWorld *world, FVector &location){
 
 AAeroActor::AAeroActor() : AcustomMeshActorBase(){
 
+    
+    // create back wing sub component!
+    MeshBackWings = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("backwingMesh"));
+    // Attach it to the RootComponent (Mesh) so it has the same transform
+    MeshBackWings->SetupAttachment(RootComponent);
+
 }
 
 void AAeroActor::BeginPlay(){
@@ -45,7 +53,7 @@ void AAeroActor::BeginPlay(){
 }
 
 void AAeroActor::initMesh(){
-    //materialEnum::wingMaterial
+    //materialEnum::wingMaterials
     
     
     //meshDataMain setup, hauptsache eine schräge fläche ist dabei
@@ -80,17 +88,44 @@ void AAeroActor::initMesh(){
     meshDataMain.appendEfficent(v3, v5, v6);
 
 
+    //for no reason the whole mesh is flipped.
+    AeroMeshData wingLeft = meshDataMain;
+    MMatrix flip;
+    flip.scale(1.0f, -1.0f, 1.0f);
+    wingLeft.transformAllVertecies(flip);
+    wingLeft.flipAllTriangles();
+    meshDataMain.append(wingLeft);
+
+    
+
+
+    //setup mesh data for up and down wings
+    //meshDataUpDownBackWings
+    meshDataUpDownBackWings = meshDataMain; //copy doesnt work ?
+
+
+
+    FVector moveBackAndUp(-100, 0, 50);
+    MMatrix scaleDown;
+    scaleDown.scale(0.5f, 0.5f, 1.0f);
+    meshDataUpDownBackWings.transformAllVertecies(scaleDown);
+    if(MeshBackWings){
+        MeshBackWings->SetRelativeLocation(moveBackAndUp);
+    }
+    
+
+
 
     meshDataMain.calculateNormals();
+    meshDataUpDownBackWings.calculateNormals();
 
-    //update mesh
+    //update mesh main (wings)
     if(Mesh){
         int layer = 0;
         bool enableCollision = true;
-
         updateMesh(
             *Mesh,
-            meshDataMain, //MeshData & otherMesh,
+            meshDataMain, // MeshData & otherMesh,
             layer,
             enableCollision
         );
@@ -99,11 +134,33 @@ void AAeroActor::initMesh(){
             Mesh,
             wingMaterialPointer(),
             layer
-        );
+        );  
     }
+
+    //update mesh back wing
+    if(MeshBackWings){
+        int layer = 0;
+        bool enableCollision = true;
+        updateMesh(
+            *MeshBackWings,
+            meshDataUpDownBackWings, // MeshData & otherMesh,
+            layer,
+            enableCollision
+        );
+
+        ApplyMaterial(
+            MeshBackWings,
+            wingMaterialPointer(),
+            layer
+        );  
+    }
+
+
+
 
     //ReloadMeshAndApplyAllMaterials(); // super
 }
+
 
 UMaterialInterface *AAeroActor::wingMaterialPointer(){
     UMaterialInterface *ptr = nullptr;
@@ -114,6 +171,25 @@ UMaterialInterface *AAeroActor::wingMaterialPointer(){
     return ptr;
 }
 
+/*
+std::vector<AeroMeshData *> AAeroActor::allMeshDataHavingForce(){
+    std::vector<AeroMeshData *> output;
+    output.push_back(&meshDataMain);
+    output.push_back(&meshDataUpDownBackWings);
+
+    return output;
+}*/
+
+std::map<AeroMeshData*, UProceduralMeshComponent*> AAeroActor::allMeshDataHavingForce(){
+    std::map<AeroMeshData*, UProceduralMeshComponent*> output;
+
+    output[&meshDataMain] = Mesh;
+    output[&meshDataUpDownBackWings] = MeshBackWings;
+    
+    return output;
+}
+
+
 
 
 void AAeroActor::Tick(float DeltaTime){
@@ -121,6 +197,7 @@ void AAeroActor::Tick(float DeltaTime){
 
     //debug
     DeltaTime *= 0.01f;
+    return;
 
     //todo: überlegen wie man wing mesh aufbaut und testet!
 
@@ -129,12 +206,46 @@ void AAeroActor::Tick(float DeltaTime){
     //und an objekt bewegung anhängt!
     //F = mass * acceleration
     //F ist bestimmt aus meshdata
-    FVector windVector(-100, 0, 0);
-    FVector forceOnMesh = meshDataMain.forceFrom(windVector);
+    FVector windVectorWorld(-100, 0, 0); //world space
+    //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
-    DebugHelper::logMessage("totalForce", forceOnMesh); //has values
-    drawForce(forceOnMesh, DeltaTime); //IS NOT DRAWN PROPERLY
 
+    FVector forceOnMesh;
+    FVector torque_momentum;
+    std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshes = allMeshDataHavingForce();
+    for (auto &pair : allMeshes){
+        AeroMeshData *currentMesh = pair.first;
+        UProceduralMeshComponent *meshComponent = pair.second;
+        if (currentMesh && meshComponent)
+        {
+
+            FVector windrelative = transformVektorToLocalSpace(
+                meshComponent,
+                windVectorWorld // world space
+            );
+
+            FVector currentForce = currentMesh->forceFrom(windrelative);
+
+            /**
+             * CAUTION //might pass actor center of mass!
+             */
+            FVector currentTorque = currentMesh->torqueVector(forceOnMesh);
+
+            forceOnMesh += currentForce; //Sum as expected
+            torque_momentum += currentTorque; //might pass actor center of mass
+        }
+    }
+
+    // DebugHelper::logMessage("totalForce", forceOnMesh); //has values
+    drawForce(forceOnMesh, DeltaTime); 
+
+    //process
+    processAeroForceAcceleration(forceOnMesh, DeltaTime);
+    processTroqueAcceleration(torque_momentum, DeltaTime);
+}
+
+
+void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaTime){
     //pass into F = m * a
     /*
     
@@ -145,27 +256,24 @@ void AAeroActor::Tick(float DeltaTime){
     x(t) = x0 + v0*t + 1/2*(gravity + a)*t^2
 
     */
-    float mass = 100.0f; //100kg
-    FVector accelerationFromForce = forceOnMesh / mass;
+   float mass = 100.0f; //100kg
+   FVector accelerationFromForce = forceOnMesh / mass;
 
-    FVector gravity(0, 0, -980);
-    FVector x0 = GetActorLocation();
-    FVector v0 = linearVelocity * DeltaTime;
-    FVector a = gravity + accelerationFromForce;
+   FVector gravity(0, 0, -980);
+   FVector x0 = GetActorLocation();
+   FVector v0 = linearVelocity * DeltaTime;
+   FVector a = gravity + accelerationFromForce;
 
-    //update v(t) = v0 + at
-    linearVelocity += a * DeltaTime;
+   //update v(t) = v0 + at
+   linearVelocity += a * DeltaTime;
 
-    //build new x(t)
-    FVector xt = x0 + v0 * DeltaTime + 0.5f * a * DeltaTime * DeltaTime;
+   //build new x(t)
+   FVector xt = x0 + v0 * DeltaTime + 0.5f * a * DeltaTime * DeltaTime;
 
-    //debug
-    xt.Z = std::max(xt.Z, 0.0);
+   //debug
+   xt.Z = std::max(xt.Z, 0.0);
 
-    SetActorLocation(xt);
-
-    FVector torque_momentum = meshDataMain.torqueVector(forceOnMesh);
-    processTroqueAcceleration(torque_momentum, DeltaTime);
+   SetActorLocation(xt);
 }
 
 
@@ -189,9 +297,9 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
 
 }
 
-FVector AAeroActor::transformVektorToLocalSpace(FVector &dir){
+FVector AAeroActor::transformVektorToLocalSpace(FVector &dirWorldSpace){
 
-    FVector dirRelativeToVelocity = dir - linearVelocity; //AB = B - A
+    FVector dirRelativeToVelocity = dirWorldSpace - linearVelocity; //AB = B - A
 
     FRotator r = GetActorRotation();
     FMatrix rotationMatrix = FRotationMatrix(r);
@@ -202,6 +310,22 @@ FVector AAeroActor::transformVektorToLocalSpace(FVector &dir){
 }
 
 
+//testing needed
+FVector AAeroActor::transformVektorToLocalSpace(
+    UProceduralMeshComponent *component,
+    FVector &dirWorldSpace
+){
+    FVector dirActorSpace = transformVektorToLocalSpace(dirWorldSpace);
+    if(component){
+        FRotator rotation = component->GetComponentRotation();
+        FMatrix rotationMatrix = FRotationMatrix(rotation);
+        FMatrix InverseMatrix = rotationMatrix.GetTransposed(); //R^-1 = R^T
+
+        FVector output = InverseMatrix.TransformVector(dirActorSpace);
+        return output;
+    }
+    return dirActorSpace;
+}
 
 
 
@@ -210,7 +334,7 @@ void AAeroActor::drawForce(FVector &force, float deltatime){
     FVector vec = force.GetSafeNormal() * 100.0f;
     FVector b = a + vec;
 
-    DebugHelper::logMessage("debugdrawvec ", vec);
+    //DebugHelper::logMessage("debugdrawvec ", vec);
 
     DebugHelper::showLineBetween(
         GetWorld(),

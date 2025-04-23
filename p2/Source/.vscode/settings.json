@@ -1,0 +1,10 @@
+{
+    "editor.renderValidationDecorations": "never",
+    "emmet.syntaxProfiles": {
+      // Your Emmet settings go here
+    }
+    "workbench.colorCustomizations": {
+        "editorError.foreground": "#0000FF"
+    }
+  }
+  

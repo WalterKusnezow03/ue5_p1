@@ -94,7 +94,8 @@
 			"scoped_allocator": "cpp",
 			"alignedvector3": "cpp",
 			"__memory": "cpp",
-			"mprealsupport": "cpp"
+			"mprealsupport": "cpp",
+			"fft": "cpp"
 		}
 	},
 	"extensions": {
