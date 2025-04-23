@@ -229,6 +229,7 @@ FVector AeroMeshData::torqueVector(
         FVector centerOfTriangle = vertecies[v0] + vertecies[v1] + vertecies[v2];
         centerOfTriangle /= 3.0f;
 
+        //M is torque momentum
         //M = r x F ----> r vector kann auch in tabelle gespeichert werden
         FVector centerOfMassToHittedPoint = centerOfTriangle - centerOfMass; // AB = B - A
         FVector torque = FVector::CrossProduct(centerOfMassToHittedPoint, force);

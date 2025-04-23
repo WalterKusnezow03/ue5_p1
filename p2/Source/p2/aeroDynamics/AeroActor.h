@@ -38,7 +38,7 @@ private:
     //std::vector<AeroMeshData *> allMeshDataHavingForce();
     std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshDataHavingForce();
 
-
+    int weightPerCubicMeterInCentiMeter();
 
     FVector transformVektorToLocalSpace(FVector &dir);
     FVector transformVektorToLocalSpace(

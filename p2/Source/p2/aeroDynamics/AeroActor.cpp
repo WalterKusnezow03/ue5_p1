@@ -244,7 +244,7 @@ void AAeroActor::Tick(float DeltaTime){
     processAeroForceAcceleration(forceOnMesh, DeltaTime);
     
     //erstmal ausblenden
-    //processTroqueAcceleration(torque_momentum, DeltaTime);
+    processTroqueAcceleration(torque_momentum, DeltaTime);
 }
 
 
@@ -259,8 +259,8 @@ void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaT
     x(t) = x0 + v0*t + 1/2*(gravity + a)*t^2
 
     */
-   float mass = 1000.0f; //5000kg
-   FVector accelerationFromForce = forceOnMesh / mass;
+   float massInCubicCentimersOnOneMeter = weightPerCubicMeterInCentiMeter();
+   FVector accelerationFromForce = forceOnMesh / massInCubicCentimersOnOneMeter;
 
    FVector gravity(0, 0, -980);
    FVector x0 = GetActorLocation();
@@ -280,15 +280,28 @@ void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaT
 }
 
 
+int AAeroActor::weightPerCubicMeterInCentiMeter(){
+    int weightKg = 100;
+    int weightCms = 100 * 100 * weightKg;
+    return weightCms;
+}
+
 
 void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
+    int weightCms = weightPerCubicMeterInCentiMeter();
 
-    FVector Interia(1, 1, 1); //eigentlich soll das eine 3x3 matrix sein die die masse verteilung
-    //des körpers beschreibt... das ist jetzt nur sx, sy und sz
+    // Diagonale des Inertia-Tensors -- soll noch 3x3 matrix sein!
+    FVector inertia(weightCms, weightCms, weightCms); 
 
-    // angualarAcceleration = torque / Interia   //muss ich noch verstehen, mass verteilung
-    FVector angualarAcceleration = torque / Interia;
-    angularVelocity += angualarAcceleration * DeltaTime; //vt = v0 + at integration
+    // 1. Berechne Winkelbeschleunigung (α = τ / I)
+    FVector angularAcceleration = torque / inertia;
+
+    // 2. Integriere Winkelgeschwindigkeit
+    angularVelocity += angularAcceleration * DeltaTime;
+
+    // 3. Dämpfung (sonst dreht sich alles für immer)
+    float angularDamping = 0.98f;
+    angularVelocity *= angularDamping;
 
     FVector deltaRotationRad = angularVelocity * DeltaTime;
 
