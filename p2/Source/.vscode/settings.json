@@ -4,7 +4,8 @@
       // Your Emmet settings go here
     }
     "workbench.colorCustomizations": {
-        "editorError.foreground": "#0000FF"
+        "editorError.foreground": "#00aeff"
     }
+    "problems.visibility": false
   }
   

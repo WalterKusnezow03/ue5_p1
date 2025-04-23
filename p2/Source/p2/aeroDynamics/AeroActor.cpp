@@ -196,8 +196,8 @@ void AAeroActor::Tick(float DeltaTime){
     //Super::Tick(deltaTime);
 
     //debug
-    DeltaTime *= 0.01f;
-    return;
+    DeltaTime *= 0.1f;
+    
 
     //todo: überlegen wie man wing mesh aufbaut und testet!
 
@@ -206,7 +206,8 @@ void AAeroActor::Tick(float DeltaTime){
     //und an objekt bewegung anhängt!
     //F = mass * acceleration
     //F ist bestimmt aus meshdata
-    FVector windVectorWorld(-100, 0, 0); //world space
+    int meters = -100;
+    FVector windVectorWorld(100 * meters, 0, 0); //world space
     //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
 
@@ -241,7 +242,9 @@ void AAeroActor::Tick(float DeltaTime){
 
     //process
     processAeroForceAcceleration(forceOnMesh, DeltaTime);
-    processTroqueAcceleration(torque_momentum, DeltaTime);
+    
+    //erstmal ausblenden
+    //processTroqueAcceleration(torque_momentum, DeltaTime);
 }
 
 
@@ -256,7 +259,7 @@ void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaT
     x(t) = x0 + v0*t + 1/2*(gravity + a)*t^2
 
     */
-   float mass = 100.0f; //100kg
+   float mass = 1000.0f; //5000kg
    FVector accelerationFromForce = forceOnMesh / mass;
 
    FVector gravity(0, 0, -980);
@@ -297,6 +300,9 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
 
 }
 
+/// @brief transforms a direction into actor rotation space
+/// @param dirWorldSpace 
+/// @return 
 FVector AAeroActor::transformVektorToLocalSpace(FVector &dirWorldSpace){
 
     FVector dirRelativeToVelocity = dirWorldSpace - linearVelocity; //AB = B - A
@@ -311,6 +317,10 @@ FVector AAeroActor::transformVektorToLocalSpace(FVector &dirWorldSpace){
 
 
 //testing needed
+/// @brief transforms a direction into actor rotation space
+/// @param component component relative, own rotation if needed 
+/// @param dirWorldSpace world space vector
+/// @return transformed vecto in actor AND relative mesh rotation space
 FVector AAeroActor::transformVektorToLocalSpace(
     UProceduralMeshComponent *component,
     FVector &dirWorldSpace

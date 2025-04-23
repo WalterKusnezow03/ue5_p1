@@ -84,10 +84,12 @@ AeroMeshData::~AeroMeshData(){
 
 /// @brief wind direction must be relative to the object AND its movement!
 /// @param windDirectionAndScaledSpeed 
-/// @return 
+/// @return force in CM 
 FVector AeroMeshData::forceFrom(FVector &windDirectionAndScaledSpeed){
     FVector flow = windDirectionAndScaledSpeed * -1.0f; //auftreff punkt wind ist aus entgegengesetzer richtung, wie normale wegschaut.
-    float windSpeed = flow.Size();
+    float windSpeedCms = flow.Size();
+
+
 
     FVector flowDir = flow.GetSafeNormal();
 
@@ -100,7 +102,7 @@ FVector AeroMeshData::forceFrom(FVector &windDirectionAndScaledSpeed){
         int v1 = triangles[i - 1];
         int v2 = triangles[i];
 
-        totalForce += forceVector(flowDir, v0, v1, v2, windSpeed);
+        totalForce += forceVector(flowDir, v0, v1, v2, windSpeedCms);
     }
 
     return totalForce;
@@ -144,8 +146,9 @@ FVector AeroMeshData::forceVector(
     FVector dragDir = flowDir;
 
     //pressure = 1/2 * air * v^2 nach bernoullie bro
-    float airDensity = 1.225f; //Standard wert auf meeres höhe
-    float q_pressure = 0.5f * airDensity * windSpeed * windSpeed;
+    float airDensityKGM3 = 1.225f; //Standard wert auf meeres höhe
+    float airDensityCM3 = airDensityKGM3 / (100 * 100 * 100);//von SI-Meter zu CM
+    float q_pressure = 0.5f * airDensityCM3 * windSpeed * windSpeed;
 
     
     //für pressure notwendig weil wenn = 0: kein pressure,
@@ -229,6 +232,8 @@ FVector AeroMeshData::torqueVector(
         //M = r x F ----> r vector kann auch in tabelle gespeichert werden
         FVector centerOfMassToHittedPoint = centerOfTriangle - centerOfMass; // AB = B - A
         FVector torque = FVector::CrossProduct(centerOfMassToHittedPoint, force);
+
+        return torque;
     }
     return FVector(0, 0, 0);
 }
