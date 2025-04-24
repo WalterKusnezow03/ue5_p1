@@ -6,6 +6,7 @@
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/DebugHelper.h"
 #include "p2/meshgen/MeshData/aeroDynamic/AeroMeshData.h"
+#include "p2/entityManager/referenceManager.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 
 
@@ -86,6 +87,11 @@ void AAeroActor::initMesh(){
     meshDataMain.appendEfficent(v2, v6, v7);
     meshDataMain.appendEfficent(v3, v6, v2);
     meshDataMain.appendEfficent(v3, v5, v6);
+
+    //make wider
+    MMatrix wider;
+    wider.scale(1.0f, 2.0f, 1.0f);
+    meshDataMain.transformAllVertecies(wider);
 
 
     //for no reason the whole mesh is flipped.
@@ -189,14 +195,26 @@ std::map<AeroMeshData*, UProceduralMeshComponent*> AAeroActor::allMeshDataHaving
     return output;
 }
 
-
+/**
+ * TODO: Forward acceleration to remove drag! 
+ */
 
 
 void AAeroActor::Tick(float DeltaTime){
     //Super::Tick(deltaTime);
 
     //debug
-    DeltaTime *= 0.1f;
+    //DeltaTime *= 0.1f;
+    
+    //debugplayer
+    if(true){
+        if(referenceManager *r = referenceManager::instance()){
+            AplayerScript *player = r->getPlayerPointer();
+            if(player){
+                player->SetActorLocation(GetActorLocation());
+            }
+        }
+    }
     
 
     //todo: überlegen wie man wing mesh aufbaut und testet!
@@ -206,8 +224,8 @@ void AAeroActor::Tick(float DeltaTime){
     //und an objekt bewegung anhängt!
     //F = mass * acceleration
     //F ist bestimmt aus meshdata
-    int meters = -100;
-    FVector windVectorWorld(100 * meters, 0, 0); //world space
+    int onemeter = 100;
+    FVector windVectorWorld(-500 * onemeter, 0, -10); //world space
     //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
 
@@ -244,7 +262,7 @@ void AAeroActor::Tick(float DeltaTime){
     processAeroForceAcceleration(forceOnMesh, DeltaTime);
     
     //erstmal ausblenden
-    processTroqueAcceleration(torque_momentum, DeltaTime);
+    //processTroqueAcceleration(torque_momentum, DeltaTime);
 }
 
 
@@ -259,48 +277,66 @@ void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaT
     x(t) = x0 + v0*t + 1/2*(gravity + a)*t^2
 
     */
-   float massInCubicCentimersOnOneMeter = weightPerCubicMeterInCentiMeter();
-   FVector accelerationFromForce = forceOnMesh / massInCubicCentimersOnOneMeter;
 
-   FVector gravity(0, 0, -980);
-   FVector x0 = GetActorLocation();
-   FVector v0 = linearVelocity * DeltaTime;
-   FVector a = gravity + accelerationFromForce;
 
-   //update v(t) = v0 + at
-   linearVelocity += a * DeltaTime;
+    //test
+    FVector forceInMeter = forceOnMesh / 100.0f;
 
-   //build new x(t)
-   FVector xt = x0 + v0 * DeltaTime + 0.5f * a * DeltaTime * DeltaTime;
+    float mass = MassInKgTotal();
+    FVector accelerationFromForceInMeter = forceInMeter / mass;
+    FVector accelerationFromForce = accelerationFromForceInMeter * 100.0f;
 
-   //debug
-   xt.Z = std::max(xt.Z, 0.0);
 
-   SetActorLocation(xt);
+    FVector gravity(0, 0, -980);
+    FVector x0 = GetActorLocation();
+    if(x0.Z <= 0.0f){
+        return;
+    }
+
+    FVector v0 = linearVelocity * DeltaTime;
+    FVector a = gravity + accelerationFromForce;
+
+    //update v(t) = v0 + at
+    linearVelocity += a * DeltaTime;
+
+    //build new x(t) = x0 + v0*t + 1/2*a*t^2
+    FVector xt = x0 + v0 * DeltaTime + 0.5f * a * DeltaTime * DeltaTime;
+
+    //debug
+    xt.Z = std::max(xt.Z, 0.0);
+
+    SetActorLocation(xt);
 }
 
 
-int AAeroActor::weightPerCubicMeterInCentiMeter(){
-    int weightKg = 100;
-    int weightCms = 100 * 100 * weightKg;
-    return weightCms;
+float AAeroActor::MassInKgTotal(){
+    
+    /*
+    F = m * a    mit F in m = m in kg * a in m
+    F in cm = m in gramm * (cm/100)
+    */
+    float oneKg = 1000.0f; //gramm
+    float kg = 500;
+    return oneKg * kg;
 }
 
 
 void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
-    int weightCms = weightPerCubicMeterInCentiMeter();
+    float mass = MassInKgTotal();
+    FVector torqueMomentumInM = torque / 100.0f;
 
     // Diagonale des Inertia-Tensors -- soll noch 3x3 matrix sein!
-    FVector inertia(weightCms, weightCms, weightCms); 
+    FVector inertia(mass, mass, mass); 
 
     // 1. Berechne Winkelbeschleunigung (α = τ / I)
-    FVector angularAcceleration = torque / inertia;
+    FVector angularAccelerationInM = torqueMomentumInM / inertia;
+    FVector angularAcceleration = angularAccelerationInM * 100.0f;
 
     // 2. Integriere Winkelgeschwindigkeit
     angularVelocity += angularAcceleration * DeltaTime;
 
     // 3. Dämpfung (sonst dreht sich alles für immer)
-    float angularDamping = 0.98f;
+    float angularDamping = 0.9f;
     angularVelocity *= angularDamping;
 
     FVector deltaRotationRad = angularVelocity * DeltaTime;

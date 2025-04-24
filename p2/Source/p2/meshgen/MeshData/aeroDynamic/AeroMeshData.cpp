@@ -146,7 +146,7 @@ FVector AeroMeshData::forceVector(
     FVector dragDir = flowDir;
 
     //pressure = 1/2 * air * v^2 nach bernoullie bro
-    float airDensityKGM3 = 1.225f; //Standard wert auf meeres höhe
+    float airDensityKGM3 = 1.225f; //Standard wert auf meeres höhe in kubik METER
     float airDensityCM3 = airDensityKGM3 / (100 * 100 * 100);//von SI-Meter zu CM
     float q_pressure = 0.5f * airDensityCM3 * windSpeed * windSpeed;
 
