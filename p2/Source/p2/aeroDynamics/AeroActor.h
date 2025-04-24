@@ -47,6 +47,13 @@ private:
         FVector &dirWorldSpace
     );
 
+    FVector transformVektorToWorldSpace(FVector &dirLocalSpace);
+    FVector transformVektorToWorldSpace(
+        UProceduralMeshComponent *component,
+        FVector &dirLocalSpace
+    );
+
+
     void drawForce(FVector &force, float deltatime);
 
     FMatrix actorRotationMatrix();

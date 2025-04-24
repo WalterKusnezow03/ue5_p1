@@ -161,7 +161,7 @@ void AAeroActor::initMesh(){
         );  
     }
 
-
+    SetActorRotation(FRotator(0,0,20));
 
 
     //ReloadMeshAndApplyAllMaterials(); // super
@@ -228,6 +228,7 @@ void AAeroActor::Tick(float DeltaTime){
 
 
     FVector forceOnMesh;
+    FVector forceOnMeshWorld;
 
     std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshes = allMeshDataHavingForce();
     for (auto &pair : allMeshes){
@@ -243,17 +244,24 @@ void AAeroActor::Tick(float DeltaTime){
 
             FVector currentForce = currentMesh->forceFrom(windrelative);
             forceOnMesh += currentForce; //Sum as expected
+
+            //world space (sum)
+            forceOnMeshWorld += transformVektorToWorldSpace(meshComponent, currentForce);
+
         }
     }
+
+    
     //forward force
-    forceOnMesh += thrustForce();
+    forceOnMeshWorld += thrustForce();
+
+
 
     //FIND TORQUE / MOMENTUM
     FVector torque_momentum;
     for (auto &pair : allMeshes){
         AeroMeshData *currentMesh = pair.first;
-        UProceduralMeshComponent *meshComponent = pair.second;
-        if (currentMesh && meshComponent)
+        if (currentMesh)
         {
             /**
              * CAUTION //might pass actor center of mass!
@@ -264,10 +272,10 @@ void AAeroActor::Tick(float DeltaTime){
     }
 
     // DebugHelper::logMessage("totalForce", forceOnMesh); //has values
-    drawForce(forceOnMesh, DeltaTime); 
+    drawForce(forceOnMeshWorld, DeltaTime); 
 
     //process
-    processAeroForceAcceleration(forceOnMesh, DeltaTime);
+    processAeroForceAcceleration(forceOnMeshWorld, DeltaTime);
     
     //erstmal ausblenden
     //processTroqueAcceleration(torque_momentum, DeltaTime);
@@ -356,20 +364,34 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
     FVector torqueMomentumInM = torque / 100.0f;
 
     // Diagonale des Inertia-Tensors -- soll noch 3x3 matrix sein!
-    FVector inertia(mass, mass, mass); 
+    //FVector inertia(mass * 0.1f, mass, mass * 0.1f); 
+    // Realistisches Inertia
+    FVector size = FVector(300,600,100) / 100.0f; // in Meter
+    float w = size.Y;
+    float h = size.Z;
+    float l = size.X;
+    FVector inertia(
+        (1.0f / 12.0f) * mass * (h * h + w * w),
+        (1.0f / 12.0f) * mass * (l * l + h * h),
+        (1.0f / 12.0f) * mass * (l * l + w * w)
+    );
 
-    // 1. Berechne Winkelbeschleunigung (α = τ / I)
+    // 1.Berechne Winkelbeschleunigung (α = τ / I)
     FVector angularAccelerationInM = torqueMomentumInM / inertia;
     FVector angularAcceleration = angularAccelerationInM * 100.0f;
 
-    // 2. Integriere Winkelgeschwindigkeit
-    angularVelocity += angularAcceleration * DeltaTime;
-
-    // 3. Dämpfung (sonst dreht sich alles für immer)
-    float angularDamping = 0.9f;
-    angularVelocity *= angularDamping;
+    //2.Integral der accelration zu velocity
+    float scaleDown = 0.00000001f;
+    angularVelocity += angularAcceleration * scaleDown * DeltaTime;
 
     FVector deltaRotationRad = angularVelocity * DeltaTime;
+
+    FQuat deltaQuat = FQuat::MakeFromEuler(FMath::RadiansToDegrees(deltaRotationRad));
+    FQuat currentQuat = GetActorQuat();
+    FQuat newQuat = (deltaQuat * currentQuat).GetNormalized();
+    SetActorRotation(newQuat);
+
+    return;
 
     //das verstehe ich noch nicht
     FRotator deltaRotator = FRotator::MakeFromEuler(FMath::RadiansToDegrees(deltaRotationRad));
@@ -421,6 +443,31 @@ FVector AAeroActor::transformVektorToLocalSpace(
     }
     return dirActorSpace;
 }
+
+
+
+
+
+FVector AAeroActor::transformVektorToWorldSpace(
+    UProceduralMeshComponent *component,
+    FVector &dirLocalSpace
+){
+    FVector dirWorldSpace = transformVektorToWorldSpace(dirLocalSpace);
+    if(component){
+        FRotator rotation = component->GetComponentRotation();
+        FMatrix rotationMatrix = FRotationMatrix(rotation);
+        FVector output = rotationMatrix.TransformVector(dirWorldSpace);
+        return output;
+    }
+    return dirWorldSpace;
+}
+
+FVector AAeroActor::transformVektorToWorldSpace(FVector &dirLocalSpace){
+    FMatrix rotationMatrix = actorRotationMatrix();
+    FVector output = rotationMatrix.TransformVector(dirLocalSpace);
+    return output;
+}
+
 
 
 
