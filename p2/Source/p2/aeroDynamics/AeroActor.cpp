@@ -195,9 +195,7 @@ std::map<AeroMeshData*, UProceduralMeshComponent*> AAeroActor::allMeshDataHaving
     return output;
 }
 
-/**
- * TODO: Forward acceleration to remove drag! 
- */
+
 
 
 void AAeroActor::Tick(float DeltaTime){
@@ -225,12 +223,12 @@ void AAeroActor::Tick(float DeltaTime){
     //F = mass * acceleration
     //F ist bestimmt aus meshdata
     int onemeter = 100;
-    FVector windVectorWorld(-500 * onemeter, 0, -10); //world space
+    FVector windVectorWorld(-1000 * onemeter, 0, -10); //world space
     //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
 
     FVector forceOnMesh;
-    FVector torque_momentum;
+
     std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshes = allMeshDataHavingForce();
     for (auto &pair : allMeshes){
         AeroMeshData *currentMesh = pair.first;
@@ -244,13 +242,23 @@ void AAeroActor::Tick(float DeltaTime){
             );
 
             FVector currentForce = currentMesh->forceFrom(windrelative);
+            forceOnMesh += currentForce; //Sum as expected
+        }
+    }
+    //forward force
+    forceOnMesh += thrustForce();
 
+    //FIND TORQUE / MOMENTUM
+    FVector torque_momentum;
+    for (auto &pair : allMeshes){
+        AeroMeshData *currentMesh = pair.first;
+        UProceduralMeshComponent *meshComponent = pair.second;
+        if (currentMesh && meshComponent)
+        {
             /**
              * CAUTION //might pass actor center of mass!
              */
             FVector currentTorque = currentMesh->torqueVector(forceOnMesh);
-
-            forceOnMesh += currentForce; //Sum as expected
             torque_momentum += currentTorque; //might pass actor center of mass
         }
     }
@@ -320,6 +328,28 @@ float AAeroActor::MassInKgTotal(){
     return oneKg * kg;
 }
 
+/**
+ * TODO: Forward acceleration to remove drag! 
+ */
+
+/// @brief Thrust (forward) force in CM 
+FVector AAeroActor::thrustForce(){
+    //F = m * a
+    FVector forward(1,0,0);
+    FMatrix rot = actorRotationMatrix();
+    forward = rot.TransformVector(forward);
+
+
+    float accelerationMs = 400.0f;
+    FVector accelerationDirMs = forward * accelerationMs;
+    FVector FThrustM = MassInKgTotal() * accelerationDirMs; //F = m * a
+    FVector FThrustCm = FThrustM * 100.0f;
+
+    drawForce(FThrustCm, 1.0f); 
+    return FThrustCm;
+}
+
+
 
 void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
     float mass = MassInKgTotal();
@@ -356,12 +386,18 @@ FVector AAeroActor::transformVektorToLocalSpace(FVector &dirWorldSpace){
 
     FVector dirRelativeToVelocity = dirWorldSpace - linearVelocity; //AB = B - A
 
-    FRotator r = GetActorRotation();
-    FMatrix rotationMatrix = FRotationMatrix(r);
+   
+    FMatrix rotationMatrix = actorRotationMatrix();
     FMatrix InverseMatrix = rotationMatrix.GetTransposed(); //R^-1 = R^T
 
     FVector output = InverseMatrix.TransformVector(dirRelativeToVelocity);
     return output;
+}
+
+FMatrix AAeroActor::actorRotationMatrix(){
+    FRotator r = GetActorRotation();
+    FMatrix rotationMatrix = FRotationMatrix(r);
+    return rotationMatrix;
 }
 
 

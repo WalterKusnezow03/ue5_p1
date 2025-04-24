@@ -39,6 +39,7 @@ private:
     std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshDataHavingForce();
 
     float MassInKgTotal();
+    FVector thrustForce();
 
     FVector transformVektorToLocalSpace(FVector &dir);
     FVector transformVektorToLocalSpace(
@@ -47,4 +48,6 @@ private:
     );
 
     void drawForce(FVector &force, float deltatime);
+
+    FMatrix actorRotationMatrix();
 };
