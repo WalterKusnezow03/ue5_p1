@@ -2,6 +2,7 @@
 
 
 #include "p2/entities/customIk/animation/TargetInterpolator.h"
+#include "p2/DebugHelper.h"
 
 TargetInterpolator::TargetInterpolator()
 {

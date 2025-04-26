@@ -1,6 +1,8 @@
 
-#include "CoreMinimal.h"
 #include "AeroMeshData.h"
+
+#include "CoreMinimal.h"
+#include "p2/DebugHelper.h"
 
 
 
@@ -150,6 +152,9 @@ FVector AeroMeshData::forceVector(
     float airDensityCM3 = airDensityKGM3 / (100 * 100 * 100);//von SI-Meter zu CM
     float q_pressure = 0.5f * airDensityCM3 * windSpeed * windSpeed; //ekin = 0.5 m v^2
 
+    DebugHelper::showScreenMessage("air pressure ", q_pressure);
+
+
     
     //für pressure notwendig weil wenn = 0: kein pressure,
     //wenn = -1 full pressure, anhand normale und flow dir bestimmt, 
@@ -164,9 +169,13 @@ FVector AeroMeshData::forceVector(
 
     float sinAlpha = std::sin(angle); //umkehren der skalarprodukt logik
     float sin_a_pow2 = sinAlpha * sinAlpha;
-    float dragCoefficent = 0.1f + sin_a_pow2; // Beispiel Drag-Kurve (gucks in wolfram alpha an)
-    //drag peak bei alpha = 45 deg, 
-    //ansonsten gegen 0
+    
+    /*
+    idee: wenn skalarprodukt = 1, maximaler drag, flugzeug pendelt sich bei 390 kmh ein.
+    */
+    float dragCoefficent = std::cos(angle);
+
+
 
     FVector lift = liftDir * (liftCoefficent * q_pressure * areaOfTriangle); //lift force
     FVector drag = dragDir * (dragCoefficent * q_pressure * areaOfTriangle); //drag force

@@ -3,6 +3,7 @@
 #include "p2/EntityManager/EntityManager.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/ELod.h"
+#include "p2/gamestart/assetManager.h"
 #include "DynamicRenderedObjectDebugger.h"
 
 

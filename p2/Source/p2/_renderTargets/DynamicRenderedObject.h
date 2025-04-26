@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/CanvasRenderTarget2D.h"
 
 /**
  * this object is designed to be owned by a parent object 

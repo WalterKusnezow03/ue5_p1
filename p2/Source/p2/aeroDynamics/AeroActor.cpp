@@ -223,12 +223,12 @@ void AAeroActor::Tick(float DeltaTime){
     //F = mass * acceleration
     //F ist bestimmt aus meshdata
     int onemeter = 100;
-    FVector windVectorWorld(-1000 * onemeter, 0, -10); //world space
+    FVector windVectorWorld(-300 * onemeter, 0, -10); //world space
     //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
 
-    FVector forceOnMesh;
-    FVector forceOnMeshWorld;
+    FVector forceOnMesh(0,0,0);
+    FVector forceOnMeshWorld(0,0,0);
 
     std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshes = allMeshDataHavingForce();
     for (auto &pair : allMeshes){
@@ -241,6 +241,10 @@ void AAeroActor::Tick(float DeltaTime){
                 meshComponent,
                 windVectorWorld // world space
             );
+
+            float size = windrelative.Size();
+            DebugHelper::showScreenMessage("relative speed: ", size);
+
 
             FVector currentForce = currentMesh->forceFrom(windrelative);
             forceOnMesh += currentForce; //Sum as expected
@@ -305,12 +309,10 @@ void AAeroActor::processAeroForceAcceleration(FVector &forceOnMesh, float DeltaT
 
     FVector gravity(0, 0, -980);
     FVector x0 = GetActorLocation();
-    if(x0.Z <= 0.0f){
-        return;
-    }
 
     FVector v0 = linearVelocity * DeltaTime;
     FVector a = gravity + accelerationFromForce;
+
 
     //update v(t) = v0 + at
     linearVelocity += a * DeltaTime;
@@ -348,10 +350,14 @@ FVector AAeroActor::thrustForce(){
     forward = rot.TransformVector(forward);
 
 
-    float accelerationMs = 400.0f;
+    float accelerationMs = 400.0f; //4m/s
     FVector accelerationDirMs = forward * accelerationMs;
     FVector FThrustM = MassInKgTotal() * accelerationDirMs; //F = m * a
     FVector FThrustCm = FThrustM * 100.0f;
+
+    //
+
+
 
     drawForce(FThrustCm, 1.0f); 
     return FThrustCm;
