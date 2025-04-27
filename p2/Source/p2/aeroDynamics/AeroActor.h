@@ -28,9 +28,11 @@ protected:
 
 private:
     UProceduralMeshComponent *MeshBackWings = nullptr;
+    UProceduralMeshComponent *MeshTail = nullptr;
 
     AeroMeshData meshDataMain;
     AeroMeshData meshDataUpDownBackWings;
+    AeroMeshData meshDataTail;
 
     FVector linearVelocity;
     FVector angularVelocity;
@@ -40,9 +42,10 @@ private:
 
     float MassInKgTotal();
     FVector thrustForce();
+    FVector thrustForceLocal();
 
-    FVector transformVektorToLocalSpace(FVector &dir);
-    FVector transformVektorToLocalSpace(
+    FVector transformVektorToLocalSpaceAndSpeed(FVector &dir);
+    FVector transformVektorToLocalSpaceAndSpeed(
         UProceduralMeshComponent *component,
         FVector &dirWorldSpace
     );

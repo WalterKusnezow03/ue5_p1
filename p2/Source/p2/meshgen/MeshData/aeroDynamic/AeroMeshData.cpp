@@ -165,21 +165,17 @@ FVector AeroMeshData::forceVector(
 
     //lift kooeffizienten cappen bei 45 grad (2*alpha doppelt so schnell bei 90, sin(pi/2) = 1)
     //maximaler lift bei 45 grad, rest abwärts zu 0
-    float liftCoefficent = std::sin(2 * angle); // lift coefficent
-
-    float sinAlpha = std::sin(angle); //umkehren der skalarprodukt logik
-    float sin_a_pow2 = sinAlpha * sinAlpha;
-    
-    /*
-    idee: wenn skalarprodukt = 1, maximaler drag, flugzeug pendelt sich bei 390 kmh ein.
-    */
-    float dragCoefficent = std::cos(angle);
+    float liftCoefficent = LiftCoefficent(angle);//std::sin(2 * angle); // lift coefficent
+    float dragCoefficent = DragCoefficent(angle);
 
 
 
     FVector lift = liftDir * (liftCoefficent * q_pressure * areaOfTriangle); //lift force
     FVector drag = dragDir * (dragCoefficent * q_pressure * areaOfTriangle); //drag force
     FVector totalForce = lift + drag;
+
+    DebugHelper::showScreenMessage("lift ", lift);
+    DebugHelper::showScreenMessage("drag ", drag);
 
     return totalForce;
 }
@@ -201,13 +197,65 @@ float AeroMeshData::angleBetween(
 
 
 
+
+float AeroMeshData::LiftCoefficent(float angle){
+    //old
+    //lift kooeffizienten cappen bei 45 grad (2*alpha doppelt so schnell bei 90, sin(pi/2) = 1)
+    //maximaler lift bei 45 grad, rest abwärts zu 0
+    
+    //float liftCoefficent = std::sin(2 * angle); // lift coefficent
+    
+    
+    //new
+    const float MaxAngle = FMath::DegreesToRadians(15.0f); // Stall ab 15°
+    const float StallDropoffRate = 2.0f; // Wie schnell der Lift nach Stall abfällt
+    
+    if (FMath::Abs(angle) <= MaxAngle)
+    {
+        // Bis Stall linear steigen
+        return angle / MaxAngle;
+    }
+    else
+    {
+        // Nach Stall exponentiell oder linear sinken
+        float overshoot = FMath::Abs(angle) - MaxAngle;
+        return FMath::Clamp(1.0f - StallDropoffRate * overshoot, 0.0f, 1.0f);
+    }
+}
+
+
+float AeroMeshData::DragCoefficent(float angle){
+    //float sinAlpha = std::sin(angle); //umkehren der skalarprodukt logik
+    //float sin_a_pow2 = sinAlpha * sinAlpha;
+    
+    /*
+    idee: wenn skalarprodukt = 1, maximaler drag, flugzeug pendelt sich bei 390 kmh ein.
+    */
+    //float dragCoefficent = std::cos(std::abs(angle));
+
+
+    //angepasset funktion:
+    float degSlowDown = std::sin(M_PI / 6.0f); //45 grad bei pi / 4
+    float dragCoefficent = (std::cos(std::abs(angle)))- degSlowDown;
+
+
+    return dragCoefficent;
+}
+
+
+
+
+
+
+
 /**
  * -- dreh moment (torque extraction) --
  */
 FVector AeroMeshData::torqueVector(
-    FVector &force
+    FVector &force,
+    FVector &offsetFromAirPlaneCenter
 ){
-    FVector centerOfMass = center();
+    FVector centerOfMass = offsetFromAirPlaneCenter + center();
     FVector totalDrehMoment(0, 0, 0);
 
     // zu jedem auftreff punkt der kraft wird ein moment berechnet

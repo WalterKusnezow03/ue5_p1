@@ -35,7 +35,8 @@ public:
     //FVector forceFrom(FVector &windDir, float airDensity);
 
     FVector torqueVector(
-        FVector &force
+        FVector &force,
+		FVector &offsetFromAirPlaneCenter
     );
 
 protected:
@@ -68,6 +69,9 @@ protected:
         int v1,
         int v2
     );
+
+	float LiftCoefficent(float angle);
+	float DragCoefficent(float angle);
 
     virtual void removeVertex(int index, std::vector<int> &connectedvertecies) override;
 

@@ -52,6 +52,7 @@ void UCustomRenderedTexture::setupMaterial(){
         UMaterialInstanceDynamic *dynamicMaterialInstance = UMaterialInstanceDynamic::Create(base, this);
         if(dynamicMaterialInstance){
             dynamicMaterialInstance->SetTextureParameterValue("rendertexture", renderTarget);
+            //save pointer
             dynamicMaterial = dynamicMaterialInstance;
         }
     }

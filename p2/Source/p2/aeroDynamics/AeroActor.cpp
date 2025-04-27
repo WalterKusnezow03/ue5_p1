@@ -44,6 +44,9 @@ AAeroActor::AAeroActor() : AcustomMeshActorBase(){
     // Attach it to the RootComponent (Mesh) so it has the same transform
     MeshBackWings->SetupAttachment(RootComponent);
 
+    MeshTail = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("backtailMesh"));
+    MeshTail->SetupAttachment(RootComponent);
+
 }
 
 void AAeroActor::BeginPlay(){
@@ -51,6 +54,11 @@ void AAeroActor::BeginPlay(){
     initMesh();
 
     linearVelocity = FVector(100, 0, 0);
+
+
+    FRotator rotation;
+    rotation.Yaw = -20.0f;
+    //SetActorRotation(rotation);
 }
 
 void AAeroActor::initMesh(){
@@ -66,9 +74,9 @@ void AAeroActor::initMesh(){
 
     FVector v4(-100, 300, height);
 
-    FVector v5 = v3 + FVector(-30, 0, 0);
-    FVector v6 = v2 + FVector(-30, 0, 0);
-    FVector v7 = v4 + FVector(-30, 0, 0);
+    FVector v5 = v3 + FVector(-70, 0, 0);
+    FVector v6 = v2 + FVector(-70, 0, 0);
+    FVector v7 = v4 + FVector(-70, 0, 0);
     /*
     1->2
     |  |
@@ -79,6 +87,8 @@ void AAeroActor::initMesh(){
 		FVector &c
 	);
     */
+
+    //top
     meshDataMain.appendEfficent(v0, v2, v1);
     meshDataMain.appendEfficent(v0, v3, v2);
     meshDataMain.appendEfficent(v1, v2, v4);
@@ -88,9 +98,15 @@ void AAeroActor::initMesh(){
     meshDataMain.appendEfficent(v3, v6, v2);
     meshDataMain.appendEfficent(v3, v5, v6);
 
+    //close bottom
+    meshDataMain.appendEfficent(v0, v1, v6);
+    meshDataMain.appendEfficent(v0, v6, v5);
+    meshDataMain.appendEfficent(v1, v7, v6);
+
+
     //make wider
     MMatrix wider;
-    wider.scale(1.0f, 2.0f, 1.0f);
+    wider.scale(1.0f, 1.5f, 1.0f);
     meshDataMain.transformAllVertecies(wider);
 
 
@@ -99,7 +115,7 @@ void AAeroActor::initMesh(){
     MMatrix flip;
     flip.scale(1.0f, -1.0f, 1.0f);
     wingLeft.transformAllVertecies(flip);
-    wingLeft.flipAllTriangles();
+    wingLeft.flipAllTriangles(); //after flip the winding order is wrong!
     meshDataMain.append(wingLeft);
 
     
@@ -107,23 +123,40 @@ void AAeroActor::initMesh(){
 
     //setup mesh data for up and down wings
     //meshDataUpDownBackWings
-    meshDataUpDownBackWings = meshDataMain; //copy doesnt work ?
-
-
-
-    FVector moveBackAndUp(-100, 0, 50);
+    meshDataUpDownBackWings = meshDataMain; //copy backwings but smaller
     MMatrix scaleDown;
     scaleDown.scale(0.5f, 0.5f, 1.0f);
     meshDataUpDownBackWings.transformAllVertecies(scaleDown);
+
+    FVector moveBackAndUp(-500, 0, 100);
     if(MeshBackWings){
         MeshBackWings->SetRelativeLocation(moveBackAndUp);
     }
+    if(MeshTail){
+        MeshTail->SetRelativeLocation(moveBackAndUp);
+    }
+
+
+    //setup tail mesh
+    FVector tailv0(0,0,0);
+    FVector tailv1(-100,20,0);
+    FVector tailv2(-100,0,100);
+    FVector tailv3(-100,0,0);
+    meshDataTail.appendEfficent(tailv0, tailv2, tailv1); //aussen dreieck
+    meshDataTail.appendEfficent(tailv1, tailv2, tailv3); //hinten dreieck
+
+    AeroMeshData copyTail = meshDataTail;
+    copyTail.transformAllVertecies(flip); //flip along y axis
+    copyTail.flipAllTriangles(); //after flip the winding order is wrong!
+    meshDataTail.append(copyTail);
+
     
 
 
 
     meshDataMain.calculateNormals();
     meshDataUpDownBackWings.calculateNormals();
+    meshDataTail.calculateNormals();
 
     //update mesh main (wings)
     if(Mesh){
@@ -161,8 +194,24 @@ void AAeroActor::initMesh(){
         );  
     }
 
-    SetActorRotation(FRotator(0,0,20));
 
+    //tail
+    if(MeshTail){
+        int layer = 0;
+        bool enableCollision = true;
+        updateMesh(
+            *MeshTail,
+            meshDataTail, // MeshData & otherMesh,
+            layer,
+            enableCollision
+        );
+
+        ApplyMaterial(
+            MeshTail,
+            wingMaterialPointer(),
+            layer
+        );  
+    }
 
     //ReloadMeshAndApplyAllMaterials(); // super
 }
@@ -191,6 +240,7 @@ std::map<AeroMeshData*, UProceduralMeshComponent*> AAeroActor::allMeshDataHaving
 
     output[&meshDataMain] = Mesh;
     output[&meshDataUpDownBackWings] = MeshBackWings;
+    output[&meshDataTail] = MeshTail;
     
     return output;
 }
@@ -209,9 +259,12 @@ void AAeroActor::Tick(float DeltaTime){
         if(referenceManager *r = referenceManager::instance()){
             AplayerScript *player = r->getPlayerPointer();
             if(player){
-                player->SetActorLocation(GetActorLocation());
+                FVector offsetLocation = GetActorLocation() + FVector(0,0,100);
+                player->SetActorLocation(offsetLocation);
             }
         }
+    }else{
+        DeltaTime *= 0.001f;
     }
     
 
@@ -237,7 +290,7 @@ void AAeroActor::Tick(float DeltaTime){
         if (currentMesh && meshComponent)
         {
 
-            FVector windrelative = transformVektorToLocalSpace(
+            FVector windrelative = transformVektorToLocalSpaceAndSpeed(
                 meshComponent,
                 windVectorWorld // world space
             );
@@ -255,22 +308,23 @@ void AAeroActor::Tick(float DeltaTime){
         }
     }
 
-    
-    //forward force
-    forceOnMeshWorld += thrustForce();
-
 
 
     //FIND TORQUE / MOMENTUM
     FVector torque_momentum;
     for (auto &pair : allMeshes){
         AeroMeshData *currentMesh = pair.first;
-        if (currentMesh)
+        UProceduralMeshComponent *meshComponent = pair.second;
+        if (currentMesh && meshComponent)
         {
             /**
              * CAUTION //might pass actor center of mass!
              */
-            FVector currentTorque = currentMesh->torqueVector(forceOnMesh);
+            FVector relativeLocationToAirplanePivot = meshComponent->GetRelativeLocation();
+            FVector currentTorque = currentMesh->torqueVector(
+                forceOnMesh,
+                relativeLocationToAirplanePivot
+            );
             torque_momentum += currentTorque; //might pass actor center of mass
         }
     }
@@ -278,11 +332,14 @@ void AAeroActor::Tick(float DeltaTime){
     // DebugHelper::logMessage("totalForce", forceOnMesh); //has values
     drawForce(forceOnMeshWorld, DeltaTime); 
 
+    //forward force
+    forceOnMeshWorld += thrustForce();
+
     //process
     processAeroForceAcceleration(forceOnMeshWorld, DeltaTime);
     
     //erstmal ausblenden
-    //processTroqueAcceleration(torque_momentum, DeltaTime);
+    processTroqueAcceleration(torque_momentum, DeltaTime);
 }
 
 
@@ -332,10 +389,12 @@ float AAeroActor::MassInKgTotal(){
     /*
     F = m * a    mit F in m = m in kg * a in m
     F in cm = m in gramm * (cm/100)
-    */
+    
     float oneKg = 1000.0f; //gramm
-    float kg = 500;
-    return oneKg * kg;
+    float kg = 1000;
+    return oneKg * kg;*/
+
+    return 10000.0f;
 }
 
 /**
@@ -355,9 +414,19 @@ FVector AAeroActor::thrustForce(){
     FVector FThrustM = MassInKgTotal() * accelerationDirMs; //F = m * a
     FVector FThrustCm = FThrustM * 100.0f;
 
-    //
+    //drawForce(FThrustCm, 1.0f); 
+    return FThrustCm;
+}
 
 
+FVector AAeroActor::thrustForceLocal(){
+    //F = m * a
+    FVector forward(1,0,0);
+    
+    float accelerationMs = 400.0f; //4m/s
+    FVector accelerationDirMs = forward * accelerationMs;
+    FVector FThrustM = MassInKgTotal() * accelerationDirMs; //F = m * a
+    FVector FThrustCm = FThrustM * 100.0f;
 
     drawForce(FThrustCm, 1.0f); 
     return FThrustCm;
@@ -369,48 +438,69 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
     float mass = MassInKgTotal();
     FVector torqueMomentumInM = torque / 100.0f;
 
-    // Diagonale des Inertia-Tensors -- soll noch 3x3 matrix sein!
-    //FVector inertia(mass * 0.1f, mass, mass * 0.1f); 
-    // Realistisches Inertia
-    FVector size = FVector(300,600,100) / 100.0f; // in Meter
-    float w = size.Y;
-    float h = size.Z;
-    float l = size.X;
-    FVector inertia(
-        (1.0f / 12.0f) * mass * (h * h + w * w),
-        (1.0f / 12.0f) * mass * (l * l + h * h),
-        (1.0f / 12.0f) * mass * (l * l + w * w)
-    );
+    // Interia Tensor
+    MMatrix interia;
+    interia.scale(mass * 0.1f, mass, mass * 0.1f);
+    MMatrix interiaInverse = interia.jordanInverse();
 
-    // 1.Berechne Winkelbeschleunigung (α = τ / I)
-    FVector angularAccelerationInM = torqueMomentumInM / inertia;
+    // 1.Berechne Winkelbeschleunigung (α = τ / I  <=> α = I^-1 * τ)
+    FVector angularAccelerationInM = interiaInverse * torqueMomentumInM;
     FVector angularAcceleration = angularAccelerationInM * 100.0f;
 
-    //2.Integral der accelration zu velocity
-    float scaleDown = 0.00000001f;
-    angularVelocity += angularAcceleration * scaleDown * DeltaTime;
 
-    FVector deltaRotationRad = angularVelocity * DeltaTime;
+    // **Dämpfungsmoment hinzufügen**
+    if(true){
+        const float DampingFactor = 10.0f; // Wert feinjustieren
+        FVector dampingTorque = -angularVelocity * DampingFactor;
+        FVector totalTorque = torque + dampingTorque;
+        totalTorque /= 100.0f;
 
-    FQuat deltaQuat = FQuat::MakeFromEuler(FMath::RadiansToDegrees(deltaRotationRad));
-    FQuat currentQuat = GetActorQuat();
-    FQuat newQuat = (deltaQuat * currentQuat).GetNormalized();
-    SetActorRotation(newQuat);
+        angularAccelerationInM = interiaInverse * totalTorque;
+        angularAcceleration = angularAccelerationInM * 100.0f;
 
-    return;
 
-    //das verstehe ich noch nicht
-    FRotator deltaRotator = FRotator::MakeFromEuler(FMath::RadiansToDegrees(deltaRotationRad));
-    FRotator currentRotation = GetActorRotation();
-    currentRotation = (currentRotation + deltaRotator).GetNormalized();
-    SetActorRotation(currentRotation);
+        //DEBUG
+        if(true){
+            angularAcceleration.Z = 0.0f;
 
+            angularAcceleration.X *= 0.000001f;
+        }
+
+
+        
+    }
+    
+
+
+
+
+
+    //2.Integration der acceleration
+    //limitiert durch grösse des vektors.
+
+    //angular velocity = rad / s
+    FVector integrateAcceleration = angularAcceleration * DeltaTime;
+    if(angularVelocity.Size() >= 0.1f)
+        integrateAcceleration *= 1.0f / angularVelocity.Size();
+    angularVelocity += integrateAcceleration * 0.00000000001f;
+
+    DebugHelper::showScreenMessage("angular velocity ",angularVelocity);
+
+    //3.Integration der velocity
+    FRotator x = GetActorRotation();
+    FRotator vt = FRotator::MakeFromEuler(FMath::RadiansToDegrees(angularVelocity * DeltaTime));
+    FRotator finalRotation = vt + x; //M = 
+    SetActorRotation(finalRotation);
+    
+    
 }
+
+
 
 /// @brief transforms a direction into actor rotation space
 /// @param dirWorldSpace 
 /// @return 
-FVector AAeroActor::transformVektorToLocalSpace(FVector &dirWorldSpace){
+FVector AAeroActor::transformVektorToLocalSpaceAndSpeed(FVector &dirWorldSpace){
 
     FVector dirRelativeToVelocity = dirWorldSpace - linearVelocity; //AB = B - A
 
@@ -434,11 +524,11 @@ FMatrix AAeroActor::actorRotationMatrix(){
 /// @param component component relative, own rotation if needed 
 /// @param dirWorldSpace world space vector
 /// @return transformed vecto in actor AND relative mesh rotation space
-FVector AAeroActor::transformVektorToLocalSpace(
+FVector AAeroActor::transformVektorToLocalSpaceAndSpeed(
     UProceduralMeshComponent *component,
     FVector &dirWorldSpace
 ){
-    FVector dirActorSpace = transformVektorToLocalSpace(dirWorldSpace);
+    FVector dirActorSpace = transformVektorToLocalSpaceAndSpeed(dirWorldSpace);
     if(component){
         FRotator rotation = component->GetComponentRotation();
         FMatrix rotationMatrix = FRotationMatrix(rotation);

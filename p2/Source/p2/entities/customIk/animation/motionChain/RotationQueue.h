@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entities/customIk/animation/TargetInterpolator.h"
+#include <map>
 #include "RotationStates.h"
 
 class P2_API RotationQueue {

@@ -161,18 +161,24 @@ FString DebugHelper::connect(int a, int b){
 }
 
 void DebugHelper::showScreenMessage(FVector vec){
-	FString sOut = TEXT("vector: ");
+	showScreenMessage("vector: ", vec);
+}
+
+void DebugHelper::showScreenMessage(FString sOut, FVector vec){
+	
 	FString xPart = FString::Printf(TEXT("%.2f"), vec.X);
 	FString yPart = FString::Printf(TEXT("%.2f"), vec.Y);
 	FString zPart = FString::Printf(TEXT("%.2f"), vec.Z);
 
-	sOut = sOut + TEXT("\n") +
-				   xPart + TEXT("\n") +
-				   yPart + TEXT("\n") +
-				   zPart + TEXT("\n");
+	sOut = sOut + TEXT("(") +
+				   xPart + TEXT("; ") +
+				   yPart + TEXT("; ") +
+				   zPart + TEXT(" )");
 
 	showScreenMessage(sOut, FColor::Purple);
 }
+
+
 
 
 /**

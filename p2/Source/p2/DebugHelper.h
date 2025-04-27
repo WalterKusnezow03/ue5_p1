@@ -27,6 +27,7 @@ public:
 	static void showScreenMessage(FString s, FVector a, FVector b, FColor color);
 	static void showScreenMessage(FString s, FVector2D a, FVector2D b, FColor color);
 	static void showScreenMessage(FVector vec);
+	static void showScreenMessage(FString s, FVector vec);
 
 	static void showScreenMessageCompare(FString message, FVector a, FVector b, float maxDistance);
 
