@@ -35,6 +35,10 @@ private:
 
     void updateMiniMapItems();
     void transformToPlayerSpace(TArray<FVector> &positions);
+    void transformToPlayerSpace(TArray<MMatrix> &positions);
+
     void transformToCanvasSpace(TArray<FVector> &position, FVector2D &canvasScale);
+    void transformToCanvasSpace(TArray<MMatrix> &positions, FVector2D &canvasScale);
+    
     float scaleToCanvasSpace(float xPos, float xCanvasScale, float mapsize);
 };

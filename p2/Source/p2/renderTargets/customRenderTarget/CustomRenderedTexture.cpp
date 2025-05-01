@@ -1,5 +1,6 @@
 #include "CustomRenderedTexture.h"
 #include "p2/gamestart/assetManager.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "Engine/Canvas.h"
 
 
@@ -76,6 +77,13 @@ void UCustomRenderedTexture::replaceMarkers(
     markerMap[etexture] = positions;
 }
 
+void UCustomRenderedTexture::replaceMarkers(
+    TArray<MMatrix> &positions, 
+    textureEnum etexture
+){
+    markerMapMatrix[etexture] = positions;
+}
+
 
 
 
@@ -113,7 +121,9 @@ void UCustomRenderedTexture::drawMarkers(
     UCanvas *canvas
 ){
     if(assetManager *manager = assetManager::instance()){
-        FVector2D scaleForMarker = scalePercent(2.0f);
+        FVector2D scaleForMarker = scalePercent(5.0f);
+        
+        //vector only based
         for(auto &pair : markerMap){
             textureEnum type = pair.first;
             UTexture2D *texture = manager->findTexture(type);
@@ -128,7 +138,24 @@ void UCustomRenderedTexture::drawMarkers(
                     );
                 }
             }
-            
+        }  
+
+        
+        //matrix based
+        for(auto &pair : markerMapMatrix){
+            textureEnum type = pair.first;
+            UTexture2D *texture = manager->findTexture(type);
+            if(texture){
+                TArray<MMatrix> &positions = pair.second;
+                for(int i = 0; i < positions.Num(); i++){
+                    drawImage(
+                        canvas, 
+                        texture,
+                        positions[i],
+                        scaleForMarker
+                    );
+                }
+            }
         }   
     }
 
@@ -184,4 +211,72 @@ void UCustomRenderedTexture::drawImage(
 
     }
    
+}
+
+
+
+
+
+
+/*
+----- rotated section -----
+*/
+void UCustomRenderedTexture::drawImage(
+    UCanvas *canvas,
+    UTexture2D* texture,
+    MMatrix &transform,
+    FVector2D &scale
+){
+    FRotator rotation = transform.extractRotator();
+    rotation.Pitch = 0.0f;
+    rotation.Roll = 0.0f;
+    FVector pos3D = transform.getTranslation();
+    FVector2D pos(pos3D.X, pos3D.Y);
+
+    drawImage(
+        canvas,
+        texture,
+        pos,
+        scale,
+        rotation
+    );
+}
+
+
+
+void UCustomRenderedTexture::drawImage(
+    UCanvas *canvas,
+    UTexture2D* texture,
+    FVector2D &pos,
+    FVector2D &scale,
+    FRotator &rotation
+){
+    if(canvas && texture){
+        
+        float rad = MMatrix::degToRadian(rotation.Yaw);
+        canvas->K2_DrawTexture ( 
+            texture,
+            pos,
+            scale,
+            FVector2D(0,0),
+            FVector2D(1,1),
+            FLinearColor::White,
+            EBlendMode::BLEND_Translucent,
+            rotation.Yaw,
+            FVector2D(0.5, 0.5) //pivot
+        );
+
+
+
+
+
+        /*
+        FCanvasTileItem TileItem(pos, texture->GetResource(), scale, FLinearColor::White); 
+        TileItem.Rotation = rotation; //FRotator(0, angleRad, 0);
+        TileItem.PivotPoint = FVector2D(0.5f, 0.5f); // Dreht um Mittelpunkt
+        canvas->DrawItem(TileItem);
+        */
+    }
+
+
 }

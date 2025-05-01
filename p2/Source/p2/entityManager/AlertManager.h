@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
+#include "p2/entities/customIk/MMatrix.h"
 
 /**
  * 
  */
+
+
 class P2_API AlertManager
 {
 private:
@@ -27,6 +30,13 @@ public:
 		FVector &pos,
 		float radius,
 		TArray<FVector> &outputPositions
+	);
+
+	
+	static void EntitiesInRadiusAsTransform(
+		FVector &pos,
+		float radius,
+		TArray<MMatrix> &outputMatrices
 	);
 
 private:

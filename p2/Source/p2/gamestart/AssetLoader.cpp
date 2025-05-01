@@ -404,9 +404,9 @@ void AssetLoader::loadTextures(){
         );
 
         am->addTexture(
-            textureEnum::redEnemyIcon,
+            textureEnum::enemyMarkerIcon,
             AssetLoader::loadAsset<UTexture2D>(TEXT(
-                "Texture2D'/Game/Prefabs/icons/healthIcon.healthIcon'")
+                "Texture2D'/Game/Prefabs/icons/enemyMarkerIcon.enemyMarkerIcon'")
             )
         );
     }

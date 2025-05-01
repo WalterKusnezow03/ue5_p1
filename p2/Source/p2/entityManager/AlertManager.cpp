@@ -7,6 +7,7 @@
 #include "p2/interfaces/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "p2/entities/customIk/MMatrix.h"
 #include "p2/DebugHelper.h"
 
 std::vector<AEntityScript *> AlertManager::subscribedToAlert;
@@ -248,6 +249,31 @@ void AlertManager::EntitiesInRadius(
             float distance = FVector::Dist(comparePos, pos);
             if(distance < radius){
                 outputPositions.Add(comparePos);
+            }
+        }
+    }
+}
+
+
+void AlertManager::EntitiesInRadiusAsTransform(
+    FVector &pos,
+    float radius,
+    TArray<MMatrix> &outputMatrices
+){
+    for(int i = 0; i < subscribedToAlert.size(); i++){
+        AEntityScript *ptr = subscribedToAlert[i];
+        if(ptr != nullptr){
+            FVector comparePos = ptr->GetActorLocation();
+            float distance = FVector::Dist(comparePos, pos);
+            if(distance < radius){
+                FRotator rot = ptr->GetActorRotation();
+                
+                MMatrix r(rot);
+                MMatrix t(comparePos);
+                
+                MMatrix mat = t * r;//M = T * R
+                
+                outputMatrices.Add(mat);
             }
         }
     }

@@ -7,6 +7,8 @@
 
 #include "CustomRenderedTexture.generated.h"
 
+class MMatrix;
+
 UCLASS()
 class P2_API UCustomRenderedTexture : public UObject{
 
@@ -27,6 +29,7 @@ public:
     FVector2D canvasScale();
 
     void replaceMarkers(TArray<FVector> &positions, textureEnum etexture);
+    void replaceMarkers(TArray<MMatrix> &positions, textureEnum etexture);
 
 private:
     void setupRenderTarget();
@@ -39,6 +42,7 @@ private:
     int resY = 4096; //4096
 
     std::map<textureEnum, TArray<FVector>> markerMap;
+    std::map<textureEnum, TArray<MMatrix>> markerMapMatrix;
 
     void drawMarkers(
         UCanvas *canvas
@@ -57,6 +61,21 @@ private:
         UTexture2D *texture,
         FVector2D &pos,
         FVector2D &scale
+    );
+
+    void drawImage(
+        UCanvas *canvas,
+        UTexture2D* texture,
+        MMatrix &transform,
+        FVector2D &scale
+    );
+
+    void drawImage(
+        UCanvas *canvas,
+        UTexture2D* texture,
+        FVector2D &pos,
+        FVector2D &scale,
+        FRotator &rotation
     );
 
     FVector2D scalePercent(float percent);

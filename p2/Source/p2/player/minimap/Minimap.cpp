@@ -69,9 +69,8 @@ void AMinimap::BeginPlay(){
 
 void AMinimap::initialRotationAndScale(){
     FRotator rotation;
-    //rotation.Pitch = 90.0f;
-    rotation.Yaw = 90.0f;
-    //Mesh->SetRelativeRotation(rotation);
+    rotation.Pitch = 90.0f;
+    //this->SetActorRotation(rotation);
 
     //relativ zu ein meter
     //FVector scale(0.1f, 0.1f, 1.0f);
@@ -115,7 +114,7 @@ void AMinimap::updatePlayerPositionAndRotation(FVector &pos, FRotator &rot){
     //M = T * R
     //M^-1 = R^-1 * T^-1
     MMatrix r(rot);
-    MMatrix t(pos);
+    MMatrix t(pos); 
     MMatrix tr = t * r;
     playerMatrixInverted = tr.createInverse();
     
@@ -126,8 +125,9 @@ void AMinimap::updateMiniMapItems(){
         return;
     }
 
-    TArray<FVector> worldSpacePositions;
-    AlertManager::EntitiesInRadius(
+    TArray<MMatrix> worldSpacePositions;
+    //AlertManager::EntitiesInRadius(
+    AlertManager::EntitiesInRadiusAsTransform(
 		playerPosition,
 		minimapRadius,
 		worldSpacePositions
@@ -141,7 +141,7 @@ void AMinimap::updateMiniMapItems(){
     //add to texture draw dots
     texture->replaceMarkers(
         worldSpacePositions, 
-        textureEnum::redEnemyIcon
+        textureEnum::enemyMarkerIcon
     );
 
 }
@@ -153,6 +153,14 @@ void AMinimap::transformToPlayerSpace(TArray<FVector> &positions){
 
         ref.Z = 0.0f;
         DebugHelper::showScreenMessage("entity relative pos", ref);
+    }
+}
+
+void AMinimap::transformToPlayerSpace(TArray<MMatrix> &positions){
+    for(int i = 0; i < positions.Num(); i++){
+        MMatrix &ref = positions[i];
+        ref = playerMatrixInverted * ref;
+        DebugHelper::showScreenMessage("entity relative pos", ref.getTranslation());
     }
 }
 
@@ -177,26 +185,36 @@ void AMinimap::transformToCanvasSpace(TArray<FVector> &positions, FVector2D &can
         current.X += scaleX / 2.0f;
         current.Y += scaleY / 2.0f;
 
-
-        //flip because (0,0) is at top left while should be at bottom right
-        /*
-        current.X = scaleX - current.X;
-        current.Y = scaleY - current.Y;
-        
-
-
-        float copy = current.Y;
-        current.Y = current.X;
-        current.X = copy;
-        */
-
     }
     
 }
 
 
 float AMinimap::scaleToCanvasSpace(float xPos, float xCanvasScale, float mapsize){
-    float normalized = xPos / mapsize; // 0–1
+    float normalized = xPos / mapsize; // skalar [0,1]
     return normalized * xCanvasScale; // auf canvas skaliert
+}
+
+
+
+
+
+
+void AMinimap::transformToCanvasSpace(TArray<MMatrix> &positions, FVector2D &canvasScale){
+    //pos * x = scale
+    //x = ?
+    //scale / pos = x
+    float scaleX = canvasScale.X;
+    float scaleY = canvasScale.Y;
+    for(int i = 0; i < positions.Num(); i++){
+        //move to local scale space
+        FVector current = positions[i].getTranslation();
+        current.X = scaleToCanvasSpace(current.X, scaleX, minimapRadius);
+        current.Y = scaleToCanvasSpace(current.Y, scaleY, minimapRadius);
+        current.X += scaleX / 2.0f;
+        current.Y += scaleY / 2.0f;
+        positions[i].setTranslation(current);
+    }
+    
 }
 
