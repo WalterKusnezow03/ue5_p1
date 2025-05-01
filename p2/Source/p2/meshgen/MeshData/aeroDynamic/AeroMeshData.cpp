@@ -84,6 +84,54 @@ AeroMeshData::~AeroMeshData(){
  * 
  */
 
+void AeroMeshData::forceAndTorqueFrom(
+    FVector &windDirectionScaled,
+    FVector &offsetFromAirPlaneCenter,
+    FVector &outForce,
+    FVector &outTorque
+){
+    FVector flow = windDirectionScaled * -1.0f; //auftreff punkt wind ist aus entgegengesetzer richtung, wie normale wegschaut.
+    float windSpeedCms = flow.Size();
+    FVector flowDir = flow.GetSafeNormal();
+
+
+
+    //FVector totalForce;
+    for (int i = 2; i < triangles.Num(); i += 3){
+        int v0 = triangles[i - 2];
+        int v1 = triangles[i - 1];
+        int v2 = triangles[i];
+        FVector currentForce = forceVector(flowDir, v0, v1, v2, windSpeedCms);
+        FVector currentTorque = torqueVector(
+            currentForce, 
+            offsetFromAirPlaneCenter,
+            v0,
+            v1,
+            v2
+        );
+        
+        outForce += currentForce;
+        outTorque += currentTorque;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * OLD
+ */
+
+
+
+
 /// @brief wind direction must be relative to the object AND its movement!
 /// @param windDirectionAndScaledSpeed 
 /// @return force in CM 
@@ -203,7 +251,8 @@ float AeroMeshData::LiftCoefficent(float angle){
     //lift kooeffizienten cappen bei 45 grad (2*alpha doppelt so schnell bei 90, sin(pi/2) = 1)
     //maximaler lift bei 45 grad, rest abwärts zu 0
     
-    //float liftCoefficent = std::sin(2 * angle); // lift coefficent
+    float liftCoefficent = std::sin(2 * angle); // lift coefficent
+    return liftCoefficent;
     
     
     //new
@@ -231,15 +280,21 @@ float AeroMeshData::DragCoefficent(float angle){
     /*
     idee: wenn skalarprodukt = 1, maximaler drag, flugzeug pendelt sich bei 390 kmh ein.
     */
-    //float dragCoefficent = std::cos(std::abs(angle));
+    if(true){
+        float dragCoefficent = std::cos(std::abs(angle));
+        return dragCoefficent;
+    }else{
+        //angepasset funktion:
+        float degSlowDown = std::sin(M_PI / 6.0f); //45 grad bei pi / 4
+        float dragCoefficent = (std::cos(std::abs(angle)))- degSlowDown;
 
 
-    //angepasset funktion:
-    float degSlowDown = std::sin(M_PI / 6.0f); //45 grad bei pi / 4
-    float dragCoefficent = (std::cos(std::abs(angle)))- degSlowDown;
+        return dragCoefficent;
+    }
+    
 
 
-    return dragCoefficent;
+    
 }
 
 
@@ -255,7 +310,6 @@ FVector AeroMeshData::torqueVector(
     FVector &force,
     FVector &offsetFromAirPlaneCenter
 ){
-    FVector centerOfMass = offsetFromAirPlaneCenter + center();
     FVector totalDrehMoment(0, 0, 0);
 
     // zu jedem auftreff punkt der kraft wird ein moment berechnet
@@ -266,7 +320,7 @@ FVector AeroMeshData::torqueVector(
         //der total dreh moment ist die summe aus allen momentums
         totalDrehMoment += torqueVector(
             force,
-            centerOfMass,
+            offsetFromAirPlaneCenter,
             triangles[i - 2],
             triangles[i - 1],
             triangles[i]
@@ -277,7 +331,7 @@ FVector AeroMeshData::torqueVector(
 
 FVector AeroMeshData::torqueVector(
     FVector &force,
-    FVector &centerOfMass,
+    FVector &relativeLocationMesh,
     int v0,
     int v1,
     int v2
@@ -288,7 +342,7 @@ FVector AeroMeshData::torqueVector(
 
         //M is torque momentum
         //M = r x F ----> r vector kann auch in tabelle gespeichert werden
-        FVector centerOfMassToHittedPoint = centerOfTriangle - centerOfMass; // AB = B - A
+        FVector centerOfMassToHittedPoint = relativeLocationMesh + centerOfTriangle; //verbidungs vektor zum vertex insgesamt
         FVector torque = FVector::CrossProduct(centerOfMassToHittedPoint, force);
 
         return torque;

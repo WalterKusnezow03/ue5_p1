@@ -18,6 +18,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "p2/ui/PlayerUi.h"
+#include "p2/player/minimap/Minimap.h"
 
 #include "playerScript.generated.h"
 
@@ -162,4 +163,10 @@ private:
 	void pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
 		Aweapon *weapon
 	);
+
+
+	//Minimap
+	AMinimap *minimap = nullptr;
+	void createMiniMap();
+	void TickMiniMap();
 };

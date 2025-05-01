@@ -230,3 +230,25 @@ float AlertManager::deltaTime(UWorld * world){
     }
     return 0.0f;
 }
+
+
+
+/**
+ * api for minimap
+ */
+void AlertManager::EntitiesInRadius(
+    FVector &pos,
+    float radius,
+    TArray<FVector> &outputPositions
+){
+    for(int i = 0; i < subscribedToAlert.size(); i++){
+        AEntityScript *ptr = subscribedToAlert[i];
+        if(ptr != nullptr){
+            FVector comparePos = ptr->GetActorLocation();
+            float distance = FVector::Dist(comparePos, pos);
+            if(distance < radius){
+                outputPositions.Add(comparePos);
+            }
+        }
+    }
+}

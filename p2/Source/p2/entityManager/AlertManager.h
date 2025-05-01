@@ -23,6 +23,12 @@ public:
 	static void subscribeToAlert(AEntityScript *pointer);
 	static void unSubscribeFromAlert(AEntityScript *pointer);
 
+	static void EntitiesInRadius(
+		FVector &pos,
+		float radius,
+		TArray<FVector> &outputPositions
+	);
+
 private:
 	static float deltaTime(UWorld *world);
 

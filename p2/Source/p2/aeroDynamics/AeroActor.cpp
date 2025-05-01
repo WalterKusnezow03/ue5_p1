@@ -255,7 +255,7 @@ void AAeroActor::Tick(float DeltaTime){
     //DeltaTime *= 0.1f;
     
     //debugplayer
-    if(true){
+    if(false){
         if(referenceManager *r = referenceManager::instance()){
             AplayerScript *player = r->getPlayerPointer();
             if(player){
@@ -280,6 +280,52 @@ void AAeroActor::Tick(float DeltaTime){
     //FVector forceOnMesh = meshDataMain.forceFrom(windVector);
 
 
+    ///----- NEW ------
+    FVector torque_momentum(0,0,0);
+    FVector forceOnMesh(0,0,0);
+    FVector forceOnMeshWorld(0,0,0);
+
+
+    std::map<AeroMeshData*, UProceduralMeshComponent*> allMeshes = allMeshDataHavingForce();
+    for (auto &pair : allMeshes){
+        AeroMeshData *currentMesh = pair.first;
+        UProceduralMeshComponent *meshComponent = pair.second;
+        if (currentMesh && meshComponent)
+        {
+
+            FVector windrelative = transformVektorToLocalSpaceAndSpeed(
+                meshComponent,
+                windVectorWorld // world space
+            );
+            FVector relativeLocationToAirplanePivot = meshComponent->GetRelativeLocation();
+
+
+            FVector currentForce(0,0,0);
+            FVector currentTorque(0,0,0);
+            currentMesh->forceAndTorqueFrom(
+                windrelative,
+                relativeLocationToAirplanePivot,
+                currentForce,
+                currentTorque
+            );
+            
+            torque_momentum += currentTorque;
+
+            forceOnMesh += currentForce; //Sum as expected
+
+            //world space (sum)
+            forceOnMeshWorld += transformVektorToWorldSpace(meshComponent, currentForce);
+
+        }
+    }
+
+    
+
+
+
+
+    //----- OLD ------
+    /*
     FVector forceOnMesh(0,0,0);
     FVector forceOnMeshWorld(0,0,0);
 
@@ -317,9 +363,9 @@ void AAeroActor::Tick(float DeltaTime){
         UProceduralMeshComponent *meshComponent = pair.second;
         if (currentMesh && meshComponent)
         {
-            /**
+            / **
              * CAUTION //might pass actor center of mass!
-             */
+             * /
             FVector relativeLocationToAirplanePivot = meshComponent->GetRelativeLocation();
             FVector currentTorque = currentMesh->torqueVector(
                 forceOnMesh,
@@ -327,7 +373,7 @@ void AAeroActor::Tick(float DeltaTime){
             );
             torque_momentum += currentTorque; //might pass actor center of mass
         }
-    }
+    }*/
 
     // DebugHelper::logMessage("totalForce", forceOnMesh); //has values
     drawForce(forceOnMeshWorld, DeltaTime); 
@@ -439,9 +485,13 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
     FVector torqueMomentumInM = torque / 100.0f;
 
     // Interia Tensor
-    MMatrix interia;
-    interia.scale(mass * 0.1f, mass, mass * 0.1f);
-    MMatrix interiaInverse = interia.jordanInverse();
+    MMatrix interiaInverse;
+    interiaInverse.scale(
+        1.0f / (mass * 0.1f), 
+        1.0f / (mass), 
+        1.0f / (mass * 0.1f)
+    );
+   
 
     // 1.Berechne Winkelbeschleunigung (α = τ / I  <=> α = I^-1 * τ)
     FVector angularAccelerationInM = interiaInverse * torqueMomentumInM;
@@ -460,7 +510,7 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
 
 
         //DEBUG
-        if(true){
+        if(false){
             angularAcceleration.Z = 0.0f;
 
             angularAcceleration.X *= 0.000001f;
@@ -479,10 +529,15 @@ void AAeroActor::processTroqueAcceleration(FVector &torque, float DeltaTime){
     //limitiert durch grösse des vektors.
 
     //angular velocity = rad / s
+
     FVector integrateAcceleration = angularAcceleration * DeltaTime;
-    if(angularVelocity.Size() >= 0.1f)
-        integrateAcceleration *= 1.0f / angularVelocity.Size();
-    angularVelocity += integrateAcceleration * 0.00000000001f;
+    angularVelocity += integrateAcceleration;
+    if(false){
+        if(angularVelocity.Size() >= 0.1f)
+            integrateAcceleration *= 1.0f / angularVelocity.Size();
+        angularVelocity += integrateAcceleration * 0.00000000001f;
+    }
+    
 
     DebugHelper::showScreenMessage("angular velocity ",angularVelocity);
 

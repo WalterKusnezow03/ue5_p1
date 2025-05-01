@@ -1,0 +1,64 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/CanvasRenderTarget2D.h"
+#include "p2/gameStart/assetEnums/textureEnum.h"
+#include <map>
+
+#include "CustomRenderedTexture.generated.h"
+
+UCLASS()
+class P2_API UCustomRenderedTexture : public UObject{
+
+    GENERATED_BODY()
+
+
+public:
+    static UCustomRenderedTexture* Construct(AActor *owner);
+
+
+    void Tick(float deltatime);
+
+    UFUNCTION()
+    virtual void CanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height);
+
+    UMaterialInterface *getMaterial();
+
+    FVector2D canvasScale();
+
+    void replaceMarkers(TArray<FVector> &positions, textureEnum etexture);
+
+private:
+    void setupRenderTarget();
+    void setupMaterial();
+    
+    UCanvasRenderTarget2D *renderTarget = nullptr;
+    UMaterialInterface* dynamicMaterial = nullptr;
+
+    int resX = 4096; //4096
+    int resY = 4096; //4096
+
+    std::map<textureEnum, TArray<FVector>> markerMap;
+
+    void drawMarkers(
+        UCanvas *canvas
+    );
+
+
+    void drawImage(
+        UCanvas *canvas,
+        UTexture2D *texture,
+        FVector &pos,
+        FVector2D &scale
+    );
+
+    void drawImage(
+        UCanvas *canvas,
+        UTexture2D *texture,
+        FVector2D &pos,
+        FVector2D &scale
+    );
+
+    FVector2D scalePercent(float percent);
+
+};

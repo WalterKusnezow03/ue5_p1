@@ -79,7 +79,6 @@ private:
 
 	static bool gamePausedFlag;
 
-	static void debugCreateCustomTextureMesh(UWorld *world);
 
 	static void createAeroActor(UWorld *world);
 };

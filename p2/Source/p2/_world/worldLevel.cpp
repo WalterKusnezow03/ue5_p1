@@ -22,7 +22,6 @@
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/_renderTargets/DynamicRenderedObjectDebugger.h"
 #include "p2/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
 #include "CoreMinimal.h"
@@ -120,11 +119,10 @@ void worldLevel::initWorld(UWorld *world){
 
     debugMatrix();
 
-    debugCreateCustomTextureMesh(world);
 
     DebugCreatedoor(world);
 
-   createAeroActor(world);
+    //createAeroActor(world);
 }
 
 /**
@@ -584,11 +582,6 @@ void worldLevel::setGamePaused(bool in){
 
 
 
-void worldLevel::debugCreateCustomTextureMesh(UWorld *world){
-    if(world != nullptr){
-        DynamicRenderedObjectDebugger::createDebugObject(world);
-    }
-}
 
 
 void worldLevel::DebugCreatedoor(UWorld *world){

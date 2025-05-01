@@ -20,6 +20,7 @@
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
+#include "p2/player/minimap/Minimap.h"
 
 #include "p2/ui/PlayerUi.h"
 
@@ -107,6 +108,7 @@ void AplayerScript::BeginPlay()
     }
 
     createUserInterface();
+    createMiniMap();
 }
 
 // Called to bind functionality to input
@@ -226,6 +228,7 @@ void AplayerScript::Tick(float DeltaTime)
     TickUpdateWingsuit(DeltaTime);
 
     updateUi();
+    TickMiniMap();
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -927,5 +930,23 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
         weapon->pickup(CameraComponent);
         boneController.dropWeapon(); //drop old weapon(?)
         boneController.attachCarriedItem(weapon);
+    }
+}
+
+/**
+ * player minimap
+ */
+
+void AplayerScript::createMiniMap(){
+    if(minimap == nullptr){
+        minimap = AMinimap::Construct(GetWorld(), this);
+    }
+}
+
+void AplayerScript::TickMiniMap(){
+    if(minimap){
+        FVector pos = GetActorLocation();
+        FRotator rot = GetActorRotation();
+        minimap->updatePlayerPositionAndRotation(pos, rot);
     }
 }

@@ -2,6 +2,7 @@
 
 
 #include "terrainHillSetup.h"
+#include "p2/util/FVectorUtil.h"
 
 terrainHillSetup::terrainHillSetup(int posX, int posY, int scaleX, int scaleY, int minHeightAdd, int maxHeightAdd)
 {

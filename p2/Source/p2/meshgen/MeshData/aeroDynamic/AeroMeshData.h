@@ -39,6 +39,16 @@ public:
 		FVector &offsetFromAirPlaneCenter
     );
 
+	//new
+	void forceAndTorqueFrom(
+		FVector &windDirectionScaled,
+		FVector &offsetFromAirPlaneCenter,
+		FVector &outForce,
+		FVector &outTorque
+	);
+
+
+
 protected:
 	FVector normalFor(int v0, int v1, int v2);
 	float areaOfTriangle(int v0, int v1, int v2);
