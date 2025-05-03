@@ -939,7 +939,7 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
 
 void AplayerScript::createMiniMap(){
     if(minimap == nullptr){
-        minimap = AMinimap::Construct(GetWorld(), this);
+        minimap = AMinimap::Construct(GetWorld(), this, CameraComponent);
     }
 }
 

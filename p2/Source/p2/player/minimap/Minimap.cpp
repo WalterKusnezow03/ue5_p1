@@ -6,7 +6,11 @@
 #include "p2/entities/customIk/MMatrix.h"
 
 
-AMinimap* AMinimap::Construct(UWorld *world, AActor *attachTo){
+AMinimap* AMinimap::Construct(
+    UWorld *world, 
+    AActor *attachTo,
+    UCameraComponent *cameraComponent
+){
     if(world != nullptr){
 
         UClass *toSpawn = AMinimap::StaticClass();
@@ -19,23 +23,129 @@ AMinimap* AMinimap::Construct(UWorld *world, AActor *attachTo){
             AMinimap *spawned = world->SpawnActor<AMinimap>(
                 toSpawn, 
                 location, 
-                FRotator::ZeroRotator, 
+                FRotator::ZeroRotator,
                 SpawnParams
             );
 
-            if(attachTo && spawned){
-                FVector relativeLocation(100,0,0);
-                //ChildActor->AttachToActor(ParentActor, FAttachmentTransformRules::KeepRelativeTransform);
-                spawned->AttachToActor(attachTo, FAttachmentTransformRules::KeepRelativeTransform);
-                spawned->SetActorRelativeLocation(relativeLocation);
+            if(spawned){
+                spawned->attachToBottomLeftCorner(cameraComponent);
             }
-            
 
+            
+        
             return spawned;
         }
     }
     return nullptr;
 }
+
+
+/// @brief attaches the minimap to the camera on the bottom right direction ray of the camera
+/// @param camera player camera
+void AMinimap::attachToBottomLeftCorner(UCameraComponent *camera){
+    if(camera){
+        /*
+        0 1
+        3 2
+        */
+        TArray<FVector> cornerDirections;
+        deprojectCamera(camera, cornerDirections);
+        if(cornerDirections.Num() >= 4){
+            float distance = 100.0f;
+            FVector cornerDirection = findDir(cornerDirections, -1.0f, -1.0f); //bottom left
+            attachTo(camera, cornerDirection, distance);
+        }
+    }
+}
+
+FVector AMinimap::findDir(TArray<FVector> &directions, float signY, float signZ){
+    bool signYFlag = signY < 0.0f;
+    bool signZFlag = signZ < 0.0f;
+    for(int i = 0; i < directions.Num(); i++){
+        FVector &current = directions[i];
+        bool signYCurrent = current.Y < 0.0f;
+        bool signZCurrent = current.Z < 0.0f;
+        if(signYCurrent == signYFlag && signZCurrent == signZFlag){
+            return current;
+        }
+    }
+    return FVector(0,0,0);
+}
+
+
+/// @brief finds the corner directions of the camera / viewport (rays vom viewport matrix)
+/// @param Camera 
+/// @param outCornerDirections 
+void AMinimap::deprojectCamera(
+    UCameraComponent *Camera,
+    TArray<FVector> &outCornerDirections
+){
+    APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+    if(!PC){
+        return;
+    }
+    int32 SizeX, SizeY;
+    PC->GetViewportSize(SizeX, SizeY);
+
+    DebugHelper::logMessage("ViewPort size", FVector(SizeX, SizeY,0));
+
+    FVector2D ScreenCorners[4] = {
+        FVector2D(0, SizeY),            
+        FVector2D(0, 0),                  
+        FVector2D(SizeX, 0),              
+        FVector2D(SizeX, SizeY)
+    };
+
+    for (int i = 0; i < 4; ++i)
+    {
+        FVector WorldOrigin, WorldDirection;
+        PC->DeprojectScreenPositionToWorld(ScreenCorners[i].X, ScreenCorners[i].Y, WorldOrigin, WorldDirection);
+        WorldDirection.X = std::abs(WorldDirection.X);
+        outCornerDirections.Add(WorldDirection);
+        DebugHelper::logMessage("corner dir: ", WorldDirection);
+    }
+}
+
+void AMinimap::attachTo(
+    UCameraComponent *camera,
+    FVector &cornerDirection,
+    float distance
+){
+    if(camera){
+        
+        //problem aktuell:pivot falsch gesetzt
+
+        //mesh pivot neu setzen
+        FVector offset;
+        if(Mesh){
+            DebugHelper::logMessage("Map RelativeLocation Before", Mesh->GetRelativeLocation());
+
+            float scaleInitial = 100.0f;
+            FVector dir;
+            dir.X = 0.0f;
+            dir.Y = cornerDirection.Y > 0.0f ? -1.0f : 1.0f;
+            dir.Z = cornerDirection.Z > 0.0f ? -1.0f : 1.0f;
+            dir *= (scaleInitial / 2.0f); //Half offset
+        
+            float scaleRelative = 0.2f;
+            offset = dir * scaleRelative; //this is correct dont touch
+            
+            DebugHelper::logMessage("Map Relative Location", offset);
+            Mesh->SetRelativeScale3D(FVector(scaleRelative));
+        }
+
+        this->AttachToComponent(camera, FAttachmentTransformRules::KeepRelativeTransform);
+        FVector gx = cornerDirection.GetSafeNormal() * distance;
+        gx += offset;
+
+        SetActorRelativeLocation(gx);
+        
+    }
+}
+
+
+
+
 
 
 AMinimap::AMinimap(){
@@ -52,7 +162,6 @@ AMinimap::AMinimap(){
     if (PlaneMeshAsset.Succeeded())
     {
         Mesh->SetStaticMesh(PlaneMeshAsset.Object);
-        DebugHelper::logMessage("loaded plane mesh");
     }
 
     // Turn off collision entirely
@@ -63,18 +172,16 @@ AMinimap::AMinimap(){
 
 void AMinimap::BeginPlay(){
     Super::BeginPlay();
-    initialRotationAndScale();
+    initialRotation();
     initTexture();
 }
 
-void AMinimap::initialRotationAndScale(){
+void AMinimap::initialRotation(){
     FRotator rotation;
+    rotation.Roll = 0.0f;
+    rotation.Yaw = 0.0f;
     rotation.Pitch = 90.0f;
-    //this->SetActorRotation(rotation);
-
-    //relativ zu ein meter
-    //FVector scale(0.1f, 0.1f, 1.0f);
-    //Mesh->SetRelativeScale3D(scale);
+    Mesh->SetRelativeRotation(rotation);
 }
 
 void AMinimap::initTexture(){
@@ -102,6 +209,17 @@ void AMinimap::Tick(float DeltaTime){
         texture->Tick(DeltaTime);
     }
 
+    //debug draw
+    if(false){
+        FVector location = GetActorLocation();
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            location,
+            location + FVector(100,0,0),
+            FColor::Green
+        );
+    }
+
 }
 
 
@@ -109,7 +227,10 @@ void AMinimap::updatePlayerPositionAndRotation(FVector &pos, FRotator &rot){
     playerPosition = pos;
     rot.Pitch = 0.0f;
     rot.Roll = 0.0f;
-    DebugHelper::showScreenMessage("player rotation yaw ", (float) rot.Yaw);
+    if(debugMessages){
+        DebugHelper::showScreenMessage("player rotation yaw ", (float) rot.Yaw);
+    }
+    
 
     //M = T * R
     //M^-1 = R^-1 * T^-1
@@ -152,7 +273,10 @@ void AMinimap::transformToPlayerSpace(TArray<FVector> &positions){
         ref = playerMatrixInverted * ref;
 
         ref.Z = 0.0f;
-        DebugHelper::showScreenMessage("entity relative pos", ref);
+        if(debugMessages){
+            DebugHelper::showScreenMessage("entity relative pos", ref);
+        }
+        
     }
 }
 
@@ -160,7 +284,10 @@ void AMinimap::transformToPlayerSpace(TArray<MMatrix> &positions){
     for(int i = 0; i < positions.Num(); i++){
         MMatrix &ref = positions[i];
         ref = playerMatrixInverted * ref;
-        DebugHelper::showScreenMessage("entity relative pos", ref.getTranslation());
+        if(debugMessages){
+            DebugHelper::showScreenMessage("entity relative pos", ref.getTranslation());
+        }
+        
     }
 }
 

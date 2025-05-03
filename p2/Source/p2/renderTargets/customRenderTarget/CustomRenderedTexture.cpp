@@ -95,16 +95,20 @@ void UCustomRenderedTexture::Tick(float deltatime){
     }
 }
 
-
+/// @brief callback function on tick 
+/// @param Canvas 
+/// @param Width 
+/// @param Height 
 void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height)
 {
 
     FLinearColor BackgroundColor = FLinearColor(1.0f,0.0f,0.0f,1.0f);
-    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(Width, Height), 10.0f, BackgroundColor);
+    float lineThickness = Width / 10.0f;
+    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(Width, Height), lineThickness, BackgroundColor);
 
     //debug
     BackgroundColor = FLinearColor(1.0f,1.0f,0.0f,1.0f);
-    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), 10.0f, BackgroundColor);
+    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), lineThickness, BackgroundColor);
    
 
     //draw markers
@@ -114,12 +118,18 @@ void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 He
     //draw center
     FVector2D center(Width / 2.0f, Height / 2.0f);
     FVector2D dir(50,50);
-    Canvas->K2_DrawBox(center, dir, 10.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
+    Canvas->K2_DrawBox(center, dir, lineThickness / 4.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
 }
 
+/// @brief draws all markers on this canvas
+/// @param canvas 
 void UCustomRenderedTexture::drawMarkers(
     UCanvas *canvas
 ){
+    if(!canvas){
+        return;
+    }
+    
     if(assetManager *manager = assetManager::instance()){
         FVector2D scaleForMarker = scalePercent(5.0f);
         
