@@ -107,6 +107,8 @@ private:
 	void drop();
 	void aim();
 
+	void TickWeaponSway();
+
 	void setHolding(bool h);
 	void shoot();
 	void leftMouseUp();

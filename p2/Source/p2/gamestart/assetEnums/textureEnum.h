@@ -7,5 +7,6 @@ enum class textureEnum
 {
     patroneIcon,
     healthIcon,
-    enemyMarkerIcon
+    enemyMarkerIcon,
+    playerMarkerIcon
 };

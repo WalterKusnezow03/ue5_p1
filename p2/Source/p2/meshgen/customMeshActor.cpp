@@ -375,7 +375,7 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
 
 void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
     
-    tree.generate(thisTerrainType); //this terrain type now available
+    tree.generate(thisTerrainType); 
     
     MeshData &currentTreeStemMesh = tree.meshDataStemByReference();
     MeshData &currentLeafMesh = tree.meshDataLeafByReference();

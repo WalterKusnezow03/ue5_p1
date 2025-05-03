@@ -220,7 +220,8 @@ void AplayerScript::Tick(float DeltaTime)
     worldLevel::Tick(DeltaTime);
 
     shoot(); //shoot the weapon if needed or release. Method handles both automatically
-    
+    TickWeaponSway();
+
     TickBoneController(DeltaTime);
     resetFlagsOnTick();
     //TickWingsuitTimer(DeltaTime);
@@ -229,6 +230,8 @@ void AplayerScript::Tick(float DeltaTime)
 
     updateUi();
     TickMiniMap();
+
+
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -565,7 +568,15 @@ teamEnum AplayerScript::getTeam(){
 }
 
 
-
+void AplayerScript::TickWeaponSway(){
+    if(isPaused){
+        return;
+    }
+    Aweapon *current = playerInventory.getItemPointer();
+    if(current != nullptr){
+        current->updateSwayEnabledStatus(isWalking);
+    }
+}
 
 
 

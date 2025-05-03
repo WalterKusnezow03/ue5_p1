@@ -30,6 +30,7 @@ public:
 
     void replaceMarkers(TArray<FVector> &positions, textureEnum etexture);
     void replaceMarkers(TArray<MMatrix> &positions, textureEnum etexture);
+ 
 
 private:
     void setupRenderTarget();

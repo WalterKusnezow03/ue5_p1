@@ -171,6 +171,7 @@ void AMinimap::BeginPlay(){
     Super::BeginPlay();
     initialRotation();
     initTexture();
+    addPlayerMarker();
 }
 
 void AMinimap::initialRotation(){
@@ -256,13 +257,35 @@ void AMinimap::updateMiniMapItems(){
     FVector2D canvasScale = texture->canvasScale();
     transformToCanvasSpace(worldSpacePositions, canvasScale);
 
-    //add to texture draw dots
+    //add to texture draw enemies
     texture->replaceMarkers(
-        worldSpacePositions, 
+        worldSpacePositions,//already local //replace by matrix
         textureEnum::enemyMarkerIcon
     );
+   
 
 }
+
+void AMinimap::addPlayerMarker(){
+    //replace player
+    if(texture){
+        FVector2D canvasScale = texture->canvasScale();
+        FVector2D playerLocationCenterOfCanvas = canvasScale / 2.0f;
+        FVector playerLocationCenterOfCanvas3D(
+            playerLocationCenterOfCanvas.X, 
+            playerLocationCenterOfCanvas.Y, 
+            0.0f
+        );
+        TArray<FVector> playerMarker = {playerLocationCenterOfCanvas3D};
+        texture->replaceMarkers(
+            playerMarker, //replace by matrix
+            textureEnum::playerMarkerIcon
+        );
+    }
+    
+}
+
+
 
 void AMinimap::transformToPlayerSpace(TArray<FVector> &positions){
     for(int i = 0; i < positions.Num(); i++){

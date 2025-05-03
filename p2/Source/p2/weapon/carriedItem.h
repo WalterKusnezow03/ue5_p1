@@ -76,6 +76,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void applyWeaponSway();
 
 	
 	virtual FVector actorAnimationOffsetLocal();
@@ -83,7 +84,7 @@ public:
 protected:
 	FVector actorAnimationOffsetTicked;
 	void updateAnimationOffset(FVector &other);
-
+	void addToAnimationOffset(FVector &other);
 
 	//sight offset for weapons
 	FVector verticalSightOffset;

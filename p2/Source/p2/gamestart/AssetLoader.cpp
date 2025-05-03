@@ -409,6 +409,14 @@ void AssetLoader::loadTextures(){
                 "Texture2D'/Game/Prefabs/icons/enemyMarkerIcon.enemyMarkerIcon'")
             )
         );
+
+        am->addTexture(
+            textureEnum::playerMarkerIcon,
+            AssetLoader::loadAsset<UTexture2D>(TEXT(
+                "Texture2D'/Game/Prefabs/icons/playerMarkerIcon.playerMarkerIcon'")
+            )
+        );
+
     }
 }
 

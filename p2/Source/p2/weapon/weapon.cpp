@@ -96,6 +96,8 @@ void Aweapon::BeginPlay()
 	setupVerschlussAnimation();
 
 
+	setupSwayAnimation();
+
 
 	bulletsInMag = getMagSize();
 }
@@ -111,6 +113,7 @@ void Aweapon::Tick(float DeltaTime)
 	//new
 	TickKickback(DeltaTime);
 	TickVerschlussKickBack(DeltaTime);
+	TickSway(DeltaTime);
 }
 
 
@@ -1157,6 +1160,59 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 		}
 	}
 }
+
+
+
+/**
+ * weapon sway
+ */
+
+void Aweapon::setupSwayAnimation(){
+	float timeForMotion = 0.5f;
+	swayInterpolator.setMotionTime(timeForMotion);
+	swayInterpolator.setHeightOfWave(5.0f, -1.0f);
+}
+
+void Aweapon::updateSwayEnabledStatus(bool flag){
+	if(isAiming) return;
+	if(abzugHinten) return;
+	
+	swayInterpolator.enableSwayFlag(flag);
+	/*
+	if(flag){
+		if(!swayEnabled){
+			swayEnabled = true;
+			stopSway = false;
+		}
+	}else{
+		if(!swayEnabled){
+			return;
+		}
+		stopSway = true;
+	}*/
+	
+}
+
+void Aweapon::TickSway(float deltatime){
+	if(isAiming) return;
+	if(abzugHinten) return;
+	//if(!swayEnabled) return;
+	
+	FVector interpolated = swayInterpolator.Tick(deltatime);
+	bool reached = swayInterpolator.reachedLoop();
+	/*
+	if(stopSway){
+		if(swayEnabled && reached){
+			swayEnabled = false;
+			stopSway = false;
+		}
+	}*/
+
+	//super
+	Super::addToAnimationOffset(interpolated);
+}
+
+
 
 
 

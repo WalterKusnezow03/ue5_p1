@@ -17,6 +17,7 @@
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/util/timer.h"
+#include "p2/weapon/sway/SwayInterpolator.h"
 
 #include "weapon.generated.h"
 
@@ -204,7 +205,7 @@ public:
 	// get ammuntion type for this weapon
 	virtual ammunitionEnum getAmmunitionType();
 
-
+	void updateSwayEnabledStatus(bool flag);
 
 
 
@@ -227,6 +228,7 @@ private:
 	//api bone controller
 public:
 	FVector sightOffsetNoRotation();
+
 
 private:
 	bool actorAlreadyAttached(AActor *actorpointer);
@@ -253,7 +255,12 @@ private:
 	void setupVerschlussAnimation();
 	void TickVerschlussKickBack(float DeltaTime);
 
-
+	//sway
+	SwayInterpolator swayInterpolator;
+	void setupSwayAnimation();
+	void TickSway(float deltatime);
+	bool stopSway = false;
+	bool swayEnabled = false;
 
 
 	//sight offset

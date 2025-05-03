@@ -52,6 +52,7 @@ private:
     FVector playerPosition;
     float minimapRadius = 20000; //20m
 
+    void addPlayerMarker();
 
     void updateMiniMapItems();
     void transformToPlayerSpace(TArray<FVector> &positions);

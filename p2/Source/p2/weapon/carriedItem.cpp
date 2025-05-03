@@ -283,8 +283,14 @@ FVector AcarriedItem::actorAnimationOffsetLocal(){
 	return actorAnimationOffsetTicked;
 }
 
+/// @brief used by weapon to have kickback!
+/// @param other 
 void AcarriedItem::updateAnimationOffset(FVector &other){
 	actorAnimationOffsetTicked = other;
+}
+
+void AcarriedItem::addToAnimationOffset(FVector &other){
+	actorAnimationOffsetTicked += other;
 }
 
 
