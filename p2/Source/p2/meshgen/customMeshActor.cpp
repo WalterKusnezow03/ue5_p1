@@ -196,7 +196,8 @@ void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
     setMaterialBehaiviour(materialEnum::grassMaterial); //no split
 
     if(package.createTrees() && (thisTerrainType != ETerrainType::EOcean)){ 
-        createFoliageAndPushNodesAroundFoliageToNavMesh(touples);
+        float percentDensity = package.treeDensitySkalar();
+        createFoliageAndPushNodesAroundFoliageToNavMesh(touples, percentDensity);
     }else{
         Super::addRandomNodesToNavmesh(touples);
     }
@@ -292,7 +293,8 @@ void AcustomMeshActor::createCube(
 /// @param touples lcoation and normal in a touple
 /// @param outputAppend for example a terrain mesh to create trees on
 void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
-    TArray<FVectorTouple> &touples
+    TArray<FVectorTouple> &touples,
+    float treeDensitySkalar
 ){
     
 
@@ -313,8 +315,13 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
     std::vector<FVector> pickedLocationsForNavmesh;
 
 
-    int chunkScaleOneAxisInMeter = chunkScaleOneAxisLengthCm / 100;
-    int limit = chunkScaleOneAxisInMeter / 2; // tree count
+    //int chunkScaleOneAxisInMeter = chunkScaleOneAxisLengthCm / 100;
+    //int limit = chunkScaleOneAxisInMeter / 2; // tree count
+
+    int limit = treeDensitySkalar * touples.Num();
+    DebugHelper::logMessage("tree density limit: ", limit);
+    //limit = 10;
+
     for (int i = 0; i < limit; i++){
 
         int index = FVectorUtil::randomNumber(0, potentialLocations.size() - 1);
@@ -367,7 +374,7 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
 //new!
 
 void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
-    MatrixTree tree;
+    
     tree.generate(thisTerrainType); //this terrain type now available
     
     MeshData &currentTreeStemMesh = tree.meshDataStemByReference();

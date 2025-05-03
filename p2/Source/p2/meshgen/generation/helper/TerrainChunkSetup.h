@@ -22,6 +22,7 @@ public:
 
     bool createTrees();
     ETerrainType getTerrainType();
+    float treeDensitySkalar();
 
     void createOutPostIfFlagged(UWorld *world);
 

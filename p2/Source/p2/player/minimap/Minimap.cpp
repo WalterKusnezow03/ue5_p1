@@ -8,7 +8,6 @@
 
 AMinimap* AMinimap::Construct(
     UWorld *world, 
-    AActor *attachTo,
     UCameraComponent *cameraComponent
 ){
     if(world != nullptr){
@@ -31,8 +30,6 @@ AMinimap* AMinimap::Construct(
                 spawned->attachToBottomLeftCorner(cameraComponent);
             }
 
-            
-        
             return spawned;
         }
     }

@@ -499,6 +499,19 @@ float terrainCreator::chunk::maxHeight(){
     return output;
 }
 
+float terrainCreator::chunk::minHeight(){
+    float output = HEIGHT_MAX_OCEAN + 1; //above limit
+    for (int i = 0; i < innerMap.size(); i++){
+        for (int j = 0; j < innerMap[i].size(); j++){
+            float current = innerMap[i][j].Z;
+            if(current < output){
+                output = current;
+            }
+        }
+    }
+    return output;
+}
+
 // --- chunk plotting functions ---
 
 
@@ -554,12 +567,14 @@ void terrainCreator::chunk::updateTerraintype(ETerrainType typeIn){
 
 void terrainCreator::chunk::updateTerrainTypeBySpecialHeights(){
     float currentHeightAverage = heightAverage();
+    float currentMinHeight = minHeight();
     if(currentHeightAverage > HEIGH_AVG_SNOWHILL_LOWERBOUND){
         updateTerraintype(ETerrainType::ESnowHill);
     }            
-    //causes crash(?)
-    if(currentHeightAverage < HEIGHT_MAX_OCEAN){
+    
+    if(currentMinHeight < HEIGHT_MAX_OCEAN){
         updateTerraintype(ETerrainType::EOcean);
+        DebugHelper::logMessage("terrain min height terrain: ", currentMinHeight);
     }
 }
 

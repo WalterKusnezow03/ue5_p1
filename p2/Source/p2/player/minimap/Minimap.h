@@ -15,7 +15,6 @@ GENERATED_BODY()
 public:
     static AMinimap* Construct(
         UWorld *world, 
-        AActor *attachto, 
         UCameraComponent *cameraComponent
     );
 

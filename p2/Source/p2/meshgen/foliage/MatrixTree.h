@@ -27,6 +27,7 @@ public:
 
 private:
 	void clean();
+	void resetRotationMatrices();
 
 
 	void processAndGenerate(TreeProperties &properties);

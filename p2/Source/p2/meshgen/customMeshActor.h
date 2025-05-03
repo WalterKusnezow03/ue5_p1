@@ -14,6 +14,7 @@
 #include "p2/meshgen/foliage/ETerrainType.h"
 #include "p2/meshgen/customMeshActorBase.h"
 #include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
+#include "p2/meshgen/foliage/MatrixTree.h"
 #include <map>
 #include "customMeshActor.generated.h"
 
@@ -104,6 +105,8 @@ public:
 	void enableDebug();
 
 protected:
+	MatrixTree tree;
+
 	bool DEBUG_enabled = false;
 	void debugThis(FVector &hitpoint);
 
@@ -121,7 +124,10 @@ protected:
 	class IDamageinterface *damagedOwner = nullptr;
 
 
-	void createFoliageAndPushNodesAroundFoliageToNavMesh(TArray<FVectorTouple> &touples);
+	void createFoliageAndPushNodesAroundFoliageToNavMesh(
+		TArray<FVectorTouple> &touples,
+		float percentDensity
+	);
 
 	void createTreeAndSaveToMesh(FVector &location);
 

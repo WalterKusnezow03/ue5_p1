@@ -24,8 +24,8 @@ public:
 	static const bool PLOTTING_ENABLED = false; // false;
 	
 	/// @brief saves the number of vertecies in one chunk (m^2)
-	static const int CHUNKSIZE = 20; //10
-	static const int ONEMETER = 100; //one meter constant
+	static const int CHUNKSIZE = 20; //10 //20
+	static const int ONEMETER = 200; //one meter constant
 	static const int fractureHeightStep = 3;
 
 	static const int MAXHEIGHT = 15000; //3000 is a good value, dont change
@@ -68,7 +68,7 @@ private:
 	);
 
 	static const int HEIGH_AVG_SNOWHILL_LOWERBOUND = 200000; //200 * 100cm
-	static const int HEIGHT_MAX_OCEAN = 300; //10 * 100 meter
+	static const int HEIGHT_MAX_OCEAN = 200; //10 * 100 meter
 
 	void createTerrain(UWorld *world, int meters);
 	void createTerrain(
@@ -131,6 +131,7 @@ private:
 
 			float heightAverage();
 			float maxHeight();
+			float minHeight();
 
 			void setWasCreatedTrue();
 			bool wasAlreadyCreated();

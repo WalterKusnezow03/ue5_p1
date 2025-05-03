@@ -23,6 +23,7 @@ MatrixTree::MatrixTree()
     }
 }
 
+
 MatrixTree::~MatrixTree()
 {
 }
@@ -50,7 +51,7 @@ void MatrixTree::loadProperties(){
     oakProperty.addTerrainType(ETerrainType::EForest);
     oakProperty.addTerrainType(ETerrainType::EDesertForest);
     oakProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
-    oakProperty.setRecursionLevelMax(2); //debug
+    //oakProperty.setRecursionLevelMax(0); //debug
     defaultProperty = oakProperty;
     addPropertyToMap(oakProperty);
 
@@ -135,6 +136,14 @@ void MatrixTree::generate(ETerrainType terrainType){
     clean();
     TreeProperties &properties = findProperty(terrainType);
     processAndGenerate(properties);
+    resetRotationMatrices(); //clean up
+}
+
+void MatrixTree::resetRotationMatrices(){
+    for (int i = 0; i < matrices.size(); i++){
+        MMatrix &current = matrices[i];
+        current.makeIdentity();
+    }
 }
 
 

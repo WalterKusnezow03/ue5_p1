@@ -101,14 +101,18 @@ void UCustomRenderedTexture::Tick(float deltatime){
 /// @param Height 
 void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height)
 {
-
-    FLinearColor BackgroundColor = FLinearColor(1.0f,0.0f,0.0f,1.0f);
     float lineThickness = Width / 10.0f;
-    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(Width, Height), lineThickness, BackgroundColor);
 
-    //debug
-    BackgroundColor = FLinearColor(1.0f,1.0f,0.0f,1.0f);
-    Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), lineThickness, BackgroundColor);
+    bool debugDrawMapBound = false;
+    if(debugDrawMapBound){
+        FLinearColor BackgroundColor = FLinearColor(1.0f,0.0f,0.0f,1.0f);
+        Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(Width, Height), lineThickness, BackgroundColor);
+
+        //debug corner
+        BackgroundColor = FLinearColor(1.0f,1.0f,0.0f,1.0f);
+        Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), lineThickness, BackgroundColor);
+    }
+    
    
 
     //draw markers
@@ -129,7 +133,7 @@ void UCustomRenderedTexture::drawMarkers(
     if(!canvas){
         return;
     }
-    
+
     if(assetManager *manager = assetManager::instance()){
         FVector2D scaleForMarker = scalePercent(5.0f);
         

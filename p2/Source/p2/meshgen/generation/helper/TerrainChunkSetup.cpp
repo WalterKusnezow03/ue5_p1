@@ -40,6 +40,27 @@ TerrainChunkSetup::~TerrainChunkSetup(){
 }
 
 
+float TerrainChunkSetup::treeDensitySkalar(){
+    if(createTrees()){
+        /*
+        EForest,
+        ETropical,
+        EDesert,
+        EDesertForest,
+        EOcean,
+        ESnowHill
+        */
+        if(savedTerrainType == ETerrainType::EForest) return 0.1f;
+        if(savedTerrainType == ETerrainType::ETropical) return 0.1f;
+        if(savedTerrainType == ETerrainType::EDesert) return 0.05f;
+        if(savedTerrainType == ETerrainType::EDesertForest) return 0.2f;
+        if(savedTerrainType == ETerrainType::EOcean) return 0.05f;
+        if(savedTerrainType == ETerrainType::ESnowHill) return 0.05f;
+
+    }
+    return 0.0f;
+}
+
 
 std::vector<std::vector<FVector>> &TerrainChunkSetup::mapReference(){
     if(map2D != nullptr){
