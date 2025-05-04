@@ -18,6 +18,7 @@
 #include "p2/meshgen/water/customWaterActor.h"
 #include "p2/rooms/roomActor/roomProcedural.h"
 #include "p2/DebugHelper.h"
+#include "p2/gamestart/assetManager.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
@@ -53,6 +54,7 @@ bool worldLevel::gamePausedFlag = false;
 /// -> outpostManager: holds all outposts and assigns them on request
 /// -> terrainPointer: creates the terrain once and holds the whole mesh for faster ground detection
 /// -> pathfinder singleton instance -> all nodes will be wiped
+/// -> asset manager: all asset data wiped
 void worldLevel::resetWorld(){
     if(entityManagerPointer != nullptr){
         delete entityManagerPointer;
@@ -79,6 +81,10 @@ void worldLevel::resetWorld(){
         FString s = FString::Printf(TEXT("debug end play: deleted path finder"));
         DebugHelper::logMessage(s);
     }
+
+
+    assetManager::EndGame();
+
 }
 
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!

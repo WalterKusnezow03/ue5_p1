@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/DebugHelper.h"
 #include <map>
 
 /**
@@ -25,7 +26,8 @@ public:
 
 	}
 	~assetManagerGeneric(){
-		
+		map.Empty();
+		DebugHelper::logMessage("map cleared");
 	}
 
 	void addBp(E e, T *t){

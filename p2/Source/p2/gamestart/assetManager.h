@@ -19,6 +19,7 @@
 class P2_API assetManager
 {
 public:
+	static void EndGame();
 	static assetManager *instance();
 	~assetManager();
 

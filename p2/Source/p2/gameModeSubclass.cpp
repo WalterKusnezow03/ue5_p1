@@ -62,7 +62,7 @@ void AgameModeSubclass::BeginPlay()
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
-    worldLevel::resetWorld();
+    worldLevel::resetWorld(); //clears all instances of assets etc. All memory release
     FString s = FString::Printf(TEXT("DEBUG END PLAY"));
     DebugHelper::logMessage(s);
 }

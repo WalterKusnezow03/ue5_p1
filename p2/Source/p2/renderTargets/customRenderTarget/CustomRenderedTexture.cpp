@@ -111,6 +111,11 @@ void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 He
         //debug corner
         BackgroundColor = FLinearColor(1.0f,1.0f,0.0f,1.0f);
         Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), lineThickness, BackgroundColor);
+
+        //draw center
+        FVector2D center(Width / 2.0f, Height / 2.0f);
+        FVector2D dir(50,50);
+        Canvas->K2_DrawBox(center, dir, lineThickness / 4.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
     }
     
    
@@ -119,10 +124,7 @@ void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 He
     drawMarkers(Canvas);
 
 
-    //draw center
-    FVector2D center(Width / 2.0f, Height / 2.0f);
-    FVector2D dir(50,50);
-    Canvas->K2_DrawBox(center, dir, lineThickness / 4.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
+    
 }
 
 /// @brief draws all markers on this canvas
@@ -137,6 +139,8 @@ void UCustomRenderedTexture::drawMarkers(
     if(assetManager *manager = assetManager::instance()){
         FVector2D scaleForMarker = scalePercent(5.0f);
         
+        bool centerPivot = true;
+
         //vector only based
         for(auto &pair : markerMap){
             textureEnum type = pair.first;
@@ -148,7 +152,8 @@ void UCustomRenderedTexture::drawMarkers(
                         canvas, 
                         texture,
                         positions[i],
-                        scaleForMarker
+                        scaleForMarker,
+                        centerPivot
                     );
                 }
             }
@@ -166,7 +171,8 @@ void UCustomRenderedTexture::drawMarkers(
                         canvas, 
                         texture,
                         positions[i],
-                        scaleForMarker
+                        scaleForMarker,
+                        centerPivot
                     );
                 }
             }
@@ -181,10 +187,11 @@ void UCustomRenderedTexture::drawImage(
     UCanvas *canvas,
     UTexture2D *texture,
     FVector &pos,
-    FVector2D &scale
+    FVector2D &scale,
+    bool centerPivot
 ){
     FVector2D pos2D(pos.X, pos.Y);
-    drawImage(canvas, texture, pos2D, scale);
+    drawImage(canvas, texture, pos2D, scale, centerPivot);
 }
 
 
@@ -192,9 +199,16 @@ void UCustomRenderedTexture::drawImage(
     UCanvas *canvas,
     UTexture2D *texture,
     FVector2D &pos,
-    FVector2D &scale
+    FVector2D &scale,
+    bool centerPivot
 ){
     if(texture && canvas){
+
+        FVector2D poscopy = pos;
+        if(centerPivot){
+            poscopy = centerPositionPivot(pos, scale);
+        }
+
         /*
         DrawTile ( 
             UTexture* Tex,
@@ -211,8 +225,8 @@ void UCustomRenderedTexture::drawImage(
         */
         canvas->DrawTile ( 
             texture,
-            pos.X,
-            pos.Y,
+            poscopy.X,
+            poscopy.Y,
             scale.X,
             scale.Y,
             0.0f,
@@ -239,7 +253,8 @@ void UCustomRenderedTexture::drawImage(
     UCanvas *canvas,
     UTexture2D* texture,
     MMatrix &transform,
-    FVector2D &scale
+    FVector2D &scale,
+    bool centerPivot
 ){
     FRotator rotation = transform.extractRotator();
     rotation.Pitch = 0.0f;
@@ -252,7 +267,8 @@ void UCustomRenderedTexture::drawImage(
         texture,
         pos,
         scale,
-        rotation
+        rotation,
+        centerPivot
     );
 }
 
@@ -263,14 +279,20 @@ void UCustomRenderedTexture::drawImage(
     UTexture2D* texture,
     FVector2D &pos,
     FVector2D &scale,
-    FRotator &rotation
+    FRotator &rotation,
+    bool centerPivot
 ){
     if(canvas && texture){
+
+        FVector2D poscopy = pos;
+        if(centerPivot){
+            poscopy = centerPositionPivot(pos, scale);
+        }
         
         float rad = MMatrix::degToRadian(rotation.Yaw);
         canvas->K2_DrawTexture ( 
             texture,
-            pos,
+            poscopy,
             scale,
             FVector2D(0,0),
             FVector2D(1,1),
@@ -279,18 +301,19 @@ void UCustomRenderedTexture::drawImage(
             rotation.Yaw,
             FVector2D(0.5, 0.5) //pivot
         );
-
-
-
-
-
-        /*
-        FCanvasTileItem TileItem(pos, texture->GetResource(), scale, FLinearColor::White); 
-        TileItem.Rotation = rotation; //FRotator(0, angleRad, 0);
-        TileItem.PivotPoint = FVector2D(0.5f, 0.5f); // Dreht um Mittelpunkt
-        canvas->DrawItem(TileItem);
-        */
     }
+}
 
 
+/// @brief centers the position to draw the image from center pivot
+/// @param pos 
+/// @param scale 
+/// @return 
+FVector2D UCustomRenderedTexture::centerPositionPivot(
+    FVector2D &pos, 
+    FVector2D &scale
+){
+    FVector2D outpos = pos;
+    outpos -= scale / 2.0f;
+    return outpos;
 }

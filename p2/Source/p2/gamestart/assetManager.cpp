@@ -18,6 +18,13 @@ template class assetManagerGeneric<weaponAttachmentEnum, UClass>;
 
 assetManager *assetManager::instancePointer = nullptr;
 
+
+void assetManager::EndGame(){
+    if(assetManager* ptr = instance()){
+        delete ptr;
+    }
+}
+
 /// @brief you are not allowed to delete this pointer!
 /// @return instance pointer
 assetManager* assetManager::instance(){

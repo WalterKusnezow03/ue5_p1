@@ -60,18 +60,13 @@ FVector SwayInterpolator::Tick(float deltatime){
         return FVector(0,0,0);
     }
     
-    /*
-    sway on y (sideways) and z(up) axis
+    //integral sin dt
+    deltaTimeSum += deltatime * timeSumSign; 
 
-    start at 0 -> sin(x)
-    */
-    deltaTimeSum += deltatime * timeSumSign;
-    if(deltaTimeSum > fullMotionTime){
+    if(deltaTimeSum > fullMotionTime || deltaTimeSum < 0.0f){
         reachedPeakFlag = true;
     }
-    if(deltaTimeSum < 0.0f){
-        reachedPeakFlag = true;
-    }
+
     //disable
     if(reachedPeakFlag && stopSway){
         deltaTimeSum = 0.0f;
@@ -90,7 +85,7 @@ FVector SwayInterpolator::Tick(float deltatime){
         interpolatedValue * heightY, //strecken des outputs
         interpolatedValue * heightZ
     );
-    //outvector *= timeSumSign;
+   
 
     return outvector;
 }

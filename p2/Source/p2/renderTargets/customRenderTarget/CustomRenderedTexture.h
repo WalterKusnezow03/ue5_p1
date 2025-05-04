@@ -54,21 +54,24 @@ private:
         UCanvas *canvas,
         UTexture2D *texture,
         FVector &pos,
-        FVector2D &scale
+        FVector2D &scale,
+        bool centerPivot
     );
 
     void drawImage(
         UCanvas *canvas,
         UTexture2D *texture,
         FVector2D &pos,
-        FVector2D &scale
+        FVector2D &scale,
+        bool centerPivot
     );
 
     void drawImage(
         UCanvas *canvas,
         UTexture2D* texture,
         MMatrix &transform,
-        FVector2D &scale
+        FVector2D &scale,
+        bool centerPivot
     );
 
     void drawImage(
@@ -76,9 +79,11 @@ private:
         UTexture2D* texture,
         FVector2D &pos,
         FVector2D &scale,
-        FRotator &rotation
+        FRotator &rotation,
+        bool centerPivot
     );
 
     FVector2D scalePercent(float percent);
+    FVector2D centerPositionPivot(FVector2D &pos, FVector2D &scale);
 
 };
