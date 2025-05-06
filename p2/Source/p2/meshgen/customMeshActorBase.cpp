@@ -71,6 +71,11 @@ void AcustomMeshActorBase::BeginPlay()
 	
 }
 
+void AcustomMeshActorBase::disableDistanceListening(){
+    distanceListeningBlocked = true;
+}
+
+
 // Called every frame
 void AcustomMeshActorBase::Tick(float DeltaTime)
 {
@@ -808,7 +813,10 @@ ELod AcustomMeshActorBase::lodLevelByDistanceTo(FVector &locationOfPlayer){
 
     FVector a = GetActorLocation();
     LodCheckContainer checkContainer(a, locationOfPlayer);
-    SetActorHiddenInGame(checkContainer.hideActorByLod());
+    if(!distanceListeningBlocked){
+        SetActorHiddenInGame(checkContainer.hideActorByLod());
+    }
+    
 
     return checkContainer.lod();
 }

@@ -191,6 +191,8 @@ void AMinimap::initTexture(){
                 int layer = 0;
                 Mesh->SetMaterial(layer, material);
             }
+
+            texture->enableBackground(true);
         }
     }
 }

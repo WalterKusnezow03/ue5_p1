@@ -31,11 +31,13 @@ public:
     void replaceMarkers(TArray<FVector> &positions, textureEnum etexture);
     void replaceMarkers(TArray<MMatrix> &positions, textureEnum etexture);
  
+    void enableBackground(bool flag);
 
 private:
     void setupRenderTarget();
     void setupMaterial();
     
+    bool drawbackgroundFlag = false;
     UCanvasRenderTarget2D *renderTarget = nullptr;
     UMaterialInterface* dynamicMaterial = nullptr;
 

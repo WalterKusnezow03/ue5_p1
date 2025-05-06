@@ -2,6 +2,7 @@
 
 
 #include "bezierCurve.h"
+#include "p2/util/FVectorUtil.h"
 #include "p2/util/TVector.h"
 
 template class TVector<FVector2D>;
@@ -336,3 +337,55 @@ FVector2D bezierCurve::FVector2DFourAnchorBezier(
 
 
 
+
+
+
+
+
+
+
+
+/*
+---- generation ----
+*/
+void bezierCurve::createNewRandomCurve(
+    FVector2D &startingPoint,
+    TVector<FVector2D> &output,
+    float _einheitsValue,
+    float distanceBetweenAnchorsMin,
+    float distanceBetweenAnchorsMax,
+    float max_xy_coordinate
+){
+    std::vector<FVector2D> points;
+    points.push_back(startingPoint);
+    while(true){
+        FVector2D &latest = points.back();
+        if(latest.X >= max_xy_coordinate){ //fill on x
+            break;
+        }
+        FVector2D offset = FVectorUtil::randomOffset2D(
+            distanceBetweenAnchorsMin,
+            distanceBetweenAnchorsMax
+        );
+        FVector2D finalpoint = latest + offset;
+        bool flipY = latest.Y >= max_xy_coordinate;
+        if(flipY){
+            offset.Y *= -1.0f;
+            finalpoint = latest + offset;
+        }
+
+        points.push_back(finalpoint);
+
+    }
+
+
+
+
+
+
+    calculatecurve(
+		points,
+		output,
+		_einheitsValue
+	);
+}

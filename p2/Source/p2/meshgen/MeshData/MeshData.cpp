@@ -1700,8 +1700,30 @@ void MeshData::replaceAt(int i, int j, FVector &other){
 
 
 
+// ---- road section ----
+void MeshData::appendParalellLinesClosedAsQuads(
+    TArray<FVector> &line0,
+    TArray<FVector> &line1
+){
+    
+    int limit = std::min(line0.Num(), line1.Num()); //safety, should be same size
+    for(int i = 1; i < limit; i++){
+        /*
+        1->2 //line1
+        |  |
+        0<-3 //line0
+        */
+        FVector &v0 = line0[i-1];
+        FVector &v1 = line1[i-1];
+        FVector &v2 = line1[i];
+        FVector &v3 = line0[i];
+
+        appendEfficent(v0, v1, v2, v3);
+    }
 
 
+
+}
 
 
 

@@ -249,10 +249,6 @@ protected:
 
 
 
-
-
-
-
 /**
  * 2D section
  */
@@ -268,6 +264,16 @@ protected:
 	FVector noneVertex;
 	int umbruch = 0;
 
+
+
+/**
+ * road section
+ */
+public:
+	void appendParalellLinesClosedAsQuads(
+		TArray<FVector> &line1,
+		TArray<FVector> &line2
+	);
 
 
 

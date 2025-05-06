@@ -27,7 +27,7 @@ public:
 	}
 	~assetManagerGeneric(){
 		map.Empty();
-		DebugHelper::logMessage("map cleared");
+		//DebugHelper::logMessage("map cleared");
 	}
 
 	void addBp(E e, T *t){

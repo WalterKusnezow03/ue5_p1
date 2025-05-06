@@ -70,6 +70,13 @@ FVector2D UCustomRenderedTexture::scalePercent(float percent){
     return scale * scalar;
 }
 
+
+void UCustomRenderedTexture::enableBackground(bool flag){
+    drawbackgroundFlag = flag;
+}
+
+
+
 void UCustomRenderedTexture::replaceMarkers(
     TArray<FVector> &positions, 
     textureEnum etexture
@@ -101,6 +108,10 @@ void UCustomRenderedTexture::Tick(float deltatime){
 /// @param Height 
 void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height)
 {
+    if(Canvas == nullptr){
+        return;
+    }
+
     float lineThickness = Width / 10.0f;
 
     bool debugDrawMapBound = false;
@@ -116,6 +127,15 @@ void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 He
         FVector2D center(Width / 2.0f, Height / 2.0f);
         FVector2D dir(50,50);
         Canvas->K2_DrawBox(center, dir, lineThickness / 4.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
+    }
+
+
+    if(drawbackgroundFlag){
+        FVector2D pos(0,0);
+        FVector2D size(Width, Height);
+        float thickness = Width;
+        FLinearColor color(1.0f,1.0f,1.0f, 0.5f);
+        Canvas->K2_DrawBox(pos, size, thickness, color); //is opaque, not transculent (issue!)
     }
     
    

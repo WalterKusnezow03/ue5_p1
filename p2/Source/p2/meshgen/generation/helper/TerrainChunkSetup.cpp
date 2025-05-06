@@ -50,10 +50,11 @@ float TerrainChunkSetup::treeDensitySkalar(){
         EOcean,
         ESnowHill
         */
+        // dont go beyond 0.1 
         if(savedTerrainType == ETerrainType::EForest) return 0.1f;
         if(savedTerrainType == ETerrainType::ETropical) return 0.1f;
         if(savedTerrainType == ETerrainType::EDesert) return 0.05f;
-        if(savedTerrainType == ETerrainType::EDesertForest) return 0.2f;
+        if(savedTerrainType == ETerrainType::EDesertForest) return 0.1f;
         if(savedTerrainType == ETerrainType::EOcean) return 0.05f;
         if(savedTerrainType == ETerrainType::ESnowHill) return 0.05f;
 
@@ -100,4 +101,10 @@ void TerrainChunkSetup::createOutPostIfFlagged(UWorld *world){
         }
 
     }
+}
+
+/// @brief free foliage positions by reference, without any normal dir filetring
+/// @return free foliage positions reference
+TArray<FVectorTouple> &TerrainChunkSetup::freeFoliagePositionsRef(){
+    return freeFoliagePositions;
 }

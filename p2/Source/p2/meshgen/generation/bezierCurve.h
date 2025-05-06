@@ -27,6 +27,18 @@ public:
 		float _einheitsValue
 	);
 
+
+	void createNewRandomCurve(
+		FVector2D &startingPoint,
+		TVector<FVector2D> &output,
+		float _einheitsValue,
+		float distanceBetweenAnchorsMin,
+		float distanceBetweenAnchorsMax,
+		float max_xy_coordinate
+	);
+
+
+
 private:
 
 	float EinheitsValue;

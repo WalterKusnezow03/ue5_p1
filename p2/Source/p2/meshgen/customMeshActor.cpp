@@ -195,6 +195,16 @@ void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
     );
     setMaterialBehaiviour(materialEnum::grassMaterial); //no split
 
+    /*
+    tuples may be removed from the method completly,
+    only received from terrainSetup package !
+    
+    */
+    if(true){
+        touples = package.freeFoliagePositionsRef();
+    }
+
+
     if(package.createTrees() && (thisTerrainType != ETerrainType::EOcean)){ 
         float percentDensity = package.treeDensitySkalar();
         createFoliageAndPushNodesAroundFoliageToNavMesh(touples, percentDensity);

@@ -7,6 +7,7 @@
 #include <set>
 #include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
+#include "p2/util/FVectorTouple.h"
 #include "p2/util/TVector.h"
 
 /**
@@ -44,7 +45,8 @@ public:
 	void applyTerrainDataToMeshActors();
 
 	//raycast
-	int getHeightFor(FVector &position);
+	float getHeightFor(FVector &position);
+	float getHeightFor(FVector2D &pos);
 
 	void plotAllChunks(UWorld *world);
 
@@ -68,7 +70,7 @@ private:
 	);
 
 	static const int HEIGH_AVG_SNOWHILL_LOWERBOUND = 200000; //200 * 100cm
-	static const int HEIGHT_MAX_OCEAN = 200; //10 * 100 meter
+	static const int HEIGHT_MAX_OCEAN = 200; 
 
 	void createTerrain(UWorld *world, int meters);
 	void createTerrain(
@@ -89,7 +91,7 @@ private:
 				chunk *topRight
 			);
 
-			int getHeightFor(FVector &a);
+			float getHeightFor(FVector &a);
 			FVector position();
 			FVector positionPivotBottomLeft();
 
@@ -140,19 +142,28 @@ private:
 
 			void markCreateOutpostTrue();
 
+			void blockAreaForFoliage(FVector &a, FVector &b);
+			void freePositionsForFoliageLocal(
+				TArray<FVectorTouple> &outpositions
+			);
+
 		private:
+			bool indexFreeForFoliage(int i, int j);
+			void lockPositionForAnyFoliage(int i, int j);
+
 			bool wasCreated = false;
 			ETerrainType savedTerrainType = ETerrainType::ETropical;
 			bool createOutpost = false;
 
 			std::vector<std::vector<FVector>> innerMap;
+			std::vector<std::vector<bool>> innerMapFreePositions;
 			int x;
 			int y;
 			bool blockTrees = false;
 
 			int clampInnerIndex(int a);
 			
-			
+			FVector normalFor(int i, int j);
 
 			int convertToInnerIndex(int value);
 			int clampOuterYIndex(FVector2D &a);
@@ -240,5 +251,22 @@ private:
 	void findChunksEnclosedBy(
 		terrainHillSetup &hillData,
 		std::set<terrainCreator::chunk *> &output
+	);
+
+
+
+	//--road--
+	void createRoads(UWorld *world);
+	void createRoads(MeshData &meshdata, int count);
+	void createRoad(MeshData &meshdata);
+	void processRoad(
+		TVector<FVector2D> &curve,
+		float roadWidth,
+		MeshData &data
+	);
+	FVector make3D(FVector2D &pos, float height);
+	void lockQuadsFromParalellArrayLines(
+		TArray<FVector> &line0,
+		TArray<FVector> &line1
 	);
 };

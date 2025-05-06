@@ -30,6 +30,7 @@ protected:
 
 public:
 	void enableLodListening();
+	void disableDistanceListening();
 
 	void disablePhysicscollision();
 
@@ -53,6 +54,8 @@ public:
 
 
 protected:
+	bool distanceListeningBlocked = false;
+
 	void createTerrainFrom2DMap(
 		std::vector<std::vector<FVector>> &map,
 		ETerrainType typeIn

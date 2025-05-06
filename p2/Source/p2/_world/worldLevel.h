@@ -79,6 +79,9 @@ private:
 
 	static bool gamePausedFlag;
 
+	static void debugBezier(UWorld *world);
 
 	static void createAeroActor(UWorld *world);
+
+
 };

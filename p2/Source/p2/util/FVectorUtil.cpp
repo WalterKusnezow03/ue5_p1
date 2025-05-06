@@ -99,6 +99,17 @@ FVector2D FVectorUtil::randomOffset2D(int range){
         y);
 }
 
+FVector2D FVectorUtil::randomOffset2D(int lower, int higher){
+    int range = higher - lower;
+    FVector2D out = randomOffset2D(range);
+    out.X += lower;
+    out.Y += lower;
+    return out;
+}
+
+
+
+
 int FVectorUtil::randomNumber(int range){
     int r = std::rand();
     r %= range;

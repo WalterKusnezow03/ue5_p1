@@ -25,7 +25,11 @@
 #include "p2/entityManager/referenceManager.h"
 #include "p2/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
+#include "p2/util/TVector.h"
+#include "p2/meshgen/generation/bezierCurve.h"
 #include "CoreMinimal.h"
+
+template class TVector<FVector2D>;
 
 worldLevel::worldLevel()
 {
@@ -127,6 +131,8 @@ void worldLevel::initWorld(UWorld *world){
 
 
     DebugCreatedoor(world);
+
+    debugBezier(world);
 
     //createAeroActor(world);
 }
@@ -584,7 +590,39 @@ void worldLevel::setGamePaused(bool in){
 
 
 
+void worldLevel::debugBezier(UWorld *world){
+    bezierCurve curve;
 
+    FVector2D startingPoint;
+    TVector<FVector2D> output;
+    float _einheitsValue = 10.0f;
+    float distanceBetweenAnchorsMin = 200.0f;
+    float distanceBetweenAnchorsMax = 400.0f;
+    float max_xy_coordinate = 10000.0f;
+
+    curve.createNewRandomCurve(
+        startingPoint,
+        output,
+        _einheitsValue,
+        distanceBetweenAnchorsMin,
+        distanceBetweenAnchorsMax,
+        max_xy_coordinate
+    );
+
+    FVector prev;
+    for(int i = 0; i < output.size(); i++){
+        FVector2D &ref = output[i];
+        FVector to3d(
+            ref.X,
+            0.0f,
+            ref.Y
+        );
+        DebugHelper::showLineBetween(world, prev, to3d, FColor::Blue);
+        prev = to3d;
+    }
+
+
+}
 
 
 

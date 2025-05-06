@@ -24,6 +24,7 @@ public:
 	static FRotator randomRotation(FVector ownLocation);
 
 	static FVector2D randomOffset2D(int range);
+	static FVector2D randomOffset2D(int lower, int higher);
 
 	static bool edgeIsVertical(FVector &A, FVector &B);
 	static bool directionIsVertical(FVector &A);
