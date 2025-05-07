@@ -30,6 +30,7 @@ public:
     TArray<FVectorTouple> &freeFoliagePositionsRef();
 
 private:
+    float scaleUpFractionByLeftOverValidPositions();
 
 
     void setMapReference(std::vector<std::vector<FVector>> &refIn);

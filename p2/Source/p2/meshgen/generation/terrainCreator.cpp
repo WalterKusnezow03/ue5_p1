@@ -188,8 +188,13 @@ std::vector<std::vector<FVector>>& terrainCreator::chunk::readAndMerge(
 float terrainCreator::chunk::getHeightFor(FVector &a){
     if(isInBounds(a)){
         
-        int xa = convertToInnerIndex(a.X);
-        int ya = convertToInnerIndex(a.Y);
+        //int xa = convertToInnerIndex(a.X);
+        //int ya = convertToInnerIndex(a.Y);
+
+        int xa = 0;
+        int ya = 0;
+        convertPositionToInnerIndexClamped(a, xa, ya); //testing needed
+
         return innerMap.at(xa).at(ya).Z;
     }
     return a.Z;
@@ -528,16 +533,33 @@ float terrainCreator::chunk::minHeight(){
 
 
 // --- chunk block area functions ---
-void terrainCreator::chunk::blockAreaForFoliage(FVector &a, FVector &b){
+void terrainCreator::chunk::blockAreaForFoliage(
+    FVector &a, 
+    FVector &b
+){
     int ax = convertToInnerIndex(a.X);
     int ay = convertToInnerIndex(a.Y);
     int bx = convertToInnerIndex(b.X);
     int by = convertToInnerIndex(b.Y);
 
+    //new - prüfung intesiver notwendig
+    convertPositionToInnerIndexClamped(a, ax, ay);
+    convertPositionToInnerIndexClamped(b, bx, by);
+
+
     int minX = std::min(ax, bx);
     int maxX = std::max(ax, bx);
     int minY = std::min(ay, by);
     int maxY = std::max(ay, by);
+
+    FString message = FString::Printf(
+        TEXT(
+            "terrain blocked area: (%d, %d) (%d, %d)"
+        ),
+        minX, minY, maxX, maxY
+    );
+    DebugHelper::logMessage(message);
+
 
     for(int i = minX; i <= maxX; i++){
         for(int j = minY; j <= maxY; j++){
@@ -545,6 +567,31 @@ void terrainCreator::chunk::blockAreaForFoliage(FVector &a, FVector &b){
         }
     }
 }
+
+void terrainCreator::chunk::convertPositionToInnerIndexClamped(
+    FVector inpos,
+    int &i,
+    int &j
+){
+    inpos -= position();
+
+    int xIndex = inpos.X / terrainCreator::ONEMETER;
+    int yIndex = inpos.Y / terrainCreator::ONEMETER;
+
+    xIndex = std::min(xIndex, terrainCreator::CHUNKSIZE);
+    yIndex = std::min(yIndex, terrainCreator::CHUNKSIZE);
+    xIndex = std::max(xIndex, 0);
+    yIndex = std::max(yIndex, 0);
+    
+    i = xIndex;
+    j = yIndex;
+
+    /*
+    i = convertToInnerIndex(inpos.X);
+    j = convertToInnerIndex(inpos.Y);
+    */
+}
+
 
 //is clamped!
 void terrainCreator::chunk::lockPositionForAnyFoliage(int i, int j){

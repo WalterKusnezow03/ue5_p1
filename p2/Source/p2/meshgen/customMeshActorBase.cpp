@@ -110,16 +110,7 @@ void AcustomMeshActorBase::disablePhysicscollision(){
 
 
 
-void AcustomMeshActorBase::createTerrainFrom2DMap(
-    std::vector<std::vector<FVector>> &map,
-    ETerrainType typeIn
-){
-    thisTerrainType = typeIn;
-    TArray<FVectorTouple> touples;
-    createTerrainFrom2DMap(map, touples, typeIn);
 
-    addRandomNodesToNavmesh(touples);
-}
 
 
 
@@ -128,7 +119,6 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
 /// @param map 2D vector of LOCAL coordinates!
 void AcustomMeshActorBase::createTerrainFrom2DMap(
     std::vector<std::vector<FVector>> &map,
-	TArray<FVectorTouple> &touples, //MUST BE KEPT FOR SUBCLASS FOLIAGE CREATION!
     ETerrainType typeIn
 ){
     thisTerrainType = typeIn;
@@ -138,7 +128,7 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
     //MeshData &stoneLayer = findMeshDataReference(materialEnum::stoneMaterial, ELod::lodNear, true);
 
 
-    std::vector<FVector> navMeshAdd;
+    
     FVector originVec(0, 0, 0);
 
     
@@ -156,12 +146,9 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
 
         appendLodTerrain(
             map,
-            touples, // MUST BE KEPT FOR SUBCLASS FOLIAGE CREATION!
-            navMeshAdd,
             grassLayer,
             stoneLayer,
-            prevLodStep, // index increase
-            lodStep == 0
+            prevLodStep // index increase
         );
         grassLayer.calculateNormals();
         stoneLayer.calculateNormals();
@@ -189,12 +176,9 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
 
 void AcustomMeshActorBase::appendLodTerrain(
     std::vector<std::vector<FVector>> &map,
-	TArray<FVectorTouple> &touples, //MUST BE KEPT FOR SUBCLASS FOLIAGE CREATION!
-    std::vector<FVector> &navMeshAdd,
     MeshData &grassLayer,
     MeshData &stoneLayer,
-    int stepSize,
-    bool addTouplesAndNavmeshNodes
+    int stepSize
 ){
     int distanceBetweenNodesMin = 300;
     FVector originVec(0, 0, 0);
@@ -237,68 +221,28 @@ void AcustomMeshActorBase::appendLodTerrain(
 
             if (x + xstep < map.size() && y + ystep < map.at(x + xstep).size())
             {
-                try
+                
+                // get the vertecies
+                FVector vzero = map.at(x).at(y);
+                FVector vone = map.at(x).at(y + ystep);
+                FVector vtwo = map.at(x + xstep).at(y + ystep);
+                FVector vthree = map.at(x + xstep).at(y);
+
+                // add to standard output
+                // buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
+
+                FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo); // direction obviously
+                if (FVectorUtil::directionIsVertical(normal))
                 {
-                    // get the vertecies
-                    FVector vzero = map.at(x).at(y);
-                    FVector vone = map.at(x).at(y + ystep);
-                    FVector vtwo = map.at(x + xstep).at(y + ystep);
-                    FVector vthree = map.at(x + xstep).at(y);
+                    grassLayer.appendEfficent(vzero, vone, vtwo, vthree);
+                }
+                else
+                {
+                    stoneLayer.appendEfficent(vzero, vone, vtwo, vthree);
+                }
 
-                    // add to standard output
-                    // buildQuad(vzero, vone, vtwo, vthree, output, newtriangles);
-
-                    FVector normal = FVectorUtil::calculateNormal(vzero, vone, vtwo); // direction obviously
-                    if (FVectorUtil::directionIsVertical(normal))
-                    {
-                        grassLayer.appendEfficent(vzero, vone, vtwo, vthree);
-                    }
-                    else
-                    {
-                        stoneLayer.appendEfficent(vzero, vone, vtwo, vthree);
-                    }
-
-
-                    if(addTouplesAndNavmeshNodes){
-                        // calculate center
-                        FVector centerLocal = FVectorUtil::calculateCenter(vzero, vone, vtwo);
-                        FVector centerWorld = centerLocal + GetActorLocation();
-
-                        // create and add touple to list
-                        FVectorTouple t(centerLocal, normal); // first center, then normal
-                        touples.Add(t);
-
-                        /**
-                         * COLLECT NODES FOR NAV MESH
-                        */
-
-                        // testing only a few per chunk, raycasting takes a lot of time
-                        if (navMeshAdd.size() <= 6 && FVectorUtil::edgeIsVertical(originVec, normal))
-                        {
-                            if (navMeshAdd.size() == 0)
-                            {
-                                navMeshAdd.push_back(centerWorld);
-                            }
-                            else
-                            {
-                                // only push nodes 3 meters away from each other -> reduce mesh count
-                                FVector &prev = navMeshAdd.back();
-                                if (FVector::Dist(prev, centerWorld) >= distanceBetweenNodesMin)
-                                {
-                                    navMeshAdd.push_back(centerWorld);
-                                }
-                            }
-                        }
-                    }
 
                     
-                }
-                catch (const std::exception &e)
-                {
-                    // this try catch block was just added when debugging can certainly be
-                    // kept for safety
-                    DebugHelper::showScreenMessage("mesh actor exception!", FColor::Red);
-                }
             }
         }
     }

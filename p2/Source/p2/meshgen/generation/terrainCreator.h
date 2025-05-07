@@ -172,6 +172,12 @@ private:
 			int xPositionInCm();
 			int yPositionInCm();
 
+			void convertPositionToInnerIndexClamped(
+				FVector inpos,
+				int &i,
+				int &j
+			);
+
 			std::vector<FVector> readFirstXColumn();
 			std::vector<FVector> readFirstYRow();
 			FVector readBottomLeftCorner();

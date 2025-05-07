@@ -61,11 +61,7 @@ protected:
 		ETerrainType typeIn
 	);
 	
-	void createTerrainFrom2DMap(
-		std::vector<std::vector<FVector>> &map,
-		TArray<FVectorTouple> &touples,
-		ETerrainType typeIn
-	);
+	
 
 public:
 
@@ -121,12 +117,9 @@ protected:
 
 	void appendLodTerrain(
 		std::vector<std::vector<FVector>> &map,
-		TArray<FVectorTouple> &touples, // MUST BE KEPT FOR SUBCLASS FOLIAGE CREATION!
-		std::vector<FVector> &navMeshAdd,
 		MeshData &grassLayer,
 		MeshData &stoneLayer,
-		int stepSize,
-		bool addTouplesAndNavmeshNodes
+		int stepSize
 	);
 
 	ELod currentLodLevel = ELod::lodNear;

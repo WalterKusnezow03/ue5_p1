@@ -3,6 +3,7 @@
 #include "TerrainChunkSetup.h"
 #include "p2/entityManager/OutPost/Outpost.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/DebugHelper.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
 
 TerrainChunkSetup::TerrainChunkSetup(
@@ -51,16 +52,40 @@ float TerrainChunkSetup::treeDensitySkalar(){
         ESnowHill
         */
         // dont go beyond 0.1 
-        if(savedTerrainType == ETerrainType::EForest) return 0.1f;
-        if(savedTerrainType == ETerrainType::ETropical) return 0.1f;
-        if(savedTerrainType == ETerrainType::EDesert) return 0.05f;
-        if(savedTerrainType == ETerrainType::EDesertForest) return 0.1f;
-        if(savedTerrainType == ETerrainType::EOcean) return 0.05f;
-        if(savedTerrainType == ETerrainType::ESnowHill) return 0.05f;
+        float scalar = 0.1f;
+        if(savedTerrainType == ETerrainType::EForest) scalar = 0.1f;
+        if(savedTerrainType == ETerrainType::ETropical) scalar = 0.1f;
+        if(savedTerrainType == ETerrainType::EDesert) scalar = 0.05f;
+        if(savedTerrainType == ETerrainType::EDesertForest) scalar = 0.1f;
+        if(savedTerrainType == ETerrainType::EOcean) scalar = 0.05f;
+        if(savedTerrainType == ETerrainType::ESnowHill) scalar = 0.05f;
 
+        //dont use raw number which is for a 100% valid position part
+        float scaledCorrectly = scalar * scaleUpFractionByLeftOverValidPositions();
+        DebugHelper::logMessage("terrain tree fraction scaled up done: ", (float) scaledCorrectly);
+        return scaledCorrectly;
     }
     return 0.0f;
 }
+
+float TerrainChunkSetup::scaleUpFractionByLeftOverValidPositions(){
+    //left / all wäre z.b. 1/2, mal percent ist weniger, nicht gewollt,
+    //part soll höher skalliert werden um auf gleiche percent zu kommen effektiv
+    //also: mulitply by: all / left
+    float left = freeFoliagePositions.Num();
+    if(left <= 0.0f){
+        return 0.0f;
+    }
+    if(map2D == nullptr){
+        return 0.0f;
+    }
+    float all = map2D->size() * map2D->size();
+    float scaledUp = all / left; 
+    DebugHelper::logMessage("terrain tree fraction scaled up: ", (float) scaledUp);
+
+    return scaledUp;
+}
+
 
 
 std::vector<std::vector<FVector>> &TerrainChunkSetup::mapReference(){

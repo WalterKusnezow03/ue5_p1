@@ -186,24 +186,15 @@ bool AcustomMeshActor::isDestructable(){
 void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
 
     thisTerrainType = package.getTerrainType(); //must be set before mesh gen!
-    TArray<FVectorTouple> touples;
 
     Super::createTerrainFrom2DMap(
-        package.mapReference(), 
-        touples, 
+        package.mapReference(),
         thisTerrainType
     );
     setMaterialBehaiviour(materialEnum::grassMaterial); //no split
 
-    /*
-    tuples may be removed from the method completly,
-    only received from terrainSetup package !
-    
-    */
-    if(true){
-        touples = package.freeFoliagePositionsRef();
-    }
 
+    TArray<FVectorTouple> &touples = package.freeFoliagePositionsRef();
 
     if(package.createTrees() && (thisTerrainType != ETerrainType::EOcean)){ 
         float percentDensity = package.treeDensitySkalar();
@@ -338,10 +329,13 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
         if (index < potentialLocations.size() && index >= 0)
         {
             FVector vertex = potentialLocations[index];
-            pickedLocationsForNavmesh.push_back(vertex);
+            pickedLocationsForNavmesh.push_back(vertex); //tree position added to navmesh
             createTreeAndSaveToMesh(vertex);
-            potentialLocations.erase(potentialLocations.begin() + index);
             
+            
+            //potentialLocations.erase(potentialLocations.begin() + index);
+            potentialLocations[index] = potentialLocations.back();
+            potentialLocations.pop_back();
         }
     }
 
