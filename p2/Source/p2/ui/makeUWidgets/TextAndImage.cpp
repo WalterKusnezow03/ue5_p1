@@ -7,9 +7,8 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "p2/gameStart/AssetLoader.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/ui/PlayerUi.h"
-#include "p2/DebugHelper.h"
 #include "p2/gameStart/assetEnums/textureEnum.h"
 
 #include "TextAndImage.h"

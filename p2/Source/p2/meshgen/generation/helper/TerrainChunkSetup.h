@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/util/FVectorTouple.h"
+#include "GameCore/util/FVectorTouple.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
 
 class P2_API TerrainChunkSetup{

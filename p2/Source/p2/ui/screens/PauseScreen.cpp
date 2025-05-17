@@ -6,7 +6,7 @@
 #include "Components/BackgroundBlur.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include <functional>
 #include "p2/gamestart/assetEnums/textureEnum.h"

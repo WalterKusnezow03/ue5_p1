@@ -1,6 +1,6 @@
 
 #include "StaticMeshBoundsextractor.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 
 /**
  * 

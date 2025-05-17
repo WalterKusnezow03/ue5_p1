@@ -31,4 +31,6 @@ private:
     float timeSumSign = 1.0f;
     bool swayEnabled = true;
     bool stopSway = false;
+
+    bool DEBUG_BLOCKSWAY = true;
 };

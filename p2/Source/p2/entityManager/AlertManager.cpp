@@ -4,11 +4,11 @@
 #include "AlertManager.h"
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
-#include "p2/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 
 std::vector<AEntityScript *> AlertManager::subscribedToAlert;
 

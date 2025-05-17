@@ -9,10 +9,10 @@
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
-#include "teamEnum.h"
-#include "p2/interfaces/Damageinterface.h"
+#include "GameCore/team/teamEnum.h"
+#include "GameCore/interfaces/Damageinterface.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
-#include "p2/util/timer.h"
+#include "GameCore/util/timer.h"
 #include "WingsuitInterface.h"
 
 #include "Components/SceneCaptureComponent2D.h"

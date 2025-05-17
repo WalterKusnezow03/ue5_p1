@@ -4,7 +4,7 @@
 #include "ParallellShapeMerger.h"
 #include <algorithm>
 #include "GrahamScan.h"
-#include "p2/util/FVectorUtil.h"
+#include "GameCore/util/FVectorUtil.h"
 #include <limits>
 
 ParallellShapeMerger::ParallellShapeMerger()

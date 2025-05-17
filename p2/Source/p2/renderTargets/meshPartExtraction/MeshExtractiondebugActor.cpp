@@ -1,6 +1,6 @@
 #include "MeshExtractiondebugActor.h"
 #include "StaticMeshBoundsextractor.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include <algorithm>
 
 AMeshExtractiondebugActor::AMeshExtractiondebugActor(){

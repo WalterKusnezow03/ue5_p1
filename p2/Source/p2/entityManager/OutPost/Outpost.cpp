@@ -5,11 +5,10 @@
 #include "Outpost.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "p2/player/teamEnum.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/util/FVectorUtil.h"
+#include "GameCore/util/FVectorUtil.h"
 #include "OutpostAlarmPole.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include <cstdlib>
 
 

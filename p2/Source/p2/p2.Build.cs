@@ -12,7 +12,12 @@ public class p2 : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore",
 
 			//new
-			"Slate", "SlateCore" 
+			"Slate", "SlateCore",
+
+			//terrain plugin
+			"terrainPlugin",
+			"GameCore",
+			"PathFinder"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

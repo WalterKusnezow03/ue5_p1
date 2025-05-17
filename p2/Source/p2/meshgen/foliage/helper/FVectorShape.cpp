@@ -5,7 +5,7 @@
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/meshgen/generation/bezierCurve.h"
 #include "GrahamScan.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/TVector.h"
 
 FVectorShape::FVectorShape()
 {

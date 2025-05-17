@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/util/FVectorTouple.h"
+#include "GameCore/util/FVectorTouple.h"
 #include "ProceduralMeshComponent.h"
-#include "p2/interfaces/Damageinterface.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/team/teamEnum.h"
 #include "Components/BoxComponent.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/meshgen/MeshData/MeshData.h"

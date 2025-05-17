@@ -1,6 +1,6 @@
 #pragma once
 
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "callback.generated.h"
 
 UCLASS()

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/weapon/weapon.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include "throwerWeapon.generated.h"
 
 /**

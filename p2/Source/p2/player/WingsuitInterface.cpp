@@ -3,8 +3,8 @@
 
 #include "WingsuitInterface.h"
 #include <cmath>
-#include "p2/DebugHelper.h"
-#include "p2/util/timer.h"
+#include "GameCore/DebugHelper.h"
+
 
 WingsuitInterface::WingsuitInterface()
 {

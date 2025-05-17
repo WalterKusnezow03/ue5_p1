@@ -176,6 +176,13 @@ FVector MMatrix::operator*(FVector &other){
     return resultVec;
 }
 
+FVector2D MMatrix::operator*(FVector2D &other){
+    FVector d3Vec(other.X, other.Y, 0.0f);
+    d3Vec = *this * d3Vec;
+    return FVector2D(d3Vec.X, d3Vec.Y);
+}
+
+
 
 void MMatrix::operator+=(FVector &other){
     array[3] += other.X;

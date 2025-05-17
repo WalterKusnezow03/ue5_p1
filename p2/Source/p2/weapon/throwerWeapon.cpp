@@ -4,7 +4,7 @@
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/weapon/throwerWeapon.h"
 

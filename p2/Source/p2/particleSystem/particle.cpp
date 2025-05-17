@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/entityManager/EntityManager.h"
-#include "p2/util/FVectorUtil.h"
+#include "GameCore/util/FVectorUtil.h"
 #include "p2/particleSystem/particleEnum.h"
-#include "p2/util/AActorUtil.h"
+#include "GameCore/util/AActorUtil.h"
 #include "p2/_world/worldLevel.h"
 #include "particle.h"
 

@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "p2/player/playerScript.h"
-#include "p2/pathFinding/PathFinder.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/AlertManager.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include "EntityScript.h"
 
 // Sets default values

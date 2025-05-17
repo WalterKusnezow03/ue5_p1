@@ -4,29 +4,31 @@
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
-#include "p2/rooms/layoutCreator/layoutMaker.h"
-#include "p2/util/TVector.h"
+#include "p2/meshgen/rooms/layoutCreator/layoutMaker.h"
+#include "GameCore/util/TVector.h"
 #include "p2/meshgen/generation/terrainCreator.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/meshgen/foliage/ETreeType.h"
 #include "p2/meshgen/customMeshActorBase.h"
-#include "p2/pathFinding/EdgeCollector.h"
-#include "p2/pathFinding/PathFinder.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "p2/meshgen/foliage/rocks/RockCreator.h"
 #include "p2/meshgen/water/customWaterActor.h"
-#include "p2/rooms/roomActor/roomProcedural.h"
-#include "p2/DebugHelper.h"
+#include "p2/meshgen/rooms/roomActor/roomProcedural.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/gamestart/assetManager.h"
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/rooms/doorLike/DoorBase.h"
+#include "p2/meshgen/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/TVector.h"
+#include "p2/vehicles/vehicle/vehicleCar.h"
 #include "p2/meshgen/generation/bezierCurve.h"
+
+#include "PathFinder/Public/PathFinderModule.h"
+
 #include "CoreMinimal.h"
 
 template class TVector<FVector2D>;
@@ -75,6 +77,7 @@ void worldLevel::resetWorld(){
     }
 
     //clears all nodes from graph
+    /*
     PathFinder *p = PathFinder::instance();
     if (p != nullptr)
     {
@@ -84,8 +87,8 @@ void worldLevel::resetWorld(){
 
         FString s = FString::Printf(TEXT("debug end play: deleted path finder"));
         DebugHelper::logMessage(s);
-    }
-
+    }*/
+    FPathFinderModule::EndPathFinder();
 
     assetManager::EndGame();
 
@@ -135,23 +138,14 @@ void worldLevel::initWorld(UWorld *world){
     debugBezier(world);
 
     //createAeroActor(world);
+    createCar(world);
 }
 
 /**
  * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start
  */
 void worldLevel::createPathFinder(UWorld *WorldIn){
-    if(WorldIn == nullptr){
-        return;
-    }
-
-    if (WorldIn)
-    {
-        EdgeCollector c = EdgeCollector();
-        c.getAllEdges(WorldIn); //pushes them to the navmesh on its own
-    }
-
-
+    FPathFinderModule::StartPathFinder(WorldIn);
 }
 
 
@@ -591,7 +585,7 @@ void worldLevel::setGamePaused(bool in){
 
 
 void worldLevel::debugBezier(UWorld *world){
-    bezierCurve curve;
+    /*bezierCurve curve;
 
     FVector2D startingPoint;
     TVector<FVector2D> output;
@@ -619,7 +613,7 @@ void worldLevel::debugBezier(UWorld *world){
         );
         DebugHelper::showLineBetween(world, prev, to3d, FColor::Blue);
         prev = to3d;
-    }
+    }*/
 
 
 }
@@ -661,5 +655,14 @@ void worldLevel::createAeroActor(UWorld *world){
         );
 
         AAeroActor *ptr = AAeroActor::Construct(world, location);
+    }
+}
+
+
+
+
+void worldLevel::createCar(UWorld *world){
+    if(world){
+        AvehicleCar *car = AvehicleCar::Construct(world);
     }
 }

@@ -3,14 +3,13 @@
 
 #include "p2/meshgen/MeshData/MeshData.h"
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "p2/meshgen/foliage/helper/GrahamScan.h"
 #include "p2/meshgen/foliage/helper/FVectorShape.h"
 #include "p2/meshgen/foliage/helper/ParallellShapeMerger.h"
 #include "p2/gameStart/assetEnums/materialEnum.h"
 #include "p2/meshgen/foliage/helper/baryCentricInterpolator.h"
-#include "p2/DebugHelper.h"
 #include "BoundingBox.h"
 
 #include <algorithm>

@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CoreMinimal.h"
-#include "p2/util/FVectorTouple.h"
-#include "p2/util/AActorUtil.h"
-#include "p2/pathFinding/PathFinder.h"
+#include "GameCore/util/FVectorTouple.h"
+#include "GameCore/util/AActorUtil.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "p2/meshgen/generation/bezierCurve.h"
 #include "ELod.h"
 #include "p2/meshgen/lodHelper/LodCheckContainer.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
-#include "p2/util/FVectorUtil.h"
+#include "GameCore/util/FVectorUtil.h"
 #include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/customMeshActorBase.h"
 
@@ -91,24 +91,6 @@ void AcustomMeshActorBase::disablePhysicscollision(){
         Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -318,18 +300,6 @@ void AcustomMeshActorBase::filterTouplesForVerticalVectors(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

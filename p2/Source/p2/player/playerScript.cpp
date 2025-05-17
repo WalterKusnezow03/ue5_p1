@@ -7,20 +7,20 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "Animation/AnimSequence.h"
-#include "teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include <cmath>
-#include "p2/interfaces/Interactinterface.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/interfaces/Interactinterface.h"
 #include "GameFramework/Character.h" // Falls noch nicht inkludiert
 #include "GameFramework/CharacterMovementComponent.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/player/minimap/Minimap.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 
 #include "p2/ui/PlayerUi.h"
 

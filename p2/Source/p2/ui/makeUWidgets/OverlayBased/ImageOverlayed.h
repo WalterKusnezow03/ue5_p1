@@ -4,7 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "p2/gameStart/assetEnums/textureEnum.h"
-#include "p2/util/timer.h"
+#include "GameCore/util/timer.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 #include "ImageOverlayed.generated.h"

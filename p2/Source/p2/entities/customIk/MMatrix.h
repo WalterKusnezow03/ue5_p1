@@ -32,6 +32,8 @@ public:
 	FVector operator*(FVector &other);
 	MMatrix operator*(MMatrix &other);
 
+	FVector2D operator*(FVector2D &other);
+
 	FString asString();
 
 	

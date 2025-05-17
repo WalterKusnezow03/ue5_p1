@@ -7,8 +7,8 @@
 #include <set>
 #include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "p2/meshgen/foliage/ETerrainType.h"
-#include "p2/util/FVectorTouple.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/FVectorTouple.h"
+#include "GameCore/util/TVector.h"
 
 /**
  * 
@@ -47,6 +47,11 @@ public:
 	//raycast
 	float getHeightFor(FVector &position);
 	float getHeightFor(FVector2D &pos);
+	void getHeightAndDistanceFromModVertex(
+		FVector2D &a,
+		float &height,
+		float &distance
+	);
 
 	void plotAllChunks(UWorld *world);
 
@@ -79,108 +84,127 @@ private:
 		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea // flat area
 	);
 
-	class chunk{
+	class HeightExtractionData{
 		public:
-			chunk(int xPos, int yPos);
-			~chunk();
+			HeightExtractionData(FVector &posIn);
+			~HeightExtractionData();
 
-			TerrainChunkSetup makeSetupPackage();
-			TerrainChunkSetup makeSetupPackage(
-				chunk *top,
-				chunk *right,
-				chunk *topRight
-			);
+			HeightExtractionData(const HeightExtractionData &other);
+			HeightExtractionData &operator=(const HeightExtractionData &other);
 
-			float getHeightFor(FVector &a);
-			FVector position();
-			FVector positionPivotBottomLeft();
+			float height = 0.0f;
+			float distanceFromTarget = 0.0f;
 
-			void addheightForAll(int value);
-			void scaleheightForAll(float value);
-			void setheightForAll(float value);
-			void setheightForAllToAverage();
-			void clampheightForAllUpperLimit(float value);
-			void clampheightForAllUpperLimitByOwnAverageHeight();
+			FVector position;
 
-			FVector2D getFirstXColumnAnchor(int xColumn);
-			FVector2D getFirstYRowAnchor(int yRow);
-			
+			static float findHeight(TArray<HeightExtractionData> &array);
+	};
 
-			void plot(UWorld *world);
+	class chunk
+	{
+	public:
+		chunk(int xPos, int yPos);
+		~chunk();
 
-			void applyIndivualVertexIndexBased(
-				int xIn,
-				int yIn,
-				float newHeight,
-				bool override
-			);
+		TerrainChunkSetup makeSetupPackage();
+		TerrainChunkSetup makeSetupPackage(
+			chunk *top,
+			chunk *right,
+			chunk *topRight);
 
-			std::vector<std::vector<FVector>> &readMap();
+		float getHeightFor(FVector &a);
+		void getHeightWith(
+			HeightExtractionData &data
+		);
+		FVector position();
+		FVector positionPivotBottomLeft();
 
-			std::vector<std::vector<FVector>> &readAndMerge(
-				chunk *top,
-				chunk *right,
-				chunk *topRight
-			);
-			bool xIsValid(int a);
-			bool yIsValid(int a);
+		void addheightForAll(int value);
+		void scaleheightForAll(float value);
+		void setheightForAll(float value);
+		void setheightForAllToAverage();
+		void clampheightForAllUpperLimit(float value);
+		void clampheightForAllUpperLimitByOwnAverageHeight();
 
-			void setTreesBlocked(bool b);
-			bool createTrees();
+		FVector2D getFirstXColumnAnchor(int xColumn);
+		FVector2D getFirstYRowAnchor(int yRow);
 
-			ETerrainType getTerrainType();
-			void updateTerraintype(ETerrainType typeIn);
+		void plot(UWorld *world);
 
-			float heightAverage();
-			float maxHeight();
-			float minHeight();
+		void applyIndivualVertexIndexBased(
+			int xIn,
+			int yIn,
+			float newHeight,
+			bool override);
 
-			void setWasCreatedTrue();
-			bool wasAlreadyCreated();
+		std::vector<std::vector<FVector>> &readMap();
 
-			void updateTerrainTypeBySpecialHeights();
+		std::vector<std::vector<FVector>> &readAndMerge(
+			chunk *top,
+			chunk *right,
+			chunk *topRight);
+		bool xIsValid(int a);
+		bool yIsValid(int a);
 
-			void markCreateOutpostTrue();
+		void setTreesBlocked(bool b);
+		bool createTrees();
 
-			void blockAreaForFoliage(FVector &a, FVector &b);
-			void freePositionsForFoliageLocal(
-				TArray<FVectorTouple> &outpositions
-			);
+		ETerrainType getTerrainType();
+		void updateTerraintype(ETerrainType typeIn);
 
-		private:
-			bool indexFreeForFoliage(int i, int j);
-			void lockPositionForAnyFoliage(int i, int j);
+		float heightAverage();
+		float maxHeight();
+		float minHeight();
 
-			bool wasCreated = false;
-			ETerrainType savedTerrainType = ETerrainType::ETropical;
-			bool createOutpost = false;
+		void setWasCreatedTrue();
+		bool wasAlreadyCreated();
 
-			std::vector<std::vector<FVector>> innerMap;
-			std::vector<std::vector<bool>> innerMapFreePositions;
-			int x;
-			int y;
-			bool blockTrees = false;
+		void updateTerrainTypeBySpecialHeights();
 
-			int clampInnerIndex(int a);
-			
-			FVector normalFor(int i, int j);
+		void markCreateOutpostTrue();
 
-			int convertToInnerIndex(int value);
-			int clampOuterYIndex(FVector2D &a);
-			bool isInBounds(FVector &a);
+		void blockAreaForFoliage(FVector &a, FVector &b);
+		void freePositionsForFoliageLocal(
+			TArray<FVectorTouple> &outpositions);
 
-			int xPositionInCm();
-			int yPositionInCm();
+	private:
+		bool indexFreeForFoliage(int i, int j);
+		void lockPositionForAnyFoliage(int i, int j);
+		void lockPositionForAnyFoliageIfTrue(int i, int j, bool flag);
 
-			void convertPositionToInnerIndexClamped(
-				FVector inpos,
-				int &i,
-				int &j
-			);
+		bool wasCreated = false;
+		ETerrainType savedTerrainType = ETerrainType::ETropical;
+		bool createOutpost = false;
 
-			std::vector<FVector> readFirstXColumn();
-			std::vector<FVector> readFirstYRow();
-			FVector readBottomLeftCorner();
+		std::vector<std::vector<FVector>> innerMap;
+		std::vector<std::vector<bool>> innerMapFreePositions;
+		int x;
+		int y;
+		bool blockTrees = false;
+
+		int clampInnerIndex(int a);
+
+		FVector normalFor(int i, int j);
+
+		int convertToInnerIndex(int value);
+		int clampOuterYIndex(FVector2D &a);
+		bool isInBounds(FVector &a);
+
+		int xPositionInCm();
+		int yPositionInCm();
+
+		void convertPositionToInnerIndexClamped(
+			FVector inpos,
+			int &i,
+			int &j);
+
+		std::vector<FVector> readFirstXColumn();
+		std::vector<FVector> readFirstYRow();
+		FVector readBottomLeftCorner();
+
+		std::vector<bool> readFirstXColumnFoliage();
+		std::vector<bool> readFirstYRowFoliage();
+		bool readBottomLeftCornerFoliage();
 	};
 
 	class UWorld *worldPointer = nullptr;
@@ -268,7 +292,8 @@ private:
 	void processRoad(
 		TVector<FVector2D> &curve,
 		float roadWidth,
-		MeshData &data
+		MeshData &data,
+		float _einheitsValue
 	);
 	FVector make3D(FVector2D &pos, float height);
 	void lockQuadsFromParalellArrayLines(

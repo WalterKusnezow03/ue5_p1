@@ -6,8 +6,8 @@
 #include "p2/entityManager/AlertManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/DebugHelper.h"
-#include "p2/util/timer.h"
+#include "GameCore/DebugHelper.h"
+#include "GameCore/util/timer.h"
 
 AgrenadeItem::AgrenadeItem(){
     throwableType = throwableEnum::greneade_enum;

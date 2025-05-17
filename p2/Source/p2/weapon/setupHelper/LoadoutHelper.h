@@ -2,7 +2,7 @@
 
 
 #include "weaponSetupHelper.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/TVector.h"
 #include "p2/weapon/weapon.h"
 
 /**

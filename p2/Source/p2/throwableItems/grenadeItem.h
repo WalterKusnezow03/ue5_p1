@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "p2/util/timer.h"
+#include "GameCore/util/timer.h"
 #include "grenadeItem.generated.h"
 
 /**

@@ -5,7 +5,7 @@
 
 #include "EntityScript.h"
 #include "p2/player/playerScript.h"
-#include "p2/pathFinding/PathFinder.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -16,7 +16,7 @@
 #include "p2/entityManager/AlertManager.h"
 #include "p2/gameStart/assetManager.h"
 #include "p2/entities/botActionHelper/EAttackType.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 

@@ -13,7 +13,7 @@
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 
 #include "LoadoutScreen.h"
 

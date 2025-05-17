@@ -2,7 +2,7 @@
 
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-#include "p2/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
 #include "weaponEnum.h"
 #include "carriedItem.h"
@@ -11,10 +11,10 @@
 #include "ammunitionEnum.h"
 #include <map>
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "p2/util/AActorUtil.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/util/AActorUtil.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
@@ -1168,9 +1168,9 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
  */
 
 void Aweapon::setupSwayAnimation(){
-	float timeForMotion = 0.5f;
+	float timeForMotion = 0.7f;
 	swayInterpolator.setMotionTime(timeForMotion);
-	swayInterpolator.setHeightOfWave(5.0f, -1.0f);
+	swayInterpolator.setHeightOfWave(2.0f, -1.0f); //y,z
 }
 
 void Aweapon::updateSwayEnabledStatus(bool flag){
@@ -1178,35 +1178,14 @@ void Aweapon::updateSwayEnabledStatus(bool flag){
 	if(abzugHinten) return;
 	
 	swayInterpolator.enableSwayFlag(flag);
-	/*
-	if(flag){
-		if(!swayEnabled){
-			swayEnabled = true;
-			stopSway = false;
-		}
-	}else{
-		if(!swayEnabled){
-			return;
-		}
-		stopSway = true;
-	}*/
 	
 }
 
 void Aweapon::TickSway(float deltatime){
 	if(isAiming) return;
 	if(abzugHinten) return;
-	//if(!swayEnabled) return;
 	
 	FVector interpolated = swayInterpolator.Tick(deltatime);
-	bool reached = swayInterpolator.reachedLoop();
-	/*
-	if(stopSway){
-		if(swayEnabled && reached){
-			swayEnabled = false;
-			stopSway = false;
-		}
-	}*/
 
 	//super
 	Super::addToAnimationOffset(interpolated);

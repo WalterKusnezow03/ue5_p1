@@ -12,7 +12,7 @@
 #include "p2/entities/customIk/animation/motionChain/RotationQueue.h"
 #include "p2/entities/customIk/animation/motionChain/RotationStates.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "CoreMinimal.h"
 
 
@@ -430,7 +430,7 @@ void BoneController::setupAnimation(){
 	//running item state, hochanschlag, nur rechts an waffe
 	MotionAction hochAnschlagState;
 	FRotator rotationForTarget5;
-	rotationForTarget5.Pitch = 90; //up
+	rotationForTarget5.Pitch = -90; //up
 	FVector targetHochAnschlagStateLocation(armScaleCM * 0.2f, armScaleCM * 0.2f, armScaleCM * 1.5f);
 	hochAnschlagState.setLocationAndRotation(targetHochAnschlagStateLocation, rotationForTarget5);
 	stateNoneNoItem.setLocalFrame2ArmsSeperate(true);//nur rechts an waffe

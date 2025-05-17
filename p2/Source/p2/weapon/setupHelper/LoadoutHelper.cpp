@@ -1,11 +1,11 @@
 
 
 #include "weaponSetupHelper.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/TVector.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/player/playerInventory.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "LoadoutHelper.h"
 
 

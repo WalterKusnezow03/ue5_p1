@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/TVector.h"
 
 
 /**
@@ -32,12 +32,28 @@ public:
 		FVector2D &startingPoint,
 		TVector<FVector2D> &output,
 		float _einheitsValue,
-		float distanceBetweenAnchorsMin,
-		float distanceBetweenAnchorsMax,
+		float distanceBetweenAnchorsOnXAxisMin,
+    	float distanceBetweenAnchorsOnXAxisMax,
+		float distanceBetweenAnchorsYRange,
 		float max_xy_coordinate
 	);
 
+	void createNewRandomCurve(
+		FVector2D &startingPoint,
+		TVector<FVector2D> &output,
+		float _einheitsValue,
+		float distanceMin,
+		float distanceMax,
+		float angleTurnMinAbs,
+		float angleTurnMaxAbs,
+		float max_xy_coordinate
+	);
 
+	void afterSmoothHeight(
+		TArray<FVector> &curve,
+		float _einheitsValue,
+		int anchorSkipPerStep
+	);
 
 private:
 
@@ -68,4 +84,31 @@ private:
 		std::vector<FVector2D> &curve,
 		float constSkalar
 	);
+
+
+	//random anchors validation
+	FVector2D randomOffset2D(
+		float xMin,
+		float xMax,
+		float yMin,
+		float yMax
+	);
+	FVector2D NewAnchorValidated(
+		FVector2D &latestAnchor, 
+		FVector2D &offset, 
+		float maxYValue
+	);
+
+	//rotation anchors validation
+	bool inBoundY(FVector2D &other, float min, float max);
+	FVector2D createNewValidAnchor(
+		FVector2D &anchorPrev,
+		FVector2D &direction,
+		MMatrix &integratedRotation,
+		float minAngle,
+		float maxAngle,
+		float maxXY
+	);
+
+
 };

@@ -56,7 +56,7 @@ void SwayInterpolator::enableSwayFlag(bool flag){
 
 
 FVector SwayInterpolator::Tick(float deltatime){
-    if(!swayEnabled){
+    if(DEBUG_BLOCKSWAY || !swayEnabled){
         return FVector(0,0,0);
     }
     

@@ -4,7 +4,7 @@
 #include "p2/gamestart/assetManager.h"
 #include <algorithm>
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/meshgen/MeshData/aeroDynamic/AeroMeshData.h"
 #include "p2/entityManager/referenceManager.h"
 #include "p2/meshgen/MeshData/MeshData.h"

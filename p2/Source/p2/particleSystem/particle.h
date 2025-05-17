@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/util/timer.h"
+#include "GameCore/util/timer.h"
 #include "particleEnum.h"
 #include "particle.generated.h"
 

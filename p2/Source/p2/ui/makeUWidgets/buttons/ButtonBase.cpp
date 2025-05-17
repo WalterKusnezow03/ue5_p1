@@ -6,7 +6,7 @@
 #include "Components/SizeBox.h"
 #include "Components/SizeBoxSlot.h"
 #include "Components/ScaleBox.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/ui/makeUWidgets/callback/callback.h"
 
 #include "ButtonBase.h"

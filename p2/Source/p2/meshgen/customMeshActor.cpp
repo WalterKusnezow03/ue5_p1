@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CoreMinimal.h"
-#include "p2/util/FVectorTouple.h"
-#include "p2/util/AActorUtil.h"
-#include "p2/pathFinding/PathFinder.h"
+#include "GameCore/util/FVectorTouple.h"
+#include "GameCore/util/AActorUtil.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "p2/meshgen/generation/bezierCurve.h"
 #include "p2/meshgen/foliage/MatrixTree.h"
 #include "p2/meshgen/foliage/ETreeType.h"
-#include "p2/util/FVectorUtil.h"
+#include "GameCore/util/FVectorUtil.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/meshgen/generation/helper/TerrainChunkSetup.h"
 #include <set>
@@ -75,14 +75,9 @@ void AcustomMeshActor::takedamage(int d, bool surpressed){
         {
             health -= d;
             if(health <= 0){
-
                 damagedOwner = nullptr;
-
                 health = 100;
-                if(splitOnDeath && false){ //OLD 
-                    splitIntoAllTriangles();
-                }
-
+                
                 SetActorLocation(FVector(0, 0, -10000));
 
                 //not really despawn for now

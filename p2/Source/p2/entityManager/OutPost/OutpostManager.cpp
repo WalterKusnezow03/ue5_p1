@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Outpost.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "OutpostManager.h"
 
 OutpostManager::OutpostManager()

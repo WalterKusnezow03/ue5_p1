@@ -1,6 +1,6 @@
 
 #include "p2/entities/customIk/MMatrix.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "RotationQueue.h"
 
 

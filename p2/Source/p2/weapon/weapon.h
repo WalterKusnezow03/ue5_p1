@@ -12,11 +12,11 @@
 #include "ammunitionEnum.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include "p2/entities/customIk/MMatrix.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
-#include "p2/util/timer.h"
+#include "GameCore/util/timer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 
 #include "weapon.generated.h"
@@ -259,8 +259,7 @@ private:
 	SwayInterpolator swayInterpolator;
 	void setupSwayAnimation();
 	void TickSway(float deltatime);
-	bool stopSway = false;
-	bool swayEnabled = false;
+	
 
 
 	//sight offset

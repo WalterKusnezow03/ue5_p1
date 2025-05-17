@@ -17,8 +17,9 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "p2/util/FVectorUtil.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/util/FVectorUtil.h"
+#include "GameCore/DebugHelper.h"
+#include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/weapon/throwerWeapon.h"
 
 #include <map>
@@ -173,6 +174,11 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
 void EntityManager::addActorToIgnoredAllParams(AActor *actor){
     if(actor != nullptr){
         collisionIgnoreParams.AddIgnoredActor(actor);
+    
+        if(PathFinder *p = PathFinder::instance()){
+            p->addActorToIgnoreRaycastParams(actor);
+            
+        }
     }
 }
 

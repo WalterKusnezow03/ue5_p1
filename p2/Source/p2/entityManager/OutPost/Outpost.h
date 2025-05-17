@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "p2/player/teamEnum.h"
+#include "GameCore/team/teamEnum.h"
 #include <map>
 #include "Outpost.generated.h"
 

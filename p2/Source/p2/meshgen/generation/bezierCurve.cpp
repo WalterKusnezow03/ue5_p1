@@ -2,8 +2,9 @@
 
 
 #include "bezierCurve.h"
-#include "p2/util/FVectorUtil.h"
-#include "p2/util/TVector.h"
+#include "GameCore/util/FVectorUtil.h"
+#include "p2/entities/customIk/MMatrix.h"
+#include "GameCore/util/TVector.h"
 
 template class TVector<FVector2D>;
 
@@ -342,19 +343,108 @@ FVector2D bezierCurve::FVector2DFourAnchorBezier(
 
 
 
-
-
-
 /*
 ---- generation ----
 */
+
+//winkel basierter ansatz -- testing needed!
 void bezierCurve::createNewRandomCurve(
     FVector2D &startingPoint,
     TVector<FVector2D> &output,
     float _einheitsValue,
-    float distanceBetweenAnchorsMin,
-    float distanceBetweenAnchorsMax,
+    float distanceMin,
+    float distanceMax,
+    float angleTurnMinAbs,
+    float angleTurnMaxAbs,
     float max_xy_coordinate
+){
+    angleTurnMinAbs = std::abs(angleTurnMinAbs);
+    angleTurnMaxAbs = std::abs(angleTurnMaxAbs);
+
+    std::vector<FVector2D> points;
+    points.push_back(startingPoint);
+    MMatrix integratedRotation;
+    while(true){
+        FVector2D &latest = points.back();
+        if(latest.X >= max_xy_coordinate){ //fill on x
+            break;
+        }
+        FVector2D direction(
+            FVectorUtil::randomFloatNumber(distanceMin, distanceMax),
+            0.0f
+        );
+        
+        FVector2D newAnchorFinal = createNewValidAnchor(
+            latest,
+            direction,
+            integratedRotation,
+            angleTurnMinAbs,
+            angleTurnMaxAbs,
+            max_xy_coordinate
+        );
+        points.push_back(newAnchorFinal);
+    }
+    //process
+    calculatecurve(
+		points,
+		output,
+		_einheitsValue
+	);
+
+}
+
+FVector2D bezierCurve::createNewValidAnchor(
+    FVector2D &anchorPrev,
+    FVector2D &direction,
+    MMatrix &integratedRotation,
+    float minAngle,
+    float maxAngle,
+    float maxXY
+){
+    MMatrix rotationA = integratedRotation;
+    MMatrix rotationB = integratedRotation;
+    float angle = FVectorUtil::randomFloatNumber(minAngle, maxAngle);
+    float angleRad = MMatrix::degToRadian(angle);
+    rotationA.yawRadAdd(angleRad);
+    rotationB.yawRadAdd(-1.0f * angleRad);
+
+    FVector2D resultA = anchorPrev + rotationA * direction; 
+    FVector2D resultB = anchorPrev + rotationB * direction; 
+
+    if(inBoundY(resultA, 0.0f, maxXY)){
+        integratedRotation = rotationA;
+        return resultA;
+    }
+
+    integratedRotation = rotationB;
+    return resultB;
+}
+
+bool bezierCurve::inBoundY(FVector2D &other, float min, float max){
+    return other.Y >= min && other.Y < max;
+}
+
+
+
+
+
+
+
+
+
+
+///random basierter vektoren ansatz
+
+/// @brief creates a curve alogn the x axis with random y directions
+void bezierCurve::createNewRandomCurve(
+    FVector2D &startingPoint,
+    TVector<FVector2D> &output,
+    float _einheitsValue,
+    float distanceBetweenAnchorsOnXAxisMin,
+    float distanceBetweenAnchorsOnXAxisMax,
+    float distanceBetweenAnchorsYRange,
+    //add min xy here too!
+    float max_xy_coordinate //capped top, lower is 0 by default
 ){
     std::vector<FVector2D> points;
     points.push_back(startingPoint);
@@ -363,29 +453,131 @@ void bezierCurve::createNewRandomCurve(
         if(latest.X >= max_xy_coordinate){ //fill on x
             break;
         }
-        FVector2D offset = FVectorUtil::randomOffset2D(
-            distanceBetweenAnchorsMin,
-            distanceBetweenAnchorsMax
+        FVector2D offset = randomOffset2D(
+            distanceBetweenAnchorsOnXAxisMin,
+            distanceBetweenAnchorsOnXAxisMax,
+            0.0f,
+            distanceBetweenAnchorsYRange
         );
-        FVector2D finalpoint = latest + offset;
-        bool flipY = latest.Y >= max_xy_coordinate;
-        if(flipY){
-            offset.Y *= -1.0f;
-            finalpoint = latest + offset;
-        }
-
+        
+        FVector2D finalpoint = NewAnchorValidated(latest, offset, max_xy_coordinate);
         points.push_back(finalpoint);
 
     }
 
+    //todo hier ggf: random rotation von 0 bis 90
 
 
 
-
-
+    //process
     calculatecurve(
 		points,
 		output,
 		_einheitsValue
 	);
+}
+
+FVector2D bezierCurve::randomOffset2D(
+    float xMin,
+    float xMax,
+    float yMin,
+    float yMax
+){
+    FVector2D output(
+        FVectorUtil::randomFloatNumber(xMin, xMax),
+        FVectorUtil::randomFloatNumber(yMin, yMax)
+    );
+    return output;
+}
+
+
+
+
+
+/// @brief creates a new valid anchor with a random sign on Y dir, while
+/// keeping constraints
+/// @param anchor 
+/// @param offsetToModify 
+/// @param maxYValue 
+FVector2D bezierCurve::NewAnchorValidated(
+    FVector2D &latestAnchor, 
+    FVector2D &offset, 
+    float maxYValue
+){
+    FVector2D anchorToValidate = latestAnchor + offset;
+    
+    bool edgeCase = false;
+    if(anchorToValidate.Y >= maxYValue){
+        offset.Y = std::abs(offset.Y) * -1.0f;
+        edgeCase = true;
+    }
+    if(anchorToValidate.Y <= 0.0f){
+        offset.Y = std::abs(offset.Y);
+        edgeCase = true;
+    }
+
+    if(!edgeCase){
+        int random = FVectorUtil::randomNumber(1, 100);
+        int moduloNum = FVectorUtil::randomNumber(2, 4);
+        if(random % moduloNum == 0){
+            offset.Y *= -1.0f; //random flip of sign
+        }
+    }
+
+    FVector2D validAnchor = latestAnchor + offset;
+    return validAnchor;
+}
+
+
+
+
+
+
+
+
+
+/*
+
+------ after smooth ------
+
+testing needed !
+*/
+void bezierCurve::afterSmoothHeight(
+    TArray<FVector> &curve,
+    float _einheitsValue,
+    int anchorSkipPerStep
+){
+    anchorSkipPerStep = std::max(std::abs(anchorSkipPerStep), 1);
+
+    //copy anchors
+    std::vector<FVector> anchors;
+    for(int i = 0; i < curve.Num(); i += anchorSkipPerStep){
+        anchors.push_back(curve[i]);
+
+        int nextIndex = i + anchorSkipPerStep;
+        if(nextIndex >= curve.Num()){
+            anchors.push_back(curve[curve.Num() - 1]);
+        }
+    }
+
+
+    //calculate
+    std::vector<FVector> output;
+    calculatecurve(
+        anchors, 
+        output,
+        _einheitsValue
+    );
+
+
+    //apply smooth 
+    for(int i = 0; i < output.size(); i++){
+        if(i < curve.Num()){
+            FVector &interpolated = output[i];
+            FVector &current = curve[i];
+            current.Z = interpolated.Z;
+        }
+    }
+
+
 }

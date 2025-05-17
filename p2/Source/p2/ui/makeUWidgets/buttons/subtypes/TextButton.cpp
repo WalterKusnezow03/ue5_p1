@@ -4,7 +4,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/ScaleBox.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
 #include "p2/ui/makeUWidgets/callback/callback.h"
 #include "TextButton.h"

@@ -2,7 +2,8 @@
 #include "p2/renderTargets/customRenderTarget/CustomRenderedTexture.h"
 #include "p2/entityManager/AlertManager.h"
 #include "p2/gamestart/assetEnums/textureEnum.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
+#include "Kismet/GameplayStatics.h"
 #include "p2/entities/customIk/MMatrix.h"
 
 

@@ -20,7 +20,7 @@
 #include "p2/entityManager/EntityManagerGeneric.h"
 #include "p2/gamestart/assetEnums/materialEnum.h"
 #include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "p2/rooms/roomtypeEnum.h"
+
 
 
 /**

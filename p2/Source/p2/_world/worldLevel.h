@@ -83,5 +83,5 @@ private:
 
 	static void createAeroActor(UWorld *world);
 
-
+	static void createCar(UWorld *world);
 };

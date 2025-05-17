@@ -7,7 +7,7 @@
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 #include "CanvasScreen.h"
 
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 
 
 void UPlayerHud::init(UPlayerUi &refin){

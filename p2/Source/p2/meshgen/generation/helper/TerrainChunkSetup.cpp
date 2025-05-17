@@ -3,7 +3,7 @@
 #include "TerrainChunkSetup.h"
 #include "p2/entityManager/OutPost/Outpost.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/DebugHelper.h"
+#include "GameCore/DebugHelper.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
 
 TerrainChunkSetup::TerrainChunkSetup(
