@@ -14,6 +14,8 @@
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "GameCore/util/timer.h"
 #include "WingsuitInterface.h"
+#include "GameCore/Input/InputContainer.h"
+#include "GameCore/interfaces/Steeringinterface.h"
 
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -23,7 +25,7 @@
 #include "playerScript.generated.h"
 
 UCLASS()
-class P2_API AplayerScript : public ACharacter, public IDamageinterface
+class P2_API AplayerScript : public ACharacter, public IDamageinterface, public ISteeringinterface
 {
 	GENERATED_BODY()
 
@@ -44,12 +46,19 @@ public:
 
 	void reloadLoadout(LoadoutHelper &loadout);
 
+	//steering
+	virtual InputContainer &input() override;
+	virtual void setDriverLocation(FVector &location) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	//derived from ACharacter
 	virtual void Jump() override;
+
+	//tracks input for steering vehicles, and unseat
+	InputContainer playerInputContainer;
 
 public:	
 	// Called every frame
@@ -68,6 +77,7 @@ public:
     class UAnimInstance* AnimInstance;
 
 	FRotator cameraRotation();
+	FVector playerLookDir();
 
 	void updatePlayerEnteredAreaUi(bool entered);
 

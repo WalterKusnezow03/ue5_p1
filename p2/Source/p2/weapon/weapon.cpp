@@ -4,22 +4,21 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "GameCore/interfaces/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
-#include "weaponEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "carriedItem.h"
 #include "p2/player/playerScript.h"
 #include "sightScript.h"
 #include "ammunitionEnum.h"
 #include <map>
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/team/teamEnum.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "GameCore/util/AActorUtil.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/entities/customIk/MMatrix.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/gamestart/assetManager.h"
-#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetPlugin/gamestart/assetManager.h"
+#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "carriedItem.h"
 
 

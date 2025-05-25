@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/meshgen/customMeshActorBase.h"
-#include "p2/meshgen/MeshData/aeroDynamic/AeroMeshData.h"
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
+#include "GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h"
 #include <map>
 
 #include "AeroActor.generated.h"

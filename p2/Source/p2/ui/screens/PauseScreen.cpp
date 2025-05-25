@@ -9,7 +9,7 @@
 #include "GameCore/DebugHelper.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include <functional>
-#include "p2/gamestart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "PauseScreen.h"
 
 

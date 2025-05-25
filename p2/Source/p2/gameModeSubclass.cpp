@@ -14,7 +14,7 @@
 #include "Engine/Blueprint.h"
 #include "UObject/SoftObjectPath.h"
 #include "UObject/ConstructorHelpers.h"
-#include "p2/gameStart/AssetLoader.h"
+#include "AssetPlugin/gamestart/AssetLoader.h"
 #include "p2/_world/worldLevel.h"
 
 
@@ -30,15 +30,6 @@ AgameModeSubclass::AgameModeSubclass()
     static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Prefabs/player/playerPrefab")); 
     DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-    //worldLevel::resetWorld();
-
-    /**
-     * ASSET LOADER
-     */
-    AssetLoader a(GetWorld());
-    a.loadAssets();
-    
-
 }
 
 // ----- DEFAULT METHODS -----
@@ -48,6 +39,13 @@ AgameModeSubclass::AgameModeSubclass()
 void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
+
+    /**
+     * ASSET LOADER
+     */
+    AssetLoader a(GetWorld());
+    a.loadAssets();
+
 
     /**
      * CREATE WORLD LEVEL 

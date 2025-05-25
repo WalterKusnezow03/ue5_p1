@@ -1,7 +1,7 @@
 
 #include "ImageOverlayed.h"
 #include "Components/Overlay.h"
-#include "p2/gamestart/assetManager.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 #include "p2/ui/PlayerUi.h"
 
 

@@ -2,24 +2,25 @@
 
 #pragma once
 
+#include "GameCore/EntityGC/EntityManagerBase.h"
+
 #include "CoreMinimal.h"
-#include "EntityManagerGeneric.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "p2/weapon/weaponEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "p2/weapon/throwerWeapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "p2/throwableItems/throwableEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "p2/particleSystem/particleEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/particleEnum.h"
 #include "p2/particleSystem/particle.h"
-#include "p2/meshgen/customMeshActor.h"
-#include "p2/meshgen/customMeshActorBase.h"
-#include "p2/meshgen/water/customWaterActor.h"
-#include "p2/entityManager/EntityManagerGenericMap.h"
-#include "p2/entityManager/EntityManagerGeneric.h"
-#include "p2/gamestart/assetEnums/materialEnum.h"
-#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "terrainPlugin/meshgen/customMeshActor.h"
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
+#include "terrainPlugin/meshgen/water/customWaterActor.h"
+#include "GameCore/EntityGC/EntityManagerGenericMap.h"
+#include "GameCore/EntityGC/EntityManagerGeneric.h"
+#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 
 
 
@@ -32,7 +33,7 @@
  * only this class will spawn any enteties and manage them if they are not needed!
  * will help with object pooling for the whole game
  */
-class P2_API EntityManager
+class P2_API EntityManager : public EntityManagerBase
 {
 private:
 	FCollisionQueryParams collisionIgnoreParams;
@@ -41,6 +42,11 @@ private:
 	std::map<teamEnum, FCollisionQueryParams> collisionMap;
 
 public:
+
+	static void BeginPlay();
+	static EntityManager *instance();
+
+
 	void addActorToIgnoreRaycastParams(AActor *actor, teamEnum team);
 	void addActorToIgnoredAllParams(AActor *actor);
 
@@ -49,6 +55,9 @@ public:
 
 	EntityManager();
 	~EntityManager();
+
+	//using base class
+	using EntityManagerBase::add;
 
 	//add entity section
 	void add(AEntityScript *entity);
@@ -97,9 +106,7 @@ public:
 private:
 	
 
-	//empty mesh actor
-	UPROPERTY()
-	class UClass *emptyCustomMeshActorBp = nullptr;
+	
 
 
 	//hier nur den typ parameter als klasse angeben nicht pointer oderso

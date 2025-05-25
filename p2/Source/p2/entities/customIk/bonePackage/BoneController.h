@@ -8,7 +8,7 @@
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/bonePackage/ArmMotionStates.h"
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "p2/entities/customIk/animation/GravityInterpolator.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandController.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"

@@ -26,6 +26,10 @@ public class terrainPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
+				"GameCore",
+				"CoreMath",
+				"AssetPlugin",
+				"PathFinder"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,6 +42,7 @@ public class terrainPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"ProceduralMeshComponent"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

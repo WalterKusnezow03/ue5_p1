@@ -16,11 +16,13 @@
 #include "GameCore/interfaces/Interactinterface.h"
 #include "GameFramework/Character.h" // Falls noch nicht inkludiert
 #include "GameFramework/CharacterMovementComponent.h"
-#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/player/minimap/Minimap.h"
 #include "PathFinder/pathFinding/PathFinder.h"
+#include "p2/vehicles/vehicle/base/vehicleBase.h"
+#include "GameCore/PlayerInfo/PlayerInfo.h"
 
 #include "p2/ui/PlayerUi.h"
 
@@ -219,6 +221,12 @@ void AplayerScript::Tick(float DeltaTime)
     //world level chunkTick
     worldLevel::Tick(DeltaTime);
 
+    PlayerInfo::Update(
+        GetActorLocation(),
+        cameraRotation(),
+        playerLookDir()
+    );
+
     shoot(); //shoot the weapon if needed or release. Method handles both automatically
     TickWeaponSway();
 
@@ -295,6 +303,7 @@ void AplayerScript::takedamage(int d, FVector &hitpoint, bool surpressed){
  */
 void AplayerScript::MoveForward(float Value)
 {
+    playerInputContainer.setForwardAxis(Value);
 
     if ((Controller != nullptr) && (Value != 0.0f))
     {
@@ -327,6 +336,8 @@ void AplayerScript::MoveForward(float Value)
 
 void AplayerScript::MoveRight(float Value)
 {
+    playerInputContainer.setRightAxis(Value);
+
     if ( (Controller != nullptr) && (Value != 0.0f) )
     {
         const FRotator Rotation = Controller->GetControlRotation();
@@ -405,6 +416,7 @@ void AplayerScript::sprint(){
 void AplayerScript::interact(){
 	performRaycast();
 
+    playerInputContainer.setInteractKeyPressedTrue();
 }
 
 void AplayerScript::performRaycast()
@@ -418,7 +430,7 @@ void AplayerScript::performRaycast()
 
     //100 = 1m
     //500m = 
-    FVector End = Start + (CameraRotation.Vector() * 100.0f); //1 meter in front of the camera
+    FVector End = Start + (CameraRotation.Vector() * 200.0f); //2 meter in front of the camera
 
     // Perform the raycast
     FHitResult HitResult;
@@ -445,6 +457,13 @@ void AplayerScript::performRaycast()
             IInteractinterface *interactable = Cast<IInteractinterface>(actor);
             if(interactable){
                 interactable->interact();
+                return;
+            }
+
+            AvehicleBase *vehicle = Cast<AvehicleBase>(actor);
+            if(vehicle != nullptr){
+                vehicle->seatAsDriver(this); //interface
+                return;
             }
         }
 
@@ -630,38 +649,41 @@ void AplayerScript::setupBoneController(){
     boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); // hand 2 debug
 
 
-    //fingers right
-    int fingerX = 2;
-    HandBoneIndexEnum array[] = {
-        HandBoneIndexEnum::thumb,
-        HandBoneIndexEnum::finger1,
-        HandBoneIndexEnum::finger2,
-        HandBoneIndexEnum::finger3,
-        HandBoneIndexEnum::finger4,
-    };
-    for (int i = 0; i < 5; i++)
-    {
-        //right hand
-        int fingerY = boneController.fingerScale(array[i]);
-        AActor *fingertop = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
-        AActor *fingerbottom = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
-        boneController.attachFinger(
-            fingertop,
-            fingerbottom,
-            HandBoneIndexEnum::rightHand,
-            array[i]
-        );
+    //fingers 
+    if(false){
+        int fingerX = 2;
+        HandBoneIndexEnum array[] = {
+            HandBoneIndexEnum::thumb,
+            HandBoneIndexEnum::finger1,
+            HandBoneIndexEnum::finger2,
+            HandBoneIndexEnum::finger3,
+            HandBoneIndexEnum::finger4,
+        };
+        for (int i = 0; i < 5; i++)
+        {
+            //right hand
+            int fingerY = boneController.fingerScale(array[i]);
+            AActor *fingertop = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+            AActor *fingerbottom = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+            boneController.attachFinger(
+                fingertop,
+                fingerbottom,
+                HandBoneIndexEnum::rightHand,
+                array[i]
+            );
 
-        //left hand
-        AActor *fingertop1 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
-        AActor *fingerbottom2 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
-        boneController.attachFinger(
-            fingertop1,
-            fingerbottom2,
-            HandBoneIndexEnum::leftHand,
-            array[i]
-        );
+            //left hand
+            AActor *fingertop1 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+            AActor *fingerbottom2 = createLimbPivotAtTop(fingerX, fingerX, fingerY, 0);
+            boneController.attachFinger(
+                fingertop1,
+                fingerbottom2,
+                HandBoneIndexEnum::leftHand,
+                array[i]
+            );
+        }
     }
+    
 
     //return;
 
@@ -674,9 +696,11 @@ void AplayerScript::setupBoneController(){
 	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
 	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
 
-
-    AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
-	boneController.attachTorso(torsoMesh);
+    if(false){
+        AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
+	    boneController.attachTorso(torsoMesh);
+    }
+    
 
     //foot
 	AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
@@ -798,8 +822,12 @@ FRotator AplayerScript::cameraRotation(){
     return rotator;
 }
 
-
-
+FVector AplayerScript::playerLookDir(){
+    if(CameraComponent){
+        return CameraComponent->GetForwardVector();
+    }
+    return FVector(0, 0, 0);
+}
 
 /**
  * --- helper ---
@@ -960,4 +988,14 @@ void AplayerScript::TickMiniMap(){
         FRotator rot = GetActorRotation();
         minimap->updatePlayerPositionAndRotation(pos, rot);
     }
+}
+
+/**
+ * player steering
+ */
+InputContainer &AplayerScript::input(){
+    return playerInputContainer;
+}
+void AplayerScript::setDriverLocation(FVector &location){
+    SetActorLocation(location);
 }

@@ -5,7 +5,7 @@
 #include "p2/weapon/carriedItem.h"
 #include "HandBoneIndexEnum.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 HandController::HandController()
 {

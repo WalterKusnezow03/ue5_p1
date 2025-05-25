@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "throwableEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/throwableEnum.h"
 #include "throwableItem.generated.h"
 
 UCLASS()

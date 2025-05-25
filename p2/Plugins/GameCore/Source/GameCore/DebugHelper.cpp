@@ -237,6 +237,11 @@ void DebugHelper::logMessage(FString s, FVector a){
 	logMessage(s);
 }
 
+void DebugHelper::logMessage(FString s, FString t){
+	s += t;
+	logMessage(s);
+}
+
 FString DebugHelper::FVectorToString(FVector vec){
 	FString xPart = FString::Printf(TEXT("%.2f"), vec.X);
 	FString yPart = FString::Printf(TEXT("%.2f"), vec.Y);

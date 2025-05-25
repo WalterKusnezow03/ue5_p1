@@ -4,30 +4,32 @@
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
-#include "p2/meshgen/rooms/layoutCreator/layoutMaker.h"
+#include "terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h"
 #include "GameCore/util/TVector.h"
-#include "p2/meshgen/generation/terrainCreator.h"
-#include "p2/meshgen/foliage/MatrixTree.h"
-#include "p2/entities/customIk/MMatrix.h"
-#include "p2/meshgen/foliage/ETreeType.h"
-#include "p2/meshgen/customMeshActorBase.h"
+#include "terrainPlugin/meshgen/generation/terrainCreator.h"
+#include "terrainPlugin/meshgen/foliage/MatrixTree.h"
+#include "CoreMath/Matrix/MMatrix.h"
+#include "terrainPlugin/meshgen/foliage/ETreeType.h"
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
-#include "p2/meshgen/foliage/rocks/RockCreator.h"
-#include "p2/meshgen/water/customWaterActor.h"
-#include "p2/meshgen/rooms/roomActor/roomProcedural.h"
+#include "terrainPlugin/meshgen/foliage/rocks/RockCreator.h"
+#include "terrainPlugin/meshgen/water/customWaterActor.h"
+#include "terrainPlugin/meshgen/rooms/roomActor/roomProcedural.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/gamestart/assetManager.h"
-#include "p2/meshgen/MeshData/MeshData.h"
+#include "AssetPlugin/gamestart/assetManager.h"
+#include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "p2/ui/_baseClass/customUiComponentTickHandler.h"
-#include "p2/entities/customIk/MMatrix.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/meshgen/rooms/doorLike/DoorBase.h"
+#include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
 #include "GameCore/util/TVector.h"
 #include "p2/vehicles/vehicle/vehicleCar.h"
-#include "p2/meshgen/generation/bezierCurve.h"
+#include "terrainPlugin/meshgen/generation/bezierCurve.h"
+#include "p2/entityManager/OutPost/Outpost.h"
 
 #include "PathFinder/Public/PathFinderModule.h"
+
+#include "Humanoid/Debug/DebugJointsActor.h"
 
 #include "CoreMinimal.h"
 
@@ -45,7 +47,7 @@ worldLevel::~worldLevel()
 
 //static vars init:
 bool worldLevel::isTerrainInited = false;
-EntityManager *worldLevel::entityManagerPointer = nullptr;
+
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
 terrainCreator *worldLevel::terrainPointer = nullptr;
 bool worldLevel::nodesWereShown = false;
@@ -62,10 +64,9 @@ bool worldLevel::gamePausedFlag = false;
 /// -> pathfinder singleton instance -> all nodes will be wiped
 /// -> asset manager: all asset data wiped
 void worldLevel::resetWorld(){
-    if(entityManagerPointer != nullptr){
-        delete entityManagerPointer;
-        entityManagerPointer = nullptr;
-    }
+
+    EntityManager::EndPlay(); //very important
+
     if(outpostManagerPointer != nullptr){
         delete outpostManagerPointer;
         outpostManagerPointer = nullptr;
@@ -76,18 +77,6 @@ void worldLevel::resetWorld(){
         isTerrainInited = false;
     }
 
-    //clears all nodes from graph
-    /*
-    PathFinder *p = PathFinder::instance();
-    if (p != nullptr)
-    {
-        //p->clear();
-
-        p->deleteInstance();
-
-        FString s = FString::Printf(TEXT("debug end play: deleted path finder"));
-        DebugHelper::logMessage(s);
-    }*/
     FPathFinderModule::EndPathFinder();
 
     assetManager::EndGame();
@@ -97,6 +86,8 @@ void worldLevel::resetWorld(){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
+    EntityManager::BeginPlay(); //very important
+    
     gamePausedFlag = false;
     bool debugCreate = true; // dont create terrain for debugging
     // disabled for debugging
@@ -104,6 +95,7 @@ void worldLevel::initWorld(UWorld *world){
         if (!isTerrainInited && world != nullptr){
             int meters = 200;
             createTerrain(world, meters); // 100m
+            
         }
     }
 
@@ -115,6 +107,8 @@ void worldLevel::initWorld(UWorld *world){
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
     humanBotsOnStart(world, 1);
+
+    createOutpostsRequested(world); //stored in super class
         
     createGroundPane(world);
 
@@ -138,7 +132,25 @@ void worldLevel::initWorld(UWorld *world){
     debugBezier(world);
 
     //createAeroActor(world);
-    createCar(world);
+    //createCar(world);
+
+    createJointActor(world);
+}
+
+void worldLevel::createOutpostsRequested(UWorld *world){
+
+    for (int i = 0; i < worldLevelBase::outpostsToCreate.Num(); i++){
+        FVector &locationCurrent = worldLevelBase::outpostsToCreate[i];
+        if (OutpostManager *ptr = worldLevel::outpostManager())
+        {
+            AOutpost *outpost = ptr->requestOutpost(world, locationCurrent);
+            if (outpost)
+            {
+                outpost->createAlarmPolesIfNeeded();
+            }
+        }
+    }
+    worldLevelBase::outpostsToCreate.Empty();
 }
 
 /**
@@ -161,11 +173,7 @@ void worldLevel::createPathFinder(UWorld *WorldIn){
 /// @brief intended for one time use only, do not delete, do not save
 /// @return returns pointer to entitymanager
 EntityManager *worldLevel::entityManager(){
-    if(entityManagerPointer == nullptr){
-        entityManagerPointer = new EntityManager();
-    }
-
-    return entityManagerPointer;
+    return EntityManager::instance();
 }
 
 /// @brief returns the outpost manager to ask for the nearest outpost
@@ -664,5 +672,13 @@ void worldLevel::createAeroActor(UWorld *world){
 void worldLevel::createCar(UWorld *world){
     if(world){
         AvehicleCar *car = AvehicleCar::Construct(world);
+    }
+}
+
+
+
+void worldLevel::createJointActor(UWorld *world){
+    if(world != nullptr){
+        ADebugJointsActor::CreateInstance(world);
     }
 }

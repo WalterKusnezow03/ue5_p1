@@ -1,16 +1,16 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "p2/entities/customIk/MMatrix.h"
-#include "p2/meshgen/customMeshActorBase.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 #include "wheel.generated.h"
 
 UCLASS()
-class P2_API Awheel : public AcustomMeshActorBase {
+class P2_API Awheel : public AActor {
 
 GENERATED_BODY()
 
 public:
+    bool debugPrint = false;
 
     static Awheel *Construct(UWorld *world, float radiusIn);
     static Awheel *Construct(
@@ -20,6 +20,7 @@ public:
         FVector relativeLocation
     );
 
+    void disableTraction();
     void AttachToParent(AActor *parent, FVector &relativeLocation);
 
     Awheel();
@@ -28,33 +29,38 @@ public:
 
     FVector TickAngularAccelerationAndGetVelocity(float radPerSecond, float deltaTime);
 
-    void processDirectionFromVehicleSpace(FVector &deltaDirection);
+    void processVelocityFromVehicleSpace(FVector &deltaDirection);
 
     FVector forwardDir();
     float thetaYawRad();
+    void addYaw(float angleRad);
+    void copyRotation(Awheel *ptr);
 
+    FVector groundBelowWheel();
 
-
-
-    FVector tractionForce();
-
-    FVector corneringForce(float slipAngle);
-
-    FVector frictionForceRoadDry(FVector &normal);
-    FVector frictionForceRoadWet(FVector &normal);
-    FVector frictionForce(FVector &normal, float haftReibungszahl);
-
-    FVector AllForces(FVector &normal, float slipAngle);
+    FVector AllForces(FVector &normal, float slipAngle, float massPerWheel, FVector carLocalVelocity);
 
 protected:
-    void generateMesh(float radiusIn);
+    FVector tractionForce();
+    FVector corneringForce(float slipAngle);
+    FVector normalForce(FVector &normal, float mass);
 
+    FVector frictionForceRoadDry(FVector &normal, FVector &velocity, float mass);
+    FVector frictionForceRoadWet(FVector &normal, FVector &velocity, float mass);
+    FVector frictionForce(FVector &normal, float haftReibungszahl, FVector &velocity, float mass);
+
+    float normalForceMagnitude(FVector &normal, float mass);
+
+    float maxSteerAngleRad = 0.0f;
+    bool tractionEnabled = true;
     float angularVelocity = 0.0f;
+    float angularAcceleration = 0.0f;
     float radius = 50.0f;
 
     float yawAngle = 0.0f;
 
     MMatrix rotation;
+    float clampRotationAdd(float yawAdd);
 
     FVector moveToLocalRotationSpace(FVector &dir);
     FVector moveToWorldRotationSpace(FVector &localDir);

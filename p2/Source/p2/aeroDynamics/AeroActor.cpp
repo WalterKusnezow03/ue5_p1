@@ -1,13 +1,13 @@
 #include "AeroActor.h"
-#include "p2/meshgen/ELod.h"
-#include "p2/gamestart/assetEnums/materialEnum.h"
-#include "p2/gamestart/assetManager.h"
+#include "GameCore/MeshGenBase/ELod.h"
+#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 #include <algorithm>
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/meshgen/MeshData/aeroDynamic/AeroMeshData.h"
+#include "GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/meshgen/MeshData/MeshData.h"
+#include "GameCore/MeshGenBase/MeshData/MeshData.h"
 
 
 AAeroActor* AAeroActor::Construct(UWorld *world, FVector &location){

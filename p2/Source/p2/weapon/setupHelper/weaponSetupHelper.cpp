@@ -2,7 +2,6 @@
 
 
 #include "p2/weapon/weapon.h"
-#include "p2/weapon/weaponEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
 

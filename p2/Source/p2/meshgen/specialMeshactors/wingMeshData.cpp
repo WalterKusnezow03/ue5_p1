@@ -1,6 +1,6 @@
 
 #include "wingMeshData.h"
-#include "p2/meshgen/MeshData/MeshData.h"
+#include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMinimal.h"
 
 

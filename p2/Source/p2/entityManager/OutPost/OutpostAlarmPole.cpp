@@ -1,10 +1,10 @@
 #include "CoreMinimal.h"
 
-#include "p2/gamestart/assetEnums/materialEnum.h"
-#include "p2/meshgen/MeshData/MeshData.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/meshgen/ELod.h"
+#include "GameCore/MeshGenBase/ELod.h"
 #include "OutpostAlarmPole.h"
 
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CoreMinimal.h"
-#include "p2/gamestart/assetEnums/materialEnum.h"
-#include "p2/gamestart/assetManager.h"
+#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 #include "wingsuitMeshActor.h"
 
 

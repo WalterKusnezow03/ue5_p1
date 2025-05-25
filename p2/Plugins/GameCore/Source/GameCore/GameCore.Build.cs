@@ -26,7 +26,8 @@ public class GameCore : ModuleRules
 			new string[]
 			{
 				"Core",
-				
+				"AssetPlugin",
+				"CoreMath"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -39,6 +40,7 @@ public class GameCore : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"ProceduralMeshComponent"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

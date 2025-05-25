@@ -2,20 +2,17 @@
 
 
 #include "EntityManager.h"
-#include "EntityManagerGeneric.h"
+#include "GameCore/EntityGC/EntityManagerGeneric.h"
 #include "p2/particleSystem/particle.h"
-#include "p2/particleSystem/particleEnum.h"
-#include "p2/meshgen/customMeshActor.h"
-#include "p2/meshgen/customMeshActorBase.h"
-#include "p2/meshgen/water/customWaterActor.h"
-#include "p2/gamestart/assetManager.h"
+#include "terrainPlugin/meshgen/customMeshActor.h"
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
+#include "terrainPlugin/meshgen/water/customWaterActor.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "p2/weapon/weaponEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "p2/throwableItems/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "GameCore/DebugHelper.h"
@@ -23,6 +20,40 @@
 #include "p2/weapon/throwerWeapon.h"
 
 #include <map>
+
+
+template class EntityManagerGeneric<AEntityScript>;
+template class EntityManagerGenericMap<teamEnum, AHumanEntityScript>;
+template class EntityManagerGeneric<AcustomMeshActor>;
+template class EntityManagerGenericMap<weaponEnum, Aweapon>;
+template class EntityManagerGenericMap<throwableEnum, AthrowableItem>;
+template class EntityManagerGenericMap<particleEnum, Aparticle>;
+
+
+
+//must be called before anything happens. On Begin Play !
+void EntityManager::BeginPlay(){
+    if(instancePtr != nullptr){
+        EndPlay();
+    }
+    EntityManagerBase::instancePtr = new EntityManager();
+}
+
+EntityManager *EntityManager::instance(){
+    if(EntityManagerBase::instancePtr == nullptr){
+        BeginPlay();
+    }
+    //gefährlicher code.
+    if(EntityManagerBase::instancePtr != nullptr){
+        EntityManager *casted = static_cast<EntityManager*>(EntityManagerBase::instancePtr);
+        if(casted){
+            return casted;
+        }
+    }
+    
+    return nullptr;
+}
+
 
 
 
@@ -36,13 +67,6 @@ EntityManager::~EntityManager()
     
 }
 
-
-template class EntityManagerGeneric<AEntityScript>;
-template class EntityManagerGenericMap<teamEnum, AHumanEntityScript>;
-template class EntityManagerGeneric<AcustomMeshActor>;
-template class EntityManagerGenericMap<weaponEnum, Aweapon>;
-template class EntityManagerGenericMap<throwableEnum, AthrowableItem>;
-template class EntityManagerGenericMap<particleEnum, Aparticle>;
 
 
 
@@ -481,17 +505,6 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
         );
         return SpawnedActor;
 
-        /*
-        if(emptyCustomMeshActorBp != nullptr){
-            AActor *actor = spawnAactor(world, emptyCustomMeshActorBp, location);
-            if(actor != nullptr){
-
-                AcustomMeshActor *customMesh = Cast<AcustomMeshActor>(actor);
-                if(customMesh != nullptr){
-                    return customMesh;
-                }
-            }
-        }*/
     }
     return nullptr;
 }

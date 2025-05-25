@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/meshgen/customMeshActor.h"
+#include "terrainPlugin/meshgen/customMeshActor.h"
 
 #include "OutpostAlarmPole.generated.h"
 

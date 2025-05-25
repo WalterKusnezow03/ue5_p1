@@ -16,8 +16,11 @@ public class p2 : ModuleRules
 
 			//terrain plugin
 			"terrainPlugin",
+			"CoreMath",
 			"GameCore",
-			"PathFinder"
+			"PathFinder",
+			"Humanoid",
+			"AssetPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

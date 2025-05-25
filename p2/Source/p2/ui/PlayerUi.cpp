@@ -2,10 +2,10 @@
 
 
 #include "PlayerUi.h"
-#include "p2/gameStart/assetManager.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
-#include "p2/gameStart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/entityManager/referenceManager.h"

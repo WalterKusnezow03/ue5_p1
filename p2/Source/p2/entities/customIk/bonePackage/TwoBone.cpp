@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 TwoBone::TwoBone()
 {
@@ -343,12 +343,20 @@ void TwoBone::rotateEndToTarget(
     //bei arm yaw und pitch zum ziel von interesse
     if(isArmBone()){
         //new global start rotator testing
-        MMatrix rotator = MMatrix::createRotatorFrom(vec, FVector2D(1, 0), FVector2D(0, -1));
+        MMatrix rotator = MMatrix::createRotatorFrom(
+            vec,
+            FVector2D(1, 0), // x forward
+            FVector2D(0, -1) // z down!,
+            ,true //constraint yaw
+        );
         start *= rotator;
 
+        //checkup test yaw evt falsch
+        //FRotator r = rotator.extractRotator();
+        //DebugHelper::showScreenMessage("rotation yaw: ", (float)r.Yaw);
+        //DebugHelper::showScreenMessage("rotation pitch: ", (float)r.Pitch); //negative when aim down! 
     }
 
-    
     //normalize the target location if exceeding the bone lenght
     float distance = vec.Size();
     if (distance > totalBoneLengthCopy)
@@ -372,6 +380,7 @@ void TwoBone::rotateEndToTarget(
         end
     );
 
+    
 
     //WEIGHT KNICK RICHTUNG
     //anhand des wights dann knick winkel flippen
@@ -379,6 +388,8 @@ void TwoBone::rotateEndToTarget(
         hipAngle *= -1.0f;
         kneeAngle *= -1.0f;
     }
+
+    
 
     //ETHA & WEIGHT ---> funktioniert auch wie erwartet 
     start.pitchRadAdd(hipAngle);   //hip nach vorne
@@ -419,11 +430,13 @@ bool TwoBone::flipAngleForBoneNeeded(FVector &target, FVector &weight, float hip
         return true;
     }
 
-    if(isArmBone()){
+    if(isArmBone() && false){
+        //keine ahnung mehr
         bool negativeTarget = target.X < 0.0f;
         if(negativeTarget){
             return true;
         }
+
     }
     
     return false;

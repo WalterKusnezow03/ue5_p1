@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "p2/weapon/weaponEnum.h"
-#include "p2/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/WeaponContainer.h"
 #include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
 

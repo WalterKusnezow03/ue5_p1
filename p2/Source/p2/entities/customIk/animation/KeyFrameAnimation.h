@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TargetInterpolator.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "FrameProjectContainer.h"
 #include "KeyFrame.h"
 

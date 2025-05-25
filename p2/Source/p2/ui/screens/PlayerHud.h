@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Components/CanvasPanel.h"
-#include "p2/gameStart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/makeUWidgets/TextAndImage.h"
 #include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"

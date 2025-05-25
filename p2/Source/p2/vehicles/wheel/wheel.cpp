@@ -1,5 +1,4 @@
 #include "wheel.h"
-#include "p2/meshgen/foliage/helper/FVectorShape.h"
 
 
 /// @brief creates an instance of an wheel
@@ -22,9 +21,7 @@ Awheel *Awheel::Construct(UWorld *world, float radiusIn){
                 FRotator::ZeroRotator,
                 SpawnParams
             );
-            if(spawned != nullptr){
-                spawned->generateMesh(radiusIn);
-            }
+            
 
             return spawned;
         }
@@ -33,67 +30,9 @@ Awheel *Awheel::Construct(UWorld *world, float radiusIn){
     return nullptr;
 }
 
-Awheel::Awheel() : AcustomMeshActorBase(){
-
+Awheel::Awheel() : AActor(){
+    maxSteerAngleRad = MMatrix::degToRadian(30.0f);
 }
-
-void Awheel::generateMesh(float radiusIn){
-    radius = std::abs(radiusIn);
-
-
-
-    MeshData &meshDataForTire = findMeshDataReference(
-        materialEnum::stoneMaterial,
-        true // has raycast
-    );
-
-
-
-    FVectorShape shape;
-    int detail = 360;
-    shape.createCircleShape(radius, detail); // is around yaw, need to pitch 90
-    MMatrix pitchUp;
-    pitchUp.pitchRadAdd(MMatrix::degToRadian(90.0f));
-    pitchUp.yawRadAdd(MMatrix::degToRadian(90.0f)); //sideways
-
-    shape.moveVerteciesWith(pitchUp);
-
-    bool sideFlag = true;
-
-    std::vector<FVector> line0 = shape.vectorCopy();
-    MeshData leftSideMeshData = shape.closeMeshAtCenter(!sideFlag);
-    meshDataForTire.append(leftSideMeshData);
-
-    //create right side
-    FVector offsetDir(0, 30, 0);
-    MMatrix offset(offsetDir);
-    shape.moveVerteciesWith(offset);
-    std::vector<FVector> line1 = shape.vectorCopy();
-
-    MeshData rightSideMeshData = shape.closeMeshAtCenter(sideFlag);
-    meshDataForTire.append(rightSideMeshData);
-
-    //merge paralell quads / append paralell lines
-    for (int i = 1; i < line0.size(); i++){
-        if(i < line1.size()){
-            /*
-            1->2
-            |  |
-            0<-3
-            */
-            FVector &v0 = line0[i-1];
-            FVector &v1 = line0[i];
-            FVector &v2 = line1[i];
-            FVector &v3 = line1[i - 1];
-
-            meshDataForTire.appendEfficent(v0, v1, v2, v3);
-        }
-    }
-    meshDataForTire.calculateNormals();
-
-    ReloadMeshAndApplyAllMaterials();
-}
-
 
 /// @brief ccreates a wheel actor and attaches it to the given parent
 /// @param world 
@@ -130,7 +69,12 @@ void Awheel::AttachToParent(AActor *ParentActor, FVector &relativeLocation){
     }
 }
 
+void Awheel::disableTraction(){
+    tractionEnabled = false;
+}
+
 void Awheel::BeginPlay(){
+    tractionEnabled = true;
     Super::BeginPlay();
 }
 
@@ -139,6 +83,40 @@ void Awheel::Tick(float deltatime){
     Super::Tick(deltatime);
 }
 
+void Awheel::addYaw(float angleRad){
+
+    angleRad = clampRotationAdd(angleRad);
+    rotation.yawRadAdd(angleRad);
+    yawAngle += angleRad;
+    
+
+    if(debugPrint) DebugHelper::showScreenMessage("YAW ", (float)yawAngle);
+
+    FRotator r = rotation.extractRotator();
+    SetActorRotation(r);
+}
+
+float Awheel::clampRotationAdd(float yawAdd){
+    float result = yawAngle + yawAdd;
+    if(result > maxSteerAngleRad){
+        yawAdd = yawAdd - (result - maxSteerAngleRad);
+        return yawAdd;
+    }
+    if(result < -1.0f * maxSteerAngleRad){
+        yawAdd = yawAdd - (result - (-1.0f *maxSteerAngleRad));
+        return yawAdd;
+    }
+
+    return yawAdd;
+}
+
+void Awheel::copyRotation(Awheel *ptr){
+    if(ptr != nullptr){
+        yawAngle = ptr->yawAngle;
+        rotation = ptr->rotation;
+        SetActorRotation(ptr->GetActorRotation());
+    }
+}
 
 float Awheel::thetaYawRad(){
     return yawAngle;
@@ -151,6 +129,7 @@ float Awheel::thetaYawRad(){
 FVector Awheel::TickAngularAccelerationAndGetVelocity(float radPerSecond, float deltaTime){
     //angularVelocity = w0 + a * t
     angularVelocity += radPerSecond * deltaTime;
+    angularAcceleration = radPerSecond;
 
     //s zurück gelegt 
     //s = angularVelocity * Radius 
@@ -164,8 +143,8 @@ FVector Awheel::TickAngularAccelerationAndGetVelocity(float radPerSecond, float 
 }
 
 
-/// apply rotation after vehicle has moved ?
-void Awheel::processDirectionFromVehicleSpace(FVector &deltaDirection){
+/// apply rotation after vehicle has moved (for front wheels)
+void Awheel::processVelocityFromVehicleSpace(FVector &deltaDirection){
     //direction sollte nur x und z value haben
 
     //achtung in wheel space bringen!
@@ -182,7 +161,7 @@ void Awheel::processDirectionFromVehicleSpace(FVector &deltaDirection){
 
     gegeben s:
     s = angularVelocity * radius
-    s / radius = angularVelocity
+    s / radius = angularVelocity <--kopieren--
     
     */ 
     float newAngularVelocity = deltaDirectionLocal.Size() / radius; //.size falls die ebene schief ist ?
@@ -213,29 +192,44 @@ FVector Awheel::forwardDir(){
     return result.GetSafeNormal();
 }
 
-FVector Awheel::AllForces(FVector &normal, float slipAngle){
+FVector Awheel::AllForces(
+    FVector &normal, 
+    float slipAngle, 
+    float massPerWheel,
+    FVector carLocalVelocity
+){
+    carLocalVelocity = moveToLocalRotationSpace(carLocalVelocity); //make local for friction force
+
     FVector sum =
         tractionForce() +
         corneringForce(slipAngle) +
-        frictionForceRoadDry(normal);
+        normalForce(normal, massPerWheel) +
+        frictionForceRoadDry(normal, carLocalVelocity, massPerWheel);
 
     return sum;
 }
 
 /*
-ist nicht getestet und muss ausserdem noch verstanden werden
+antriebskraft nach vorne
 */
 FVector Awheel::tractionForce(){
-    //f traction = Torque / radiusWheel angeblich
+    if(!tractionEnabled){
+        return FVector(0, 0, 0);
+    }
 
-    //Winkelbeschleunigung (α = τ / I  <=> α = I^-1 * τ)
-    //alpha = t / interia 
-    //t = alpha * interia
+    //f traction = Torque / radiusWheel    //-->angeblich
+
+    //Winkelbeschleunigung 
+    //angularAcceleration = torque / Interia
+    //torque = angularAcceleration * Interia
     
-    FVector interia(1.0f, 1.0f, 1.0f); //entspricht diagonal matrix
-    FVector torqueIntegriert = angularVelocity * interia; //darf man das so ?
+    float wheelInertia = 1.0f; //nur grade aus 
+    float torque = angularAcceleration * wheelInertia; // wheelInertia = float
+    float forceX = torque / radius;
+    FVector force(forceX, 0, 0);
 
-    FVector force = torqueIntegriert / radius;
+    if(debugPrint) DebugHelper::showScreenMessage("traktion force", force);
+
     return force;
 }
 
@@ -257,39 +251,88 @@ FVector Awheel::corneringForce(float slipAngle){
     //is lateral force, rothogonal zu reifen richtung und up
     FVector forward = forwardDir();
 
-    FVector lateralForceDirection = FVector::CrossProduct(forward, FVector(0, 0, 1)); // orthogonal zu up und forward
+    FVector lateralForceDirection = FVector::CrossProduct(forward, FVector(0, 0, 1)); //orthogonal zu up und forward
     lateralForceDirection = lateralForceDirection.GetSafeNormal();
 
 
     //cornering stiffness [in N/rad] (z. B. 5000–150000) was ist das ?
     float stiffness = 5000.0f;
-    FVector corneringForce = -1.0f * stiffness * slipAngle * lateralForceDirection;
 
-    return FVector(0, 0, 0);
+    //warum * -1 ?:
+    //entgegen wirken der reifen rotation, das ist das driften
+    //scheinbar
+    FVector corneringForce = -1.0f * stiffness * slipAngle * lateralForceDirection; 
+
+    if(debugPrint) DebugHelper::showScreenMessage("cornering ", corneringForce);
+    return corneringForce;
+
+    //return FVector(0, 0, 0);
 }
 
 
 
 
-FVector Awheel::frictionForceRoadDry(FVector &normal){
+FVector Awheel::frictionForceRoadDry(
+    FVector &normal, 
+    FVector &velocity,
+    float mass
+){
     float haftreibungszahlStrasseTrocken = 0.6f; //Gummi auf Beton
     //trocken 0,6 – 0,9
     //nass 0,4 – 0,6
-    return frictionForce(normal, haftreibungszahlStrasseTrocken);
+    return frictionForce(
+        normal, 
+        haftreibungszahlStrasseTrocken, 
+        velocity,
+        mass
+    );
 }
 
-FVector Awheel::frictionForceRoadWet(FVector &normal){
+FVector Awheel::frictionForceRoadWet(
+    FVector &normal, 
+    FVector &velocity,
+    float mass
+){
     float haftreibungszahlStrasseNass = 0.4f;
-    return frictionForce(normal, haftreibungszahlStrasseNass);
+    return frictionForce(
+        normal, 
+        haftreibungszahlStrasseNass, 
+        velocity,
+        mass
+    );
 }
 
-FVector Awheel::frictionForce(FVector &normal, float haftReibungszahl){ //must be normalized
-    FVector fgravity(0, 0, -981);
+FVector Awheel::normalForce(FVector &normal, float mass){
+    FVector fNormal = normal * normalForceMagnitude(normal, mass);
 
+    if(debugPrint) DebugHelper::showScreenMessage("normal force", fNormal);
 
-    float dotproduct = FVector::DotProduct(normal, fgravity * -1.0f);
-    FVector fNormal = normal * dotproduct;
+    return fNormal;
+}
 
-    FVector fritctionForce = haftReibungszahl * fNormal;
-    return fritctionForce;
+float Awheel::normalForceMagnitude(FVector &normal, float mass){
+    FVector gravity(0, 0, -981);
+    FVector fgravity = gravity * mass; //fg = m * g
+    float dotproduct = FVector::DotProduct(normal, fgravity * -1.0f); //normal force magnitude
+    return dotproduct;
+}
+
+FVector Awheel::frictionForce(
+    FVector &normal, 
+    float haftReibungszahl,
+    FVector &velocity,
+    float mass
+){ //must be normalized
+    if(velocity.Size() < 1.0f){
+        return FVector(0, 0, 0);
+    }
+
+    // Gleit-/Haftreibungsrichtung: Tangential zur Oberfläche, entgegen Bewegungsrichtung
+    FVector tangentialVelocity = velocity - FVector::DotProduct(velocity, normal) * normal;
+    FVector frictionDir = -1.0f * tangentialVelocity.GetSafeNormal();
+    FVector frictionForce = haftReibungszahl * frictionDir;
+
+    if(debugPrint) DebugHelper::showScreenMessage("frictionForce ", frictionForce);
+
+    return frictionForce;
 }

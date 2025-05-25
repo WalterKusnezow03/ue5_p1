@@ -3819,33 +3819,101 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GameCore/Module.GameCore.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GameCore/Definitions.GameCore.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Damageinterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.h \
   Runtime/Core/Public/CoreMinimal.h \
+  Runtime/Engine/Classes/GameFramework/Actor.h \
+  ../Plugins/Runtime/ProceduralMeshComponent/Source/ProceduralMeshComponent/Public/ProceduralMeshComponent.h \
+  Runtime/Engine/Classes/Interfaces/Interface_CollisionDataProvider.h \
+  Runtime/Engine/Classes/Components/MeshComponent.h \
+  ../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT/ProceduralMeshComponent.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  Runtime/Engine/Classes/PhysicsEngine/ConvexElem.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/ELod.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/set \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h \
+  ../Plugins/Runtime/ProceduralMeshComponent/Source/ProceduralMeshComponent/Public/KismetProceduralMeshLibrary.h \
+  Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h \
+  ../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT/KismetProceduralMeshLibrary.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gameStart/assetEnums/materialEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/foliage/ETerrainType.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Damageinterface.h \
   Runtime/CoreUObject/Public/UObject/Interface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/team/teamEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.generated.h \
-  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/debugEntity.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/debugEntity.h \
-  Runtime/Engine/Classes/GameFramework/Actor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/debugEntity.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/ELod.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/ETerrainType.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/GameCore.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Interactinterface.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Interactinterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Interactinterface.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Steeringinterface.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Steeringinterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Input/InputContainer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Steeringinterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/teamEnum.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/trackedActors.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/trackedActors.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EnitityManagerBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerGeneric.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Input/InputContainer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.h \
+  Runtime/Engine/Classes/Components/BoxComponent.h \
+  Runtime/Engine/Classes/Components/ShapeComponent.h \
+  Runtime/CoreUObject/Public/Templates/SubclassOf.h \
+  Runtime/Engine/Classes/Components/PrimitiveComponent.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ShapeComponent.generated.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BoxComponent.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gameStart/assetManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/entityEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/materialEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/particleEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/throwableEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/textureEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/aeroDynamic/Util/ThreeKeyMap.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/aeroDynamic/Util/ThreeKeyMap.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Private/GameCore.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Public/GameCore.h \
   Runtime/Core/Public/Modules/ModuleManager.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.cpp \
   Runtime/Engine/Public/EngineUtils.h \
-  Runtime/CoreUObject/Public/Templates/SubclassOf.h \
   Runtime/Engine/Classes/Engine/EngineTypes.h \
   Runtime/Engine/Public/HitProxies.h \
   Runtime/Engine/Classes/Engine/Level.h \
@@ -3856,21 +3924,19 @@
   Runtime/RenderCore/Public/RendererInterface.h \
   Runtime/Engine/Classes/Engine/StaticMesh.h \
   Runtime/Engine/Public/StaticMeshResources.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/debugEntity.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.h \
   Runtime/Engine/Classes/Kismet/KismetMathLibrary.h \
   Runtime/CoreUObject/Public/UObject/Script.h \
   Runtime/Core/Public/Math/RandomStream.h \
   Runtime/CoreUObject/Public/UObject/UnrealType.h \
   Runtime/CoreUObject/Public/UObject/Stack.h \
-  Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h \
   Runtime/Core/Public/Misc/QualifiedFrameTime.h \
   Runtime/Engine/Classes/Engine/NetSerialization.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/KismetMathLibrary.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.inl \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.h
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h

@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
-#include "p2/meshgen/generation/terrainCreator.h"
+#include "terrainPlugin/meshgen/generation/terrainCreator.h"
+#include "GameCore/world/worldLevelBase.h"
+
 
 /**
  * saves the world data and nesecarry instance pointers 
@@ -13,7 +15,7 @@
  * - outpost manager to group enteties in the area
  * - terrain creator to create the terrain and keep 
  */
-class P2_API worldLevel
+class P2_API worldLevel : public worldLevelBase
 {
 public:
 	static EntityManager *entityManager();
@@ -41,7 +43,7 @@ private:
 	worldLevel();
 	~worldLevel();
 
-	
+	static void createOutpostsRequested(UWorld *world);
 
 	//pathfinder init edge collection
 	static void createPathFinder(UWorld *WorldIn);
@@ -49,7 +51,6 @@ private:
 	static void humanBotsOnStart(UWorld *worldIn, int count);
 
 	//manager
-	static class EntityManager *entityManagerPointer;
 	static class OutpostManager *outpostManagerPointer;
 
 	//terrain
@@ -84,4 +85,6 @@ private:
 	static void createAeroActor(UWorld *world);
 
 	static void createCar(UWorld *world);
+
+	static void createJointActor(UWorld *world);
 };

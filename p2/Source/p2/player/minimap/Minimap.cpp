@@ -1,11 +1,10 @@
 #include "Minimap.h"
 #include "p2/renderTargets/customRenderTarget/CustomRenderedTexture.h"
 #include "p2/entityManager/AlertManager.h"
-#include "p2/gamestart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "GameCore/DebugHelper.h"
 #include "Kismet/GameplayStatics.h"
-#include "p2/entities/customIk/MMatrix.h"
-
+#include "CoreMath/Matrix/MMatrix.h"
 
 AMinimap* AMinimap::Construct(
     UWorld *world, 

@@ -6,7 +6,7 @@
 #include "MotionAction.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandController.h"
-#include "p2/entities/customIk/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TargetInterpolator.h"
 
 /**
  * stores states based on the arm motion state enum

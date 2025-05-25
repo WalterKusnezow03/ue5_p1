@@ -3,7 +3,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
-#include "p2/gameStart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 #include "TextAndImage.generated.h"

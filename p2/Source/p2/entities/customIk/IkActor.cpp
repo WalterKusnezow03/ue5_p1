@@ -5,7 +5,6 @@
 #include <cmath>
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
 #include "p2/entities/customIk/animation/DoubleKeyFrameAnimation.h"
-#include "p2/gameStart/assetManager.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entities/customIk/IkActor.h"
@@ -40,35 +39,6 @@ void AIkActor::BeginPlay()
 	hipController.attachCarriedItem(weaponPointer);
 
 
-	
-
-
-
-	//testing fabrik
-	/*
-	float debugDisplayTime = 100.0f;
-	FabrikBone debugFabrikBone;
-	debugFabrikBone.moveEndToTarget(GetWorld(), FVector(200,-300,200), ownLocation, debugDisplayTime);
-	*/
-
-
-
-	//extract angles
-	/*
-	MMatrix rotTest;
-	rotTest.yawRadAdd(MMatrix::degToRadian(90));
-	rotTest.yawRadAdd(MMatrix::degToRadian(25));
-	rotTest.pitchRadAdd(MMatrix::degToRadian(45));
-	rotTest.pitchRadAdd(MMatrix::degToRadian(-10));
-	FRotator r = rotTest.extractRotator();
-	FString string = FString::Printf(
-		TEXT("ROTATION DEBUG x %f ; y %f; z %f"), 
-		r.Roll,
-		r.Pitch,
-		r.Yaw
-	);
-	DebugHelper::logMessage(string);
-	*/
 
 
 	// debug testing meshes

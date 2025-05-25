@@ -2,7 +2,7 @@
 
 #include "p2/entityManager/EntityManager.h"
 #include "GameCore/util/FVectorUtil.h"
-#include "p2/particleSystem/particleEnum.h"
+#include "AssetPlugin/gameStart/assetEnums/particleEnum.h"
 #include "GameCore/util/AActorUtil.h"
 #include "p2/_world/worldLevel.h"
 #include "particle.h"

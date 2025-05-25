@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/entities/customIk/MMatrix.h"
-#include "p2/meshgen/customMeshActorBase.h"
+#include "CoreMath/Matrix/MMatrix.h"
+#include "GameCore/interfaces/Steeringinterface.h"
+#include "GameCore/util/timer.h"
 #include "vehicleBase.generated.h"
 
 UCLASS()
-class P2_API AvehicleBase : public AcustomMeshActorBase {
+class P2_API AvehicleBase : public AActor {
 
 GENERATED_BODY()
 
@@ -15,8 +16,15 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
+    virtual void seatAsDriver(ISteeringinterface *driverIn);
 
 protected:
+    void processPlayerInputUnseatCheck(float deltaTime);
+
+    void copyTransformOnStart();
+
+    ISteeringinterface *driverInterface = nullptr;
+
     float velocity();
 
     float SlipAngle();
@@ -29,7 +37,10 @@ protected:
     FVector moveDirectionToLocalRotationSpace(FVector &dir);
     FVector moveDirectionToWorldRotationSpace(FVector &dir);
 
-    
+    timer unseatTimer;
+    bool canUnseat();
+    void TickUnseatTimer(float deltatime);
+    void resetUnseatTimer();
 
     FVector velocityLocal;
     FVector velocityWorld;

@@ -7,7 +7,7 @@
 #include "p2/weapon/carriedItem.h"
 #include "HandTargetContainer.h"
 #include "HandBoneIndexEnum.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 /**
  * 

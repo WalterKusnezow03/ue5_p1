@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/meshgen/MeshData/MeshData.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 
 /**

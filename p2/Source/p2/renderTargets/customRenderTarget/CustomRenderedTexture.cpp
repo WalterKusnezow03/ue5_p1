@@ -1,6 +1,6 @@
 #include "CustomRenderedTexture.h"
-#include "p2/gamestart/assetManager.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "AssetPlugin/gamestart/assetManager.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "Engine/Canvas.h"
 
 

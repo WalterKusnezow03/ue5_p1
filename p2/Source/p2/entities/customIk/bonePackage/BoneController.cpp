@@ -4,7 +4,7 @@
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
 #include "p2/entities/customIk/animation/KeyFrameAnimation.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "CoreMath/Matrix/MMatrix.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/animation/motionChain/MotionQueue.h"
@@ -377,7 +377,7 @@ void BoneController::setupAnimation(){
 	//animation states new for motion queue state machine thingy
 	MotionAction aimingState;
 	FRotator rotationForTarget;
-	FVector targetAim(armScaleCM * 0.8f, 0, armScaleCM); //old
+	FVector targetAim(armScaleCM * 0.8f, 0, armScaleCM); //for bot
 	//debug:
 	//FVector targetAim(armScaleCM * 0.8f, armScaleCM * 0.5f, armScaleCM);
 	aimingState.setLocationAndRotation(targetAim, rotationForTarget);
@@ -922,9 +922,9 @@ void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
 
 
 		FRotator camPitched;
-		camPitched.Pitch = cameraRot.Pitch * -1.0f; //must be flipped.
+		camPitched.Pitch = cameraRot.Pitch * -1.0f; //must be flipped for reasons but its true.
 
-		//sight offset vector
+		//sight offset vector rotated correctly
 		if(attachedCarriedItem){
 			FVector offsetSight = attachedCarriedItem->sightOffsetNoRotation();
 			MMatrix rotMat(camPitched);
@@ -941,8 +941,8 @@ void BoneController::updateStatesBasedOnCamera(UCameraComponent &camera){
 
 
 		//HIP FIRE OVERRIDE
-		camLocation += FVector(-armScaleCM * 0.2f,0,0) + 
-					  FVector(0, armScaleCM * 0.2f, 0);
+		camLocation += FVector(armScaleCM * -0.05f,0,0) + //forward
+					  FVector(0, armScaleCM * 0.2f, 0); //sideways
 		MotionAction hipaction;
 		hipaction.setLocationAndRotation(camLocation, camPitched); //local matrix now
 		armMotionQueue.addTarget(ArmMotionStates::kontaktStellung, hipaction);

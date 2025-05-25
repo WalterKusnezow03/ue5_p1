@@ -6,10 +6,10 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
-#include "p2/gameStart/AssetLoader.h"
+#include "AssetPlugin/gamestart/AssetLoader.h"
 #include "GameCore/DebugHelper.h"
 #include "p2/ui/PlayerUi.h"
-#include "p2/gameStart/assetEnums/textureEnum.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 
 #include "TextAndImage.h"
 

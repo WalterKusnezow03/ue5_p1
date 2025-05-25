@@ -1,5 +1,7 @@
 #include "vehicleCar.h"
-#include "p2/entities/customIk/MMatrix.h"
+#include "GameCore/Input/InputContainer.h"
+#include "CoreMath/Matrix/MMatrix.h"
+#include <algorithm>
 
 
 AvehicleCar *AvehicleCar::Construct(UWorld *world){
@@ -24,53 +26,100 @@ AvehicleCar *AvehicleCar::Construct(UWorld *world){
 }
 
 AvehicleCar::AvehicleCar() : AvehicleBase(){
-
-
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 
 void AvehicleCar::BeginPlay(){
-    Super::BeginPlay();
-    createWheels();
-    createBaseCube();
+    Super::BeginPlay(); //needed for transform setup
+    
+    findWheels();
+    findRearFrontDistance();
 }
 
-void AvehicleCar::createWheels(){
-    UWorld *world = GetWorld();
-    float radius = 25.0f;
 
-    //x is forward axis !
-    frontRight = Awheel::Construct(world, radius, this, FVector(200,-50,0));
-    frontLeft = Awheel::Construct(world, radius, this, FVector(200,50,0));
-    rearRight = Awheel::Construct(world, radius, this, FVector(-200, -50,0));
-    rearLeft = Awheel::Construct(world, radius, this, FVector(-200, 50, 0)); 
+
+void AvehicleCar::findRearFrontDistance(){
+    rearFrontDistance = 500.0f;
+    if(frontRight != nullptr && rearRight != nullptr){
+        FVector a = frontRight->GetActorLocation();
+        FVector b = rearRight->GetActorLocation();
+        rearFrontDistance = FVector::Dist(a, b);
+    }
 }
 
-void AvehicleCar::createBaseCube(){
-    MeshData &ref = findMeshDataReference(
-        materialEnum::wallMaterial,
-        true // has raycast
-    );
 
-    /*
-    1->2
-    |  |
-    0<-3
-    */
-    FVector b(200,-50,0);
-    FVector c(200,50,0);
-    FVector a(-200, -50,0);
-    FVector d(-200, 50, 0);
-    FVector dir(0, 0, 20);
-    ref.appendCube(a, b, c, d, dir);
-
-    ReloadMeshAndApplyAllMaterials();
+void AvehicleCar::findWheels(){
+    
+    TArray<UChildActorComponent*> ChildActorComponents;
+    GetComponents(ChildActorComponents);
+    for (UChildActorComponent* Comp : ChildActorComponents)
+    {
+        if (Comp && Comp->GetChildActor())
+        {
+            AActor *ChildActor = Comp->GetChildActor();
+            if(ChildActor){
+                FString name = Comp->GetName();
+                DebugHelper::logMessage("debugvehicle child name ", name);
+                Awheel *wheelCasted = Cast<Awheel>(ChildActor);
+                if(wheelCasted != nullptr){
+                    if(name.Contains("FrontRight")){
+                        frontRight = wheelCasted;
+                        frontRight->disableTraction();
+                    }
+                    if(name.Contains("FrontLeft")){
+                        frontLeft = wheelCasted;
+                        frontLeft->disableTraction();
+                    }
+                    if(name.Contains("RearRight")){
+                        rearRight = wheelCasted;
+                    }
+                    if(name.Contains("RearLeft")){
+                        rearLeft = wheelCasted;
+                    }
+                }
+            }
+        }
+    }
 }
+
+
+
+
+
 
 void AvehicleCar::Tick(float deltaTime){
     Super::Tick(deltaTime);
+    
+    processDriverInput(deltaTime);
+    TickWheels(deltaTime);
+}
+
+/// @brief processes the driver input container and applys gas and steering to the car
+void AvehicleCar::processDriverInput(float deltatime){
+    if(driverInterface != nullptr){
+
+        //set location
+        FVector seatLocation = GetActorLocation(); //erstmal so
+        driverInterface->setDriverLocation(seatLocation);
+
+        //input
+        InputContainer &inputRef = driverInterface->input();
+        pushGasPedal(inputRef.forwardAxisValue());
+        steer(deltatime, inputRef.rightAxisValue());
+
+    }else{
+        pushGasPedal(0.0f);
+    }
+}
 
 
+void AvehicleCar::steer(float deltatime, float scalarDirection){
+    float steer = steerSpeedRadPerSecond * deltatime * scalarDirection;
+    if(frontRight != nullptr && frontLeft != nullptr){
+        frontRight->addYaw(steer);
+        frontLeft->copyRotation(frontRight);
+    }
 }
 
 void AvehicleCar::pushGasPedal(float scalar){
@@ -79,12 +128,22 @@ void AvehicleCar::pushGasPedal(float scalar){
     scalar = std::max(scalar, 0.0f);
 
     gasPedalScalar = scalar;
+
+    //ok
+    if(showScreenLog && false) DebugHelper::showScreenMessage("gas pedal ", (float) scalar);
+}
+
+/// @brief reduces acceleration if brake > 0.0f, otherwise 1.0f
+/// @return 
+float AvehicleCar::brakeScalar(){
+    float brake = 0.0f;
+    float invert = 1.0f - brake;
+    return invert;
 }
 
 float AvehicleCar::radPerSecondAcceleration(){
-    float brake = 0.0f;
-    float accelerationOfMotor = MMatrix::degToRadian(100.0f);
-    return gasPedalScalar * brake * accelerationOfMotor;
+    float accelerationOfMotor = 500.0f * 100.0f;
+    return gasPedalScalar * brakeScalar() * accelerationOfMotor;
 }
 
 void AvehicleCar::TickWheels(float deltaTime){
@@ -98,16 +157,18 @@ void AvehicleCar::TickWheels(float deltaTime){
         deltaDirection += rearLeft->TickAngularAccelerationAndGetVelocity(radPerSecond, deltaTime);
     }
     
+
+    if(frontLeft != nullptr){
+        frontLeft->processVelocityFromVehicleSpace(velocityLocal);
+    }
+    if(frontRight != nullptr){
+        frontRight->processVelocityFromVehicleSpace(velocityLocal);
+    }
+
     
 
-    deltaDirection /= 2.0f; //strecke zurück gelegt
 
-    //apply velocity (?)
-    
-    //braucht man für slip ratio oder, drift. Keine ahnung man.
-    deltaDirection = Super::moveDirectionToLocalRotationSpace(deltaDirection); //super::
-
-    applyDeltaRotation();
+    applyDeltaRotation(deltaTime);
     applyForces(deltaTime);
 }
 
@@ -127,17 +188,31 @@ void AvehicleCar::applyForces(float deltaTime){
 
     FVector normal(0,0,1); //aus reifen ebene
     float slipAngle = SlipAngle();
+    
+    
+
     FVector totalForce(0, 0, 0);
+    float massPerWheel = mass / allWheels.Num();
     for (int i = 0; i < allWheels.Num(); i++)
     {
         Awheel *current = allWheels[i];
         if(current){
-
-            totalForce += current->AllForces(normal, slipAngle);
+            totalForce += current->AllForces(
+                normal, 
+                slipAngle, 
+                massPerWheel,
+                velocityLocal
+            );
         }
     }
 
-    float mass = 2000.0f;
+    if(showScreenLog){
+        DebugHelper::showScreenMessage("Slip: ", (float)slipAngle);
+        DebugHelper::showScreenMessage("force ", totalForce);
+    }
+    
+
+    
 
     FVector forceInMeter = totalForce / 100.0f;
     FVector accelerationMS2 = forceInMeter / mass;
@@ -152,26 +227,36 @@ void AvehicleCar::IntegrateMovement(FVector &acceleration, float deltaTime){
     
     //add gravity
     FVector gravity(0, 0, -981);
-    accelerationWorld += gravity * deltaTime;
+    accelerationWorld += gravity;
+    acceleration += gravity;
 
     
     //v(t) = v0 + at
     velocityLocal += acceleration * deltaTime;
     velocityWorld += accelerationWorld * deltaTime;
 
-    //x(t) = x0 + v0t + 1/2at^2
+    //x(t) = x0 + v0t + 1/2*a*t^2
     FVector x0 = translation.getTranslation();
     FVector velocity = velocityWorld;
-    FVector accelerationPart = 0.5f * accelerationWorld * accelerationWorld;
+    FVector accelerationPart = 0.5f * accelerationWorld * deltaTime * deltaTime;
 
     FVector xt = x0 + velocity + accelerationPart;
+    
+    //verify ground truth muss auch von rädern aus gehen später.
+    double groundTruth = 40.0;
+    xt.Z = std::max(groundTruth, xt.Z);
+
+
+
     translation.setTranslation(xt);
     SetActorLocation(xt);
 }
 
+
 //achtung stimmt ggf nicht
-void AvehicleCar::applyDeltaRotation(){
-    float rearFrontDistance = 5.0f;
+//yaw rotation of wheels
+void AvehicleCar::applyDeltaRotation(float deltaTime){
+    //float rearFrontDistance = 500.0f; //5m ?
 
     if (frontRight != nullptr){
         float theta = frontRight->thetaYawRad();
@@ -182,9 +267,28 @@ void AvehicleCar::applyDeltaRotation(){
 
         float tanTheta = std::tan(theta);
         if(isNotZero(tanTheta)){
+            //tan(theta) = g / a
+            //g = tan(theta) * a
+            //a = g / tan(theta)
             float rotationRadius = rearFrontDistance / tanTheta;
             if(isNotZero(rotationRadius)){
-                float angularSpeed = velocity() / rotationRadius;
+                float angularVelocity = velocity() / rotationRadius;
+
+                //Rotation anwenden
+                float deltaYaw = angularVelocity * deltaTime;
+                MMatrix deltaRotationMatrix;
+                deltaRotationMatrix.yawRadAdd(deltaYaw);
+
+                if(showScreenLog){
+                    DebugHelper::showScreenMessage("wheel yaw ", theta, FColor::Yellow);
+                    DebugHelper::showScreenMessage("base ", rearFrontDistance, FColor::Yellow);
+                    DebugHelper::showScreenMessage("delta yaw ", deltaYaw, FColor::Yellow);
+                }
+                
+
+                MMatrix result = rotation * deltaRotationMatrix; //<-- lese richtung
+                FRotator rotator = result.extractRotator();
+                SetActorRotation(rotator);
             }
         }
     }

@@ -32,8 +32,6 @@ PathFinder::PathFinder(UWorld *worldIn)
 
 PathFinder::~PathFinder()
 {
-    DebugHelper::logMessage(TEXT("PATHFINDER DESTROY"));
-
     worldPointer = nullptr;
     //pathFinderInstance = nullptr;
     delete (TopRight); 
