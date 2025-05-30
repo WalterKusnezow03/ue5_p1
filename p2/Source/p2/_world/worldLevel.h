@@ -36,7 +36,12 @@ public:
 	static bool gamePausedByPlayer();
 	static void setGamePaused(bool in);
 
+	
+
 private:
+	static void debugTerrainHeight();
+
+
 	static void createTerrain(UWorld *world, int meters);
 	static UWorld *GetWorld();
 

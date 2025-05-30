@@ -23,7 +23,19 @@ protected:
 
 private:
     void initChain();
+    void findErrorTwist(
+        MMatrix &root, 
+        MMatrix &end, 
+        FVector &target, 
+        float deltatime
+    );
 
     timer timerFortick;
     TArray<Joint *> createdJoints;
+
+
+    //for single chain debug
+    FVector angularVelocity;
+    FVector linearVelocity;
+    FVector targetLocalPos;
 };

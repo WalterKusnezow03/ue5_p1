@@ -241,6 +241,7 @@ void worldLevel::Tick(float DeltaTime){
                 FVector playerLocationCopy = referenceManagerPointer->playerLocation();
                 terrainPointer->Tick(playerLocationCopy);
 
+                debugTerrainHeight();
             }
         }
 
@@ -680,5 +681,22 @@ void worldLevel::createCar(UWorld *world){
 void worldLevel::createJointActor(UWorld *world){
     if(world != nullptr){
         ADebugJointsActor::CreateInstance(world);
+    }
+}
+
+
+
+void worldLevel::debugTerrainHeight(){
+    if(terrainPointer != nullptr){
+        FVector playerLocation = PlayerInfo::playerLocation();
+        float a = playerLocation.Z;
+        float b = terrainPointer->getHeightFor(playerLocation);
+
+        FString message = FString::Printf(
+            TEXT("terrain height %.2f -> player pos %.2f"),
+            b, a
+        );
+
+        DebugHelper::showScreenMessage(message);
     }
 }

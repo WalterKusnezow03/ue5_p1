@@ -8,6 +8,7 @@
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
 #include "GameCore/util/FVectorTouple.h"
+#include "terrainPlugin/meshgen/generation/helper/HeightExtractionData.h"
 #include "GameCore/util/TVector.h"
 
 /**
@@ -84,21 +85,7 @@ private:
 		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea // flat area
 	);
 
-	class HeightExtractionData{
-		public:
-			HeightExtractionData(FVector &posIn);
-			~HeightExtractionData();
-
-			HeightExtractionData(const HeightExtractionData &other);
-			HeightExtractionData &operator=(const HeightExtractionData &other);
-
-			float height = 0.0f;
-			float distanceFromTarget = 0.0f;
-
-			FVector position;
-
-			static float findHeight(TArray<HeightExtractionData> &array);
-	};
+	
 
 	class chunk
 	{

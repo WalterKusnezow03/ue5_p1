@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include <cmath>
+#include "GameCore/DebugHelper.h"
 #include "Math/Rotator.h"
 
 
@@ -168,11 +169,22 @@ float Matrix3x3::radToDegree(float rad){
  * 
  * 
  */
+
+/// @brief makes the skew matrix for omega
+/// @param omega must be normalized!
 void Matrix3x3::makeSkew(FVector &omega){
+    //wenn man einen vektor mit der skew matrix multipliziert kommt
+    //das kreuz produkt bei raus
+
     /*
     0  1  2
     3  4  5
     6  7  8
+    */
+    /*
+              0   -wz    wy
+    S(w) =   wz     0   -wx
+            -wy   -wx     0
     */
     array[0] = 0.0f;
     array[1] = omega.Z * -1.0f;
@@ -215,12 +227,12 @@ Matrix3x3 Matrix3x3::makeExponentialMap_Skew(FVector &screw, float theta){
 }
 
 //convert to SE3 4x4
-void Matrix3x3::convertTwistToSE3components(
-    FVector &angularVelocity,
-    FVector &linearVelocity,
-    Matrix3x3 &outRotation,
-    FVector &outTranslation,
-    float deltatime
+void Matrix3x3::convertPlueckerToSE3components(
+    FVector &angularVelocity, //w0
+    FVector &linearVelocity, //v0
+    Matrix3x3 &outRotation, //delta rotation 
+    FVector &outTranslation, //delta translation
+    float deltatime //used for theta over time, angvelocity * deltatime
 ){
     /*
     extract transform in SE3:
@@ -230,8 +242,8 @@ void Matrix3x3::convertTwistToSE3components(
 
     R = e^(Skew(angVelocity)dt)
     
-    //hier ||w|| == 1 !! und dt = w * dt
-    tnew = (1_3x3 - eSkew) * (w x v)  +  (w dot v) * dt * w
+    //hier ||w|| == 1 !! und theta_dt = w * dt
+    tnew = (1_3x3 - eSkew) * (w x v)  +  (w dot v) * theta_dt * w
             ^^^^^rotation of screw^^^ | ^^^^ translation along screw^^^^^
     */
 
@@ -256,6 +268,105 @@ void Matrix3x3::convertTwistToSE3components(
 
     outTranslation = rotationAroundScrew + translationAlongScrew;
 }
+
+
+/**
+ * convert T to Pluecker
+ */
+void Matrix3x3::convertSE3ToPluecker(
+    Matrix3x3 &Rotation, //R
+    FVector &translation, //p
+    FVector &outAngularVelocity,
+    FVector &outLinearVelocity,
+    float wantedAngularVelocity
+){
+    /*
+    l = (               
+        r32 - r23,             
+        r13 - r31, 
+        r21 - r12
+        )
+    omega = l / (2*sin(theta)) //für s(omega)
+    
+    theta = sign(l dot p) * (acos((r11 + r22 + r33 - 1) / 2))
+
+    h = (l · p)/(2 · θ · sin(θ))
+
+    v = h * omega
+
+    */
+
+    //bestimmung xi(w,v)
+
+    //falsch rum?
+    FVector l(
+        Rotation.getRowMajor(2,1) - Rotation.getRowMajor(1,2),
+        Rotation.getRowMajor(0,2) - Rotation.getRowMajor(2,0),
+        Rotation.getRowMajor(1,0) - Rotation.getRowMajor(0,1)
+    );
+    DebugHelper::showScreenMessage("l0", l);
+    FVector l1(
+        Rotation.get(2,1) - Rotation.get(1,2),
+        Rotation.get(0,2) - Rotation.get(2,0),
+        Rotation.get(1,0) - Rotation.get(0,1)
+    );
+    DebugHelper::showScreenMessage("l1", l1);
+
+
+
+    FVector p = translation;
+    float LPdot = FVector::DotProduct(l, p);
+    float sign = LPdot >= 0.0f ? 1.0f : -1.0f;
+
+    float inner = (
+        Rotation.getRowMajor(0, 0) + 
+        Rotation.getRowMajor(1, 1) + 
+        Rotation.getRowMajor(2, 2) - 1
+    ) / 2.0f;
+    inner = FMath::Clamp(inner, -1.0f, 1.0f);
+    float theta = sign * std::acosf(inner);
+
+    float sinTheta = std::sin(theta);
+    
+    //void div by zero
+    if(std::abs(sinTheta) < 0.000000000001f){
+        outAngularVelocity = FVector(0.00001f,0.0f,0.0f);
+        outLinearVelocity = translation;
+        DebugHelper::showScreenMessage("sin theta not ok", (float)sinTheta);
+        return;
+    }
+    if(std::abs(theta) < 0.000000000001f){
+        outAngularVelocity = FVector::ZeroVector;
+        outLinearVelocity = translation;
+        DebugHelper::showScreenMessage("theta not ok", (float)theta);
+        return;
+    }
+    
+    FVector omega = l * (1.0f / (2.0f * sinTheta));
+
+    float h = LPdot / (2.0f * theta * sinTheta);
+
+    FVector w = omega; //* theta ? gute frage.
+    FVector v = h * omega;
+
+    DebugHelper::showScreenMessage("dir w", w.GetSafeNormal(), FColor::Green);
+
+    outAngularVelocity = w; //gute frage.
+    outLinearVelocity = v;
+
+    //test
+    //outAngularVelocity = w.GetSafeNormal() * wantedAngularVelocity;
+    //outAngularVelocity = v.GetSafeNormal() * wantedAngularVelocity;
+}
+
+
+
+
+
+
+
+
+
 
 
 /**
@@ -424,9 +535,19 @@ void Matrix3x3::setRotation(Matrix3x3 &other){
     }
 }
 
+void Matrix3x3::setRotation(MMatrix &other){
+    FRotator r = other.extractRotator();
+    setRotation(r);
+    return;
 
-
-
+    //old
+    std::vector<float> values = other.CopyRotation();
+    if(values.size() == 9){
+        for (int i = 0; i < 9; i++){
+            array[i] = values[i];
+        }
+    }
+}
 
 /// @brief requires both indeces to be in bounds!
 /// @param a 
@@ -450,19 +571,6 @@ void Matrix3x3::swapIndices(int a, int b){
 /// @return FRotator rotation of this matrix
 FRotator Matrix3x3::extractRotator(){
     
-    //rotation wird mithilfe von unreal extrahiert 
-    //weil ich es selber nicht weiss
-    /*
-    //so korrekt
-    FMatrix MyMatrix(
-        FPlane(get(0, 0), get(0, 1), get(0, 2), get(0, 3)), // erste Spalte
-        FPlane(get(1, 0), get(1, 1), get(1, 2), get(1, 3)), // zweite Spalte
-        FPlane(get(2, 0), get(2, 1), get(2, 2), get(2, 3)), // dritte Spalte
-        FPlane(get(3, 0), get(3, 1), get(3, 2), get(3, 3))  // vierte Spalte
-    );
-    return MyMatrix.Rotator();
-    */
-
     //extracting rotation from a matrix:
     /*
 
@@ -545,9 +653,9 @@ FRotator Matrix3x3::extractRotator(){
 
 void Matrix3x3::set(int column, int row, float value){
     bool lowerRange = column >= 0 && row >= 0;
-    bool higherRange = column < 4 && row < 4;
+    bool higherRange = column < 3 && row < 3;
     if(lowerRange && higherRange){
-        int index = (row * 4) + column;
+        int index = (row * 3) + column;
         array[index] = value;
     }
 }
@@ -559,16 +667,17 @@ void Matrix3x3::set(int column, int row, float value){
 float Matrix3x3::get(int columnX, int rowY){
     
     bool lowerRange = columnX >= 0 && rowY >= 0;
-    bool higherRange = columnX < 4 && rowY < 4;
+    bool higherRange = columnX < 3 && rowY < 3;
     if(lowerRange && higherRange){
-        int index = (rowY * 4) + columnX;
+        int index = (rowY * 3) + columnX;
         return array[index];
     }
     return 0.0f;
 }
 
-
-
+float Matrix3x3::getRowMajor(int rowY, int columnX){
+    return get(columnX, rowY);
+}
 
 /// @brief transposes this matrix as expected
 void Matrix3x3::transpose(){

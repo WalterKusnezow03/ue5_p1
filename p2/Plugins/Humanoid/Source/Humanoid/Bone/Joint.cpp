@@ -102,6 +102,7 @@ void Joint::Build(MMatrix &inTransform){
     
     //from 6x6
     MMatrix result = spatialTransform * inTransform;
+    transformCopy = result;
 
     //apply rotation to attached actor:
     FRotator actorRotation = result.extractRotator();
@@ -121,4 +122,27 @@ void Joint::draw(MMatrix &a, MMatrix &b){
     FVector t2 = b.getTranslation();
     FColor color = ownId % 2 == 0 ? FColor::Blue : FColor::Red;
     DebugHelper::showLineBetween(world, t1, t2, color, deltatime * 1.3f);
+}
+
+
+
+MMatrix Joint::endTransform(){
+    if(child != nullptr){
+        return child->endTransform();
+    }
+    return transformCopy;
+}
+
+
+int Joint::childCountDownstream(){
+    int self = 1;
+    if(child != nullptr){
+        self += child->childCountDownstream();
+    }
+    return self;
+}
+
+bool Joint::isTwoBone(){
+
+    return false;
 }

@@ -20,7 +20,15 @@ public:
     void Tick(float deltaTime, FVector &w, FVector &v);
     void Build(MMatrix &inTransform);
 
+    MMatrix endTransform();
+
+    bool isTwoBone();
+    int childCountDownstream();
 private:
+    
+
+    MMatrix transformCopy;
+
     void copyDeltatime(float deltaTime);
 
     static int id;

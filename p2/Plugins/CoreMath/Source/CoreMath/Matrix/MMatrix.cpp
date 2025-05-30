@@ -722,7 +722,7 @@ FRotator MMatrix::extractRotator(){
     */
 
 
-    //kontext: get(column, row)
+    //kontext: get(column, row) umgedreht.
     float _yaw = std::atan2f(get(0, 1), get(0, 0));
     //float _pitch = -1 * std::asinf(get(0, 2));
     float _pitch = -1 * std::asinf(FMath::Clamp(get(0, 2), -1.0f, 1.0f));
@@ -1097,4 +1097,20 @@ void MMatrix::setRotation(std::vector<float> &values){
         array[10] = values[8];
 
     }
+}
+
+
+
+std::vector<float> MMatrix::CopyRotation(){
+    std::vector<float> values = {
+        array[0],
+        array[1],
+        array[2],
+        array[4],
+        array[5],
+        array[6],
+        array[8],
+        array[9],
+        array[10]};
+    return values;
 }

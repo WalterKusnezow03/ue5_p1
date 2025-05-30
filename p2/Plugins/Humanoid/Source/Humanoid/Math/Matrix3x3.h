@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 /**
  * 
@@ -32,13 +33,21 @@ public:
 	void makeSkew(FVector &omega);
 	static Matrix3x3 skew(FVector &omega);
 	static Matrix3x3 makeExponentialMap_Skew(FVector &screw, float thetaOrTime);
-	static void convertTwistToSE3components(
+	static void convertPlueckerToSE3components(
 		FVector &angularVelocity,
 		FVector &linearVelocity,
 		Matrix3x3 &outRotation,
 		FVector &outTranslation,
 		float deltatime
 	);
+	static void convertSE3ToPluecker(
+		Matrix3x3 &Rotation,
+		FVector &Translation,
+		FVector &outAngularVelocity,
+		FVector &outLinearVelocity,
+		float wantedAngularVelocity
+	);
+
 	// skew operations end
 
 	void rollRadAdd(float angle);
@@ -46,6 +55,7 @@ public:
 	void yawRadAdd(float angle);
 	void setRotation(FRotator &other);
 	void setRotation(Matrix3x3 &other);
+	void setRotation(MMatrix &other);
 
 	static float degToRadian(float deg);
 	static float radToDegree(float rad);
@@ -57,6 +67,7 @@ public:
 	void transpose();
 
 	std::vector<float> Copy();
+	
 
 private:
 	//16 langes array für die 4x4 matrix
@@ -74,5 +85,5 @@ public:
 private:
 	void set(int i, int j, float value);
 	float get(int column, int row);
-	
+	float getRowMajor(int rowY, int columnX);
 };

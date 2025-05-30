@@ -14,6 +14,16 @@ void Matrix6x6::setTranslation(FVector &other){
 }
 
 
+void Matrix6x6::applyConstraints(FVector &w, FVector &v){
+    //kugel gelenk
+    if(true){
+        v = FVector(0, 0, 0);
+    }
+}
+
+
+
+
 //makes forward pluecker and refreshes the given w and v
 void Matrix6x6::forwardPluecker(
     FVector &angularVelocity, //w
@@ -30,12 +40,6 @@ void Matrix6x6::forwardPluecker(
 
     j_v(w,v) = X * i_v(w,v)
 
-    */
-   /**
-    * 
-    * es kann sein das hier alles weg fliegt,
-    * constraints wurden noch nicht verstanden, nicht durchgelesen!
-    * 
     */
 
     //erst j_v ausrechnen
@@ -59,32 +63,29 @@ void Matrix6x6::forwardPluecker(
     FVector w1 = a * angularVelocity + b * linearVelocity;
     FVector v1 = c * angularVelocity + d * linearVelocity;
 
+    //constraints limitieren:
+    FVector w1_constrained = w1;
+    FVector v1_constrained = v1;
+    applyConstraints(w1_constrained, v1_constrained); // ob hier noch unklar.
+
     //dann velocity integrieren
     //deltaTwist(w1, v1)
     Matrix3x3 outDeltaRotation;
     FVector outDeltaTranslation;
-    Matrix3x3::convertTwistToSE3components(
-        w1, v1, outDeltaRotation, outDeltaTranslation, deltatime
+    Matrix3x3::convertPlueckerToSE3components(
+        w1_constrained, v1_constrained, outDeltaRotation, outDeltaTranslation, deltatime
     );
 
 
     //Integrieren
-    /**
-     * CAUTION: --- NOCH SEHR UNKLAR WIE MAN RICHTIG INTEGRIERT ---
-     * 
-     * IST DER 
-     * 
-     */
-    //resultTranslation = translation + outDeltaTranslation; //Unklar ob richtig. Chat gpt sagt nein.
-    //resultTranslation = translation + outDeltaTranslation; //Unklar ob richtig.
-
     resultTranslation = outDeltaTranslation + translation; //sollte so ok sein
     RotationSO3 = RotationSO3 * outDeltaRotation; //<-- lese richtung so --
 
-    //refresh
+    //refresh, for propagation to next joint
     angularVelocity = w1;
     linearVelocity = v1;
 }
+
 
 MMatrix Matrix6x6::operator*(MMatrix &prev){
     MMatrix result;
@@ -96,7 +97,7 @@ MMatrix Matrix6x6::operator*(MMatrix &prev){
 
 
     //MWorld = T * R * prev
-    MMatrix transform = translationLocal * rotationLocal; //<-- lese richtung --
+    MMatrix transform = rotationLocal * translationLocal; //<-- lese richtung --
     result = prev * transform; //lese richtung
     return result;
 }

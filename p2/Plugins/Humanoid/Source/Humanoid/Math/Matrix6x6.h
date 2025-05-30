@@ -23,6 +23,8 @@ public:
     void setTranslation(FVector &other);
 
 private:
+    void applyConstraints(FVector &w, FVector &v);
+
     Matrix3x3 RotationSO3;
     FVector translation;
 

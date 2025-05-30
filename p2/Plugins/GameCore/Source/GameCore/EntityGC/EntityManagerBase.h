@@ -33,8 +33,8 @@ public:
         {
             FActorSpawnParameters SpawnParams;
             UClass* classType = T::StaticClass();
-            FVector Location;
-            FRotator Rotation;
+            FVector Location = FVector::ZeroVector;
+            FRotator Rotation = FRotator::ZeroRotator;
 
             AActor* spawned = world->SpawnActor<AActor>(classType, Location, Rotation, SpawnParams);
             if (spawned)
