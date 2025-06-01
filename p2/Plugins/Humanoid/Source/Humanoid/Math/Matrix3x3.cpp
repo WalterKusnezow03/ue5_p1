@@ -693,3 +693,125 @@ void Matrix3x3::transpose(){
 
 
 
+
+
+
+
+void Matrix3x3::setColumn(FVector &column, int i){
+    i = std::min(2, i);
+    i = std::max(0, i);
+
+    set(i, 0, column.X);
+    set(i, 1, column.X);
+    set(i, 2, column.X);
+}
+
+
+
+/**
+ * Inverse section
+ */
+
+/// @brief calculates the inverse matrix with jordan gaus algorythm
+/// an identity matrix is returned if the inverse is not possible to make (det(A) = 0)
+/// the inverse is calculated in O(n^2)
+/// @return inverse matrix, or identity if an issue occured
+Matrix3x3 Matrix3x3::jordanInverse(){
+    Matrix3x3 identity; //operationen auf diese identity matrix auch anwenden,
+    identity.makeIdentity();
+    int sizeSide = 3;
+
+    Matrix3x3 thisMatrix = *this; //kopie um nicht zu manipulieren
+    // das ist am ende die inverse
+
+    for (int x = 0; x < sizeSide; x++){
+
+        /*
+        //durch pivot teilen dass 1 in pivot
+        float devide = thisMatrix.get(x, x); //sollte das skallierungs element (sX, sY, sZ) = 0 sein
+        //ist die matrix natürlich nicht invertierbar!!
+        if(devide == 0.0f){
+            DebugHelper::logMessage("debug identitydebug MATRIX NICHT INVERTIERBAR");
+            MMatrix cleanMatrix;
+            return cleanMatrix;
+        }*/
+
+        float devide = clampDivisionByZero(thisMatrix.get(x, x));
+        thisMatrix.scaleRow(x, (1.0f / devide)); // d * 1 / d = 1, skallieren pivot.
+        identity.scaleRow(x, (1.0f / devide));
+
+        //darunter wandern, elemente eliminieren
+        for (int y = x + 1; y < sizeSide; y++){
+
+            //gleichung essenziell:
+            //a soll 0 sein
+
+            //1 - - - 
+            //a - - - 
+            //b - - - 
+            //c - - -
+            // usw
+
+            // a - x * 1 = 0 
+            // a = x * 1
+            //heisst dann ja arow -= 1row * x und x ist das spalten element darunter
+            float lower = thisMatrix.get(x, y);
+            thisMatrix.minusForRow(y, x, lower); //von untere, jetzt (1 * something sodass = 0, = something, ist gleich wert.)
+            identity.minusForRow(y, x, lower);
+        }
+    }
+
+    // Eliminate elements above the pivots (new part)
+    for (int x = sizeSide - 1; x >= 0; x--) {
+        for (int y = x - 1; y >= 0; y--) {
+            float upper = thisMatrix.get(x, y);
+            thisMatrix.minusForRow(y, x, upper); // Eliminate element in (y, x)
+            identity.minusForRow(y, x, upper); // Do the same for identity matrix
+        }
+    }
+    
+
+    /*
+    FString message = FString::Printf(TEXT("debug inverse:"));
+	message += identity.asString();
+    DebugHelper::logMessage(message);
+    */
+
+    return identity;
+}
+
+/// @brief a very dangerous fix to let the matrix be invertable. Does introduce numeric
+/// inaccuracy
+/// THIS VALUES ARE TESTED FOR THE BONECONTROLLER AND SEEMS TO WORK OK! DO NOT CHANGE!
+/// @param other value to check
+/// @return value to allow invertion of the matrix with jordan gauß verfahren
+float Matrix3x3::clampDivisionByZero(float other){
+    if(std::abs(other) <= 0.000001f){
+        return 0.00001f;
+    }
+    return other;
+}
+
+
+/// @brief scales a row with a factor 
+/// @param row row to scale
+/// @param scale faktor
+void Matrix3x3::scaleRow(int row, float scale){
+    for (int i = 0; i < 3; i++){
+        float val = get(i, row) * scale;
+        set(i, row, val);
+    }
+}
+
+/// @brief subtrahiere von row , other row, mal einem faktor
+/// @param row row to apply subtraction
+/// @param otherRow subtract this row
+/// @param faktor faktor of otherRow 
+void Matrix3x3::minusForRow(int row, int otherRow, float faktor) {
+
+    for (int i = 0; i < 3; i++){
+        float otherValueScaled = get(i, otherRow) * faktor;
+        float thisValue = get(i, row) - otherValueScaled;
+        set(i, row, thisValue);
+    }
+}

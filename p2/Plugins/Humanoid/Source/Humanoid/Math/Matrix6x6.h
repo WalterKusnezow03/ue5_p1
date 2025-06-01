@@ -20,7 +20,23 @@ public:
         float deltatime
     );
 
+    void forwardDeltaPluecker(
+        FVector &angularVelocity, // w
+        FVector &linearVelocity,  // v
+        Matrix3x3 &outDeltaRotation,
+        FVector &outDeltaTranslation,
+        float deltatime
+    );
+
     void setTranslation(FVector &other);
+
+
+    //fk ik
+    MMatrix tmpForwardPluecker(
+        FVector &angularVelocity,
+        MMatrix &prevTransformWorld,
+        float deltatime
+    );
 
 private:
     void applyConstraints(FVector &w, FVector &v);

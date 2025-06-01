@@ -67,7 +67,10 @@ public:
 	void transpose();
 
 	std::vector<float> Copy();
-	
+
+	void setColumn(FVector &column, int i);
+
+	Matrix3x3 jordanInverse();
 
 private:
 	//16 langes array für die 4x4 matrix
@@ -86,4 +89,12 @@ private:
 	void set(int i, int j, float value);
 	float get(int column, int row);
 	float getRowMajor(int rowY, int columnX);
+
+
+
+
+	//for inverse
+	float clampDivisionByZero(float other);
+	void scaleRow(int row, float scale);
+	void minusForRow(int row, int otherRow, float faktor);
 };

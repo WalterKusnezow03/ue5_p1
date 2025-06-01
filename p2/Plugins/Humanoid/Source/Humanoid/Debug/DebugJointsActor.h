@@ -38,4 +38,14 @@ private:
     FVector angularVelocity;
     FVector linearVelocity;
     FVector targetLocalPos;
+
+    void debugTvonWFunction();
+    void solveIk(Joint *joint, FVector &target);
+    Matrix3x3 computeNumericalJacobian(
+        MMatrix &transform,
+        Joint *joint,
+        const FVector &w,
+        float deltatime
+    );
+    FVector guessAngularVelocity(Joint &joint, FVector &targetLocal);
 };

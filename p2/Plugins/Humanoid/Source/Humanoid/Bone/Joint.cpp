@@ -146,3 +146,25 @@ bool Joint::isTwoBone(){
 
     return false;
 }
+
+
+
+
+
+/**
+ * Experimental forward plücker IK Solving
+ */
+FVector Joint::T_vonW(MMatrix &transformWorld, FVector &angularVelocityIn, float deltaTime){
+
+    MMatrix transformUpdate = spatialTransform.tmpForwardPluecker(
+        angularVelocityIn,
+        transformWorld,
+        deltaTime //could be 1.0f
+    );
+    if(child != nullptr){
+        return child->T_vonW(transformUpdate, angularVelocityIn, deltaTime);
+    }
+    return transformUpdate.getTranslation();
+
+    //return FVector(0, 0, 0);
+}

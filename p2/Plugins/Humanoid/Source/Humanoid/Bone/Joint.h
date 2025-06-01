@@ -24,6 +24,13 @@ public:
 
     bool isTwoBone();
     int childCountDownstream();
+
+    FVector T_vonW(
+        MMatrix &transform, 
+        FVector &angularVelocity,
+        float deltatime
+    );
+
 private:
     
 
