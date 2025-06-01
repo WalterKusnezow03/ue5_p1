@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "terrainPlugin/meshgen/foliage/ETreeType.h"
+#include "ETreeType.h"
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
 
@@ -40,6 +40,9 @@ public:
 
 	int subTreeCount();
 
+	void setRotationMax(float degree);
+	float rotationOnRecursionLevel(int level);
+
 	void setRecursionLevelMax(int count);
 	int resursionLevelMax();
 
@@ -64,7 +67,10 @@ private:
 
 	void updateDetailStep(int detailStepIn);
 
+	//rotation on recursion
+	float pitchRotationMax = 0.0f;
+	float pitchRotationPerRecursion = 0.0f;
 
-	//new: recursion level
-	int recursionLevelInternal = 0;
+	//new: recursion level maximum
+	int recursionLevelInternalMax = 0;
 };

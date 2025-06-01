@@ -95,7 +95,7 @@ void Joint::Tick(float deltaTime, FVector &w, FVector &v){
         child->Tick(deltaTime, w, v); // erstmal einfach nicht weitergeben.
     }
 
-    DebugHelper::showScreenMessage("joint tick ", ownId); //nur 2 zusehen...
+    //DebugHelper::showScreenMessage("joint tick ", ownId); //nur 2 zusehen...
 }
 
 void Joint::Build(MMatrix &inTransform){

@@ -7,9 +7,9 @@
 #include "terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h"
 #include "GameCore/util/TVector.h"
 #include "terrainPlugin/meshgen/generation/terrainCreator.h"
-#include "terrainPlugin/meshgen/foliage/MatrixTree.h"
+#include "terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "terrainPlugin/meshgen/foliage/ETreeType.h"
+#include "terrainPlugin/meshgen/foliage/MatrixTree/ETreeType.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "p2/meshgen/specialMeshactors/wingsuitMeshActor.h"
 #include "terrainPlugin/meshgen/foliage/rocks/RockCreator.h"
@@ -93,7 +93,7 @@ void worldLevel::initWorld(UWorld *world){
     // disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
-            int meters = 200;
+            int meters = 200 * 1; //200
             createTerrain(world, meters); // 100m
             
         }
@@ -687,6 +687,10 @@ void worldLevel::createJointActor(UWorld *world){
 
 
 void worldLevel::debugTerrainHeight(){
+    if(true){
+        return;
+    }
+
     if(terrainPointer != nullptr){
         FVector playerLocation = PlayerInfo::playerLocation();
         float a = playerLocation.Z;
@@ -696,7 +700,7 @@ void worldLevel::debugTerrainHeight(){
             TEXT("terrain height %.2f -> player pos %.2f"),
             b, a
         );
-
+    
         DebugHelper::showScreenMessage(message);
     }
 }

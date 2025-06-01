@@ -75,6 +75,11 @@ void IndexChain::setRecursionLevel(int level){
     internalRecursionLevel = std::abs(level);
 }
 
+void IndexChain::setRecursionLevelAndPitch(int level, float pitch){
+    setRecursionLevel(level);
+    pitchOnRecursion = pitch;
+}
+
 int IndexChain::getRecursionLevel(){
     return internalRecursionLevel;
 }
@@ -89,16 +94,21 @@ float IndexChain::scaleFractionByRecursionLevel(){
         1 - (5 / 100) ----> zahl von 100% kann varieren.
         1 - (0.05)
         */
-        float fullPercent = 10.0f;
+        float fullPercent = 50.0f;
         scaleByRecursion = 1.0f - (recursionLevel / fullPercent);
     }
     return scaleByRecursion;
 }
 
 
-MMatrix IndexChain::scaleXYMatrixFromrecursionLevel(){
-    MMatrix outMatrix;
+MMatrix IndexChain::scaleXYAndRotationMatrixFromRecursionLevel(){
+    MMatrix scaleMatrix;
     float scale = scaleFractionByRecursionLevel();
-    outMatrix.scale(scale, scale, 1.0f);
+    scaleMatrix.scale(scale, scale, 1.0f);
+
+    MMatrix rotation;
+    rotation.pitchRadAdd(MMatrix::degToRadian(pitchOnRecursion));
+
+    MMatrix outMatrix = rotation * scaleMatrix; //<-- lese richtung --
     return outMatrix;
 }

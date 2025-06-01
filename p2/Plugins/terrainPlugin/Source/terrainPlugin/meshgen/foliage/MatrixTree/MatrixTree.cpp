@@ -4,8 +4,8 @@
 #include "MatrixTree.h"
 #include "ETreeType.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
-#include "terrainPlugin/meshgen/foliage/helper/IndexChain.h"
-#include "terrainPlugin/meshgen/foliage/helper/TreeProperties.h"
+#include "IndexChain.h"
+#include "TreeProperties.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
 
 MatrixTree::MatrixTree()
@@ -47,11 +47,12 @@ void MatrixTree::loadProperties(){
     palmProperty.addTerrainType(ETerrainType::EDesert); // additional types for more than one terrain
     addPropertyToMap(palmProperty);
 
-    TreeProperties oakProperty(100, ETreeType::Edefault, ETerrainType::ETropical, 30, 10, 3);
+    TreeProperties oakProperty(200, ETreeType::Edefault, ETerrainType::ETropical, 8, 3, 3);
     oakProperty.addTerrainType(ETerrainType::EForest);
     oakProperty.addTerrainType(ETerrainType::EDesertForest);
     oakProperty.setTargetedMaterials(materialEnum::treeMaterial, materialEnum::palmLeafMaterial);
-    //oakProperty.setRecursionLevelMax(0); //debug
+    oakProperty.setRotationMax(30.0f); 
+    oakProperty.setRecursionLevelMax(1); //debug
     defaultProperty = oakProperty;
     addPropertyToMap(oakProperty);
 
@@ -221,7 +222,7 @@ void MatrixTree::generateMesh(){
 void MatrixTree::wrapWithMesh(IndexChain &indexChain, MeshData &mesh){
 
     std::vector<MMatrix> &matricesIn = indexChain.matrixChain();
-    MMatrix recursionScaleMatForShapes = indexChain.scaleXYMatrixFromrecursionLevel();
+    MMatrix recursionScaleMatrixForShapes = indexChain.scaleXYAndRotationMatrixFromRecursionLevel();
 
 
     MeshData subMesh;
@@ -231,14 +232,14 @@ void MatrixTree::wrapWithMesh(IndexChain &indexChain, MeshData &mesh){
         //einfach alle shapes moven und dann connecten nacheinander
         std::vector<FVectorShape> allShapes;
 
-        //STEM DATA MOVE
+        //STEM DATA MOVE AND SCALE
         for (int i = 0; i < matricesIn.size(); i++)
         {
             MMatrix &currentMatrix = matricesIn[i];
             std::vector<FVectorShape> current = StemShapeByEnum(treeType);
             for (int j = 0; j < current.size(); j++){
                 FVectorShape &currentShape = current[j];
-                currentShape.moveVerteciesWithButPivotCenter(recursionScaleMatForShapes);
+                currentShape.moveVerteciesWithButPivotCenter(recursionScaleMatrixForShapes);
                 currentShape.moveVerteciesWith(currentMatrix);
                 allShapes.push_back(currentShape);
             }
@@ -296,10 +297,13 @@ void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop, int recur
      * FURTHER TESTING NEEDED, bei subtree count 1 macht das keinen sinn, sieht doof aus.
      */
     int count = prop.subTreeCount();
+    DebugHelper::logMessage("subtree count ", count);
     for (int i = 0; i < count; i++)
     {
         IndexChain subtree = createSubTree(offset, prop);
-        subtree.setRecursionLevel(recursion + 1);
+        int levelOfRecursion = recursion + 1;
+        float pitchOfRecursion = prop.rotationOnRecursionLevel(levelOfRecursion);
+        subtree.setRecursionLevelAndPitch(levelOfRecursion, pitchOfRecursion);
         indexChains.push_back(subtree);
 
         //go level deeper, testing needed, might cause stack overflow.
@@ -307,15 +311,6 @@ void MatrixTree::createSubTrees(MMatrix &offset, TreeProperties &prop, int recur
         createSubTrees(endMatrixBuildedFromChain, prop, recursion + 1);
     }
 
-    /*
-    //old
-    for (int i = 0; i < prop.subTreeCount(); i++)
-    {
-        IndexChain subtree = createSubTree(offset, prop);
-        subtree.setRecursionLevel(recursion + 1);
-        indexChains.push_back(subtree);
-    }
-    */
 
 }
 
@@ -331,7 +326,8 @@ IndexChain MatrixTree::createSubTree(
     IndexChain subtree;
     subtree.setOffsetMatrix(offset);
 
-    for (int i = 0; i < prop.partsPerSubtree(); i++){
+    int subtreeParts = prop.partsPerSubtree();
+    for (int i = 0; i < subtreeParts; i++){
         int random = FVectorUtil::randomNumber(1, matrices.size() - 1); //only stem can have index 0 as start!
         if(indexIsValid(random)){
             subtree.addIndex(random);
@@ -644,10 +640,11 @@ void MatrixTree::generateLeafShape(ETreeType type){
         flip.scale(-1.0f, 1.0f, 1.0f);
         oneSide.moveVerteciesWith(flip);
 
+        //add flipped
         output.push_back(oneSide); 
         MMatrix scaleUp;
 
-        int scaleUpRand = FVectorUtil::randomNumber(3, 10);
+        int scaleUpRand = FVectorUtil::randomNumber(6, 20);
         scaleUp.scaleUniform(scaleUpRand);
         output.moveVerteciesWith(scaleUp);
 

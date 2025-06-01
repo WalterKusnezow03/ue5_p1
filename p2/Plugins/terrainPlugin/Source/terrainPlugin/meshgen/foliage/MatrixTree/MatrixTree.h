@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
-#include "terrainPlugin/meshgen/foliage/helper/IndexChain.h"
-#include "terrainPlugin/meshgen/foliage/helper/TreeProperties.h"
+#include "IndexChain.h"
+#include "TreeProperties.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
 #include <map>
 #include "ETreeType.h"

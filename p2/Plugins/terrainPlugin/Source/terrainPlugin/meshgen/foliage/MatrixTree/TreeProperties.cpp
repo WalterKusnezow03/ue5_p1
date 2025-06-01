@@ -6,7 +6,7 @@
 TreeProperties::TreeProperties()
 {
     leafcountPerJointSaved = 10;
-    recursionLevelInternal = 0;
+    recursionLevelInternalMax = 0;
 }
 
 TreeProperties::TreeProperties(const TreeProperties &other){
@@ -25,7 +25,9 @@ TreeProperties &TreeProperties::operator=(const TreeProperties &other){
     leafcountPerJointSaved = other.leafcountPerJointSaved;
     partsPerSubtreeSaved = other.partsPerSubtreeSaved;
     subTreeCountSaved = other.subTreeCountSaved;
-    recursionLevelInternal = other.recursionLevelInternal;
+    recursionLevelInternalMax = other.recursionLevelInternalMax;
+    pitchRotationMax = other.pitchRotationMax;
+    pitchRotationPerRecursion = other.pitchRotationPerRecursion;
 
     leafMaterial = other.leafMaterial;
 	stemMaterial = other.stemMaterial;
@@ -121,7 +123,7 @@ int TreeProperties::partsPerSubtree(){
 
 
 int TreeProperties::subTreeCount(){
-    int rand = FVectorUtil::randomNumber(0, subTreeCountSaved);
+    int rand = FVectorUtil::randomNumber(subTreeCountSaved / 2, subTreeCountSaved);
     if(rand != 1){
         return rand;
     }
@@ -129,14 +131,14 @@ int TreeProperties::subTreeCount(){
 }
 
 void TreeProperties::setRecursionLevelMax(int count){
-    recursionLevelInternal = std::abs(count);
-    if(recursionLevelInternal < 1){
-        recursionLevelInternal = 1;
+    recursionLevelInternalMax = std::abs(count);
+    if(recursionLevelInternalMax < 1){
+        recursionLevelInternalMax = 1;
     }
 }
 
 int TreeProperties::resursionLevelMax(){
-    return recursionLevelInternal;
+    return recursionLevelInternalMax;
 }
 
 void TreeProperties::setTargetedMaterials(materialEnum stem, materialEnum leaf){
@@ -150,4 +152,25 @@ materialEnum TreeProperties::targetMaterialForStem(){
 
 materialEnum TreeProperties::targetMaterialForLeaf(){
     return leafMaterial;
+}
+
+
+
+/// @brief max rotation on any recursion level
+/// @param degree 
+void TreeProperties::setRotationMax(float degree){
+    pitchRotationMax = std::abs(degree);
+
+    pitchRotationPerRecursion = 0.0f;
+    if (recursionLevelInternalMax > 0)
+    {
+        pitchRotationPerRecursion = pitchRotationMax / recursionLevelInternalMax;
+    }
+}
+
+float TreeProperties::rotationOnRecursionLevel(int level){
+    float absRange = std::abs(level * pitchRotationPerRecursion);
+    absRange = std::min(180.0f, absRange);
+
+    return FVectorUtil::randomFloatNumber(-absRange, absRange);
 }

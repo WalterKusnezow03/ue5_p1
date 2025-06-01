@@ -33,8 +33,9 @@ public:
 	void resetMatrices();
 
 	void setRecursionLevel(int level);
-	
-	MMatrix scaleXYMatrixFromrecursionLevel();
+	void setRecursionLevelAndPitch(int level, float deg);
+
+	MMatrix scaleXYAndRotationMatrixFromRecursionLevel();
 
 private:
 	std::vector<int> indexChainVector;
@@ -44,6 +45,7 @@ private:
 	std::vector<MMatrix> matrixChainVector;
 
 	int internalRecursionLevel = 0;
+	float pitchOnRecursion = 10.0f;
 
 	int getRecursionLevel();
 	float scaleFractionByRecursionLevel();
