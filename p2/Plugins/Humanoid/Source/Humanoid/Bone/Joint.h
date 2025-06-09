@@ -8,6 +8,10 @@
 class HUMANOID_API Joint {
 
 public:
+    static void resetId(){
+        id = 0;
+    }
+
     Joint(UWorld *world);
     Joint(UWorld *world, FVector &translationVector);
     ~Joint();

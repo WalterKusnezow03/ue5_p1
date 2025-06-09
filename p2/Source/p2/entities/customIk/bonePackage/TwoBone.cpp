@@ -102,65 +102,6 @@ void TwoBone::normalizeTarget(FVector &target){
 
 
 
-float TwoBone::clampEtha(float etha){
-    if(etha < 0.0f){
-        etha = 0.0f;
-    }
-    if(etha > 1.0f){
-        etha = 1.0f;
-    }
-    return etha;
-}
-
-/**
- * 
- ----- ETHA EXPLAINED -----
-
-wenn das skalarprodukt zwier vektoren 0 ergibt sind sie othogonal zu einander
-wenn das skalarprodukt zwier vektoren 1 ergibt sind sie paralell zu einander
-
-wenn das bein ausgestreckt, ist der cos(theta) * n = 1 
-wenn das bein ganz raungezogen ist der cos(theta) * n = 0 weil projeziert lönge 0!
-
-wie komme ich jetzt an den winkel:
-Full extended etha = 1
-der acos(1) = 0,
-man dreht um 0 grad
-ansonsten um 90 grad
- */
-
-
-
-/// @brief will clamp the etha value and return the angle for the hip, positive
-/// @param etha etha value
-/// @return angle for the hip pitch from etha as dot product 
-float TwoBone::angleFromEtha(float etha){
-    //mit dem arcus cosinus einen cosinus wert wieder zu winkel bauen, um dann zu rotieren
-    if(etha < 0.0f){
-        etha = 0.0f;
-    }
-    if(etha > 1.0f){
-        etha = 1.0f;
-    }
-    
-    float lambda = std::acosf(etha); //testing. Richtig! --> 1, ganz paralell, 0 grad.
-    return lambda;
-}
-
-
-/// @brief returns the etha (angle) value for a distance
-/// @param distance distance from 0,0,0 to target
-/// @return etha value, dot product
-float TwoBone::createEthaFromDistance(float distance){
-    if(totalBoneLengthCopy == 0){
-        return 0; //fully extended error
-    }
-    //ganz ausgestreckt: skalarprodukt = 1
-    //ansonsten eingekickt. Ganz angezogen: skalarprodukt 0: 90 grad
-    float etha = (distance / totalBoneLengthCopy);
-    return etha;
-}
-
 
 
 
@@ -170,12 +111,7 @@ float TwoBone::createEthaFromDistance(float distance){
 float TwoBone::createHipAngle(float angle){
     return angle *-1;
 }
-/// @brief creates the knee angle and multiplies in automatically
-/// @param angle angle for the knee 
-/// @return signed and multiplied angle for knee, ready for matrix pitch apply
-float TwoBone::createKneeAngle(float angle){
-    return angle * 2;
-}
+
 
 
 
@@ -334,11 +270,11 @@ void TwoBone::rotateEndToTarget(
      * Top view yaw rotation of weight
      * 
      * gewicht ziegt ja irgendwo in zy pane und dann wird die bein achse (um z) gespinnt.
-     */
+     
     if(std::abs(weight.Y) >= 0.1f){ //gegen epsilon prüfen.
         float yawAngleWeight = yawAngleTo(weight); // rollAngleTo(weight);
         start.yawRadAdd(yawAngleWeight); //yaw drehen weil fuss erstmal nach unten zeigt, rotiert um eigene achse
-    }
+    }*/
 
     //bei arm yaw und pitch zum ziel von interesse
     if(isArmBone()){
@@ -400,6 +336,12 @@ void TwoBone::rotateEndToTarget(
 
 
 
+
+
+
+
+    //DEPRECATED!
+
     // --- GLOBAL PITCH TO TARGET ROTATION ---
     
     //die matrix zeigt zunächst immer nach unten, so ist der limb im konstruktor definiert
@@ -415,7 +357,16 @@ void TwoBone::rotateEndToTarget(
         start.pitchRadAdd(globalSideAdd);
     
     }
-    
+
+
+
+
+    //DEBUG
+    if(false){
+        if(!isArmBone()){
+            DebugHelper::showScreenMessage("trajectory: ", vec);
+        }
+    }
 
     
 

@@ -100,10 +100,7 @@ private:
 	bool isArmFlag = false;
 	bool DEBUG_DRAW = false; // false;
 
-	float createEthaFromDistance(float distance);
-	float angleFromEtha(float etha);
 	float createHipAngle(float angle);
-	float createKneeAngle(float angle);
 	void normalizeTarget(FVector &target);
 
 	void createEthaPitchAnglesFor(

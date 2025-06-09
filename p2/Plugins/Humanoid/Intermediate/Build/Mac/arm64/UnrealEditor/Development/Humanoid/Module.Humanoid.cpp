@@ -3,6 +3,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Intermediate/Build/Mac/UnrealEditor/Inc/Humanoid/UHT/Humanoid.init.gen.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Bone/Joint.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Debug/DebugJointsActor.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/IkSolver/NewtonSolve.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Math/Matrix3x3.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Math/Matrix6x6.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Private/Humanoid.cpp"

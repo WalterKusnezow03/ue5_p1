@@ -23,12 +23,7 @@ protected:
 
 private:
     void initChain();
-    void findErrorTwist(
-        MMatrix &root, 
-        MMatrix &end, 
-        FVector &target, 
-        float deltatime
-    );
+    
 
     timer timerFortick;
     TArray<Joint *> createdJoints;
@@ -37,15 +32,10 @@ private:
     //for single chain debug
     FVector angularVelocity;
     FVector linearVelocity;
-    FVector targetLocalPos;
 
-    void debugTvonWFunction();
-    void solveIk(Joint *joint, FVector &target);
-    Matrix3x3 computeNumericalJacobian(
-        MMatrix &transform,
-        Joint *joint,
-        const FVector &w,
-        float deltatime
-    );
-    FVector guessAngularVelocity(Joint &joint, FVector &targetLocal);
+    FVector target;
+
+
+    void debugSolveIk();
+    void testForwardTmpPluecker();
 };

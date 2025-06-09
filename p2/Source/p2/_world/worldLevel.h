@@ -92,4 +92,6 @@ private:
 	static void createCar(UWorld *world);
 
 	static void createJointActor(UWorld *world);
+
+	static void createBoneActorDebug(UWorld *world);
 };

@@ -20,7 +20,8 @@ public class p2 : ModuleRules
 			"GameCore",
 			"PathFinder",
 			"Humanoid",
-			"AssetPlugin"
+			"AssetPlugin",
+			"IkHumanoidModell"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

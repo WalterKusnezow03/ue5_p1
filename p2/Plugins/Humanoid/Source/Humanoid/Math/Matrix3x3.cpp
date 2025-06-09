@@ -56,7 +56,7 @@ Matrix3x3& Matrix3x3::operator=(const Matrix3x3 &other){
     }
 
     //copy data
-    for (int i = 0; i < size; i++){
+    for (int i = 0; i < 9; i++){
         array[i] = other.array[i];
     }
 
@@ -719,12 +719,11 @@ void Matrix3x3::setColumn(FVector &column, int i){
 Matrix3x3 Matrix3x3::jordanInverse(){
     Matrix3x3 identity; //operationen auf diese identity matrix auch anwenden,
     identity.makeIdentity();
-    int sizeSide = 3;
 
     Matrix3x3 thisMatrix = *this; //kopie um nicht zu manipulieren
     // das ist am ende die inverse
 
-    for (int x = 0; x < sizeSide; x++){
+    for (int x = 0; x < 3; x++){
 
         /*
         //durch pivot teilen dass 1 in pivot
@@ -741,7 +740,7 @@ Matrix3x3 Matrix3x3::jordanInverse(){
         identity.scaleRow(x, (1.0f / devide));
 
         //darunter wandern, elemente eliminieren
-        for (int y = x + 1; y < sizeSide; y++){
+        for (int y = x + 1; y < 3; y++){
 
             //gleichung essenziell:
             //a soll 0 sein
@@ -762,7 +761,7 @@ Matrix3x3 Matrix3x3::jordanInverse(){
     }
 
     // Eliminate elements above the pivots (new part)
-    for (int x = sizeSide - 1; x >= 0; x--) {
+    for (int x = 2; x >= 0; x--) {
         for (int y = x - 1; y >= 0; y--) {
             float upper = thisMatrix.get(x, y);
             thisMatrix.minusForRow(y, x, upper); // Eliminate element in (y, x)
@@ -786,8 +785,10 @@ Matrix3x3 Matrix3x3::jordanInverse(){
 /// @param other value to check
 /// @return value to allow invertion of the matrix with jordan gauß verfahren
 float Matrix3x3::clampDivisionByZero(float other){
-    if(std::abs(other) <= 0.000001f){
-        return 0.00001f;
+    float min = 0.000000000001f; // 0.000001f
+    if (std::abs(other) <= min)
+    {
+        return min;
     }
     return other;
 }
@@ -814,4 +815,45 @@ void Matrix3x3::minusForRow(int row, int otherRow, float faktor) {
         float thisValue = get(i, row) - otherValueScaled;
         set(i, row, thisValue);
     }
+}
+
+
+
+FString Matrix3x3::asString(){
+    FString out;
+    for (int i = 0; i < 3; i++)
+    {
+        FString s = FString::Printf(
+            TEXT("[%.2f, %.2f, %.2f]"),
+            get(i, 0),
+            get(i, 1),
+            get(i, 2)
+        );
+        out += s;
+    }
+    return out;
+}
+
+
+
+void Matrix3x3::testInverse(){
+    Matrix3x3 a;
+    a.makeIdentity();
+    a.yawRadAdd(Matrix3x3::degToRadian(23));
+    a.pitchRadAdd(Matrix3x3::degToRadian(54));
+    a.rollRadAdd(Matrix3x3::degToRadian(-30));
+    Matrix3x3 aInv = a.jordanInverse();
+
+    Matrix3x3 result = a * aInv;
+    FString s = result.asString();
+    DebugHelper::logMessage("inverse test ", s);
+
+
+    FVector aVec(4, 3, 2);
+    FVector bVec = result * aVec;
+    
+    if(FVector::Dist(aVec, bVec) < 1.0f){
+        DebugHelper::logMessage("inverse test valid", aVec, bVec);
+    }
+
 }

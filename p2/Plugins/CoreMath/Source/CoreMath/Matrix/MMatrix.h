@@ -91,6 +91,9 @@ public:
 	static float signedAngleRadBetween(FVector2D &a, FVector2D &b);
 
 	void transpose();
+	void transposeRotation();
+	MMatrix transposedRotation();
+	MMatrix invertedTranslation();
 
 	std::vector<float> CopyRotation();
 

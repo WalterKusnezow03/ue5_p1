@@ -72,6 +72,9 @@ public:
 
 	Matrix3x3 jordanInverse();
 
+	FString asString();
+	static void testInverse();
+
 private:
 	//16 langes array für die 4x4 matrix
 	static constexpr int size = 9;

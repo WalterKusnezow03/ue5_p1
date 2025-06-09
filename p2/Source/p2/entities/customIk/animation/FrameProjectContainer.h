@@ -22,9 +22,7 @@ public:
 		UWorld *world, 
 		MMatrix &currentActorMatrixTemporary, 
 		float velocity, 
-		FVector lookDir, 
-		float lowerLimitToClimb,
-		float maxHeightForProjectionIn,
+		FVector lookDir,
 		float minHeightStartFallingIn,
 		BoneControllerStates state
 	);
@@ -38,11 +36,6 @@ public:
 	FVector getWorldHit();
 	FVector getOffsetFromOriginal();
 
-	bool exceedsMaxHeight(FVector &offsetFromOriginal);
-	bool exceedsMaxHeight();
-
-	bool startClimb();
-	bool startClimbingAndNoExceedingMaxHeight();
 
 	bool startFalling();
 
@@ -62,8 +55,6 @@ private:
 
 	FVector offsetFromOriginal;
 
-	float maxHeightStartClimb;
-	float minHeightStartClimb;
 
 	float minHeightStartFalling; //negative value
 

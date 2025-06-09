@@ -475,6 +475,15 @@ MMatrix MMatrix::createRotatorFrom(
     //yaw angle
     FVector2D xydir(normalized.X, normalized.Y);
     float yawRad = signedAngleRadBetween(XAxis, xydir); //signiert voll umfänglich notwendig anders als pitch
+    
+    /**
+     * wenn sich der zielpunkt nahe der 0 werte befindet,
+     * ist der acos(0) = 90 degree, was seltsame
+     * sprünge erzeugt.
+     */
+    if(std::abs(XAxis.X) < 0.00001f){
+        yawRad = 0.0f;
+    }
 
     //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist! (das ist richtig so!)
     MMatrix removeYaw;
@@ -494,11 +503,10 @@ MMatrix MMatrix::createRotatorFrom(
     //zu fehlern
     if(yawConstraint90){
         float rad90 = M_PI / 2.0f;
-        float epsilon = MMatrix::degToRadian(5.0f); //not used
         float absYaw = std::abs(yawRad);
 
         if (absYaw > rad90) {
-            float sign = yawRad > 0.0f ? 1.0f : -1.0f;
+            float sign = yawRad >= 0.0f ? 1.0f : -1.0f;
             float overshoot = absYaw - rad90;
             
             // Begrenze yaw auf +-90 in entgegengesetzte Richtung
@@ -903,8 +911,31 @@ void MMatrix::transpose(){
     swapIndices(11, 14);
 }
 
+void MMatrix::transposeRotation(){
+    /*
+    r0  r1  r2  3
+    r4  r5  r6  7
+    r8  r9  r10 11
+    12 13 14 15
+    */
+    swapIndices(1, 4);
+    swapIndices(2, 8);
+    swapIndices(6, 9);
+}
 
+//special cases for custom inverse finding
+MMatrix MMatrix::transposedRotation(){
+    MMatrix copy = *this;
+    copy.setTranslation(0, 0, 0);
+    copy.transposeRotation();
+    return copy;
+}
 
+MMatrix MMatrix::invertedTranslation(){
+    FVector translation = getTranslation() * -1.0f;
+    MMatrix output(translation);
+    return output;
+}
 
 /// @brief calculates the inverse matrix with jordan gaus algorythm
 /// an identity matrix is returned if the inverse is not possible to make (det(A) = 0)

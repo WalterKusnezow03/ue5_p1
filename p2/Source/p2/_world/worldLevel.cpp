@@ -31,6 +31,8 @@
 
 #include "Humanoid/Debug/DebugJointsActor.h"
 
+#include "IkHumanoidModell/actor/IkDebugActor.h"
+
 #include "CoreMinimal.h"
 
 template class TVector<FVector2D>;
@@ -106,7 +108,7 @@ void worldLevel::initWorld(UWorld *world){
     createPathFinder(world);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    humanBotsOnStart(world, 1);
+    //humanBotsOnStart(world, 1);
 
     createOutpostsRequested(world); //stored in super class
         
@@ -134,7 +136,9 @@ void worldLevel::initWorld(UWorld *world){
     //createAeroActor(world);
     //createCar(world);
 
-    createJointActor(world);
+    //createJointActor(world);
+
+    createBoneActorDebug(world);
 }
 
 void worldLevel::createOutpostsRequested(UWorld *world){
@@ -702,5 +706,13 @@ void worldLevel::debugTerrainHeight(){
         );
     
         DebugHelper::showScreenMessage(message);
+    }
+}
+
+
+void worldLevel::createBoneActorDebug(UWorld *world){
+    if(world){
+        //AIkActor::CreateInstance(world);
+        AIkDebugActor::CreateInstance(world);
     }
 }

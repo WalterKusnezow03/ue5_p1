@@ -3836,6 +3836,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Debug/DebugJointsActor.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/IkSolver/NewtonSolve.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/IkSolver/NewtonSolve.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Math/Matrix3x3.cpp \
   Runtime/Core/Public/Math/Rotator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Math/Matrix6x6.cpp \

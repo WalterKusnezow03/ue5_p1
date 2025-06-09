@@ -446,6 +446,23 @@ void KeyFrameAnimation::rotateNextFrames(float signedAngleYawDegree){
     rotateFramesMatrix.resetRotation();
     rotateFramesMatrix.yawRadAdd(MMatrix::degToRadian(signedAngleYawDegree));
     rotateFramesMatrix.setTranslation(0, 0, 0);
+
+    //get target and add rotation
+    //DebugHelper::showScreenMessage("Rotate trajectory: ", (float) signedAngleYawDegree);
+
+    /*
+    if(!interpolator.hasTargetSetup()){
+        updateFrameInterpolator();
+    }
+
+    //trajectory rotation funktioniert in ordnung
+
+    FVector currentLocalFrame = interpolator.readToPosition();
+    
+    addRotationToFrame(currentLocalFrame);
+    
+    interpolator.overrideTarget(currentLocalFrame);
+    */
 }
 
 void KeyFrameAnimation::resetRotationOnFramesFlag(){
@@ -454,7 +471,9 @@ void KeyFrameAnimation::resetRotationOnFramesFlag(){
 
 void KeyFrameAnimation::addRotationToFrame(FVector &localFrameToRotate){
     if(rotateFramesBasedOnAngle){
+        //DebugHelper::showScreenMessage("Rotate trajectory from: ", localFrameToRotate, FColor::Orange);
         localFrameToRotate = rotateFramesMatrix * localFrameToRotate;
+        //DebugHelper::showScreenMessage("Rotate trajectory to: ", localFrameToRotate, FColor::Orange);
     }
 }
 
@@ -515,22 +534,20 @@ bool KeyFrameAnimation::projectNextFrameToGroundIfNeeded(FrameProjectContainer &
             frameToProject,
             nextTimeToFrame
         );
+        //DebugHelper::showScreenMessage("PROJECTED", FColor::Purple);
+        overrideNextFrame(frameToProject);
 
-        //no climb
-        if(
-            !containerInOut.startClimbingAndNoExceedingMaxHeight() || 
-            containerInOut.locomotionStateIsClimb()
-        ){
-            //DebugHelper::showScreenMessage("PROJECTED", FColor::Purple);
-            overrideNextFrame(frameToProject);
+        FVector worldHitOutput = containerInOut.getWorldHit();
+        interpolator.overrideTargetWorld(worldHitOutput);
 
-            FVector worldHitOutput = containerInOut.getWorldHit();
-            interpolator.overrideTargetWorld(worldHitOutput);
-            return true;
-        }else{
-            //DebugHelper::showScreenMessage("NOT PROJECTED", FColor::Red);
-            return false;
-        }
+
+        // reset rotation, erstmal per one frame
+        //DebugHelper::showScreenMessage("reset rotation for trajectories");
+        rotateFramesBasedOnAngle = false;
+        rotateFramesMatrix.resetRotation();
+
+
+        return true;
     }
     return false;
 }
