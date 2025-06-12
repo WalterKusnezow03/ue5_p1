@@ -18,6 +18,12 @@ public:
     void setLocation(FVector &location);
 
 private:
+    float bodyMass = 10.0f; //10 kg ?
+
+    FVector velocity;
+
+
+
     UWorld *worldPointer = nullptr;
 
     BoneAttachment legLeft;
@@ -37,6 +43,7 @@ private:
 
     bool forwardMotion = true;
     bool legLeftPlaying = true;
+    bool stancePhaseLegLeft = false;
 
     void updateInterpolatorLocomotion();
     void updateForwardTargetWorld(FVector &targetWorld);
@@ -48,4 +55,8 @@ private:
     void setupForwardInterpolation();
 
     void drawLocation(float deltatime);
+
+    void projectToGround(FVector &worldTarjectory);
+
+    void applyStancePhaseSLIPForce(float deltatime);
 };

@@ -1,5 +1,6 @@
 #include "HipController.h"
 #include "GameCore/DebugHelper.h"
+#include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 
 HipController::HipController(){
 
@@ -94,7 +95,12 @@ void HipController::applyLocomotion(float deltatime){
 
 
     BoneAttachment &other = !legLeftPlaying ? legLeft : legRight;
-    other.TickNone(transform, deltatime);
+    //other.TickNone(transform, deltatime);
+    other.TickKeepEndInWorldPlace(
+        translation,
+        orientation,
+        deltatime
+    );
 }
 
 //interpolation update
@@ -162,6 +168,15 @@ void HipController::setupBackwardInterpolation(){
     DebugHelper::logMessage("hipcontroller: backwards end ", localEnd);    
 
     interpolatorBackwardLocal.setTarget(localStart, localEnd, motionTime);
+
+
+
+    //wenn das bein den boden berührt und bis zum heel
+    //off am boden bleibt gilt für das bein bis zum nächsten forward 
+    //die stance phase
+    stancePhaseLegLeft = legLeftPlaying;
+
+
 }
 
 
@@ -178,18 +193,64 @@ void HipController::setupForwardInterpolation(){
 
     //project frame to ground
     FVector worldTrajectoryProjected = worldTrajectory;
+    projectToGround(worldTrajectoryProjected);
 
     //set as target with end and current Starting point (end effector)
     FVector currentEndEffector = attachment.endEffectorWorldLocation();
 
     DebugHelper::logMessage("hipcontroller: forward start ", currentEndEffector);
     DebugHelper::logMessage("hipcontroller: forward end ", worldTrajectoryProjected);
-
     DebugHelper::showLineBetween(
-        worldPointer, currentEndEffector, currentEndEffector + FVector(0, 0, 30), FColor::Red, 1.0f
+        worldPointer, currentEndEffector, currentEndEffector + FVector(0, 0, 30), FColor::Orange, 1.0f
+    );
+    DebugHelper::showLineBetween(
+        worldPointer, currentEndEffector, worldTrajectoryProjected , FColor::Yellow, 1.0f
     );
 
     interpolatorForwardWorld.setTarget(currentEndEffector, worldTrajectoryProjected, motionTime);
 }
 
 
+void HipController::projectToGround(FVector &worldTarjectory){
+    if(!worldPointer){
+        return;
+    }
+
+    FVector Start = worldTarjectory + FVector(0, 0, 200);
+    FVector End = worldTarjectory + FVector(0, 0, -400);
+
+
+    // Perform the raycast
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.bTraceComplex = false;
+    bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+
+    // If the raycast hit something, save the collision point
+    if (bHit)
+    {
+        FVector worldImpact = HitResult.ImpactPoint;
+        worldTarjectory = worldImpact;
+    }
+}
+
+
+
+
+
+void HipController::applyStancePhaseSLIPForce(float deltatime){
+    //stance phase ist eigentlich fast immer true
+    //wenn man normal geht
+    //immer ein bein eben!
+    
+    BoneAttachment &attachment = stancePhaseLegLeft ? legLeft : legRight;
+
+    //if the foot is actually grounded apply force
+    SlipContainer container = attachment.slipData();
+    
+    //x(t) = x0 + v0t + 0.5at^2
+    //v(t) = v0 + at
+    //a(t) = a
+    FVector acceleration = container.acceleration(bodyMass);
+    velocity += acceleration * deltatime;
+}

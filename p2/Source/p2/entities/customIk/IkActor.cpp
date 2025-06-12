@@ -18,27 +18,6 @@ AIkActor::AIkActor()
 
 }
 
-
-void AIkActor::CreateInstance(UWorld *world){
-    if(world != nullptr){
-
-        UClass *toSpawn = AIkActor::StaticClass();
-        if (toSpawn){
-            //Initialize SpawnParams if needed
-            FActorSpawnParameters SpawnParams;
-
-            // Spawn the actor
-            FVector location(500,-500,0);
-            AIkActor *spawned = world->SpawnActor<AIkActor>(
-                toSpawn, 
-                location, 
-                FRotator::ZeroRotator,
-                SpawnParams
-            );
-        }
-    }
-}
-
 // Called when the game starts or when spawned
 void AIkActor::BeginPlay()
 {
@@ -129,7 +108,7 @@ void AIkActor::Tick(float DeltaTime)
 	//rotation muss auch noch kopiert werden
 
 	debugDeltaTimeTrigger += DeltaTime;
-	if (debugDeltaTimeTrigger > 5.0f)
+	if (debugDeltaTimeTrigger > 10.0f)
 	{
 		debugFunction();
 		debugDeltaTimeTrigger = 0.0f;
@@ -138,6 +117,7 @@ void AIkActor::Tick(float DeltaTime)
 
 
 void AIkActor::debugFunction(){
+	return;
 	hipController.updateRotation(-45.0f);
 }
 

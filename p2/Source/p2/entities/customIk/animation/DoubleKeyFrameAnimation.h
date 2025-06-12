@@ -35,13 +35,6 @@ public:
 		MMatrix &actor
 	);
 
-	FVector interpolateBackwardKinematic(
-		float DeltaTime, 
-		FVector currentRelative,
-		MMatrix &actorRotation,
-		MMatrix &outRotationMatrix
-	);
-
 	bool animationCycleWasComplete();
 
 	void processProjectOffset(FVector &offsetMade);

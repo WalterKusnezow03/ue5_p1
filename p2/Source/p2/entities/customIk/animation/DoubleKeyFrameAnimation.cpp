@@ -248,7 +248,19 @@ void DoubleKeyFrameAnimation::projectNextFrameIfNeeded(
 
     //locomotion climbing required to get to this height!
     FVector offsetMade = container.getOffsetFromOriginal();
+    if (container.startClimb())
+    {
+        offsetMade = FVector(0, 0, 0);
+        if (!container.locomotionStateIsClimb()) //not climbing: wanted to climb: return
+        {
+            return;
+        }
+    }
 
+    if(container.exceedsMaxHeight()){
+        offsetMade = FVector(0, 0, 0);
+    }
+    
     if(wasProjected){
 
         processProjectOffset(offsetMade);
@@ -348,11 +360,6 @@ FVector DoubleKeyFrameAnimation::interpolate(float DeltaTime, FVector currentRel
 
     return interpolated;
 }
-
-
-
-
-
 
 
 
@@ -501,84 +508,4 @@ void DoubleKeyFrameAnimation::resetAnimationToStartAndResetRotation(){
     isAnimationAPlaying = true;
     cycleComplete = false;
     framesA.resetAnimationToStartAndResetRotation();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * new
- */
-
-/**
- * backward kinematics delta rotation
- */
-FVector DoubleKeyFrameAnimation::interpolateBackwardKinematic(
-    float DeltaTime, 
-    FVector currentRelative,
-    MMatrix &actorRotation,
-    MMatrix &outRotationMatrix
-){
-    
-    deltaTime += DeltaTime;
-
-    
-    FVector interpolated;
-    if(isAnimationB()){
-
-        //winkel forward und fuss stellung zum angleichen
-        FVector flipped = currentRelative * -1.0f;
-        FVector forward(1, 0, 0);
-        forward = actorRotation * forward;
-        flipped.Z = 0.0f;
-        forward.Z = 0.0f;
-        MMatrix rotatorB = MMatrix::createRotatorFrom(flipped);
-
-        //delta rotation muss eingestellt werden
-        FRotator a = actorRotation.extractRotator();
-        FRotator b = rotatorB.extractRotator();
-        a.Roll = 0.0f;
-        b.Roll = 0.0f;
-        a.Pitch = 0.0f;
-        b.Pitch = 0.0f;
-
-        if(false){
-            DebugHelper::showScreenMessage("rotation yaw current: ", (float) a.Yaw);
-            DebugHelper::showScreenMessage("rotation yaw targeted: ", (float) b.Yaw);
-            DebugHelper::showScreenMessage("rotation yaw difference: ", (float) (b.Yaw - a.Yaw));
-        }
-
-
-        interpolateB.overrideTarget(b);
-        interpolateB.overrideStartSpeedRelative(currentRelative, a);
-
-        FRotator outRotation;
-        interpolated = interpolateB.interpolate(DeltaTime, outRotation);
-        outRotationMatrix = MMatrix(outRotation);
-
-        if(false){
-            //is always immidiate. Why.
-            DebugHelper::showScreenMessage("backward kinematic rotation yaw: ", (float) outRotation.Yaw);
-        }
-
-        //new: alos listen for ground reached on B!
-        if(interpolateB.hasReachedTarget() && gravityInterpolator.groundReachedFlag()){
-            cycleComplete = true;
-            projectionHipOffsetComplete = FVector(0, 0, 0);
-            isAnimationAPlaying = true; //flip bool!
-            deltaTime = 0.0f;
-        }
-    }
-
-
-    return interpolated;
 }

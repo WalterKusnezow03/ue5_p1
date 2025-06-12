@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 
 class IKHUMANOIDMODELL_API BoneAttachment {
 
@@ -28,6 +29,11 @@ public:
         MMatrix &orientationRoot,
         float deltatime
     );
+    void TickKeepEndInWorldPlace(
+        MMatrix &translationRoot,
+        MMatrix &orientationRoot,
+        float deltatime
+    );
 
     FVector inLocalSpace(
         FVector &worldFrame, 
@@ -45,6 +51,8 @@ public:
     );
 
     FVector endEffectorWorldLocation();
+
+    SlipContainer slipData();
 
 private:
     FVector extendedTranslationBottomToUp;

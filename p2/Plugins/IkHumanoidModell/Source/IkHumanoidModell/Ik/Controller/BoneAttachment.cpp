@@ -63,6 +63,9 @@ void BoneAttachment::setBackwardTargetLocal(FVector &target){
 }
 
 
+
+/// --- tick section ---
+
 void BoneAttachment::TickNone(MMatrix &worldRoot, float deltatime){
     MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
     bone.TickBuildForward(transformStartEffector, deltatime);
@@ -102,8 +105,25 @@ void BoneAttachment::TickBackwardKinematic(
 }
 
 
+void BoneAttachment::TickKeepEndInWorldPlace(
+    MMatrix &translationRoot, 
+    MMatrix &orientationRoot,
+    float deltatime
+){
+    /**
+     * NOCH VERBUGGT!
+     */
+
+    FVector endEffectorWorld = bone.EndEffectorLocation();
+    DebugHelper::showScreenMessage("in world space keep end: ", endEffectorWorld); //verändert sich, unklar wieso!
+    FVector endEffectorLocal = inLocalSpace(endEffectorWorld, translationRoot, orientationRoot);
+    DebugHelper::showScreenMessage("in local space keep end: ", endEffectorLocal);
 
 
+    MMatrix worldRoot = translationRoot * orientationRoot; // M = T * R <-- lese richtung --
+    MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
+    bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
+}
 
 //projection of trajectories
 FVector BoneAttachment::inLocalSpace(
@@ -165,4 +185,28 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
     DebugHelper::logMessage("boenAttachment: foot to hip B: ", relative);
 
     return relative;
+}
+
+
+
+
+/**
+ * slip force
+ */
+
+/// @brief will return the slip data, based if has reached target or not
+/// @param mass 
+/// @return 
+SlipContainer BoneAttachment::slipData(){
+    SlipContainer container;
+    //if reached target: setup
+    FVector reached = bone.EndEffectorRelativeLocation();
+    if(reached.Size() <= forwardTarget.Size()){
+        container.setup(
+            bone.lengthOfBone(),
+            reached
+        );
+    }
+
+    return container;
 }

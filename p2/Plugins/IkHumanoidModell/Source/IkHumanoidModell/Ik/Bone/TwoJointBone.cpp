@@ -160,10 +160,9 @@ void TwoJointBone::MoveToTargetInverse(FVector &target){
 
 }
 
-
-
-
-
+float TwoJointBone::lengthOfBone(){
+    return length;
+}
 
 void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     //M = R * T <-- lese richtung per joint

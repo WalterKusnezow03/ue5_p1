@@ -21,8 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	AIkActor();
 
-	static void CreateInstance(UWorld *world);
-
 	bool debugRaycastDraw = false;
 
 protected:

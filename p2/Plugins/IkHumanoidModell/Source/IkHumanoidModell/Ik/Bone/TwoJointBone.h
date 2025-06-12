@@ -23,6 +23,8 @@ public:
 
     FVector EndEffectorRelativeLocation();
 
+    float lengthOfBone();
+
 private:
     UWorld *worldPtr = nullptr;
     void resetRotations();
