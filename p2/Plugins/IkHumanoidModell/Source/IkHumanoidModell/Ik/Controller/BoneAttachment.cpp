@@ -1,5 +1,7 @@
 #include "BoneAttachment.h"
 
+#include "GameCore/DebugHelper.h"
+
 
 BoneAttachment::BoneAttachment(){
 
@@ -46,6 +48,7 @@ void BoneAttachment::setForwardTargetWorld(
     MMatrix &rootTranslation, 
     MMatrix &rootOrientation
 ){
+    forwardTargetWorld = targetWorld;
     FVector forwardTargetLocal = inLocalSpace(
         targetWorld,
         rootTranslation,
@@ -76,6 +79,46 @@ void BoneAttachment::TickForwardKinematic(MMatrix &worldRoot, float deltatime){
     bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime);
 }
 
+
+// new layered kinematics - unklar wie das gesteuert werden soll
+void BoneAttachment::TickForwardKinematicOutOfReachTarget(
+    MMatrix &translation,
+    MMatrix &orientation, //könnte temporäre kopie sein
+    float deltatime
+){
+    //is out of reach:
+    FVector outOfReach = bone.outOfreachDistance(forwardTarget);
+    float minDistance = 1.0f;
+    if (outOfReach.Size() > minDistance){
+        //weil x nach vorne zeigt muss
+        //der inner offset so gedreht werden dann er die 
+        //höhe x erreicht
+
+        //theta = asin(g/h) mit g: x of target
+        //h: width of hip
+
+        float g = outOfReach.X;
+        float h = innerOffset.getTranslation().Size();
+
+        float theta = std::asinf(g/h);
+        float sign = outOfReach.Y < 0.0f ? 1.0f : -1.0f;
+
+        float angleRad = sign * theta;
+
+        orientation.yawRadAdd(angleRad);
+
+        /**
+         * es ist noch nicht klar ob der ansatz reicht!
+         * mit hoher wahrscheinlichkeit nein!
+         */
+        //roll oder pitch der hip nicht beachtet. Achtung.
+
+        DebugHelper::showScreenMessage("target out of reach ", outOfReach);
+    }
+
+    MMatrix worldRoot = translation * orientation;
+    TickForwardKinematic(worldRoot, deltatime);
+}
 
 /// @brief 
 /// @param transformRoot to be manipulated from movement!
@@ -110,15 +153,8 @@ void BoneAttachment::TickKeepEndInWorldPlace(
     MMatrix &orientationRoot,
     float deltatime
 ){
-    /**
-     * NOCH VERBUGGT!
-     */
-
     FVector endEffectorWorld = bone.EndEffectorLocation();
-    DebugHelper::showScreenMessage("in world space keep end: ", endEffectorWorld); //verändert sich, unklar wieso!
     FVector endEffectorLocal = inLocalSpace(endEffectorWorld, translationRoot, orientationRoot);
-    DebugHelper::showScreenMessage("in local space keep end: ", endEffectorLocal);
-
 
     MMatrix worldRoot = translationRoot * orientationRoot; // M = T * R <-- lese richtung --
     MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
@@ -209,4 +245,17 @@ SlipContainer BoneAttachment::slipData(){
     }
 
     return container;
+}
+
+
+/**
+ * targte info
+ */
+bool BoneAttachment::reachedTarget(){
+    return distanceFromTarget() <= 10.0f;
+}
+
+float BoneAttachment::distanceFromTarget(){
+    FVector endeffector = bone.EndEffectorLocation();
+    return FVector::Dist(endeffector, forwardTargetWorld);
 }

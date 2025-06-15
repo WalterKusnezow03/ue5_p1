@@ -54,6 +54,15 @@ void TwoJointBone::clampTarget(FVector &target){
     }
 }
 
+FVector TwoJointBone::outOfreachDistance(FVector &target){
+    FVector outVector(0, 0, 0);
+    if (target.Size() > length){
+        float difference = target.Size() - length;
+        outVector = target.GetSafeNormal() * difference;
+    }
+    return outVector;
+}
+
 void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
     if(markedForTriangleFlip){
         pitch1 *= -1.0f;
@@ -61,7 +70,7 @@ void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
     }
 }
 
-void TwoJointBone::MoveToTarget(FVector &target, MMatrix &world, float deltatime){
+void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime){
     MoveToTarget(target);
     buildForward(world, deltatime);
 
@@ -102,7 +111,7 @@ void TwoJointBone::MoveToTarget(FVector &target){
 
 
 
-void TwoJointBone::MoveToTargetInverse(FVector &target, float deltatime){
+void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     MoveToTargetInverse(target);
 
     //it is very important to clear the end effectors own rotation,

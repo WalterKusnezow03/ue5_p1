@@ -18,11 +18,12 @@ public:
     void setLocation(FVector &location);
 
 private:
-    float bodyMass = 10.0f; //10 kg ?
+    float bodyMass = 30.0f; //10 kg ?
 
+    //actor velocity
     FVector velocity;
 
-
+    FVector latestGroundTruth;
 
     UWorld *worldPointer = nullptr;
 
@@ -39,7 +40,7 @@ private:
     void applyLocomotion(float deltatime);
     void updateInterpolatorLocomotion(float deltatime);
 
-    float motionTime = 1.0f;
+    float motionTime = 0.5f;
 
     bool forwardMotion = true;
     bool legLeftPlaying = true;
@@ -58,5 +59,13 @@ private:
 
     void projectToGround(FVector &worldTarjectory);
 
+    void applyForces(float deltatime);
     void applyStancePhaseSLIPForce(float deltatime);
+    void applyForceGravity(float deltatime);
+
+    void applyVelocity(float deltatime);
+
+    void validateTransformUpdate(FVector &position);
+
+    bool isGrounded();
 };

@@ -481,7 +481,8 @@ MMatrix MMatrix::createRotatorFrom(
      * ist der acos(0) = 90 degree, was seltsame
      * sprünge erzeugt.
      */
-    if(std::abs(XAxis.X) < 0.00001f){
+    FVector xyProjection(other.X, other.Y, 0.0f);
+    if (xyProjection.Size() < 0.1f){ //prevents weird rotations.
         yawRad = 0.0f;
     }
 
@@ -493,10 +494,7 @@ MMatrix MMatrix::createRotatorFrom(
 
     //pitch angle
     FVector2D xzdir(normalized.X, normalized.Z);
-    float pitchRad = signedAngleRadBetween(ZAxis, xzdir) * -1.0f; //test (negieren. Aus. Gründen.) 
-
-
-    
+    float pitchRad = signedAngleRadBetween(ZAxis, xzdir) *-1.0f; // test (negieren. Aus. Gründen.)
 
     //hier wieder rück führen
     //tut noch nicht immer was es soll, wenn der yaw winkel sehr klein ist kommt es 

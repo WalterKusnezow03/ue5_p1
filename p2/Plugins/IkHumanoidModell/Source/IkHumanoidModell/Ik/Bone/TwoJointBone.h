@@ -12,8 +12,8 @@ public:
     void setup(float a, float b, UWorld *world);
     void markTriangleFlipAsWantedForArms();
 
-    void MoveToTarget(FVector &target, MMatrix &world, float deltatime);
-    void MoveToTargetInverse(FVector &target, float deltatime);
+    void MoveToTarget(FVector target, MMatrix &world, float deltatime);
+    void MoveToTargetInverse(FVector target, float deltatime);
 
     void TickBuildForward(MMatrix &world, float deltatime);
 
@@ -24,6 +24,8 @@ public:
     FVector EndEffectorRelativeLocation();
 
     float lengthOfBone();
+
+    FVector outOfreachDistance(FVector &target);
 
 private:
     UWorld *worldPtr = nullptr;

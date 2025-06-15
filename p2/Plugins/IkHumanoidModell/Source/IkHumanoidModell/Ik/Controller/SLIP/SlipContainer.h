@@ -13,15 +13,17 @@ public:
 
 
     void setup(float defaultBoneSize, FVector &currentStartToEndEffector);
-    FVector force();
-    FVector acceleration(float mass);
+    FVector force(FVector &movedir);
+    FVector acceleration(float mass, FVector &movedir);
 
 private:
     
     float featherComplete; //ausrichtung scheint eine rolle zu spielen
     FVector featherCurrent;
 
-    float federKonstanteD = 1.0f;
+    float federKonstanteD = 10.0f;
 
     bool wasSetup = false;
+
+    void findMinDForGravityBlock(float mass);
 };

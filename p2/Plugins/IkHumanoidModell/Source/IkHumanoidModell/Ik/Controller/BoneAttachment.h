@@ -35,24 +35,30 @@ public:
         float deltatime
     );
 
-    FVector inLocalSpace(
-        FVector &worldFrame, 
-        MMatrix &rootTranslation, 
-        MMatrix &rootOrientation
+    void TickForwardKinematicOutOfReachTarget(
+        MMatrix &translation,
+        MMatrix &orientation, // könnte temporäre kopie sein
+        float deltatime
     );
+
+    FVector inLocalSpace(
+        FVector &worldFrame,
+        MMatrix &rootTranslation,
+        MMatrix &rootOrientation);
     FVector inWorldSpace(
         FVector &localFrame,
         MMatrix &rootTranslation,
-        MMatrix &rootOrientation
-    );
+        MMatrix &rootOrientation);
     FVector hipRelativeLocationToEndEffector(
         MMatrix &rootTranslation,
-        MMatrix &rootOrientation
-    );
+        MMatrix &rootOrientation);
 
     FVector endEffectorWorldLocation();
 
     SlipContainer slipData();
+
+    bool reachedTarget();
+    float distanceFromTarget();
 
 private:
     FVector extendedTranslationBottomToUp;
@@ -62,6 +68,7 @@ private:
 
     TwoJointBone bone;
 
+    FVector forwardTargetWorld;
     FVector forwardTarget;
     FVector backwardTarget;
 

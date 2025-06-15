@@ -47,6 +47,8 @@ void HipController::setup(UWorld *world){
     //debug
     forwardDefaultLocalLocomotionFrame = FVector(distanceForward, 0, -lengthTotal * 0.7f);
 
+    forwardDefaultLocalLocomotionFrame = FVector(distanceForward * 2.0f, 0, -lengthTotal * 0.7f);
+
     buildOnStart();
 }
 
@@ -62,13 +64,13 @@ void HipController::buildOnStart(){
 
 void HipController::Tick(float deltatime){
     TickLocomotion(deltatime);
-    drawLocation(deltatime);
+    //drawLocation(deltatime);
 }
 
 void HipController::TickLocomotion(float deltatime){
     updateInterpolatorLocomotion(deltatime);
     applyLocomotion(deltatime);
-
+    applyForces(deltatime);
 }
 
 //apply locomotion
@@ -76,10 +78,19 @@ void HipController::applyLocomotion(float deltatime){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
     MMatrix transform = translation * orientation; //<-- lese richtung --
     if(forwardMotion){
+        
         attachment.TickForwardKinematic(transform, deltatime);
 
-        FString message = legLeftPlaying ? TEXT("leg 1 forward") : TEXT("leg 2 forward ");
-        DebugHelper::showScreenMessage(message);
+        /*
+        MMatrix orientationCopy = orientation;
+        attachment.TickForwardKinematicOutOfReachTarget(
+            translation,
+            orientationCopy, // könnte temporäre kopie sein
+            deltatime
+        );*/
+
+        //FString message = legLeftPlaying ? TEXT("leg 1 forward") : TEXT("leg 2 forward ");
+        //DebugHelper::showScreenMessage(message);
     }
     else
     {
@@ -89,8 +100,8 @@ void HipController::applyLocomotion(float deltatime){
             deltatime
         );
 
-        FString message = legLeftPlaying ? TEXT("leg 1 backward") : TEXT("leg 2 backward ");
-        DebugHelper::showScreenMessage(message);
+        //FString message = legLeftPlaying ? TEXT("leg 1 backward") : TEXT("leg 2 backward ");
+        //DebugHelper::showScreenMessage(message);
     }
 
 
@@ -217,7 +228,7 @@ void HipController::projectToGround(FVector &worldTarjectory){
     }
 
     FVector Start = worldTarjectory + FVector(0, 0, 200);
-    FVector End = worldTarjectory + FVector(0, 0, -400);
+    FVector End = worldTarjectory + FVector(0, 0, -3000);
 
 
     // Perform the raycast
@@ -231,12 +242,59 @@ void HipController::projectToGround(FVector &worldTarjectory){
     {
         FVector worldImpact = HitResult.ImpactPoint;
         worldTarjectory = worldImpact;
+        latestGroundTruth = worldImpact;
     }
 }
 
 
 
 
+
+/// ---- force section ----
+void HipController::applyForces(float deltatime){
+    applyStancePhaseSLIPForce(deltatime);
+    applyForceGravity(deltatime);
+    
+    if(isGrounded()){
+        velocity.Z = std::max(velocity.Z, 0.0);
+        DebugHelper::showScreenMessage("velocity reset ", FColor::Red);
+    }
+    //applyForceGravity(deltatime);
+    applyVelocity(deltatime);
+}
+
+//testing needed
+bool HipController::isGrounded(){
+    if(forwardMotion && legLeftPlaying){
+        return legRight.reachedTarget();
+    }
+    if(forwardMotion && !legLeftPlaying){
+        return legLeft.reachedTarget();
+    }
+    return false;
+}
+
+void HipController::applyVelocity(float deltatime){
+
+    //debug
+    DebugHelper::showScreenMessage("velocity ", velocity);
+    
+
+    //x(t) = x0 + v0t + fällt weg(0.5at^2)?
+    FVector x0 = translation.getTranslation();
+    FVector xt = x0 + velocity * deltatime;
+    validateTransformUpdate(xt);
+
+    DebugHelper::showScreenMessage("x(t) ", xt);
+    translation.setTranslation(xt);
+}
+
+/// @brief clamps the position update to not fall below ground
+/// @param position 
+void HipController::validateTransformUpdate(FVector &position){
+    float heightUpdate = std::max(position.Z, latestGroundTruth.Z);
+    position.Z = heightUpdate;
+}
 
 void HipController::applyStancePhaseSLIPForce(float deltatime){
     //stance phase ist eigentlich fast immer true
@@ -248,9 +306,39 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
     //if the foot is actually grounded apply force
     SlipContainer container = attachment.slipData();
     
+    /**
+     * was hier noch nicht klar sit ob die kraft auch 
+     * in das welt koordintane system gebracht werden muss.
+     * 
+     * wobei ja start und end effektor in welt kordinaten ausgedrückt sind
+     * und somit die federkraft sich auch in der welt befindet
+     * 
+     * die frage die sich noch stellt ist ob die stance phase so
+     * stimmt
+     */
+
     //x(t) = x0 + v0t + 0.5at^2
     //v(t) = v0 + at
     //a(t) = a
-    FVector acceleration = container.acceleration(bodyMass);
+    FVector moveDir(1, 0, 0);
+    moveDir = orientation * moveDir;
+
+    FVector acceleration = container.acceleration(bodyMass, moveDir);
     velocity += acceleration * deltatime;
+}
+
+void HipController::applyForceGravity(float deltatime){
+    //apply gravity if not below
+    //ground 
+    //maybe by adding extra distance (but not sure) to keep from ground
+
+    float gravityScale = 0.4f;
+
+    float currentZheight = translation.getTranslation().Z;
+    float groundZheight = latestGroundTruth.Z;
+
+    if(currentZheight > groundZheight){
+        FVector acceleration(0, 0, -981 * gravityScale);
+        velocity += acceleration * deltatime;
+    }
 }
