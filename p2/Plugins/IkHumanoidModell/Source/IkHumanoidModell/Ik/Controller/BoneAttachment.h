@@ -58,6 +58,7 @@ public:
     SlipContainer slipData();
 
     bool reachedTarget();
+    bool reachedTargtZ();
     float distanceFromTarget();
 
 private:

@@ -54,7 +54,7 @@ void SlipContainer::findMinDForGravityBlock(float mass){
     float minD = -1.0f * (forceGravity / denominator);
     //minD *= 0.00001f;
 
-    DebugHelper::showScreenMessage("min D ", (float)minD);
+    //DebugHelper::showScreenMessage("min D ", (float)minD);
 
     //federKonstanteD = minD;
 }
@@ -104,6 +104,8 @@ FVector SlipContainer::force(FVector &movedir){
 
     //hier sin?
     float theta = std::acosf(dotProduct);
+
+    float thetaMaxAt45 = theta / 2.0f;//1.0 bei 45 grad
     float sinScale = std::sinf(theta);
     sinScale *= -1.0f; //negieren um beim negativen winkel auftrieb zu erzeugen
 

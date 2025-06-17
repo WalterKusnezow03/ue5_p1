@@ -64,13 +64,29 @@ void HipController::buildOnStart(){
 
 void HipController::Tick(float deltatime){
     TickLocomotion(deltatime);
-    //drawLocation(deltatime);
+
+    //ground flag noch instabil.
+    /*
+    if(isGrounded()) 
+        TickLocomotion(deltatime);
+    else
+        TickFalling(deltatime);
+    */
+    // drawLocation(deltatime);
 }
 
 void HipController::TickLocomotion(float deltatime){
     updateInterpolatorLocomotion(deltatime);
     applyLocomotion(deltatime);
     applyForces(deltatime);
+}
+
+void HipController::TickFalling(float deltatime){
+    applyForceGravity(deltatime);
+    applyVelocity(deltatime);
+    MMatrix transform = translation * orientation; //<-- lese richtung --
+    legLeft.TickNone(transform, deltatime);
+    legRight.TickNone(transform, deltatime);
 }
 
 //apply locomotion
@@ -195,9 +211,22 @@ void HipController::setupBackwardInterpolation(){
 void HipController::setupForwardInterpolation(){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
 
+
+    //move trajectory to future with velocity
+    FVector localTrajectory = forwardDefaultLocalLocomotionFrame;
+
+    //TESTING NEEDED
+
+    // t motionTime
+    //gx = a + t (b-a)
+    FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
+    localTrjectoryRotatedSpace += motionTime * velocity;
+    MMatrix orientationInverse = orientation.transposedRotation();
+    localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
+
     //move trajectory to world space
     FVector worldTrajectory = attachment.inWorldSpace(
-        forwardDefaultLocalLocomotionFrame,
+        localTrajectory, //forwardDefaultLocalLocomotionFrame,
         translation,
         orientation
     );
@@ -252,6 +281,9 @@ void HipController::projectToGround(FVector &worldTarjectory){
 
 /// ---- force section ----
 void HipController::applyForces(float deltatime){
+
+    //es ist noch nicht klar ob die slip force an die gravity geknüpft wird,
+    //eigentlich ja.
     applyStancePhaseSLIPForce(deltatime);
     applyForceGravity(deltatime);
     
@@ -317,11 +349,13 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
      * stimmt
      */
 
+    FVector moveDir(1, 0, 0);
+    moveDir = orientation * moveDir;
+
+
     //x(t) = x0 + v0t + 0.5at^2
     //v(t) = v0 + at
     //a(t) = a
-    FVector moveDir(1, 0, 0);
-    moveDir = orientation * moveDir;
 
     FVector acceleration = container.acceleration(bodyMass, moveDir);
     velocity += acceleration * deltatime;
@@ -332,7 +366,7 @@ void HipController::applyForceGravity(float deltatime){
     //ground 
     //maybe by adding extra distance (but not sure) to keep from ground
 
-    float gravityScale = 0.4f;
+    float gravityScale = 1.0f; //0.4
 
     float currentZheight = translation.getTranslation().Z;
     float groundZheight = latestGroundTruth.Z;

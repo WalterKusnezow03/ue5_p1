@@ -252,8 +252,16 @@ SlipContainer BoneAttachment::slipData(){
  * targte info
  */
 bool BoneAttachment::reachedTarget(){
-    return distanceFromTarget() <= 10.0f;
+    return distanceFromTarget() <= 2.0f; // 10.0f;
 }
+
+bool BoneAttachment::reachedTargtZ(){
+    FVector endeffector = bone.EndEffectorLocation();
+    float distZ = forwardTargetWorld.Z - endeffector.Z;
+
+    return distZ <= 2.0f; // 10.0f;
+}
+
 
 float BoneAttachment::distanceFromTarget(){
     FVector endeffector = bone.EndEffectorLocation();

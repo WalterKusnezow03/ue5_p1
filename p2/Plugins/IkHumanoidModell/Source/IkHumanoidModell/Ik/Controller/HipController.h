@@ -37,10 +37,11 @@ private:
 
     void buildOnStart();
     void TickLocomotion(float deltatime);
+    void TickFalling(float deltatime);
     void applyLocomotion(float deltatime);
     void updateInterpolatorLocomotion(float deltatime);
 
-    float motionTime = 0.5f;
+    float motionTime = 0.2f;
 
     bool forwardMotion = true;
     bool legLeftPlaying = true;
