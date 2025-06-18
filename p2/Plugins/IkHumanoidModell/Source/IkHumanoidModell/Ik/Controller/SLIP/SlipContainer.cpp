@@ -37,24 +37,35 @@ void SlipContainer::findMinDForGravityBlock(float mass){
     float forceGravity = mass * gravity;
 
     /*
-    mg <= - D * (l0 * z)/(||feathercurrent||) + D * z
-    mg <= - D * ((l0 * z)/(||feathercurrent||) - z)
-    D >= -1 * (mg / ((l0 * z)/(||feathercurrent||) - z))
+    
+    -F_{grav} <= F_{slip}
+    
+    
+    -m\cdot g <= - D \cdot \frac{||featherFull|| \cdot z}{||featherCurrent||} + D \cdot z
+    
+
+    
+    -m \cdot g <= D \cdot (\frac{-(||featherFull|| \cdot z)}{||feathercurrent||} + z)
+    
+
+    
+    D >= \frac{(\frac{-(||featherFull|| \cdot z)}{||feathercurrent||} + z)}{-m\cdot g}
+    
     */
-    float size = featherCurrent.Size();
-    size = std::max(0.0001f, size);
+    
+    
+    float featherCurrentSize = featherCurrent.Size();
+    featherCurrentSize = std::max(0.0001f, featherCurrentSize);
 
     float z = featherCurrent.Z;
 
-    float denominator = ((featherComplete * z) / size) - z;
+    float oben = (-1.0f * (featherComplete * z) / featherCurrentSize) + z;
+    float unten = -forceGravity;
 
-    float sign = denominator < 0.0f ? -1.0f : 1.0f;
-    denominator = std::max(0.0001f, std::abs(denominator)) * sign;
+    float minD = oben / unten;
+    minD *= 1.1f;
 
-    float minD = -1.0f * (forceGravity / denominator);
-    //minD *= 0.00001f;
-
-    //DebugHelper::showScreenMessage("min D ", (float)minD);
+    DebugHelper::showScreenMessage("min D overcome Gravity ", (float)minD);
 
     //federKonstanteD = minD;
 }
