@@ -76,6 +76,7 @@ void HipController::Tick(float deltatime){
 }
 
 void HipController::TickLocomotion(float deltatime){
+    UpdateStanceStatus();
     updateInterpolatorLocomotion(deltatime);
     applyLocomotion(deltatime);
     applyForces(deltatime);
@@ -129,6 +130,34 @@ void HipController::applyLocomotion(float deltatime){
         deltatime
     );
 }
+
+
+
+void HipController::UpdateStanceStatus(){
+    if(legLeftPlaying){
+        if(forwardMotion){
+            phaseLeft = ELegPhase::EForward;
+            phaseRight = ELegPhase::EEndInPlace;
+        }
+        else
+        {
+            phaseLeft = ELegPhase::EBackward;
+            phaseRight = ELegPhase::EEndInPlace;
+        }
+    }else{
+        if(forwardMotion){
+            phaseRight = ELegPhase::EForward;
+            phaseLeft = ELegPhase::EEndInPlace;
+        }
+        else
+        {
+            phaseRight = ELegPhase::EBackward;
+            phaseLeft = ELegPhase::EEndInPlace;
+        }
+    }
+}
+
+
 
 //interpolation update
 void HipController::updateInterpolatorLocomotion(float deltatime){
@@ -190,10 +219,6 @@ void HipController::setupBackwardInterpolation(){
         orientation
     );
     FVector localEnd = attachment.defaultExtendedEndToStartLocal();
-
-    DebugHelper::logMessage("hipcontroller: backwards start ", localStart);
-    DebugHelper::logMessage("hipcontroller: backwards end ", localEnd);    
-
     interpolatorBackwardLocal.setTarget(localStart, localEnd, motionTime);
 
 
@@ -204,9 +229,25 @@ void HipController::setupBackwardInterpolation(){
     stancePhaseLegLeft = legLeftPlaying;
 
 
+
+
+    //pre calculate D
+    
+    //A: end effector current relative to hip
+    //B: end effector when next step touches ground relative to hip -- immer der default aber rückwärts?
+    //komischer hack, muss genau definiert werden!
+
+    FVector b = forwardDefaultLocalLocomotionFrame;
+    b.X *= -1.0f; //to back when lifting off ground
+    float velocityDown = velocity.Z;
+    attachment.setupSlipDataOnStanceBegin(
+        orientation,
+        b, // local end on liftoff
+        motionTime,
+        velocityDown,
+        bodyMass
+    );
 }
-
-
 
 void HipController::setupForwardInterpolation(){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
@@ -256,8 +297,8 @@ void HipController::projectToGround(FVector &worldTarjectory){
         return;
     }
 
-    FVector Start = worldTarjectory + FVector(0, 0, 200);
-    FVector End = worldTarjectory + FVector(0, 0, -3000);
+    FVector Start = worldTarjectory + FVector(0, 0, 600);
+    FVector End = worldTarjectory + FVector(0, 0, -600);
 
 
     // Perform the raycast
@@ -285,7 +326,7 @@ void HipController::applyForces(float deltatime){
     //es ist noch nicht klar ob die slip force an die gravity geknüpft wird,
     //eigentlich ja.
     applyStancePhaseSLIPForce(deltatime);
-    applyForceGravity(deltatime);
+    //applyForceGravity(deltatime);
     
     if(isGrounded()){
         velocity.Z = std::max(velocity.Z, 0.0);
@@ -319,6 +360,22 @@ void HipController::applyVelocity(float deltatime){
 
     DebugHelper::showScreenMessage("x(t) ", xt);
     translation.setTranslation(xt);
+
+
+    //debug
+    //return;
+
+    //rebuild both to update end effectors - is needed in case of backward kinematic.
+    legLeft.TickKeepEndInWorldPlace(
+        translation,
+        orientation,
+        deltatime
+    );
+    legRight.TickKeepEndInWorldPlace(
+        translation,
+        orientation,
+        deltatime
+    );
 }
 
 /// @brief clamps the position update to not fall below ground
@@ -328,37 +385,78 @@ void HipController::validateTransformUpdate(FVector &position){
     position.Z = heightUpdate;
 }
 
+/// @brief returns if left leg is in stance phase
+/// @return is in stance phase for slip force
+bool HipController::leftInStancePhase(){
+    return phaseLeft == ELegPhase::EEndInPlace || phaseLeft == ELegPhase::EBackward;
+}
+
+/// @brief returns if left leg is in stance phase
+/// @return is in stance phase for slip force
+bool HipController::rightInStancePhase(){
+    return phaseRight == ELegPhase::EEndInPlace || phaseRight == ELegPhase::EBackward;
+}
+
 void HipController::applyStancePhaseSLIPForce(float deltatime){
-    //stance phase ist eigentlich fast immer true
-    //wenn man normal geht
-    //immer ein bein eben!
-    
-    BoneAttachment &attachment = stancePhaseLegLeft ? legLeft : legRight;
 
-    //if the foot is actually grounded apply force
-    SlipContainer container = attachment.slipData();
-    
-    /**
-     * was hier noch nicht klar sit ob die kraft auch 
-     * in das welt koordintane system gebracht werden muss.
-     * 
-     * wobei ja start und end effektor in welt kordinaten ausgedrückt sind
-     * und somit die federkraft sich auch in der welt befindet
-     * 
-     * die frage die sich noch stellt ist ob die stance phase so
-     * stimmt
-     */
-
+    //move dir for slip force
     FVector moveDir(1, 0, 0);
     moveDir = orientation * moveDir;
 
+
+    TArray<BoneAttachment *> attachmentsToEvaluateForce;
+    if(leftInStancePhase()){
+        attachmentsToEvaluateForce.Add(&legLeft);
+    }
+    if(rightInStancePhase()){
+        attachmentsToEvaluateForce.Add(&legRight);
+    }
+
+    FVector acceleration(0, 0, 0);
+    for (int i = 0; i < attachmentsToEvaluateForce.Num(); i++)
+    {
+        BoneAttachment *currentBoneAttachment = attachmentsToEvaluateForce[i];
+        if(currentBoneAttachment){
+            //if the foot is actually grounded apply force
+            SlipContainer &container = currentBoneAttachment->slipData();
+
+            /**
+             * was hier noch nicht klar sit ob die kraft auch 
+             * in das welt koordintane system gebracht werden muss.
+             * 
+             * wobei ja start und end effektor in welt kordinaten ausgedrückt sind
+             * und somit die federkraft sich auch in der welt befindet
+             * 
+             * die frage die sich noch stellt ist ob die stance phase so
+             * stimmt
+             */
+            FVector accelerationCurrent = container.accelerationInterpolated(
+                deltatime,
+                bodyMass,
+                moveDir
+            );
+
+            acceleration += accelerationCurrent;
+        }
+    }
 
     //x(t) = x0 + v0t + 0.5at^2
     //v(t) = v0 + at
     //a(t) = a
 
-    FVector acceleration = container.acceleration(bodyMass, moveDir);
+    //old simple
+    //FVector acceleration = container.acceleration(bodyMass, moveDir);
+
+
+    DebugHelper::showScreenMessage("acceleration ", acceleration, FColor::Orange);
+
     velocity += acceleration * deltatime;
+
+
+
+    //DEBUG
+    slipAcceleration += acceleration.Z * deltatime;
+    DebugHelper::logMessage("slip acceleration: ", slipAcceleration);
 }
 
 void HipController::applyForceGravity(float deltatime){
@@ -366,7 +464,7 @@ void HipController::applyForceGravity(float deltatime){
     //ground 
     //maybe by adding extra distance (but not sure) to keep from ground
 
-    float gravityScale = 1.0f; //0.4
+    float gravityScale = 0.4;
 
     float currentZheight = translation.getTranslation().Z;
     float groundZheight = latestGroundTruth.Z;

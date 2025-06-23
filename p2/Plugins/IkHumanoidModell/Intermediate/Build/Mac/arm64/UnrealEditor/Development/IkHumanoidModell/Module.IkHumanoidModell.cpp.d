@@ -3819,10 +3819,12 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/arm64/UnrealEditor/Development/IkHumanoidModell/Module.IkHumanoidModell.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/arm64/UnrealEditor/Development/IkHumanoidModell/Definitions.IkHumanoidModell.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ELegPhase.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/enums/ELegPhase.h \
   Runtime/Core/Public/CoreMinimal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/TwoJointBone.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController.h \

@@ -691,7 +691,7 @@ void worldLevel::createJointActor(UWorld *world){
 
 
 void worldLevel::debugTerrainHeight(){
-    if(true){
+    if(false){
         return;
     }
 

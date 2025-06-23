@@ -27,6 +27,10 @@ public:
 
     FVector outOfreachDistance(FVector &target);
 
+    void clampTarget(FVector &target);
+
+
+
 private:
     UWorld *worldPtr = nullptr;
     void resetRotations();
@@ -60,7 +64,7 @@ private:
     //very important to use before using backwards kinematics
     void removeRotationFromEndEffector();
 
-    void clampTarget(FVector &target);
+    
     void MoveToTarget(FVector &target);
     void MoveToTargetInverse(FVector &target);
 

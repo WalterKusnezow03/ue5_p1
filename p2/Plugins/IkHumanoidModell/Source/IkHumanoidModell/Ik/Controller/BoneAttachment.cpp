@@ -230,23 +230,56 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
  * slip force
  */
 
-/// @brief will return the slip data, based if has reached target or not
+/// @brief will return the slip data, based if has reached target or not - MIGHT BE DEPRECATED as constraint
 /// @param mass 
 /// @return 
-SlipContainer BoneAttachment::slipData(){
-    SlipContainer container;
+SlipContainer &BoneAttachment::slipData(){
     //if reached target: setup
     FVector reached = bone.EndEffectorRelativeLocation();
+    container.setup(
+        bone.lengthOfBone(),
+        reached
+    );
+    
+    /*
     if(reached.Size() <= forwardTarget.Size()){
         container.setup(
             bone.lengthOfBone(),
             reached
         );
-    }
+    }*/
 
     return container;
 }
 
+
+//new!
+void BoneAttachment::setupSlipDataOnStanceBegin(
+    MMatrix &orientation,
+    FVector &localEnd, //lift off frame
+    float time,
+    float velocityDown,
+    float mass
+){
+    FVector aLocal = bone.EndEffectorRelativeLocation(); // forwardTarget;
+    FVector bLocal = localEnd;
+
+    FVector moveDir(1, 0, 0);
+    moveDir = orientation * moveDir;
+
+    bone.clampTarget(aLocal);
+    bone.clampTarget(bLocal);
+
+    container.setupInterpolatedD(
+        aLocal,
+        bLocal,
+        moveDir,
+        time,
+        velocityDown,
+        bone.lengthOfBone(), 
+        mass
+    );
+}
 
 /**
  * targte info

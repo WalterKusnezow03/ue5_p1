@@ -4,6 +4,7 @@
 #include "IkHumanoidModell/Ik/Controller/BoneAttachment.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "CoreMath/animation/TargetInterpolator.h"
+#include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 
 class IKHUMANOIDMODELL_API HipController {
 
@@ -20,6 +21,8 @@ public:
 private:
     float bodyMass = 30.0f; //10 kg ?
 
+    float motionTime = 1.0f; // 0.7f;//0.2f;
+
     //actor velocity
     FVector velocity;
 
@@ -29,6 +32,9 @@ private:
 
     BoneAttachment legLeft;
     BoneAttachment legRight;
+
+    ELegPhase phaseLeft;
+    ELegPhase phaseRight;
 
     MMatrix translation;
     MMatrix orientation;
@@ -40,8 +46,6 @@ private:
     void TickFalling(float deltatime);
     void applyLocomotion(float deltatime);
     void updateInterpolatorLocomotion(float deltatime);
-
-    float motionTime = 0.2f;
 
     bool forwardMotion = true;
     bool legLeftPlaying = true;
@@ -69,4 +73,14 @@ private:
     void validateTransformUpdate(FVector &position);
 
     bool isGrounded();
+
+
+
+
+    void UpdateStanceStatus();
+    bool leftInStancePhase();
+    bool rightInStancePhase();
+
+    //debug
+    float slipAcceleration = 0.0f;
 };

@@ -55,7 +55,7 @@ public:
 
     FVector endEffectorWorldLocation();
 
-    SlipContainer slipData();
+    SlipContainer &slipData();
 
     bool reachedTarget();
     bool reachedTargtZ();
@@ -75,5 +75,17 @@ private:
 
     MMatrix startEffectorTransformWorld(MMatrix &worldRoot);
 
+    
 
+
+    SlipContainer container;
+
+public:
+    void setupSlipDataOnStanceBegin(
+        MMatrix &orientation,
+        FVector &localEnd,
+        float time,
+        float velocityDown,
+        float mass
+    );
 };
