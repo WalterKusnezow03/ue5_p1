@@ -236,6 +236,9 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
 SlipContainer &BoneAttachment::slipData(){
     //if reached target: setup
     FVector reached = bone.EndEffectorRelativeLocation();
+    bone.clampTarget(reached);
+
+    DebugHelper::logMessage("boenAttachment: end effector trajectory ", reached);
     container.setup(
         bone.lengthOfBone(),
         reached

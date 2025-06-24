@@ -82,5 +82,5 @@ private:
     bool rightInStancePhase();
 
     //debug
-    float slipAcceleration = 0.0f;
+    FVector slipAcceleration;
 };

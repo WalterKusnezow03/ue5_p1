@@ -13,13 +13,17 @@ public:
 
 
     void setup(float defaultBoneSize, FVector &currentStartToEndEffector);
-    FVector force(FVector &movedir);
-    FVector acceleration(float mass, FVector &movedir);
+
 
 private:
-    bool bLogEnabled = false;
+    bool bLogEnabled = true;
 
     FVector forceUnscaled(
+        FVector &legdir_featherCurrent,
+        FVector &movedir
+    );
+
+    float slipSineScalar(
         FVector &legdir_featherCurrent,
         FVector &movedir
     );
@@ -31,8 +35,6 @@ private:
 
     bool wasSetup = false;
 
-    //depracted
-    float findMinDForGravityBlock(float mass);
 
 
 
@@ -55,6 +57,7 @@ public:
         FVector &movedir
     );
 
+
 private:
     //new
     FVector A;
@@ -62,6 +65,13 @@ private:
     
     float timeForInterpolation;
     float Dcurrent = 1.0f;
+
+
+
+    //debug
+    void showEstimationVersusRealVelocity();
+    FVector slipVelocityEstimatedInternal;
+    FVector slipVelocityIntegratedInternal;
 
     float estimateVmin(float timeOfAnimation);
     float avoidDivisionByZero(float value);

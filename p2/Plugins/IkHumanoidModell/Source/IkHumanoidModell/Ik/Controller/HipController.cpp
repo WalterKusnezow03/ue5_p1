@@ -327,8 +327,9 @@ void HipController::applyForces(float deltatime){
     //eigentlich ja.
     applyStancePhaseSLIPForce(deltatime);
     //applyForceGravity(deltatime);
-    
-    if(isGrounded()){
+
+    //deprecated hack
+    if(false && isGrounded()){
         velocity.Z = std::max(velocity.Z, 0.0);
         DebugHelper::showScreenMessage("velocity reset ", FColor::Red);
     }
@@ -350,7 +351,7 @@ bool HipController::isGrounded(){
 void HipController::applyVelocity(float deltatime){
 
     //debug
-    DebugHelper::showScreenMessage("velocity ", velocity);
+    DebugHelper::showScreenMessage("velocity ", velocity, FColor::Orange);
     
 
     //x(t) = x0 + v0t + fällt weg(0.5at^2)?
@@ -454,9 +455,9 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
 
 
 
-    //DEBUG
-    slipAcceleration += acceleration.Z * deltatime;
-    DebugHelper::logMessage("slip acceleration: ", slipAcceleration);
+    //integrate slip force
+    slipAcceleration += (acceleration * deltatime);
+    DebugHelper::logMessage("accumulated slip acceleration ", slipAcceleration);
 }
 
 void HipController::applyForceGravity(float deltatime){
