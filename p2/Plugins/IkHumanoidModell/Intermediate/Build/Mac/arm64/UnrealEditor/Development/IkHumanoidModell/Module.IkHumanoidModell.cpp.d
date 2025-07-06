@@ -3831,6 +3831,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BoneAttachment.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/TargetInterpolator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/RotationInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.generated.h \
   Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
   Runtime/CoreUObject/Public/UObject/ScriptMacros.h \

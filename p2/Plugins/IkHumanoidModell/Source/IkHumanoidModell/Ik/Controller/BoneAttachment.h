@@ -34,6 +34,11 @@ public:
         MMatrix &orientationRoot,
         float deltatime
     );
+    void TickKeepEndInWorldPlaceNegHeightTrajectory(
+        MMatrix &translationRoot,
+        MMatrix &orientationRoot,
+        float deltatime
+    );
 
     void TickForwardKinematicOutOfReachTarget(
         MMatrix &translation,

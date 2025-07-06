@@ -50,8 +50,12 @@ void TwoJointBone::resetRotations(){
 
 void TwoJointBone::clampTarget(FVector &target){
     if(target.Size() > length){
-        target = target.GetSafeNormal() * length;
+        clampToFullMotionRangeCircle(target);
     }
+}
+
+void TwoJointBone::clampToFullMotionRangeCircle(FVector &target){
+    target = target.GetSafeNormal() * length;
 }
 
 FVector TwoJointBone::outOfreachDistance(FVector &target){

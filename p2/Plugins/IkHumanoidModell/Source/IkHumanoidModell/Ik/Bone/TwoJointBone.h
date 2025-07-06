@@ -28,8 +28,7 @@ public:
     FVector outOfreachDistance(FVector &target);
 
     void clampTarget(FVector &target);
-
-
+    void clampToFullMotionRangeCircle(FVector &target);
 
 private:
     UWorld *worldPtr = nullptr;

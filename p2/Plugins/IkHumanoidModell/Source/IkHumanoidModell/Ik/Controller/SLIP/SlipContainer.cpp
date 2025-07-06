@@ -34,6 +34,13 @@ void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffec
     featherComplete = defaultBoneSize;
     featherCurrent = currentStartToEndEffector;
 
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("slip integral setup trajectory: (%.2f, %.2f, %.2f) size (%2.f)"),
+            featherCurrent.X, featherCurrent.Y, featherCurrent.Z, featherCurrent.Size()
+        )
+    );
+
     wasSetup = true;
 }
 
@@ -128,7 +135,35 @@ float SlipContainer::slipSineScalar(
     if(bLogEnabled) DebugHelper::logMessage("slip move dir: ", moveNormalized);
 
     float dotProduct = FVector::DotProduct(moveNormalized, legNormal);
+    float dotProductUp = FVector::DotProduct(FVector(0.0f, 0.0f, 1.0f), legNormal);
 
+    /*
+    CASES:
+    $$
+    maxForceAngle = sin(\frac{\pi}{4}) //\textit{45 grad}
+    $$
+    $$
+    scalar = 
+    \begin{cases}
+    0 & \textit{ bei } dotproduct_{up} > 0 \\
+    0 & \textit{ bei } dotproduct_{forward} > 0 \\
+    0 & \textit{ bei } dotproduct_{forward} < maxForceAngle \\
+    |\sin(\theta)| & \textit{ bei } maxForceAngle < dotproduct_{forward} < 0 \\
+    \end{cases}
+    $$
+    
+    */
+
+    //wenn bein oben: keine kraft
+    if(dotProductUp > 0.0f){
+        return 0.0f;
+    }
+
+    //wenn < 45 grad hinten: keine kraft
+    float dotneg45 = -0.7f;
+    if(dotProduct < dotneg45){
+        //return 0.0f;
+    }
 
     //wenn bein vorne, also dot > 0: kein kraft abschnitt
     if(dotProduct > 0.0f){
@@ -187,8 +222,20 @@ FVector SlipContainer::forceIntegrated(
     FVector &b
 ){
     if(bLogEnabled){
-        DebugHelper::logMessage("slip integral: a", a);
-        DebugHelper::logMessage("slip integral: b", b);
+
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("slip overcome integral a: (%.2f, %.2f, %.2f) size (%2.f)"),
+                a.X, a.Y, a.Z, a.Size()
+            )
+        );
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("slip overcome integral b: (%.2f, %.2f, %.2f) size (%2.f)"),
+                b.X, b.Y, b.Z, b.Size()
+            )
+        );
+
     }
     
 
@@ -199,10 +246,18 @@ FVector SlipContainer::forceIntegrated(
     for (float i = 0; i <= time; i += deltaTime)
     {
         float scalar = i / time; // distTarget / distAll
-        if(bLogEnabled) DebugHelper::logMessage(FString::Printf(TEXT("slip scalar: %.2f"), scalar));
+        
+        //if(bLogEnabled) DebugHelper::logMessage(FString::Printf(TEXT("slip scalar: %.2f"), scalar));
 
         boneCurrentEnd = a + scalar * (b - a);
         outforce += forceUnscaled(boneCurrentEnd, moveDir);
+
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("slip integral interpolated trajectory: (%.2f, %.2f, %.2f) size (%2.f)"),
+                boneCurrentEnd.X, boneCurrentEnd.Y, boneCurrentEnd.Z, boneCurrentEnd.Size()
+            )
+        );
     }
     return outforce;
 }
@@ -218,14 +273,17 @@ void SlipContainer::setupInterpolatedD(
     float defaultBoneSize,
     float mass
 ){
-    showEstimationVersusRealVelocity();
+    showEstimationVersusRealVelocity(); //prev auswertung
+    DebugHelper::logMessage("Slip overcome: ----- log end ----");
+    DebugHelper::logMessage("Slip overcome: ----- log start ----");
 
     A = endA;
     B = endB;
     time = std::abs(time);
     timeForInterpolation = time;
     
-    if(velocityDown > 0.0f){
+    //hack.
+    if(false && velocityDown > 0.0f){
         //is up
         velocityDown = 0.0f;
     }
@@ -236,15 +294,27 @@ void SlipContainer::setupInterpolatedD(
     float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
 
     //extra gravity to have 
-    float vMinOptional = estimateVmin(time); // 10.0f; //up
+    float vMinOptional = estimateVmin(time); //quasi normal kraft ?
 
+
+    /**
+     * was false! 
+     */
+    if(false){
+        //debug
+        //vMinOptional = 0.0f;
+
+        vMinOptional = velocityWithGravityIntegrated * -1.0f;
+
+        vMinOptional = 0.0f;
+    }
 
     //D >= \frac{\frac{(vmin - v_0 - at) \cdot m}{t}}{F_{raw}(t)}
     //upperfrac = \frac{(- v_0 - at) \cdot m}{t}
     float upperFrac = ((vMinOptional - gravityIntegrated) * mass) / time;
     float lowerFracIntegralZ = 0.0f;
 
-    float dtStep = time / 1000.0f;
+    float dtStep = time / 200.0f; //160 bei tick für time, war 1000
     FVector lowerFracIntegratedForce = forceIntegrated(
         time,
         dtStep,
@@ -259,7 +329,7 @@ void SlipContainer::setupInterpolatedD(
     Dcurrent = minD;
     
 
-
+    
 
     DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
     DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
@@ -277,8 +347,9 @@ void SlipContainer::setupInterpolatedD(
     FVector resultVelocity = velocityPart + a * time;
 
     //looks very correct
-    DebugHelper::logMessage("Slip overcome: RESULT V ESTIMATED: ", resultVelocity);
+    //DebugHelper::logMessage("Slip overcome: RESULT V ESTIMATED: ", resultVelocity);
     slipVelocityEstimatedInternal = resultVelocity;
+
 }
 
 /// @brief avoids values too close to 0
@@ -300,7 +371,7 @@ float SlipContainer::estimateVmin(float timeOfAnimation){
     
     v_{min} = v_0 = - at
     */
-    float a = 981;
+    float a = 981.0f;
 
     return a * timeOfAnimation;
 }
@@ -352,8 +423,10 @@ FVector SlipContainer::accelerationInterpolated(
 
 
 void SlipContainer::showEstimationVersusRealVelocity(){
-    DebugHelper::logMessage("Slip RESULT: RESULT V ESTIMATED: ", slipVelocityEstimatedInternal);
-    DebugHelper::logMessage("Slip RESULT: RESULT V REAL: ", slipVelocityIntegratedInternal);
+    DebugHelper::logMessage("Slip overcome RESULT -------");
+    DebugHelper::logMessage("Slip overcome RESULT V ESTIMATED: ", slipVelocityEstimatedInternal);
+    DebugHelper::logMessage("Slip overcome RESULT V REAL: ", slipVelocityIntegratedInternal);
+    DebugHelper::logMessage("Slip overcome RESULT -------");
 
     slipVelocityEstimatedInternal = FVector(0, 0, 0);
     slipVelocityIntegratedInternal = FVector(0, 0, 0);

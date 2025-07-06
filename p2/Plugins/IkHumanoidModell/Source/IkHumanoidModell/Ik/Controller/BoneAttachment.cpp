@@ -161,6 +161,27 @@ void BoneAttachment::TickKeepEndInWorldPlace(
     bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
 }
 
+//flipped for falling
+void BoneAttachment::TickKeepEndInWorldPlaceNegHeightTrajectory(
+    MMatrix &translationRoot, 
+    MMatrix &orientationRoot,
+    float deltatime
+){
+    FVector endEffectorWorld = bone.EndEffectorLocation();
+    FVector endEffectorLocal = inLocalSpace(endEffectorWorld, translationRoot, orientationRoot);
+    
+    if(endEffectorLocal.Z > 0.0f){
+        endEffectorLocal *= -1.0f;
+    }
+
+    MMatrix worldRoot = translationRoot * orientationRoot; // M = T * R <-- lese richtung --
+    MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
+    bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
+}
+
+
+
+
 //projection of trajectories
 FVector BoneAttachment::inLocalSpace(
     FVector &worldFrame, 
@@ -235,22 +256,13 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
 /// @return 
 SlipContainer &BoneAttachment::slipData(){
     //if reached target: setup
-    FVector reached = bone.EndEffectorRelativeLocation();
-    bone.clampTarget(reached);
+    FVector endEffectorTrajectory = bone.EndEffectorRelativeLocation();
 
-    DebugHelper::logMessage("boenAttachment: end effector trajectory ", reached);
     container.setup(
         bone.lengthOfBone(),
-        reached
+        endEffectorTrajectory
     );
     
-    /*
-    if(reached.Size() <= forwardTarget.Size()){
-        container.setup(
-            bone.lengthOfBone(),
-            reached
-        );
-    }*/
 
     return container;
 }
@@ -264,14 +276,47 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     float velocityDown,
     float mass
 ){
-    FVector aLocal = bone.EndEffectorRelativeLocation(); // forwardTarget;
+    FVector aLocal = bone.EndEffectorRelativeLocation();
     FVector bLocal = localEnd;
 
     FVector moveDir(1, 0, 0);
     moveDir = orientation * moveDir;
 
+
+
+    //so lassen
     bone.clampTarget(aLocal);
-    bone.clampTarget(bLocal);
+
+    //hier falsch, extenden auf volle dir, nicht clamp! -> falls nicht projected!
+    //bone.clampTarget(bLocal);
+    bone.clampToFullMotionRangeCircle(bLocal); //so besser.
+
+
+    /*
+    weil das forward target auch projeziert wird, 
+    und somit nicht das standard forward target ist,
+    könnte es sein dass das einfach gedreht werden muss
+    beim setup,
+    bzw die x länge übernommen und diese gespiegelt, nicht die höhe
+    was wie ein hack wirkt könnte funktionieren!
+
+    JA! Funktioniert!
+
+    ----TODO:----
+    Könnte auch durch forward target ersetzt werden, wäre eingeschlossener!!
+    */
+    FVector liftOffDefault = localEnd;
+    FVector liftOffHacked = localEnd;
+    liftOffHacked.X = aLocal.X * -1.0f; //1 versuch
+    bLocal = liftOffHacked; 
+
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("slip integral: liftOff before (%.2f, %.2f, %.2f), hacked: (%.2f, %.2f, %.2f)"),
+            liftOffDefault.X, liftOffDefault.Y, liftOffDefault.Z,
+            liftOffHacked.X, liftOffHacked.Y, liftOffHacked.Z
+        )
+    );
 
     container.setupInterpolatedD(
         aLocal,
@@ -279,7 +324,7 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
         moveDir,
         time,
         velocityDown,
-        bone.lengthOfBone(), 
+        bone.lengthOfBone(),
         mass
     );
 }

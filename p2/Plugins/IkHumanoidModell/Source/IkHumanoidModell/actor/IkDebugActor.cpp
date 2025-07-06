@@ -62,6 +62,16 @@ void AIkDebugActor::Tick(float deltatime){
     Super::Tick(deltatime);
     hipController.Tick(deltatime);
 
+
+
+    //debug
+    time += deltatime;
+    if(time > 2.0f){
+        time = 0.0f;
+
+        hipController.setupRotationForNextStep(MMatrix::degToRadian(45.0f));
+    }
+
     /*
     FVector target;
     if (!flipFlag)
