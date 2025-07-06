@@ -190,11 +190,11 @@ FVector BoneAttachment::inLocalSpace(
 ){
 
     //M = Troot * Rhip * Tinner <-- lese richtung --
-    //M^-1 = Tinner^-1 * Rhip^-1 * Troot^-1
-    MMatrix translationInv = rootTranslation.invertedTranslation();
+    //M^-1 = Tinner^-1 * Rhip^-1 * Troot^-1 <-- lese richtung --
+    MMatrix rootTranslationInv = rootTranslation.invertedTranslation();
     MMatrix rotationInv = rootOrientation.transposedRotation();
 
-    MMatrix transformInverse = rotationInv * translationInv;
+    MMatrix transformInverse = rotationInv * rootTranslationInv;
     MMatrix M = innerOffsetInverse * transformInverse;
 
     FVector local = M * worldFrame;
@@ -236,10 +236,10 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
         rootOrientation
     );
     FVector relative = localEnd * -1.0f;
-    DebugHelper::logMessage("boenAttachment: foot to hip A: ", relative);
+    DebugHelper::logMessage("boneAttachment: foot to hip A: ", relative);
 
     relative = bone.EndEffectorRelativeLocation() * -1.0f;
-    DebugHelper::logMessage("boenAttachment: foot to hip B: ", relative);
+    DebugHelper::logMessage("boneAttachment: foot to hip B: ", relative);
 
     return relative;
 }

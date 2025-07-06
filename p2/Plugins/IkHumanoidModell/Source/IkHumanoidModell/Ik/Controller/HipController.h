@@ -105,10 +105,12 @@ private:
 public:
     void setupRotationForNextStep(float radianYaw);
 
-private:    
-    
+private:
+    bool DEBUG_SLOWTIME = false;  // true;
     void TickHipRotation(float deltatime);
     bool anyBackwardPhase();
     RotationInterpolator hipRotationInterpolator;
     bool rotationSet = false;
+    FVector forwardTrajectory();
+    float slowDownTimeForDebugRotationStance(float deltatime);
 };

@@ -51,6 +51,11 @@ void HipController::setup(UWorld *world){
     DebugHelper::logMessage("Default Forward Trajectory unprojected", forwardDefaultLocalLocomotionFrame);
     forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
 
+
+    //debug
+    //forwardDefaultLocalLocomotionFrame = FVector(40.0f, 20, -lengthTotal);
+    //forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
+
     buildOnStart();
 }
 
@@ -82,6 +87,10 @@ bool HipController::groundedByDistance(){
         velocity.Z = std::max(z, 0.0f);
     }
 
+
+    //DEBUG
+    grounded = true;
+
     return grounded;
 }
 
@@ -91,7 +100,15 @@ void HipController::Tick(float deltatime){
     FString message;
     if (groundedByDistance())
     {
-        TickHipRotation(deltatime); //new
+
+        
+        if(DEBUG_SLOWTIME){
+            float timesSlower = 5.0f;
+            deltatime = 1.0f / (timesSlower * 60.0f); // DEBUG
+        }
+            
+
+        TickHipRotation(deltatime);
         TickLocomotion(deltatime);
         message = TEXT("locomotion");
     }
@@ -270,7 +287,7 @@ void HipController::setupBackwardInterpolation(){
         orientation,
         b, // local end on liftoff
         dynamicMotionTime,//motionTime,
-        velocityDown,
+        velocityDown, //current velocity downwards to overcome
         bodyMass
     );
 
@@ -289,17 +306,7 @@ void HipController::setupForwardInterpolation(){
     //FVector localTrajectory = forwardDefaultLocalLocomotionFrame;
 
     //CAUTION: NEW: Rotated trajectory copy, reset rotation
-    FVector localTrajectory;
-    bool newRotatedTrajectory = true;
-    if (newRotatedTrajectory)
-    {
-        localTrajectory = forwardRotatedLocalLocomotionFrame;
-        forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
-    }
-    else
-    {
-        localTrajectory = forwardDefaultLocalLocomotionFrame;
-    }
+    FVector localTrajectory = forwardTrajectory();
 
     // t motionTime
     //gx = a + t (b-a)
@@ -597,14 +604,27 @@ float HipController::animationTimeBasedOnCurrentVelocity(
 
 
 // ----- rotation section experimental ------
+FVector HipController::forwardTrajectory(){
+    FVector localTrajectory;
+    bool newRotatedTrajectory = true;
+    if (newRotatedTrajectory)
+    {
+        localTrajectory = forwardRotatedLocalLocomotionFrame;
+
+        //reset rotation after step
+        forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
+    }
+    else
+    {
+        localTrajectory = forwardDefaultLocalLocomotionFrame;
+    }
+    return localTrajectory;
+}
+
 void HipController::setupRotationForNextStep(float radian){
     MMatrix addYawMat;
     addYawMat.yawRadAdd(radian);
-    forwardRotatedLocalLocomotionFrame = addYawMat * forwardRotatedLocalLocomotionFrame;
-
-
-    //setup hip rotation interpolation
-
+    forwardRotatedLocalLocomotionFrame = addYawMat * forwardDefaultLocalLocomotionFrame;
 
 
     //setup interpolation of rotation
@@ -622,6 +642,9 @@ void HipController::setupRotationForNextStep(float radian){
 }
 
 void HipController::TickHipRotation(float deltatime){
+    //debug
+    //return;
+
     if(rotationSet && anyBackwardPhase()){
         if(hipRotationInterpolator.endReached()){
             rotationSet = false;

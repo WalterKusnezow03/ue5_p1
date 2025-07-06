@@ -45,7 +45,7 @@ void AIkDebugActor::BeginPlay(){
     start1 = FVector(-30, 0, 50);
     end1 = FVector(0, 0, 50);
 
-    time = 2.0f;
+    time = -10.0f; //abwarten.
     resetInterpolators();
 }
 

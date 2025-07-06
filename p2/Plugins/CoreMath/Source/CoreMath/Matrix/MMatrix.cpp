@@ -497,8 +497,8 @@ MMatrix MMatrix::createRotatorFrom(
     float pitchRad = signedAngleRadBetween(ZAxis, xzdir) *-1.0f; // test (negieren. Aus. Gründen.)
 
     //hier wieder rück führen
-    //tut noch nicht immer was es soll, wenn der yaw winkel sehr klein ist kommt es 
-    //zu fehlern
+
+    /*
     if(yawConstraint90){
         float rad90 = M_PI / 2.0f;
         float absYaw = std::abs(yawRad);
@@ -511,6 +511,16 @@ MMatrix MMatrix::createRotatorFrom(
             yawRad = sign * (rad90 - overshoot);
 
             // Invertiere Pitch weil x achse jetzt "nach hinten" guckt
+            pitchRad *= -1.0f;
+        }
+    }*/
+
+    //is tested. 
+    if(yawConstraint90){
+        float rad90 = M_PI / 2.0f;
+    
+        if (std::abs(yawRad) > rad90) {
+            yawRad += (yawRad > 0.0f) ? -M_PI : M_PI;
             pitchRad *= -1.0f;
         }
     }
@@ -546,7 +556,12 @@ float MMatrix::unsignedAngleRadBetween(FVector2D &a, FVector2D &b){
 }
 
 float MMatrix::signedAngleRadBetween(FVector2D &a, FVector2D &b){
+    //old
     float angle = unsignedAngleRadBetween(a,b) * signForAngle(a, b);
+    
+    //new
+    //float angle = std::atan2(a.X * b.Y - a.Y * b.X, a.X * b.X + a.Y * b.Y);
+    
     return angle;
 }
 

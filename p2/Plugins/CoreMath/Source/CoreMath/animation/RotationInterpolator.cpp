@@ -17,6 +17,7 @@ void RotationInterpolator::setTarget(FRotator &a, FRotator &b, float time){
 
 void RotationInterpolator::overrideTime(float timein){
     interpolationTime = std::abs(timein);
+    timeIntegrated = 0.0f;
 }
 
 bool RotationInterpolator::endReached(){

@@ -31,6 +31,8 @@ public:
     void clampToFullMotionRangeCircle(FVector &target);
 
 private:
+    bool bLogEnabled = true;
+
     UWorld *worldPtr = nullptr;
     void resetRotations();
 

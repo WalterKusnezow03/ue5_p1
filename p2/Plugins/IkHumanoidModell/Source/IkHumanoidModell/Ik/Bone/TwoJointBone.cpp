@@ -79,7 +79,7 @@ void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime)
     buildForward(world, deltatime);
 
     //debug:
-    if(false){
+    if(bLogEnabled){
         FVector reached = EndEffectorRelativeLocation();
         DebugHelper::logMessage("debugKinematic forward kinematic targeted: ", target);
         DebugHelper::logMessage("debugKinematic forward kinematic reached: ", reached);
@@ -125,7 +125,7 @@ void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     buildBackward(endEffectorWorld, deltatime); //builded from end effector
 
     //debug:
-    if(false){
+    if(bLogEnabled){
         FVector reached = EndEffectorRelativeLocation() * -1.0f;
         DebugHelper::logMessage("debugKinematic backward kinematic targeted: ", target);
         DebugHelper::logMessage("debugKinematic backward kinematic reached: ", reached);
@@ -146,7 +146,7 @@ void TwoJointBone::MoveToTargetInverse(FVector &target){
 
     //test look at matrix
     //es funktioniert einwandfrei!
-    if(false){
+    if(bLogEnabled){
         FVector boneAxisDefaultUp(0, 0, 1);
         boneAxisDefaultUp = lookAtTarget * boneAxisDefaultUp;
         boneAxisDefaultUp = boneAxisDefaultUp.GetSafeNormal() * target.Size();
@@ -215,7 +215,8 @@ void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, floa
     FVector bT = b.getTranslation();
     FVector cT = c.getTranslation();
 
-    dt *= 3.0f;
+    float frame = 0.01f;
+    dt = std::max(frame * 3.0f, dt);
 
     DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
     DebugHelper::showLineBetween(worldPtr, aT, wT, FColor::Red, dt);
