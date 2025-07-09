@@ -11,6 +11,10 @@ BoneAttachment::~BoneAttachment(){
 
 }
 
+void BoneAttachment::setWorld(UWorld *worldIn){
+    world = worldIn;
+}
+
 FVector BoneAttachment::defaultExtendedEndToStartLocal(){
     return extendedTranslationBottomToUp;
 }
@@ -19,8 +23,9 @@ FVector BoneAttachment::endEffectorWorldLocation(){
     return bone.EndEffectorLocation();
 }
 
-void BoneAttachment::setupBone(float a, float b, UWorld *world, FVector offset){
-    bone.setup(a, b, world);
+void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset){
+    bone.setup(a, b, worldIn);
+    setWorld(worldIn);
 
     innerOffset.setTranslation(offset);
 
@@ -64,8 +69,6 @@ void BoneAttachment::setForwardTargetLocal(FVector &target){
 void BoneAttachment::setBackwardTargetLocal(FVector &target){
     backwardTarget = target;
 }
-
-
 
 /// --- tick section ---
 
@@ -128,8 +131,46 @@ void BoneAttachment::TickBackwardKinematic(
     MMatrix &translationRootToUpdate, 
     MMatrix &orientationRoot,
     float deltatime
-){
-    bone.MoveToTargetInverse(backwardTarget, deltatime);
+){ 
+
+    //target scheint bei 180 gespiegelt zu sein
+    //was dafür spricht das es manuell gedreht werden muss:
+    FVector targetcopy = orientationRoot * backwardTarget;
+    bone.MoveToTargetInverse(targetcopy, deltatime);
+
+    //works on 180
+    FVector StartEffectorLocation = bone.StartEffector().getTranslation();
+    MMatrix innerOffsetR = orientationRoot * innerOffset;
+    FVector asVector(1, 0, 0);
+    asVector = innerOffsetR * asVector;
+    FVector rootPos = StartEffectorLocation - asVector;
+    translationRootToUpdate.setTranslation(rootPos);
+
+
+
+    /*
+    //very buggy
+    //SO ist es stimmig bei 180 rotation, UNKLAR WIESO! NACHDENKEN!
+
+    FVector StartEffectorLocation = bone.StartEffector().getTranslation();
+
+    //NO MMatrix rotationInverse = orientationRoot.transposedRotation();
+    MMatrix innerOffsetInverseRotated = innerOffsetInverse * orientationRoot;
+
+    //NO FVector worldUpdate = innerOffsetInverseRotated * StartEffectorLocation;
+    //FVector worldUpdate = innerOffset * StartEffectorLocation; //WEIRD JUMPS SIDEWYS ON FORWRD, OKAY 180
+    FVector worldUpdate = innerOffsetInverse * StartEffectorLocation; //SO forward! -> nicht bei 180!
+
+    //FVector worldUpdate = innerOffsetInverseRotated * StartEffectorLocation; //180 bricked total
+
+
+    translationRootToUpdate.setTranslation(worldUpdate);
+
+    //before!
+    return;
+    
+    //before: working on x forward(1,0,0)
+    //bone.MoveToTargetInverse(backwardTarget, deltatime);
 
     //update root
     //M = offset * startEffector <---lese richtung--- (noch ohne rotation)
@@ -145,8 +186,14 @@ void BoneAttachment::TickBackwardKinematic(
     FVector locationUpdate = updatedTransform.getTranslation();
     translationRootToUpdate.setTranslation(locationUpdate);
 
-}
 
+    DebugHelper::logMessage("backward location update ", locationUpdate);
+
+    //kleiner test --> erzeugt lustigen bug
+    //MMatrix root = updatedTransform * orientationRoot;
+    //TickKeepEndInWorldPlace(translationRootToUpdate, orientationRoot, deltatime);
+    */
+}
 
 void BoneAttachment::TickKeepEndInWorldPlace(
     MMatrix &translationRoot, 
@@ -238,8 +285,12 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
     FVector relative = localEnd * -1.0f;
     DebugHelper::logMessage("boneAttachment: foot to hip A: ", relative);
 
-    relative = bone.EndEffectorRelativeLocation() * -1.0f;
-    DebugHelper::logMessage("boneAttachment: foot to hip B: ", relative);
+    //wrong bei backward kinematic 180 degree rotation!
+    if(false){
+        relative = bone.EndEffectorRelativeLocation() * -1.0f;
+        DebugHelper::logMessage("boneAttachment: foot to hip B: ", relative);
+    }
+    
 
     return relative;
 }
@@ -254,9 +305,12 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
 /// @brief will return the slip data, based if has reached target or not - MIGHT BE DEPRECATED as constraint
 /// @param mass 
 /// @return 
-SlipContainer &BoneAttachment::slipData(){
+SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
     //if reached target: setup
     FVector endEffectorTrajectory = bone.EndEffectorRelativeLocation();
+
+    //move to WORLD rotation!
+    endEffectorTrajectory = orientation * endEffectorTrajectory;
 
     container.setup(
         bone.lengthOfBone(),
@@ -293,6 +347,8 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
     /*
+    ONLY FORWARD WALK
+
     weil das forward target auch projeziert wird, 
     und somit nicht das standard forward target ist,
     könnte es sein dass das einfach gedreht werden muss
@@ -308,7 +364,7 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     FVector liftOffDefault = localEnd;
     FVector liftOffHacked = localEnd;
     liftOffHacked.X = aLocal.X * -1.0f; //1 versuch
-    bLocal = liftOffHacked; 
+    bLocal = liftOffHacked;  //ACHTUNG: FUNKTIONIErT NICHT BEI ROTIERTEN TRAJEKTORIEN!
 
     DebugHelper::logMessage(
         FString::Printf(
@@ -317,6 +373,20 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
             liftOffHacked.X, liftOffHacked.Y, liftOffHacked.Z
         )
     );
+
+    /**
+     * Der lift off frame ist nach der rotation wieder entrotiert,
+     * die Yaw rotation muss entfernt werden und der frame nach hinten gespiegelt werden
+     
+
+    MMatrix removeRotation = orientation.transposedRotation();
+    FVector aLocalDeRotated = removeRotation * aLocal;
+    bLocal.X = aLocalDeRotated.X * -1.0f; //hack spiegel
+    */
+
+
+    //MOVE TO WORLD LIFT OFF
+    bLocal = orientation * bLocal;
 
     container.setupInterpolatedD(
         aLocal,

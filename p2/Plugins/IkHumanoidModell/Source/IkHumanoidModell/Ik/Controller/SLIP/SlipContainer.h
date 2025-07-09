@@ -31,15 +31,12 @@ private:
     float featherComplete; //ausrichtung scheint eine rolle zu spielen
     FVector featherCurrent;
 
+
     float federKonstanteD = 10.0f;
 
     bool wasSetup = false;
 
-
-
-
-
-
+    bool debugSkipToCloseframes(FVector a, FVector b);
 
 public:
     void setupInterpolatedD(
@@ -66,7 +63,7 @@ private:
     float timeForInterpolation;
     float Dcurrent = 1.0f;
 
-
+    bool slipForceAllowedDotProductUp(FVector &leg);
 
     //debug
     void showEstimationVersusRealVelocity();
@@ -83,4 +80,13 @@ private:
         FVector &a,
         FVector &b
     );
+
+
+
+    //experimental
+    void deRotateDirectionsForSlipSine(
+        FVector &legDir,
+        FVector &forward
+    );
+    void hackSigns(FVector &force, FVector &forward);
 };

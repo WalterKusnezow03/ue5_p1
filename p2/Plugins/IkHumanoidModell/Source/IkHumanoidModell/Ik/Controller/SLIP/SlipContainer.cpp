@@ -19,6 +19,7 @@ SlipContainer &SlipContainer::operator=(SlipContainer &other){
     if(this != &other){
         featherComplete = other.featherComplete; //ausrichtung scheint eine rolle zu spielen
         featherCurrent = other.featherCurrent;
+
         federKonstanteD = other.federKonstanteD;
 
         Dcurrent = other.Dcurrent;
@@ -31,6 +32,7 @@ SlipContainer &SlipContainer::operator=(SlipContainer &other){
 /// @param defaultBoneSize 
 /// @param currentStartToEndEffector 
 void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffector){
+
     featherComplete = defaultBoneSize;
     featherCurrent = currentStartToEndEffector;
 
@@ -90,25 +92,24 @@ FVector SlipContainer::forceUnscaled(
         frac_Z + add_Z 
     );
 
-
-
+   
     float sinScale = slipSineScalar(legdir_featherCurrent, movedir);
     forceRaw *= sinScale; //smooth scale force
 
-
     //hack positive force only on z
-    if(forceRaw.Z < 0.0f)
-        forceRaw.Z *= -1.0f;
-
-
+    forceRaw.Z = std::abs(forceRaw.Z);
 
     if(bLogEnabled){
         FString message = FString::Printf(
-            TEXT("--- slip force Z result: (%.2f), trajectory (%.2f, %.2f, %.2f)"),
+            TEXT("--- slip force result: (%.2f %.2f %.2f), trajectory (%.2f, %.2f, %.2f) move(%.2f %.2f)"),
+            forceRaw.X,
+            forceRaw.Y,
             forceRaw.Z,
             legdir_featherCurrent.X,
             legdir_featherCurrent.Y,
-            legdir_featherCurrent.Z
+            legdir_featherCurrent.Z,
+            movedir.X,
+            movedir.Y
         );
         DebugHelper::logMessage(message);
     }
@@ -117,7 +118,11 @@ FVector SlipContainer::forceUnscaled(
     return forceRaw;
 }
 
+void SlipContainer::hackSigns(FVector &force, FVector &forward){
+    force.X = std::abs(force.X) * (forward.X > 0 ? 1.0f : -1.0f);
+    force.Y = std::abs(force.Y) * (forward.Y > 0 ? 1.0f : -1.0f);
 
+}
 
 
 
@@ -132,10 +137,22 @@ float SlipContainer::slipSineScalar(
     FVector moveNormalized = movedir.GetSafeNormal();
     FVector legNormal = legdir_featherCurrent.GetSafeNormal();
 
-    if(bLogEnabled) DebugHelper::logMessage("slip move dir: ", moveNormalized);
+    //wenn bein oben: keine kraft
+    if(!slipForceAllowedDotProductUp(legNormal)){
+        return 0.0f;
+    }
+
+
+    //new added to allow rotated trajectories
+    //might not be needed at all, bricks some stuff!
+    deRotateDirectionsForSlipSine(legNormal, moveNormalized);
+    moveNormalized = moveNormalized.GetSafeNormal();
+    legNormal = legNormal.GetSafeNormal();
+
+
+
 
     float dotProduct = FVector::DotProduct(moveNormalized, legNormal);
-    float dotProductUp = FVector::DotProduct(FVector(0.0f, 0.0f, 1.0f), legNormal);
 
     /*
     CASES:
@@ -154,19 +171,15 @@ float SlipContainer::slipSineScalar(
     
     */
 
-    //wenn bein oben: keine kraft
-    if(dotProductUp > 0.0f){
-        return 0.0f;
-    }
-
+    
     //wenn < 45 grad hinten: keine kraft
     float dotneg45 = -0.7f;
     if(dotProduct < dotneg45){
-        //return 0.0f;
+        return 0.0f;
     }
 
     //wenn bein vorne, also dot > 0: kein kraft abschnitt
-    if(dotProduct > 0.0f){
+    if(dotProduct >= 0.0f){ //0.0f
         return 0.0f;
     }
 
@@ -178,22 +191,26 @@ float SlipContainer::slipSineScalar(
     /*
     Achtung hier teilweise vorzeichen noch falsch gedreht,
     unklar wieso!
-    */
-    float sign = dotProduct > 0.0f ? -1.0f : 1.0f; 
-    float sinScale = std::sinf(thetaMaxAt45) * sign;
+
+    float sign = dotProduct > 0.0f ? -1.0f : 1.0f;
+    float sinScale = std::sinf(thetaMaxAt45) * sign; */
 
     //nur positive kraft, kein nachgeben der kraft
     //wenn nur negative winkel bertrachtet (siehe dot product bedingung)
-    sinScale = std::abs(sinScale);
+    float sinScale = std::abs(std::sinf(thetaMaxAt45));
 
     if(bLogEnabled){
         FString message = FString::Printf(
-            TEXT("--- slip theta: %.2f , sin scale: %.2f, featherX: %.2f, move_xz(%.2f,%2.f)"),
+            TEXT("--- slip: projected: theta: %.2f , sin scale: %.2f, feather(%.2f, %.2f,%.2f) move_xyz(%.2f,%.2f,%.2f) dot(%.2f)"),
             (MMatrix::radToDegree(theta) - 90.0f),
             sinScale,
-            legdir_featherCurrent.X,
-            movedir.X,
-            movedir.Z
+            legNormal.X,
+            legNormal.Y,
+            legNormal.Z,
+            moveNormalized.X,
+            moveNormalized.Y,
+            moveNormalized.Z,
+            dotProduct
         );
         DebugHelper::logMessage(message);
     }
@@ -205,7 +222,80 @@ float SlipContainer::slipSineScalar(
 }
 
 
+/// @brief wenn bein nach oben zeigt, keine kraft!
+/// @param leg 
+/// @return 
+bool SlipContainer::slipForceAllowedDotProductUp(FVector &leg){
+    float dotProductUp = FVector::DotProduct(FVector(0.0f, 0.0f, 1.0f), leg);
 
+    //wenn bein oben: keine kraft
+    if(dotProductUp >= 0.0f){
+        return false;
+    }
+    return true;
+}
+
+void SlipContainer::deRotateDirectionsForSlipSine(
+    FVector &legDir,
+    FVector &forward
+){
+    FVector legCopy = legDir;
+
+    //axis align both
+    MMatrix r;
+    r.setRotation(forward);
+    MMatrix r1 = r.transposedRotation();
+    legDir = r1 * legDir;
+    forward = r1 * forward;
+
+
+
+
+
+
+    /*
+    //align trajectory on negative axis
+    FVector leg2D(legDir.X, legDir.Y, 0);
+    FVector forwardFlipped(forward.X, forward.Y, 0);
+
+    leg2D = leg2D.GetSafeNormal();
+    forwardFlipped = forwardFlipped.GetSafeNormal();
+
+    forwardFlipped *= -1.0f;
+
+    float dot = FVector::DotProduct(forwardFlipped, leg2D);
+    if(dot > 0.0f){
+        float angle = std::acosf(dot);
+        float sign = forwardFlipped.X * leg2D.Y - forwardFlipped.Y * leg2D.X > 0.0f ? 1.0f : -1.0f;
+        MMatrix alginOnAxis;
+        alginOnAxis.yawRadAdd(MMatrix::degToRadian(angle * sign * -1.0f));
+
+        legDir = alginOnAxis * legDir;
+    }
+    */
+
+    //align trajectory on negative axis
+    FVector leg2D(legDir.X, legDir.Y, 0);
+    FVector forward2D(forward.X, forward.Y, 0);
+    
+    float dot = FVector::DotProduct(forward2D, leg2D); //direction of leg forward or backward
+    float sign = dot > 0.0f ? 1.0f : -1.0f;
+
+    //cheap projection
+    legDir.X = leg2D.Size() * sign;
+    legDir.Y = 0.0f;
+
+    //works as expected
+    
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Slip: Projected legOld(%.2f %.2f %.2f) leg project x(%.2f %.2f %.2f) and forward(%.2f, %.2f)"),
+            legCopy.X, legCopy.Y, legCopy.Z,
+            legDir.X, legDir.Y, legDir.Z,
+            forward.X, forward.Y
+        )
+    );
+}
 
 /// @brief inetgrates the force from end effektor location a to b
 /// @param time 
@@ -263,6 +353,18 @@ FVector SlipContainer::forceIntegrated(
 }
 
 
+bool SlipContainer::debugSkipToCloseframes(FVector a, FVector b){
+    //debug
+    a.Z = 0.0f;
+    b.Z = 0.0f;
+    if (FVector::Dist(a, b) < 10)
+    {
+        DebugHelper::logMessage("Slip overCome DebugSkip!");
+        return true;
+    }
+    return false;
+}
+
 //new: compensation velocity
 void SlipContainer::setupInterpolatedD(
     FVector &endA, //start
@@ -273,6 +375,10 @@ void SlipContainer::setupInterpolatedD(
     float defaultBoneSize,
     float mass
 ){
+    if(debugSkipToCloseframes(endA, endB)){
+        return;
+    }
+
     showEstimationVersusRealVelocity(); //prev auswertung
     DebugHelper::logMessage("Slip overcome: ----- log end ----");
     DebugHelper::logMessage("Slip overcome: ----- log start ----");
@@ -387,7 +493,11 @@ FVector SlipContainer::accelerationInterpolated(
     float mass,
     FVector &movedir
 ){
+    if(!slipForceAllowedDotProductUp(featherCurrent)){
+        return FVector(0, 0, 0);
+    }
     
+
     FVector force = Dcurrent * forceUnscaled(featherCurrent, movedir);
 
     //F = m * a
@@ -398,10 +508,11 @@ FVector SlipContainer::accelerationInterpolated(
     slipVelocityIntegratedInternal += a * deltatime;
 
     //debug
-    if((bLogEnabled || true) && featherCurrent.X < 0.0f){
+    if(bLogEnabled){
         
         FString message = FString::Printf(
-            TEXT("--- slip output: D(%.2f) force(%.2f %.2f %.2f) acceleration(%.2f %.2f %.2f), trajectory(%.2f, %.2f, %2.f)"),
+            TEXT("--- slip output: D(%.2f) force(%.2f %.2f %.2f) acceleration(%.2f %.2f %.2f), trajectory(%.2f, %.2f, %2.f) forward(%.2f, %.2f, %.2f)"
+            ),
             Dcurrent,
             force.X,
             force.Y,
@@ -411,11 +522,18 @@ FVector SlipContainer::accelerationInterpolated(
             a.Z,
             featherCurrent.X,
             featherCurrent.Y,
-            featherCurrent.Z
+            featherCurrent.Z,
+            movedir.X,
+            movedir.Y,
+            movedir.Z
         );
         DebugHelper::logMessage(message);
     }
-    
+
+    if(force.Size() > 0.0f){
+        DebugHelper::showScreenMessage("positive slip!", FColor::Green);
+    }
+
     return a;
 }
 
@@ -431,3 +549,5 @@ void SlipContainer::showEstimationVersusRealVelocity(){
     slipVelocityEstimatedInternal = FVector(0, 0, 0);
     slipVelocityIntegratedInternal = FVector(0, 0, 0);
 }
+
+

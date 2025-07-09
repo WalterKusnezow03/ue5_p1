@@ -33,8 +33,12 @@ AIkDebugActor::AIkDebugActor(){
 void AIkDebugActor::BeginPlay(){
     Super::BeginPlay();
 
-    FVector startWorld(200, -400, 210);
+    FVector startWorld(400, -400, 210);
     hipController.setLocation(startWorld);
+
+    float initRotation = 10; //180
+    hipController.forceYawAdd(initRotation);
+
     hipController.setup(GetWorld());
 
     bone.setup(50, 50, GetWorld());
@@ -66,7 +70,7 @@ void AIkDebugActor::Tick(float deltatime){
 
     //debug
     time += deltatime;
-    if(time > 2.0f){
+    if(time > 2.0f && false){
         time = 0.0f;
 
         hipController.setupRotationForNextStep(MMatrix::degToRadian(45.0f));

@@ -11,6 +11,8 @@ public:
     BoneAttachment();
     ~BoneAttachment();
 
+    void setWorld(UWorld *world);
+
     FVector defaultExtendedEndToStartLocal();
     void setupBone(float a, float b, UWorld *world, FVector offset);
 
@@ -60,7 +62,7 @@ public:
 
     FVector endEffectorWorldLocation();
 
-    SlipContainer &slipData();
+    SlipContainer &slipData(MMatrix &orientation);
 
     bool reachedTarget();
     bool reachedTargtZ();
@@ -80,8 +82,8 @@ private:
 
     MMatrix startEffectorTransformWorld(MMatrix &worldRoot);
 
-    
-
+    UWorld *world = nullptr;
+    bool bDebugDraw = true;
 
     SlipContainer container;
 

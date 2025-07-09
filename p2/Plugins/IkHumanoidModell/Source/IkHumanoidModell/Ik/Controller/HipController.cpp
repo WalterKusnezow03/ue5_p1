@@ -3,7 +3,7 @@
 #include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 
 HipController::HipController(){
-
+    rotationSet = false;
 }
 
 HipController::~HipController(){
@@ -26,6 +26,10 @@ void HipController::setLocation(FVector &other){
     //might falling needed
     FVector ignored;
     projectToGround(ignored);
+}
+
+void HipController::forceYawAdd(float degree){
+    orientation.yawRadAdd(MMatrix::degToRadian(degree));
 }
 
 void HipController::setup(UWorld *world){
@@ -142,19 +146,7 @@ void HipController::applyLocomotion(float deltatime){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
     MMatrix transform = translation * orientation; //<-- lese richtung --
     if(forwardMotion){
-        
         attachment.TickForwardKinematic(transform, deltatime);
-
-        /*
-        MMatrix orientationCopy = orientation;
-        attachment.TickForwardKinematicOutOfReachTarget(
-            translation,
-            orientationCopy, // könnte temporäre kopie sein
-            deltatime
-        );*/
-
-        //FString message = legLeftPlaying ? TEXT("leg 1 forward") : TEXT("leg 2 forward ");
-        //DebugHelper::showScreenMessage(message);
     }
     else
     {
@@ -163,12 +155,22 @@ void HipController::applyLocomotion(float deltatime){
             orientation,
             deltatime
         );
-
-        //FString message = legLeftPlaying ? TEXT("leg 1 backward") : TEXT("leg 2 backward ");
-        //DebugHelper::showScreenMessage(message);
     }
 
+    /*
+    legLeft.TickKeepEndInWorldPlace(
+        translation,
+        orientation,
+        deltatime
+    );
+    legRight.TickKeepEndInWorldPlace(
+        translation,
+        orientation,
+        deltatime
+    );
+    return;*/
 
+    //old
     BoneAttachment &other = !legLeftPlaying ? legLeft : legRight;
     //other.TickNone(transform, deltatime);
     other.TickKeepEndInWorldPlace(
@@ -251,6 +253,10 @@ void HipController::updateForwardTargetWorld(FVector &targetWorld){
 
 void HipController::updateBackwardTargetLocal(FVector &targetLocal){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
+
+    //DEBUG
+    //targetLocal = orientation * targetLocal;
+
     attachment.setBackwardTargetLocal(targetLocal);
 }
 
@@ -273,6 +279,16 @@ void HipController::setupBackwardInterpolation(){
     interpolatorBackwardLocal.setTarget(localStart, localEnd, dynamicMotionTime);
 
 
+    //UNKLAR!
+    //NEW HERE: REGISTER VELOCITY KILL 
+    bool ignored = groundedByDistance();
+
+
+    if(true){
+        DebugHelper::logMessage("hipcontroller: backward start ", localStart);
+        DebugHelper::logMessage("hipcontroller: backward end ", localEnd);
+    }
+
 
     //PRE CALCULATE D 
     
@@ -281,11 +297,10 @@ void HipController::setupBackwardInterpolation(){
     //komischer hack, muss genau definiert werden!
 
     FVector b = forwardDefaultLocalLocomotionFrame;
-    b.X *= -1.0f; //to back when lifting off ground --> is overriden internally
     float velocityDown = velocity.Z;
     attachment.setupSlipDataOnStanceBegin(
         orientation,
-        b, // local end on liftoff
+        b, // local end on liftoff - is flipped internally
         dynamicMotionTime,//motionTime,
         velocityDown, //current velocity downwards to overcome
         bodyMass
@@ -329,7 +344,7 @@ void HipController::setupForwardInterpolation(){
     //set as target with end and current Starting point (end effector)
     FVector currentEndEffector = attachment.endEffectorWorldLocation();
 
-    if(false){
+    if(true){
         DebugHelper::logMessage("hipcontroller: forward start ", currentEndEffector);
         DebugHelper::logMessage("hipcontroller: forward end ", worldTrajectoryProjected);
     }
@@ -390,8 +405,8 @@ void HipController::projectToGround(FVector &worldTarjectory){
 /// ---- force section ----
 void HipController::applyForces(float deltatime){
 
-    //es ist noch nicht klar ob die slip force an die gravity geknüpft wird,
-    //eigentlich ja.
+    // es ist noch nicht klar ob die slip force an die gravity geknüpft wird,
+    // eigentlich ja.
     applyStancePhaseSLIPForce(deltatime);
 
     //unklar ob es hier bleibt
@@ -505,17 +520,13 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
         BoneAttachment *currentBoneAttachment = attachmentsToEvaluateForce[i];
         if(currentBoneAttachment){
             //if the foot is actually grounded apply force
-            SlipContainer &container = currentBoneAttachment->slipData();
+            SlipContainer &container = currentBoneAttachment->slipData(orientation);
 
             /**
              * was hier noch nicht klar sit ob die kraft auch 
              * in das welt koordintane system gebracht werden muss.
              * 
-             * wobei ja start und end effektor in welt kordinaten ausgedrückt sind
-             * und somit die federkraft sich auch in der welt befindet
-             * 
-             * die frage die sich noch stellt ist ob die stance phase so
-             * stimmt
+             * JA MUSS ES, IN ROTATION SPACE 
              */
             FVector accelerationCurrent = container.accelerationInterpolated(
                 deltatime,

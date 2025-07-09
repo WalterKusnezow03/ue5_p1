@@ -118,20 +118,16 @@ void worldLevel::initWorld(UWorld *world){
     DebugHelper::Debugtest(world);
 
     //debugBezier(world);
-    debugAngleFinder(world);
-
-    debugCreateWater(world);
-
-    debugCreateRock(world);
-
-    debugCreateWingsuitMesh(world);
+    //debugAngleFinder(world);
+    //debugCreateWater(world);
+    //debugCreateRock(world);
+    //debugCreateWingsuitMesh(world);
 
     debugMatrix();
 
 
-    DebugCreatedoor(world);
-
-    debugBezier(world);
+    //DebugCreatedoor(world);
+    //debugBezier(world);
 
     //createAeroActor(world);
     //createCar(world);

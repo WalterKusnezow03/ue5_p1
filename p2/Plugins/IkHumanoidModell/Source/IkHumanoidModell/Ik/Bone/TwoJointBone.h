@@ -68,6 +68,7 @@ private:
     
     void MoveToTarget(FVector &target);
     void MoveToTargetInverse(FVector &target);
+    void copyRotationFromInverseMatrices();
 
     void buildForward(MMatrix &world, float deltatime);
     void buildBackward(MMatrix &world, float deltatime);

@@ -80,7 +80,9 @@ void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime)
 
     //debug:
     if(bLogEnabled){
-        FVector reached = EndEffectorRelativeLocation();
+        FVector reached = EndEffectorLocation() - world.getTranslation();
+
+        //EndEffectorRelativeLocation();
         DebugHelper::logMessage("debugKinematic forward kinematic targeted: ", target);
         DebugHelper::logMessage("debugKinematic forward kinematic reached: ", reached);
         DebugHelper::logMessage("debugKinematic forward kinematic -----");
@@ -97,7 +99,14 @@ void TwoJointBone::MoveToTarget(FVector &target){
     FVector2D x(1.0f, 0.0f);
     FVector2D z(0.0f, -1.0f);//DOWN-Z
     MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true);
-    r1 = lookAtTarget;
+    //r1 = lookAtTarget;
+
+    if(bLogEnabled){
+        FVector boneAxisDefaultDown(0, 0, -1);
+        boneAxisDefaultDown = lookAtTarget * boneAxisDefaultDown;
+        boneAxisDefaultDown = boneAxisDefaultDown.GetSafeNormal() * target.Size();
+        DebugHelper::logMessage("debugKinematic forward kinematic look result: ", boneAxisDefaultDown);
+    }
 
     //pitch anziehen
     float pitchHip = 0.0f;
@@ -110,7 +119,10 @@ void TwoJointBone::MoveToTarget(FVector &target){
     r1.pitchRadAdd(pitchHip);
     r2.pitchRadAdd(pitchKnee);
 
+
+    r1 = lookAtTarget * r1;
 }
+
 
 
 
@@ -123,6 +135,9 @@ void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     removeRotationFromEndEffector();
 
     buildBackward(endEffectorWorld, deltatime); //builded from end effector
+    
+    //might be needed for rebuild.
+    copyRotationFromInverseMatrices();
 
     //debug:
     if(bLogEnabled){
@@ -131,6 +146,15 @@ void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
         DebugHelper::logMessage("debugKinematic backward kinematic reached: ", reached);
         DebugHelper::logMessage("debugKinematic backward kinematic -----");
     }
+
+    //debug draw
+    FVector start = endEffectorWorld.getTranslation();
+    DebugHelper::showLineBetween(
+        worldPtr,
+        start,
+        start + target,
+        FColor::Yellow
+    );
 }
 
 void TwoJointBone::MoveToTargetInverse(FVector &target){
@@ -139,10 +163,10 @@ void TwoJointBone::MoveToTargetInverse(FVector &target){
     clampTarget(target); //ok kein fehler
 
     //globale rotation
-    FVector2D x(1.0f, 0.0f);
+    FVector2D x(1.0f, 0.0f); //kleiner test
     FVector2D z(0.0f, 1.0f); //UP-Z
     MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true);
-    r2Inv = lookAtTarget; //r2 instead of r1
+    //r2Inv = lookAtTarget; //r2 instead of r1
 
     //test look at matrix
     //es funktioniert einwandfrei!
@@ -171,6 +195,8 @@ void TwoJointBone::MoveToTargetInverse(FVector &target){
     r2Inv.pitchRadAdd(pitchHip);
     r1Inv.pitchRadAdd(pitchKnee);
 
+    r2Inv = lookAtTarget * r2Inv;
+    //r2Inv = lookAtTarget; // r2 instead of r1
 }
 
 float TwoJointBone::lengthOfBone(){
@@ -207,6 +233,17 @@ void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
 
     startEffectorWorld = j2World; //update start effector
     draw(world, j0World, j1World, j2World, deltatime);
+
+
+    //debug rebuild forward
+    //FVector target = EndEffectorRelativeLocation();
+    //MoveToTarget(target, startEffectorWorld, deltatime);
+    //buildForwardFromInverseMatrices(deltatime);
+}
+
+void TwoJointBone::copyRotationFromInverseMatrices(){
+    r1 = r2Inv.transposedRotation();
+    r2 = r1Inv.transposedRotation();
 }
 
 void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, float dt){
@@ -217,6 +254,8 @@ void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, floa
 
     float frame = 0.01f;
     dt = std::max(frame * 3.0f, dt);
+
+    //dt = 1.0f;
 
     DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
     DebugHelper::showLineBetween(worldPtr, aT, wT, FColor::Red, dt);

@@ -105,6 +105,9 @@ private:
 public:
     void setupRotationForNextStep(float radianYaw);
 
+    //debug
+    void forceYawAdd(float degree);
+
 private:
     bool DEBUG_SLOWTIME = false;  // true;
     void TickHipRotation(float deltatime);
