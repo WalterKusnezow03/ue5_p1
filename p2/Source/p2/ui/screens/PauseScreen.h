@@ -5,10 +5,11 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 
-#include "Components/VerticalBox.h"
+
+#include "p2/ui/Widgets/autoContainer/Vbox.h"
 
 #include "PauseScreen.generated.h"
 
@@ -26,7 +27,7 @@ public:
     
 
 private:
-    UVerticalBox *menu = nullptr;
+    UVbox *menu = nullptr;
     
     UTextButton *exitButton = nullptr;
     UTextButton *loadoutScreenButton = nullptr;
@@ -36,5 +37,4 @@ private:
     void createExitButton();
     void createLoadoutScreenButton();
 
-    void AddChildToMenu(UcustomUiComponentBase &item);
 };

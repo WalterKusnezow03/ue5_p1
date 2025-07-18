@@ -500,8 +500,10 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    if(isPaused){
-        //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange);
+    registerMousClickInUI();
+    if (isPaused)
+    {
+        //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange)        
         return;
     }
 
@@ -520,6 +522,20 @@ void AplayerScript::shoot(){
         playerInventory.releaseShoot(); //abzug loslassen
     }
 }
+
+
+/// @brief manually registering mouse clicks because buttons are bad in unreal umg
+void AplayerScript::registerMousClickInUI(){
+    if(isPaused){
+        //New Internal click registering!
+        if(uiInstance){
+            uiInstance->updateClickDispatch();
+        }
+    }
+}
+
+
+
 
 /// @brief sets the left mouse holding status for the weapon
 /// @param h 
@@ -847,9 +863,16 @@ void AplayerScript::showCursor(bool show){
         }else{
             PlayerController->SetInputMode(FInputModeGameOnly());
         }*/
+
+
+
+        //game only custom dispatch no ui - CUSTOM DIPATCH CLICKS
+        FInputModeGameOnly InputMode;
+        PlayerController->SetInputMode(InputMode);
         
         
     }
+
 }
 
 void AplayerScript::setPaused(bool in){

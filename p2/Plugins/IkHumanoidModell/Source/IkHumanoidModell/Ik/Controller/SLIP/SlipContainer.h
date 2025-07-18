@@ -14,6 +14,11 @@ public:
 
     void setup(float defaultBoneSize, FVector &currentStartToEndEffector);
 
+    void initDefaultForParameterD(
+        float defaultBoneSize, 
+        float mass,
+        float motionTime
+    );
 
 private:
     bool bLogEnabled = true;
@@ -32,8 +37,6 @@ private:
     FVector featherCurrent;
 
 
-    float federKonstanteD = 10.0f;
-
     bool wasSetup = false;
 
     bool debugSkipToCloseframes(FVector a, FVector b);
@@ -45,7 +48,6 @@ public:
         FVector &movedir,
         float time,
         float velocity,
-        float defaultBoneSize,
         float mass
     );
     FVector accelerationInterpolated(
@@ -61,7 +63,12 @@ private:
     FVector B;
     
     float timeForInterpolation;
-    float Dcurrent = 1.0f;
+    float Dcurrent = 1.0f; //feder konstante D
+    
+    //D limit for prevention of bad values
+    float DLimit = 9999999999.0f;
+    bool bDLimitSetup = false;
+    void validateD(float &dIn);
 
     bool slipForceAllowedDotProductUp(FVector &leg);
 

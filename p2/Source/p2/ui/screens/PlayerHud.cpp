@@ -4,7 +4,7 @@
 #include "Components/CanvasPanel.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
-#include "p2/ui/makeUWidgets/TextAndImage.h"
+#include "p2/ui/Widgets/TextBased/TextAndImage.h"
 #include "CanvasScreen.h"
 
 #include "GameCore/DebugHelper.h"

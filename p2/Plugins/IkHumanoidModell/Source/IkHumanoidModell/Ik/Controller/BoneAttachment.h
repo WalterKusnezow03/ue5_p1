@@ -14,7 +14,16 @@ public:
     void setWorld(UWorld *world);
 
     FVector defaultExtendedEndToStartLocal();
+    
     void setupBone(float a, float b, UWorld *world, FVector offset);
+    void setupBone(
+        float a,
+        float b,
+        UWorld *worldIn,
+        FVector offset,
+        float massOfParent,
+        float defaultMotionTime
+    );
 
     void setForwardTargetWorld(
         FVector &targetWorld,

@@ -39,12 +39,13 @@ void HipController::setup(UWorld *world){
     float lengthB = 50.0f;
     setupLegLength = lengthA + lengthB;
 
+
     //x is forward
     FVector offsetLeft(0, -20.0f, 0.0f);
-    legLeft.setupBone(lengthA, lengthB, world, offsetLeft);
+    legLeft.setupBone(lengthA, lengthB, world, offsetLeft, bodyMass, motionTime);
 
     FVector offsetRight = offsetLeft * -1.0f;
-    legRight.setupBone(lengthA, lengthB, world, offsetRight);
+    legRight.setupBone(lengthA, lengthB, world, offsetRight, bodyMass, motionTime);
 
 
 
@@ -326,7 +327,7 @@ void HipController::setupForwardInterpolation(){
     // t motionTime
     //gx = a + t (b-a)
     FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
-    localTrjectoryRotatedSpace += motionTime * velocity;
+    localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m
     MMatrix orientationInverse = orientation.transposedRotation();
     localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
 
@@ -598,15 +599,15 @@ float HipController::animationTimeBasedOnCurrentVelocity(
     //s = m / v
 
     float m = FVector::Dist(localStart, localEnd);
-
     float v = horizontalVelocity();
 
-    //1cm s
-    if(v < 1.0f){
+    float time = m / v;
+
+    //NOCH UNKLAR
+    if(time > motionTime){
         return motionTime; //default motion time fallback
     }
 
-    float time = m / v;
     return time;
 }
 

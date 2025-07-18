@@ -23,7 +23,17 @@ FVector BoneAttachment::endEffectorWorldLocation(){
     return bone.EndEffectorLocation();
 }
 
-void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset){
+/// @brief setup bone
+/// @param a part a (upper) lenght
+/// @param b part b (lower) length
+/// @param worldIn world for drawing
+/// @param offset inner offset of bone attachment (hip offset for example)
+void BoneAttachment::setupBone(
+    float a, 
+    float b, 
+    UWorld *worldIn, 
+    FVector offset
+){
     bone.setup(a, b, worldIn);
     setWorld(worldIn);
 
@@ -36,6 +46,39 @@ void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset
         0,
         0,
         (std::abs(a) + std::abs(b))
+    );
+
+}
+
+/// @brief setup bone
+/// @param a part a (upper) lenght
+/// @param b part b (lower) length
+/// @param worldIn world for drawing
+/// @param offset inner offset of bone attachment (hip offset for example)
+/// @param massOfParent mass of parent body to pre calculate slip data 
+/// @param defaultMotionTime default motion time of the stance phase
+void BoneAttachment::setupBone(
+    float a, 
+    float b, 
+    UWorld *worldIn, 
+    FVector offset,
+    float massOfParent,
+    float defaultMotionTime
+){
+    setupBone(
+        a, 
+        b, 
+        worldIn, 
+        offset
+    );
+
+    //debug
+    return;
+
+    container.initDefaultForParameterD(
+        bone.lengthOfBone(),
+        massOfParent,
+        defaultMotionTime
     );
 }
 
@@ -146,6 +189,18 @@ void BoneAttachment::TickBackwardKinematic(
     FVector rootPos = StartEffectorLocation - asVector;
     translationRootToUpdate.setTranslation(rootPos);
 
+    /**
+     * Sollte analog sein zu:
+     * - asVector 
+     * -1 * asVector
+     * innerOffsetR * -1 * asVector
+     * (orientationRoot * innerOffset) * -1 * asVector
+     * (orientationRoot * innerOffset)^-1 * asVector
+     * innerOffset^-1 * orientationRoot^-1 * asVector
+     */
+
+
+
 
 
     /*
@@ -217,6 +272,7 @@ void BoneAttachment::TickKeepEndInWorldPlaceNegHeightTrajectory(
     FVector endEffectorWorld = bone.EndEffectorLocation();
     FVector endEffectorLocal = inLocalSpace(endEffectorWorld, translationRoot, orientationRoot);
     
+    //slip leg down
     if(endEffectorLocal.Z > 0.0f){
         endEffectorLocal *= -1.0f;
     }
@@ -394,7 +450,6 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
         moveDir,
         time,
         velocityDown,
-        bone.lengthOfBone(),
         mass
     );
 }

@@ -4,8 +4,8 @@
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/Button.h"
 #include "Components/ScaleBox.h"
-#include "p2/ui/makeUWidgets/callback/callback.h"
-#include "p2/ui/makeUWidgets/buttons/ButtonBase.h"
+#include "p2/ui/Widgets/callback/callback.h"
+#include "p2/ui/Widgets/buttons/ButtonBase.h"
 #include "Components/TextBlock.h"
 
 #include "TextButton.generated.h"
@@ -24,9 +24,12 @@ public:
     void setText(FString textIn);
 
 
+    virtual bool dispatchClick() override;
+
 private:
 
     UTextBlock *TextBlock = nullptr;
+    FString textInternalCopy;
     void createTextAndAddToButton();
 
     void setUpCallbackHover();

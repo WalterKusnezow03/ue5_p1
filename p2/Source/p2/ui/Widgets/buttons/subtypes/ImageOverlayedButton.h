@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"
-#include "p2/ui/makeUWidgets/buttons/ButtonBase.h"
+#include "p2/ui/Widgets/OverlayBased/ImageOverlayed.h"
+#include "p2/ui/Widgets/buttons/ButtonBase.h"
 
 #include "ImageOverlayedButton.generated.h"
 

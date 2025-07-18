@@ -8,7 +8,7 @@
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/screens/PauseScreen.h"
 #include "p2/ui/screens/enum/EScreenEnum.h"
-#include "p2/ui/helper/ScreenOpenStack.h"
+#include "p2/ui/ScreenStack/ScreenOpenStack.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
 #include "PlayerUi.generated.h"
@@ -82,7 +82,9 @@ public:
 
 	void addToCanvas(UWidget *any);
 
-	
+
+	void RegisterCursorClick();
+	void updateClickDispatch();
 
 protected:
 

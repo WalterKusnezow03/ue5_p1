@@ -4,8 +4,8 @@
 #include "CanvasScreen.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "GameCore/DebugHelper.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include <functional>
@@ -28,15 +28,14 @@ void UPauseScreen::init(UPlayerUi &playerUiParentref){
 
 void UPauseScreen::createMenu(){
     if(menu == nullptr && baseCanvas != nullptr){
-        menu = NewObject<UVerticalBox>(this);
+        menu = NewObject<UVbox>(this);
 
         if(menu){
-            baseCanvas->AddChild(menu);
+            menu->init(); //very important for custom click dispatcher
 
-            UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(menu->Slot);
-            if(slot != nullptr){
-                slot->SetPosition(FVector2D(100, 100)); //kleiner test, nach innen schieben
-            }
+            //add menu to UCanvas in parent class, automatically tracked dispatcher / in click listening!
+            //Super::
+            AddChild(menu, FVector2D(100,100));
         }
         
     }
@@ -61,7 +60,7 @@ void UPauseScreen::createExitButton(){
                 FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openGameScreen)
             );
 
-            AddChildToMenu(*exitButton);
+            menu->AddChild(exitButton); //automatically listened in click dispatcher because menu is listed
         }
        
     }
@@ -81,19 +80,7 @@ void UPauseScreen::createLoadoutScreenButton(){
                 FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openLoadoutScreen)
             );
 
-            AddChildToMenu(*loadoutScreenButton);
-        }
-        
-    }
-}
-
-
-///@brief adds a custom ui component to the menu.
-void UPauseScreen::AddChildToMenu(UcustomUiComponentBase &item){
-    if(menu != nullptr){
-        UWidget *baseLayout = item.baseLayoutPointer();
-        if(baseLayout != nullptr){
-            menu->AddChildToVerticalBox(baseLayout);
+            menu->AddChild(loadoutScreenButton); //automatically listened in click dispatcher because menu is listed
         }
     }
 }

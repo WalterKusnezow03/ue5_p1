@@ -1,6 +1,6 @@
 
 #include "ImageOverlayedButton.h"
-#include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"
+#include "p2/ui/Widgets/OverlayBased/ImageOverlayed.h"
 #include "Components/Button.h"
 
 

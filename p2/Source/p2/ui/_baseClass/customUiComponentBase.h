@@ -16,6 +16,29 @@ class P2_API UcustomUiComponentBase : public UObject{
     GENERATED_BODY()
 
 public:
+    // --- CALL ON ANY DERIVED BEFORE USING! ---
+    //construct
+    virtual void init(){
+        WAS_INIT_FLAG = true;
+    }
+    virtual void init(UPlayerUi &refin){
+        saveParent(refin);
+        WAS_INIT_FLAG = true;
+    }
+
+
+    // --- manual click dispatch ---
+    virtual bool dispatchClick(){
+        return false;
+    }
+
+    /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
+    /// invisible too!
+    /// @param visible 
+    virtual void setVisible(bool visible) {
+        setVisible(baseLayoutPointer(), visible);
+    }
+
     //--- Ticker section ---
     //destruct
     virtual void BeginDestroy() override
@@ -49,16 +72,6 @@ public:
     //--- Ticker section end ---
 
 
-    //construct
-    virtual void init(){
-        WAS_INIT_FLAG = true;
-    }
-    virtual void init(UPlayerUi &refin){
-        saveParent(refin);
-        WAS_INIT_FLAG = true;
-    }
-    virtual void setVisible(bool visible) {}
-
     void saveParent(UPlayerUi &ref){
         playerUiParent = &ref;
     }
@@ -83,6 +96,8 @@ protected:
 
             //test
             any->SetIsEnabled(visible);
+
+            VISIBLE_FLAG = visible;
         }
     }
 
@@ -96,8 +111,11 @@ protected:
         }
     }
 
+    bool markedVisible(){
+        return VISIBLE_FLAG;
+    }
+
 private:
     bool TICK_ENABLED = false;
-
-
+    bool VISIBLE_FLAG = true;
 };

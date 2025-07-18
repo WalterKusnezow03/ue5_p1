@@ -4,7 +4,7 @@
 #include "Components/BackgroundBlur.h"
 #include "Components/Overlay.h"
 #include "Components/Border.h"
-#include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
+#include "p2/ui/Widgets/buttons/colors/UiColors.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 
 ///@brief sets up the canvas, the player ui parent is 
@@ -14,6 +14,75 @@ void UCanvasScreen::init(UPlayerUi &refin){
 
 }
 
+/// ---- Adding items ----
+
+/// @brief adds a child to the UCanvasPanel
+void UCanvasScreen::AddChild(UcustomUiComponentBase *item){
+    AddChild(item, FVector2D(0, 0));
+}
+
+/// @brief adds a child to the UCanvasPanel with a offset
+/// @param item 
+/// @param offset 
+void UCanvasScreen::AddChild(UcustomUiComponentBase *item, FVector2D offset){
+    if(item && baseCanvas){
+        UWidget *basePtr = item->baseLayoutPointer();
+        if(basePtr){
+            AddClickListenedItem(item); //Add to dispatcher!
+
+            baseCanvas->AddChild(basePtr); //Add BEFORE SLOT* request!
+
+
+            //APPLY OFFSET FROM TOP LEFT CORNER
+
+            //get owning pointer of ui element and set to a position
+            UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(basePtr->Slot);
+            if(slot != nullptr){
+                slot->SetPosition(offset); //kleiner test, nach innen schieben
+            }
+        }
+
+        
+    }
+}
+
+
+// --- CLICK AND VISIBILITY DISPATCH ----
+
+/// @brief dispatch click to all tracked items
+/// @param mousePosition 
+/// @return 
+bool UCanvasScreen::dispatchClick(){
+    for (int i = 0; i < listenForclickItems.Num(); i++){
+        if(UcustomUiComponentBase *current = listenForclickItems[i]){
+            if(current->dispatchClick()){
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/// @brief ADD EACH BUTTON TO THIS DIPATCH POOL! add item to click dispatcher
+/// @param ptr 
+void UCanvasScreen::AddClickListenedItem(UcustomUiComponentBase *ptr){
+    if(ptr){
+        if(!listenForclickItems.Contains(ptr)){
+            listenForclickItems.Add(ptr);
+        }
+    }
+}
+
+void UCanvasScreen::AddClickListenedItems(TArray<UcustomUiComponentBase *> array){
+    for (int i = 0; i < array.Num(); i++){
+        AddClickListenedItem(array[i]);
+    }
+}
+
+
+
+/// @brief creates the canvas for this screen
 void UCanvasScreen::createBaseCanvas(){
     if(playerUiParent != nullptr){
         if(baseCanvas == nullptr){

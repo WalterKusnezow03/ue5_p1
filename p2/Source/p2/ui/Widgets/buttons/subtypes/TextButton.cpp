@@ -5,8 +5,8 @@
 #include "Components/TextBlock.h"
 #include "Components/ScaleBox.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/ui/makeUWidgets/buttons/colors/UiColors.h"
-#include "p2/ui/makeUWidgets/callback/callback.h"
+#include "p2/ui/Widgets/buttons/colors/UiColors.h"
+#include "p2/ui/Widgets/callback/callback.h"
 #include "TextButton.h"
 
 
@@ -38,27 +38,45 @@ void UTextButton::createTextAndAddToButton(){
 }
 
 void UTextButton::setText(FString textIn){
+    textInternalCopy = textIn;
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }
 }
 
 
-
-
+/**
+ * debug
+ */
+bool UTextButton::dispatchClick(){
+    bool found = Super::dispatchClick();
+    if(found){
+        DebugHelper::showScreenMessage(FString::Printf(TEXT("PRESSED BUTTON: %s"), *textInternalCopy), FColor::Orange);
+    }
+    return found;
+}
 
 /**
  * callback api
  */
 void UTextButton::setDesignHovered(){
+    
     if(button){
         button->SetBackgroundColor(UiColors::buttonWhite);
     }
     if(TextBlock){
         TextBlock->SetColorAndOpacity(FSlateColor(UiColors::buttonBlack));
     }
-}
 
+
+
+    //Debug
+    if(false){
+        DebugHelper::logMessage("dispatch cursor DEBUG!");
+        dispatchClick();
+    }
+    
+}
 
 void UTextButton::setDesignDefault(){
     if(button){
@@ -71,6 +89,8 @@ void UTextButton::setDesignDefault(){
 
 
 void UTextButton::setUpCallbackHover(){
+
+
 
     SetCallBackOnHovered(
         // on hover

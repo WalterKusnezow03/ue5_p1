@@ -3,8 +3,8 @@
 #include "Components/CanvasPanel.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
-#include "p2/ui/makeUWidgets/TextAndImage.h"
-#include "p2/ui/makeUWidgets/OverlayBased/ImageOverlayed.h"
+#include "p2/ui/Widgets/TextBased/TextAndImage.h"
+#include "p2/ui/Widgets/OverlayBased/ImageOverlayed.h"
 #include "CanvasScreen.h"
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 

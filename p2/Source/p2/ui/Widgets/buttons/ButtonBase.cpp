@@ -7,7 +7,7 @@
 #include "Components/SizeBoxSlot.h"
 #include "Components/ScaleBox.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/ui/makeUWidgets/callback/callback.h"
+#include "p2/ui/Widgets/callback/callback.h"
 
 #include "ButtonBase.h"
 
@@ -20,9 +20,6 @@ void UButtonBase::init(){
     createButton();
 }
 
-
-
-
 void UButtonBase::createButton(){
     button = NewObject<UButton>(this); 
 
@@ -34,16 +31,89 @@ void UButtonBase::createButton(){
 
         WAS_INIT_FLAG = true;
         // scalebox->AddChild(button); //kleiner test, sichtbar aber anderer inhalt von scale box nicht mehr
-        
 
+        //disableUMGClicks();
     }
-
-    
-
 }
 
 /**
- * ---- pressed callback ----
+ * ---- click dispatch manual -----
+ */
+
+void UButtonBase::disableUMGClicks(){
+    if(button){
+        button->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+    }
+}
+
+/// @brief tests if this button was hit on click!
+/// @return 
+bool UButtonBase::dispatchClick(){
+
+    DebugHelper::logMessage("UButtonBase try dispatch click");
+    if (button && markedVisible()) //may be marked invisible: dont do hittest
+    {
+        TSharedPtr<SWidget> SlateWidget = button->GetCachedWidget();
+
+        if (SlateWidget.IsValid())
+        {
+
+            FGeometry Geometry = SlateWidget->GetCachedGeometry();
+
+            FVector2D cursorPos = FSlateApplication::Get().GetCursorPos();
+
+            FVector2D topLeft = Geometry.LocalToAbsolute(FVector2D(0, 0));
+            FVector2D bottomRight = Geometry.LocalToAbsolute(Geometry.GetLocalSize());
+
+            FVector2D size = bottomRight - topLeft; //AB = B - A
+            topLeft -= size * 0.1f;
+            bottomRight += size * 0.1f;
+
+            bool inBoundsX = cursorPos.X >= topLeft.X && cursorPos.X <= bottomRight.X;
+            bool inBoundsY = cursorPos.Y >= topLeft.Y && cursorPos.Y <= bottomRight.Y;
+
+
+
+
+            
+            /*
+            FVector2f topLeft = Geometry.GetAbsolutePosition();
+            FVector2f Size = Geometry.GetAbsoluteSize();
+            FVector2f bottomRight = topLeft + Size;
+
+            bool inBoundsX = mousePositionIn.X >= topLeft.X && mousePositionIn.X <= bottomRight.X;
+            bool inBoundsY = mousePositionIn.Y >= topLeft.Y && mousePositionIn.Y <= bottomRight.Y;
+            */
+            if(inBoundsX && inBoundsY){
+                if(callbackPointer){
+                    callbackPointer->UCallbackFunction(); //manual trigger
+                }
+                DebugHelper::logMessage("UButtonBase dispatch try sucess");
+
+                for(int i = 0; i < 10; i++){
+                    DebugHelper::showScreenMessage("UButtonBase dispatch try sucess");
+                }
+
+
+                return true;
+            }
+            
+
+            FString message = FString::Printf(
+                TEXT("UButtonbase dispatch no sucess (%.2f, %.2f)(%.2f %.2f), cursor(%.2f, %.2f)"),
+                topLeft.X, topLeft.Y,
+                bottomRight.X, bottomRight.Y,
+                cursorPos.X, cursorPos.Y
+            );
+            DebugHelper::logMessage(message);
+        }
+    }
+
+    return false;
+}
+
+/**
+ * ---- pressed callback unreal default ----
  */
 
 ///@brief sets the callback for onlick, REMOVES the old callback!
@@ -55,6 +125,9 @@ void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
         {
             callbackPointer->SetCallback(callbackIn);
         
+            //DEBUG using custom click dispatcher
+            return;
+
             //reagiert besser
             button->SetClickMethod(EButtonClickMethod::MouseDown);
             //button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
@@ -93,7 +166,7 @@ void UButtonBase::reloadCallback(){
 
 void UButtonBase::makeTransparent(){
     if(button){
-        button->SetBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f)); // Vollständig transparent
+        button->SetBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.2f)); // Vollständig transparent
     }
     
 }
@@ -108,6 +181,9 @@ void UButtonBase::SetCallBackOnHovered(
     FSimpleDelegate onHoveredDelegate,
     FSimpleDelegate onUnHoveredDelegate
 ){
+    //Debug
+    return;
+
     if(button != nullptr){
         createHoveredAndUnHoveredCallbackIfNeeded();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "p2/ui/_baseClass/customUiComponentBase.h"
+#include "p2/ui/screens/CanvasScreen.h"
 
 
 class P2_API ScreenOpenStack {
@@ -9,14 +10,16 @@ public:
     ScreenOpenStack();
     ~ScreenOpenStack();
 
-    void open(UcustomUiComponentBase *item);
+    void open(UCanvasScreen *item);
     void closeBack();
 
     void closeAll();
 
     bool isEmpty();
 
+    void dispatchClick();
+
 private:
-    std::vector<UcustomUiComponentBase *> opened;
+    std::vector<UCanvasScreen *> opened;
     
 };

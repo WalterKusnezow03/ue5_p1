@@ -4,14 +4,14 @@
 #include "p2/ui/PlayerUi.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "Components/CanvasPanelSlot.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "p2/entityManager/referenceManager.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "GameCore/DebugHelper.h"
 
@@ -31,13 +31,18 @@ void ULoadoutScreen::init(UPlayerUi &ref){
     createRigthListPickers();
 }
 
+
+/// @brief creates base layout AND TRACKS COMPLETE LAYOUT IN CLICK LISTENING - AND ALL CHILDREN!
 void ULoadoutScreen::createBaseLayout(){
     if(baseCanvas != nullptr){
         halfSplitBase = NewObject<UPresetHalfSplitLayout>(this);
-        halfSplitBase->init();
 
         if(halfSplitBase){
-            halfSplitBase->init();
+
+            //TRACK IN CUTSOM CLICK DISPATCHING AND VISIBLITY
+            //OWNS ALL ELEMENTS
+            halfSplitBase->init(); //VERY IMPORTANT
+            AddClickListenedItem(halfSplitBase); 
 
             UWidget *basePointer = halfSplitBase->baseLayoutPointer();
             if(basePointer != nullptr){
@@ -64,10 +69,11 @@ void ULoadoutScreen::createHeadline(){
                 //FSimpleDelegate::CreateUObject(uclassInstance, &<classname>::<methodname>)
                 FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::closeLatestScreen)
             );
-            UWidget *baseOfExitButton = exitButton->baseLayoutPointer();
-            if(baseOfExitButton){
-                halfSplitBase->addChildToHeadLine(baseOfExitButton);
-            }
+            halfSplitBase->addChildToHeadLine(exitButton);
+
+
+            //add to click listener!
+            //AddClickListenedItem(exitButton);
         }
         
 
@@ -85,7 +91,7 @@ void ULoadoutScreen::createHeadline(){
 
 
 
-
+/// @brief player load out on left Side of screen (Weapon containers by index)
 void ULoadoutScreen::createLeftSideLoadoutMenuItems(){
 
     if(halfSplitBase){
@@ -104,19 +110,20 @@ void ULoadoutScreen::createLeftSideLoadoutMenuItems(){
         LoadoutContainersCreated = true; //lock after creation
 
         // VERY IMPORTANT!
-        // on create show first
-        openPickerCallBack(WEAPON_PICKER_IDENTIFIER, weaponContainer1);
+        // on create show first weapon picker
+        openPickerCallBack(WEAPON_PICKER_IDENTIFIER, 0);
 
     }
     
 }
 
 ///@brief CALLBACK FOR SLOT BUTTONS TO OPEN PICKERS
-void ULoadoutScreen::openPickerCallBack(int index, UWeaponContainer *clickComingFrom){
+/// pickers will update the correct container on the left side
+void ULoadoutScreen::openPickerCallBack(int indexChooseType, int containerIndex){
     if(halfSplitBase != nullptr){
-        if(clickComingFrom != nullptr){
-            rebindAllPickers(clickComingFrom);
-            halfSplitBase->showRightSideLayoutAtIndex(index);
+        if(containerIndex >= 0 && containerIndex < weaponContainers.size()){
+            rebindAllPickers(containerIndex);
+            halfSplitBase->showRightSideLayoutAtIndex(indexChooseType);
         }
     }
 }
@@ -125,7 +132,8 @@ void ULoadoutScreen::openPickerCallBack(int index, UWeaponContainer *clickComing
 
 
 
-///@brief creates the selectable lists and adds them to the right side of the halfsplit preset
+///@brief SELECTABLE STUFF FOR RIGHT OF HALF SPLIT BASE!
+/// creates the selectable lists and adds them to the right side of the halfsplit preset
 ///by index, for example a list for the pickable weapons, sights, etc...
 void ULoadoutScreen::createRigthListPickers(){
     
@@ -133,63 +141,80 @@ void ULoadoutScreen::createRigthListPickers(){
     //erste layout definieren und hier füllen
 
     /// ---- PICKABLE WEAPONS ----
-    pickableWeaponsVertical = NewObject<UVerticalBox>(this);
-    halfSplitBase->addChildToRightVertical(pickableWeaponsVertical, WEAPON_PICKER_IDENTIFIER); //ins 0te layout
-    std::vector<weaponEnum> typesToHave = {
-        weaponEnum::assaultRifle,
-        weaponEnum::pistol
-    };
-    for (int i = 0; i < typesToHave.size(); i++)
-    {
-        UWeaponPickButton *weaponItem = NewObject<UWeaponPickButton>(this);
-        if(weaponItem){
-            weaponEnum currentweaponType = typesToHave[i];
-            weaponItem->init();
-            weaponItem->setType(currentweaponType);
-            pickableWeaponsVertical->AddChildToVerticalBox(weaponItem->baseLayoutPointer());
-            pickableWeaponsButtonVector.push_back(weaponItem);
+    UVbox *pickableWeaponsVertical = NewObject<UVbox>(this); //OWNED BY HALFSPLIT BASE
+    if(pickableWeaponsVertical){
+        pickableWeaponsVertical->init(); //VERY IMPORTANT
+        halfSplitBase->addChildToRightVertical(pickableWeaponsVertical, WEAPON_PICKER_IDENTIFIER); // ins 0te layout
+        std::vector<weaponEnum> typesToHave = {
+            weaponEnum::assaultRifle,
+            weaponEnum::pistol
+        };
+        for (int i = 0; i < typesToHave.size(); i++)
+        {
+            UWeaponPickButton *weaponItem = NewObject<UWeaponPickButton>(this);
+            if(weaponItem){
+                weaponEnum currentweaponType = typesToHave[i];
+                weaponItem->init();
+                weaponItem->setType(currentweaponType);
+                pickableWeaponsVertical->AddChild(weaponItem);
+                pickableWeaponsButtonVector.push_back(weaponItem);
+
+                //AddClickListenedItem(weaponItem); --> deprecated: abb vbox to listened items!
+            }
         }
     }
+    
 
 
 
 
     /// ---- PICKABLE SIGHTS ----
-    pickableSightsVertical = NewObject<UVerticalBox>(this);
-    halfSplitBase->addChildToRightVertical(pickableSightsVertical, SIGHT_PICKER_IDENTIFIER); //ins 1te layout
-    std::vector<weaponAttachmentEnum> sightTypesToHave = {
-        weaponAttachmentEnum::iron_sight,
-        weaponAttachmentEnum::reddot
-    };
-    for (int i = 0; i < sightTypesToHave.size(); i++){
-        UAttachmentPickButton *sightItem = NewObject<UAttachmentPickButton>(this);
-        if(sightItem){
-            weaponAttachmentEnum currentSightType = sightTypesToHave[i];
-            sightItem->init();
-            sightItem->setType(currentSightType);
-            pickableSightsVertical->AddChildToVerticalBox(sightItem->baseLayoutPointer());
-            pickableSightsButtonVector.push_back(sightItem);
+    UVbox *pickableSightsVertical = NewObject<UVbox>(this); //OWNED BY HALFSPLIT BASE
+    if(pickableSightsVertical){
+        pickableSightsVertical->init();
+        halfSplitBase->addChildToRightVertical(pickableSightsVertical, SIGHT_PICKER_IDENTIFIER); //ins 1te layout
+        std::vector<weaponAttachmentEnum> sightTypesToHave = {
+            weaponAttachmentEnum::iron_sight,
+            weaponAttachmentEnum::reddot
+        };
+        for (int i = 0; i < sightTypesToHave.size(); i++){
+            UAttachmentPickButton *sightItem = NewObject<UAttachmentPickButton>(this);
+            if(sightItem){
+                weaponAttachmentEnum currentSightType = sightTypesToHave[i];
+                sightItem->init();
+                sightItem->setType(currentSightType);
+                pickableSightsVertical->AddChild(sightItem);
+                pickableSightsButtonVector.push_back(sightItem);
+
+                //AddClickListenedItem(sightItem); --> deprecated: abb vbox to listened items!
+            }
         }
     }
-
+    
 
 
 
     /// ---- PICKABLE MUZZLE ATTACHMENTS ----
-    pickableMuzzlesVertical = NewObject<UVerticalBox>(this);
-    halfSplitBase->addChildToRightVertical(pickableMuzzlesVertical, MUZZLE_PICKER_IDENTIFIER); //ins 1te layout
-    std::vector<weaponAttachmentEnum> muzzleTypesToHave = {
-        weaponAttachmentEnum::muzzle_flashSurpressor,
-        weaponAttachmentEnum::muzzle_SoundSurpressor
-    };
-    for (int i = 0; i < muzzleTypesToHave.size(); i++){
-        UAttachmentPickButton *muzzleItem = NewObject<UAttachmentPickButton>(this);
-        if(muzzleItem){
-            weaponAttachmentEnum currentType = muzzleTypesToHave[i];
-            muzzleItem->init();
-            muzzleItem->setType(currentType);
-            pickableMuzzlesVertical->AddChildToVerticalBox(muzzleItem->baseLayoutPointer());
-            pickableMuzzlesButtonVector.push_back(muzzleItem);
+    UVbox *pickableMuzzlesVertical = NewObject<UVbox>(this); //OWNED BY HALFSPLIT BASE
+    if(pickableMuzzlesVertical){
+        pickableMuzzlesVertical->init();
+        halfSplitBase->addChildToRightVertical(pickableMuzzlesVertical, MUZZLE_PICKER_IDENTIFIER); //ins 1te layout
+        std::vector<weaponAttachmentEnum> muzzleTypesToHave = {
+            weaponAttachmentEnum::muzzle_flashSurpressor,
+            weaponAttachmentEnum::muzzle_SoundSurpressor
+        };
+        for (int i = 0; i < muzzleTypesToHave.size(); i++){
+            UAttachmentPickButton *muzzleItem = NewObject<UAttachmentPickButton>(this);
+            if(muzzleItem){
+                weaponAttachmentEnum currentType = muzzleTypesToHave[i];
+                muzzleItem->init();
+                muzzleItem->setType(currentType);
+                pickableMuzzlesVertical->AddChild(muzzleItem);
+                pickableMuzzlesButtonVector.push_back(muzzleItem);
+
+
+                //AddClickListenedItem(muzzleItem); --> deprecated: abb vbox to listened items!
+            }
         }
     }
 
@@ -200,8 +225,15 @@ void ULoadoutScreen::createRigthListPickers(){
 
 
 
-///@brief on click of any container on the left side, rebind
-void ULoadoutScreen::rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed){
+///@brief on click of any container on the left side, rebind weapon container to be set up
+void ULoadoutScreen::rebindAllPickers(int indexWeaponPickerFocussed){
+
+    //find picker by index
+    UWeaponContainer *currentWeaponContainerFocussed = nullptr;
+    if(indexWeaponPickerFocussed >= 0 && indexWeaponPickerFocussed < weaponContainers.size()){
+        currentWeaponContainerFocussed = weaponContainers[indexWeaponPickerFocussed];
+    }
+
     if(currentWeaponContainerFocussed == nullptr){
         return;
     }
@@ -263,7 +295,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
                 if(this){
                     this->openPickerCallBack(
                         this->WEAPON_PICKER_IDENTIFIER,  
-                        this->weaponContainers[index]
+                        index //self weapon container
                     );
                 } 
             })
@@ -277,7 +309,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
                 if(this){
                     this->openPickerCallBack(
                         this->SIGHT_PICKER_IDENTIFIER,  
-                        this->weaponContainers[index]
+                        index //self weapon container
                     );
                 } 
             })
@@ -291,15 +323,19 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
                 if(this){
                     this->openPickerCallBack(
                         this->MUZZLE_PICKER_IDENTIFIER,  
-                        this->weaponContainers[index]
+                        index //self weapon container
                     );
                 } 
             })
         );
 
+        halfSplitBase->addChildToLeftVertical(weaponContainers[index]);
 
 
-        halfSplitBase->addChildToLeftVertical(*weaponContainers[index]);
+
+        //DEPRECATED!
+        //LISTEN FOR INTERAL BUTTONS
+        //AddClickListenedItems(weaponContainers[index]->internalButtons());
     }
 }
 

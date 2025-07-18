@@ -6,6 +6,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/Border.h"
 #include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 
 #include "CanvasScreen.generated.h"
 
@@ -19,13 +20,31 @@ public:
 
     virtual void init(UPlayerUi &refin);
 
+    // --- CUSTOM DISPATCHER -> OVERRIDE ---
+    virtual bool dispatchClick() override;
     virtual void setVisible(bool visible) override;
+
+
     virtual UWidget *baseLayoutPointer() override;
     
     void setBackgroundColor(FLinearColor color);
     void setDefaultBackgroundColor();
 
+
+    
+    void AddClickListenedItem(UcustomUiComponentBase *ptr);
+    void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
+
+    /// @brief added child AUTOMATICALLY addet to click and visibilty DISPATCH!
+    /// @param item 
+    void AddChild(UcustomUiComponentBase *item);
+    /// @brief 
+    /// @param item 
+    /// @param offset 
+    void AddChild(UcustomUiComponentBase *item, FVector2D offset);
+
 protected:
+
     UCanvasPanel *baseCanvas = nullptr;
 
     void createBaseCanvas();
@@ -41,4 +60,6 @@ protected:
 
     void createBackgroundOverlay();
     void createColoredBackground();
+
+    TArray<UcustomUiComponentBase *> listenForclickItems;
 };

@@ -9,7 +9,7 @@
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/entityManager/referenceManager.h"
-#include "p2/ui/makeUWidgets/TextAndImage.h"
+#include "p2/ui/Widgets/TextBased/TextAndImage.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
 //instance maker with init call!
@@ -185,4 +185,32 @@ void UPlayerUi::closeLatestScreen(){
 
 void UPlayerUi::showPlayerCursor(bool show){
     referenceManager::showPlayerCursor(show);
+}
+
+
+
+
+
+
+
+/// ----- MANUAL CLICK DISPATCHER ------
+
+/// @brief manually registers clicks for UMG UI! Needed to be updated every frame!
+void UPlayerUi::updateClickDispatch(){
+
+    //click dispatch!
+    TSet<FKey> PressedButtons = FSlateApplication::Get().GetPressedMouseButtons();
+    if (PressedButtons.Contains(EKeys::LeftMouseButton)) {
+        // Linksklick ist aktuell gedrückt
+        RegisterCursorClick();
+        DebugHelper::showScreenMessage("SLATE CLICK REGISTERED", FColor::Red);
+        return;
+    }
+
+    //Hover dispatch
+}
+
+// new manual cursor dispatching clicks!
+void UPlayerUi::RegisterCursorClick(){
+    openedScreenStack.dispatchClick();
 }

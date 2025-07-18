@@ -25,9 +25,26 @@ void UWeaponContainer::init(int index, LoadoutHelper &parentLoadout){
 }
 
 
+// --- CUSTOM CLICK AND VISIBILTY ---
+void UWeaponContainer::setVisible(bool flag){
+    if(baseHorizontalBox){
+        return baseHorizontalBox->setVisible(flag);
+    }
+}
+
+bool UWeaponContainer::dispatchClick(){
+    if(baseHorizontalBox){
+        return baseHorizontalBox->dispatchClick();
+    }
+    return false;
+}
+
+
+/// @brief creates Base Hbox and adds children for listening to click dispatcher
 void UWeaponContainer::createLayout(){
-    baseHorizontalBox = NewObject<UHorizontalBox>(this);
-    if(baseHorizontalBox != nullptr){
+    baseHorizontalBox = NewObject<UHbox>(this);
+    if (baseHorizontalBox != nullptr){
+        baseHorizontalBox->init();
 
         weaponPreviewImageButton = NewObject<UImageOverlayedButton>(this);
         if(weaponPreviewImageButton){
@@ -36,7 +53,8 @@ void UWeaponContainer::createLayout(){
 
             //set on click later, weapon must know LoadoutScreen class to show weapon picker
 
-            addToHorizontalBox(weaponPreviewImageButton);
+            //addToHorizontalBox(weaponPreviewImageButton);
+            baseHorizontalBox->AddChild(weaponPreviewImageButton);
         }
 
         attachmentSightImageButton = NewObject<UImageOverlayedButton>(this);
@@ -46,7 +64,8 @@ void UWeaponContainer::createLayout(){
 
             //set on click later, weapon must know LoadoutScreen class to show attachment picker
 
-            addToHorizontalBox(attachmentSightImageButton);
+            //addToHorizontalBox(attachmentSightImageButton);
+            baseHorizontalBox->AddChild(attachmentSightImageButton);
         }
 
         attachmentMuzzleImageButton = NewObject<UImageOverlayedButton>(this);
@@ -55,16 +74,8 @@ void UWeaponContainer::createLayout(){
             attachmentMuzzleImageButton->setText("muzzle image");
 
             //set on click later, weapon must know LoadoutScreen class to show attachment picker
-            addToHorizontalBox(attachmentMuzzleImageButton);
-        }
-    }
-}
-
-void UWeaponContainer::addToHorizontalBox(UcustomUiComponentBase *any){
-    if(any != nullptr){
-        UWidget *base = any->baseLayoutPointer();
-        if(base != nullptr){
-            baseHorizontalBox->AddChildToHorizontalBox(base);
+            //addToHorizontalBox(attachmentMuzzleImageButton);
+            baseHorizontalBox->AddChild(attachmentMuzzleImageButton);
         }
     }
 }

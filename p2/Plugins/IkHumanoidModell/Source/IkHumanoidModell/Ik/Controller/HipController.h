@@ -23,7 +23,7 @@ private:
     float setupLegLength = 0.0f;
     float bodyMass = 30.0f; // 10 kg ?
 
-    float motionTime = 1.0f; // 0.7f;//0.2f;
+    float motionTime = 0.3f; // 0.7f;//0.2f;
 
     //actor velocity
     FVector velocity;

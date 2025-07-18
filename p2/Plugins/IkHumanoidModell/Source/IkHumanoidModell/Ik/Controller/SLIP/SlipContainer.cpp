@@ -20,7 +20,6 @@ SlipContainer &SlipContainer::operator=(SlipContainer &other){
         featherComplete = other.featherComplete; //ausrichtung scheint eine rolle zu spielen
         featherCurrent = other.featherCurrent;
 
-        federKonstanteD = other.federKonstanteD;
 
         Dcurrent = other.Dcurrent;
         timeForInterpolation = other.timeForInterpolation;
@@ -372,7 +371,6 @@ void SlipContainer::setupInterpolatedD(
     FVector &movedir, 
     float time, 
     float velocityDown,
-    float defaultBoneSize,
     float mass
 ){
     if(debugSkipToCloseframes(endA, endB)){
@@ -432,10 +430,8 @@ void SlipContainer::setupInterpolatedD(
 
 
     float minD = upperFrac / lowerFracIntegralZ;
+    validateD(minD); //validates if needed
     Dcurrent = minD;
-    
-
-    
 
     DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
     DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
@@ -551,3 +547,84 @@ void SlipContainer::showEstimationVersusRealVelocity(){
 }
 
 
+
+
+
+
+
+
+/// ---- Default D calculation for clamping ----
+
+
+/// @brief calculates a Default D value to prevent to high values of numerical or trajectory issues
+/// which are not as expected
+/// @param defaultBoneSize 
+/// @param mass 
+/// @param motionTime 
+void SlipContainer::initDefaultForParameterD(
+    float defaultBoneSize,
+    float mass,
+    float motionTime
+){
+    //dont setup twicce
+    if(bDLimitSetup){
+        return;
+    }
+
+    defaultBoneSize = std::abs(defaultBoneSize);
+    FVector trajectoryNone(0, 0, -1.0f * std::abs(defaultBoneSize));
+
+    MMatrix rotateFront;
+    MMatrix rotateBack;
+
+    rotateFront.pitchRadAdd(MMatrix::degToRadian(-45));
+    rotateBack.pitchRadAdd(MMatrix::degToRadian(45));
+
+    FVector moveDir(1, 0, 0);
+
+    FVector trajectoryFront = rotateFront * trajectoryNone;
+    FVector trajectoryLiftOff = rotateBack * trajectoryNone;
+    float velocityDown = motionTime * -981.0f;
+
+    //project to ground
+    trajectoryLiftOff.Z = -1.0f * defaultBoneSize; //abs -1
+
+    float DCurrentCopy = Dcurrent;
+
+    setupInterpolatedD(
+        trajectoryFront,   // start
+        trajectoryLiftOff, // lift off
+        moveDir,
+        motionTime,
+        velocityDown,
+        mass
+    );
+
+    //copy calculated D
+    DLimit = Dcurrent;
+    Dcurrent = DCurrentCopy; //reset
+
+    //mark setup flag
+    bDLimitSetup = true;
+
+
+    DebugHelper::logMessage("Slip preclamped front: ", trajectoryFront);
+    DebugHelper::logMessage("Slip preclamped end: ", trajectoryLiftOff);
+    DebugHelper::logMessage("Slip preclamped D: ", DLimit);
+    //Achtung: ist bei 12: offensichtlich falsch! 
+
+}
+
+/// @brief validate D if setup
+/// @param dIn 
+/// @return 
+void SlipContainer::validateD(float &dIn){
+    if(bDLimitSetup){
+        float allowedIncrease = 2.0f;
+        float limitLower = std::abs(DLimit) * -1.0f * allowedIncrease;
+        float limitHigher = std::abs(DLimit) * allowedIncrease;
+
+        dIn = std::max(dIn, limitLower);
+        dIn = std::min(dIn, limitHigher);
+    }
+}

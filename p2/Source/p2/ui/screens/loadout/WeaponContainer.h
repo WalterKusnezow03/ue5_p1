@@ -7,12 +7,19 @@
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/Widgets/buttons/ButtonBase.h"
+
+#include "p2/ui/Widgets/autoContainer/Hbox.h"
+
 #include "WeaponContainer.generated.h"
 
 class UPlayerUi;
 /**
  * container to hold spawn information and provide weapoSetup class by value (generation)
+ * 
+ * holds a UHbox internally: dispatches clicks and visibility automatically!
+ * - remember to track in canvasscreen!
  */
 UCLASS()
 class UWeaponContainer : public UcustomUiComponentBase{
@@ -25,8 +32,16 @@ public:
     void init(int index, LoadoutHelper &parentLoadout);
 
     virtual UWidget *baseLayoutPointer(){
-        return baseHorizontalBox;
+        if(baseHorizontalBox){
+            return baseHorizontalBox->baseLayoutPointer();
+        }
+        return nullptr;
+        // return baseHorizontalBox;
     }
+
+    // --- CUSTOM CLICK AND VISIBILTY override---
+    virtual void setVisible(bool flag) override;
+    virtual bool dispatchClick() override;
 
     //einfachere Api
     void setTextWeapon(FString s);
@@ -53,15 +68,17 @@ public:
     static FString toString(weaponEnum type);
     static FString toString(weaponAttachmentEnum type);
 
-private:
-    UHorizontalBox *baseHorizontalBox;
+    
 
-    UImageOverlayedButton *weaponPreviewImageButton;
-    UImageOverlayedButton *attachmentSightImageButton;
-    UImageOverlayedButton *attachmentMuzzleImageButton;
+private:
+    UHbox *baseHorizontalBox = nullptr;
+
+    UImageOverlayedButton *weaponPreviewImageButton = nullptr;
+    UImageOverlayedButton *attachmentSightImageButton = nullptr;
+    UImageOverlayedButton *attachmentMuzzleImageButton = nullptr;
 
     void createLayout();
-    void addToHorizontalBox(UcustomUiComponentBase *any);
+    
 
 
     //internal weapon setup object

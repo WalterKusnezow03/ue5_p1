@@ -3,7 +3,7 @@
 
 #include "p2/ui/_baseClass/customUiComponentBase.h"
 #include "Components/Button.h"
-#include "p2/ui/makeUWidgets/callback/callback.h"
+#include "p2/ui/Widgets/callback/callback.h"
 #include "Components/SizeBox.h"
 #include "Components/ScaleBox.h"
 #include "Components/Overlay.h"
@@ -44,8 +44,11 @@ public:
         FSimpleDelegate onUnHoveredDelegate
     );
 
+    //NEW
+    virtual bool dispatchClick() override;
+
 protected:
-    
+
     UButton *button = nullptr;
     UScaleBox *scalebox = nullptr; //inside button. Use to add your childs
 
@@ -58,4 +61,6 @@ protected:
     void createButton();
     void createPressedCallbackIfNeeded();
     void createHoveredAndUnHoveredCallbackIfNeeded();
+
+    void disableUMGClicks();
 };

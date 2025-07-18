@@ -3,11 +3,10 @@
 
 #include "p2/ui/screens/CanvasScreen.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
-#include "p2/ui/makeUWidgets/buttons/subtypes/TextButton.h"
+#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "WeaponContainer.h"
-#include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 
 #include "LoadoutScreen.generated.h"
@@ -39,14 +38,14 @@ private:
 
     //left side interaction
     void createLeftSideLoadoutMenuItems();
-    void openPickerCallBack(int index, UWeaponContainer *clickComingFrom);
+    void openPickerCallBack(int indexChooseType, int containerIndex);
 
     ///@brief saves all loadout data from the weaponContainers and their updates
     ///which push them to this container on their own because of owning a reference
     ///this object will later be used by the player to update its own inventory 
     LoadoutHelper loadoutinternal;
 
-    //left containers(4 in total)
+    //left containers(2 in total)
     std::vector<UWeaponContainer *> weaponContainers; //MUST NOT BE CHANGED AFTER INIT!
     UWeaponContainer *weaponContainer1;
     UWeaponContainer *weaponContainer2;
@@ -61,18 +60,16 @@ private:
     const int MUZZLE_PICKER_IDENTIFIER = 2;
 
     //PICKER BIND SECTION
-    void rebindAllPickers(UWeaponContainer *currentWeaponContainerFocussed);
+    void rebindAllPickers(int indexWeaponPickerFocussed);
 
-    //internal saving of the weapon pick layout
-    UVerticalBox *pickableWeaponsVertical;
+    //internal saving of the weapon pick buttons to update callbacks
     std::vector<UWeaponPickButton *> pickableWeaponsButtonVector;
 
-    //internal saving of the sight pick layout
-    UVerticalBox *pickableSightsVertical;
+    //internal saving of the sight pick buttons to update callbacks
     std::vector<UAttachmentPickButton *> pickableSightsButtonVector;
     
 
-    UVerticalBox *pickableMuzzlesVertical;
+    //internal saving of the attachment pick buttons to update callbacks
     std::vector<UAttachmentPickButton *> pickableMuzzlesButtonVector;
 
     
