@@ -6,12 +6,10 @@
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
-#include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/screens/PlayerHud.h"
-#include "p2/entityManager/referenceManager.h"
-#include "p2/ui/Widgets/TextBased/TextAndImage.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
+#include "p2/entityManager/referenceManager.h"
 
 //instance maker with init call!
 UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){

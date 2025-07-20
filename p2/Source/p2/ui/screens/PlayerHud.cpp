@@ -3,7 +3,6 @@
 #include "customUiPlugin/ui/PlayerUiBase.h"
 #include "Components/CanvasPanel.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
-#include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
 
 #include "GameCore/DebugHelper.h"

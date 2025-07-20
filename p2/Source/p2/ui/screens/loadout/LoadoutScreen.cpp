@@ -12,7 +12,6 @@
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
-#include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "GameCore/DebugHelper.h"
 
 #include "LoadoutScreen.h"

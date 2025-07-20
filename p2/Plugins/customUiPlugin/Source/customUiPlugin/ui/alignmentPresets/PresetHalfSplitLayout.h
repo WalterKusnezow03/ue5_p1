@@ -26,7 +26,7 @@
  */
 
 UCLASS()
-class P2_API UPresetHalfSplitLayout : public UcustomUiComponentBase{
+class CUSTOMUIPLUGIN_API UPresetHalfSplitLayout : public UcustomUiComponentBase{
     GENERATED_BODY()
 
 public:

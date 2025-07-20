@@ -9,7 +9,7 @@
  */
 
 UCLASS()
-class P2_API UPresetCornersLayout : public UcustomUiComponentBase{
+class CUSTOMUIPLUGIN_API UPresetCornersLayout : public UcustomUiComponentBase{
 
     GENERATED_BODY()
 

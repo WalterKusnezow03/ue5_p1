@@ -3993,6 +3993,17 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/PlayerUiBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/ScreenStack/ScreenOpenStack.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PlayerUiBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetCornersLayout.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetCornersLayout.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Vbox.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetCornersLayout.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetHalfSplitLayout.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetHalfSplitLayout.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  Runtime/UMG/Public/Components/Spacer.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Spacer.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetHalfSplitLayout.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextAndImageBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/TextBased/TextAndImageBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextAndImageBase.generated.h \
@@ -4004,18 +4015,20 @@
   Runtime/Engine/Classes/GameFramework/Actor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Vbox.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public/customUiPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetCornersLayout.cpp \
+  Runtime/UMG/Public/Components/CanvasPanelSlot.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/CanvasPanelSlot.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetHalfSplitLayout.cpp \
+  Runtime/UMG/Public/Components/VerticalBoxSlot.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/VerticalBoxSlot.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/PlayerUiBase.cpp \
   Runtime/UMG/Public/Blueprint/WidgetTree.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetTree.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/screens/CanvasScreen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/colors/UiColors.h \
-  Runtime/UMG/Public/Components/CanvasPanelSlot.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/CanvasPanelSlot.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/ScreenStack/ScreenOpenStack.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/TickUpdate/UiActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/AutoBoxBase.cpp \
@@ -4029,7 +4042,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/OverlayBased/ImageOverlayedBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetManager.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/entityEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/materialEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h \
@@ -5277,8 +5289,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/NamedSlot.generated.h \
   Runtime/UMG/Public/Components/HorizontalBoxSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/HorizontalBoxSlot.generated.h \
-  Runtime/UMG/Public/Components/VerticalBoxSlot.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/VerticalBoxSlot.generated.h \
   Runtime/UMG/Public/Components/WrapBoxSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WrapBoxSlot.generated.h \
   Runtime/UMG/Public/Components/WrapBox.h \
@@ -5330,8 +5340,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ScaleBoxSlot.generated.h \
   Runtime/UMG/Public/Components/ExpandableArea.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ExpandableArea.generated.h \
-  Runtime/UMG/Public/Components/Spacer.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Spacer.generated.h \
   Runtime/UMG/Public/Components/MenuAnchor.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/MenuAnchor.generated.h \
   Runtime/UMG/Public/Components/ScrollBar.h \
