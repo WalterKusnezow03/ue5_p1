@@ -1,19 +1,18 @@
 #pragma once
 
 
-#include "p2/ui/_baseClass/customUiComponentBase.h"
-#include "Components/HorizontalBox.h"
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+
 #include <map>
 #include "Components/Spacer.h"
-#include "Components/VerticalBox.h"
 
 
-#include "p2/ui/Widgets/autoContainer/Hbox.h"
-#include "p2/ui/Widgets/autoContainer/Vbox.h"
+
+#include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 
 #include "PresetHalfSplitLayout.generated.h"
 
-class UPlayerUi;
 
 /**
  * screen for the player to choose weapons and attachments for example, layout A and B side to side

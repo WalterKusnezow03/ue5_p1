@@ -1,20 +1,16 @@
 
 #include "p2/ui/PlayerUi.h"
+#include "customUiPlugin/ui/PlayerUiBase.h"
 #include "Components/CanvasPanel.h"
-#include "CanvasScreen.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
-#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/ui/_baseClass/customUiComponentBase.h"
-#include <functional>
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "PauseScreen.h"
 
 
 
-void UPauseScreen::init(UPlayerUi &playerUiParentref){
+void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
     Super::init(playerUiParentref);
 
     //createBackgroundBlur();
@@ -57,7 +53,7 @@ void UPauseScreen::createExitButton(){
 
             //set callback here
             exitButton->SetCallBack(
-                FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openGameScreen)
+                FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUiBase::openGameScreen)
             );
 
             menu->AddChild(exitButton); //automatically listened in click dispatcher because menu is listed
@@ -76,9 +72,15 @@ void UPauseScreen::createLoadoutScreenButton(){
             loadoutScreenButton->setText("Loadout"); //exit
 
             //set callback here
-            loadoutScreenButton->SetCallBack(
-                FSimpleDelegate::CreateUObject(playerUiParent, &UPlayerUi::openLoadoutScreen)
-            );
+            //cast to sub ui class because of function
+            UPlayerUi *casted = Cast<UPlayerUi>(playerUiParent);
+            if(casted){
+                loadoutScreenButton->SetCallBack(
+                    FSimpleDelegate::CreateUObject(casted, &UPlayerUi::openLoadoutScreen)
+                );
+            }
+
+            
 
             menu->AddChild(loadoutScreenButton); //automatically listened in click dispatcher because menu is listed
         }

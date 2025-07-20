@@ -2,13 +2,15 @@
 
 #pragma once
 
+#include "customUiPlugin/ui/PlayerUiBase.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/screens/PauseScreen.h"
 #include "p2/ui/screens/enum/EScreenEnum.h"
-#include "p2/ui/ScreenStack/ScreenOpenStack.h"
+#include "customUiPlugin/ui/ScreenStack/ScreenOpenStack.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
 #include "PlayerUi.generated.h"
@@ -52,25 +54,25 @@
  */
 
 UCLASS()
-class P2_API UPlayerUi : public UUserWidget
+class P2_API UPlayerUi : public UPlayerUiBase
 {
 	GENERATED_BODY()
 
 public:
 	static UPlayerUi *createNewInstance(UWorld *world);
-	virtual void init();
-
-	
-	void openPauseScreen();
+	virtual void init(UWorld *world) override;
 
 	UFUNCTION()
-	void openGameScreen();
+	void openPauseScreen();
+
+	/// @brief important to override!
+	virtual void openGameScreen() override;
 
 	UFUNCTION()
 	void openLoadoutScreen();
 
-	UFUNCTION()
-	void closeLatestScreen();
+	//UFUNCTION()
+	//void closeLatestScreen();
 
 	void updateAmmunitionText(int number);
 	void updateAmmunitionText(FString message);
@@ -78,26 +80,14 @@ public:
 	void updateMissionText(FString messgae);
 	void updateMissionTextTimed(FString message);
 
-	UCanvasPanel *canvasPanelPointer();
-
-	void addToCanvas(UWidget *any);
-
-
-	void RegisterCursorClick();
-	void updateClickDispatch();
 
 protected:
 
-	bool isInited = false;
-	UCanvasPanel *baseCanvas = nullptr;
-	
-
-	void findBaseCanvasFromBluePrint();
 	void createBasePlayerHud();
 	void createPauseScreen();
 	void createLoadoutScreen();
 
-	void showPlayerCursor(bool show);
+	virtual void showPlayerCursor(bool show) override;
 
 	//screens
 	bool pauseMenuOpened = false;
@@ -105,7 +95,4 @@ protected:
 	UPauseScreen *pauseScreen;
 	ULoadoutScreen *loadoutScreen;
 
-	//todo: aktives element speichern, und alle pointer in einem vektor
-
-	ScreenOpenStack openedScreenStack;
 };

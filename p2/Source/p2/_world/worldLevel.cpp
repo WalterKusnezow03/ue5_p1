@@ -18,7 +18,7 @@
 #include "GameCore/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
-#include "p2/ui/_baseClass/customUiComponentTickHandler.h"
+
 #include "p2/entityManager/referenceManager.h"
 #include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
@@ -266,7 +266,7 @@ void worldLevel::Tick(float DeltaTime){
 
 
     //tick player ui timer based actions
-    customUiComponentTickHandler::Tick(DeltaTime);
+    //customUiComponentTickHandler::Tick(DeltaTime); //TICKED BY AACTOR NOW
 }
 
 UWorld *worldLevel::GetWorld(){

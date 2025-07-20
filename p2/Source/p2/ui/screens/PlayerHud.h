@@ -5,19 +5,19 @@
 #include "p2/ui/alignmentPresets/PresetCornersLayout.h"
 #include "p2/ui/Widgets/TextBased/TextAndImage.h"
 #include "p2/ui/Widgets/OverlayBased/ImageOverlayed.h"
-#include "CanvasScreen.h"
-#include "p2/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/ui/screens/CanvasScreen.h"
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 
 #include "PlayerHud.generated.h"
 
-class UPlayerUi;
+class UPlayerUiBase;
 
 UCLASS()
 class P2_API UPlayerHud : public UCanvasScreen {
     GENERATED_BODY()
 public:
     
-    virtual void init(UPlayerUi &refin) override;
+    virtual void init(UPlayerUiBase &refin) override;
 
     void updateAmmunitionText(int number);
     void updateAmmunitionText(FString message);

@@ -12,9 +12,23 @@
 #include "p2/ui/Widgets/TextBased/TextAndImage.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
+
 //instance maker with init call!
 UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
     if(world != nullptr){
+        
+        UClass *blueprint = UPlayerUi::StaticClass();
+        if(blueprint != nullptr){
+
+            UPlayerUi* newUiInstance = CreateWidget<UPlayerUi>(world, blueprint);
+            if (newUiInstance != nullptr)
+            {
+                newUiInstance->init(world);
+                return newUiInstance;
+            }
+        }
+        
+        /*
         assetManager *pointer = assetManager::instance();
         if(pointer != nullptr){
             UClass *blueprint = pointer->uiBp();
@@ -28,54 +42,30 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
                     return newUiInstance;
                 }
             }
-        }
+        }*/
     }
     return nullptr;
 }
 
 
-///@brief do not delete, only for ui components!
-UCanvasPanel *UPlayerUi::canvasPanelPointer(){
-    return baseCanvas;
-}
 
 //constructor like
-void UPlayerUi::init(){
+void UPlayerUi::init(UWorld *world){
     if(isInited){
         return;
     }
     isInited = true;
 
-
     //the root widget must be a canvas panel in bp!
-    findBaseCanvasFromBluePrint();
+    Super::init(world);
 
     createBasePlayerHud();
     createPauseScreen();
     createLoadoutScreen();
 }
 
-void UPlayerUi::findBaseCanvasFromBluePrint(){
-    UWidget* RootWidget = GetRootWidget();
-    if (RootWidget)
-    {
-        UCanvasPanel* CanvasPanel = Cast<UCanvasPanel>(RootWidget);
-        if (CanvasPanel)
-        {
-            baseCanvas = CanvasPanel;
-        }
-    }
-}
 
 
-/// ----- add to own ------
-
-///@brief will add any widget to the base canvas, if not nullptr!
-void UPlayerUi::addToCanvas(UWidget *any){
-    if(any != nullptr && baseCanvas != nullptr){
-        baseCanvas->AddChild(any);
-    }
-}
 
 
 ///@brief creates the player hud
@@ -175,13 +165,7 @@ void UPlayerUi::openLoadoutScreen(){
     openedScreenStack.open(loadoutScreen);
 }
 
-void UPlayerUi::closeLatestScreen(){
-    DebugHelper::logMessage("debugClose screen");
-    openedScreenStack.closeBack();
-    if(openedScreenStack.isEmpty()){
-        openGameScreen();
-    }
-}
+
 
 void UPlayerUi::showPlayerCursor(bool show){
     referenceManager::showPlayerCursor(show);
@@ -192,25 +176,3 @@ void UPlayerUi::showPlayerCursor(bool show){
 
 
 
-
-/// ----- MANUAL CLICK DISPATCHER ------
-
-/// @brief manually registers clicks for UMG UI! Needed to be updated every frame!
-void UPlayerUi::updateClickDispatch(){
-
-    //click dispatch!
-    TSet<FKey> PressedButtons = FSlateApplication::Get().GetPressedMouseButtons();
-    if (PressedButtons.Contains(EKeys::LeftMouseButton)) {
-        // Linksklick ist aktuell gedrückt
-        RegisterCursorClick();
-        DebugHelper::showScreenMessage("SLATE CLICK REGISTERED", FColor::Red);
-        return;
-    }
-
-    //Hover dispatch
-}
-
-// new manual cursor dispatching clicks!
-void UPlayerUi::RegisterCursorClick(){
-    openedScreenStack.dispatchClick();
-}

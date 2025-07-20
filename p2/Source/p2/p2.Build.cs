@@ -21,7 +21,8 @@ public class p2 : ModuleRules
 			"PathFinder",
 			"Humanoid",
 			"AssetPlugin",
-			"IkHumanoidModell"
+			"IkHumanoidModell",
+			"customUiPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

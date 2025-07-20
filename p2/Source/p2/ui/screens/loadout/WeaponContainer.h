@@ -1,20 +1,20 @@
 
 #pragma once
 
-#include "p2/ui/_baseClass/customUiComponentBase.h"
-#include "Components/HorizontalBox.h"
+#include "customUiPLugin/ui/_baseClass/customUiComponentBase.h"
+
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
-#include "p2/ui/Widgets/buttons/ButtonBase.h"
+#include "customUiPlugin/ui/Widgets/buttons/ButtonBase.h"
 
-#include "p2/ui/Widgets/autoContainer/Hbox.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
 
 #include "WeaponContainer.generated.h"
 
-class UPlayerUi;
+class UPlayerUiBase;
 /**
  * container to hold spawn information and provide weapoSetup class by value (generation)
  * 
@@ -28,7 +28,7 @@ class UWeaponContainer : public UcustomUiComponentBase{
 public:
 
     virtual void init() override;
-    void init(UPlayerUi &refin) override;
+    void init(UPlayerUiBase &refin) override;
     void init(int index, LoadoutHelper &parentLoadout);
 
     virtual UWidget *baseLayoutPointer(){

@@ -1,54 +1,33 @@
 
 #include "ImageOverlayedButton.h"
-#include "p2/ui/Widgets/OverlayBased/ImageOverlayed.h"
-#include "Components/Button.h"
 
 
+//IMPORTANT OVERRIDE
 
-void UImageOverlayedButton::init(){
-    if(WAS_INIT_FLAG){
-        return;
-    }
-    Super::init();
-    createImageOverlayedBackground();
-
-}
-
+/// @brief creates a DERIVED CLASS instead of default image overlayed base! support ETextureLoading
 void UImageOverlayedButton::createImageOverlayedBackground(){
-    background = NewObject<UImageOverlayed>(this);
-    background->init();
-    if (button)
-    {
-        UWidget *base = background->baseLayoutPointer();
-        if(base != nullptr){
-            //button->AddChild(base); //old
-            scalebox->AddChild(base); //add to scalebox instead
-        }
-
-        makeTransparent(); //super
+    if(!background){
+        background = NewObject<UImageOverlayed>(this);
+        background->init();
     }
 }
 
 
 
-
-
-//public api wrappers
-
-void UImageOverlayedButton::setText(FString textIn){
-    if(background)
-        background->setText(textIn);
-}
 
 void UImageOverlayedButton::setImage(textureEnum type){
-    if(background)
-        background->setImage(type);
+    setImage(type, FVector2D(0.5f, 0.5f));
 }
 
 ///@brief sets an icon for the image
 ///@param type - enum type of texture 
 ///@param scale value each component between 0.0 and 1.0 
 void UImageOverlayedButton::setImage(textureEnum type, FVector2D scale){
-    if(background)
-        background->setImage(type, scale);
+    if(background){
+        assetManager *pointer = assetManager::instance();
+        if(pointer != nullptr){
+            UTexture2D *loadedTexture = pointer->findTexture(type);
+            Super::setImage(loadedTexture, scale); //Super::
+        }
+    }
 }

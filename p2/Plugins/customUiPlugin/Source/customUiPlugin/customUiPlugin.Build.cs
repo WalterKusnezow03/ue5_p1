@@ -26,6 +26,9 @@ public class customUiPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
+				"GameCore",
+				"UMG", //widgets
+				"InputCore" //mouse listen
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -1,9 +1,11 @@
 
 #pragma once
 
-#include "p2/ui/screens/CanvasScreen.h"
+
+#include "customUiPlugin/ui/screens/CanvasScreen.h"
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
+
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
-#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
 #include "WeaponContainer.h"
@@ -11,7 +13,7 @@
 
 #include "LoadoutScreen.generated.h"
 
-class UPlayerUi;
+class UPlayerUiBase;
 /**
  * loadout screen for the player to choose weapons and attachments
  * 
@@ -22,7 +24,7 @@ class P2_API ULoadoutScreen : public UCanvasScreen{
 
 public:
     
-    virtual void init(UPlayerUi &ref);
+    virtual void init(UPlayerUiBase &ref);
 
     void reloadPlayerLoadoutOnUiLeaveIfNeeded();
 

@@ -161,7 +161,6 @@ private:
 
 
 	//UI
-	void registerMousClickInUI();
 	UPlayerUi *uiInstance = nullptr;
 	void createUserInterface();
 	void openPauseMenu();

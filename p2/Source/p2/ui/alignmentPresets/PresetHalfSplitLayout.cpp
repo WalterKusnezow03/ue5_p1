@@ -4,9 +4,8 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/Spacer.h"
-#include "p2/ui/PlayerUi.h"
 #include "GameCore/DebugHelper.h"
-#include "p2/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 #include <map>
 
 #include "PresetHalfSplitLayout.h"

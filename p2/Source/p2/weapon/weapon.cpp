@@ -631,12 +631,66 @@ void Aweapon::findAttachmentChildActors(){
 }
 
 
+
+
+/// ---- ATTACHMENT SECTION -----
+
+/// @brief spawns all available attachments and disables the not picked ones
+void Aweapon::spawnAllAvailableAttachments(){
+
+	loadAndSaveAttachment(weaponAttachmentEnum::reddot);
+	loadAndSaveAttachment(weaponAttachmentEnum::iron_sight);
+
+	loadAndSaveAttachment(weaponAttachmentEnum::grip_vertical);
+	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_flashSurpressor);
+	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_SoundSurpressor);
+}
+
+/// @brief loads an attachment by type, spawns it and attaches it to the 
+/// proper skelletal part as attachment
+/// @param EattachmentType attachment to spawn
+void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
+
+	assetManager *assetManagerInstance = assetManager::instance();
+	EntityManager *entityManager = worldLevel::entityManager();
+	if (assetManagerInstance != nullptr && entityManager != nullptr)
+	{
+		weaponEnum ownType = readType();
+
+		//spawn uclass
+		UClass *foundAttachment = assetManagerInstance->findBp(ownType, EattachmentType);
+		if(foundAttachment != nullptr){
+			FVector location;
+			AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
+			if(actor != nullptr){
+				
+				attachNewItem(actor, EattachmentType);
+				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
+				}
+				if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+					muzzleMap[EattachmentType] = actor;
+				}
+				if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+					gripMap[EattachmentType] = actor;
+				}
+				
+			}
+		}
+	}
+}
+
+
+
+
+/// @brief shows all selected attachments and hides the other ones
 void Aweapon::showAllPickedAttachments(){
 	applySight(pickedSight);
 	applyMuzzle(pickedMuzzle);
 	applyGrip(pickedGrip);
 }
 
+/// @brief hides all attached actors because visibility setting is not propagated!
 void Aweapon::hideAllAttachments(){
 	hideAllAttachments(sightMap);
 	hideAllAttachments(gripMap);
@@ -718,52 +772,77 @@ void Aweapon::hideAllAttachments(std::map<weaponAttachmentEnum, AActor*> &map){
 
 
 
+// ---- attach to actor sockets start ----
 
+///@brief will attach new item IF the gehauseSkelleton pointer exists!
+void Aweapon::attachNewItem(AActor* actor){
+	if(actor == nullptr){
+		return;
+	}
+	if(!actorAlreadyAttached(actor)){
+		
+		attachedActors.push_back(actor);
 
-/**
- * spawning all attachments
- */
-//new create sights all on start
-void Aweapon::spawnAllAvailableAttachments(){
+		AActorUtil::enableColliderOnActor(*actor, false);
 
-	loadAndSaveAttachment(weaponAttachmentEnum::reddot);
-	loadAndSaveAttachment(weaponAttachmentEnum::iron_sight);
-
-	loadAndSaveAttachment(weaponAttachmentEnum::grip_vertical);
-	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_flashSurpressor);
-	loadAndSaveAttachment(weaponAttachmentEnum::muzzle_SoundSurpressor);
-}
-
-void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
-
-	assetManager *manager = assetManager::instance();
-	EntityManager *entityManager = worldLevel::entityManager();
-	if (manager != nullptr && entityManager != nullptr)
-	{
-		weaponEnum ownType = readType();
-
-		//spawn uclass
-		UClass *foundAttachment = manager->findBp(ownType, EattachmentType);
-		if(foundAttachment != nullptr){
-			FVector location;
-			AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);
-			if(actor != nullptr){
-				
-				attachNewItem(actor, EattachmentType);
-				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
-					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
-				}
-				if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
-					muzzleMap[EattachmentType] = actor;
-				}
-				if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
-					gripMap[EattachmentType] = actor;
-				}
-				
-			}
+		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
+		if (gehauseSkeletonPointer)
+		{
+			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
+			actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
 		}
 	}
 }
+
+
+
+
+///@brief will attach new item IF the skelleton pointer responsible for the attachment type exists!
+void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
+	if(actor == nullptr){
+		return;
+	}
+	if(!actorAlreadyAttached(actor)){
+		attachedActors.push_back(actor);
+
+		AActorUtil::enableColliderOnActor(*actor, false);
+
+		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
+		USkeletalMeshComponent *ptr = attachmentSkeletalComponentBy(type);
+		if(ptr){
+			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
+			actor->AttachToComponent(ptr, AttachRules);
+		}
+		
+	}
+}
+
+///@brief returns the skeletal mesh component pointer for an given attachment 
+USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
+	weaponAttachmentEnum EattachmentType
+){
+	if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+		return gehauseSkeletonPointer;
+	}
+	if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+		return muzzleAttachmentSkelletonPointer;
+	}
+	if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+		return gripAttachmentSkelletonPointer;
+	}
+	return gehauseSkeletonPointer;
+}
+
+bool Aweapon::actorAlreadyAttached(AActor *actor){
+	for (int i = 0; i < attachedActors.size(); i++){
+		if(actor == attachedActors[i]){
+			return true;
+		}
+	}
+	return false;
+}
+
+// ---- attach to actor sockets end ----
 
 
 
@@ -969,85 +1048,6 @@ int Aweapon::damageForAmmunitionType(){
 	return 10;
 }
 
-
-
-
-
-
-/**
- * 
- * 
- * --- new attachment section ---
- * 
- */
-
-///@brief will attach new item IF the gehauseSkelleton pointer exists!
-void Aweapon::attachNewItem(AActor* actor){
-	if(actor == nullptr){
-		return;
-	}
-	if(!actorAlreadyAttached(actor)){
-		
-		attachedActors.push_back(actor);
-
-		AActorUtil::enableColliderOnActor(*actor, false);
-
-		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
-		if (gehauseSkeletonPointer)
-		{
-			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
-			actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
-		}
-	}
-}
-
-
-
-
-///@brief will attach new item IF the skelleton pointer responsible for the attachment type exists!
-void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
-	if(actor == nullptr){
-		return;
-	}
-	if(!actorAlreadyAttached(actor)){
-		attachedActors.push_back(actor);
-
-		AActorUtil::enableColliderOnActor(*actor, false);
-
-		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
-		USkeletalMeshComponent *ptr = attachmentSkeletalComponentBy(type);
-		if(ptr){
-			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
-			actor->AttachToComponent(ptr, AttachRules);
-		}
-		
-	}
-}
-
-///@brief returns the skeletal mesh component pointer for an given attachment 
-USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
-	weaponAttachmentEnum EattachmentType
-){
-	if(weaponSetupHelper::isASightAttachment(EattachmentType)){
-		return gehauseSkeletonPointer;
-	}
-	if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
-		return muzzleAttachmentSkelletonPointer;
-	}
-	if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
-		return gripAttachmentSkelletonPointer;
-	}
-	return gehauseSkeletonPointer;
-}
-
-bool Aweapon::actorAlreadyAttached(AActor *actor){
-	for (int i = 0; i < attachedActors.size(); i++){
-		if(actor == attachedActors[i]){
-			return true;
-		}
-	}
-	return false;
-}
 
 
 

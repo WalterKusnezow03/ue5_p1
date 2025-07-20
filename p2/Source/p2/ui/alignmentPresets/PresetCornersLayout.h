@@ -1,12 +1,8 @@
 #pragma once
 
-#include "p2/ui/_baseClass/customUiComponentBase.h"
-#include "Components/VerticalBox.h"
-
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 #include "PresetCornersLayout.generated.h"
-
-
-class UPlayerUi;
 
 /**
  * preset corners layout with vertical boxes
@@ -27,16 +23,32 @@ public:
     void addChildToBottomRight(UWidget *any);
     void addChildToTopCenter(UWidget *any);
 
+    void addChildToTopLeft(UcustomUiComponentBase *any);
+    void addChildToTopRight(UcustomUiComponentBase *any);
+    void addChildToBottomLeft(UcustomUiComponentBase *any);
+    void addChildToBottomRight(UcustomUiComponentBase *any);
+    void addChildToTopCenter(UcustomUiComponentBase *any);
+
+    //custom click dispatch and visibility
+    virtual bool dispatchClick() override;
+    virtual void setVisible(bool visible) override;
+
 private:
     void createSubLayouts();
-    void addChildTo(UVerticalBox *box, UWidget *any);
 
-    UVerticalBox *topLeft = nullptr;
-    UVerticalBox *topRight = nullptr;
-    UVerticalBox *bottomLeft = nullptr;
-    UVerticalBox *bottomRight = nullptr;
+    void addChildTo(UVbox *box, UWidget *any);
+    void addChildTo(UVbox *box, UcustomUiComponentBase *any);
+
+    UVbox *topLeft = nullptr;
+    UVbox *topRight = nullptr;
+    UVbox *bottomLeft = nullptr;
+    UVbox *bottomRight = nullptr;
     
-    UVerticalBox *topCenter = nullptr;
+    UVbox *topCenter = nullptr;
 
     UCanvasPanel *parentPanel = nullptr;
+
+    void addToParentPanelAndInit(UcustomUiComponentBase *item, FVector2D anchor, FVector2D alignment);
+
+    TArray<UcustomUiComponentBase *> elements;
 };

@@ -22,61 +22,120 @@ void UPresetCornersLayout::createSubLayouts(){
 
             //create all sublayouts at corners
 
-            topLeft = NewObject<UVerticalBox>(this);
-            UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topLeft));
-            if (CanvasSlot){
-                CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f));  // oben links
-                CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f)); // An die Ecke ausrichten
-                CanvasSlot->SetAutoSize(true); // Automatische Größe anpassen
-            }
+            topLeft = NewObject<UVbox>(this);
+            addToParentPanelAndInit(topLeft, FVector2D(0.0f, 0.0f), FVector2D(0.0f, 0.0f));
 
+            topRight = NewObject<UVbox>(this);
+            addToParentPanelAndInit(topRight, FVector2D(1.0f, 0.0f), FVector2D(1.0f, 0.0f));
 
-            topRight = NewObject<UVerticalBox>(this);
-            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topRight));
-            if (CanvasSlot){
-                CanvasSlot->SetAnchors(FAnchors(1.0f, 0.0f));  // oben rechts
-                CanvasSlot->SetAlignment(FVector2D(1.0f, 0.0f)); // An die Ecke ausrichten
-                CanvasSlot->SetAutoSize(true); // Automatische Größe anpassen
-            }
+            bottomRight = NewObject<UVbox>(this);
+            addToParentPanelAndInit(bottomRight, FVector2D(1.0f, 1.0f), FVector2D(1.0f, 1.0f));
 
-            bottomRight = NewObject<UVerticalBox>(this);
-            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(bottomRight));
-            if (CanvasSlot){
-                CanvasSlot->SetAnchors(FAnchors(1.0f, 1.0f));  // unten rechts
-                CanvasSlot->SetAlignment(FVector2D(1.0f, 1.0f)); // An die uEcke ausrichten
-                CanvasSlot->SetAutoSize(true); // Automatische Größe anpassen
-            }
+            bottomLeft = NewObject<UVbox>(this);
+            addToParentPanelAndInit(bottomLeft, FVector2D(0.0f, 1.0f), FVector2D(0.0f, 1.0f));
 
-            bottomLeft = NewObject<UVerticalBox>(this);
-            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(bottomLeft));
-            if (CanvasSlot){
-                CanvasSlot->SetAnchors(FAnchors(0.0f, 1.0f));  // unten rechts
-                CanvasSlot->SetAlignment(FVector2D(0.0f, 1.0f)); // An die uEcke ausrichten
-                CanvasSlot->SetAutoSize(true); // Automatische Größe anpassen
-            }
+            topCenter = NewObject<UVbox>(this);
+            addToParentPanelAndInit(topCenter, FVector2D(0.5f, 0.0f), FVector2D(0.5f, 0.0f));
 
-            topCenter = NewObject<UVerticalBox>(this);
-            CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(topCenter));
+            elements.Add(topLeft);
+            elements.Add(topRight);
+            elements.Add(bottomRight);
+            elements.Add(bottomLeft);
+            elements.Add(topCenter);
+        }
+    }
+}
+
+/// @brief adds a item to the parent panel and inits the component!
+/// @param item 
+/// @param anchor 
+/// @param alignment 
+void UPresetCornersLayout::addToParentPanelAndInit(
+    UcustomUiComponentBase *item, 
+    FVector2D anchor, 
+    FVector2D alignment
+){
+    if(item){
+        item->init();
+        UWidget *basePointer = item->baseLayoutPointer();
+        if(basePointer){
+            UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(parentPanel->AddChild(basePointer));
             if(CanvasSlot != nullptr){
-                CanvasSlot->SetAnchors(FAnchors(0.5f, 0.0f));  //mitte(?)
-                CanvasSlot->SetAlignment(FVector2D(0.5f, 0.0f)); //content center aligned (?)
+                CanvasSlot->SetAnchors(FAnchors(anchor.X, anchor.Y));  //anchror from 2d(0,1) range
+                CanvasSlot->SetAlignment(alignment); //content alignment from 2d(0,1) range
                 CanvasSlot->SetAutoSize(true);
             }
         }
-        
+    }
+}
+
+
+//click dispatch
+bool UPresetCornersLayout::dispatchClick(){
+    bool found = false;
+    for (int i = 0; i < elements.Num(); i++){
+        UcustomUiComponentBase *current = elements[i];
+        if(current){
+            if(current->dispatchClick()){
+                found = true;
+            }
+        }
+    }
+    return found;
+}
+
+/// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
+/// invisible too!
+/// @param visible 
+void UPresetCornersLayout::setVisible(bool visible) {
+    Super::setVisible(visible);
+
+    for (int i = 0; i < elements.Num(); i++){
+        UcustomUiComponentBase *current = elements[i];
+        if(current){
+            current->setVisible(visible);
+        }
+    }
+}
+
+///@brief will try to add a child to any vertical box, if both not nullptr
+void UPresetCornersLayout::addChildTo(UVbox *box, UWidget *any){
+    if(any != nullptr && box != nullptr){
+        box->AddChild(any);
     }
 }
 
 
 ///@brief will try to add a child to any vertical box, if both not nullptr
-void UPresetCornersLayout::addChildTo(UVerticalBox *box, UWidget *any){
+void UPresetCornersLayout::addChildTo(UVbox *box, UcustomUiComponentBase *any){
     if(any != nullptr && box != nullptr){
-        box->AddChildToVerticalBox(any);
+        box->AddChild(any);
     }
 }
 
-
+//public api add child WITH Click and visibilty listening
 //public api adding childs
+void UPresetCornersLayout::addChildToTopLeft(UcustomUiComponentBase *any){
+    addChildTo(topLeft, any);
+}
+void UPresetCornersLayout::addChildToTopRight(UcustomUiComponentBase *any){
+    addChildTo(topRight, any);
+}
+void UPresetCornersLayout::addChildToBottomLeft(UcustomUiComponentBase *any){
+    addChildTo(bottomLeft, any);
+}
+void UPresetCornersLayout::addChildToBottomRight(UcustomUiComponentBase *any){
+    addChildTo(bottomRight, any);
+}
+
+void UPresetCornersLayout::addChildToTopCenter(UcustomUiComponentBase *any){
+    addChildTo(topCenter, any);
+}
+
+
+
+
+//public api adding childs UWIDGET - no click listen and visiblity listen
 void UPresetCornersLayout::addChildToTopLeft(UWidget *any){
     addChildTo(topLeft, any);
 }
@@ -89,7 +148,6 @@ void UPresetCornersLayout::addChildToBottomLeft(UWidget *any){
 void UPresetCornersLayout::addChildToBottomRight(UWidget *any){
     addChildTo(bottomRight, any);
 }
-
 
 void UPresetCornersLayout::addChildToTopCenter(UWidget *any){
     addChildTo(topCenter, any);

@@ -500,7 +500,6 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    registerMousClickInUI();
     if (isPaused)
     {
         //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange)        
@@ -524,15 +523,6 @@ void AplayerScript::shoot(){
 }
 
 
-/// @brief manually registering mouse clicks because buttons are bad in unreal umg
-void AplayerScript::registerMousClickInUI(){
-    if(isPaused){
-        //New Internal click registering!
-        if(uiInstance){
-            uiInstance->updateClickDispatch();
-        }
-    }
-}
 
 
 

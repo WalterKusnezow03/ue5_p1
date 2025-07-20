@@ -4,7 +4,7 @@
 
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/WeaponContainer.h"
-#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 
 #include "AttachmentPickButton.generated.h"
 

@@ -3,11 +3,11 @@
 #include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "p2/ui/PlayerUi.h"
+#include "customUiPlugin/ui/PlayerUiBase.h"
 #include "CoreMinimal.h"
 #include "WeaponContainer.h"
 
-void UWeaponContainer::init(UPlayerUi &ref){
+void UWeaponContainer::init(UPlayerUiBase &ref){
     //ref is not needed
     init();
 }

@@ -1,7 +1,7 @@
 
 
-#include "p2/ui/screens/CanvasScreen.h"
-#include "p2/ui/PlayerUi.h"
+#include "customUiPlugin/ui/screens/CanvasScreen.h"
+#include "customUiPlugin/ui/PlayerUiBase.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
@@ -11,7 +11,7 @@
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/buttons/WeaponPickButton.h"
 #include "p2/ui/screens/loadout/buttons/AttachmentPickButton.h"
-#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/alignmentPresets/PresetHalfSplitLayout.h"
 #include "GameCore/DebugHelper.h"
 
@@ -19,7 +19,7 @@
 
 
 
-void ULoadoutScreen::init(UPlayerUi &ref){
+void ULoadoutScreen::init(UPlayerUiBase &ref){
     Super::init(ref);
     //createBackgroundBlur();
     createBackgroundBlurAndDefaultColor();

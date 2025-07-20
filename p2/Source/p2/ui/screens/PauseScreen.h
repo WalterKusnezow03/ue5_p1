@@ -1,19 +1,19 @@
 #pragma once
 
-#include "p2/ui/_baseClass/customUiComponentBase.h"
-#include "CanvasScreen.h"
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/ui/screens/CanvasScreen.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "p2/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 
 
-#include "p2/ui/Widgets/autoContainer/Vbox.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 
 #include "PauseScreen.generated.h"
 
-class UPlayerUi;
+class UPlayerUiBase;
 
 UCLASS()
 class P2_API UPauseScreen : public UCanvasScreen {
@@ -22,7 +22,7 @@ class P2_API UPauseScreen : public UCanvasScreen {
 
 public:
     using UcustomUiComponentBase::init;
-    virtual void init(UPlayerUi &playerUiParentref) override;
+    virtual void init(UPlayerUiBase &playerUiParentref) override;
     
     
 
