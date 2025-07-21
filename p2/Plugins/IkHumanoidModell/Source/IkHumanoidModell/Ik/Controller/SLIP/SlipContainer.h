@@ -20,6 +20,15 @@ public:
         float motionTime
     );
 
+    void initDefaultForParameterD(
+        FVector &endA, // start
+        FVector &endB, // lift off
+        FVector &movedir,
+        float time,
+        float velocityDown,
+        float mass
+    );
+
 private:
     bool bLogEnabled = true;
 

@@ -36,7 +36,7 @@ void AIkDebugActor::BeginPlay(){
     FVector startWorld(400, -400, 210);
     hipController.setLocation(startWorld);
 
-    float initRotation = 10; //180
+    float initRotation = -90; //180 //10
     hipController.forceYawAdd(initRotation);
 
     hipController.setup(GetWorld());

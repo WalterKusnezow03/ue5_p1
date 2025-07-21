@@ -433,10 +433,13 @@ void SlipContainer::setupInterpolatedD(
     validateD(minD); //validates if needed
     Dcurrent = minD;
 
+
+    DebugHelper::logMessage("Slip overcome: v gravity at t0: ", velocityDown);
     DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
     DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
     DebugHelper::logMessage("Slip overcome: upper: ", upperFrac);
     DebugHelper::logMessage("Slip overcome: lower ForceIntegral(z): ", lowerFracIntegralZ);
+    DebugHelper::logMessage(FString::Printf(TEXT("Slip overcome: time: %.2f "), time));
     FString msg = FString::Printf(TEXT("Slip overcome: D: %.4f"), minD);
     DebugHelper::logMessage(msg);
 
@@ -554,7 +557,31 @@ void SlipContainer::showEstimationVersusRealVelocity(){
 
 
 /// ---- Default D calculation for clamping ----
+void SlipContainer::initDefaultForParameterD(
+    FVector &endA, //start
+    FVector &endB, //lift off
+    FVector &movedir, 
+    float time, 
+    float velocityDown,
+    float mass
+){
+    setupInterpolatedD(
+        endA,   // start
+        endB, // lift off
+        movedir,
+        time,
+        velocityDown,
+        mass
+    );
 
+    //copy calculated D
+    DLimit = Dcurrent;
+
+    //debug disable dlimit maker
+    if(false){
+        bDLimitSetup = true;
+    }
+}
 
 /// @brief calculates a Default D value to prevent to high values of numerical or trajectory issues
 /// which are not as expected
@@ -577,21 +604,25 @@ void SlipContainer::initDefaultForParameterD(
     MMatrix rotateFront;
     MMatrix rotateBack;
 
-    rotateFront.pitchRadAdd(MMatrix::degToRadian(-45));
-    rotateBack.pitchRadAdd(MMatrix::degToRadian(45));
+    float degrees = 20.0f;
+    rotateFront.pitchRadAdd(MMatrix::degToRadian(-degrees));
+    rotateBack.pitchRadAdd(MMatrix::degToRadian(degrees));
 
     FVector moveDir(1, 0, 0);
 
     FVector trajectoryFront = rotateFront * trajectoryNone;
     FVector trajectoryLiftOff = rotateBack * trajectoryNone;
-    float velocityDown = motionTime * -981.0f;
+    float velocityDown = motionTime * -981.0f; //v(t) = v0 + at
+
+
+    //DEBUG BECAUSE D is inconsitent, if gravity added: D: 18, else 500 (as expected)
+    velocityDown = 0.0f;
 
     //project to ground
+    trajectoryFront.Z = -1.0f * defaultBoneSize; //abs -1
     trajectoryLiftOff.Z = -1.0f * defaultBoneSize; //abs -1
 
-    float DCurrentCopy = Dcurrent;
-
-    setupInterpolatedD(
+    initDefaultForParameterD(
         trajectoryFront,   // start
         trajectoryLiftOff, // lift off
         moveDir,
@@ -600,17 +631,12 @@ void SlipContainer::initDefaultForParameterD(
         mass
     );
 
-    //copy calculated D
-    DLimit = Dcurrent;
-    Dcurrent = DCurrentCopy; //reset
-
-    //mark setup flag
-    bDLimitSetup = true;
-
-
-    DebugHelper::logMessage("Slip preclamped front: ", trajectoryFront);
-    DebugHelper::logMessage("Slip preclamped end: ", trajectoryLiftOff);
-    DebugHelper::logMessage("Slip preclamped D: ", DLimit);
+    DebugHelper::logMessage("Slip overcome preclamped log --------");
+    DebugHelper::logMessage("Slip overcome: preclamped Time: ", motionTime);
+    DebugHelper::logMessage("Slip overcome: preclamped front: ", trajectoryFront);
+    DebugHelper::logMessage("Slip overcome: preclamped end: ", trajectoryLiftOff);
+    DebugHelper::logMessage("Slip overcome: preclamped D: ", DLimit);
+    DebugHelper::logMessage("Slip overcome preclamped log --------");
     //Achtung: ist bei 12: offensichtlich falsch! 
 
 }

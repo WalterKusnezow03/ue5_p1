@@ -73,7 +73,7 @@ void BoneAttachment::setupBone(
     );
 
     //debug
-    return;
+    //return;
 
     container.initDefaultForParameterD(
         bone.lengthOfBone(),
@@ -81,6 +81,29 @@ void BoneAttachment::setupBone(
         defaultMotionTime
     );
 }
+
+
+//default D NEW
+/*
+void BoneAttachment::setupBone(
+    float a, 
+    float b, 
+    UWorld *worldIn, 
+    FVector offset,
+    float defaultMotionTime,
+    MMatrix &orientation,
+    FVector &defaultForward, //forward frame local
+    float time,
+    float mass
+){
+    setupBone(
+        a, 
+        b, 
+        worldIn, 
+        offset
+    );
+    float velocityDown = 0.0f;
+}*/
 
 /// @brief transforms the root, adds inner offset to matrix
 /// @param worldRoot 
@@ -198,56 +221,6 @@ void BoneAttachment::TickBackwardKinematic(
      * (orientationRoot * innerOffset)^-1 * asVector
      * innerOffset^-1 * orientationRoot^-1 * asVector
      */
-
-
-
-
-
-    /*
-    //very buggy
-    //SO ist es stimmig bei 180 rotation, UNKLAR WIESO! NACHDENKEN!
-
-    FVector StartEffectorLocation = bone.StartEffector().getTranslation();
-
-    //NO MMatrix rotationInverse = orientationRoot.transposedRotation();
-    MMatrix innerOffsetInverseRotated = innerOffsetInverse * orientationRoot;
-
-    //NO FVector worldUpdate = innerOffsetInverseRotated * StartEffectorLocation;
-    //FVector worldUpdate = innerOffset * StartEffectorLocation; //WEIRD JUMPS SIDEWYS ON FORWRD, OKAY 180
-    FVector worldUpdate = innerOffsetInverse * StartEffectorLocation; //SO forward! -> nicht bei 180!
-
-    //FVector worldUpdate = innerOffsetInverseRotated * StartEffectorLocation; //180 bricked total
-
-
-    translationRootToUpdate.setTranslation(worldUpdate);
-
-    //before!
-    return;
-    
-    //before: working on x forward(1,0,0)
-    //bone.MoveToTargetInverse(backwardTarget, deltatime);
-
-    //update root
-    //M = offset * startEffector <---lese richtung--- (noch ohne rotation)
-
-    //M = R_hip * T_innerOffset <-- im regelfall
-    //M^-1 = T_innerOffset^-1 * R_hip^-1
-    MMatrix rotationInverse = orientationRoot.transposedRotation();
-    MMatrix innerOffsetInverseRotated = innerOffsetInverse * rotationInverse;
-
-    //letzen schritt zur welt wandern
-    MMatrix StartEffector = bone.StartEffector();
-    MMatrix updatedTransform = innerOffsetInverseRotated * StartEffector;
-    FVector locationUpdate = updatedTransform.getTranslation();
-    translationRootToUpdate.setTranslation(locationUpdate);
-
-
-    DebugHelper::logMessage("backward location update ", locationUpdate);
-
-    //kleiner test --> erzeugt lustigen bug
-    //MMatrix root = updatedTransform * orientationRoot;
-    //TickKeepEndInWorldPlace(translationRootToUpdate, orientationRoot, deltatime);
-    */
 }
 
 void BoneAttachment::TickKeepEndInWorldPlace(
@@ -386,7 +359,10 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     float velocityDown,
     float mass
 ){
-    FVector aLocal = bone.EndEffectorRelativeLocation();
+    FVector aWorld = bone.EndEffectorRelativeLocation();
+    MMatrix r1 = orientation.transposedRotation();
+    FVector aLocal = r1 * aWorld;
+
     FVector bLocal = localEnd;
 
     FVector moveDir(1, 0, 0);
@@ -442,17 +418,30 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
     //MOVE TO WORLD LIFT OFF
-    bLocal = orientation * bLocal;
+    FVector bWorld = orientation * bLocal;
 
     container.setupInterpolatedD(
-        aLocal,
-        bLocal,
+        aWorld,
+        bWorld,
         moveDir,
         time,
         velocityDown,
         mass
     );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * targte info
