@@ -25,7 +25,7 @@ private:
 
     float motionTime = 0.3f; // 0.7f;//0.2f;
 
-    //actor velocity
+    //actor velocity / hip velocity in every direction
     FVector velocity;
 
     FVector latestGroundTruth;
@@ -116,4 +116,7 @@ private:
     bool rotationSet = false;
     FVector forwardTrajectory();
     float slowDownTimeForDebugRotationStance(float deltatime);
+
+    //slow down velocity on rotation change, prevent slipping
+    void slowDownBasedOnRotationInRadian(float radianInNextStep);
 };

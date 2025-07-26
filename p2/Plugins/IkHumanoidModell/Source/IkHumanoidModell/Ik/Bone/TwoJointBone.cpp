@@ -13,7 +13,18 @@ TwoJointBone::~TwoJointBone(){
 
 void TwoJointBone::markTriangleFlipAsWantedForArms(){
     markedForTriangleFlip = true;
+
+    markedForTriangleflipLegs = false;
+    markedForTriangleflipArms = true;
 }
+
+//new
+void TwoJointBone::markTriangleFlipAsWantedForLegs(){
+    markedForTriangleflipLegs = true;
+    markedForTriangleflipArms = false;
+}
+
+
 
 void TwoJointBone::setup(float a, float b, UWorld *world){
     worldPtr = world;
@@ -68,6 +79,27 @@ FVector TwoJointBone::outOfreachDistance(FVector &target){
 }
 
 void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
+    
+    //not tested new code!
+    //legs, genau überlegt
+    if(markedForTriangleflipLegs){
+        //only pos on hip, neg knee (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
+        pitch1 = std::abs(pitch1);
+        pitch2 = std::abs(pitch2) * -1.0f;
+        return;
+    }
+
+    //---- temporary! - nicht genau überlegt ----
+    //arme naturel nach unten
+    if(markedForTriangleflipArms){
+        //only neg on shoulder, neg ellbow (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
+        pitch1 = std::abs(pitch1) * -1.0f;
+        pitch2 = std::abs(pitch2);
+        return;
+    }
+
+
+    //deprecated
     if(markedForTriangleFlip){
         pitch1 *= -1.0f;
         pitch2 *= -1.0f;
@@ -114,13 +146,13 @@ void TwoJointBone::MoveToTarget(FVector &target){
 
     float distance = target.Size();
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
-    flipTriangleIfMarkedWanted(pitchHip, pitchKnee);
+    flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
 
     r1.pitchRadAdd(pitchHip);
     r2.pitchRadAdd(pitchKnee);
 
 
-    r1 = lookAtTarget * r1;
+    r1 = lookAtTarget * r1; //<-- lese richtung --
 }
 
 
@@ -130,8 +162,9 @@ void TwoJointBone::MoveToTarget(FVector &target){
 void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     MoveToTargetInverse(target);
 
+    //CAUTION VERY IMPORTANT
     //it is very important to clear the end effectors own rotation,
-    //otherwise the trajectory is not correctly followed (remove any pitch)
+    //otherwise the trajectory is not correctly followed by the hip(remove any pitch)
     removeRotationFromEndEffector();
 
     buildBackward(endEffectorWorld, deltatime); //builded from end effector
@@ -148,13 +181,16 @@ void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     }
 
     //debug draw
-    FVector start = endEffectorWorld.getTranslation();
-    DebugHelper::showLineBetween(
-        worldPtr,
-        start,
-        start + target,
-        FColor::Yellow
-    );
+    if(bDrawBackwardReach){
+        FVector start = endEffectorWorld.getTranslation();
+        DebugHelper::showLineBetween(
+            worldPtr,
+            start,
+            start + target,
+            FColor::Yellow
+        );
+    }
+    
 }
 
 void TwoJointBone::MoveToTargetInverse(FVector &target){

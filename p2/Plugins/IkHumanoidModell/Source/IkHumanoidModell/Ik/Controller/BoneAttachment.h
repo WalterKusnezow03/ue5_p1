@@ -12,6 +12,7 @@ public:
     ~BoneAttachment();
 
     void setWorld(UWorld *world);
+    void setAsLeg();
 
     FVector defaultExtendedEndToStartLocal();
     

@@ -15,6 +15,11 @@ void BoneAttachment::setWorld(UWorld *worldIn){
     world = worldIn;
 }
 
+//not tested!
+void BoneAttachment::setAsLeg(){
+    bone.markTriangleFlipAsWantedForLegs();
+}
+
 FVector BoneAttachment::defaultExtendedEndToStartLocal(){
     return extendedTranslationBottomToUp;
 }

@@ -481,9 +481,11 @@ MMatrix MMatrix::createRotatorFrom(
      * ist der acos(0) = 90 degree, was seltsame
      * sprünge erzeugt.
      */
+    bool noYaw = false;
     FVector xyProjection(other.X, other.Y, 0.0f);
     if (xyProjection.Size() < 0.1f){ //prevents weird rotations.
         yawRad = 0.0f;
+        noYaw = true;
     }
 
     //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist! (das ist richtig so!)
@@ -497,9 +499,10 @@ MMatrix MMatrix::createRotatorFrom(
     float pitchRad = signedAngleRadBetween(ZAxis, xzdir) *-1.0f; // test (negieren. Aus. Gründen.)
 
     //is tested. 
-    if(yawConstraint90){
+    if(yawConstraint90 && !noYaw){
         float rad90 = M_PI / 2.0f;
     
+        //makes yaw angle on the positive side and flips pitch instead!
         if (std::abs(yawRad) > rad90) {
             yawRad += (yawRad > 0.0f) ? -M_PI : M_PI;
             pitchRad *= -1.0f;

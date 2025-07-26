@@ -11,6 +11,7 @@ public:
 
     void setup(float a, float b, UWorld *world);
     void markTriangleFlipAsWantedForArms();
+    void markTriangleFlipAsWantedForLegs();
 
     void MoveToTarget(FVector target, MMatrix &world, float deltatime);
     void MoveToTargetInverse(FVector target, float deltatime);
@@ -32,11 +33,15 @@ public:
 
 private:
     bool bLogEnabled = true;
+    bool bDrawBackwardReach = false;
 
     UWorld *worldPtr = nullptr;
     void resetRotations();
 
     bool markedForTriangleFlip = false; //for arms to have their elbows down
+
+    bool markedForTriangleflipArms = false;
+    bool markedForTriangleflipLegs = false;
     void flipTriangleIfMarkedWanted(float &pitch1, float &pitch2);
 
     //size

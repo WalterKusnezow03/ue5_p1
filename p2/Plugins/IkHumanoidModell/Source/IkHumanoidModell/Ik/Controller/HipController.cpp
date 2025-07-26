@@ -43,11 +43,11 @@ void HipController::setup(UWorld *world){
     //x is forward
     FVector offsetLeft(0, -20.0f, 0.0f);
     legLeft.setupBone(lengthA, lengthB, world, offsetLeft, bodyMass, motionTime);
+    legLeft.setAsLeg();
 
     FVector offsetRight = offsetLeft * -1.0f;
     legRight.setupBone(lengthA, lengthB, world, offsetRight, bodyMass, motionTime);
-
-
+    legRight.setAsLeg();
 
     //setup forward reach target
     float lengthTotal = std::abs(lengthA) + std::abs(lengthB);
@@ -324,10 +324,18 @@ void HipController::setupForwardInterpolation(){
     //CAUTION: NEW: Rotated trajectory copy, reset rotation
     FVector localTrajectory = forwardTrajectory();
 
+
+    //move local trajectory into rotation space: apply velocity offset, 
+    //rotate back
+
     // t motionTime
     //gx = a + t (b-a)
     FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
-    localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m
+    localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m 
+    //achtung hier noch unklar: velocity auch drehen?
+
+
+
     MMatrix orientationInverse = orientation.transposedRotation();
     localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
 
@@ -623,7 +631,7 @@ FVector HipController::forwardTrajectory(){
     {
         localTrajectory = forwardRotatedLocalLocomotionFrame;
 
-        //reset rotation after step
+        //reset rotation of trajectory after step (interpolator setup now.)
         forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
     }
     else
@@ -633,7 +641,14 @@ FVector HipController::forwardTrajectory(){
     return localTrajectory;
 }
 
+
+/// @brief rotate next step by a angle in rad
+/// @param radian angle in
 void HipController::setupRotationForNextStep(float radian){
+    if(rotationSet){
+        return;
+    }
+
     MMatrix addYawMat;
     addYawMat.yawRadAdd(radian);
     forwardRotatedLocalLocomotionFrame = addYawMat * forwardDefaultLocalLocomotionFrame;
@@ -651,8 +666,53 @@ void HipController::setupRotationForNextStep(float radian){
     // FRotator TargetInterpolator::interpolateRotationOnly(float DeltaTime)
 
     rotationSet = true;
+
+    //prevent skelleton from slipping and not running again properly
+    slowDownBasedOnRotationInRadian(radian);
 }
 
+/// @brief will scale velocity immidiate based on radian to rotate in,
+/// must be raw delta rotation add, velocity scalar is made internally
+/// -- prevents skelleton from slipping into weird directions if velocity is to high
+/// (Wird als stolpern wahrgenommen, unkontrolliert, fängt sich nicht)
+/// @param radianInNextStep 
+void HipController::slowDownBasedOnRotationInRadian(float radianInNextStep){
+    FVector forward2D(1, 0, 0);
+    FVector forwardCurrent = orientation * forward2D;
+
+    MMatrix deltaRotation;
+    deltaRotation.yawRadAdd(radianInNextStep);
+    //(berücksichtig pitch nicht, nicht erwartet!)
+    MMatrix orientationIntegrated = orientation * deltaRotation; //<-- lese richtung --
+
+    FVector forwardDeltaApplied = orientationIntegrated * forward2D;
+
+    float scalar = FVector::DotProduct(forwardCurrent, forwardDeltaApplied);
+
+    /*
+    $$
+    slow =\begin{cases}
+        s_v \textit{ if } s_v> 0 \\
+        0 \textit{ } otherwise 
+    \end{cases} 
+    $$
+    */
+    float slow = scalar > 0 ? scalar : 0.0f;
+
+    /*
+    $$
+    horizontal_{velocity} = horizontal_{velocity} \cdot slow
+    $$
+    */
+    //Horizontal XY Only!
+    velocity.X *= slow;
+    velocity.Y *= slow;
+
+    DebugHelper::logMessageFloat("HipController: Slow down:", (float) slow);
+}
+
+/// @brief ticks the hip rotation if an angle was setup in "setupRotationForNextStep()"
+/// @param deltatime 
 void HipController::TickHipRotation(float deltatime){
     //debug
     //return;
@@ -660,12 +720,14 @@ void HipController::TickHipRotation(float deltatime){
     if(rotationSet && anyBackwardPhase()){
         if(hipRotationInterpolator.endReached()){
             rotationSet = false;
+            DebugHelper::logMessage("hipRotation finished!");
             return;
         }
 
         FRotator rTicked = hipRotationInterpolator.interpolate(deltatime);
         MMatrix newRotation(rTicked);
         orientation = rTicked;
-        
+
+        DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
     }
 }

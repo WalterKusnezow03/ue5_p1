@@ -70,10 +70,10 @@ void AIkDebugActor::Tick(float deltatime){
 
     //debug
     time += deltatime;
-    if(time > 2.0f && false){
+    if(time > 5.0f && true){
         time = 0.0f;
 
-        hipController.setupRotationForNextStep(MMatrix::degToRadian(45.0f));
+        hipController.setupRotationForNextStep(MMatrix::degToRadian(30.0f));
     }
 
     /*
