@@ -55,6 +55,8 @@ public:
 
     void showRightSideLayoutAtIndex(int i);
 
+    
+
     // bool dispatchClick() override; //MUST COME HERE
 
 private:

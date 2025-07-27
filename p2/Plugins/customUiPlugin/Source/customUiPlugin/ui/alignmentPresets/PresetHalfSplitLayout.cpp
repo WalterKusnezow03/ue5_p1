@@ -21,7 +21,7 @@ void UPresetHalfSplitLayout::init(){
 /// CLICK DISPATCH AND VISIBLITY
 bool UPresetHalfSplitLayout::dispatchClick(){
     if(baseVertical){
-        baseVertical->dispatchClick(); //NOTIFY ALL CHILDREN IN BASE BASE 
+        return baseVertical->dispatchClick(); //NOTIFY ALL CHILDREN IN BASE BASE 
     }
     return false;
 }

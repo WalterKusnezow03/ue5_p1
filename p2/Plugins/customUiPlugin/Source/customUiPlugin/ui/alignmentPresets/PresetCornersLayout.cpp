@@ -98,6 +98,18 @@ void UPresetCornersLayout::setVisible(bool visible) {
     }
 }
 
+void UPresetCornersLayout::Tick(float deltatime){
+    for (int i = 0; i < elements.Num(); i++){
+        UcustomUiComponentBase *current = elements[i];
+        if(current){
+            current->Tick(deltatime);
+        }
+    }
+}
+
+
+
+
 ///@brief will try to add a child to any vertical box, if both not nullptr
 void UPresetCornersLayout::addChildTo(UVbox *box, UWidget *any){
     if(any != nullptr && box != nullptr){
