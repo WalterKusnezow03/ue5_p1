@@ -17,6 +17,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "p2/entities/botActionHelper/EAttackType.h"
 #include "GameCore/DebugHelper.h"
+#include "GameCore/PlayerInfo/PlayerInfo.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
@@ -316,20 +317,17 @@ bool AHumanEntityScript::attackTypeIs(EAttackType type){
 
 
 bool AHumanEntityScript::playerIsInLookDir(){
-    referenceManager *pointer = referenceManager::instance();
-    if(pointer != nullptr){
-        FVector playerLocation = pointer->playerLocation();
-        FVector connectToPlayer = playerLocation - boneController.GetLocation(); // AB = B - A
-        connectToPlayer.Z = 0.0f;
+    
+    FVector playerLocation = PlayerInfo::playerLocation();
+    FVector connectToPlayer = playerLocation - boneController.GetLocation(); // AB = B - A
+    connectToPlayer.Z = 0.0f;
 
-        connectToPlayer = connectToPlayer.GetSafeNormal();
-        FVector forward = boneController.lookDirection();
-        forward.Z = 0.0f;
-        forward = forward.GetSafeNormal();
+    connectToPlayer = connectToPlayer.GetSafeNormal();
+    FVector forward = boneController.lookDirection();
+    forward.Z = 0.0f;
+    forward = forward.GetSafeNormal();
 
-        return FVector::DotProduct(connectToPlayer, forward) >= 0.6f; //0 orthogonal, 1 parallell
-    }
-    return false;
+    return FVector::DotProduct(connectToPlayer, forward) >= 0.6f; //0 orthogonal, 1 parallell
 }
 
 

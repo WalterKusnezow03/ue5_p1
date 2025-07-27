@@ -22,6 +22,8 @@ public:
 
     bool loadOutWasModified();
 
+    weaponSetupHelper getIfValidIndex(int index);
+
 private:
     bool loadoutWasModifedFlag = false;
     std::vector<weaponSetupHelper> vec;

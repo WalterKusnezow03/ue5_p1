@@ -3868,10 +3868,6 @@
   Runtime/SlateCore/Public/Types/ISlateMetaData.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetNavigation.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Widget.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/customUiComponentTickHandler.h \
-  Runtime/Core/Public/HAL/CriticalSection.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/set \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiComponentBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/AutoBoxBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ButtonBase.gen.cpp \
@@ -4001,6 +3997,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetHalfSplitLayout.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetHalfSplitLayout.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
   Runtime/UMG/Public/Components/Spacer.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Spacer.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PresetHalfSplitLayout.generated.h \
@@ -4088,6 +4085,7 @@
   Runtime/Core/Public/GenericPlatform/GenericPlatformProcess.h \
   Runtime/Core/Public/HAL/PlatformProcess.h \
   Runtime/Core/Public/GenericPlatform/GenericPlatformCriticalSection.h \
+  Runtime/Core/Public/HAL/CriticalSection.h \
   Runtime/Core/Public/GenericPlatform/GenericPlatformAtomics.h \
   Runtime/Core/Public/HAL/PlatformAtomics.h \
   Runtime/Core/Public/GenericPlatform/GenericPlatformTLS.h \
@@ -5568,5 +5566,4 @@
   Runtime/UMG/Public/Animation/WidgetAnimation.h \
   Runtime/UMG/Public/Animation/WidgetAnimationBinding.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimationBinding.generated.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/customUiComponentTickHandler.cpp
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h

@@ -42,6 +42,7 @@ public:
     // ---- CLICK DISPATCH AND VISIBILTY ----
     virtual bool dispatchClick() override;
     virtual void setVisible(bool visible) override;
+    virtual void Tick(float deltatime) override;
 
     // --- PURE UNREAL ADDING - NO CLICK DISTPATCHING ---
     void addChildToHeadLine(UWidget *any);
@@ -60,10 +61,10 @@ private:
     USpacer *createMarginSpacer(int x, int y);
     void createSubLayouts();
 
-    /// @brief TRACKS ALL CHILDS ALSO FOR CLICK LISTENING!
+    /// @brief TRACKS ALL CHILDS ALSO FOR CLICK LISTENING AND TICK!!
     UVbox *baseVertical = nullptr; //base layout for all sublayouts
 
-
+    //INNER CONTAINERS DO NOT TICK! AGREGATION NOT OWNERSHIP
     UHbox *rightLeftContainer = nullptr;
     UVbox *rightVertical = nullptr; //deprecated.
     std::map<int, UVbox *> rightPanels; //iterierbar / changable machen

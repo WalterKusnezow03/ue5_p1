@@ -30,12 +30,14 @@ public:
     void setBackgroundColor(FLinearColor color);
     void setDefaultBackgroundColor();
 
+    /// @brief ticks all children owned
+    /// @param deltatime 
+    virtual void Tick(float deltatime) override;
 
-    
     void AddClickListenedItem(UcustomUiComponentBase *ptr);
     void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
-    /// @brief added child AUTOMATICALLY addet to click and visibilty DISPATCH!
+    /// @brief added child AUTOMATICALLY addet to click and visibilty and Tick DISPATCH!
     /// @param item 
     void AddChild(UcustomUiComponentBase *item);
     /// @brief 
@@ -61,5 +63,6 @@ protected:
     void createBackgroundOverlay();
     void createColoredBackground();
 
+    /// @brief listens for click AND Tick
     TArray<UcustomUiComponentBase *> listenForclickItems;
 };

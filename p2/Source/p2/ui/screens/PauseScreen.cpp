@@ -43,6 +43,9 @@ void UPauseScreen::createButtons(){
     createLoadoutScreenButton();
 }
 
+
+
+/// @brief creates the exit button to open the game screen (from play ui base class)
 void UPauseScreen::createExitButton(){
     if(menu != nullptr && playerUiParent != nullptr){
         exitButton = NewObject<UTextButton>(this);

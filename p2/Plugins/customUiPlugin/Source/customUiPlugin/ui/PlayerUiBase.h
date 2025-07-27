@@ -72,6 +72,8 @@ public:
     UFUNCTION()
     virtual void openGameScreen();
 
+    void Tick(float deltatime);
+
 protected:
 
     void RegisterCursorClick();

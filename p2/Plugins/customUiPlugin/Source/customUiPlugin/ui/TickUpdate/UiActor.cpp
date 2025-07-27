@@ -2,7 +2,7 @@
 
 #include "GameCore/DebugHelper.h"
 #include "customUiPlugin/ui/PlayerUiBase.h"
-#include "customUiPlugin/ui/_baseClass/customUiComponentTickHandler.h"
+
 
 AUiActor *AUiActor::createInstance(UWorld *world, UPlayerUiBase *ptr){
     if(world){
@@ -38,9 +38,9 @@ void AUiActor::Tick(float DeltaTime){
     Super::Tick(DeltaTime); // <- das fehlt bei dir
 
     //tick player ui timer based actions
-    customUiComponentTickHandler::Tick(DeltaTime);
+    //customUiComponentTickHandler::Tick(DeltaTime); //DEPRECATED
     if(uiToUpdate){
         uiToUpdate->updateClickDispatch(); //VERY IMPORTANT
+        uiToUpdate->Tick(DeltaTime); //VERY IMPORTANT
     }
-
 }

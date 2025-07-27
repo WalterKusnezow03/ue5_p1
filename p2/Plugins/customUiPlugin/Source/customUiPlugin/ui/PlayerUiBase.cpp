@@ -106,3 +106,10 @@ void UPlayerUiBase::updateClickDispatch(){
 void UPlayerUiBase::RegisterCursorClick(){
     openedScreenStack.dispatchClick();
 }
+
+
+/// @brief ticks all children on the open screen
+/// @param deltatime 
+void UPlayerUiBase::Tick(float deltatime){
+    openedScreenStack.Tick(deltatime);
+}

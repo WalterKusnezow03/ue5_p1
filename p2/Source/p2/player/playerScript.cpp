@@ -940,7 +940,7 @@ void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
 
 
 /**
- * player ui reload loadout api
+ * public Api: player ui reload loadout api
  */
 void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
 

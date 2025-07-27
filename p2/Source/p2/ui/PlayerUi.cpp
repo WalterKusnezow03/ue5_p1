@@ -25,22 +25,6 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
                 return newUiInstance;
             }
         }
-        
-        /*
-        assetManager *pointer = assetManager::instance();
-        if(pointer != nullptr){
-            UClass *blueprint = pointer->uiBp();
-
-            if(blueprint != nullptr){
-
-                UPlayerUi* newUiInstance = CreateWidget<UPlayerUi>(world, blueprint);
-                if (newUiInstance != nullptr)
-                {
-                    newUiInstance->init();
-                    return newUiInstance;
-                }
-            }
-        }*/
     }
     return nullptr;
 }

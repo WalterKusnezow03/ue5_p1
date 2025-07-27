@@ -67,6 +67,35 @@ bool UCanvasScreen::dispatchClick(){
     return false;
 }
 
+
+void UCanvasScreen::setVisible(bool visible){
+    for (int i = 0; i < listenForclickItems.Num(); i++){
+        if(UcustomUiComponentBase *current = listenForclickItems[i]){
+            current->setVisible(visible);
+        }
+    }
+
+
+    //UcustomUiComponentBase::setVisible(baseCanvas, visible);
+    UcustomUiComponentBase::setVisibleNoCollsion(baseCanvas, visible);
+}
+
+
+void UCanvasScreen::Tick(float deltatime){
+    for (int i = 0; i < listenForclickItems.Num(); i++){
+        if(UcustomUiComponentBase *current = listenForclickItems[i]){
+            current->Tick(deltatime);
+        }
+    }
+}
+
+
+
+
+
+
+
+
 /// @brief ADD EACH BUTTON TO THIS DIPATCH POOL! add item to click dispatcher
 /// @param ptr 
 void UCanvasScreen::AddClickListenedItem(UcustomUiComponentBase *ptr){
@@ -124,11 +153,6 @@ void UCanvasScreen::updateCanvasScale(UWorld *world){
 }
 
 
-
-void UCanvasScreen::setVisible(bool visible){
-    //UcustomUiComponentBase::setVisible(baseCanvas, visible);
-    UcustomUiComponentBase::setVisibleNoCollsion(baseCanvas, visible);
-}
 
 UWidget *UCanvasScreen::baseLayoutPointer(){
     return baseCanvas;

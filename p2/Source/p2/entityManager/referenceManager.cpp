@@ -46,26 +46,7 @@ AplayerScript *referenceManager::getPlayerPointer(){
 }
 
 
-FVector referenceManager::playerLocation(){
-    if(playerPointer != nullptr){
-        return playerPointer->GetActorLocation();
-    }
-    return FVector(0, 0, 0);
-}
 
-FVector referenceManager::playerLookDir(){
-    if(playerPointer != nullptr){
-        return playerPointer->GetActorForwardVector();
-    }
-    return FVector(0, 0, 0);
-}
-
-FRotator referenceManager::playerRotation(){
-    if(playerPointer != nullptr){
-        return playerPointer->cameraRotation();
-    }
-    return FRotator(0,0,0);
-}
 
 int referenceManager::verifyTeam(int teamIn){
     if(

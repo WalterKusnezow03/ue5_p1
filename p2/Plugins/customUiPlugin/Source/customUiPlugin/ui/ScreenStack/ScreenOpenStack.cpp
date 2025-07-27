@@ -25,6 +25,8 @@ void ScreenOpenStack::dispatchClick(){
 }
 
 
+/// @brief opens a new ucanvas screen, marks others ivisible, new item visible
+/// @param item 
 void ScreenOpenStack::open(UCanvasScreen *item){
     if(item){
         for (int i = 0; i < opened.size(); i++){
@@ -38,7 +40,7 @@ void ScreenOpenStack::open(UCanvasScreen *item){
     }
 }
 
-
+/// @brief closes the latest screen and shows the previous screen
 void ScreenOpenStack::closeBack(){
     if(opened.size() > 0){
         UCanvasScreen *back = opened.back();
@@ -67,4 +69,16 @@ void ScreenOpenStack::closeAll(){
 
 bool ScreenOpenStack::isEmpty(){
     return opened.size() <= 0;
+}
+
+
+
+///@brief ticks all children on the latest screen
+void ScreenOpenStack::Tick(float deltatime){
+    if(opened.size() > 0){
+        UCanvasScreen *back = opened.back();
+        if(back){
+            back->Tick(deltatime);
+        }
+    }
 }

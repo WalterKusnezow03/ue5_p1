@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Components/Widget.h"
-#include "customUiComponentTickHandler.h"
+
 #include "customUiComponentBase.generated.h"
 
 class UPlayerUiBase;
@@ -51,22 +51,18 @@ public:
 
     ///@brief is called by tick handler if subscribed
     virtual void Tick(float DeltaTime){
-
+        if(!TICK_ENABLED){
+            return;
+        }
     }
 
+    //deprecated flag.
     void enableTick(){
-        if(!TICK_ENABLED){
-            customUiComponentTickHandler::subscribe(*this);
-            TICK_ENABLED = true;
-        }
-        
+        TICK_ENABLED = true;
     }
 
     void disableTick(){
-        if(TICK_ENABLED){
-            customUiComponentTickHandler::unSubscribe(*this);
-            TICK_ENABLED = false;
-        }
+        TICK_ENABLED = false;
     }
 
     //--- Ticker section end ---

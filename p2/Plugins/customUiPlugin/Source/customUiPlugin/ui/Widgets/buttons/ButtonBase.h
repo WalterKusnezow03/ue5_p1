@@ -51,10 +51,13 @@ protected:
     UButton *button = nullptr;
     UScaleBox *scalebox = nullptr; //inside button. Use to add your childs
 
+    UPROPERTY()
     UCallback *callbackPointer = nullptr;
 
-
+    UPROPERTY()
     UCallback *callbackPointerOnHovered = nullptr;
+
+    UPROPERTY()
     UCallback *callbackPointerOnUnHovered = nullptr;
 
     void createButton();

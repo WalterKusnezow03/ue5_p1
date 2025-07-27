@@ -13,7 +13,10 @@
 
 ///@brief get the pointer of this layout and add it to an owning parent canvas for example!
 UWidget *UTextAndImageBase::baseLayoutPointer(){
-    return baseHorizontalBox;
+    if(baseHorizontalBox){
+        return baseHorizontalBox->baseLayoutPointer();
+    }
+    return nullptr;
 }
 
 void UTextAndImageBase::init(){
@@ -25,7 +28,8 @@ void UTextAndImageBase::init(){
     Image = nullptr;
    
 
-    baseHorizontalBox = NewObject<UHorizontalBox>(this);
+    baseHorizontalBox = NewObject<UHbox>(this);
+    baseHorizontalBox->init();
 
     createText();
     setText("new text box image");
@@ -43,7 +47,7 @@ void UTextAndImageBase::createText(){
     if(TextBlock == nullptr && correctInitialized()){
         TextBlock = NewObject<UTextBlock>(this);
         if (TextBlock){
-            baseHorizontalBox->AddChildToHorizontalBox(TextBlock);
+            baseHorizontalBox->AddChild(TextBlock);
         }
     }
 }
@@ -52,7 +56,7 @@ void UTextAndImageBase::createImage(){
     if(Image == nullptr && correctInitialized()){
         Image = NewObject<UImage>(this);
         if (Image){
-            baseHorizontalBox->AddChildToHorizontalBox(Image);
+            baseHorizontalBox->AddChild(Image);
         }
     }
 }

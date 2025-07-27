@@ -14,16 +14,22 @@ void UWeaponContainer::init(UPlayerUiBase &ref){
 
 void UWeaponContainer::init(){
     createLayout();
+
+    //default texts!
+    setTextWeapon("weapon");
+    setTextSight("sight");
+    setTextMuzzle("muzzle");
 }
 
 ///@brief inits the container, reference must not get invalid! - use this method to have the proper
 ///loadout updates!
+/// @param parentLoadout MUST STAY VALID UNTIL THIS OBJECT DIES!
 void UWeaponContainer::init(int index, LoadoutHelper &parentLoadout){
     ownIndexInLoadoutHelperParent = index;
-    loadoutParent = &parentLoadout;
+    loadoutStorageParent = &parentLoadout;
     createLayout();
+    initUiFromLoadoutParentAtOwnIndex();
 }
-
 
 // --- CUSTOM CLICK AND VISIBILTY ---
 void UWeaponContainer::setVisible(bool flag){
@@ -39,6 +45,8 @@ bool UWeaponContainer::dispatchClick(){
     return false;
 }
 
+
+// --- LAYOUT INIT ---
 
 /// @brief creates Base Hbox and adds children for listening to click dispatcher
 void UWeaponContainer::createLayout(){
@@ -121,7 +129,14 @@ FString UWeaponContainer::toString(weaponAttachmentEnum type){
 /**
  * internal image and text updates
  */
-void UWeaponContainer::updateWeaponName(){
+void UWeaponContainer::updateAllNames(){
+    updateMuzzleName();
+    updateSightName();
+    updateWeaponName();
+    updateGripName();
+}
+void UWeaponContainer::updateWeaponName()
+{
     weaponEnum type = setupinternal.getWeaponTypeToCreate();
     FString name = toString(type);
     setTextWeapon(name);
@@ -142,7 +157,7 @@ void UWeaponContainer::updateMuzzleName(){
 void UWeaponContainer::updateGripName(){
     weaponAttachmentEnum type = setupinternal.getGripTypeToCreate();
     FString name = toString(type);
-    setTextMuzzle(name);
+    
 }
 
 
@@ -249,22 +264,38 @@ void UWeaponContainer::updateWeaponGrip(weaponAttachmentEnum typein){
 
 void UWeaponContainer::updateFrom(weaponSetupHelper &other){
     setupinternal = other;
-    updateWeaponName();
-    updateSightName();
+    updateAllNames();
     updateLoadoutParent();
 }
 
+
+
 /**
- * update parent
+ * update own ui on init
+ */
+
+/// @brief loads loadout storage parent data at own index into ui elements
+void UWeaponContainer::initUiFromLoadoutParentAtOwnIndex(){
+    if(loadoutStorageParent){
+        // real setup or fallback empty setup:
+        weaponSetupHelper ownSetup = loadoutStorageParent->getIfValidIndex(ownIndexInLoadoutHelperParent);
+        setupinternal = ownSetup;
+        updateAllNames();
+    }
+}
+
+/**
+ * update parent when anything changed!
  */
 weaponSetupHelper UWeaponContainer::setupHelperCopy(){
     return setupinternal;
 }
 
+/// @brief updates loadout parent with WeaponSetup preset held internally
 void UWeaponContainer::updateLoadoutParent(){
-    if(loadoutParent != nullptr){
+    if(loadoutStorageParent != nullptr){
 
-        //internal copy is made anyway
-        loadoutParent->replace(ownIndexInLoadoutHelperParent, setupinternal);
+        //update loadout parent ptr with own weapon setup helper, override
+        loadoutStorageParent->replace(ownIndexInLoadoutHelperParent, setupinternal);
     }
 }

@@ -4,6 +4,7 @@
 
 #include "Outpost.h"
 #include "p2/entityManager/referenceManager.h"
+#include "GameCore/PlayerInfo/PlayerInfo.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/_world/worldLevel.h"
 #include "GameCore/util/FVectorUtil.h"
@@ -49,18 +50,15 @@ void AOutpost::Tick(float DeltaTime)
 		return;
 	}
 
-	if(referenceManager *r = referenceManager::instance()){
-
-		FVector playerlocation = r->playerLocation();
-		if(isInRange(playerlocation)){
-			//spawn if needed
-			initEntitiesIfNeeded();
-			switchPlayerEnteredStatus(true);
-		}else{
-			//despawn if needed
-			releaseAll();
-			switchPlayerEnteredStatus(false);
-		}
+	FVector playerlocation = PlayerInfo::playerLocation();
+	if(isInRange(playerlocation)){
+		//spawn if needed
+		initEntitiesIfNeeded();
+		switchPlayerEnteredStatus(true);
+	}else{
+		//despawn if needed
+		releaseAll();
+		switchPlayerEnteredStatus(false);
 	}
 
 

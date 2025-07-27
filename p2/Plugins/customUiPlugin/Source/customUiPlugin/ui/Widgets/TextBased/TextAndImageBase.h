@@ -3,6 +3,9 @@
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+
+#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 
 #include "TextAndImageBase.generated.h"
@@ -29,8 +32,8 @@ public:
 protected:
     bool isHorizontal = false;
 
-    UHorizontalBox *baseHorizontalBox = nullptr;
-    UVerticalBox *baseVerticalBox = nullptr;
+    UHbox *baseHorizontalBox = nullptr;
+    
 
     UTextBlock *TextBlock;
     UImage *Image;

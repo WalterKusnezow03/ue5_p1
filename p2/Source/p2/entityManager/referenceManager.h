@@ -27,9 +27,6 @@ public:
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
-	FVector playerLocation();
-	FVector playerLookDir();
-	FRotator playerRotation();
 
 	static void showPlayerCursor(bool show);
 	static void forceSetPlayerPaused(bool in);

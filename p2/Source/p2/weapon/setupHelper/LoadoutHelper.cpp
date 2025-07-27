@@ -74,6 +74,13 @@ std::vector<Aweapon *> LoadoutHelper::spawnAllWeaponsAndApplyAttachments(UWorld 
     return outweapons;
 }
 
-
-
-
+/// @brief gets a weapon setup helper at some index (copy for ui init on start)
+/// @param index 
+/// @return 
+weaponSetupHelper LoadoutHelper::getIfValidIndex(int index){
+    if(index >= 0 && index < vec.size()){
+        return vec[index];
+    }
+    weaponSetupHelper fallback;
+    return fallback;
+}

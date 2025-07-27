@@ -286,8 +286,6 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
         weaponContainers[index]->init(index, loadoutinternal);
 
         //weapon button setup
-        FString sampleText = FString::Printf(TEXT("weapon %d"), index);
-        weaponContainers[index]->setTextWeapon(sampleText);
         weaponContainers[index]->SetCallBackWeapon(
             FSimpleDelegate::CreateLambda([this, index]()
             {
@@ -300,8 +298,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
             })
         );
 
-        //sight button setup folgt hier..
-        weaponContainers[index]->setTextSight("sight"); //SIGHT_PICKER_IDENTIFIER
+        //sight button setup folgt hier
         weaponContainers[index]->SetCallBackSight(
             FSimpleDelegate::CreateLambda([this, index]()
             {
@@ -315,7 +312,6 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
         );
 
         //muzzle flash surpressor picker button
-        weaponContainers[index]->setTextMuzzle("muzzle");
         weaponContainers[index]->SetCallBackMuzzle(
             FSimpleDelegate::CreateLambda([this, index]()
             {
@@ -328,6 +324,7 @@ void ULoadoutScreen::createLoadoutWeaponContainerForValidIndex(
             })
         );
 
+        //add to left child always visible layout
         halfSplitBase->addChildToLeftVertical(weaponContainers[index]);
 
 

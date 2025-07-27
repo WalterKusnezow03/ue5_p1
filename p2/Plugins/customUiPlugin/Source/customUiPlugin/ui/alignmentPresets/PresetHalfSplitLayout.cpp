@@ -21,7 +21,7 @@ void UPresetHalfSplitLayout::init(){
 /// CLICK DISPATCH AND VISIBLITY
 bool UPresetHalfSplitLayout::dispatchClick(){
     if(baseVertical){
-        baseVertical->dispatchClick(); //NOTIFY ALL CHILDREN
+        baseVertical->dispatchClick(); //NOTIFY ALL CHILDREN IN BASE BASE 
     }
     return false;
 }
@@ -33,6 +33,11 @@ void UPresetHalfSplitLayout::setVisible(bool visible){
     }
 }
 
+void UPresetHalfSplitLayout::Tick(float deltatime){
+    if(baseVertical){
+        baseVertical->Tick(deltatime); //NOTIFY ALL CHILDREN
+    }
+}
 
 
 

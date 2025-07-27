@@ -125,6 +125,7 @@ void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
         {
             callbackPointer->SetCallback(callbackIn);
         
+            /*
             //DEBUG using custom click dispatcher
             return;
 
@@ -142,7 +143,7 @@ void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
             //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
 
             DebugHelper::logMessage("debugCallback created"); //printed
-        
+            */
         }
     }
 }

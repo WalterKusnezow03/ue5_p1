@@ -28,6 +28,11 @@ public:
     /// @param flag 
     void setVisible(bool flag) override;
 
+    
+    /// @brief dipatches tick to all children!
+    /// @param deltatime 
+    void Tick(float deltatime) override;
+
     /// @brief adds a child to click listening!
     /// @param item 
     virtual void AddChild(UcustomUiComponentBase *item);

@@ -86,10 +86,11 @@ private:
 
     //loadout helper parent to update
     int ownIndexInLoadoutHelperParent = 0;
-    LoadoutHelper *loadoutParent = nullptr;
+    LoadoutHelper *loadoutStorageParent = nullptr;
     void updateLoadoutParent();
 
     //internal updates
+    void updateAllNames();
     void updateWeaponName();
     void updateSightName();
     void updateMuzzleName();
@@ -98,4 +99,6 @@ private:
     void updateWeaponSight(weaponAttachmentEnum sightIn);
     void updateWeaponMuzzle(weaponAttachmentEnum typeIn);
     void updateWeaponGrip(weaponAttachmentEnum typein);
+
+    void initUiFromLoadoutParentAtOwnIndex();
 };

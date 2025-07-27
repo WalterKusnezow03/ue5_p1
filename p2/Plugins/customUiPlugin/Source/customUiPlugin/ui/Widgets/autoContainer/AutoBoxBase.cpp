@@ -31,6 +31,18 @@ bool UAutoBoxBase::dispatchClick(){
     return flag;
 }
 
+/// @brief ticks all children attached
+/// @param deltatime 
+void UAutoBoxBase::Tick(float deltatime){
+    for (int i = 0; i < attachedItems.Num(); i++){
+        UcustomUiComponentBase *current = attachedItems[i];
+        if (current){
+            current->Tick(deltatime);
+        }
+    }
+}
+
+
 
 /// @brief adds a child to click listening and visibility propagation if not null
 /// @param item 

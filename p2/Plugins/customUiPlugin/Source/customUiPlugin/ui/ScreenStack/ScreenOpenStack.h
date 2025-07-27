@@ -18,6 +18,8 @@ public:
 
     void dispatchClick();
 
+    void Tick(float deltatime);
+
 private:
     std::vector<UCanvasScreen *> opened;
     

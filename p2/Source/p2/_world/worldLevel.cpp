@@ -18,6 +18,7 @@
 #include "GameCore/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "GameCore/PlayerInfo/PlayerInfo.h"
 
 #include "p2/entityManager/referenceManager.h"
 #include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
@@ -235,14 +236,11 @@ int worldLevel::getGroundHeight(FVector &pos){
 void worldLevel::Tick(float DeltaTime){
     if(isTerrainInited){
         //tick terrain creation if not done yet by player distance
-        referenceManager *referenceManagerPointer = referenceManager::instance();
-        if(referenceManagerPointer != nullptr){
-            if(terrainPointer != nullptr){
-                FVector playerLocationCopy = referenceManagerPointer->playerLocation();
-                terrainPointer->Tick(playerLocationCopy);
+        if(terrainPointer != nullptr){
+            FVector playerLocationCopy = PlayerInfo::playerLocation();
+            terrainPointer->Tick(playerLocationCopy);
 
-                debugTerrainHeight();
-            }
+            debugTerrainHeight();
         }
 
         //tick sync tick tasks from pathfinder

@@ -140,7 +140,7 @@ void TwoJointBone::MoveToTarget(FVector &target){
         DebugHelper::logMessage("debugKinematic forward kinematic look result: ", boneAxisDefaultDown);
     }
 
-    //pitch anziehen
+    //pitch anziehen des beins / arms
     float pitchHip = 0.0f;
     float pitchKnee = 0.0f;
 
