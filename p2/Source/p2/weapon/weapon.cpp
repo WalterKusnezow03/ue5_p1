@@ -509,7 +509,8 @@ void Aweapon::setupAnimations()
 
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
-	if(verschlussSkeletonPointer != nullptr){
+	
+	if(false && verschlussSkeletonPointer != nullptr){
 		//old anim sequnce (new: custom animator)
 		//playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
 
@@ -519,11 +520,13 @@ void Aweapon::shootAnimation(){
 			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
 			playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
 
-		}else{
-			//new custom animation with target interpolator
-			flagKickbackStart();
 		}
 	}
+
+
+	//new custom animation with target interpolator
+	flagKickbackStart();
+
 }
 
 /// @brief plays the reload animation
@@ -565,26 +568,17 @@ void Aweapon::playAnimation(
 
 
 
-/// @brief will return a recoil value to apply IF CAN SHOOT
+/// @brief will return a recoil value to apply if recoil not copied yet
 /// @return value (negative) for camera roatation, or 0 if cant shoot at the moment
 float Aweapon::recoilValue(){
-	/*if(!canShoot()){
-		return 0.0f;
-	}
-	return -0.1f;
-	*/
-	
 
-	if(kickbackStarted && !recoilCopied){
+	//copy recoil whether still kickback or doesnt!
+	if(!recoilCopied){
+		//must be a negative value to properly flip up the camera!
 		recoilCopied = true;
 		return -0.1f;
 	}
-
-	//must be a negative value to properly flip up the camera!
 	return 0.0f;
-
-
-
 
 }
 
@@ -595,6 +589,7 @@ float Aweapon::recoilValue(){
 
 /// @brief finds all the attachments in blueprint for the weapon being DIRECT CHILD ACTOR in the weapon
 void Aweapon::findAttachmentChildActors(){
+	//deprecated, are spawned!
 	/*
 	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
 	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method
@@ -1067,6 +1062,8 @@ void Aweapon::flagKickbackStart(){
 	kickbackStarted = true;
 	recoilCopied = false;
 }
+
+
 
 void Aweapon::setupKickBackAnimation(){
 	int kickBackDistance = 10; //3cm

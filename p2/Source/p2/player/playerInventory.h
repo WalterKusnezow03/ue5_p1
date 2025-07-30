@@ -54,6 +54,9 @@ private:
 			int getBulletsInMag();
 			float recoilValue();
 	};
+
+
+	/// @brief stored on heap because copy constructor must be const, NOT wanted here!
 	std::vector<playerInventory::wslot *> weaponVector;
 	int currentIndex;
 

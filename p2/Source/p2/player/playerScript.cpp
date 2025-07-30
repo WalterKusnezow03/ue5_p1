@@ -28,53 +28,9 @@
 
 
 // Sets default values
-AplayerScript::AplayerScript()
+AplayerScript::AplayerScript() : APlayerControllerBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-    
-
     aiming = false;
-
-    // Set capsule size
-    float radius = 45.0f;
-    float halfHeight = 85.0f; //100cm leg, 70 arms / torso = 170 -> 170 /2 = 85.0f
-    GetCapsuleComponent()->InitCapsuleSize(radius, halfHeight);
-
-    CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-    CameraComponent->SetupAttachment(GetCapsuleComponent());
-    //CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 84.f)); // Position the camera
-    //CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, halfHeight * 2.0f)); // Position the camera
-    CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, halfHeight)); // Position the camera
-    CameraComponent->bUsePawnControlRotation = true;
-
-    DebugHelper::logMessage("debugsetup player capsule");
-
-    // Set default values
-    TurnRateGamepad = 45.f;
-    LookUpRateGamepad = 45.f;
-
-	TurnRateGamepad = 90.f;
-    LookUpRateGamepad = 90.f;
-
-	health = 100;
-
-
-    // Initialize the Skeletal Mesh Component pointer
-    SkeletalMeshComponent = GetMesh();
-
-    
-
-
-    if (GEngine && SkeletalMeshComponent) {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "found skeletal mesh");
-    }
-
-    sprinting = false;
-
-
-    
-
 }
 
 // Called when the game starts or when spawned
@@ -116,36 +72,9 @@ void AplayerScript::BeginPlay()
 // Called to bind functionality to input
 void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent); //very important!
 
-    // Bind input actions
-    PlayerInputComponent->BindAxis("MoveForward", this, &AplayerScript::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AplayerScript::MoveRight);
-    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-    PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("TurnRate", this, &AplayerScript::TurnAtRate);
-    PlayerInputComponent->BindAxis("LookUpRate", this, &AplayerScript::LookUpAtRate);
-
-    PlayerInputComponent->BindAction("openPauseKey", IE_Pressed, this, &AplayerScript::openPauseMenu);
-
-    PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AplayerScript::interact);
-	PlayerInputComponent->BindAction("ReloadKey", IE_Pressed, this, &AplayerScript::reload);
-	PlayerInputComponent->BindAction("DropKey", IE_Pressed, this, &AplayerScript::drop);
-    PlayerInputComponent->BindAction("JumpKey", IE_Pressed, this, &AplayerScript::Jump);
-
-    PlayerInputComponent->BindAction("sprintKey", IE_Pressed, this, &AplayerScript::sprint);
-    PlayerInputComponent->BindAction("sprintKey", IE_Released, this, &AplayerScript::sprint);
-
-    // Bind the key down action, here, not needed
-	// PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AplayerScript::OnInteractKeyDown);
-	// Bind the key up action
-    PlayerInputComponent->BindAction("leftMouse", IE_Pressed, this, &AplayerScript::leftMouseDown);
-	PlayerInputComponent->BindAction("leftMouse", IE_Released, this, &AplayerScript::leftMouseUp);
-
-    PlayerInputComponent->BindAction("rightMouse", IE_Pressed, this, &AplayerScript::aim);
-    PlayerInputComponent->BindAction("rightMouse", IE_Released, this, &AplayerScript::aim);
-
-
+    //other player controls in Super Class!
 
     PlayerInputComponent->BindAction("key1", IE_Pressed, this, &AplayerScript::keydown1);
     PlayerInputComponent->BindAction("key2", IE_Pressed, this, &AplayerScript::keydown2);
@@ -221,11 +150,6 @@ void AplayerScript::Tick(float DeltaTime)
     //world level chunkTick
     worldLevel::Tick(DeltaTime);
 
-    PlayerInfo::Update(
-        GetActorLocation(),
-        cameraRotation(),
-        playerLookDir()
-    );
 
     shoot(); //shoot the weapon if needed or release. Method handles both automatically
     TickWeaponSway();
@@ -274,28 +198,6 @@ void AplayerScript::resetFlagsOnTick(){
     isWalking = false;
 }
 
-/**
- * Implemented take damage method from interface, need to override it, this method is not valid yet
- */
-void AplayerScript::takedamage(int d)
-{
-    takedamage(d, false);
-}
-
-void AplayerScript::takedamage(int d, FVector &hitpoint){
-    takedamage(d, hitpoint, false);
-}
-
-void AplayerScript::takedamage(int d, bool surpressed){
-    health -= d;
-	if(health <= 0){
-		health = 0;
-	}
-}
-
-void AplayerScript::takedamage(int d, FVector &hitpoint, bool surpressed){
-    takedamage(d, surpressed);
-}
 
 //Movement
 /**
@@ -303,79 +205,26 @@ void AplayerScript::takedamage(int d, FVector &hitpoint, bool surpressed){
  */
 void AplayerScript::MoveForward(float Value)
 {
-    playerInputContainer.setForwardAxis(Value);
-
+    Super::MoveForward(Value);
+    
+    if(isPaused){
+        return;
+    }
+ 
     if ((Controller != nullptr) && (Value != 0.0f))
     {
-        GetCharacterMovement()->MaxWalkSpeed = BASE_SPEED;
-        GetCharacterMovement()->MinAnalogWalkSpeed = BASE_SPEED - 1;
         if (sprinting) {
-            GetCharacterMovement()->MaxWalkSpeed = SPRINT_SPEED;
-            GetCharacterMovement()->MinAnalogWalkSpeed = SPRINT_SPEED - 1;
-
             boneController.weaponRaisedReadyPosition(); //testing needed
         }else{
             boneController.weaponContactPosition();
         }
-        
-
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-        if(true){
-            AddMovementInput(Direction, Value);
-        }
-    
-        isWalking = true;
-
 
     }
 }
 
 void AplayerScript::MoveRight(float Value)
 {
-    playerInputContainer.setRightAxis(Value);
-
-    if ( (Controller != nullptr) && (Value != 0.0f) )
-    {
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(Direction, Value);
-
-    }
-}
-
-void AplayerScript::TurnAtRate(float Rate)
-{
-    if(isPaused){
-        return;
-    }
-    float yawRate = Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds();
-    AddControllerYawInput(yawRate);
-    //AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
-
-void AplayerScript::LookUpAtRate(float Rate)
-{
-    if(isPaused){
-        return;
-    }
-    
-    if(Controller){
-        float DeltaPitch = Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds();
-        FRotator currentRotaion = Controller->GetControlRotation();
-        float newPichAbs = std::abs(currentRotaion.Pitch + DeltaPitch);
-        if(newPichAbs < 89.0f){
-            AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
-        }    
-    }
-    
-	//AddControllerPitchInput(Rate * LookUpRateGamepad * GetWorld()->GetDeltaSeconds());
-	//UE_LOG(LogTemp, Warning, TEXT("Turning at rate: %f"), Rate);
+    Super::MoveRight(Value);
 }
 
 
@@ -383,12 +232,14 @@ void AplayerScript::LookUpAtRate(float Rate)
 
 
 void AplayerScript::Jump(){
-    if(isPaused){
+    Super::Jump();
+    if (isPaused)
+    {
         return;
     }
 
     if (CanJump()){
-        ACharacter::Jump(); // Calls the base class jump function
+        //ACharacter::Jump(); // Calls the base class jump function
 
         if(!wingsuitInterface.wingsuitIsOpenFlag()){
             wingsuitInterface.setWingsuitTimerOnJump();
@@ -405,77 +256,35 @@ void AplayerScript::Jump(){
 }
 
 
-
-void AplayerScript::sprint(){
-    sprinting = !sprinting;
-}
-
 /**
  * allows the player to interact (for example picking up a weapon by pressing "E")
  */
 void AplayerScript::interact(){
-	performRaycast();
+	Super::interact(); //performs Raycast!
 
-    playerInputContainer.setInteractKeyPressedTrue();
-}
-
-void AplayerScript::performRaycast()
-{
-	// Get the camera location and rotation
-    FVector CameraLocation = CameraComponent->GetComponentLocation();
-    FRotator CameraRotation = CameraComponent->GetComponentRotation();
-
-    // Define the start and end vectors for the raycast
-    FVector Start = CameraLocation;
-
-    //100 = 1m
-    //500m = 
-    FVector End = Start + (CameraRotation.Vector() * 200.0f); //2 meter in front of the camera
-
-    // Perform the raycast
-    FHitResult HitResult;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this); // Ignore the character itself
-
-    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-
-
-
-    // If the raycast hit something, log the hit actor's name
-    if (bHit)
-    {
-		AActor* actor = HitResult.GetActor();
-		if(actor != nullptr){
-			
-
-			Aweapon *weapon = Cast<Aweapon>(actor);
-			if(weapon){
-                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
-                return;
-            }
-
-            IInteractinterface *interactable = Cast<IInteractinterface>(actor);
-            if(interactable){
-                interactable->interact();
-                return;
-            }
-
-            AvehicleBase *vehicle = Cast<AvehicleBase>(actor);
-            if(vehicle != nullptr){
-                vehicle->seatAsDriver(this); //interface
-                return;
-            }
+    if(interactedActorPointer){
+        Aweapon *weapon = Cast<Aweapon>(interactedActorPointer);
+        if(weapon){
+            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
+            return;
         }
 
-		
+        AvehicleBase *vehicle = Cast<AvehicleBase>(interactedActorPointer);
+        if(vehicle != nullptr){
+            vehicle->seatAsDriver(this); //interface
+            return;
+        }
     }
+    interactedActorPointer = nullptr; //reset
 }
+
 
 
 /// @brief drops the weapon from the inventory and bone controller and attaches the new weapon if
 /// possible
 void AplayerScript::drop(){
-    boneController.dropWeapon(); 
+    Super::drop();
+    boneController.dropWeapon();
     playerInventory.dropWeapon();
 
     Aweapon *otherWeaponNow = playerInventory.getItemPointer();
@@ -485,13 +294,13 @@ void AplayerScript::drop(){
 }
 
 void AplayerScript::reload(){
+    Super::reload();
     playerInventory.reloadWeapon();
 }
 
-
-
 void AplayerScript::aim(){
-    aiming = !aiming;
+    Super::aim();
+    
     playerInventory.aim(aiming);
     boneController.weaponAimDownSight(aiming);
 }
@@ -508,48 +317,16 @@ void AplayerScript::shoot(){
 
     if(holding){ //checks if holding mouse down
         
-
-        //recoil apply (immidiate, will be based on canshoot of weapon)
-        float recoil = playerInventory.recoilValue();
-        LookUpAtRate(recoil);
-
         playerInventory.shoot();
-
-
-
+        float recoil = playerInventory.recoilValue(); 
+        DebugHelper::logMessageFloat("WeaponRecoil", recoil); //ok
+        addPendingRecoil(recoil * 10.0f);
     }else{
         playerInventory.releaseShoot(); //abzug loslassen
     }
 }
 
 
-
-
-
-
-/// @brief sets the left mouse holding status for the weapon
-/// @param h 
-void AplayerScript::setHolding(bool h){
-    holding = h;
-}
-
-
-void AplayerScript::leftMouseDown(){
-    setHolding(true);
-
-    /*
-    DebugHelper::showScreenMessage("----> player mouse down!");
-    if(!isPaused){
-        DebugHelper::showScreenMessage("----> player mouse down! NO PAUSE");
-    }*/
-
-    //debug
-    //debugPathFinder();
-}
-
-void AplayerScript::leftMouseUp(){
-    setHolding(false);
-}
 
 
 
@@ -578,18 +355,6 @@ void AplayerScript::switchToIndex(int index){
             );
         }
     }
-}
-
-
-
-
-void AplayerScript::setTeam(teamEnum teamIn){
-    this->team = teamIn;
-    // referenceManager::verifyTeam(teamIn);
-}
-
-teamEnum AplayerScript::getTeam(){
-    return team;
 }
 
 
@@ -820,54 +585,7 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
 }
 
 
-FRotator AplayerScript::cameraRotation(){
-    FRotator rotator;
-    if(CameraComponent){
-        return CameraComponent->GetComponentRotation();
-    }
-    return rotator;
-}
 
-FVector AplayerScript::playerLookDir(){
-    if(CameraComponent){
-        return CameraComponent->GetForwardVector();
-    }
-    return FVector(0, 0, 0);
-}
-
-/**
- * --- helper ---
- */
-void AplayerScript::showCursor(bool show){
-    // Assuming you're inside your ACharacter or subclass (e.g., AMyCharacter)
-    APlayerController* PlayerController = Cast<APlayerController>(GetController());
-    if (PlayerController)
-    {
-        // Toggle mouse cursor visibility
-        PlayerController->bShowMouseCursor = show;
-        //! PlayerController->bShowMouseCursor;
-
-        /*
-        if(show){
-            PlayerController->SetInputMode(FInputModeUIOnly());
-        }else{
-            PlayerController->SetInputMode(FInputModeGameOnly());
-        }*/
-
-
-
-        //game only custom dispatch no ui - CUSTOM DIPATCH CLICKS
-        FInputModeGameOnly InputMode;
-        PlayerController->SetInputMode(InputMode);
-        
-        
-    }
-
-}
-
-void AplayerScript::setPaused(bool in){
-    isPaused = in;
-}
 
 /**
  * 
@@ -884,6 +602,7 @@ void AplayerScript::createUserInterface(){
 }
 
 void AplayerScript::openPauseMenu(){
+    Super::openPauseMenu();
     if (uiInstance != nullptr)
     {
         if(isPaused){
@@ -1001,14 +720,4 @@ void AplayerScript::TickMiniMap(){
         FRotator rot = GetActorRotation();
         minimap->updatePlayerPositionAndRotation(pos, rot);
     }
-}
-
-/**
- * player steering
- */
-InputContainer &AplayerScript::input(){
-    return playerInputContainer;
-}
-void AplayerScript::setDriverLocation(FVector &location){
-    SetActorLocation(location);
 }

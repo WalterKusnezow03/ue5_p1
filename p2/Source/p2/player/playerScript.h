@@ -22,33 +22,25 @@
 #include "p2/ui/PlayerUi.h"
 #include "p2/player/minimap/Minimap.h"
 
+#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
+
 #include "playerScript.generated.h"
 
 UCLASS()
-class P2_API AplayerScript : public ACharacter, public IDamageinterface, public ISteeringinterface
+class P2_API AplayerScript : public APlayerControllerBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AplayerScript();
-	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &hitpoint) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
-	virtual void setTeam(teamEnum teamIn) override;
-	virtual teamEnum getTeam() override;
+
 
 	void debugPathFinder();
 
-	void showCursor(bool show);
-	void setPaused(bool in);
+	
 
 	void reloadLoadout(LoadoutHelper &loadout);
-
-	//steering
-	virtual InputContainer &input() override;
-	virtual void setDriverLocation(FVector &location) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -66,18 +58,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	UPROPERTY(VisibleAnywhere)
-    class UCameraComponent* CameraComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UCameraComponent* CameraComponentSecondary;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations", meta = (AllowPrivateAccess = "true"))
-    class UAnimInstance* AnimInstance;
-
-	FRotator cameraRotation();
-	FVector playerLookDir();
 
 	void updatePlayerEnteredAreaUi(bool entered);
 
@@ -89,40 +69,27 @@ private:
 	void cameraDefaultFpv();
 	void cameraDebugFpv();
 
-	teamEnum team;
-
 	class playerInventory playerInventory;
 
 
 	// Pointer to the Skeletal Mesh Component
     class USkeletalMeshComponent* SkeletalMeshComponent;
 
-	bool aiming;
-	bool holding;
-	bool sprinting;
-	void sprint();
-	static const int BASE_SPEED = 600;
-	static const int SPRINT_SPEED = 700;
-	static const int WINGSUIT_SPEED = 600; //6ms
-
-	bool isWalking;
+	
 
 
-	void MoveForward(float Value);
-    void MoveRight(float Value);
-    void TurnAtRate(float Rate);
-    void LookUpAtRate(float Rate);
-	void interact();
-	void reload();
-	void drop();
-	void aim();
+	virtual void MoveForward(float Value) override;
+    virtual void MoveRight(float Value) override;
+    
+	virtual void interact() override;
+	virtual void reload() override;
+	virtual void drop() override;
+	virtual void aim() override;
 
 	void TickWeaponSway();
 
-	void setHolding(bool h);
 	void shoot();
-	void leftMouseUp();
-	void leftMouseDown();
+	
 
 	void keydown1();
 	void keydown2();
@@ -130,15 +97,6 @@ private:
 	void keydown4();
 	void switchToIndex(int index);
 
-	void performRaycast();
-
-	UPROPERTY(EditAnywhere)
-    float TurnRateGamepad;
-
-    UPROPERTY(EditAnywhere)
-    float LookUpRateGamepad;
-
-	int health;
 
 
 	//BONE CONTROLLER
@@ -156,19 +114,17 @@ private:
 	void TickUpdateWingsuit(float DeltaTime);
 	void setWingsuitTimerOnMovement();
 	class WingsuitInterface wingsuitInterface;
-
-	float playerMaxMovementVelocity = 500.0f;
+	static const int WINGSUIT_SPEED = 600; //6ms
 
 
 	//UI
 	UPlayerUi *uiInstance = nullptr;
 	void createUserInterface();
-	void openPauseMenu();
+	virtual void openPauseMenu() override;
 	void updateUi();
 	void updateAmmunitionUi();
 	void updateHealthUi();
 
-	bool isPaused = false;
 
 
 	//Loadout setup

@@ -10,9 +10,11 @@ LodCheckContainer::LodCheckContainer(){
     int metersLodMiddleUntil = 400;
     int metersLodFarUntil = 600;
 
-    modifyUpperDistanceLimitFor(ELod::lodNear, metersLodNearUntil * 100);
-    modifyUpperDistanceLimitFor(ELod::lodMiddle, metersLodMiddleUntil * 100);
-    modifyUpperDistanceLimitFor(ELod::lodFar, metersLodFarUntil * 100);
+    int factor = 100; //100
+
+    modifyUpperDistanceLimitFor(ELod::lodNear, metersLodNearUntil * factor);
+    modifyUpperDistanceLimitFor(ELod::lodMiddle, metersLodMiddleUntil * factor);
+    modifyUpperDistanceLimitFor(ELod::lodFar, metersLodFarUntil * factor);
 }
 
 LodCheckContainer::LodCheckContainer(FVector &a, FVector &b) : LodCheckContainer(){

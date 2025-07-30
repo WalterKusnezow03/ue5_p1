@@ -246,7 +246,7 @@ private:
 	bool verschlussKickBackStarted = false;
 	bool recoilCopied = false;
 
-	
+
 	void setupKickBackAnimation();
 	bool kickbackIsRunning();
 	void TickKickback(float DeltaTime);

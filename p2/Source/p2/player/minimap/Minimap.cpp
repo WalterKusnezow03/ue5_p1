@@ -165,6 +165,9 @@ AMinimap::AMinimap(){
     Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     // Optional: also set collision response to ignore everything (not strictly needed if NoCollision is set)
     Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+    //hide shadows 
+    Mesh->CastShadow = false;
 }
 
 void AMinimap::BeginPlay(){
