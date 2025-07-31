@@ -21,6 +21,9 @@
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "carriedItem.h"
 
+#include "p2/weapon/weaponProperties/WeaponPropertiesMap.h"
+#include "p2/weapon/weaponProperties/WeaponProperties.h"
+
 
 // Sets default values
 Aweapon::Aweapon()
@@ -50,10 +53,6 @@ Aweapon::Aweapon()
 
 	offset = FVector(-100, 100.0f, 0);
 
-	//time
-	
-	cooldownTime = calculateRpm(500);
-	reloadTime = 1.5f;
 
 	pickedMuzzle = weaponAttachmentEnum::muzzle_flashSurpressor;
 }
@@ -64,6 +63,10 @@ void Aweapon::resetFlags(){
 	recoilCopied = false;
 	abzugHinten = false; 
 	isReloading = false;
+}
+
+weaponEnum Aweapon::weaponType(){
+	return Type;
 }
 
 
@@ -167,14 +170,6 @@ void Aweapon::updateCooltime(float time){
 	}
 
 }
-/// @brief will say if single fire is on
-/// @return true false
-bool Aweapon::singleFireMode(){
-	if(Type == weaponEnum::pistol){
-		return true;
-	}
-	return singleFireModeOn;
-}
 
 
 /// @brief Unbind from player or bot
@@ -254,7 +249,7 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 
 		//DONT FORGET THESE!! OTHERWISE NO FIRERATE IS APPLIED
 		abzugHinten = true;
-		resetCoolTime(cooldownTime);
+		resetCoolTime(cooldownTime());
 		bulletsInMag--;
 
 		// Perform the raycast
@@ -277,38 +272,9 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 			AActor* actor = HitResult.GetActor();
 			if(actor != nullptr){
 				
-				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *actor->GetName()); // dereference and call method
-
 				IDamageinterface* entity = Cast<IDamageinterface>(actor);
-				if (entity)
-				{
-					//damage entity if some other team
-					teamEnum entityTeam = entity->getTeam();
-					if(entityTeam != ownTeam || entityTeam == teamEnum::none){
-						if(DEBUG_DRAW){
-							DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
-						}
-
-						FVector hitpoint = HitResult.ImpactPoint;
-						entity->takedamage(
-							damageForAmmunitionType(), 
-							hitpoint,
-							isSoundSurpressed()
-						); // must be changed later
-					}else{
-						//own team hit / any other
-						if(DEBUG_DRAW){
-							DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
-						}
-					}
-
-					
-				}
-
-
+				damageIfPossible(ownTeam, entity, HitResult, Start, End);
 			}
-
-			
 		}
 
 
@@ -322,6 +288,46 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 		
 	}
 }
+
+
+
+void Aweapon::damageIfPossible(
+	teamEnum ownTeam,
+	IDamageinterface *entity, 
+	FHitResult &HitResult, 
+	FVector &start, 
+	FVector &end
+){
+	if(entity){
+		//damage entity if some other team
+		teamEnum entityTeam = entity->getTeam();
+		if(entityTeam != ownTeam || entityTeam == teamEnum::none){
+			if(DEBUG_DRAW){
+				DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 1.0f, 0, 1.0f);
+			}
+
+			FVector hitpoint = HitResult.ImpactPoint;
+			float damage = WeaponPropertiesMap::damageFor(
+				Type,
+				start,
+				hitpoint
+			);
+
+			entity->takedamage(
+				damage,
+				hitpoint,
+				isSoundSurpressed()
+			); // must be changed later
+		}else{
+			//own team hit / any other
+			if(DEBUG_DRAW){
+				DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 1.0f, 0, 1.0f);
+			}
+		}
+	}
+}
+
+
 
 
 
@@ -391,27 +397,82 @@ bool Aweapon::canReload(){
 void Aweapon::reload(int amount){
 	if(amount > 0){
 		bulletsInMag += amount;
-		resetCoolTime(reloadTime);
+		resetCoolTime(reloadTime());
 		reloadAnimation();
 
 		isReloading = true;
 	}
 }
 
+
+// --------- weapon properties usuage -----------
+
+
 int Aweapon::getMagSize(){
-	//return 30;
-	if(Type == weaponEnum::assaultRifle){
-		return 30;
-	}
-	if(Type == weaponEnum::pistol){
-		return 12;
-	}
-	return 30;
+	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	return ref.getMagSize();
 }
 
 int Aweapon::getBulletsInMag(){
 	return bulletsInMag;
 }
+
+
+/// @brief will return a recoil value to apply if recoil not copied yet
+/// @return value (negative) for camera roatation, or 0 if cant shoot at the moment
+float Aweapon::recoilValue(){
+
+	//copy recoil whether still kickback or doesnt!
+	if(!recoilCopied){
+		//must be a negative value to properly flip up the camera!
+		recoilCopied = true;
+		const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+		return ref.recoilValue();
+	}
+	return 0.0f;
+
+}
+
+float Aweapon::cooldownTime(){
+	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	return ref.CooldownTimeBasedOnRpm();
+}
+
+float Aweapon::reloadTime(){
+	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	return ref.reloadTime();
+}
+
+/// @brief used for player inventory reloading
+/// @return type
+ammunitionEnum Aweapon::getAmmunitionType(){
+	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	return ref.getAmmunitionType();
+}
+
+/// @brief will say if single fire is on or default always on
+/// @return true false
+bool Aweapon::singleFireMode(){
+	//given single fire mode
+	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	if(ref.isSingleFireOnly()){
+		return true;
+	}
+
+	//custom single fire mode
+	return singleFireModeOn;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 void Aweapon::showWeapon(bool show){
 	Super::showItem(show);
@@ -422,9 +483,6 @@ void Aweapon::showWeapon(bool show){
 	}
 }
 
-weaponEnum Aweapon::readType(){
-	return Type;
-}
 
 ////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
 
@@ -516,9 +574,9 @@ void Aweapon::shootAnimation(){
 
 		if(false){
 			//deprecated
-			playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
-			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime);
-			playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime);
+			playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime());
+			playAnimation(gehauseAnimSequence, gehauseSkeletonPointer, cooldownTime());
+			playAnimation(magAnimationShootSequence, magSkeletonPointer, cooldownTime());
 
 		}
 	}
@@ -533,7 +591,7 @@ void Aweapon::shootAnimation(){
 void Aweapon::reloadAnimation(){
 	if(magSkeletonPointer != nullptr){
 		//playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
-		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime);
+		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime());
 	}
 }
 
@@ -568,19 +626,6 @@ void Aweapon::playAnimation(
 
 
 
-/// @brief will return a recoil value to apply if recoil not copied yet
-/// @return value (negative) for camera roatation, or 0 if cant shoot at the moment
-float Aweapon::recoilValue(){
-
-	//copy recoil whether still kickback or doesnt!
-	if(!recoilCopied){
-		//must be a negative value to properly flip up the camera!
-		recoilCopied = true;
-		return -0.1f;
-	}
-	return 0.0f;
-
-}
 
 
 
@@ -650,7 +695,7 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 	EntityManager *entityManager = worldLevel::entityManager();
 	if (assetManagerInstance != nullptr && entityManager != nullptr)
 	{
-		weaponEnum ownType = readType();
+		weaponEnum ownType = weaponType();
 
 		//spawn uclass
 		UClass *foundAttachment = assetManagerInstance->findBp(ownType, EattachmentType);
@@ -693,7 +738,7 @@ void Aweapon::hideAllAttachments(){
 }
 
 /**
- * weapon setup helper api!
+ * -------- weapon setup helper api! ---------
  */
 /// @brief applys a sight if possible
 /// @param sight sight value in to enable
@@ -844,21 +889,6 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
 
 
 
-
-/// @brief returns the ammunition type for this weapon
-/// @return 
-ammunitionEnum Aweapon::getAmmunitionType(){
-	weaponEnum type = readType();
-	switch(type){
-	case weaponEnum::assaultRifle:
-		return ammunitionEnum::assaultrifle556;
-
-	case weaponEnum::pistol:
-		return ammunitionEnum::pistol9;
-	}
-
-	return ammunitionEnum::assaultrifle556;
-}
 
 
 
@@ -1029,19 +1059,7 @@ FVector Aweapon::rightHandFingerLocation(HandBoneIndexEnum type){
 
 
 
-int Aweapon::damageForAmmunitionType(){
-	ammunitionEnum typethis = getAmmunitionType();
-	if(typethis == ammunitionEnum::assaultrifle556){
-		return 18;
-	}
-	if(typethis == ammunitionEnum::pistol9){
-		return 15;
-	}
-	if(typethis == ammunitionEnum::heavy762){
-		return 21;
-	}
-	return 10;
-}
+
 
 
 
@@ -1077,12 +1095,12 @@ void Aweapon::setupKickBackAnimation(){
 		false);
 	actorKickBackAnim.addFrame(
 		FVector(-kickBackDistance, 0, 0), //x forward
-		cooldownTime * 0.1f, //time to prev frame
+		cooldownTime() * 0.1f, //time to prev frame
 		false
 	);
 	actorKickBackAnim.addFrame(
 		FVector(0, 0, 0),
-		cooldownTime * 0.9f, //time to prev frame
+		cooldownTime() * 0.9f, //time to prev frame
 		false
 	);
 }
@@ -1134,12 +1152,12 @@ void Aweapon::setupVerschlussAnimation(){
 		false);
 	verschlussKickBackAnimation.addFrame(
 		currentRelativeLocation + FVector(-kickBackDistance, 0, 0), //x forward
-		cooldownTime * 0.1f, //time to prev frame
+		cooldownTime() * 0.1f, //time to prev frame
 		false
 	);
 	verschlussKickBackAnimation.addFrame(
 		currentRelativeLocation + FVector(0, 0, 0),
-		cooldownTime * 0.8f, //time to prev frame
+		cooldownTime() * 0.8f, //time to prev frame
 		false
 	);
 }

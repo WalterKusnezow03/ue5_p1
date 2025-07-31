@@ -19,14 +19,6 @@ AthrowerWeapon::AthrowerWeapon(){
 void AthrowerWeapon::BeginPlay(){
     Super::BeginPlay();
 
-    //load the item to show
-    cooldownTime = 1.5f;
-    reloadTime = 1.5f;
-
-    //test
-    bulletsInMag = 10;
-
-    singleFireModeOn = true;
 }
 
 
@@ -50,7 +42,7 @@ void AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){
     if(Super::canShoot() && throwableActorPointer != nullptr){
         //DONT FORGET THESE
         abzugHinten = true;
-		resetCoolTime(cooldownTime);
+		resetCoolTime(cooldownTime());
         bulletsInMag--;
 
         FVector connect = to - from; //AB = B - A

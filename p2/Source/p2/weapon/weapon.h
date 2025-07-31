@@ -21,6 +21,9 @@
 
 #include "weapon.generated.h"
 
+//forward declare
+class IDamageinterface;
+
 UCLASS()
 class P2_API Aweapon : public AcarriedItem
 {
@@ -30,6 +33,9 @@ public:
 
 	// Sets default values for this actor's properties (constructor)
 	Aweapon();
+
+	weaponEnum weaponType();
+	virtual ammunitionEnum getAmmunitionType();
 
 	// Enum to specify the type of weapon -> is saved to create animation paths
 	// enum values will resemble their EXACT type for animation locations in folder structure!
@@ -41,7 +47,7 @@ protected:
 	bool DEBUG_DRAW = false;
 
 public:
-	weaponEnum readType();
+	
 
 	virtual void showWeapon(bool show);
 	/*
@@ -108,6 +114,13 @@ protected:
 
 	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
 	virtual void shootProtected(FVector from, FVector to, teamEnum ownTeam);
+	void damageIfPossible(
+		teamEnum ownTeam,
+		IDamageinterface *entity,
+		FHitResult &hitresult,
+		FVector &start,
+		FVector &end
+	);
 
 	bool singleFireModeOn;
 	bool singleFireMode();
@@ -118,12 +131,11 @@ protected:
 	bool abzugHinten;
 	bool isAiming;
 	int bulletsInMag;
-
 	bool isReloading = false;
 
 	
-	float cooldownTime;
-	float reloadTime;
+	float cooldownTime();
+	float reloadTime();
 
 	class timer timer;
 
@@ -182,12 +194,13 @@ protected:
 	class UChildActorComponent *reddotSightChildActor;
 	class UChildActorComponent *ironSightChildActor;
 	
-	/// @brief saves all sights of the weapon find from actor to enable disable them by selected type
+	/// @brief saves all sights of the weapon to spawn to enable disable them by selected type
 	std::map<weaponAttachmentEnum, AActor *> sightMap;
 
-	/// @brief saves all muzzle of the weapon find from actor to enable disable them by selected type
+	/// @brief saves all muzzle of the weapon to spawn to enable disable them by selected type
 	std::map<weaponAttachmentEnum, AActor *> muzzleMap;
 
+	/// @brief saves all grips of the weapon to spawn to enable disable them by selected type
 	std::map<weaponAttachmentEnum, AActor *> gripMap;
 
 	weaponAttachmentEnum pickedSight;
@@ -202,8 +215,7 @@ public:
 	void applyMuzzle(weaponAttachmentEnum muzzle);
 	void applyGrip(weaponAttachmentEnum type);
 
-	// get ammuntion type for this weapon
-	virtual ammunitionEnum getAmmunitionType();
+	
 
 	void updateSwayEnabledStatus(bool flag);
 

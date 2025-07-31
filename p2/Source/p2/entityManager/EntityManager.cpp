@@ -102,7 +102,7 @@ void EntityManager::add(Aweapon *weaponIn){
 
 
         weaponIn->showWeapon(false);
-        weaponEnum type = weaponIn->readType();
+        weaponEnum type = weaponIn->weaponType();
 
         //new map manager
         weaponMap.add(type, weaponIn);
