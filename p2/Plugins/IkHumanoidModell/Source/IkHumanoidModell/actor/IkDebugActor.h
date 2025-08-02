@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
-#include "IkHumanoidModell/Ik/Controller/HipController.h"
+#include "IkHumanoidModell/Ik/Controller/HipController/HipController.h"
 #include "CoreMath/animation/TargetInterpolator.h"
 
 #include "IkDebugActor.generated.h"

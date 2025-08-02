@@ -43,6 +43,8 @@ void AIkDebugActor::BeginPlay(){
 
     bone.setup(50, 50, GetWorld());
 
+
+    //depracated debug tools
     // x is forward
     start = FVector(-30, 40, -50);
     end = FVector(30, -20, -50);

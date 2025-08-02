@@ -507,6 +507,8 @@ MMatrix MMatrix::createRotatorFrom(
             yawRad += (yawRad > 0.0f) ? -M_PI : M_PI;
             pitchRad *= -1.0f;
         }
+        
+        
     }
 
     MMatrix rotationMat;
@@ -518,8 +520,158 @@ MMatrix MMatrix::createRotatorFrom(
 }
 
 
+//debug
+MMatrix MMatrix::createRotatorFrom(
+    FVector &other, 
+    FVector2D XAxis, 
+    FVector2D ZAxis,
+    bool yawConstraint90,
+    float &outYaw,
+    float &outPitch
+){
+    FVector normalized = other.GetSafeNormal();
+
+    //yaw angle
+    FVector2D xydir(normalized.X, normalized.Y);
+    float yawRad = signedAngleRadBetween(XAxis, xydir); //signiert voll umfänglich notwendig anders als pitch
+    
+    /**
+     * wenn sich der zielpunkt nahe der 0 werte befindet,
+     * ist der acos(0) = 90 degree, was seltsame
+     * sprünge erzeugt.
+     */
+    bool noYaw = false;
+    FVector xyProjection(other.X, other.Y, 0.0f);
+    if (false && xyProjection.Size() < 0.1f){ //prevents weird rotations.
+        yawRad = 0.0f;
+        noYaw = true;
+    }
+
+    //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist! (das ist richtig so!)
+    MMatrix removeYaw;
+    removeYaw.yawRadAdd(-yawRad);
+    normalized = removeYaw * normalized;
+    normalized = normalized.GetSafeNormal();
+
+    //pitch angle
+    FVector2D xzdir(normalized.X, normalized.Z);
+    float pitchRad = signedAngleRadBetween(ZAxis, xzdir) *-1.0f; // test (negieren. Aus. Gründen.)
+
+    //is tested. 
+    if(yawConstraint90 && !noYaw){
+        float rad90 = M_PI / 2.0f;
+    
+        //makes yaw angle on the positive side and flips pitch instead!
+        if (std::abs(yawRad) > rad90) {
+            yawRad += (yawRad > 0.0f) ? -M_PI : M_PI;
+            pitchRad *= -1.0f;
+        }
+        
+        
+    }
+
+    MMatrix rotationMat;
+    rotationMat.yawRadAdd(yawRad);
+    rotationMat.pitchRadAdd(pitchRad);
+
+    outYaw = yawRad;
+    outPitch = pitchRad;
+
+    return rotationMat;
+}
+
+//experimental roll instead of yaw
+MMatrix MMatrix::createRotatorFrom(
+    FVector &other, //targeted
+    FVector2D XAxis,
+    FVector2D ZAxis,
+    bool yawConstraint90,
+    FVector &localFoward
+){
+
+    FVector normalized = other.GetSafeNormal();
+
+    float yawRad = 0.0f;
+    float pitchRad = 0.0f;
+    float rollRad = 0.0f;
+
+    //use roll case
+    float dotProductBetweenTargetAndMoveDir = DotProduct2D(localFoward, other);
+    if(!useRoll(dotProductBetweenTargetAndMoveDir)){
+        //yaw angle
+        FVector2D xydir(normalized.X, normalized.Y);
+        yawRad = signedAngleRadBetween(XAxis, xydir); //signiert voll umfänglich notwendig anders als pitch
+        
+        /**
+         * wenn sich der zielpunkt nahe der 0 werte befindet,
+         * ist der acos(0) = 90 degree, was seltsame
+         * sprünge erzeugt.
+         */
+        bool noYaw = false;
+        FVector xyProjection(other.X, other.Y, 0.0f);
+        if (false && xyProjection.Size() < 0.1f){ //prevents weird rotations.
+            yawRad = 0.0f;
+            noYaw = true;
+        }
+
+        //idee: yaw angle raus nehmen damit der pitch korrekt projeziert ist! (das ist richtig so!)
+        MMatrix removeYaw;
+        removeYaw.yawRadAdd(-yawRad);
+        normalized = removeYaw * normalized;
+        normalized = normalized.GetSafeNormal();
+    }else{
+
+        //use roll removal
+        FVector2D yzDir(normalized.Y, normalized.Z);
+        rollRad = signedAngleRadBetween(ZAxis, yzDir);
+
+        //projection on xz pane to remove roll
+        MMatrix removeRoll;
+        removeRoll.rollRadAdd(-rollRad);
+        normalized = removeRoll * normalized;
+        normalized = normalized.GetSafeNormal();
+
+    }
 
 
+    //pitch angle
+    FVector2D xzdir(normalized.X, normalized.Z);
+    pitchRad = signedAngleRadBetween(ZAxis, xzdir) *-1.0f; // test (negieren. Aus. Gründen.)
+
+    //is tested. 
+    if(yawConstraint90){
+        float rad90 = M_PI / 2.0f;
+    
+        //makes yaw angle on the positive side and flips pitch instead!
+        if (std::abs(yawRad) > rad90) {
+            yawRad += (yawRad > 0.0f) ? -M_PI : M_PI;
+            pitchRad *= -1.0f;
+        }
+        
+        
+    }
+
+    MMatrix rotationMat;
+    rotationMat.yawRadAdd(yawRad); //(roll, yaw) one only
+    rotationMat.yawRadAdd(rollRad); //(roll, yaw) one only
+    rotationMat.pitchRadAdd(pitchRad);
+
+    return rotationMat;
+
+}
+
+float MMatrix::DotProduct2D(FVector &a, FVector &b){
+    FVector a2D(a.X, a.Y, 0.0f);
+    FVector b2D(b.X, b.Y, 0.0f);
+    float dot = FVector::DotProduct(a2D.GetSafeNormal(), b2D.GetSafeNormal());
+
+    return dot;
+}
+
+bool MMatrix::useRoll(float dotProduct){
+    //ab 45 grad any dir. Cos(pi / 4) = 0.707
+    return std::abs(dotProduct) <= 0.707f;
+}
 
 // ----- EXPIREMENTAL END ------
 

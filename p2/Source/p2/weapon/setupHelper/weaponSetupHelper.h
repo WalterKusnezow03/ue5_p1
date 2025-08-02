@@ -40,13 +40,7 @@ public:
 	void setMuzzleAttachment(weaponAttachmentEnum typein);
 	void setGripAttachment(weaponAttachmentEnum typein);
 
-	static std::vector<weaponAttachmentEnum> validSights();
-	static std::vector<weaponAttachmentEnum> validGrips();
-	static std::vector<weaponAttachmentEnum> validMuzzleAttachments();
-
-	static bool isASightAttachment(weaponAttachmentEnum type);
-	static bool isAMuzzleAttachment(weaponAttachmentEnum type);
-	static bool isAGripAttachment(weaponAttachmentEnum type);
+	
 
 private:
 	weaponEnum typeToCreate;

@@ -78,8 +78,14 @@ public:
     bool reachedTargtZ();
     float distanceFromTarget();
 
+    //experimental
+    void updateLocalForwardMovingDirection(FVector &localMove);
+    void resetLocalForwardMovingDirection();
+
 private:
-    FVector extendedTranslationBottomToUp;
+    FVector defaultExtendedTranslationBottomToUp;
+
+    FVector localMovingDirectionSaved;
 
     MMatrix innerOffset;
     MMatrix innerOffsetInverse;

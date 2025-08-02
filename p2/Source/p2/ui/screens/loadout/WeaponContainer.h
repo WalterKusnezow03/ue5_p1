@@ -65,9 +65,6 @@ public:
 
     weaponSetupHelper setupHelperCopy();
 
-    static FString toString(weaponEnum type);
-    static FString toString(weaponAttachmentEnum type);
-
     
 
 private:

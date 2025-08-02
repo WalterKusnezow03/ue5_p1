@@ -10,6 +10,16 @@ HipController::~HipController(){
 
 }
 
+// do not modify 
+MMatrix &HipController::getOrientation(){
+    return orientation;
+}
+
+//do not modify
+MMatrix &HipController::getTranslation(){
+    return translation;
+}
+
 void HipController::drawLocation(float deltatime){
     if(worldPointer){
         deltatime *= 2.0f;
@@ -669,6 +679,18 @@ void HipController::setupRotationForNextStep(float radian){
 
     //prevent skelleton from slipping and not running again properly
     slowDownBasedOnRotationInRadian(radian);
+
+
+    // --- EXPERIMENTAL ---
+    //tell legs here where to new local forward is targeted
+    //later reset
+    FVector dir(1, 0, 0);
+    dir = addYawMat * dir;
+    legLeft.updateLocalForwardMovingDirection(dir);
+    legRight.updateLocalForwardMovingDirection(dir);
+
+
+
 }
 
 /// @brief will scale velocity immidiate based on radian to rotate in,
@@ -721,6 +743,14 @@ void HipController::TickHipRotation(float deltatime){
         if(hipRotationInterpolator.endReached()){
             rotationSet = false;
             DebugHelper::logMessage("hipRotation finished!");
+
+            //reset leg orientation / forward local vector 
+            //to tell legs ("we are aligned again, no roll yaw adjustment needed anymore")
+            legLeft.resetLocalForwardMovingDirection();
+            legRight.resetLocalForwardMovingDirection();
+
+
+
             return;
         }
 

@@ -1,23 +1,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IkHumanoidModell/Ik/Controller/BoneAttachment.h"
+#include "IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "CoreMath/animation/TargetInterpolator.h"
 #include "CoreMath/animation/RotationInterpolator.h"
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 
+/// @brief controls two bone attachments and runnign physics based on slip data.
+/// moves the underlying hip 
 class IKHUMANOIDMODELL_API HipController {
 
 public:
     HipController();
     ~HipController();
 
+    //default setup
     void setup(UWorld *world);
+
+    //setup custom needed
+    void setup(float legPart1, float legPart2, float offsetHip, UWorld *world);
 
     void Tick(float deltatime);
 
     void setLocation(FVector &location);
+
+    //do not modify
+    MMatrix &getOrientation();
+
+    //do not modify
+    MMatrix &getTranslation();
 
 private:
     float setupLegLength = 0.0f;

@@ -21,6 +21,7 @@
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "carriedItem.h"
 
+#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 #include "p2/weapon/weaponProperties/WeaponPropertiesMap.h"
 #include "p2/weapon/weaponProperties/WeaponProperties.h"
 
@@ -705,13 +706,13 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 			if(actor != nullptr){
 				
 				attachNewItem(actor, EattachmentType);
-				if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+				if(WeaponAttachmentValidator::isASightAttachment(EattachmentType)){
 					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
 				}
-				if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+				if(WeaponAttachmentValidator::isAMuzzleAttachment(EattachmentType)){
 					muzzleMap[EattachmentType] = actor;
 				}
-				if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+				if(WeaponAttachmentValidator::isAGripAttachment(EattachmentType)){
 					gripMap[EattachmentType] = actor;
 				}
 				
@@ -860,14 +861,14 @@ void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
 ///@brief returns the skeletal mesh component pointer for an given attachment 
 USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
 	weaponAttachmentEnum EattachmentType
-){
-	if(weaponSetupHelper::isASightAttachment(EattachmentType)){
+){	
+	if(WeaponAttachmentValidator::isASightAttachment(EattachmentType)){
 		return gehauseSkeletonPointer;
 	}
-	if(weaponSetupHelper::isAMuzzleAttachment(EattachmentType)){
+	if(WeaponAttachmentValidator::isAMuzzleAttachment(EattachmentType)){
 		return muzzleAttachmentSkelletonPointer;
 	}
-	if(weaponSetupHelper::isAGripAttachment(EattachmentType)){
+	if(WeaponAttachmentValidator::isAGripAttachment(EattachmentType)){
 		return gripAttachmentSkelletonPointer;
 	}
 	return gehauseSkeletonPointer;

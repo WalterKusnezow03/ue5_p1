@@ -13,23 +13,60 @@ public:
     void markTriangleFlipAsWantedForArms();
     void markTriangleFlipAsWantedForLegs();
 
+    //move to target and build
     void MoveToTarget(FVector target, MMatrix &world, float deltatime);
     void MoveToTargetInverse(FVector target, float deltatime);
 
+    //new
+    void MoveToTarget(
+        FVector target,
+        MMatrix &world,
+        float deltatime,
+        FVector &localForward //forward direction to prevent unexpected yaw and use roll instead.
+    );
+
+    /// @brief builds the boen without any fk ik 
+    /// @param world 
+    /// @param deltatime 
     void TickBuildForward(MMatrix &world, float deltatime);
 
+    /// @brief start effector WORLD Matrix
+    /// @return 
     MMatrix StartEffector();
+
+    /// @brief endeffector WORKD MATRIX
+    /// @return 
     MMatrix EndEffector();
+
+    /// @brief end effector world location
+    /// @return 
     FVector EndEffectorLocation();
 
+    /// @brief end effector world matrix without rotational part
+    /// @return 
+    MMatrix EndEffectorTranslation();
+
+    /// @brief end effector location relative to start effector in world space (StartToEndEffector vector)
+    /// @return 
     FVector EndEffectorRelativeLocation();
 
     float lengthOfBone();
 
+    /// @brief scaled vector of a size if out of reach target
+    /// @param target 
+    /// @return 
     FVector outOfreachDistance(FVector &target);
 
     void clampTarget(FVector &target);
     void clampToFullMotionRangeCircle(FVector &target);
+    bool targetIsInMotionCircle(FVector &target);
+
+    // -- api for layered bone --
+
+    /// @brief inverse transform of the whole bone
+    /// @return 
+    MMatrix inverseTransform();
+    void overrideR2KneeRotation(MMatrix &rin);
 
 private:
     bool bLogEnabled = true;
@@ -79,5 +116,8 @@ private:
     void buildBackward(MMatrix &world, float deltatime);
 
     void draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, float dt);
-};
 
+
+    //new
+    void MoveToTarget(FVector &target, FVector &localForward);
+};

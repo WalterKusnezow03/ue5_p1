@@ -1,11 +1,13 @@
 
+#include "WeaponContainer.h"
 
-#include "Components/HorizontalBox.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "customUiPlugin/ui/PlayerUiBase.h"
 #include "CoreMinimal.h"
-#include "WeaponContainer.h"
+#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
+#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
+
 
 void UWeaponContainer::init(UPlayerUiBase &ref){
     //ref is not needed
@@ -88,41 +90,6 @@ void UWeaponContainer::createLayout(){
     }
 }
 
-/**
- * static methods
- */
-FString UWeaponContainer::toString(weaponEnum type){
-    FString name = FString::Printf(TEXT("<weapon name>"));
-    if (type == weaponEnum::assaultRifle){
-        name = FString::Printf(TEXT("assault rifle"));
-    }
-    if(type == weaponEnum::pistol){
-        name = FString::Printf(TEXT("pistol"));
-    }
-    return name;
-}
-
-FString UWeaponContainer::toString(weaponAttachmentEnum type){
-    FString name = FString::Printf(TEXT("<attachment name>"));
-    
-    if (type == weaponAttachmentEnum::iron_sight){
-        name = FString::Printf(TEXT("iron sight"));
-    }
-    if (type == weaponAttachmentEnum::reddot){
-        name = FString::Printf(TEXT("reddot sight"));
-    }
-    if (type == weaponAttachmentEnum::grip_vertical){
-        name = FString::Printf(TEXT("grip vertical"));
-    }
-    if(type == weaponAttachmentEnum::muzzle_flashSurpressor){
-        name = FString::Printf(TEXT("flash surpressor"));
-    }
-    if(type == weaponAttachmentEnum::muzzle_SoundSurpressor){
-        name = FString::Printf(TEXT("sound surpressor"));
-    }
-    
-    return name;
-} 
 
 
 
@@ -138,25 +105,25 @@ void UWeaponContainer::updateAllNames(){
 void UWeaponContainer::updateWeaponName()
 {
     weaponEnum type = setupinternal.getWeaponTypeToCreate();
-    FString name = toString(type);
+    FString name = WeaponEnumStringConverter::toString(type);
     setTextWeapon(name);
 }
 
 void UWeaponContainer::updateSightName(){
     weaponAttachmentEnum type = setupinternal.getSightTypeToCreate();
-    FString name = toString(type);
+    FString name = WeaponEnumStringConverter::toString(type);
     setTextSight(name);
 }
 
 void UWeaponContainer::updateMuzzleName(){
     weaponAttachmentEnum type = setupinternal.getMuzzleTypeToCreate();
-    FString name = toString(type);
+    FString name = WeaponEnumStringConverter::toString(type);
     setTextMuzzle(name);
 }
 
 void UWeaponContainer::updateGripName(){
     weaponAttachmentEnum type = setupinternal.getGripTypeToCreate();
-    FString name = toString(type);
+    FString name = WeaponEnumStringConverter::toString(type);
     
 }
 
@@ -211,16 +178,17 @@ void UWeaponContainer::SetCallBackMuzzle(FSimpleDelegate callbackIn){
  */
 ///@brief auto finds attachment types and sets it
 void UWeaponContainer::updateAnyWeaponAttachment(weaponAttachmentEnum type){
-    if(weaponSetupHelper::isASightAttachment(type)){
+    if(WeaponAttachmentValidator::isASightAttachment(type)){
         updateWeaponSight(type);
         return;
     }
-    if(weaponSetupHelper::isAMuzzleAttachment(type)){
+    if(WeaponAttachmentValidator::isAMuzzleAttachment(type)){
         updateWeaponMuzzle(type);
         return;
     }
-    if(weaponSetupHelper::isAGripAttachment(type)){
-        
+    if(WeaponAttachmentValidator::isAGripAttachment(type)){
+        updateWeaponGrip(type);
+        return;
     }
 }
 

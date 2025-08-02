@@ -4,6 +4,8 @@
 #include "p2/weapon/weapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
+#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
+
 
 weaponSetupHelper::weaponSetupHelper()
 {
@@ -50,19 +52,19 @@ void weaponSetupHelper::setWeaponTypeToCreate(weaponEnum typeIn){
 /// @brief sets the targeted sight to set to a value
 /// @param sightIn 
 void weaponSetupHelper::setSightAttachment(weaponAttachmentEnum sightIn){
-    if(isASightAttachment(sightIn)){
+    if(WeaponAttachmentValidator::isASightAttachment(sightIn)){
         sightToSet = sightIn;
     }
 }
 
 void weaponSetupHelper::setMuzzleAttachment(weaponAttachmentEnum typein){
-    if(isAMuzzleAttachment(typein)){
+    if(WeaponAttachmentValidator::isAMuzzleAttachment(typein)){
         muzzleToSet = typein;
     }
 }
 
 void weaponSetupHelper::setGripAttachment(weaponAttachmentEnum typein){
-    if(isAGripAttachment(typein)){
+    if(WeaponAttachmentValidator::isAGripAttachment(typein)){
         gripToSet = typein;
     }
 }
@@ -102,60 +104,4 @@ void weaponSetupHelper::applyAttachments(Aweapon *weaponIn){
         weaponIn->applyMuzzle(muzzleToSet);
         weaponIn->applyGrip(gripToSet);
     }
-}
-
-
-std::vector<weaponAttachmentEnum> weaponSetupHelper::validSights(){
-    std::vector<weaponAttachmentEnum> output = {
-        weaponAttachmentEnum::iron_sight,
-        weaponAttachmentEnum::reddot
-    };
-    return output;
-}
-std::vector<weaponAttachmentEnum> weaponSetupHelper::validGrips(){
-    std::vector<weaponAttachmentEnum> output = {
-        weaponAttachmentEnum::grip_vertical
-    };
-    return output;
-}
-std::vector<weaponAttachmentEnum> weaponSetupHelper::validMuzzleAttachments(){
-    std::vector<weaponAttachmentEnum> output = {
-        weaponAttachmentEnum::muzzle_flashSurpressor,
-        weaponAttachmentEnum::muzzle_SoundSurpressor
-    };
-    return output;
-}
-
-
-
-
-bool weaponSetupHelper::isASightAttachment(weaponAttachmentEnum type){
-    std::vector<weaponAttachmentEnum> sights = validSights();
-    for (int i = 0; i < sights.size(); i++){
-        if(sights[i] == type){
-            return true;
-        }
-    }
-    return false;
-}
-
-
-bool weaponSetupHelper::isAMuzzleAttachment(weaponAttachmentEnum type){
-    std::vector<weaponAttachmentEnum> attachments = validMuzzleAttachments();
-    for (int i = 0; i < attachments.size(); i++){
-        if(attachments[i] == type){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool weaponSetupHelper::isAGripAttachment(weaponAttachmentEnum type){
-    std::vector<weaponAttachmentEnum> attachments = validGrips();
-    for (int i = 0; i < attachments.size(); i++){
-        if(attachments[i] == type){
-            return true;
-        }
-    }
-    return false;
 }

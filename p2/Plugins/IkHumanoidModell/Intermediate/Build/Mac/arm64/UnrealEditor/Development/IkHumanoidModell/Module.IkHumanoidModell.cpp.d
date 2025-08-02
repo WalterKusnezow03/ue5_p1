@@ -3819,31 +3819,47 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/arm64/UnrealEditor/Development/IkHumanoidModell/Module.IkHumanoidModell.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/arm64/UnrealEditor/Development/IkHumanoidModell/Definitions.IkHumanoidModell.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ELegPhase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/EArmType.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/enums/ELegPhase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/EArmType.h \
   Runtime/Core/Public/CoreMinimal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ELegPhase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/enums/ELegPhase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ETwoBoneType.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/ETwoBoneType.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkCarryInterface.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/carryItems/Interface/IkCarryInterface.h \
+  Runtime/CoreUObject/Public/UObject/Interface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/carryItems/container/CarriedItemPositionData.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkCarryInterface.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/TwoJointBone.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BoneAttachment.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/TargetInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/RotationInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.generated.h \
-  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkHumanoidModell.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/carryItems/container/CarriedItemPositionData.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/TwoJointBone.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/solver/TwoBoneGeometricSolve.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BoneAttachment.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/LayeredTwoJointBone.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/LayeredTwoJointBone.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Private/IkHumanoidModell.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Public/IkHumanoidModell.h \
   Runtime/Core/Public/Modules/ModuleManager.h

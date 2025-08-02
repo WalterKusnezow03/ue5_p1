@@ -1,8 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "sightScript.h"
+
 #include "AssetPlugin/gameStart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "sightScript.h"
+#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 
 // Sets default values
 AsightScript::AsightScript()
@@ -34,7 +36,7 @@ FVector AsightScript::getSightCenter(){
 
 
 void AsightScript::setType(weaponAttachmentEnum type){
-	if(weaponSetupHelper::isASightAttachment(type)){
+	if(WeaponAttachmentValidator::isASightAttachment(type)){
 		sightType = type;
 	}
 }

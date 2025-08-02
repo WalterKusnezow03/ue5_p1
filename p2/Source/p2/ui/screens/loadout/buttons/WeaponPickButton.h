@@ -5,6 +5,7 @@
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "p2/ui/screens/loadout/WeaponContainer.h"
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
 
 #include "WeaponPickButton.generated.h"
 
@@ -49,7 +50,7 @@ private:
     weaponEnum typeSaved;
 
     void updateName(){
-        FString name = UWeaponContainer::toString(typeSaved);
+        FString name = WeaponEnumStringConverter::toString(typeSaved);
         setText(name);
     }
 };

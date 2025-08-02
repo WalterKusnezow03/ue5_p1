@@ -4,7 +4,7 @@
 
 
 BoneAttachment::BoneAttachment(){
-
+    resetLocalForwardMovingDirection(); 
 }
 
 BoneAttachment::~BoneAttachment(){
@@ -21,7 +21,7 @@ void BoneAttachment::setAsLeg(){
 }
 
 FVector BoneAttachment::defaultExtendedEndToStartLocal(){
-    return extendedTranslationBottomToUp;
+    return defaultExtendedTranslationBottomToUp;
 }
 
 FVector BoneAttachment::endEffectorWorldLocation(){
@@ -47,7 +47,7 @@ void BoneAttachment::setupBone(
     offset *= -1.0f;
     innerOffsetInverse.setTranslation(offset);
 
-    extendedTranslationBottomToUp = FVector(
+    defaultExtendedTranslationBottomToUp = FVector(
         0,
         0,
         (std::abs(a) + std::abs(b))
@@ -141,6 +141,16 @@ void BoneAttachment::setBackwardTargetLocal(FVector &target){
     backwardTarget = target;
 }
 
+/// @brief designed to decide whether to use roll or yaw rotation based on moving direction
+/// @param localMove 
+void BoneAttachment::updateLocalForwardMovingDirection(FVector &localMove){
+    localMovingDirectionSaved = localMove;
+}
+
+void BoneAttachment::resetLocalForwardMovingDirection(){
+    localMovingDirectionSaved = FVector(1, 0, 0); // default move dir local is x forward
+}
+
 /// --- tick section ---
 
 void BoneAttachment::TickNone(MMatrix &worldRoot, float deltatime){
@@ -150,7 +160,8 @@ void BoneAttachment::TickNone(MMatrix &worldRoot, float deltatime){
 
 void BoneAttachment::TickForwardKinematic(MMatrix &worldRoot, float deltatime){
     MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
-    bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime);
+    //bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime); //old yaw only start effector
+    bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime, localMovingDirectionSaved);
 }
 
 
@@ -238,7 +249,11 @@ void BoneAttachment::TickKeepEndInWorldPlace(
 
     MMatrix worldRoot = translationRoot * orientationRoot; // M = T * R <-- lese richtung --
     MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
-    bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
+    
+    //bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
+    //new using actor orientation local
+    bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime, localMovingDirectionSaved);
+
 }
 
 //flipped for falling

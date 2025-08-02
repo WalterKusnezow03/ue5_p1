@@ -78,14 +78,18 @@ FVector TwoJointBone::outOfreachDistance(FVector &target){
     return outVector;
 }
 
+bool TwoJointBone::targetIsInMotionCircle(FVector &target){
+    return target.Size() < length;
+}
+
 void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
     
     //not tested new code!
     //legs, genau überlegt
     if(markedForTriangleflipLegs){
         //only pos on hip, neg knee (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
-        pitch1 = std::abs(pitch1);
-        pitch2 = std::abs(pitch2) * -1.0f;
+        pitch1 = std::abs(pitch1)* -1.0f;
+        pitch2 = std::abs(pitch2);
         return;
     }
 
@@ -112,7 +116,7 @@ void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime)
 
     //debug:
     if(bLogEnabled){
-        FVector reached = EndEffectorLocation() - world.getTranslation();
+        FVector reached = EndEffectorLocation() - StartEffector().getTranslation();
 
         //EndEffectorRelativeLocation();
         DebugHelper::logMessage("debugKinematic forward kinematic targeted: ", target);
@@ -121,6 +125,8 @@ void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime)
     }
 }
 
+/// @brief forward kinematics method default
+/// @param target 
 void TwoJointBone::MoveToTarget(FVector &target){
     resetRotations();
 
@@ -128,12 +134,24 @@ void TwoJointBone::MoveToTarget(FVector &target){
     clampTarget(target);
 
     //globale rotation
+    float debugYaw = 0.0f;
+    float debugPitch = 0.0;
     FVector2D x(1.0f, 0.0f);
     FVector2D z(0.0f, -1.0f);//DOWN-Z
-    MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true);
+    MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true, debugYaw, debugPitch);
+
+    DebugHelper::logMessage(FString::Printf(
+        TEXT("MMatrixRotationMaker yaw(%.2f), pitch(%.2f)"),
+        MMatrix::radToDegree(debugYaw),
+        MMatrix::radToDegree(debugPitch))
+    );
+
+
     //r1 = lookAtTarget;
 
     if(bLogEnabled){
+
+        //debug look vector
         FVector boneAxisDefaultDown(0, 0, -1);
         boneAxisDefaultDown = lookAtTarget * boneAxisDefaultDown;
         boneAxisDefaultDown = boneAxisDefaultDown.GetSafeNormal() * target.Size();
@@ -148,12 +166,85 @@ void TwoJointBone::MoveToTarget(FVector &target){
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
     flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
 
+
+    //erst anziehen
     r1.pitchRadAdd(pitchHip);
     r2.pitchRadAdd(pitchKnee);
 
-
+    //dann global drehen
     r1 = lookAtTarget * r1; //<-- lese richtung --
 }
+
+
+
+//new with move direction to use roll or yaw
+void TwoJointBone::MoveToTarget(
+    FVector target,
+    MMatrix &world, 
+    float deltatime,
+    FVector &localForward
+){
+    MoveToTarget(target, localForward);
+    buildForward(world, deltatime);
+
+    //debug:
+    if(bLogEnabled){
+        FVector reached = EndEffectorLocation() - StartEffector().getTranslation();
+
+        //EndEffectorRelativeLocation();
+        DebugHelper::logMessage("debugKinematic forward kinematic (usingRoll) targeted: ", target);
+        DebugHelper::logMessage("debugKinematic forward kinematic (usingRoll) reached: ", reached);
+        DebugHelper::logMessage("debugKinematic forward kinematic -----");
+    }
+}
+
+
+/// @brief experimental method for using roll instead of yaw rotation based on moving direction
+/// @param target 
+void TwoJointBone::MoveToTarget(FVector &target, FVector &localForward){
+    resetRotations();
+
+    //clamp to movement range
+    clampTarget(target);
+
+    //globale rotation
+    FVector2D x(1.0f, 0.0f);
+    FVector2D z(0.0f, -1.0f);//DOWN-Z
+    MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true, localForward);
+
+   
+    if(bLogEnabled){
+        //debug look vector
+        FVector boneAxisDefaultDown(0, 0, -1);
+        boneAxisDefaultDown = lookAtTarget * boneAxisDefaultDown;
+        boneAxisDefaultDown = boneAxisDefaultDown.GetSafeNormal() * target.Size();
+        DebugHelper::logMessage("debugKinematic forward kinematic (usingRoll) look result: ", boneAxisDefaultDown);
+    }
+
+    //pitch anziehen des beins / arms
+    float pitchHip = 0.0f;
+    float pitchKnee = 0.0f;
+
+    float distance = target.Size();
+    TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
+    flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
+
+
+    //erst anziehen
+    r1.pitchRadAdd(pitchHip);
+    r2.pitchRadAdd(pitchKnee);
+
+    //dann global drehen
+    r1 = lookAtTarget * r1; //<-- lese richtung --
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -193,6 +284,8 @@ void TwoJointBone::MoveToTargetInverse(FVector target, float deltatime){
     
 }
 
+/// @brief default inverse kinematics method
+/// @param target 
 void TwoJointBone::MoveToTargetInverse(FVector &target){
     resetRotations();
     //clamp to movement range
@@ -304,10 +397,14 @@ MMatrix TwoJointBone::StartEffector(){
     return startEffectorWorld;
 }
 
+/// @brief returns the world end effector from the latest build inclding all rotation.
+/// @return 
 MMatrix TwoJointBone::EndEffector(){
     return endEffectorWorld;
 }
 
+/// @brief world location of end effector, rename!
+/// @return 
 FVector TwoJointBone::EndEffectorLocation(){
     return endEffectorWorld.getTranslation();
 }
@@ -330,4 +427,33 @@ FVector TwoJointBone::EndEffectorRelativeLocation(){
 //outside tick update no target
 void TwoJointBone::TickBuildForward(MMatrix &world, float deltatime){
     buildForward(world, deltatime);
+}
+
+
+
+
+
+/// ----- LAYERED IK SECTION -----
+
+//experimental!
+MMatrix TwoJointBone::inverseTransform(){
+    //M = RKnee * Tlower * Rhip * Tupper
+    //M^-1 = Tupper^-1 * Rhip^-1 * Tlower^-1 * RKnee^-1
+    //M^-1 = (Tupper^-1 * Rhip^-1) * Tlower^-1 * RKnee^-1
+    //M^-1 = ((Tupper^-1 * Rhip^-1) * Tlower^-1) * RKnee^-1
+    //M^-1 = (f * Tlower^-1) * RKnee^-1
+    //M^-1 = (g) * RKnee^-1
+
+    MMatrix r1InverseLocal = r1.transposedRotation();
+    MMatrix f = t1Inv * r1InverseLocal;
+    MMatrix g = f * t2Inv;
+
+    MMatrix r2InverseLocal = r2.transposedRotation();
+    MMatrix m1 = g * r2InverseLocal;
+    return m1;
+}
+
+
+void TwoJointBone::overrideR2KneeRotation(MMatrix &rin){
+    r2 = rin;
 }
