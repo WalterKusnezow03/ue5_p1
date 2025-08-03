@@ -3,7 +3,9 @@
 #include "CoreMinimal.h"
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/HipController.h"
+#include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
 #include "CoreMath/animation/TargetInterpolator.h"
+#include "IkHumanoidModell/actor/debugEnum/EDebugPart.h"
 
 #include "IkDebugActor.generated.h"
 
@@ -19,8 +21,20 @@ public:
     void Tick(float deltatime) override;
 
 private:
-    //new
+    void BeginPlaySingleArm();
+    void BeginPlayHipController();
+    void BeginPlayHumanoidController();
+
+    void TickPlaySingleArm(float deltatime);
+    void TickPlayHipController(float deltatime);
+    void TickPlayHumanoidController(float deltatime);
+
+    EDebugPart debugPart = EDebugPart::EDebugHumanoidController;
+
     HipController hipController;
+
+    //new
+    HumanoidController humanController;
 
     TwoJointBone bone;
     TargetInterpolator interpolator;

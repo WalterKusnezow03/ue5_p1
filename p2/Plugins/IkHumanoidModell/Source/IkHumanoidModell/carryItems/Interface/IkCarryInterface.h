@@ -26,7 +26,5 @@ class IKHUMANOIDMODELL_API IIkCarryInterface
     // pure virtual functions () = 0 Only!
 public:
 	
-	virtual void RightHandWorld() = 0;
-    virtual void LeftHandWorld() = 0;
 	virtual CarriedItemPositionData &getItemPositionDataRef() = 0;
 };

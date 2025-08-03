@@ -385,11 +385,22 @@ void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, floa
     dt = std::max(frame * 3.0f, dt);
 
     //dt = 1.0f;
+    FColor red = FColor::Red;
+    FColor blue = FColor::Blue;
+    FColor cyan = FColor::Cyan;
 
-    DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
-    DebugHelper::showLineBetween(worldPtr, aT, wT, FColor::Red, dt);
-    DebugHelper::showLineBetween(worldPtr, aT, bT, FColor::Blue, dt);
-    DebugHelper::showLineBetween(worldPtr, bT, cT, FColor::Cyan, dt);
+    if(colorFlagChanged){
+        red = FColor::Green;
+        blue = FColor::Yellow;
+        cyan = FColor::Black;
+    }
+    if(bDrawToWorldStart){
+        DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
+    }
+    
+    DebugHelper::showLineBetween(worldPtr, aT, wT, red, dt);
+    DebugHelper::showLineBetween(worldPtr, aT, bT, blue, dt);
+    DebugHelper::showLineBetween(worldPtr, bT, cT, cyan, dt);
 }
 
 
@@ -407,6 +418,11 @@ MMatrix TwoJointBone::EndEffector(){
 /// @return 
 FVector TwoJointBone::EndEffectorLocation(){
     return endEffectorWorld.getTranslation();
+}
+
+MMatrix TwoJointBone::EndEffectorTranslation(){
+    FVector location = EndEffectorLocation();
+    return MMatrix(location);
 }
 
 /// @brief clear rotation before backwards kinematics, otherwise chain is
@@ -456,4 +472,9 @@ MMatrix TwoJointBone::inverseTransform(){
 
 void TwoJointBone::overrideR2KneeRotation(MMatrix &rin){
     r2 = rin;
+}
+
+
+void TwoJointBone::useOtherColorType(){
+    colorFlagChanged = true;
 }

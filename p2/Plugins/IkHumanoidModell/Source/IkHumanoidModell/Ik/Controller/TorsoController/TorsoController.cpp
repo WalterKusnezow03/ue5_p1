@@ -34,6 +34,8 @@ void TorsoController::setup(
         lowerArm,
         world
     );
+
+    hipPitch.pitchRadAdd(MMatrix::degToRadian(180));
 }
 
 void TorsoController::Tick(
@@ -41,10 +43,14 @@ void TorsoController::Tick(
     MMatrix &actorRotation, 
     float deltatime
 ){
-    partLeft.Tick(actorTranslation, actorRotation, deltatime);
-    partRight.Tick(actorTranslation, actorRotation, deltatime);
+    partLeft.Tick(actorTranslation, actorRotation, hipPitch, deltatime);
+    partRight.Tick(actorTranslation, actorRotation, hipPitch, deltatime);
 }
 
+MMatrix TorsoController::applyUpRotation(MMatrix &inRotation){
+    MMatrix result = inRotation * hipPitch; //<-- lese richtung --
+    return result;
+}
 
 void TorsoController::SetWorldTargetLeft(FVector &target){
 

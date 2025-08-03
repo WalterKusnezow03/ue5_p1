@@ -41,6 +41,7 @@ public:
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
 
 private:
+    MMatrix applyUpRotation(MMatrix &inRotation);
 
     //unclear how but it must be somehow shared between the bones.
     //will maybe be copied every frame.

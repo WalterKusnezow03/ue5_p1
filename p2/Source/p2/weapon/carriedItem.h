@@ -9,16 +9,23 @@
 #include <list>
 #include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
+
+#include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
+#include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
+
 #include "carriedItem.generated.h"
 
 UCLASS()
-class P2_API AcarriedItem : public AActor
+class P2_API AcarriedItem : public AActor, public IIkCarryInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	AcarriedItem();
+
+	// target for hands, new IkHumanoid Plugin info container!
+	virtual CarriedItemPositionData &getItemPositionDataRef() override;
 
 	void pickup(UCameraComponent *cameraIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
@@ -32,7 +39,10 @@ public:
 	bool isActive();
 
 
+	/// @brief must be overriden for carried weapon, used also by new ik humanoid!
 	virtual FVector leftHandLocation();
+
+	/// @brief must be overriden for carried weapon, used also by new ik humanoid!
 	virtual FVector rightHandLocation();
 
 	virtual FVector leftHandFingerLocation(HandBoneIndexEnum type);
@@ -41,6 +51,8 @@ public:
 	virtual void loadFingerTargets(HandTargetContainer &container);
 
 protected:
+	CarriedItemPositionData internalCarriedItemPositionContainer;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

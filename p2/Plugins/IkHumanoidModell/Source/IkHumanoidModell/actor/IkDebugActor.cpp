@@ -32,15 +32,14 @@ AIkDebugActor::AIkDebugActor(){
 
 void AIkDebugActor::BeginPlay(){
     Super::BeginPlay();
+    time = -10.0f; //abwarten bevor irgendwas passiert
 
-    FVector startWorld(400, -400, 210);
-    hipController.setLocation(startWorld);
+    BeginPlaySingleArm();
+    BeginPlayHipController();
+    BeginPlayHumanoidController();
+}
 
-    float initRotation = -90; //180 //10
-    hipController.forceYawAdd(initRotation);
-
-    hipController.setup(GetWorld());
-
+void AIkDebugActor::BeginPlaySingleArm(){
     bone.setup(50, 50, GetWorld());
 
 
@@ -51,9 +50,26 @@ void AIkDebugActor::BeginPlay(){
     start1 = FVector(-30, 0, 50);
     end1 = FVector(0, 0, 50);
 
-    time = -10.0f; //abwarten.
+    
     resetInterpolators();
 }
+
+void AIkDebugActor::BeginPlayHipController(){
+    FVector startWorld(400, -400, 210);
+    hipController.setLocation(startWorld);
+
+    float initRotation = -90; //180 //10
+    hipController.forceYawAdd(initRotation);
+    hipController.setup(GetWorld());
+}
+
+void AIkDebugActor::BeginPlayHumanoidController(){
+    humanController.defaultSetup(GetWorld());
+}
+
+
+
+
 
 void AIkDebugActor::resetInterpolators(){
     // x is forward
@@ -66,19 +82,54 @@ void AIkDebugActor::resetInterpolators(){
 
 void AIkDebugActor::Tick(float deltatime){
     Super::Tick(deltatime);
-    hipController.Tick(deltatime);
-
-
 
     //debug
+    return;
+
+    if(debugPart == EDebugPart::EDebugHumanoidController){
+        TickPlayHumanoidController(deltatime);
+    }
+    if(debugPart == EDebugPart::EDebugHipController){
+        TickPlayHipController(deltatime);
+    }
+    if(debugPart == EDebugPart::EDebugArm){
+        TickPlaySingleArm(deltatime);
+    }
+}
+
+
+
+
+void AIkDebugActor::TickPlayHipController(float deltatime){
+    hipController.Tick(deltatime);
+
+    //debug rotation
     time += deltatime;
     if(time > 5.0f && true){
         time = 0.0f;
-
         hipController.setupRotationForNextStep(MMatrix::degToRadian(30.0f));
     }
+}
+
+void AIkDebugActor::TickPlayHumanoidController(float deltatime){
+    float slow = 1.0f; //0.1
+    deltatime *= slow;
+    humanController.Tick(deltatime);
 
     /*
+    //debug rotation
+    time += deltatime;
+    if(time > 5.0f && true){
+        time = 0.0f;
+        humanController.setupRotationForNextStep(MMatrix::degToRadian(30.0f));
+    }*/
+}
+
+
+
+
+void AIkDebugActor::TickPlaySingleArm(float deltatime){
+    
     FVector target;
     if (!flipFlag)
     {
@@ -101,5 +152,5 @@ void AIkDebugActor::Tick(float deltatime){
         bone.MoveToTargetInverse(target, deltatime);
 
         DebugHelper::showScreenMessage("tick 2", target, FColor::Cyan);
-    }*/
+    }
 }

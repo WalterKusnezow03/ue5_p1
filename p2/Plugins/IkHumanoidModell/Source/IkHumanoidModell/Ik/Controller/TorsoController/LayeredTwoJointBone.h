@@ -28,6 +28,7 @@ public:
     void Tick(
         MMatrix &actorTranslation,
         MMatrix &actorRotation,
+        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -38,6 +39,7 @@ public:
     void TickForwardKinematicsWorldTarget(
         MMatrix &actorTranslation,
         MMatrix &actorRotation, 
+        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -45,6 +47,7 @@ public:
     void TickBuildNone(
         MMatrix &actorTranslation,
         MMatrix &actorRotation,
+        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -106,9 +109,10 @@ private:
     /// @param actorOrientation 
     /// @param worldTarget 
     /// @return 
-    FVector moveToLocalSpace(
+    FVector moveToLocalSpaceOfArm(
         MMatrix &actorTranslation,
         MMatrix &actorOrientation, 
+        MMatrix &torsoRotation,
         FVector &worldTarget
     );
 
@@ -130,7 +134,8 @@ private:
         FVector &targetWorld,
         FVector &targetLocalArm,
         MMatrix &actorTranslation,
-        MMatrix &actorRotation
+        MMatrix &actorRotation,
+        MMatrix &torsoRotation
     );
 
 

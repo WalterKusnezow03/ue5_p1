@@ -53,9 +53,6 @@ void AcustomMeshActor::setDamagedOwner(IDamageinterface *damagedOwnerIn){
 /// @param mat material to set
 void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat){
     materialtypeSet = mat;
-    if(mat == materialEnum::glassMaterial){
-        enableDebug();
-    }
 }
 
 
@@ -123,6 +120,9 @@ void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
     }*/
 
     createDebreeOnDamage(hitpoint);
+
+    //Ok
+    DebugHelper::showScreenMessage("AcustomMeshActor damage hit registered", FColor::Orange);
 }
 
 void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
@@ -209,7 +209,6 @@ void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
         addRandomNodesToNavmesh(touples);
     }
 
-    enableDebug(); //DEBUG WISE FOR MESH DESTRUCTION!
 
     package.createOutPostIfFlagged(GetWorld());
 
@@ -502,34 +501,35 @@ void AcustomMeshActor::createNewMeshActors(
 
 
 
-void AcustomMeshActor::enableDebug(){
-    DEBUG_enabled = true;
-}
-
 
 
 void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
-    if(!DEBUG_enabled){
-        return;
-    }
+    
+    DebugHelper::showScreenMessage("AcustomMeshActor ground hit test!", FColor::Orange);
 
     FVector meshHit = worldToLocalHit(hitpoint);
 
     std::vector<materialEnum> hitMaterials = {
         materialEnum::grassMaterial,
-        materialEnum::redsandMaterial
+        materialEnum::redsandMaterial,
+        materialEnum::sandMaterial
     };
     for (int i = 0; i < hitMaterials.size(); i++){
         MeshData &meshdata = findMeshDataReference(hitMaterials[i], ELod::lodNear, true);
         int sizeHole = 100;
 
         //cut push in
-        FVector direction(0, 0, -25);
+        FVector direction(0, 0, -15);
+
         meshdata.pushInwards(meshHit, sizeHole, direction); //error prone!
 
         //meshdata.cutHoleWithInnerExtensionOfMesh(localHit, sizeHole); //cut sphere
 
-        ReloadMeshForMaterial(hitMaterials[i]);
+        ReloadMeshForMaterialByLod(ELod::lodNear, hitMaterials[i]);
+
+
+        //debug
+        debugDrawMeshData(meshdata);
     }
 
 
@@ -600,7 +600,7 @@ void AcustomMeshActor::debugDrawMeshData(MeshData &meshdata){
 /**
  * 
  * 
- * ----- shading function for foliage ------s
+ * ----- shading function for foliage ------ DEPRECATED
  * 
  * 
  */

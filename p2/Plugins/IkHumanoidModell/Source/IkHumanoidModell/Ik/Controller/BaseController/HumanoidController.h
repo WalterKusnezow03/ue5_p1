@@ -13,9 +13,16 @@ public:
     HumanoidController();
     ~HumanoidController();
 
+    
     void defaultSetup(UWorld *world);
     void Tick(float deltatime);
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
+
+
+    //rotation change of hipcontroller
+    void setupRotationForNextStep(float radianYaw);
+    void forceYawAdd(float degree);
+
 
 private:
 

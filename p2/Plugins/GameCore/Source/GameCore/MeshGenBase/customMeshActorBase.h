@@ -30,6 +30,8 @@ protected:
 
 	bool LISTEN_FOR_LOD_PLAYER = false;
 
+	USceneComponent *rootScene = nullptr;
+
 public:
 	void enableLodListening();
 	void disableDistanceListening();

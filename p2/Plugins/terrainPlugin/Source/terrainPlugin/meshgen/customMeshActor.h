@@ -102,12 +102,12 @@ public:
 
 	void setDamagedOwner(IDamageinterface *damagedOwnerIn);
 
-	void enableDebug();
+	
 
 protected:
 	MatrixTree tree;
 
-	bool DEBUG_enabled = false;
+	
 	void groundReactionToHitWorld(FVector &hitpoint);
 
 	void createDebreeOnDamage(FVector &worldhit);

@@ -9,4 +9,6 @@ public:
     static std::vector<materialEnum> materialVector();
 
     static materialEnum groundMaterialFor(ETerrainType terraintype);
+
+    static FString toString(materialEnum typein);
 };

@@ -38,3 +38,13 @@ void HumanoidController::Tick(float deltatime){
 void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *ptr){
     torsoController.attachOrReplaceCarriedItem(ptr);
 }
+
+
+//rotation change
+void HumanoidController::setupRotationForNextStep(float radianYaw){
+    hipController.setupRotationForNextStep(radianYaw);
+}
+
+void HumanoidController::forceYawAdd(float degree){
+    hipController.forceYawAdd(degree);
+}

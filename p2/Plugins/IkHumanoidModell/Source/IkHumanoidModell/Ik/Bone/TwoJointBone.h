@@ -68,9 +68,14 @@ public:
     MMatrix inverseTransform();
     void overrideR2KneeRotation(MMatrix &rin);
 
+    void useOtherColorType();
+
 private:
     bool bLogEnabled = true;
     bool bDrawBackwardReach = false;
+    bool bDrawToWorldStart = false;
+
+    bool colorFlagChanged = false;
 
     UWorld *worldPtr = nullptr;
     void resetRotations();

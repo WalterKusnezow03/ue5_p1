@@ -240,7 +240,8 @@ void worldLevel::Tick(float DeltaTime){
             FVector playerLocationCopy = PlayerInfo::playerLocation();
             terrainPointer->Tick(playerLocationCopy);
 
-            debugTerrainHeight();
+            //is tested
+            //debugTerrainHeight();
         }
 
         //tick sync tick tasks from pathfinder
@@ -508,8 +509,6 @@ void worldLevel::debugCreateRock(UWorld *world){
             if(actor != nullptr){
                 actor->replaceMeshData(meshData, materialEnum::stoneMaterial);
                 actor->ReloadMeshAndApplyAllMaterials();
-
-                actor->enableDebug();
             }
         }
     }

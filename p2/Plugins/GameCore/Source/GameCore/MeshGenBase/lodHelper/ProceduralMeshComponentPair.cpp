@@ -62,6 +62,9 @@ void ProceduralMeshComponentPair::setHiddenInGame(bool flag){
     }
     if(raycastMesh){
         raycastMesh->SetHiddenInGame(flag);
+
+        bool collision = !flag; //if not hidden: enable collision
+        setCollisionEnabled(collision);
     }
 }
 
@@ -124,6 +127,12 @@ void ProceduralMeshComponentPair::updateMeshRaycast(materialEnum type){
             meshDataReferenceRaycast(type),
             layer
         );
+
+        FString message = FString::Printf(
+            TEXT(" ProceduralMeshComponentPair update mesh section Raycast %s"), 
+            *MaterialEnumHelper::toString(type)
+        );
+        DebugHelper::showScreenMessage(message, FColor::Orange);
     }
 }
 
@@ -135,6 +144,11 @@ void ProceduralMeshComponentPair::updateMeshNoRaycast(materialEnum type){
             meshDataReferenceNoRaycast(type),
             layer
         );
+        FString message = FString::Printf(
+            TEXT(" ProceduralMeshComponentPair update mesh section No Raycast %s"), 
+            *MaterialEnumHelper::toString(type)
+        );
+        DebugHelper::showScreenMessage(message, FColor::Orange);
     }
 }
 

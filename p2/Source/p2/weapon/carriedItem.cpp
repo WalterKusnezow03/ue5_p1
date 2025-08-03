@@ -217,6 +217,19 @@ void AcarriedItem::leftMouseUp(){
 
 
 
+
+// NEW IK HUMANOID ITEM POSITION DATA
+CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
+	//update container
+	internalCarriedItemPositionContainer.updateHandTargets(
+		rightHandLocation(),
+		leftHandLocation()
+	);
+	return internalCarriedItemPositionContainer;
+}
+
+// deprecated bone controller interface in p2 architecture
+
 FVector AcarriedItem::leftHandLocation(){
 	return GetActorLocation();
 }
