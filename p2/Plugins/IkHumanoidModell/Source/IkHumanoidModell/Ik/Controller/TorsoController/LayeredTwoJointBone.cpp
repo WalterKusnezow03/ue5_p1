@@ -112,7 +112,17 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         worldTarget
     );
 
-    
+    //EXPERIMENTS: - KORREKT
+    //ACHTUNG: Wenn der arm immer von einer reinen TRanslation aus gebaut wird, 
+    //Und X wieder default mässig nach vorne schaut, 
+    //muss der arm durch anpassug des targets nochmal künstlich gedreht werden
+    //wie bei rotierten bein targets(?)
+    localTargetInArmSystem = actorRotation * localTargetInArmSystem;
+
+
+
+
+
     if(localTargetInArmMotionCircle(localTargetInArmSystem)){
 
         MMatrix actorTransform = actorTranslation * actorRotation; // M = T * R <--lese richtung --
@@ -130,14 +140,15 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         //fk to shoulder pos for torso bone
 
         //might not be needed
-        /*FVector worldTargetClamped = clampToFullMotionCircleWorld(
+        worldTarget = clampToFullMotionCircleWorld(
             actorTranslation,
             worldTarget
-        );*/
+        );
 
         DebugHelper::logMessage("Not! In Local Space Arm! ");
 
 
+        //might work INCORRECT
         FVector shoulderTargetLocal = shoulderLocalTargetFromTargetArmIfOutOfRange(
             worldTarget,            // world target
             localTargetInArmSystem, // local arm target
@@ -145,9 +156,9 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
             actorRotation
         );
 
-        bool drawShoulderTarget = false;
+        bool drawShoulderTarget = true;
         if(drawShoulderTarget){
-            FVector worldstart = torsoBone.EndEffectorLocation();
+            FVector worldstart = actorTranslation.getTranslation();
             FVector localRotatedSpace = actorRotation * shoulderTargetLocal;
             DebugHelper::showLineBetween(
                 world,
@@ -158,12 +169,29 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
             );
         }
 
+        bool drawHandtarget = true;
+        if(drawHandtarget){
+            FVector actorStart = actorTranslation.getTranslation();
+            FVector localRotatedSpace = actorRotation * shoulderTargetLocal;
+            FVector worldstart = actorStart + localRotatedSpace;
+
+            DebugHelper::showLineBetween(
+                world,
+                worldstart,
+                worldstart + localTargetInArmSystem,
+                FColor::Orange,
+                0.1f);
+        }
+
 
 
         //move shoulder to target
         MMatrix actorTransform = actorTranslation * actorRotation; // M = T * R <--lese richtung --
         torsoBone.MoveToTarget(shoulderTargetLocal, actorTransform, deltatime);
 
+
+        // ------ DAS HIER STIMMT NICHT WENN ACTOR GEDREHT IST, ARM NICHT EINROTIERT ------
+        // ------ UNKLAR: IST DAS LOCAL TARGET RICHTIG ROTIERT?
         //build to shoulder , build arm from raw world translation
         MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
 
@@ -245,43 +273,27 @@ FVector LayeredTwoJointBone::moveToLocalSpaceOfArm(
     MMatrix actorT1 = actorTranslation.invertedTranslation();
 
 
-
-    /*
-    kann vereinfacht werden zu default target inverse
-
-    //nochmal
-    MMatrix noneMatrixKeepTorsoLocalSpace;
-    buildTorsoBoneNone(
-        noneMatrixKeepTorsoLocalSpace,
-        0.0f // delta time irrelevant here
-    );
-
-    MMatrix torsoInv = torsoBone.EndEffectorTranslation().invertedTranslation();
-    */
     MMatrix torsoDefault(localTorsoEndEffectorTarget);
     MMatrix torsoInv = torsoDefault.invertedTranslation();
 
+    //M = T * R * torso
+    //M^-1 = torso^-1 * R^-1 * T^-1
     MMatrix A = torsoInv * actorR1;
     MMatrix localSpaceMatrix = A * actorT1;
 
     FVector localSpaceTarget = localSpaceMatrix * worldTargetIn;
 
 
-    //debug
-    bool drawLocal = false;
+    //looks correct all the time ??
+    bool drawLocal = true;
     if(drawLocal){
-        MMatrix transform = actorTranslation * actorOrientation; //<-- lese richtung M = T * R <--
-        buildTorsoBoneNone(
-            transform,
-            0.0f // delta time irrelevant here
-        );
-        FVector worldstart = torsoBone.EndEffectorLocation();
+        FVector worldstart = actorTranslation.getTranslation();
         FVector localRotatedSpace = actorOrientation * localSpaceTarget;
         DebugHelper::showLineBetween(
             world,
             worldstart,
             worldstart + localRotatedSpace,
-            FColor::Purple,
+            FColor::Black,
             0.1f
         );
     }

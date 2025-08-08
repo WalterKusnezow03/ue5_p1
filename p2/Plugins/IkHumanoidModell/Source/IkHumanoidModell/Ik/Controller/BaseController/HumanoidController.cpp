@@ -26,8 +26,8 @@ void HumanoidController::SetLocation(FVector &target){
 void HumanoidController::defaultSetup(UWorld *world){
     float legPartSizeEach = 50;
     float armPartSizeEach = 40;
-    float torsoHeight = 40;
-    float torsoHalfWidth = 20;
+    float torsoHeight = 50;
+    float torsoHalfWidth = 30;
 
     hipController.setup(world);
     torsoController.setup(
