@@ -116,7 +116,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
     //ACHTUNG: Wenn der arm immer von einer reinen TRanslation aus gebaut wird, 
     //Und X wieder default mässig nach vorne schaut, 
     //muss der arm durch anpassug des targets nochmal künstlich gedreht werden
-    //wie bei rotierten bein targets(?)
+    //wie bei rotierten bein targets!
     localTargetInArmSystem = actorRotation * localTargetInArmSystem;
 
 
@@ -130,7 +130,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
         armBone.MoveToTarget(localTargetInArmSystem, shoulderStartM, deltatime);
 
-        DebugHelper::logMessage("In Local Space Arm! ");
+        //DebugHelper::logMessage("In Local Space Arm! ");
     }else{
         //target out of bone reach:
         //clamp target world to motion circle from actor
@@ -145,7 +145,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
             worldTarget
         );
 
-        DebugHelper::logMessage("Not! In Local Space Arm! ");
+        //DebugHelper::logMessage("Not! In Local Space Arm! ");
 
 
         //might work INCORRECT

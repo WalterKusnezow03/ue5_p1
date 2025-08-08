@@ -35,6 +35,8 @@ public:
     void setStateWalking();
     void stopLocomotion();
 
+    
+
 private:
 
     //legs, locomotion
@@ -45,6 +47,7 @@ private:
 
 
     //main attached weapon / item
+    void updateCollisionParams(IIkCarryInterface *ptr);
     CarriedItemSocket mainItemSocket;
     void TickMainCarriedItemSocket(float deltatime);
 };

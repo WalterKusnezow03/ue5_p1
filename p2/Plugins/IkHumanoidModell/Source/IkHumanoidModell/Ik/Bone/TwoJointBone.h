@@ -61,7 +61,7 @@ public:
     void clampToFullMotionRangeCircle(FVector &target);
     bool targetIsInMotionCircle(FVector &target);
 
-    // -- api for layered bone --
+    // --- api for layered bone ---
 
     /// @brief inverse transform of the whole bone
     /// @return 
@@ -69,6 +69,7 @@ public:
     void overrideR2KneeRotation(MMatrix &rin);
 
     void useOtherColorType();
+
 
 private:
     bool bLogEnabled = true;
@@ -125,4 +126,19 @@ private:
 
     //new
     void MoveToTarget(FVector &target, FVector &localForward);
+
+
+
+    // --- api for actor attachment ---
+public:
+    void attachLimbs(AActor *top, AActor *bottom);
+
+private:
+    bool autoCreateLimbs = true;
+    void createLimbsIfNeeded(UWorld *world, float a, float b);
+
+    AActor *topActor = nullptr;
+    AActor *bottomActor = nullptr;
+    void applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom);
+    void applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix);
 };

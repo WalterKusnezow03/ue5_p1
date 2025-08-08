@@ -43,7 +43,13 @@ public:
     void setStateWalking();
     void stopLocomotion();
 
+    void updateCollisionParams(FCollisionQueryParams Params);
+
 private:
+    //removed ik carried item
+    FCollisionQueryParams collisionParams;
+
+    //
     float setupLegLength = 0.0f;
     float bodyMass = 30.0f; // 10 kg ?
 

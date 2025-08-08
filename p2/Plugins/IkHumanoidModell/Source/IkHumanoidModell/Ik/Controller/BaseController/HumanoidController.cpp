@@ -21,8 +21,6 @@ void HumanoidController::SetLocation(FVector &target){
     hipController.SetLocation(target);
 }
 
-
-
 void HumanoidController::defaultSetup(UWorld *world){
     float legPartSizeEach = 50;
     float armPartSizeEach = 40;
@@ -65,7 +63,25 @@ void HumanoidController::TickMainCarriedItemSocket(float deltatime){
 void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *ptr){
     torsoController.attachOrReplaceCarriedItem(ptr);
     mainItemSocket.attachOrReplaceCarriedItem(ptr);
+
+    updateCollisionParams(ptr);
 }
+
+void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr){
+    
+    FCollisionQueryParams Params;
+    Params.bTraceComplex = false;
+
+    if(ptr){
+        // exclude this actor from the trace if possible, otherwise none
+        AActor *casted = Cast<AActor>(ptr);
+        if(casted){
+            Params.AddIgnoredActor(casted);
+        }
+    }
+    hipController.updateCollisionParams(Params);
+}
+
 
 void HumanoidController::dropCarriedItem(){
     torsoController.dropCarriedItem();

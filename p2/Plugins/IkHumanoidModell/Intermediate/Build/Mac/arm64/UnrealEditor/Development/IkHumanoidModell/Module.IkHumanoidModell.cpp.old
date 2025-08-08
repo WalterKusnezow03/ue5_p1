@@ -10,6 +10,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/carryItems/container/CarriedItemPositionData.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/TwoJointBone.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.cpp"

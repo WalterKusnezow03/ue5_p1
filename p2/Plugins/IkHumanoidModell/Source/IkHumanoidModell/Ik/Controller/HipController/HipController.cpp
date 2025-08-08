@@ -415,9 +415,11 @@ void HipController::projectToGround(FVector &worldTarjectory){
 
     // Perform the raycast
     FHitResult HitResult;
-    FCollisionQueryParams Params;
-    Params.bTraceComplex = false;
-    bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+    //FCollisionQueryParams collisionParams;
+    //collisionParams.bTraceComplex = false;
+
+    collisionParams.bTraceComplex = false;
+    bool bHit = worldPointer->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, collisionParams);
 
     // If the raycast hit something, save the collision point
     if (bHit)
@@ -428,9 +430,9 @@ void HipController::projectToGround(FVector &worldTarjectory){
     }
 }
 
-
-
-
+void HipController::updateCollisionParams(FCollisionQueryParams Params){
+    collisionParams = Params;
+}
 
 /// ---- force section ----
 void HipController::applyForces(float deltatime){

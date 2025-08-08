@@ -2,6 +2,8 @@
 #include "IkHumanoidModell/Ik/solver/TwoBoneGeometricSolve.h"
 #include "GameCore/DebugHelper.h"
 
+#include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
+
 
 TwoJointBone::TwoJointBone(){
     markedForTriangleFlip = false;
@@ -51,6 +53,10 @@ void TwoJointBone::setup(float a, float b, UWorld *world){
     t3.setTranslation(foot);
     foot *= -1.0f;
     t3Inv.setTranslation(foot);
+
+
+    //create debug limbs (cubes)
+    createLimbsIfNeeded(world, a, b);
 }
 
 void TwoJointBone::resetRotations(){
@@ -348,6 +354,9 @@ void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     startEffectorWorld = world;
     endEffectorWorld = j2World;
     draw(world, j1World, j2World, j3World, deltatime);
+
+    //new actor visibility
+    applyTransformToActors(world, j1World, j2World);
 }
 
 void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
@@ -478,4 +487,44 @@ void TwoJointBone::overrideR2KneeRotation(MMatrix &rin){
 
 void TwoJointBone::useOtherColorType(){
     colorFlagChanged = true;
+}
+
+
+
+
+// --- api for actor attachment ---
+void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeight){
+    if(world && autoCreateLimbs){
+        int width = 10;
+        AActor *top = CubeLimbMaker::createLimbPivotAtTop(width, width, aHeight, world);
+        AActor *bottom = CubeLimbMaker::createLimbPivotAtTop(width, width, bHeight, world);
+        attachLimbs(top, bottom);
+    }
+}
+
+
+void TwoJointBone::attachLimbs(AActor *top, AActor *bottom){
+    topActor = top;
+    bottomActor = bottom;
+}
+
+void TwoJointBone::applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom){
+    if(autoCreateLimbs){ //has limbs.
+        applyTransform(topActor, world.getTranslation(), top);
+        applyTransform(bottomActor, top.getTranslation(), bottom);
+    }
+    
+}
+
+void TwoJointBone::applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix){
+    if(ptr){
+
+        //limb umdrehen weil falsch.
+        MMatrix rotatorPure = rotationMatrix.extarctRotatorMatrix();
+        //rotatorPure = rotatorPure.transposedRotation();
+        FRotator rotation = rotatorPure.extractRotator();
+
+        ptr->SetActorLocation(location);
+        ptr->SetActorRotation(rotation);
+    }
 }
