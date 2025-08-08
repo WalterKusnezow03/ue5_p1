@@ -20,6 +20,22 @@ MMatrix &HipController::getTranslation(){
     return translation;
 }
 
+FVector HipController::GetLocation(){
+    return translation.getTranslation();
+}
+
+void HipController::SetLocation(FVector &target){
+
+    FVector hipTarget = target;
+    hipTarget.Z += setupLegLength;
+    translation.setTranslation(hipTarget);
+
+    //find new ground truth when position is changed
+    //might falling needed
+    FVector ignored;
+    projectToGround(ignored);
+}
+
 void HipController::drawLocation(float deltatime){
     if(worldPointer){
         deltatime *= 2.0f;
@@ -29,14 +45,6 @@ void HipController::drawLocation(float deltatime){
     }
 }
 
-void HipController::setLocation(FVector &other){
-    translation.setTranslation(other);
-
-    //find new ground truth when position is changed
-    //might falling needed
-    FVector ignored;
-    projectToGround(ignored);
-}
 
 void HipController::forceYawAdd(float degree){
     orientation.yawRadAdd(MMatrix::degToRadian(degree));
@@ -113,19 +121,22 @@ void HipController::Tick(float deltatime){
     //TickLocomotion(deltatime);
 
     FString message;
-    if (groundedByDistance())
+    if (groundedByDistance()) //new here with locomotion enabled!
     {
 
-        
-        if(DEBUG_SLOWTIME){
-            float timesSlower = 5.0f;
-            deltatime = 1.0f / (timesSlower * 60.0f); // DEBUG
+        if(locoMotionStateEnabled()){
+            if(DEBUG_SLOWTIME){
+                float timesSlower = 5.0f;
+                deltatime = 1.0f / (timesSlower * 60.0f); // DEBUG
+            }
+                
+    
+            TickHipRotation(deltatime);
+            TickLocomotion(deltatime);
+            message = TEXT("locomotion");
+        }else{
+            RebuildLegsEndInPlace(deltatime);
         }
-            
-
-        TickHipRotation(deltatime);
-        TickLocomotion(deltatime);
-        message = TEXT("locomotion");
     }
     else
     {
@@ -652,6 +663,25 @@ FVector HipController::forwardTrajectory(){
 }
 
 
+FVector HipController::lookDirection(){
+    FVector forwardDefault(1, 0, 0);
+    FVector look = orientation * forwardDefault;
+    return look.GetSafeNormal(); //for safety
+}
+
+void HipController::LookAt(FVector &location){
+    //AB = B - A
+    FVector lookDirTargeted = location - translation.getTranslation();
+    lookDirTargeted = lookDirTargeted.GetSafeNormal();
+
+    FVector lookDir = lookDirection();
+    FVector2D look2D(lookDir.X, lookDir.Y);
+    FVector2D targetLook2D(lookDirTargeted.X, lookDirTargeted.Y);
+
+    float angle = MMatrix::signedAngleRadBetween(look2D, targetLook2D);
+    setupRotationForNextStep(angle);
+}
+
 /// @brief rotate next step by a angle in rad
 /// @param radian angle in
 void HipController::setupRotationForNextStep(float radian){
@@ -699,17 +729,16 @@ void HipController::setupRotationForNextStep(float radian){
 /// (Wird als stolpern wahrgenommen, unkontrolliert, fängt sich nicht)
 /// @param radianInNextStep 
 void HipController::slowDownBasedOnRotationInRadian(float radianInNextStep){
-    FVector forward2D(1, 0, 0);
-    FVector forwardCurrent = orientation * forward2D;
 
+    FVector forward = lookDirection();
     MMatrix deltaRotation;
     deltaRotation.yawRadAdd(radianInNextStep);
     //(berücksichtig pitch nicht, nicht erwartet!)
     MMatrix orientationIntegrated = orientation * deltaRotation; //<-- lese richtung --
 
-    FVector forwardDeltaApplied = orientationIntegrated * forward2D;
+    FVector forwardDeltaApplied = orientationIntegrated * forward;
 
-    float scalar = FVector::DotProduct(forwardCurrent, forwardDeltaApplied);
+    float scalar = FVector::DotProduct(forward, forwardDeltaApplied);
 
     /*
     $$
@@ -760,4 +789,21 @@ void HipController::TickHipRotation(float deltatime){
 
         DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
     }
+}
+
+
+
+
+
+// ---- motion api ----
+void HipController::setStateWalking(){
+    currentControllerState = EHipControllerStates::ELocomotion;
+}
+
+void HipController::stopLocomotion(){
+    currentControllerState = EHipControllerStates::EIdle;
+}
+
+bool HipController::locoMotionStateEnabled(){
+    return currentControllerState == EHipControllerStates::ELocomotion;
 }

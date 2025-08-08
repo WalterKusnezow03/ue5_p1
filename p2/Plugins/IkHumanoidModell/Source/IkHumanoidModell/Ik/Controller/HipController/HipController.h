@@ -6,6 +6,7 @@
 #include "CoreMath/animation/TargetInterpolator.h"
 #include "CoreMath/animation/RotationInterpolator.h"
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
+#include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 
 /// @brief controls two bone attachments and runnign physics based on slip data.
 /// moves the underlying hip 
@@ -23,13 +24,24 @@ public:
 
     void Tick(float deltatime);
 
-    void setLocation(FVector &location);
 
     //do not modify
     MMatrix &getOrientation();
 
     //do not modify
     MMatrix &getTranslation();
+
+
+    FVector GetLocation();
+    
+
+    /// @brief places the conroller at a target, foot on ground
+    void SetLocation(FVector &target);
+
+
+    // --- entity api ---
+    void setStateWalking();
+    void stopLocomotion();
 
 private:
     float setupLegLength = 0.0f;
@@ -115,7 +127,11 @@ private:
 
     //new rotation
 public:
+    void LookAt(FVector &location);
     void setupRotationForNextStep(float radianYaw);
+
+    /// @brief current look dir from orientation
+    FVector lookDirection();
 
     //debug
     void forceYawAdd(float degree);
@@ -131,4 +147,9 @@ private:
 
     //slow down velocity on rotation change, prevent slipping
     void slowDownBasedOnRotationInRadian(float radianInNextStep);
+
+
+    //locomotion state
+    EHipControllerStates currentControllerState = EHipControllerStates::EIdle;
+    bool locoMotionStateEnabled();
 };

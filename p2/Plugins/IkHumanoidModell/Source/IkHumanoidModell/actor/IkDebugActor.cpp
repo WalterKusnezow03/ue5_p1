@@ -56,20 +56,19 @@ void AIkDebugActor::BeginPlaySingleArm(){
 
 void AIkDebugActor::BeginPlayHipController(){
     FVector startWorld(400, -400, 210);
-    hipController.setLocation(startWorld);
+    hipController.SetLocation(startWorld);
 
     float initRotation = -90; //180 //10
     hipController.forceYawAdd(initRotation);
     hipController.setup(GetWorld());
+    hipController.setStateWalking();
 }
 
 void AIkDebugActor::BeginPlayHumanoidController(){
     humanController.defaultSetup(GetWorld());
+    FVector startWorld(400, -400, 210);
+    humanController.SetLocation(startWorld);
 }
-
-
-
-
 
 void AIkDebugActor::resetInterpolators(){
     // x is forward
@@ -82,9 +81,6 @@ void AIkDebugActor::resetInterpolators(){
 
 void AIkDebugActor::Tick(float deltatime){
     Super::Tick(deltatime);
-
-    //debug
-    return;
 
     if(debugPart == EDebugPart::EDebugHumanoidController){
         TickPlayHumanoidController(deltatime);

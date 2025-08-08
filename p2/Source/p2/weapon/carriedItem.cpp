@@ -217,7 +217,7 @@ void AcarriedItem::leftMouseUp(){
 
 
 
-
+// ---- IK INTERFACE API ----
 // NEW IK HUMANOID ITEM POSITION DATA
 CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 	//update container
@@ -228,7 +228,20 @@ CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 	return internalCarriedItemPositionContainer;
 }
 
-// deprecated bone controller interface in p2 architecture
+void AcarriedItem::UpdateActorTransform(
+	FVector &location, 
+	FRotator &rotation
+){
+	SetActorLocation(location);
+	SetActorRotation(rotation);
+
+	//DebugHelper::showScreenMessage("IIKCarried Item Update Transform", FColor::Cyan);
+}
+
+// ---- IK INTERFACE API END ----
+
+
+// sort of deprecated bone controller interface in p2 architecture
 
 FVector AcarriedItem::leftHandLocation(){
 	return GetActorLocation();

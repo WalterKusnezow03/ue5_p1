@@ -6,7 +6,7 @@
 #include "p2/entityManager/OutPost/OutpostManager.h"
 #include "terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h"
 #include "GameCore/util/TVector.h"
-#include "terrainPlugin/meshgen/generation/terrainCreator.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/ETreeType.h"
@@ -109,7 +109,7 @@ void worldLevel::initWorld(UWorld *world){
     createPathFinder(world);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    //humanBotsOnStart(world, 1);
+    humanBotsOnStart(world, 1);
 
     createOutpostsRequested(world); //stored in super class
         

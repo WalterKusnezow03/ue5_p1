@@ -3825,6 +3825,8 @@
   Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/EDebugPart.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/debugEnum/EDebugPart.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/EHipControllerStates.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ELegPhase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/enums/ELegPhase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/ETwoBoneType.gen.cpp \
@@ -3848,6 +3850,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/LayeredTwoJointBone.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkHumanoidModell.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.cpp \
@@ -3856,6 +3859,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/carryItems/container/CarriedItemPositionData.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Bone/TwoJointBone.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/solver/TwoBoneGeometricSolve.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.cpp \

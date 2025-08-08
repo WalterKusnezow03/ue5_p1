@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
-#include "terrainPlugin/meshgen/generation/terrainCreator.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
 #include "GameCore/world/worldLevelBase.h"
 
 

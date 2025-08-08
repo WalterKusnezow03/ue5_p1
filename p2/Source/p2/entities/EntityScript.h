@@ -12,6 +12,8 @@
 #include "ActionManager.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 
+#include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
+
 #include "EntityScript.generated.h"
 
 UCLASS()
@@ -142,7 +144,17 @@ protected:
 	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 
 
-	//NEW
+	//NEW ACTION MANAGER
 	void actUponCurrentAction(float DeltaTime);
 	ActionManager actionManager;
+
+
+
+
+
+
+	// new experimental humanoid controller
+	HumanoidController humanoidPluginController;
+	void BeginPlayHumanoidController();
+	void TickHumanoidController(float deltatime);
 };

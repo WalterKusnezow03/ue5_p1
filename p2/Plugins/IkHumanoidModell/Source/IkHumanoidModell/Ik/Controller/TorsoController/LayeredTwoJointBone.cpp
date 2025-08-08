@@ -24,6 +24,7 @@ void LayeredTwoJointBone::setup(
     torsoBone.setup(hipBreast, breastShoulder, world);
     torsoBone.useOtherColorType();
     armBone.setup(upperArm, lowerArm, world);
+    findDefaultLocalTorsoTarget(hipBreast, breastShoulder);
     findTotalMotionCircleSize(hipBreast, breastShoulder, upperArm, lowerArm);
 }
 
@@ -40,22 +41,46 @@ void LayeredTwoJointBone::findTotalMotionCircleSize(
         std::abs(armLower);
 }
 
+
+void LayeredTwoJointBone::findDefaultLocalTorsoTarget(
+    float torsoHeight, 
+    float shoulderWidth
+){
+    //find shoulder target moved to upper direction overall. Bone must move up.
+    float sign = armTypeSaved == EArmType::ELeft ? -1.0f : 1.0f;
+    FVector up(0, 0, std::abs(torsoHeight));
+    FVector side(0, std::abs(shoulderWidth) * sign, 0);
+    localTorsoEndEffectorTarget = up + side;
+}
+
 // ---- TICK SECTION ----
 
 // abstract tick will find whether to follow a target or not
 void LayeredTwoJointBone::Tick(
     MMatrix &actorTranslation,
     MMatrix &actorRotation, 
-    MMatrix &torsoRotation,
     float deltatime
 ){
     //follow actor
     if(itemIsAttached()){
         worldTarget = HandTargetWorldBasedOnAttachedItem();
+
+        //looks ok
+        if(false){
+            DebugHelper::showLineBetween(
+                world,
+                actorTranslation.getTranslation(),
+                worldTarget,
+                FColor::Purple,
+                0.1f
+            );
+        }
+        
+
+        //DebugHelper::logMessage("item world target: ", worldTarget);
         TickForwardKinematicsWorldTarget(
             actorTranslation,
             actorRotation,
-            torsoRotation,
             deltatime
         );
         return;
@@ -65,7 +90,6 @@ void LayeredTwoJointBone::Tick(
     TickBuildNone(
         actorTranslation,
         actorRotation,
-        torsoRotation,
         deltatime
     );
 }
@@ -76,8 +100,7 @@ void LayeredTwoJointBone::Tick(
 /// @param deltatime 
 void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
     MMatrix &actorTranslation,
-    MMatrix &actorRotation, 
-    MMatrix &torsoRotation,
+    MMatrix &actorRotation,
     float deltatime
 ){
     //target in both bone reach:
@@ -86,17 +109,18 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
     FVector localTargetInArmSystem = moveToLocalSpaceOfArm(
         actorTranslation, 
         actorRotation, 
-        torsoRotation,
         worldTarget
     );
+
     
     if(localTargetInArmMotionCircle(localTargetInArmSystem)){
 
-        MMatrix combinedRotation = actorRotation * torsoRotation;
-        MMatrix actorTransform = actorTranslation * combinedRotation; // M = T * R <--lese richtung --
+        MMatrix actorTransform = actorTranslation * actorRotation; // M = T * R <--lese richtung --
         buildTorsoBoneNone(actorTransform, deltatime);
-        MMatrix shoulderStartM = torsoBone.EndEffector();
+        MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
         armBone.MoveToTarget(localTargetInArmSystem, shoulderStartM, deltatime);
+
+        DebugHelper::logMessage("In Local Space Arm! ");
     }else{
         //target out of bone reach:
         //clamp target world to motion circle from actor
@@ -104,19 +128,41 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         //override end effector hand,
         //arm ik to shoulder pos
         //fk to shoulder pos for torso bone
-        FVector worldTargetClamped = clampToFullMotionCircleWorld(
+
+        //might not be needed
+        /*FVector worldTargetClamped = clampToFullMotionCircleWorld(
             actorTranslation,
             worldTarget
-        );
+        );*/
+
+        DebugHelper::logMessage("Not! In Local Space Arm! ");
 
 
         FVector shoulderTargetLocal = shoulderLocalTargetFromTargetArmIfOutOfRange(
             worldTarget,            // world target
             localTargetInArmSystem, // local arm target
             actorTranslation,
-            actorRotation,
-            torsoRotation
+            actorRotation
         );
+
+        bool drawShoulderTarget = false;
+        if(drawShoulderTarget){
+            FVector worldstart = torsoBone.EndEffectorLocation();
+            FVector localRotatedSpace = actorRotation * shoulderTargetLocal;
+            DebugHelper::showLineBetween(
+                world,
+                worldstart,
+                worldstart + localRotatedSpace,
+                FColor::Purple,
+                0.1f
+            );
+        }
+
+
+
+        //move shoulder to target
+        MMatrix actorTransform = actorTranslation * actorRotation; // M = T * R <--lese richtung --
+        torsoBone.MoveToTarget(shoulderTargetLocal, actorTransform, deltatime);
 
         //build to shoulder , build arm from raw world translation
         MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
@@ -133,8 +179,12 @@ void LayeredTwoJointBone::buildTorsoBoneNone(
     MMatrix &actorTransform, 
     float deltatime
 ){
-    overrideTorsoBreastRotationDefault();
-    torsoBone.TickBuildForward(actorTransform, deltatime);
+    //overrideTorsoBreastRotationDefault();
+    //torsoBone.TickBuildForward(actorTransform, deltatime);
+
+    //move to default target
+    torsoBone.MoveToTarget(localTorsoEndEffectorTarget, actorTransform, deltatime);
+    
 }
 
 /// @brief will roll the torso top to own direction (schlüsselbein artig nach links rechts)
@@ -150,12 +200,10 @@ void LayeredTwoJointBone::overrideTorsoBreastRotationDefault(){
 void LayeredTwoJointBone::TickBuildNone(
     MMatrix &actorTranslation,
     MMatrix &actorRotation, 
-    MMatrix &torsoRotation,
     float deltatime
 ){
     //build torso
-    MMatrix rotationCombined = actorRotation * torsoRotation;
-    MMatrix actorTransform = actorTranslation * rotationCombined;
+    MMatrix actorTransform = actorTranslation * actorRotation;
     buildTorsoBoneNone(actorTransform, deltatime);
 
     //build arm from shoulder end without rotation
@@ -187,51 +235,64 @@ MMatrix LayeredTwoJointBone::startEffectorRotation(){
 /// @return 
 FVector LayeredTwoJointBone::moveToLocalSpaceOfArm(
     MMatrix &actorTranslation,
-    MMatrix &actorOrientation, 
-    MMatrix &torsoRotation,
+    MMatrix &actorOrientation,
     FVector &worldTargetIn
 ){
-    // --- CAUTION ISSUE MIGHT ARISE ---
-    //The orientation of the hip is rotated by 180 dergree to build the torso
-    //might be replaced by inverted bone instead and internal rotation change
-    //for z axis,
-    //OR use End Effector Location as pure translational Matrix
-    //which moves a target into the shoulder system
-    bool useRawTranslation = true;
-
-    // ------ TODO ------
-    //hier könnte es sinnvoll sein den torso bone
-    //build None zu machen damit ein das koordinaten system direkt default 
-    //torso setup ist und die inverse korrekt ist.
-    MMatrix combinedRotation = actorOrientation * torsoRotation;
-    MMatrix actorTransformTorso = actorTranslation * combinedRotation;
-    buildTorsoBoneNone(
-        actorTransformTorso,
-        0.0f // delta time irrelevant here
-    );
-
     //move to local space once default torso setup
     //actor = T * R
     //actorInverse = R^-1 * T^-1
     MMatrix actorR1 = actorOrientation.transposedRotation();
     MMatrix actorT1 = actorTranslation.invertedTranslation();
-    MMatrix actorInv = actorR1 * actorT1;
 
-    //localSpace = actorInverse * Bone1Inverse
-    MMatrix torsoInv;
-    if(useRawTranslation){
-        //Just T^-1 because its more simple than using the whole inverse matrix if
-        //rot of player is modified.
-        torsoInv = torsoBone.EndEffectorTranslation().invertedTranslation();
-    }
-    else
-    {
-        torsoInv = torsoBone.inverseTransform();
-    }
 
-    MMatrix localSpaceMatrix = actorInv * torsoInv;
+
+    /*
+    kann vereinfacht werden zu default target inverse
+
+    //nochmal
+    MMatrix noneMatrixKeepTorsoLocalSpace;
+    buildTorsoBoneNone(
+        noneMatrixKeepTorsoLocalSpace,
+        0.0f // delta time irrelevant here
+    );
+
+    MMatrix torsoInv = torsoBone.EndEffectorTranslation().invertedTranslation();
+    */
+    MMatrix torsoDefault(localTorsoEndEffectorTarget);
+    MMatrix torsoInv = torsoDefault.invertedTranslation();
+
+    MMatrix A = torsoInv * actorR1;
+    MMatrix localSpaceMatrix = A * actorT1;
 
     FVector localSpaceTarget = localSpaceMatrix * worldTargetIn;
+
+
+    //debug
+    bool drawLocal = false;
+    if(drawLocal){
+        MMatrix transform = actorTranslation * actorOrientation; //<-- lese richtung M = T * R <--
+        buildTorsoBoneNone(
+            transform,
+            0.0f // delta time irrelevant here
+        );
+        FVector worldstart = torsoBone.EndEffectorLocation();
+        FVector localRotatedSpace = actorOrientation * localSpaceTarget;
+        DebugHelper::showLineBetween(
+            world,
+            worldstart,
+            worldstart + localRotatedSpace,
+            FColor::Purple,
+            0.1f
+        );
+    }
+
+
+
+
+
+
+
+
     return localSpaceTarget;
 }
 
@@ -269,8 +330,7 @@ FVector LayeredTwoJointBone::shoulderLocalTargetFromTargetArmIfOutOfRange(
     FVector &targetWorld,
     FVector &targetLocalArm,
     MMatrix &actorTranslation,
-    MMatrix &actorOrientation,
-    MMatrix &torsoRotation
+    MMatrix &actorOrientation
 ){
     FVector directionFromArm = armBone.lengthOfBone() * targetLocalArm.GetSafeNormal();
     FVector shoulderWorldtarget = targetWorld - directionFromArm;
@@ -279,10 +339,12 @@ FVector LayeredTwoJointBone::shoulderLocalTargetFromTargetArmIfOutOfRange(
     //M^-1 = R^-1 * T^-1
     MMatrix actorR1 = actorOrientation.transposedRotation();
     MMatrix actorT1 = actorTranslation.invertedTranslation();
-    MMatrix torsoR1 = torsoRotation.transposedRotation();
+    
+    //MMatrix torsoR1 = torsoRotation.transposedRotation();
+    //MMatrix rotationInverse = torsoR1 * actorR1;
+    //MMatrix actorInverse = rotationInverse * actorT1;
 
-    MMatrix rotationInverse = torsoR1 * actorR1;
-    MMatrix actorInverse = rotationInverse * actorT1;
+    MMatrix actorInverse = actorR1 * actorT1;
 
     FVector shoulderTargetLocal = actorInverse * shoulderWorldtarget;
     return shoulderTargetLocal;
@@ -299,9 +361,7 @@ void LayeredTwoJointBone::dropCarriedItem(){
 /// @brief attaches actor if not nullptr
 /// @param actor 
 void LayeredTwoJointBone::attachOrReplaceCarriedItem(IIkCarryInterface *actor){
-    if(actor){
-        attachedItemInterface = actor;
-    }
+    attachedItemInterface = actor;
 }
 
 bool LayeredTwoJointBone::itemIsAttached(){

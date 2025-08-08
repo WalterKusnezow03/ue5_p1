@@ -25,7 +25,12 @@ AEntityScript::AEntityScript()
 void AEntityScript::BeginPlay()
 {
 	Super::BeginPlay();
-	setupBoneController();
+	
+	//deprecated controller
+	//setupBoneController();
+
+	BeginPlayHumanoidController();
+
 	init();
 }
 
@@ -56,8 +61,10 @@ void AEntityScript::init(){
 
 
 	FVector offset = GetActorLocation();
-	boneController.SetLocation(offset);
-	boneController.resetRotation();
+
+	humanoidPluginController.SetLocation(offset);
+	// boneController.SetLocation(offset);
+	// boneController.resetRotation();
 
 	projectActorToGround();
 }
@@ -195,7 +202,8 @@ void AEntityScript::Tick(float DeltaTime)
 
 	//tick bone controller
 	if(true){
-		boneController.Tick(DeltaTime, GetWorld());
+		//boneController.Tick(DeltaTime, GetWorld());
+		humanoidPluginController.Tick(DeltaTime);
 		SetActorLocation(boneController.GetLocation());
 	}
 
@@ -292,8 +300,8 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 		//wenn das skalarprodukt zweier vektoren 1 ergibt sind sie paralell zu einander
 
 		//FVector forward = GetActorForwardVector().GetSafeNormal();
-		FVector forward = boneController.lookDirection();
-		FVector currentLocation = boneController.GetLocation();
+		FVector forward = humanoidPluginController.lookDirection();		  // boneController.lookDirection();
+		FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
 
 		//ab = b - a
 		FVector ab = (target->GetActorLocation() - currentLocation).GetSafeNormal();
@@ -329,12 +337,12 @@ void AEntityScript::setupRaycastIgnoreParams(){
 /// @param vec 
 /// @return 
 bool AEntityScript::isWithinMaxRange(FVector vec){
-	FVector currentLocation = boneController.GetLocation(); //GetActorLocation()
+	FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation(); //GetActorLocation()
 	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE);
 }
 
 bool AEntityScript::isWithinCloseRange(FVector &vec){
-	FVector currentLocation = boneController.GetLocation();
+	FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
 	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE_CLOSERANGE);
 }
 
@@ -409,7 +417,7 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 	// Define the start and end vectors for the raycast
 	//FVector Start = this->GetActorLocation();
 
-	FVector Start = boneController.GetLocation();
+	FVector Start = humanoidPluginController.GetLocation(); // boneController.GetLocation();
 	direction = direction.GetSafeNormal();
 	Start += direction * 100; //50cm
 
@@ -465,7 +473,7 @@ void AEntityScript::projectActorToGround(){
 	{
 		FVector output = HitResult.ImpactPoint;
 		SetActorLocation(output);
-		boneController.SetLocation(output);
+		humanoidPluginController.SetLocation(output);//boneController.SetLocation(output);
 	}
 }
 
@@ -558,9 +566,8 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 		//ask for path
 		if(p != nullptr){
 
-						
-			FVector a = boneController.GetLocation();
-					
+			FVector a = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+
 			this->path = p->getPath(a,targetLocation);
 
 			//no path was found
@@ -585,26 +592,24 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 /// @param deltaTime for calculating the movement speed
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
-		//float speed = 350.0f; //3m/s
 
-		
+		FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
 
-		//FVector currentLocation = GetActorLocation();
-
-		FVector currentLocation = boneController.GetLocation();
 		FVector nextPos = path.front();
 
 		if(reachedPosition(nextPos)){
 			path.erase(path.begin() + 0); //first node pop
 			
 			if(!hasNodesInPathLeft()){
-				boneController.stopLocomotion();
+				//boneController.stopLocomotion();
+				humanoidPluginController.stopLocomotion();
 			}
 			
 			return;
 		}else{
 			//try to switch to walking state if needed
-			boneController.setStateWalking();
+			//boneController.setStateWalking();
+			humanoidPluginController.setStateWalking();
 		}
 
 
@@ -632,9 +637,9 @@ bool AEntityScript::hasNodesInPathLeft(){
 /// @param pos position FVector to compare to
 /// @return true or false
 bool AEntityScript::reachedPosition(FVector pos){
-	FVector s = GetActorLocation();
+	FVector s = humanoidPluginController.GetLocation(); //s = boneController.GetLocation(); // GetActorLocation();
 
-	s = boneController.GetLocation();
+
 	float dist = FVector::Dist(s, pos);
 	float epsilonDistance = 100;
 	if (dist < epsilonDistance){
@@ -684,7 +689,8 @@ void AEntityScript::LookAt(FVector TargetLocation)
 
 
 	//NEW
-	boneController.LookAt(TargetLocation);
+	//boneController.LookAt(TargetLocation);
+	humanoidPluginController.LookAt(TargetLocation);
 }
 
 void AEntityScript::showScreenMessage(FString s){
@@ -739,7 +745,7 @@ void AEntityScript::enableCollider(bool enable){
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
 
-	boneController.collapse();
+	//boneController.collapse();
 	
 
 	resetpath();
@@ -839,4 +845,24 @@ void AEntityScript::drawPath(){
 			}
 		}
 	}
+}
+
+
+
+
+
+
+
+
+
+
+
+// ------------ new skelleton section --------------
+void AEntityScript::BeginPlayHumanoidController(){
+	humanoidPluginController.defaultSetup(GetWorld());
+}
+
+
+void AEntityScript::TickHumanoidController(float deltatime){
+	humanoidPluginController.Tick(deltatime);
 }

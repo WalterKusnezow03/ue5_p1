@@ -45,8 +45,10 @@ void AHumanEntityScript::init(){
     attackTypeOfBot = EAttackType::EAssault;
 
     FVector location = GetActorLocation();
-    boneController.SetLocation(location);
-    boneController.resetRotation();
+    //boneController.SetLocation(location);
+    //boneController.resetRotation();
+    humanoidPluginController.SetLocation(location);
+
 
     //DebugHelper::showScreenMessage("human init");
     
@@ -72,8 +74,11 @@ void AHumanEntityScript::init(){
 			w->pickupBot(this); //saves the pointer inside the weapon. Weapon is further managed by custom skelleton
 
             //attach to bone controller
-            boneController.dropWeapon();
-            boneController.attachCarriedItem(w);
+            //boneController.dropWeapon();
+            //boneController.attachCarriedItem(w);
+
+            humanoidPluginController.dropCarriedItem();
+            humanoidPluginController.attachOrReplaceCarriedItem(w);
 
             //save pointer
             weaponPointer = w;

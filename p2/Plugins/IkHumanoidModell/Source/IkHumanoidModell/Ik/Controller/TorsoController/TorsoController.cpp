@@ -43,14 +43,10 @@ void TorsoController::Tick(
     MMatrix &actorRotation, 
     float deltatime
 ){
-    partLeft.Tick(actorTranslation, actorRotation, hipPitch, deltatime);
-    partRight.Tick(actorTranslation, actorRotation, hipPitch, deltatime);
+    partLeft.Tick(actorTranslation, actorRotation, deltatime);
+    partRight.Tick(actorTranslation, actorRotation, deltatime);
 }
 
-MMatrix TorsoController::applyUpRotation(MMatrix &inRotation){
-    MMatrix result = inRotation * hipPitch; //<-- lese richtung --
-    return result;
-}
 
 void TorsoController::SetWorldTargetLeft(FVector &target){
 
@@ -64,4 +60,9 @@ void TorsoController::SetWorldTargetRight(FVector &target){
 void TorsoController::attachOrReplaceCarriedItem(IIkCarryInterface *ptr){
     partLeft.attachOrReplaceCarriedItem(ptr);
     partRight.attachOrReplaceCarriedItem(ptr);
+}
+
+void TorsoController::dropCarriedItem(){
+    partLeft.dropCarriedItem();
+    partRight.dropCarriedItem();
 }

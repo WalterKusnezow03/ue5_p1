@@ -24,11 +24,21 @@ public:
 	// Sets default values for this actor's properties
 	AcarriedItem();
 
-	// target for hands, new IkHumanoid Plugin info container!
+	// --- IK CARRY INTERFACE ---
+	//target for hands, new IkHumanoid Plugin info container!
 	virtual CarriedItemPositionData &getItemPositionDataRef() override;
+	//must have this api to update from outside
+	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) override;
 
+
+	// Api
+
+	/// @brief pickup by player.
+	/// @param cameraIn 
 	void pickup(UCameraComponent *cameraIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
+
+
 	virtual void drop();
 	bool isPickedupByPlayer();
 	void showItem(bool show);

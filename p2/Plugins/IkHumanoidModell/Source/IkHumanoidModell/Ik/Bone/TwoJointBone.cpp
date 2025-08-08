@@ -31,6 +31,7 @@ void TwoJointBone::setup(float a, float b, UWorld *world){
 
     a = std::abs(a);
     b = std::abs(b);
+    length = a + b;
 
     FVector aVec(0, 0, -a);
     FVector bVec(0, 0, -b);
@@ -43,7 +44,7 @@ void TwoJointBone::setup(float a, float b, UWorld *world){
     t1Inv.setTranslation(aVec);
     t2Inv.setTranslation(bVec);
 
-    length = a + b;
+   
 
     //foot
     FVector foot(20, 0, 0);

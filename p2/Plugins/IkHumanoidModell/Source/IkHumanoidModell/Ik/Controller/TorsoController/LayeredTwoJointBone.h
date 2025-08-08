@@ -28,7 +28,6 @@ public:
     void Tick(
         MMatrix &actorTranslation,
         MMatrix &actorRotation,
-        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -39,7 +38,6 @@ public:
     void TickForwardKinematicsWorldTarget(
         MMatrix &actorTranslation,
         MMatrix &actorRotation, 
-        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -47,7 +45,6 @@ public:
     void TickBuildNone(
         MMatrix &actorTranslation,
         MMatrix &actorRotation,
-        MMatrix &torsoRotation,
         float deltatime
     );
 
@@ -63,6 +60,9 @@ public:
     void attachOrReplaceCarriedItem(IIkCarryInterface *actor);
 
 private:
+    void findDefaultLocalTorsoTarget(float torsoHeight, float shoulderWidth);
+    FVector localTorsoEndEffectorTarget;
+
     EArmType armTypeSaved;
     TwoJointBone torsoBone;
     TwoJointBone armBone;
@@ -112,7 +112,6 @@ private:
     FVector moveToLocalSpaceOfArm(
         MMatrix &actorTranslation,
         MMatrix &actorOrientation, 
-        MMatrix &torsoRotation,
         FVector &worldTarget
     );
 
@@ -134,8 +133,7 @@ private:
         FVector &targetWorld,
         FVector &targetLocalArm,
         MMatrix &actorTranslation,
-        MMatrix &actorRotation,
-        MMatrix &torsoRotation
+        MMatrix &actorRotation
     );
 
 

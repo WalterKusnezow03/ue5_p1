@@ -26,5 +26,10 @@ class IKHUMANOIDMODELL_API IIkCarryInterface
     // pure virtual functions () = 0 Only!
 public:
 	
+	/// @brief must provide this package with end effector hands position and more
+	/// when asked!
 	virtual CarriedItemPositionData &getItemPositionDataRef() = 0;
+
+	/// @brief must provide this api for outside updates of the actor (but this is just an interface.)
+	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) = 0;
 };

@@ -14,6 +14,7 @@ public:
     void setWorld(UWorld *world);
     void setAsLeg();
 
+    /// @brief direction of bone from bottom to up, default size stretched bone.
     FVector defaultExtendedEndToStartLocal();
     
     void setupBone(float a, float b, UWorld *world, FVector offset);

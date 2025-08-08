@@ -30,7 +30,7 @@ public:
     );
 
 private:
-    bool bLogEnabled = true;
+    bool bLogEnabled = false; //disable.
 
     FVector forceUnscaled(
         FVector &legdir_featherCurrent,

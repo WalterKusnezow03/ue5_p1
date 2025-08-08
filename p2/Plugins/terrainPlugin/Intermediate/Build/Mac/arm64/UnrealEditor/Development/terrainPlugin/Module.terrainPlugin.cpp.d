@@ -3910,12 +3910,17 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/bezierCurve.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/terrainCreator.cpp \
-  Runtime/Core/Public/Algo/Sort.h Runtime/Core/Public/HAL/PlatformTime.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/chunk.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/chunk.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainHillSetup.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/terrainCreator.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/terrainHillSetup.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/terrainHillSetup.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainConstants.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadMaker.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadMaker.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.cpp \
+  Runtime/Core/Public/Algo/Sort.h Runtime/Core/Public/HAL/PlatformTime.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainHillSetup.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/doorLike/DoorBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h \

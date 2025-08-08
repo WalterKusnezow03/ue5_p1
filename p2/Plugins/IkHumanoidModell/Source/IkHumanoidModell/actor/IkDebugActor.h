@@ -24,12 +24,13 @@ private:
     void BeginPlaySingleArm();
     void BeginPlayHipController();
     void BeginPlayHumanoidController();
+    
 
     void TickPlaySingleArm(float deltatime);
     void TickPlayHipController(float deltatime);
     void TickPlayHumanoidController(float deltatime);
 
-    EDebugPart debugPart = EDebugPart::EDebugHumanoidController;
+    EDebugPart debugPart = EDebugPart::EDebugHipController; // EDebugHumanoidController;
 
     HipController hipController;
 

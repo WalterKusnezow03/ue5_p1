@@ -529,7 +529,7 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
 
 
         //debug
-        debugDrawMeshData(meshdata);
+        //debugDrawMeshData(meshdata);
     }
 
 
