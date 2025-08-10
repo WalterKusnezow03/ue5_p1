@@ -36,7 +36,7 @@ public:
 	static bool gamePausedByPlayer();
 	static void setGamePaused(bool in);
 
-	
+
 
 private:
 	static void debugTerrainHeight();

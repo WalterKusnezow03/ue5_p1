@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "customMeshActor.h"
 
 #include "CoreMinimal.h"
 #include "GameCore/util/FVectorTouple.h"
@@ -16,7 +17,9 @@
 #include "GameCore/DebugHelper.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
-#include "customMeshActor.h"
+
+#include "GameCore/world/worldLevelBase.h"
+
 
 
 // Sets default values
@@ -304,7 +307,10 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
     TArray<FVectorTouple> &touples,
     float treeDensitySkalar
 ){
-    
+    //create trees if not in skelleton record debug mode.
+    if(worldLevelBase::DebugSkelletonRecordMode()){
+        return;
+    }
 
     // iterate over touples
     // determine normal angle and apply foliage, rocks, trees accordingly

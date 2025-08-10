@@ -60,6 +60,8 @@ public:
     void attachOrReplaceCarriedItem(IIkCarryInterface *actor);
 
 private:
+    bool bDrawDebugLines = false;
+
     void findDefaultLocalTorsoTarget(float torsoHeight, float shoulderWidth);
     FVector localTorsoEndEffectorTarget;
 

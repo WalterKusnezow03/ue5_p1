@@ -679,6 +679,9 @@ void HipController::LookAt(FVector &location){
     FVector lookDir = lookDirection();
     FVector2D look2D(lookDir.X, lookDir.Y);
     FVector2D targetLook2D(lookDirTargeted.X, lookDirTargeted.Y);
+    if(true && FVector2D::DotProduct(look2D, targetLook2D) >= 0.90f){
+        return;
+    }
 
     float angle = MMatrix::signedAngleRadBetween(look2D, targetLook2D);
     setupRotationForNextStep(angle);

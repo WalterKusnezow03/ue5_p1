@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "EntityScript.h"
 
 #include "p2/player/playerScript.h"
 #include "PathFinder/pathFinding/PathFinder.h"
@@ -10,7 +11,10 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "p2/entityManager/AlertManager.h"
 #include "GameCore/team/teamEnum.h"
-#include "EntityScript.h"
+
+#include "GameCore/util/FVectorUtil.h"
+
+
 
 // Sets default values
 AEntityScript::AEntityScript()
@@ -201,10 +205,20 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	//tick bone controller
-	if(true){
-		//boneController.Tick(DeltaTime, GetWorld());
-		humanoidPluginController.Tick(DeltaTime);
-		SetActorLocation(boneController.GetLocation());
+	//boneController.Tick(DeltaTime, GetWorld());
+	humanoidPluginController.Tick(DeltaTime);
+	SetActorLocation(boneController.GetLocation());
+
+	if(worldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
+		humanoidPluginController.setStateWalking();
+		debugRecordRotationTimer.Tick(DeltaTime);
+		if(debugRecordRotationTimer.timesUp()){
+			debugRecordRotationTimer.Begin(30.0f, true);
+
+			float degree = FVectorUtil::randomFloatNumber(-40, 40);
+			humanoidPluginController.setupRotationForNextStep(MMatrix::degToRadian(degree));
+		}
+		return;
 	}
 
 	//only update if activated

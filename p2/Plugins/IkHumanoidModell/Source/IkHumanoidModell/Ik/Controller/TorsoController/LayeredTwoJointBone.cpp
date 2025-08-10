@@ -66,7 +66,7 @@ void LayeredTwoJointBone::Tick(
         worldTarget = HandTargetWorldBasedOnAttachedItem();
 
         //looks ok
-        if(false){
+        if(false && bDrawDebugLines){
             DebugHelper::showLineBetween(
                 world,
                 actorTranslation.getTranslation(),
@@ -157,7 +157,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         );
 
         bool drawShoulderTarget = true;
-        if(drawShoulderTarget){
+        if(drawShoulderTarget && bDrawDebugLines){
             FVector worldstart = actorTranslation.getTranslation();
             FVector localRotatedSpace = actorRotation * shoulderTargetLocal;
             DebugHelper::showLineBetween(
@@ -170,7 +170,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         }
 
         bool drawHandtarget = true;
-        if(drawHandtarget){
+        if(drawHandtarget && bDrawDebugLines){
             FVector actorStart = actorTranslation.getTranslation();
             FVector localRotatedSpace = actorRotation * shoulderTargetLocal;
             FVector worldstart = actorStart + localRotatedSpace;
@@ -286,7 +286,7 @@ FVector LayeredTwoJointBone::moveToLocalSpaceOfArm(
 
     //looks correct all the time ??
     bool drawLocal = true;
-    if(drawLocal){
+    if(drawLocal && bDrawDebugLines){
         FVector worldstart = actorTranslation.getTranslation();
         FVector localRotatedSpace = actorOrientation * localSpaceTarget;
         DebugHelper::showLineBetween(

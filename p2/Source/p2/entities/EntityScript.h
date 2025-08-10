@@ -154,7 +154,9 @@ protected:
 
 
 	// new experimental humanoid controller
+	class timer debugRecordRotationTimer;
 	HumanoidController humanoidPluginController;
+
 	void BeginPlayHumanoidController();
 	void TickHumanoidController(float deltatime);
 };

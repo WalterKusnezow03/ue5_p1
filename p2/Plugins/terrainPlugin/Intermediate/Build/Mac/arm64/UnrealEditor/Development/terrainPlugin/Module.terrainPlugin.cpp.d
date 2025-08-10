@@ -3897,6 +3897,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerGeneric.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.cpp \
@@ -3909,7 +3910,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/rocks/RockCreator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/bezierCurve.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/chunk.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/chunk.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainHillSetup.h \

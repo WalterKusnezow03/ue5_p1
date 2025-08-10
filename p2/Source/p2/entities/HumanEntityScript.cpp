@@ -222,8 +222,8 @@ void AHumanEntityScript::die(){
     AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
 
-    boneController.dropWeapon();
-    boneController.collapse(); //must call!
+    //boneController.dropWeapon();
+    //boneController.collapse(); //must call!
 
     //entity manager
     EntityManager *entityManager = worldLevel::entityManager();
@@ -261,6 +261,10 @@ void AHumanEntityScript::die(){
 
 /// @brief despawns the entity 
 void AHumanEntityScript::despawn(){
+    if(worldLevel::DebugSkelletonRecordMode()){
+        return;
+    }
+
     die();
 }
 

@@ -13,11 +13,15 @@ public:
     void markTriangleFlipAsWantedForArms();
     void markTriangleFlipAsWantedForLegs();
 
-    //move to target and build
+    //move the end effector to a target and build
     void MoveToTarget(FVector target, MMatrix &world, float deltatime);
+
+    //moves the start effector to a target and builds
     void MoveToTargetInverse(FVector target, float deltatime);
 
-    //new
+    //USE THIS METHOD FOR LEG FK IK! Includes local forward direction
+    //to use roll rotation instead of yaw, creates more believable and less
+    //glitchy movement when following a trajectory!!
     void MoveToTarget(
         FVector target,
         MMatrix &world,
@@ -57,17 +61,26 @@ public:
     /// @return 
     FVector outOfreachDistance(FVector &target);
 
+    //clamps a target to the motion sphere if needed
     void clampTarget(FVector &target);
+
+    //sets the local target to be on the motion sphere, whether inside or outside.
     void clampToFullMotionRangeCircle(FVector &target);
+
+    //returns if a local target is reachable
     bool targetIsInMotionCircle(FVector &target);
 
     // --- api for layered bone ---
 
-    /// @brief inverse transform of the whole bone
+    /// @brief inverse transform of the whole bone, not needed!
     /// @return 
     MMatrix inverseTransform();
+
+    /// can override the knee rotation for outside manipulation, 
+    /// may be used for torso but is not.
     void overrideR2KneeRotation(MMatrix &rin);
 
+    /// use other colors for debugging (used for torso bones)
     void useOtherColorType();
 
 
@@ -79,6 +92,8 @@ private:
     bool colorFlagChanged = false;
 
     UWorld *worldPtr = nullptr;
+
+    //resets the rotation matrices
     void resetRotations();
 
     bool markedForTriangleFlip = false; //for arms to have their elbows down
@@ -124,7 +139,7 @@ private:
     void draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, float dt);
 
 
-    //new
+    //Use this method for leg FK! 
     void MoveToTarget(FVector &target, FVector &localForward);
 
 

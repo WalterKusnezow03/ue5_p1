@@ -206,7 +206,7 @@ void TwoJointBone::MoveToTarget(
 }
 
 
-/// @brief experimental method for using roll instead of yaw rotation based on moving direction
+/// @brief Method for using roll instead of yaw rotation based on moving direction
 /// @param target 
 void TwoJointBone::MoveToTarget(FVector &target, FVector &localForward){
     resetRotations();
