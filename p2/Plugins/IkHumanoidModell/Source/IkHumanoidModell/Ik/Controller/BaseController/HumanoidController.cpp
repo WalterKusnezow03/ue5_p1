@@ -3,6 +3,7 @@
 HumanoidController::HumanoidController(){
     FVector location(100, 0, 100);
     mainItemSocket.setLocalLocation(location);
+
 }
 
 HumanoidController::~HumanoidController(){
@@ -60,30 +61,55 @@ void HumanoidController::TickMainCarriedItemSocket(float deltatime){
     );
 }
 
-void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *ptr){
-    torsoController.attachOrReplaceCarriedItem(ptr);
-    mainItemSocket.attachOrReplaceCarriedItem(ptr);
 
-    updateCollisionParams(ptr);
+
+// --- Attach api ---
+
+void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
+    //remove old item
+    if(IIkCarryInterface *previousItem = mainItemSocket.attachedItemPointer()){
+        updateCollisionParams(previousItem, false); //remove old item
+    }
+
+    torsoController.attachOrReplaceCarriedItem(newItem);
+    mainItemSocket.attachOrReplaceCarriedItem(newItem);
+    updateCollisionParams(newItem, true); //add new item
 }
 
-void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr){
-    
-    FCollisionQueryParams Params;
-    Params.bTraceComplex = false;
+void HumanoidController::raycastIgnoreOwner(AActor *actor){
+    updateCollisionParams(actor, true);
+}
 
-    if(ptr){
+void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr, bool add){
+    if(ptr != nullptr){
         // exclude this actor from the trace if possible, otherwise none
         AActor *casted = Cast<AActor>(ptr);
         if(casted){
-            Params.AddIgnoredActor(casted);
+            updateCollisionParams(casted, add);
         }
     }
-    hipController.updateCollisionParams(Params);
+}
+
+void HumanoidController::updateCollisionParams(AActor *actor, bool add){
+    if(actor != nullptr){
+        if(add){
+            collisionParamsProvider.AddIgnoredActor(actor);
+        }else{
+            collisionParamsProvider.RemoveIgnoredActor(actor);
+        }
+        //update params since anything has changed
+        hipController.updateCollisionParams(collisionParamsProvider.getCollisonParams());
+    }
 }
 
 
+
+
 void HumanoidController::dropCarriedItem(){
+    //remove from collision params
+    updateCollisionParams(mainItemSocket.attachedItemPointer(), false); //remove
+
+    //drop
     torsoController.dropCarriedItem();
     mainItemSocket.dropCarriedItem();
 }
@@ -110,3 +136,11 @@ void HumanoidController::stopLocomotion(){
     hipController.stopLocomotion();
 }
 
+
+
+
+
+//--- socket change api ---
+void HumanoidController::changeCarriedItemSocket(ECarriedItemPosition type){
+    //Todo: Add Carried item socket interpolator / map
+}

@@ -98,12 +98,12 @@ bool HipController::groundedByDistance(){
     /*
     check ground distance by default hip location above ground
     */
-    float hipAbovegroundZMin = latestGroundTruth.Z + setupLegLength;
+    float epsilon = 1.3f; //might be adjusted
+    float hipAbovegroundZMin = latestGroundTruth.Z + setupLegLength * epsilon;
     float ownZ = translation.getTranslation().Z;
-
     bool grounded = ownZ <= hipAbovegroundZMin;
 
-    //reset velocity when grounded 
+    //reset velocity vertical when grounded, cap min 0
     //VERY IMPORTANT!
     if(grounded){
         float z = velocity.Z;
@@ -112,7 +112,7 @@ bool HipController::groundedByDistance(){
 
 
     //DEBUG
-    grounded = true;
+    //grounded = true;
 
     return grounded;
 }
@@ -733,38 +733,53 @@ void HipController::setupRotationForNextStep(float radian){
 /// -- prevents skelleton from slipping into weird directions if velocity is to high
 /// (Wird als stolpern wahrgenommen, unkontrolliert, fängt sich nicht)
 /// @param radianInNextStep 
-void HipController::slowDownBasedOnRotationInRadian(float radianInNextStep){
+void HipController::slowDownBasedOnRotationInRadian(
+    float radianInNextStep
+){
 
+    // ----- rotate velocity and scale based on change in cos(angle) in (0,1) ------
+    bool rotatevelocity = true;
     FVector forward = lookDirection();
     MMatrix deltaRotation;
     deltaRotation.yawRadAdd(radianInNextStep);
-    //(berücksichtig pitch nicht, nicht erwartet!)
-    MMatrix orientationIntegrated = orientation * deltaRotation; //<-- lese richtung --
-
-    FVector forwardDeltaApplied = orientationIntegrated * forward;
-
+    FVector forwardDeltaApplied = deltaRotation * forward;
     float scalar = FVector::DotProduct(forward, forwardDeltaApplied);
+    float slow = scalar > 0.0f ? scalar : 0.0f;
 
-    /*
+    if(rotatevelocity){
+        FVector updatedVelocity2D = forwardDeltaApplied.GetSafeNormal() * velocity.Size() * slow;
+        updateHorizontalVelocity(updatedVelocity2D);
+        DebugHelper::logMessage("HipController update hVeloity ");
+        return;
+    }
+
+    // ----- creates sliding glitch: may not be wanted ------
+    /*    
+    / *
     $$
     slow =\begin{cases}
         s_v \textit{ if } s_v> 0 \\
         0 \textit{ } otherwise 
     \end{cases} 
     $$
-    */
+    * /
     float slow = scalar > 0 ? scalar : 0.0f;
 
-    /*
+    / *
     $$
     horizontal_{velocity} = horizontal_{velocity} \cdot slow
     $$
-    */
+    * /
     //Horizontal XY Only!
     velocity.X *= slow;
     velocity.Y *= slow;
 
-    DebugHelper::logMessageFloat("HipController: Slow down:", (float) slow);
+    DebugHelper::logMessageFloat("HipController: Slow down:", (float) slow);*/
+}
+
+void HipController::updateHorizontalVelocity(FVector &velocityIn){
+    velocity.X = velocityIn.X;
+    velocity.Y = velocityIn.Y;
 }
 
 /// @brief ticks the hip rotation if an angle was setup in "setupRotationForNextStep()"

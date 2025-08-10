@@ -28,6 +28,8 @@ public:
     /// @param rotation 
     void setLocalRotation(FRotator &rotation);
 
+    IIkCarryInterface *attachedItemPointer();
+
 private:
     IIkCarryInterface *attachedItem = nullptr;
 

@@ -5,6 +5,8 @@
 #include "IkHumanoidModell/Ik/Controller/HipController/HipController.h"
 #include "IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.h"
 #include "IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.h"
+#include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
+#include "IkHumanoidModell/Ik/Controller/BaseController/collision/CollisionTracker.h"
 
 
 /// @brief will control the skelleton, hip and torso controller
@@ -19,6 +21,9 @@ public:
     void Tick(float deltatime);
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
     void dropCarriedItem();
+
+    //add owning actor to be ignored from collision for trajectory grounding
+    void raycastIgnoreOwner(AActor *actor);
 
     //rotation change of hipcontroller
     void LookAt(FVector &location);
@@ -36,8 +41,14 @@ public:
     void stopLocomotion();
 
     
+    //human entity bot api for carried item
+    //will change the item the asigned position, lerp if needed
+    void changeCarriedItemSocket(ECarriedItemPosition type);
 
 private:
+
+    //collision params tracking
+    CollisionTracker collisionParamsProvider;
 
     //legs, locomotion
     HipController hipController;
@@ -47,7 +58,11 @@ private:
 
 
     //main attached weapon / item
-    void updateCollisionParams(IIkCarryInterface *ptr);
+
+    //add or remove a item from collison params
+    void updateCollisionParams(IIkCarryInterface *ptr, bool bAdd);
+    void updateCollisionParams(AActor *ptr, bool bAdd);
+
     CarriedItemSocket mainItemSocket;
     void TickMainCarriedItemSocket(float deltatime);
 };

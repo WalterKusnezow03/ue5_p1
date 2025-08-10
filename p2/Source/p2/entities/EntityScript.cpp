@@ -29,9 +29,6 @@ AEntityScript::AEntityScript()
 void AEntityScript::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//deprecated controller
-	//setupBoneController();
 
 	BeginPlayHumanoidController();
 
@@ -67,130 +64,9 @@ void AEntityScript::init(){
 	FVector offset = GetActorLocation();
 
 	humanoidPluginController.SetLocation(offset);
-	// boneController.SetLocation(offset);
-	// boneController.resetRotation();
 
 	projectActorToGround();
 }
-
-void AEntityScript::setupBoneController(){
-	
-
-	//init offset for now
-
-	FVector offset = GetActorLocation();
-	boneController.SetLocation(offset);
-
-	// debug testing meshes
-	float legScaleCM = 100.0f;
-	float armScaleCM = 70.0f;
-	float legHalfScale = legScaleCM / 2.0f;
-	float armHalfScale = armScaleCM / 2.0f;
-
-	int sizeX = 10;
-	int sizeY = 10;
-	int offY = sizeY / 2;
-	offY = 0;
-
-	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
-	
-	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
-
-	
-	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
-	
-
-	//torso
-	/**
-	 * torso wird jetzt erstmal auch hier erstellt
-	 * 
-	 * die create limb methode usw muss irgendwann entweder durch meshes
-	 * aus den assets ersetzt werden
-	 * oder eine eigene klasse existieren die diese detailierter
-	 * erstellen kann!
-	 */
-	AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
-	boneController.attachTorso(torsoMesh);
-
-
-	//holding weapon
-	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); //hand 2 debug
-	
-	//foot
-	AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
-	AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
-	boneController.attachPedalFoots(foot1, foot2);
-
-
-	//head
-	AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
-	boneController.attachHead(headPointer);
-
-
-	
-
-	//DEBUG HIDE OWN MESH 
-	
-}
-
-
-AActor *AEntityScript::createLimbPivotAtTop(int x, int y, int height, int pushFront){
-
-	height *= -1; //orient downwardss
-	
-
-	EntityManager *entitymanagerPointer = worldLevel::entityManager();
-	if(entitymanagerPointer != nullptr){
-		FVector location(0, 0, 0);
-		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
-		if(oberschenkel != nullptr){
-			//int width = 10;
-			//int height = -(legScaleCM / 2);
-
-			float xHalf = x / 2.0f;
-			float yHalf = y / 2.0f;
-
-			FVector a(-xHalf + pushFront, -yHalf,0);
-			FVector b(xHalf + pushFront, -yHalf, 0);
-			FVector c(xHalf + pushFront, yHalf,0);
-			FVector d(pushFront, yHalf,0);
-
-
-			FVector at(-xHalf + pushFront, -yHalf, height);
-			FVector bt(xHalf + pushFront, -yHalf, height);
-			FVector ct(xHalf + pushFront, yHalf, height);
-			FVector dt(pushFront, yHalf, height);
-
-			oberschenkel->createCube(
-				a,b,c,d,at,bt,ct,dt,
-				materialEnum::wallMaterial
-			);
-
-			entitymanagerPointer->addActorToIgnoreRaycastParams(
-				//this, getTeam()
-				oberschenkel, getTeam()
-			);
-
-			oberschenkel->setDamagedOwner(this);
-
-			return oberschenkel;
-		}
-	}
-	return nullptr;
-}
-
-
-
-
-
 
 
 
@@ -205,9 +81,8 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	//tick bone controller
-	//boneController.Tick(DeltaTime, GetWorld());
 	humanoidPluginController.Tick(DeltaTime);
-	SetActorLocation(boneController.GetLocation());
+	SetActorLocation(humanoidPluginController.GetLocation());
 
 	if(worldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
 		humanoidPluginController.setStateWalking();
@@ -314,8 +189,8 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 		//wenn das skalarprodukt zweier vektoren 1 ergibt sind sie paralell zu einander
 
 		//FVector forward = GetActorForwardVector().GetSafeNormal();
-		FVector forward = humanoidPluginController.lookDirection();		  // boneController.lookDirection();
-		FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+		FVector forward = humanoidPluginController.lookDirection();		 
+		FVector currentLocation = humanoidPluginController.GetLocation();
 
 		//ab = b - a
 		FVector ab = (target->GetActorLocation() - currentLocation).GetSafeNormal();
@@ -351,12 +226,12 @@ void AEntityScript::setupRaycastIgnoreParams(){
 /// @param vec 
 /// @return 
 bool AEntityScript::isWithinMaxRange(FVector vec){
-	FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation(); //GetActorLocation()
+	FVector currentLocation = humanoidPluginController.GetLocation(); 
 	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE);
 }
 
 bool AEntityScript::isWithinCloseRange(FVector &vec){
-	FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+	FVector currentLocation = humanoidPluginController.GetLocation();
 	return (FVector::Dist(currentLocation, vec) <= MAXDISTANCE_CLOSERANGE);
 }
 
@@ -431,7 +306,7 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 	// Define the start and end vectors for the raycast
 	//FVector Start = this->GetActorLocation();
 
-	FVector Start = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+	FVector Start = humanoidPluginController.GetLocation(); 
 	direction = direction.GetSafeNormal();
 	Start += direction * 100; //50cm
 
@@ -487,7 +362,7 @@ void AEntityScript::projectActorToGround(){
 	{
 		FVector output = HitResult.ImpactPoint;
 		SetActorLocation(output);
-		humanoidPluginController.SetLocation(output);//boneController.SetLocation(output);
+		humanoidPluginController.SetLocation(output);
 	}
 }
 
@@ -580,7 +455,7 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 		//ask for path
 		if(p != nullptr){
 
-			FVector a = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+			FVector a = humanoidPluginController.GetLocation(); 
 
 			this->path = p->getPath(a,targetLocation);
 
@@ -607,7 +482,7 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
 
-		FVector currentLocation = humanoidPluginController.GetLocation(); // boneController.GetLocation();
+		FVector currentLocation = humanoidPluginController.GetLocation(); 
 
 		FVector nextPos = path.front();
 
@@ -615,14 +490,13 @@ void AEntityScript::followpath(float deltaTime){
 			path.erase(path.begin() + 0); //first node pop
 			
 			if(!hasNodesInPathLeft()){
-				//boneController.stopLocomotion();
+				
 				humanoidPluginController.stopLocomotion();
 			}
 			
 			return;
 		}else{
 			//try to switch to walking state if needed
-			//boneController.setStateWalking();
 			humanoidPluginController.setStateWalking();
 		}
 
@@ -651,7 +525,7 @@ bool AEntityScript::hasNodesInPathLeft(){
 /// @param pos position FVector to compare to
 /// @return true or false
 bool AEntityScript::reachedPosition(FVector pos){
-	FVector s = humanoidPluginController.GetLocation(); //s = boneController.GetLocation(); // GetActorLocation();
+	FVector s = humanoidPluginController.GetLocation();
 
 
 	float dist = FVector::Dist(s, pos);
@@ -702,8 +576,7 @@ void AEntityScript::LookAt(FVector TargetLocation)
     SetActorRotation(LookAtRotation);
 
 
-	//NEW
-	//boneController.LookAt(TargetLocation);
+	//make humanoid turn
 	humanoidPluginController.LookAt(TargetLocation);
 }
 
@@ -759,9 +632,7 @@ void AEntityScript::enableCollider(bool enable){
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
 
-	//boneController.collapse();
 	
-
 	resetpath();
 	enableActiveStatus(false);
 	if (EntityManager *e = worldLevel::entityManager())
@@ -873,6 +744,7 @@ void AEntityScript::drawPath(){
 
 // ------------ new skelleton section --------------
 void AEntityScript::BeginPlayHumanoidController(){
+	humanoidPluginController.raycastIgnoreOwner(this);
 	humanoidPluginController.defaultSetup(GetWorld());
 }
 

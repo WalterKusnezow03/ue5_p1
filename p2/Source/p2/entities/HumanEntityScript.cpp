@@ -20,6 +20,7 @@
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
 
 
 // Sets default values
@@ -45,8 +46,7 @@ void AHumanEntityScript::init(){
     attackTypeOfBot = EAttackType::EAssault;
 
     FVector location = GetActorLocation();
-    //boneController.SetLocation(location);
-    //boneController.resetRotation();
+    
     humanoidPluginController.SetLocation(location);
 
 
@@ -74,9 +74,6 @@ void AHumanEntityScript::init(){
 			w->pickupBot(this); //saves the pointer inside the weapon. Weapon is further managed by custom skelleton
 
             //attach to bone controller
-            //boneController.dropWeapon();
-            //boneController.attachCarriedItem(w);
-
             humanoidPluginController.dropCarriedItem();
             humanoidPluginController.attachOrReplaceCarriedItem(w);
 
@@ -148,16 +145,19 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     }
 
     if(canSeePlayer && spottedPlayer){
-        boneController.weaponAimDownSight();
+        
+        
+        
+        humanoidPluginController.changeCarriedItemSocket(ECarriedItemPosition::EAimDownSightPosition);
         attackPlayer();
         
         //Super::resetpath(); //clear path, might change!
     }
     if(!canSeePlayer){
         if(!spottedPlayer){
-            boneController.weaponHolsterPosition();
+            humanoidPluginController.changeCarriedItemSocket(ECarriedItemPosition::EHipPosition);
         }else{
-            boneController.weaponContactPosition();
+            humanoidPluginController.changeCarriedItemSocket(ECarriedItemPosition::ETorsoPosition); //contact state
         }
     }
 }
@@ -178,13 +178,12 @@ void AHumanEntityScript::attackPlayer(){
 /// @param target 
 void AHumanEntityScript::shootAt(FVector target){
     
-    if(!boneController.canChangeStateNow()){
-        return;
-    }
+    // To be implemented for humanoid controller
+    //if(!boneController.canChangeStateNow()){
+    //    return;
+    //}
 
     
-
-    // boneController.stopLocomotion(); //blocked debug wise
     Super::LookAt(target); // look at the target
 
 
@@ -222,8 +221,8 @@ void AHumanEntityScript::die(){
     AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
 
-    //boneController.dropWeapon();
-    //boneController.collapse(); //must call!
+    
+    humanoidPluginController.dropCarriedItem();
 
     //entity manager
     EntityManager *entityManager = worldLevel::entityManager();
@@ -328,11 +327,11 @@ bool AHumanEntityScript::attackTypeIs(EAttackType type){
 bool AHumanEntityScript::playerIsInLookDir(){
     
     FVector playerLocation = PlayerInfo::playerLocation();
-    FVector connectToPlayer = playerLocation - boneController.GetLocation(); // AB = B - A
+    FVector connectToPlayer = playerLocation - humanoidPluginController.GetLocation(); // AB = B - A
     connectToPlayer.Z = 0.0f;
 
     connectToPlayer = connectToPlayer.GetSafeNormal();
-    FVector forward = boneController.lookDirection();
+    FVector forward = humanoidPluginController.lookDirection();
     forward.Z = 0.0f;
     forward = forward.GetSafeNormal();
 

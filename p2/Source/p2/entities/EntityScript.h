@@ -38,6 +38,7 @@ public:
 	static const int MAXDISTANCE = 10000; //100m --> 100 * 100 = 5000
 	static const int MAXDISTANCE_CLOSERANGE = 5000; //50m
 
+	//may be deprecated, happens in humanoid controller
 	void projectActorToGround();
 
 public:	
@@ -139,9 +140,7 @@ protected:
 
 	class timer spottingTimer;
 
-	class BoneController boneController;
-	void setupBoneController();
-	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
+	
 
 
 	//NEW ACTION MANAGER

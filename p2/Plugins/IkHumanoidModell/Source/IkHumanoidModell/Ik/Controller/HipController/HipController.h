@@ -153,7 +153,7 @@ private:
 
     //slow down velocity on rotation change, prevent slipping
     void slowDownBasedOnRotationInRadian(float radianInNextStep);
-
+    void updateHorizontalVelocity(FVector &velocityIn);
 
     //locomotion state
     EHipControllerStates currentControllerState = EHipControllerStates::EIdle;

@@ -47,3 +47,8 @@ void CarriedItemSocket::setLocalLocation(FVector &offset){
 void CarriedItemSocket::setLocalRotation(FRotator &rotation){
     TransformInner.setRotation(rotation);
 }
+
+
+IIkCarryInterface *CarriedItemSocket::attachedItemPointer(){
+    return attachedItem;
+}
