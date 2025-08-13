@@ -66,3 +66,11 @@ void TorsoController::dropCarriedItem(){
     partLeft.dropCarriedItem();
     partRight.dropCarriedItem();
 }
+
+
+
+//api for get actors:apply damaged owner casted mesh actor
+void TorsoController::getActors(TArray<AActor *> &outArray){
+    partLeft.getActors(outArray);
+    partRight.getActors(outArray);
+}

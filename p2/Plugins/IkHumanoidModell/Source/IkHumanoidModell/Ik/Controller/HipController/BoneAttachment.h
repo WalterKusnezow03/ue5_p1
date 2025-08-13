@@ -83,6 +83,10 @@ public:
     void updateLocalForwardMovingDirection(FVector &localMove);
     void resetLocalForwardMovingDirection();
 
+
+    //api for set damaged owner
+    void getActors(TArray<AActor *> &outArray);
+
 private:
     FVector defaultExtendedTranslationBottomToUp;
 

@@ -391,3 +391,11 @@ FVector LayeredTwoJointBone::HandTargetWorldBasedOnAttachedItem(){
     }
     return FVector(0, 0, 0); //should be never returned if actorIsAttached is asked before
 }
+
+
+//
+// --- api for get actors:apply damaged owner casted mesh actor ---
+void LayeredTwoJointBone::getActors(TArray<AActor *> &outArray){
+    torsoBone.getActors(outArray);
+    armBone.getActors(outArray);
+}

@@ -6,7 +6,8 @@
 #include "IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.h"
 #include "IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.h"
 #include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
-#include "IkHumanoidModell/Ik/Controller/BaseController/collision/CollisionTracker.h"
+#include "GameCore/Raycast/query/CollisionTracker.h"
+#include "GameCore/interfaces/Damageinterface.h"
 
 
 /// @brief will control the skelleton, hip and torso controller
@@ -37,13 +38,25 @@ public:
     /// @brief will place skelleton at a target, foot on ground
     void SetLocation(FVector &target);
 
+    //sets locomotion enabled immidiate
     void setStateWalking();
+
+    //sets stop locomotion immidiate
     void stopLocomotion();
 
-    
+    //will wait for rotation to finish and then stop locomotion, unless forced locomotion 
+    //any time inbetween
+    void stopLocomotionOnceRotationHasFinished();
+
     //human entity bot api for carried item
     //will change the item the asigned position, lerp if needed
     void changeCarriedItemSocket(ECarriedItemPosition type);
+
+
+    //set damaged owner api
+    /// Call after AFTER Setup - Internal Bones not setup before!
+    void setDamagedOwner(IDamageinterface *damagedOwnerIn);
+
 
 private:
 
@@ -63,6 +76,14 @@ private:
     void updateCollisionParams(IIkCarryInterface *ptr, bool bAdd);
     void updateCollisionParams(AActor *ptr, bool bAdd);
 
+
+    void addAllActorsInChildrenToRaycastExclude();
+    // actor collect for set damaged owner and exclude from raycast here
+    TArray<AActor *> actorInChildrenArray();
+
+
     CarriedItemSocket mainItemSocket;
     void TickMainCarriedItemSocket(float deltatime);
+
+    
 };

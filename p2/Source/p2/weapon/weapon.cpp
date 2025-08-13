@@ -304,7 +304,7 @@ void Aweapon::damageIfPossible(
 		teamEnum entityTeam = entity->getTeam();
 		if(entityTeam != ownTeam || entityTeam == teamEnum::none){
 			if(DEBUG_DRAW){
-				DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 1.0f, 0, 1.0f);
+				DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 1.0f, 0, 1.0f);
 			}
 
 			FVector hitpoint = HitResult.ImpactPoint;
@@ -313,6 +313,8 @@ void Aweapon::damageIfPossible(
 				start,
 				hitpoint
 			);
+
+			DebugHelper::showScreenMessage(FString::Printf(TEXT("Weapon Shot Damage: (%.2f)"), damage), FColor::Orange);
 
 			entity->takedamage(
 				damage,

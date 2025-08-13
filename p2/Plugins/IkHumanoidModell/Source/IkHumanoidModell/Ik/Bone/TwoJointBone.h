@@ -83,9 +83,10 @@ public:
     /// use other colors for debugging (used for torso bones)
     void useOtherColorType();
 
+    void getActors(TArray<AActor *> &outArray);
 
 private:
-    bool bLogEnabled = true;
+    bool bLogEnabled = false;
     bool bDrawBackwardReach = false;
     bool bDrawToWorldStart = false;
 

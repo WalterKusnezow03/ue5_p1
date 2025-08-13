@@ -482,3 +482,11 @@ float BoneAttachment::distanceFromTarget(){
     FVector endeffector = bone.EndEffectorLocation();
     return FVector::Dist(endeffector, forwardTargetWorld);
 }
+
+
+/**
+ * get actors for damaged owner setup
+ */
+void BoneAttachment::getActors(TArray<AActor *> &outArray){
+    bone.getActors(outArray);
+}

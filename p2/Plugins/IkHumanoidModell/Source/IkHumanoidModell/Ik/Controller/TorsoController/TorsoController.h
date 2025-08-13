@@ -41,6 +41,10 @@ public:
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
     void dropCarriedItem();
 
+    //api for get actors:apply damaged owner casted mesh actor
+    void getActors(TArray<AActor *> &outArray);
+
+
 private:
     
 

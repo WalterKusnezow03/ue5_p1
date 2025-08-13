@@ -45,13 +45,23 @@ void CollisionTracker::RemoveIgnoredActor(AActor *actor){
 /// @brief params with tracked actors, bTraceComplex false
 /// @return 
 FCollisionQueryParams CollisionTracker::getCollisonParams(){
+    return makeParams(tracked);
+}
+
+FCollisionQueryParams CollisionTracker::makeParams(TArray<AActor *> &actors){
     FCollisionQueryParams Params;
     Params.bTraceComplex = false;
-
-    for (int i = 0; i < tracked.Num(); i++){
-        if(AActor *current = tracked[i]){
+    for (int i = 0; i < actors.Num(); i++){
+        if(AActor *current = actors[i]){
             Params.AddIgnoredActor(current);
         }
     }
     return Params;
+}
+
+
+
+
+TArray<AActor *> CollisionTracker::copyTracked(){
+    return tracked;
 }

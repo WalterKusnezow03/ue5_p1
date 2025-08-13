@@ -16,8 +16,10 @@ AActor *CubeLimbMaker::createLimbPivotAtTop(
 		FVector location(0, 0, 0);
 		AcustomMeshActorBase *oberschenkel = spawnAcustomMeshActor(world);
 		if(oberschenkel != nullptr){
+            oberschenkel->setTeam(teamEnum::neutralTeam);
 
-            MeshData &ref = oberschenkel->findMeshDataReference(materialEnum::wallMaterial, false); //kein raycast.
+            bool haveRaycast = true;// with raycast, is ignored by humanoid controller manually
+            MeshData &ref = oberschenkel->findMeshDataReference(materialEnum::wallMaterial, haveRaycast); 
 
             float xHalf = x / 2.0f;
 			float yHalf = y / 2.0f;

@@ -6,8 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameCore/util/FVectorTouple.h"
 #include "ProceduralMeshComponent.h"
-#include "GameCore/interfaces/Damageinterface.h"
-#include "GameCore/team/teamEnum.h"
+
 #include "Components/BoxComponent.h"
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
@@ -20,7 +19,7 @@
 
 
 UCLASS()
-class TERRAINPLUGIN_API AcustomMeshActor : public AcustomMeshActorBase, public IDamageinterface
+class TERRAINPLUGIN_API AcustomMeshActor : public AcustomMeshActorBase
 {
 	GENERATED_BODY()
 	
@@ -44,8 +43,6 @@ public:
 	virtual void takedamage(int d, bool surpressed) override;
 	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
 
-	virtual void setTeam(teamEnum t) override;
-	virtual teamEnum getTeam() override;
 
 	//custom mesh actor methods
 
@@ -100,8 +97,7 @@ public:
 		MeshData &cubeMesh
 	);
 
-	void setDamagedOwner(IDamageinterface *damagedOwnerIn);
-
+	
 	
 
 protected:
@@ -112,16 +108,13 @@ protected:
 
 	void createDebreeOnDamage(FVector &worldhit);
 
-	int health = 100;
+
 	bool destructableBool = false;
 	bool splitOnDeath = false;
 	virtual bool isDestructable();
 	void setHealth(int d);
 
 
-	teamEnum team;
-
-	class IDamageinterface *damagedOwner = nullptr;
 
 
 	void createFoliageAndPushNodesAroundFoliageToNavMesh(

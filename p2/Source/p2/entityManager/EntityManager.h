@@ -22,7 +22,7 @@
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 
-
+#include "GameCore/Raycast/query/mapTracker/TCollisionTracker.h"
 
 /**
  * OBJECT POOL MANAGER
@@ -36,10 +36,11 @@
 class P2_API EntityManager : public EntityManagerBase
 {
 private:
+	//deprecated
 	FCollisionQueryParams collisionIgnoreParams;
-	
-
 	std::map<teamEnum, FCollisionQueryParams> collisionMap;
+
+	TCollisionTracker<teamEnum> tCollisionMap;
 
 public:
 
@@ -50,8 +51,8 @@ public:
 	void addActorToIgnoreRaycastParams(AActor *actor, teamEnum team);
 	void addActorToIgnoredAllParams(AActor *actor);
 
-	FCollisionQueryParams &getIgnoredRaycastParams();
-	FCollisionQueryParams &getIgnoredRaycastParams(teamEnum team);
+	FCollisionQueryParams getIgnoredRaycastParams();
+	FCollisionQueryParams getIgnoredRaycastParams(teamEnum team);
 
 	EntityManager();
 	~EntityManager();

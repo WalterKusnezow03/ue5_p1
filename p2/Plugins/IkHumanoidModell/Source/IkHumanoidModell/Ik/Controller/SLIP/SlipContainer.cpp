@@ -530,7 +530,7 @@ FVector SlipContainer::accelerationInterpolated(
     }
 
     if(force.Size() > 0.0f){
-        DebugHelper::showScreenMessage("positive slip!", FColor::Green);
+        //DebugHelper::showScreenMessage("positive slip!", FColor::Green);
     }
 
     return a;

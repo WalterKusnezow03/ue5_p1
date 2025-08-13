@@ -68,7 +68,9 @@ EntityManager::~EntityManager()
 }
 
 
-
+/**
+ * ------ GC ADD SECTION ---------
+ */
 
 /// @brief add an entity to the manager
 /// @param entity 
@@ -141,18 +143,21 @@ void EntityManager::add(AcustomMeshActor *meshActorIn){
 
 
 
+
+
+
 /**
  * ----- RAYCAST PARAM SECTION -----
  */
 
-FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(){
-    return collisionIgnoreParams;
+FCollisionQueryParams EntityManager::getIgnoredRaycastParams(){
+    //return collisionIgnoreParams;
+    return tCollisionMap.getAllCollisonParams();
 }
 
-
-FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(teamEnum team){
-    return collisionMap[team];
-    // return collisionIgnoreParams;
+FCollisionQueryParams EntityManager::getIgnoredRaycastParams(teamEnum team){
+    //return collisionMap[team];
+    return tCollisionMap.getCollisonParams(team);
 }
 
 /// @brief adds a actor to the ignored params which are used by entiteies for raycasting and 
@@ -162,6 +167,10 @@ FCollisionQueryParams &EntityManager::getIgnoredRaycastParams(teamEnum team){
 void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
     if(actor != nullptr){
 
+        tCollisionMap.AddIgnoredActor(team, actor);
+
+
+        /*
         if(collisionMap.find(team) == collisionMap.end()){
             collisionMap[team] = FCollisionQueryParams();
         }
@@ -186,7 +195,7 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
             }
             ref = &collisionMap[teamEnum::enemyTeam];
             ref->AddIgnoredActor(actor);
-        }
+        }*/
 
         //add to all
         addActorToIgnoredAllParams(actor);
@@ -197,7 +206,7 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
 /// @param actor actor to ignore
 void EntityManager::addActorToIgnoredAllParams(AActor *actor){
     if(actor != nullptr){
-        collisionIgnoreParams.AddIgnoredActor(actor);
+        //collisionIgnoreParams.AddIgnoredActor(actor);
     
         if(PathFinder *p = PathFinder::instance()){
             p->addActorToIgnoreRaycastParams(actor);

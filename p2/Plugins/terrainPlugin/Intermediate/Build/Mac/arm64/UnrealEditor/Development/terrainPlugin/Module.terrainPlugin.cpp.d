@@ -3832,10 +3832,6 @@
   Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
   Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   Runtime/Engine/Classes/PhysicsEngine/ConvexElem.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Damageinterface.h \
-  Runtime/CoreUObject/Public/UObject/Interface.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/team/teamEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.generated.h \
   Runtime/Engine/Classes/Components/BoxComponent.h \
   Runtime/Engine/Classes/Components/ShapeComponent.h \
   Runtime/CoreUObject/Public/Templates/SubclassOf.h \
@@ -3858,6 +3854,10 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/ELod.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Damageinterface.h \
+  Runtime/CoreUObject/Public/UObject/Interface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/team/teamEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h \

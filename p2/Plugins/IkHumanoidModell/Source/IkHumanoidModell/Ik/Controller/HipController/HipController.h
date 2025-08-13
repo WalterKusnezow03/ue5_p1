@@ -42,8 +42,12 @@ public:
     // --- entity api ---
     void setStateWalking();
     void stopLocomotion();
+    void stopLocomotionOnceRotationHasFinished();
 
     void updateCollisionParams(FCollisionQueryParams Params);
+
+    //api for get actors:apply damaged owner casted mesh actor
+    void getActors(TArray<AActor *> &outArray);
 
 private:
     //removed ik carried item
@@ -148,6 +152,7 @@ private:
     bool anyBackwardPhase();
     RotationInterpolator hipRotationInterpolator;
     bool rotationSet = false;
+    bool locomotionStopRequestedOnceRotationIsFinished = false;
     FVector forwardTrajectory();
     float slowDownTimeForDebugRotationStance(float deltatime);
 

@@ -47,9 +47,6 @@ void AcustomMeshActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AcustomMeshActor::setDamagedOwner(IDamageinterface *damagedOwnerIn){
-    damagedOwner = damagedOwnerIn;
-}
 
 /// @brief sets the health of the material 
 /// if material is glass it will be split on death
@@ -66,10 +63,8 @@ void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat){
 /// @brief will allow custom mesh actors such as destructables and terrain react to damage
 /// @param d 
 void AcustomMeshActor::takedamage(int d, bool surpressed){
-    //damage owner as this could be a kimb of an actor
-    if(damagedOwner != nullptr){
-        damagedOwner->takedamage(d);
-    }
+    //damage owner(base method)
+    Super::takedamage(d, surpressed);
 
     //new.
     EntityManagerBase *entityManager = EntityManagerBase::instanceBase();
@@ -156,12 +151,6 @@ void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
     
 }
 
-void AcustomMeshActor::setTeam(teamEnum t){
-    this->team = t;
-}
-teamEnum AcustomMeshActor::getTeam(){
-    return team;
-}
 
 void AcustomMeshActor::setHealth(int d){
     if(d <= 0){

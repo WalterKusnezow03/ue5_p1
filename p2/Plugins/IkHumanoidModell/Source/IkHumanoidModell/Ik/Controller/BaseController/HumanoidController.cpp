@@ -1,4 +1,5 @@
 #include "HumanoidController.h"
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
 
 HumanoidController::HumanoidController(){
     FVector location(100, 0, 100);
@@ -36,7 +37,7 @@ void HumanoidController::defaultSetup(UWorld *world){
         armPartSizeEach,
         world
     );
-
+    addAllActorsInChildrenToRaycastExclude();
 }
 
 void HumanoidController::Tick(float deltatime){
@@ -136,6 +137,51 @@ void HumanoidController::stopLocomotion(){
     hipController.stopLocomotion();
 }
 
+void HumanoidController::stopLocomotionOnceRotationHasFinished(){
+    hipController.stopLocomotionOnceRotationHasFinished();
+}
+
+//--- apply damaged owner in bone mesh actors ---
+//set damaged owner api
+void HumanoidController::setDamagedOwner(IDamageinterface *damagedOwnerIn){
+    if(damagedOwnerIn){
+        //find all components in children, try cast actor to mesh actor base
+
+        int counted = 0;
+        TArray<AActor *> children = actorInChildrenArray();
+        for (int i = 0; i < children.Num(); i++){
+            AActor *current = children[i];
+            if (current){
+
+                //try cast to mesh actor base which has a damaged owner
+                AcustomMeshActorBase *casted = Cast<AcustomMeshActorBase>(current);
+                if(casted){
+                    casted->setDamagedOwner(damagedOwnerIn);
+                    counted++;
+                }
+            }
+        }
+        //DebugHelper::logMessage("HumanoidController: set damage in children", counted);
+    }
+}
+
+
+void HumanoidController::addAllActorsInChildrenToRaycastExclude(){
+    TArray<AActor *> children = actorInChildrenArray();
+    for (int i = 0; i < children.Num(); i++){
+        if(AActor *current = children[i]){
+            bool add = true; //track
+            updateCollisionParams(current, add);
+        }
+    }
+}
+
+TArray<AActor *> HumanoidController::actorInChildrenArray(){
+    TArray<AActor *> actorArray;
+    hipController.getActors(actorArray);
+    torsoController.getActors(actorArray);
+    return actorArray;
+}
 
 
 

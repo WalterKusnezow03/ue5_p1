@@ -528,3 +528,13 @@ void TwoJointBone::applyTransform(AActor *ptr, FVector location, MMatrix &rotati
         ptr->SetActorRotation(rotation);
     }
 }
+
+
+void TwoJointBone::getActors(TArray<AActor *> &outArray){
+    if(topActor){
+        outArray.Add(topActor);
+    }
+    if(bottomActor){
+        outArray.Add(bottomActor);
+    }
+}

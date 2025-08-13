@@ -59,6 +59,9 @@ public:
     void dropCarriedItem();
     void attachOrReplaceCarriedItem(IIkCarryInterface *actor);
 
+    //api for get actors:apply damaged owner casted mesh actor
+    void getActors(TArray<AActor *> &outArray);
+
 private:
     bool bDrawDebugLines = false;
 

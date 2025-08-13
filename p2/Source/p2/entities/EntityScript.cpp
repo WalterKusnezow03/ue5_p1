@@ -193,9 +193,9 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 		FVector currentLocation = humanoidPluginController.GetLocation();
 
 		//ab = b - a
-		FVector ab = (target->GetActorLocation() - currentLocation).GetSafeNormal();
+		FVector toTarget = (target->GetActorLocation() - currentLocation).GetSafeNormal();
 
-		float skalarprodukt = FVector::DotProduct(forward, ab);
+		float skalarprodukt = FVector::DotProduct(forward, toTarget);
 
 
 		//mindestens orthogonal oder näher an der 1
@@ -500,8 +500,6 @@ void AEntityScript::followpath(float deltaTime){
 			humanoidPluginController.setStateWalking();
 		}
 
-
-		//NEW BONE CONTROLLER INTERACTION!
 		if(!canSeePlayer){
 			LookAt(nextPos);
 		}
@@ -746,6 +744,7 @@ void AEntityScript::drawPath(){
 void AEntityScript::BeginPlayHumanoidController(){
 	humanoidPluginController.raycastIgnoreOwner(this);
 	humanoidPluginController.defaultSetup(GetWorld());
+	humanoidPluginController.setDamagedOwner(this); //must be called after controller setup
 }
 
 

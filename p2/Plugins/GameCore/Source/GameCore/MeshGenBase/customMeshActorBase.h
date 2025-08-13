@@ -13,10 +13,13 @@
 
 #include "GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h"
 
+#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/team/teamEnum.h"
+
 #include "customMeshActorBase.generated.h"
 
 UCLASS()
-class GAMECORE_API AcustomMeshActorBase : public AActor
+class GAMECORE_API AcustomMeshActorBase : public AActor, public IDamageinterface
 {
 	GENERATED_BODY()
 	
@@ -33,6 +36,31 @@ protected:
 	USceneComponent *rootScene = nullptr;
 
 public:
+	//derived methods IDamageinterface
+	//methods
+	virtual void takedamage(int d) override;
+	virtual void takedamage(int d, FVector &from) override;
+	virtual void takedamage(int d, bool surpressed) override;
+	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+
+	virtual void setTeam(teamEnum t) override;
+	virtual teamEnum getTeam() override;
+
+
+	void setDamagedOwner(IDamageinterface *damagedOwnerIn);
+
+
+protected:
+	int health = 100;
+	teamEnum team;
+	class IDamageinterface *damagedOwner = nullptr;
+
+	// --- damaga api end ---
+public:
+
+
+
+
 	void enableLodListening();
 	void disableDistanceListening();
 

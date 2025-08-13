@@ -144,7 +144,7 @@ void HipController::Tick(float deltatime){
         message = TEXT("falling");
     }
 
-    DebugHelper::showScreenMessage(message);
+    //DebugHelper::showScreenMessage(message);
 }
 
 void HipController::TickLocomotion(float deltatime){
@@ -456,7 +456,7 @@ void HipController::applyForces(float deltatime){
 void HipController::applyVelocity(float deltatime){
 
     //debug
-    DebugHelper::showScreenMessage("velocity ", velocity, FColor::Orange);
+    //DebugHelper::showScreenMessage("velocity ", velocity, FColor::Orange);
 
     applyMaxVelocity();
 
@@ -465,7 +465,7 @@ void HipController::applyVelocity(float deltatime){
     FVector xt = x0 + velocity * deltatime;
     validateTransformUpdate(xt);
 
-    DebugHelper::showScreenMessage("x(t) ", xt);
+    //DebugHelper::showScreenMessage("x(t) ", xt);
     translation.setTranslation(xt);
 
 }
@@ -574,11 +574,7 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
     //v(t) = v0 + at
     //a(t) = a
 
-    //old simple
-    //FVector acceleration = container.acceleration(bodyMass, moveDir);
-
-
-    DebugHelper::showScreenMessage("acceleration ", acceleration, FColor::Orange);
+    //DebugHelper::showScreenMessage("acceleration ", acceleration, FColor::Orange);
 
     velocity += acceleration * deltatime;
 
@@ -792,6 +788,7 @@ void HipController::TickHipRotation(float deltatime){
         if(hipRotationInterpolator.endReached()){
             rotationSet = false;
             DebugHelper::logMessage("hipRotation finished!");
+            //DebugHelper::showScreenMessage("hipRotation finished!");
 
             //reset leg orientation / forward local vector 
             //to tell legs ("we are aligned again, no roll yaw adjustment needed anymore")
@@ -799,6 +796,11 @@ void HipController::TickHipRotation(float deltatime){
             legRight.resetLocalForwardMovingDirection();
 
 
+            //reset locomotionflag if requested
+            if(locomotionStopRequestedOnceRotationIsFinished){
+                locomotionStopRequestedOnceRotationIsFinished = false;
+                stopLocomotion();
+            }
 
             return;
         }
@@ -824,6 +826,18 @@ void HipController::stopLocomotion(){
     currentControllerState = EHipControllerStates::EIdle;
 }
 
+void HipController::stopLocomotionOnceRotationHasFinished(){
+    locomotionStopRequestedOnceRotationIsFinished = true;
+}
+
 bool HipController::locoMotionStateEnabled(){
     return currentControllerState == EHipControllerStates::ELocomotion;
+}
+
+
+
+// --- api for get actors:apply damaged owner casted mesh actor ---
+void HipController::getActors(TArray<AActor *> &outArray){
+    legLeft.getActors(outArray);
+    legRight.getActors(outArray);
 }

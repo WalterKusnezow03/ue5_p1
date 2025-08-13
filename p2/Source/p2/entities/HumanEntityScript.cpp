@@ -149,9 +149,11 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
         
         
         humanoidPluginController.changeCarriedItemSocket(ECarriedItemPosition::EAimDownSightPosition);
+        humanoidPluginController.stopLocomotionOnceRotationHasFinished();
         attackPlayer();
-        
-        //Super::resetpath(); //clear path, might change!
+
+        //clear path if can see player to attack
+        Super::resetpath(); //clear path, might change!
     }
     if(!canSeePlayer){
         if(!spottedPlayer){
