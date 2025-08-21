@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StoragePlugin/Storage/VertexData/StorageInterface/StorageInterface.h"
+#include "StoragePlugin/Storage/BaseInterface/StorageInterface.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
 
 

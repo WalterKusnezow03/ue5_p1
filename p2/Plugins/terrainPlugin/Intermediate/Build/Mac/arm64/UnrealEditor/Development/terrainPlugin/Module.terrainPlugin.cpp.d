@@ -3900,13 +3900,13 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/terrainConstants.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/bezierCurve.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/worldCache/ChunkParserMap.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/ChunkMeshDataLoading/ChunkMeshStorageInterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/ChunkMeshDataLoading/ChunkParserStorageInterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/StorageInterface/StorageInterfaceMeshData.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/TerrainLauncher.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/terrainPlugin.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/management/ActorManager.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/StorageInterface/StorageInterface.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/StorageInterface/enum/EFileType.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/trackedActors.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerGeneric.h \
@@ -3962,4 +3962,4 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Public/terrainPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/ChunkMeshDataLoading/ChunkMeshStorageInterface.cpp
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/ChunkMeshDataLoading/ChunkParserStorageInterface.cpp

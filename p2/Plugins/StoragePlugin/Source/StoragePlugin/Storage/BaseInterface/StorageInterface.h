@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StoragePlugin/Storage/VertexData/StorageInterface/enum/EFileType.h"
 
 class STORAGEPLUGIN_API StorageInterface {
 

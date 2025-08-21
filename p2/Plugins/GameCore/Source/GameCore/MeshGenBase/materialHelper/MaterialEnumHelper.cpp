@@ -64,3 +64,15 @@ materialEnum MaterialEnumHelper::groundMaterialFor(ETerrainType terraintype){
 
     return materialEnum::grassMaterial;
 }
+
+
+int MaterialEnumHelper::indexFor(materialEnum type){
+    int outIndex = 0;
+    std::vector<materialEnum> allMaterials = materialVector();
+    for (int i = 0; i < allMaterials.size(); i++){
+        if(allMaterials[i] == type){
+            return i;
+        }
+    }
+    return outIndex;
+}

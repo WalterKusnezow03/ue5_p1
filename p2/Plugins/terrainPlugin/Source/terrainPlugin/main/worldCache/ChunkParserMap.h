@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/TerrainMeshDataParser/ChunkParser.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
-#include "terrainPlugin/Storage/ChunkMeshDataLoading/ChunkMeshStorageInterface.h"
+#include "terrainPlugin/Storage/ChunkMeshDataLoading/ChunkParserStorageInterface.h"
 
 // will store generated or loaded from storage Chunks
 class TERRAINPLUGIN_API ChunkParserMap {

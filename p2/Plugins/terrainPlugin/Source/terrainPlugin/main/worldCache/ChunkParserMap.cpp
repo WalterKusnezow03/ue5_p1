@@ -12,9 +12,7 @@ void ChunkParserMap::setWorldLevelName(FString name){
     worldLevelName = name;
 }
 
-void ChunkParserMap::saveWorldLevel(){
 
-}
 
 void ChunkParserMap::createArray(int chunksPerAxis){
     chunksPerAxis = std::abs(chunksPerAxis);
@@ -36,6 +34,12 @@ void ChunkParserMap::createArray(int chunksPerAxis){
 }
 
 
+void ChunkParserMap::saveWorldLevel(){
+    //TODO!
+    ChunkParserStorageInterface interface;
+}
+
+
 
 bool ChunkParserMap::loadWorldLevel(FString name, TerrainChunkMap &loadedHeaderMap){
     setWorldLevelName(name);
@@ -45,7 +49,7 @@ bool ChunkParserMap::loadWorldLevel(FString name, TerrainChunkMap &loadedHeaderM
 
     //for all chunks
     int loadedSuccesfully = 0;
-    ChunkMeshStorageInterface interface;
+    ChunkParserStorageInterface interface;
     for (int i = 0; i < sizeMapAxis; i++){
         for (int j = 0; j < sizeMapAxis; j++){
             // load chunk
