@@ -29,10 +29,13 @@
 #include "p2/entityManager/OutPost/Outpost.h"
 
 #include "PathFinder/Public/PathFinderModule.h"
-
-#include "Humanoid/Debug/DebugJointsActor.h"
-
 #include "IkHumanoidModell/actor/IkDebugActor.h"
+
+#include "StoragePlugin/Storage/VertexData/StorageInterface/StorageInterfaceMeshData.h"
+#include "terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h"
+
+#include "terrainPlugin/main/TerrainLauncher.h"
+
 
 #include "CoreMinimal.h"
 
@@ -136,6 +139,7 @@ void worldLevel::initWorld(UWorld *world){
     //createJointActor(world);
 
     createBoneActorDebug(world);
+    debugStoragePlugin();
 }
 
 void worldLevel::createOutpostsRequested(UWorld *world){
@@ -206,14 +210,33 @@ void worldLevel::createTerrain(UWorld *world, int meters){
         return;
     }
 
+
+
+
+
+
     if(world != nullptr){
+        isTerrainInited = true;
+
+        bool useNewTerrainLauncher = true;
+        if(useNewTerrainLauncher){
+            //new
+            ATerrainLauncher::makeInstance(world);
+            return;
+        }
+
+        /*
+        //DEPRECATED SINGLE TON!
+
         //create new terrain pointer if needed
         if(terrainPointer == nullptr){
             terrainPointer = new terrainCreator();
         }
 
         terrainPointer->debugCreateTerrain(world, meters); //new test
-        isTerrainInited = true;
+        //spawn all needed!
+        terrainPointer->applyTerrainDataToMeshActors();
+        */
     }
 }
 
@@ -237,9 +260,7 @@ void worldLevel::Tick(float DeltaTime){
     if(isTerrainInited){
         //tick terrain creation if not done yet by player distance
         if(terrainPointer != nullptr){
-            FVector playerLocationCopy = PlayerInfo::playerLocation();
-            terrainPointer->Tick(playerLocationCopy);
-
+            
             //is tested
             //debugTerrainHeight();
         }
@@ -675,13 +696,6 @@ void worldLevel::createCar(UWorld *world){
 
 
 
-void worldLevel::createJointActor(UWorld *world){
-    if(world != nullptr){
-        ADebugJointsActor::CreateInstance(world);
-    }
-}
-
-
 
 void worldLevel::debugTerrainHeight(){
     if(false){
@@ -708,4 +722,15 @@ void worldLevel::createBoneActorDebug(UWorld *world){
         //AIkActor::CreateInstance(world);
         AIkDebugActor::CreateInstance(world);
     }
+}
+
+
+
+
+void worldLevel::debugStoragePlugin(){
+    StorageInterfaceMeshData storage;
+    storage.Test();
+
+    ChunkMapStorageInterface storageMap;
+    storageMap.Test();
 }

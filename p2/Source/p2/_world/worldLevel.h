@@ -40,7 +40,7 @@ public:
 
 private:
 	static void debugTerrainHeight();
-
+	static void debugStoragePlugin();
 
 	static void createTerrain(UWorld *world, int meters);
 	static UWorld *GetWorld();
@@ -90,8 +90,6 @@ private:
 	static void createAeroActor(UWorld *world);
 
 	static void createCar(UWorld *world);
-
-	static void createJointActor(UWorld *world);
 
 	static void createBoneActorDebug(UWorld *world);
 };

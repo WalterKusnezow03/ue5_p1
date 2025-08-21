@@ -19,6 +19,8 @@
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
 
+#include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkAttributes.h"
+
 #include "terrainConstants.h"
 
 
@@ -62,8 +64,7 @@ void terrainCreator::createTerrain(
     worldPointer = world;
 
     int chunks = floor(meters / terrainConstants::CHUNKSIZE); //to chunks
-    //int detail = terrainConstants::CHUNKSIZE; // 1 by 1 detail
-
+    
     //fill map
     map.reserve(chunks);
     for (int i = 0; i < chunks; i++){
@@ -76,14 +77,12 @@ void terrainCreator::createTerrain(
         map.push_back(vec);
     }
 
-
-    //random height and smooth
-    int layers = 12; //20 (12 waren auf 10x10)
-
-    int layersPerTen = 12;
-    layers = (chunks / 10.0f) * layersPerTen;
-
-    createRandomHeightMapChunkWide(layers);
+    
+    //NEW
+    setupMap.createChunkMap(chunks);
+    setupFromChunkMap(setupMap, 0, 0, chunks);
+    
+    
     smooth3dMap();
 
 
@@ -91,14 +90,27 @@ void terrainCreator::createTerrain(
 }
 
 
+void terrainCreator::setupFromChunkMap(
+    TerrainChunkMap &ref, 
+    int x, 
+    int y, 
+    int numChunksSide
+){
+    DebugHelper::logMessage("TerrainCreator new setup!");
+    TArray<FTerrainChunkAttributes *> attributes = ref.getQuad(x, y, numChunksSide);
+    for (int i = 0; i < attributes.Num(); i++){
+        FTerrainChunkAttributes *current = attributes[i];
+        if(current){
+            int posX = current->posX;
+            int posY = current->posY;
+            int height = current->height;
 
-
-
-
-
-
-
-
+            if(verifyIndex(posX) && verifyIndex(posY)){
+                map.at(posX).at(posY).setheightForAll(height);
+            }
+        }
+    }
+}
 
 /// @brief scales the height for all chunks (designed to upscale before bezier and downscale later)
 /// creates more detailed interpolation on Z axis (maybe)
@@ -528,8 +540,115 @@ int terrainCreator::chunkNum(){
 }
 
 
+/**
+ * 
+ * ---- APPLY DATA TO MESH ACTORS INDIRECT ----
+ * 
+ */
+void terrainCreator::createTerrainAndSetupChunkParserMap(
+    ChunkParserMap &mapToFillDataTo,
+    int chunksAxis
+){
+    //generate
+    //CHEESY HOTFIX 
+    //make chunks to meter
+    int meter = chunksAxis * terrainConstants::CHUNKSIZE;
+    debugCreateTerrain(nullptr, meter); //should be replaced.
+
+    //fill
+    applyTerrainDataIntoChunkParserMapCache(mapToFillDataTo);
+}
+
+void terrainCreator::applyTerrainDataIntoChunkParserMapCache(
+    ChunkParserMap &mapToFillDataTo
+){
+
+    for (int i = 0; i < map.size(); i++){
+        for (int j = 0; j < map[i].size(); j++){
+            applyTerrainDataIntoChunkParserAt(mapToFillDataTo, i, j); //verifies the index automatically!
+        }
+    }
+
+    /*
+    int x = 0;
+    int y = 0;
+    int xLimit = map.size();
+    int yLimit = map.size();
+    
+    int actorIndex = 0;
+    int limit = (yLimit - lowerY) * (xLimit - lowerX);
+    while (actorIndex < limit)
+    {
+        actorIndex++;
+        applyTerrainDataIntoChunkParserAt(mapToFillDataTo, x, y); //verifies the index automatically!
+        x++;
+        //top corner reached, return
+        if(y >= yLimit && x >= xLimit){
+            return;
+        }
+        //next row
+        if(x >= xLimit){
+            x = 0;
+            y++;
+        }
+    }*/
+}
+
+
+void terrainCreator::applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFillDataTo, int x, int y){
+
+    chunk *currentChunk = chunkAt(x,y);
+    if(
+        (currentChunk != nullptr) && 
+        (currentChunk->wasAlreadyCreated() == false)
+    ){
+        currentChunk->setWasCreatedTrue();
+
+        int xLimit = map.size();
+        int yLimit = map.size();
+
+        //get chunk parser reference,
+        //expects reference to be valid, and terrain generated
+        //just as TerrainChunkMap given data, aswell as
+        //ChunkParser Map generated in same size!
+        ChunkParser &currentChunkParser = mapToFillDataTo.findByIndex(x, y);
+
+
+        //apply data
+        //readAndMerge (connect to next in map)
+        chunk *top = chunkAt(x, y + 1);
+        chunk *right = chunkAt(x + 1, y);
+        chunk *topright = chunkAt(x + 1, y + 1);
+
+        TerrainChunkSetup package = currentChunk->makeSetupPackage(top, right, topright);
+
+        // apply position and data
+        FVector newPos = currentChunk->positionPivotBottomLeft();
+        currentChunkParser.createTerrainFrom2DMap(newPos, package);
+
+
+        //---- CAUTION: WILL BE MOVED TO CHUNK PARSER! ----
+        ETerrainType terrainType = package.getTerrainType();
+        if(terrainType == ETerrainType::EOcean){
+            newPos.Z = terrainConstants::HEIGHT_MAX_OCEAN * 0.8f;
+            currentChunkParser.flagWaterActorNeeded(newPos);
+
+        }
+
+        DebugHelper::showScreenMessage("CREATED NEW CHUNK", FColor::Purple);
+    }
+}
+
+
+
+
+
+
 
 /**
+ * ---- OLD IMMIDTAE TERRAIN GENERATING ACTOS ----
+ * 
+ * 
  * ---- APPLY DATA TO MESH ACTORS ----
  */
 
@@ -592,13 +711,7 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         int yLimit = map.size();
 
         AcustomMeshActor *currentActor = getNewMeshActor();
-        /*
-        deprecated! 
-        EntityManager *entityManagerPointer = worldLevel::entityManager();
-        if(entityManagerPointer != nullptr){
-            FVector location(0, 0, 0);
-            currentActor = entityManagerPointer->spawnAcustomMeshActor(worldPointer, location);
-        }*/
+        
         if(currentActor == nullptr){
             return;
         }
@@ -609,22 +722,9 @@ void terrainCreator::createChunkAtIfNotCreatedYet(int x, int y){
         FVector newPos = currentChunk->positionPivotBottomLeft();
         currentActor->SetActorLocation(newPos);
 
-        //apply data
-        //readAndMerge (connect to next in map)
-        chunk *top = nullptr;
-        chunk *right = nullptr;
-        chunk *topright = nullptr;
-
-        
-        if(y + 1 < yLimit){
-            top = &map.at(x).at(y+1);
-        }
-        if(x + 1 < xLimit){
-            right = &map.at(x+1).at(y);
-        }
-        if(x + 1 < xLimit && y + 1 < yLimit){
-            topright = &map.at(x+1).at(y+1);
-        }
+        chunk *top = chunkAt(x, y + 1);
+        chunk *right = chunkAt(x + 1, y);
+        chunk *topright = chunkAt(x + 1, y + 1);
 
         TerrainChunkSetup package = currentChunk->makeSetupPackage(top, right, topright);
         ETerrainType terrainType = package.getTerrainType();
@@ -657,109 +757,6 @@ void terrainCreator::createWaterPaneAt(FVector &location){
 
 
 
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * 
- * --- create height maps ---
- * 
- * 
- */
-
-
-/// @brief will create a random height map chunk wide, then to be smoothed
-void terrainCreator::createRandomHeightMapChunkWide(int layers){
-
-    layers = std::abs(layers);
-    for (int i = 0; i < layers; i++)
-    {
-        terrainHillSetup newHill = createRandomHillData();
-        applyHillData(newHill);
-    }
-
-    if(terrainConstants::MINCHUNK_LARGEHILL < map.size()){
-        int layersLarge = layers / 4.0f;
-        for (int i = 0; i < layersLarge; i++){
-            terrainHillSetup newHillLarge = createRandomHillDataLargeScale();
-            applyHillData(newHillLarge);
-        }
-    }
-    
-    
-}
-
-
-terrainHillSetup terrainCreator::createRandomHillData(){
-    int scaleX = FVectorUtil::randomNumber(terrainConstants::MINCHUNK_HILL, map.size()); //random hardcoded for now.
-    int scaleY = FVectorUtil::randomNumber(terrainConstants::MINCHUNK_HILL, map.size());
-    int heightMin = terrainConstants::ONEMETER / 2.0f;
-    return createRandomHillData(scaleX, scaleY,heightMin);
-}
-
-terrainHillSetup terrainCreator::createRandomHillDataLargeScale(){
-    
-    int scaleX = FVectorUtil::randomNumber(terrainConstants::MINCHUNK_LARGEHILL, map.size()); //random hardcoded for now.
-    int scaleY = FVectorUtil::randomNumber(terrainConstants::MINCHUNK_LARGEHILL, map.size());
-    int heightMin = terrainConstants::ONEMETER * 2.0f;
-    return createRandomHillData(scaleX, scaleY, heightMin);
-}
-
-terrainHillSetup terrainCreator::createRandomHillData(
-    int sizeX, 
-    int sizeY,
-    int heightMin
-){
-    sizeX = std::abs(sizeX);
-    sizeY = std::abs(sizeY);
-    if(sizeX <= 0){
-        sizeX = 1;
-    }
-    if(sizeY <= 0){
-        sizeY = 1;
-    }
-
-
-    int startX = clampIndex(FVectorUtil::randomNumber(1, map.size() - sizeX));
-    int startY = clampIndex(FVectorUtil::randomNumber(1, map.size() - sizeY));
-    int heightMax = heightMin * 3; //2
-
-    return terrainHillSetup(
-        startX,
-        startY,
-        sizeX,
-        sizeY,
-        heightMin,
-        heightMax
-    );
-}
-
-void terrainCreator::applyHillData(std::vector<terrainHillSetup> &hillDataVec){
-    for (int i = 0; i < hillDataVec.size(); i++){
-        applyHillData(hillDataVec[i]);
-    }
-}
-
-
-/// @brief will enheight the map based on the passed hilldata in size X, size Y and height add
-/// @param hillData 
-void terrainCreator::applyHillData(terrainHillSetup &hillData){
-    for (int i = clampIndex(hillData.xPosCopy()); i < clampIndex(hillData.xTargetCopy()); i++){
-        for (int j = clampIndex(hillData.yPosCopy()); j < clampIndex(hillData.yTargetCopy()); j++){
-            if(verifyIndex(i) && verifyIndex(j)){
-                map.at(i).at(j).addheightForAll(hillData.getHeightIfSetOrRandomHeight());
-            }
-        }
-    }
-}
 
 
 
@@ -963,38 +960,6 @@ void terrainCreator::applySpecialTerrainTypesByHeight(){
 }
 
 
-/**
- * 
- * 
- * ---- player tick creation ----
- * 
- * 
- */
-
-///@brief will create surrounding chunks if not created yet
-void terrainCreator::Tick(FVector &playerLocation){
-    //player to chunkindex
-    int x = cmToChunkIndex(playerLocation.X);
-    int y = cmToChunkIndex(playerLocation.Y);
-
-    FVector location(x, y, 0);
-    //DebugHelper::showScreenMessage("terrain tick chunk", location, FColor::Green);
-
-    //25 mesh actors
-
-    int half = terrainConstants::CHUNKSTOCREATEATONCE / 2;
-    half = 2;
-
-    //debug
-    half = map.size();
-
-    applyTerrainDataToMeshActors(
-        x - terrainConstants::CHUNKSTOCREATEATONCE,
-        x + terrainConstants::CHUNKSTOCREATEATONCE,
-        y - terrainConstants::CHUNKSTOCREATEATONCE,
-        y + terrainConstants::CHUNKSTOCREATEATONCE
-    );
-}
 
 /**
  * 
@@ -1009,6 +974,8 @@ void terrainCreator::debugCreateTerrain(UWorld *world){
     debugCreateTerrain(world, 200);
 }
 
+
+/// ---- CALLED FROM WORLD LEVEL RIGHT NOW ----
 void terrainCreator::debugCreateTerrain(UWorld *world, int meters){
     //createTerrainAndSpawnMeshActors(world, 200); //old
 
@@ -1094,11 +1061,11 @@ void terrainCreator::createTerrainAndCreateBuildings(
         }
     }
 
-    //spawn all - managed via tick(?).
-    //applyTerrainDataToMeshActors();
 
     markCreateOutpostsAt(predefinedHillDataVecFlatArea);
     createRoads(world);
+
+    // DO NOT SPAWN HERE, WILL BRICK TERRAIN LAUNCHER!
 }
 
 /// @brief creates a output vector of terrainHillsetup in chunk index boundign boxes
@@ -1269,16 +1236,7 @@ AcustomMeshActor *terrainCreator::getNewMeshActor(){
 float terrainCreator::getHeightFor(FVector2D &pos){
     FVector pos3d(pos.X, pos.Y, 0.0f);
     return getHeightFor(pos3d);
-    /*
-    int x = cmToChunkIndex(pos.X);
-    int y = cmToChunkIndex(pos.Y);
-    chunk *ptr = chunkAt(x,y);
-    if(ptr != nullptr){
-        FVector pos3d(pos.X, pos.Y, 0.0f);
-        int height = ptr->getHeightFor(pos3d);
-        return height;
-    }
-    return 0.0f;*/
+    
 }
 
 

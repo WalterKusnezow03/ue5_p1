@@ -19,10 +19,10 @@ public class p2 : ModuleRules
 			"CoreMath",
 			"GameCore",
 			"PathFinder",
-			"Humanoid",
 			"AssetPlugin",
 			"IkHumanoidModell",
-			"customUiPlugin"
+			"customUiPlugin",
+			"StoragePlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

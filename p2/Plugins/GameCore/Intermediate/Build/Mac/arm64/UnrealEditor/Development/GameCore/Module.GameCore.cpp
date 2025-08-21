@@ -15,6 +15,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Input/InputContainer.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.cpp"

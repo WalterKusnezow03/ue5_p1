@@ -3870,8 +3870,10 @@
   Runtime/Engine/Classes/PhysicsEngine/ConvexElem.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/ELod.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/foliage/ETerrainType.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/set \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h \
@@ -3879,9 +3881,7 @@
   Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h \
   ../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT/KismetProceduralMeshLibrary.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gameStart/assetEnums/materialEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/foliage/ETerrainType.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/materialEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/IkDebugActor.cpp \

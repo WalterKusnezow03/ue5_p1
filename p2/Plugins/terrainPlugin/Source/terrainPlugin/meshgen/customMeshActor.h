@@ -15,6 +15,10 @@
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h"
 #include <map>
+
+#include "terrainPlugin/meshgen/generation/TerrainCreator/TerrainMeshDataParser/ChunkParser.h"
+
+
 #include "customMeshActor.generated.h"
 
 
@@ -26,7 +30,8 @@ class TERRAINPLUGIN_API AcustomMeshActor : public AcustomMeshActorBase
 public:	
 	// Sets default values for this actor's properties
 	AcustomMeshActor();
-	
+
+	static AcustomMeshActor *makeInstance(UWorld *world);
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,6 +48,17 @@ public:
 	virtual void takedamage(int d, bool surpressed) override;
 	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
 
+	//chunkParser Setup: will copy data, BUT KEEP POINTER, Parser must be a non value variable!
+	//planned to be used as Ptr which is passed.
+	//also applies actors location
+	void UpdateMeshDataAndPosition(ChunkParser &parser);
+
+	/// @brief releases the chunk parser pointer if possible and
+	/// resets the usuage flag
+	void releaseChunkParserPointer();
+
+	
+
 
 	//custom mesh actor methods
 
@@ -54,13 +70,7 @@ public:
 	void splitIntoAllTriangles();
 	void createNewMeshActors(std::vector<MeshData> &meshes, materialEnum material);
 
-
-
-
 	void createTerrainFrom2DMap(TerrainChunkSetup &package);
-
-
-
 
 	void createCube(
 		FVector &a,
@@ -101,9 +111,19 @@ public:
 	
 
 protected:
-	MatrixTree tree;
+
+	//cunk parser reference for flag free
+	ChunkParser *chunkParserPointer = nullptr;
 
 	
+	
+
+
+
+
+	MatrixTree tree; //depracated to chunk parser
+
+
 	void groundReactionToHitWorld(FVector &hitpoint);
 
 	void createDebreeOnDamage(FVector &worldhit);

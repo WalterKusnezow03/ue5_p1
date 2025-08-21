@@ -1,20 +1,17 @@
 
-
-#include "CoreMinimal.h"
-#include "GameCore/MeshGenBase/customMeshActorBase.h"
-#include "GameCore/MeshGenBase/ELod.h"
 #include "LodCheckContainer.h"
 
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
+#include "GameCore/MeshGenBase/ELod.h"
+#include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
+
+
 LodCheckContainer::LodCheckContainer(){
-    int metersLodNearUntil = 200;
-    int metersLodMiddleUntil = 400;
-    int metersLodFarUntil = 600;
-
+    
     int factor = 100; //100
-
-    modifyUpperDistanceLimitFor(ELod::lodNear, metersLodNearUntil * factor);
-    modifyUpperDistanceLimitFor(ELod::lodMiddle, metersLodMiddleUntil * factor);
-    modifyUpperDistanceLimitFor(ELod::lodFar, metersLodFarUntil * factor);
+    modifyUpperDistanceLimitFor(ELod::lodNear, LodConstants::metersLodNearUntil * factor);
+    modifyUpperDistanceLimitFor(ELod::lodMiddle, LodConstants::metersLodMiddleUntil * factor);
+    modifyUpperDistanceLimitFor(ELod::lodFar, LodConstants::metersLodFarUntil * factor);
 }
 
 LodCheckContainer::LodCheckContainer(FVector &a, FVector &b) : LodCheckContainer(){

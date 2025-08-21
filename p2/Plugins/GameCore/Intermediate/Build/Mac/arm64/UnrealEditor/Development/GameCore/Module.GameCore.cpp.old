@@ -28,6 +28,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerControllerBase/PlayerControllerBase.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Private/GameCore.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Raycast/query/CollisionTracker.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/debugEntity.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.cpp"

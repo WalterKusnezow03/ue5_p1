@@ -17,21 +17,26 @@ public:
 
     }
 
+    /// @brief adds a actor to the raycast params if not nullptr with repect to template type t
     void AddIgnoredActor(T type, AActor *actor){
         CollisionTracker &ref = find(type);
         ref.AddIgnoredActor(actor);
     }
 
+    /// @brief removes an actor from the raycast params found by type t
     void RemoveIgnoredActor(T type, AActor *actor){
         CollisionTracker &ref = find(type);
         ref.RemoveIgnoredActor(actor);
     }
 
+    /// @brief creates the raycast params with respect to t
+    /// @param type type to ignore
     FCollisionQueryParams getCollisonParams(T type){
         CollisionTracker &ref = find(type);
         return ref.getCollisonParams();
     }
 
+    /// @brief gets the collision params without respect to template type
     FCollisionQueryParams getAllCollisonParams(){
         TArray<AActor *> allActors;
         for(auto &pair : collisionTrackerMap){

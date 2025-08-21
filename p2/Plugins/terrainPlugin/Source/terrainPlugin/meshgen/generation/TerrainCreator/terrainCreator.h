@@ -13,6 +13,9 @@
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadMaker.h"
 
 
+#include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
+#include "terrainPlugin/main/worldCache/ChunkParserMap.h"
+
 /**
  * 
  */
@@ -27,8 +30,6 @@ public:
 
 	static const bool PLOTTING_ENABLED = false; // false;
 	
-
-	void Tick(FVector &playerLocation);
 
 	int chunkNum();
 	
@@ -57,7 +58,18 @@ public:
 	AcustomMeshActor *getNewMeshActor();
 
 
+	//new mesh data copying
+	void createTerrainAndSetupChunkParserMap(
+		ChunkParserMap &mapToFillDataTo,
+		int chunksAxis
+	);
+	void applyTerrainDataIntoChunkParserMapCache(
+		ChunkParserMap &mapToFillDataTo
+	);
+
 private:
+	void applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFillDataTo, int x, int y);
+
 	void setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY);
 
 	void applyTerrainDataToMeshActors(
@@ -105,7 +117,11 @@ private:
 	bool verifyIndex(int a);
 	int clampIndex(int a);
 
+public:
+	//converts a cm value to a chunk index.
 	int cmToChunkIndex(int a);
+
+private:
 	int cmToMeter(int a);
 	int meterToInnerChunkIndex(int a);
 	int cmToInnerChunkIndex(int a);
@@ -113,15 +129,8 @@ private:
 
 	void scaleHeightForAll(float scale);
 
-	//new chunk bezier curve
-	void createRandomHeightMapChunkWide(int layers);
 
 
-	terrainHillSetup createRandomHillData();
-	terrainHillSetup createRandomHillDataLargeScale();
-	terrainHillSetup createRandomHillData(int sizeX, int sizeY, int minHeight);
-	void applyHillData(terrainHillSetup &hillData);
-	void applyHillData(std::vector<terrainHillSetup> &hillDataVec);
 
 	void flattenChunksForHillData(std::vector<terrainHillSetup> &hillDataVec);
 	void flattenChunksForHillData(terrainHillSetup &hillData);
@@ -174,4 +183,10 @@ private:
 	void createRoads(UWorld* world);
 	RoadMaker roadmaker;
 
+
+
+
+	//NEW
+	TerrainChunkMap setupMap;
+	void setupFromChunkMap(TerrainChunkMap &ref, int x, int y, int numChunksSide);
 };

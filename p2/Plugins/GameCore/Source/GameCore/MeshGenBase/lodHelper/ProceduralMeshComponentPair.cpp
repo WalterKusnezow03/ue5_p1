@@ -59,9 +59,18 @@ void ProceduralMeshComponentPair::setCollisionEnabled(bool flag){
 void ProceduralMeshComponentPair::setHiddenInGame(bool flag){
     if(noraycastMesh){
         noraycastMesh->SetHiddenInGame(flag);
+
+        /*
+        SetVisibility ( 
+            bool bNewVisibility,
+            bool bPropagateToChildren
+        )
+        */
+        noraycastMesh->SetVisibility(!flag, true);
     }
     if(raycastMesh){
         raycastMesh->SetHiddenInGame(flag);
+        raycastMesh->SetVisibility(!flag, true);
 
         bool collision = !flag; //if not hidden: enable collision
         setCollisionEnabled(collision);
@@ -81,29 +90,6 @@ UProceduralMeshComponent *ProceduralMeshComponentPair::noRaycastMesh(){
 }
 
 
-MeshData &ProceduralMeshComponentPair::meshDataReference(materialEnum type, bool raycast){
-    if(raycast){
-        return meshDataReferenceRaycast(type);
-    }
-    return meshDataReferenceNoRaycast(type);
-}
-
-MeshData &ProceduralMeshComponentPair::meshDataReferenceRaycast(materialEnum material){
-    if(raycastMeshData.find(material) == raycastMeshData.end()){
-        MeshData empty;
-        raycastMeshData[material] = empty;
-    }
-    return raycastMeshData[material];
-}
-
-MeshData &ProceduralMeshComponentPair::meshDataReferenceNoRaycast(materialEnum material){
-    if(noRaycastMeshData.find(material) == noRaycastMeshData.end()){
-        MeshData empty;
-        noRaycastMeshData[material] = empty;
-    }
-    return noRaycastMeshData[material];
-}
-
 
 
 
@@ -114,6 +100,23 @@ MeshData &ProceduralMeshComponentPair::meshDataReferenceNoRaycast(materialEnum m
  * Update !
  * 
  */
+void ProceduralMeshComponentPair::updateMeshAll(){
+    //from base
+    //std::map<materialEnum, MeshData> raycastMeshData;
+    //std::map<materialEnum, MeshData> noRaycastMeshData; //no physics mesh at all
+    for(auto &pair : raycastMeshData){
+        materialEnum currentMat = pair.first;
+        updateMeshRaycast(currentMat);
+    }
+
+    for(auto &pair : noRaycastMeshData){
+        materialEnum currentMat = pair.first;
+        updateMeshNoRaycast(currentMat);
+    }
+}
+
+
+
 void ProceduralMeshComponentPair::updateMeshAll(materialEnum type){
     updateMeshRaycast(type);
     updateMeshNoRaycast(type);
@@ -198,12 +201,12 @@ void ProceduralMeshComponentPair::updateMesh(
 }
 
 void ProceduralMeshComponentPair::replaceMeshDataRaycastAndUpdate(MeshData &data, materialEnum type){
-    raycastMeshData[type] = data;
+    replaceMeshDataRaycast(data, type);
     updateMeshRaycast(type);
 }
 
 void ProceduralMeshComponentPair::replaceMeshDataNoRaycastAndUpdate(MeshData &data, materialEnum type){
-    noRaycastMeshData[type] = data;
+    replaceMeshDataNoRaycast(data, type);
     updateMeshNoRaycast(type);
 }
 
@@ -265,19 +268,6 @@ void ProceduralMeshComponentPair::refreshMesh(
 
 
 
-/// @brief returns the layer by material enum type
-/// @param type type of material
-/// @return int layer index
-int ProceduralMeshComponentPair::layerByMaterialEnum(materialEnum type){
-    std::vector<materialEnum> types = MaterialEnumHelper::materialVector();
-    for (int i = 0; i < types.size(); i++)
-    {
-        if(type == types[i]){
-            return i;
-        }
-    }
-    return 0;
-}
 
 
 
@@ -287,6 +277,16 @@ int ProceduralMeshComponentPair::layerByMaterialEnum(materialEnum type){
  * Apply materials
  * 
  */
+void ProceduralMeshComponentPair::ApplyAllMaterials(){
+    std::vector<materialEnum> types = MaterialEnumHelper::materialVector();
+    for (int i = 0; i < types.size(); i++)
+    {
+        ApplyMaterialAll(types[i]);
+    }
+}
+
+
+
 void ProceduralMeshComponentPair::updateMeshAllAndApplyMaterial(materialEnum type){
     updateMeshAll(type);
     ApplyMaterialAll(type);
@@ -346,6 +346,19 @@ void ProceduralMeshComponentPair::ApplyMaterial(
     }
 }
 
+/// @brief returns the layer by material enum type
+/// @param type type of material
+/// @return int layer index
+int ProceduralMeshComponentPair::layerByMaterialEnum(materialEnum type){
+    std::vector<materialEnum> types = MaterialEnumHelper::materialVector();
+    for (int i = 0; i < types.size(); i++)
+    {
+        if(type == types[i]){
+            return i;
+        }
+    }
+    return 0;
+}
 
 
 /**
@@ -355,8 +368,7 @@ void ProceduralMeshComponentPair::appendMeshDataAndReloadRaycast(
     MeshData &meshdata,
     materialEnum type
 ){
-    MeshData &found = meshDataReferenceRaycast(type);
-    found.append(meshdata);
+    appendMeshDataRaycast(meshdata, type);
     updateMeshRaycast(type);
 }
 
@@ -364,9 +376,29 @@ void ProceduralMeshComponentPair::appendMeshDataAndReloadNoRaycast(
     MeshData &meshdata,
     materialEnum type
 ){
-    MeshData &found = meshDataReferenceNoRaycast(type);
-    found.append(meshdata);
+    appendMeshDataNoRaycast(meshdata, type);
     updateMeshNoRaycast(type);
 }
 
+
+/**
+ * Update from other
+ */
+void ProceduralMeshComponentPair::overrideMeshDataFromBaseAndUpdateMesh(
+    MeshDataMap &other
+){
+    if(&other != this){
+
+        raycastMeshData = other.raycastMeshData;
+        noRaycastMeshData = other.noRaycastMeshData;
+
+        //debug
+        if(true){
+            DebugHelper::logMessage("ProceduralMeshComponentPair Copy Data ", raycastMeshData.size());
+        }
+
+        //update mesh sections.
+        updateMeshAll();
+    }
+}
 

@@ -21,6 +21,21 @@
 #include "GameCore/world/worldLevelBase.h"
 
 
+AcustomMeshActor* AcustomMeshActor::makeInstance(UWorld *world){
+    if(world){
+        UClass *toSpawn = AcustomMeshActor::StaticClass();
+        if(toSpawn){
+            
+            FActorSpawnParameters SpawnParams;
+            FVector Location;
+            AcustomMeshActor *spawned = world->SpawnActor<AcustomMeshActor>(
+                toSpawn, Location, FRotator::ZeroRotator, SpawnParams
+            );
+            return spawned;
+        }
+    }
+    return nullptr;
+}
 
 // Sets default values
 AcustomMeshActor::AcustomMeshActor() : AcustomMeshActorBase()
@@ -54,9 +69,6 @@ void AcustomMeshActor::Tick(float DeltaTime)
 void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat){
     materialtypeSet = mat;
 }
-
-
-
 
 // --- derived methods from damageinferface ---
 
@@ -109,14 +121,6 @@ void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
     groundReactionToHitWorld(hitpoint);
     glassreactionToHitWorld(hitpoint); 
     takedamage(d, surpressed);
-
-    /*
-    EntityManager *entityManager = worldLevel::entityManager();
-    if(entityManager != nullptr){
-        //in any case create debree
-        entityManager->createDebree(GetWorld(), hitpoint, materialtypeSet);
-    }*/
-
     createDebreeOnDamage(hitpoint);
 
     //Ok
@@ -177,10 +181,54 @@ bool AcustomMeshActor::isDestructable(){
 
 
 
+// --- CHUNK PARSER SETUP / UPDATE ---
+void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
+    //Super: std::map<ELod, ProceduralMeshComponentPair> meshLodContainers;
+    SetActorLocation(parser.GetActorLocation());
+    releaseChunkParserPointer();
+    chunkParserPointer = &parser;
+
+    for(auto &pair : meshLodContainers){
+        ELod ilod = pair.first;
+        if(MeshDataMap *meshDataMapCache = parser.findMeshDataMap(ilod)){
+            ProceduralMeshComponentPair &currentPair = pair.second;
+            currentPair.overrideMeshDataFromBaseAndUpdateMesh(*meshDataMapCache);
+
+            //needed on first launch
+            currentPair.ApplyAllMaterials();
+
+            parser.addNodesToNavMeshIfNeeded(GetWorld());
+        }
+    }
+    
+    setMaterialBehaiviour(materialEnum::grassMaterial); //no split
+    enableLodListening(); //works as expected now.
+
+    //disableLodListening(); //debug
+    // switchToLodOnBeginPlayOrUpdateMesh();
+    switchToLod(currentLodLevel);
+
+}
+
+
+void AcustomMeshActor::releaseChunkParserPointer(){
+    if(chunkParserPointer){
+        chunkParserPointer->SetUsedMeshDataByActorFlag(false);
+    }
+    chunkParserPointer = nullptr;
+}
+	
 
 
 
 
+
+
+
+
+
+
+// --- deprecated setup ---
 void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
 
     thisTerrainType = package.getTerrainType(); //must be set before mesh gen!
@@ -408,7 +456,7 @@ void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
 
 void AcustomMeshActor::splitIntoAllTriangles(){
     
-    std::vector<MeshDataLod> newLodMeshes;
+    
     std::vector<materialEnum> materials = MaterialEnumHelper::materialVector();
     std::vector<bool> raycastFlags = {true, false};
 
@@ -503,28 +551,37 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
     DebugHelper::showScreenMessage("AcustomMeshActor ground hit test!", FColor::Orange);
 
     FVector meshHit = worldToLocalHit(hitpoint);
+    DebugHelper::logMessage("AcustomMeshActor mesh hit at", meshHit);
 
     std::vector<materialEnum> hitMaterials = {
         materialEnum::grassMaterial,
         materialEnum::redsandMaterial,
         materialEnum::sandMaterial
     };
+    std::vector<ELod> lods = lodVector();
+    int sizeHole = 200;
+    FVector direction(0, 0, -200); //-20
     for (int i = 0; i < hitMaterials.size(); i++){
+        for (int j = 0; j < lods.size(); j++){
+            ELod lod = lods[j];
+            
+            MeshData &meshdata = findMeshDataReference(hitMaterials[i], lod, true);
+            meshdata.pushInwards(meshHit, sizeHole, direction);
+            ReloadMeshForMaterialByLod(lod, hitMaterials[i]);
+
+
+            debugDrawMeshData(meshdata);
+        }
+
+        /*
         MeshData &meshdata = findMeshDataReference(hitMaterials[i], ELod::lodNear, true);
-        int sizeHole = 100;
-
-        //cut push in
-        FVector direction(0, 0, -15);
-
         meshdata.pushInwards(meshHit, sizeHole, direction); //error prone!
-
         //meshdata.cutHoleWithInnerExtensionOfMesh(localHit, sizeHole); //cut sphere
-
         ReloadMeshForMaterialByLod(ELod::lodNear, hitMaterials[i]);
 
-
         //debug
-        //debugDrawMeshData(meshdata);
+        debugDrawMeshData(meshdata);
+        */
     }
 
 

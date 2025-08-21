@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ProceduralMeshComponent.h"
 #include <map>
-#include "MeshDataLod.h"
+
 #include "ELod.h"
 #include "GameCore/util/FVectorTouple.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
@@ -31,6 +31,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// switches the lod on begin play to near to propagate lod
+	// to mesh component pairs
+	void switchToLodOnBeginPlayOrUpdateMesh();
+
+	//default Lod listening is set to false!
 	bool LISTEN_FOR_LOD_PLAYER = false;
 
 	USceneComponent *rootScene = nullptr;
@@ -60,8 +65,14 @@ public:
 
 
 
-
+	/// @brief default LOD listening is set to FALSE!
 	void enableLodListening();
+	void disableLodListening();
+
+	/// is dynamic if lod listening is enabled
+	ELod GetCurrentLodLevel();
+
+
 	void disableDistanceListening();
 
 	void disablePhysicscollision();

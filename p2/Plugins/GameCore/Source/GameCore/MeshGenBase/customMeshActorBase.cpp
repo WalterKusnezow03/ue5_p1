@@ -37,13 +37,14 @@ AcustomMeshActorBase::AcustomMeshActorBase()
 
     currentLodLevel = ELod::lodNear;
 
+    /*
     bool asyncCook = true;
     if(asyncCook){
         // Asynchrones Cooking aktivieren
         Mesh->bUseAsyncCooking = true;
         MeshNoRaycast->bUseAsyncCooking = true;
 
-    }
+    }*/
 }
 
 
@@ -52,8 +53,14 @@ void AcustomMeshActorBase::BeginPlay()
 {
 	Super::BeginPlay();
     initLodMeshesOnBeginPlay();
+    switchToLodOnBeginPlayOrUpdateMesh();
+}
+
+void AcustomMeshActorBase::switchToLodOnBeginPlayOrUpdateMesh(){
     switchToLod(ELod::lodNear); //set lod on start to hide other components right away and later update!
 }
+
+
 
 void AcustomMeshActorBase::disableDistanceListening(){
     distanceListeningBlocked = true;
@@ -62,13 +69,13 @@ void AcustomMeshActorBase::disableDistanceListening(){
 
 void AcustomMeshActorBase::enableLodListening(){
     LISTEN_FOR_LOD_PLAYER = true;
-
-
-    /** 
-     * ---- DEBUG! ----
-     */
-    LISTEN_FOR_LOD_PLAYER = false; //DISABLE, CAUSES STUTTER ON MESH CHANGE 
 }
+
+void AcustomMeshActorBase::disableLodListening(){
+    LISTEN_FOR_LOD_PLAYER = false;
+}
+
+
 
 
 // Called every frame
@@ -78,6 +85,18 @@ void AcustomMeshActorBase::Tick(float DeltaTime)
     TickShaderRunningTime(DeltaTime);
     changeLodBasedOnPlayerPosition();
 
+
+
+    //debug
+    if(false){
+        if(currentLodLevel == ELod::lodNear){
+            
+
+            FVector locationOfPlayer = PlayerInfo::playerLocation() + FVector(0,0,50);
+            FVector thisLocation = GetActorLocation() + FVector(0,0,50);
+            DebugHelper::showLineBetween(GetWorld(), locationOfPlayer, thisLocation, FColor::Red, DeltaTime * 3.0f);
+        }
+    }
     
 }
 
@@ -132,13 +151,6 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
         }
     }
 
-
-    //find chunk scale for foliage process
-    if(map.size() > 0 && map[0].size() > 0){
-        FVector &a = map[0][0];
-        FVector &b = map[0].back();
-        chunkScaleOneAxisLengthCm = std::abs(FVector::Dist(a, b));
-    }
 
 
     ReloadMeshAndApplyAllMaterials();
@@ -361,6 +373,7 @@ void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
     ELod lod = lodLevelByDistanceTo(locationOfPlayer);
     if(lod != currentLodLevel){
         switchToLod(lod);
+        DebugHelper::showScreenMessage("Tick Lod Update");
     }
     return;
 
@@ -457,8 +470,8 @@ void AcustomMeshActorBase::switchToLod(ELod lod){
     for(auto &pair : meshLodContainers){
         ELod pairLod = pair.first;
         ProceduralMeshComponentPair &ref = pair.second;
-        bool show = pairLod == lod;
-        ref.setHiddenInGame(!show);
+        bool hide = pairLod != lod;
+        ref.setHiddenInGame(hide);
     }
 
 }
@@ -479,7 +492,9 @@ void AcustomMeshActorBase::ReloadMeshForMaterialByLod(ELod lod, materialEnum mat
 /**
  * LOD REFACTURE END
  */
-
+ELod AcustomMeshActorBase::GetCurrentLodLevel(){
+    return currentLodLevel;
+}
 
 
 

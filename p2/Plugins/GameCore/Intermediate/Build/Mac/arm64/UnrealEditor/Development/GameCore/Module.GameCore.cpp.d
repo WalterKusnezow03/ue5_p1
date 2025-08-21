@@ -3833,8 +3833,10 @@
   Runtime/Engine/Classes/PhysicsEngine/ConvexElem.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/ELod.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/foliage/ETerrainType.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/set \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h \
@@ -3843,9 +3845,7 @@
   ../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT/KismetProceduralMeshLibrary.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gameStart/assetEnums/materialEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/foliage/ETerrainType.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Damageinterface.h \
   Runtime/CoreUObject/Public/UObject/Interface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/team/teamEnum.h \
@@ -3930,6 +3930,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/textureEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodConstants.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.cpp \
@@ -3945,6 +3947,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerControllerBase/PlayerControllerBase.cpp \
   Runtime/Engine/Classes/Animation/AnimSequence.h \
   Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h \
