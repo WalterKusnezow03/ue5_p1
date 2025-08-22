@@ -25,22 +25,26 @@ public:
 	terrainCreator();
 	~terrainCreator();
 
-	
-	void debugCreateTerrain(UWorld *world, int meters);
+	//---- Use for terrain generation ----
 
+	void createTerrainAndSetupChunkParserMap(
+		TerrainChunkMap &heightMap, //chunk information (height and position in grid)
+		ChunkParserMap &mapToFillDataTo //chunk parsermap to fill, which can setup mesh actors trough chunkparser
+	);
+	void applyTerrainDataIntoChunkParserMapCache(
+		ChunkParserMap &mapToFillDataTo
+	);
+
+
+
+
+	
 	static const bool PLOTTING_ENABLED = false; // false;
 	
 
 	int chunkNum();
 	
-	void createTerrainAndSpawnMeshActors(UWorld *world, int meters);
-	void createTerrainAndCreateBuildings(
-		UWorld *world, int meters
-	);
-	
 
-	//apply terrain
-	void applyTerrainDataToMeshActors();
 
 	//raycast
 	float getHeightFor(FVector &position);
@@ -58,42 +62,10 @@ public:
 	AcustomMeshActor *getNewMeshActor();
 
 
-	//new mesh data copying
-	void createTerrainAndSetupChunkParserMap(
-		TerrainChunkMap &heightMap,
-		ChunkParserMap &mapToFillDataTo
-	);
-	void applyTerrainDataIntoChunkParserMapCache(
-		ChunkParserMap &mapToFillDataTo
-	);
 
 private:
 	void applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFillDataTo, int x, int y);
 
-	void setFlatArea(FVector &location, int sizeMetersX, int sizeMetersY);
-
-	void applyTerrainDataToMeshActors(
-		int lowerX,
-		int xLimit,
-		int lowerY,
-		int yLimit
-	);
-	void createWaterPaneAt(FVector &location);
-
-	void markCreateOutpostsAt(
-		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea
-	);
-
-
-
-	void createTerrain(UWorld *world, int meters);
-	void createTerrain(
-		UWorld *world,
-		int meters,
-		std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea // flat area
-	);
-
-	
 
 	
 
@@ -125,15 +97,7 @@ private:
 	int cmToInnerChunkIndex(int a);
 
 
-	void scaleHeightForAll(float scale);
 
-
-
-
-	void flattenChunksForHillData(std::vector<terrainHillSetup> &hillDataVec);
-	void flattenChunksForHillData(terrainHillSetup &hillData);
-
-	void createChunkAtIfNotCreatedYet(int x, int y);
 
 	//--- terrain type apply helpers ---
 	void randomizeTerrainTypes();
@@ -152,31 +116,6 @@ private:
 	ETerrainType selectTerrainTypeExcluding(ETerrainType typeToExclude);
 
 	void applySpecialTerrainTypesByHeight();
-
-
-	//--- flat outpost helper ---
-	void createFlatAreas(
-		int count,
-		int minsizeChunks,
-		int maxsizeChunks,
-		int chunkRange,
-		std::vector<terrainHillSetup> &output
-	);
-	void createFlatArea(
-		int minsizeChunks,
-		int maxsizeChunks,
-		int chunkRange,
-		std::vector<terrainHillSetup> &output
-	);
-
-	void findChunksEnclosedBy(
-		std::vector<terrainHillSetup> &hills,
-		std::vector<chunk *> &output
-	);
-	void findChunksEnclosedBy(
-		terrainHillSetup &hillData,
-		std::set<chunk *> &output
-	);
 
 
 	void createRoads(UWorld* world);

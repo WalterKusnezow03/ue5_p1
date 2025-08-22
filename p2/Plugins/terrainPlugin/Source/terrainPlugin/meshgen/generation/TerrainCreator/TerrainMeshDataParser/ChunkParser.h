@@ -17,6 +17,8 @@
 
 class ChunkParserStorageInterface;
 
+/// CONTAINER FOR MESH DATA LATER USED BY ACUSTOMMESHACTOR -
+/// IS WRITABLE TO STORAGE
 /// @brief will parse a chunk to a terrain mesh data 
 /// with all its layers for the custom mesh actor to use
 /// will also write immidiate to disk
