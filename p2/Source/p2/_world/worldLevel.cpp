@@ -217,26 +217,7 @@ void worldLevel::createTerrain(UWorld *world, int meters){
 
     if(world != nullptr){
         isTerrainInited = true;
-
-        bool useNewTerrainLauncher = true;
-        if(useNewTerrainLauncher){
-            //new
-            ATerrainLauncher::makeInstance(world);
-            return;
-        }
-
-        /*
-        //DEPRECATED SINGLE TON!
-
-        //create new terrain pointer if needed
-        if(terrainPointer == nullptr){
-            terrainPointer = new terrainCreator();
-        }
-
-        terrainPointer->debugCreateTerrain(world, meters); //new test
-        //spawn all needed!
-        terrainPointer->applyTerrainDataToMeshActors();
-        */
+        ATerrainLauncher::makeInstance(world);
     }
 }
 

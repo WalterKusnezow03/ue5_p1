@@ -37,34 +37,13 @@ terrainCreator::~terrainCreator()
 
 
 
-/***
- * 
- * ---- TERRAIN METHODS -----
- * 
- */
 
-/// @brief will always create a qudratic terrain
-/// @param world world to spawn in / debug draw in
-/// @param meters size in meters
-void terrainCreator::createTerrain(UWorld *world, int meters){
-    std::vector<terrainHillSetup> none;
-    createTerrain(world, meters, none);
-}
+void terrainCreator::createArray(int chunks){
+    chunks = std::abs(chunks);
 
-/// @brief will always create a qudratic terrain
-/// @param world world to spawn in / debug draw in
-/// @param meters size in meters
-/// @param predefinedHillDataVecFlatArea chunks to keep a certain height forced, may vary because of
-/// bezier smoothening.
-void terrainCreator::createTerrain(
-    UWorld *world,
-    int meters,
-    std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea //flat area
-){
-    worldPointer = world;
+    //clear map
+    map.clear();
 
-    int chunks = floor(meters / terrainConstants::CHUNKSIZE); //to chunks
-    
     //fill map
     map.reserve(chunks);
     for (int i = 0; i < chunks; i++){
@@ -76,21 +55,13 @@ void terrainCreator::createTerrain(
         }
         map.push_back(vec);
     }
-
-    
-    //NEW
-    setupMap.createChunkMap(chunks);
-    setupFromChunkMap(setupMap, 0, 0, chunks);
-    
-    
-    smooth3dMap();
-
-
-    flattenChunksForHillData(predefinedHillDataVecFlatArea); //override after smooth height, clamp upper limit
 }
 
 
-void terrainCreator::setupFromChunkMap(
+
+
+
+void terrainCreator::setupFromChunkMapQuadPart(
     TerrainChunkMap &ref, 
     int x, 
     int y, 
@@ -104,9 +75,19 @@ void terrainCreator::setupFromChunkMap(
             int posX = current->posX;
             int posY = current->posY;
             int height = current->height;
+            bool outpostFlag = current->outpostFlagged;
+            bool buildingFlag = current->buildingFlagged;
 
-            if(verifyIndex(posX) && verifyIndex(posY)){
-                map.at(posX).at(posY).setheightForAll(height);
+            chunk *chunkPtr = chunkAt(posX, posY);
+            if(chunkPtr){
+                chunkPtr->setheightForAll(height);
+
+                if(outpostFlag){
+                    chunkPtr->markCreateOutpostTrue();
+                }
+                if(buildingFlag){
+                    chunkPtr->markBuildingCreateTrueAndBlockTrees();
+                }
             }
         }
     }
@@ -333,7 +314,7 @@ void terrainCreator::applyColumnOrRow(
  * 
  * --- EMBED ROOMS ---
  * 
- */
+ 
 
 /// @brief will set the are to a certain height provided in the location vector, which should be 
 /// the bottom left corner of the rooms created, will smooth the terrain data afterwards
@@ -376,7 +357,7 @@ void terrainCreator::setFlatArea(FVector &location, int sizeMetersX, int sizeMet
 
     int iterations = 2;
     smooth3dMap(a, b, iterations); // disabled for debugging
-}
+}*/
 
 /**
  * 
@@ -470,8 +451,6 @@ void terrainCreator::plotAllChunks(UWorld * world){
 float terrainCreator::getHeightFor(FVector &position){
 
     
-
-
     //create pane at world vertecies and perform hittest with FMath.
     TArray<FVector> positionIndices = {
         FVector(position.X, position.Y, 0.0f),
@@ -542,18 +521,26 @@ int terrainCreator::chunkNum(){
 
 /**
  * 
- * ---- APPLY DATA TO MESH ACTORS INDIRECT ----
+ * ---- APPLY DATA TO MESH ACTORS - CHUNK PARSER MAP ----
  * 
  */
 void terrainCreator::createTerrainAndSetupChunkParserMap(
-    ChunkParserMap &mapToFillDataTo,
-    int chunksAxis
+    TerrainChunkMap &heightMap,
+    ChunkParserMap &mapToFillDataTo
 ){
-    //generate
-    //CHEESY HOTFIX 
-    //make chunks to meter
-    int meter = chunksAxis * terrainConstants::CHUNKSIZE;
-    debugCreateTerrain(nullptr, meter); //should be replaced.
+
+    createArray(heightMap.countPerAxis());
+    setupFromChunkMapQuadPart(
+        heightMap,
+        0,
+        0,
+        heightMap.countPerAxis()
+    );
+    smooth3dMap();
+    randomizeTerrainTypes();
+    applySpecialTerrainTypesByHeight();
+
+    //manual flat areas are missing here. - must be added in terrain chunk map
 
     //fill
     applyTerrainDataIntoChunkParserMapCache(mapToFillDataTo);
@@ -562,36 +549,11 @@ void terrainCreator::createTerrainAndSetupChunkParserMap(
 void terrainCreator::applyTerrainDataIntoChunkParserMapCache(
     ChunkParserMap &mapToFillDataTo
 ){
-
     for (int i = 0; i < map.size(); i++){
         for (int j = 0; j < map[i].size(); j++){
             applyTerrainDataIntoChunkParserAt(mapToFillDataTo, i, j); //verifies the index automatically!
         }
     }
-
-    /*
-    int x = 0;
-    int y = 0;
-    int xLimit = map.size();
-    int yLimit = map.size();
-    
-    int actorIndex = 0;
-    int limit = (yLimit - lowerY) * (xLimit - lowerX);
-    while (actorIndex < limit)
-    {
-        actorIndex++;
-        applyTerrainDataIntoChunkParserAt(mapToFillDataTo, x, y); //verifies the index automatically!
-        x++;
-        //top corner reached, return
-        if(y >= yLimit && x >= xLimit){
-            return;
-        }
-        //next row
-        if(x >= xLimit){
-            x = 0;
-            y++;
-        }
-    }*/
 }
 
 
@@ -652,7 +614,7 @@ void terrainCreator::applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFill
  * ---- APPLY DATA TO MESH ACTORS ----
  */
 
-
+/*
 /// @brief will create all meshes and populate the data
 /// will not hold on to the reference when goes out of scope, only applies the data
 /// where it can and doesnt go out of bounds
@@ -752,7 +714,7 @@ void terrainCreator::createWaterPaneAt(FVector &location){
             scaleCm
         );
     }
-}
+}*/
 
 
 
@@ -788,6 +750,9 @@ void terrainCreator::flattenChunksForHillData(terrainHillSetup &hillData){
 
 
 
+void terrainCreator::randomizeTerrainTypes(){
+    randomizeTerrainTypes(nullptr);
+}
 
 /// @brief randomizes terrain types by enclosing bezier curves
 /// @param world 
@@ -965,24 +930,9 @@ void terrainCreator::applySpecialTerrainTypesByHeight(){
  * 
  * --- Example method for creating the terrain ---
  * 
- */
-void terrainCreator::debugCreateTerrain(UWorld *world){
-    //createTerrainAndSpawnMeshActors(world, 200);
-
-    //new with player tick needed
-    //createTerrainAndCreateBuildings(world, 200);
-    debugCreateTerrain(world, 200);
-}
+ 
 
 
-/// ---- CALLED FROM WORLD LEVEL RIGHT NOW ----
-void terrainCreator::debugCreateTerrain(UWorld *world, int meters){
-    //createTerrainAndSpawnMeshActors(world, 200); //old
-
-    meters = std::abs(meters);
-    meters = std::max(meters, terrainConstants::CHUNKSIZE * 2);
-    createTerrainAndCreateBuildings(world, meters); //new
-}
 
 /// @brief creates a terrain and brand new mesh actors without using the entity manager
 /// @param world world to spawn in, must not be nullptr
@@ -991,27 +941,22 @@ void terrainCreator::createTerrainAndSpawnMeshActors(
     UWorld *world, int meters
 ){
     meters = std::abs(meters);
-    if(meters < 100){
-        meters = 100;
-    }
+    meters = std::max(meters, 100);
 
     if(world != nullptr){
         FVector location(0, 0, 0);
         createTerrain(world, meters);
-
-        int numberCreated = chunkNum();
-
         randomizeTerrainTypes(world);
         applySpecialTerrainTypesByHeight();
         applyTerrainDataToMeshActors();
     }
-}
+}*/
 
 
 
 /**
  * create outposts section / buildings
- */
+ 
 
 ///@brief creates the buildings and the terrain, but only will spawn terrain if the player is
 ///near enough on tick
@@ -1036,6 +981,9 @@ void terrainCreator::createTerrainAndCreateBuildings(
     randomizeTerrainTypes(world);
     applySpecialTerrainTypesByHeight();
     
+
+
+    /// ---- make buildings ----
     //recursion issue ? 
     //use this data to create the buildings
     //predefinedHillDataVecFlatArea
@@ -1221,6 +1169,19 @@ void terrainCreator::markCreateOutpostsAt(
 
 
 
+
+void terrainCreator::createRoads(UWorld* world){
+    //roadmaker.createRoads(this, world, map.size());
+}
+
+*/
+float terrainCreator::getHeightFor(FVector2D &pos){
+    FVector pos3d(pos.X, pos.Y, 0.0f);
+    return getHeightFor(pos3d);
+    
+}
+
+
 AcustomMeshActor *terrainCreator::getNewMeshActor(){
     AcustomMeshActor *meshActor = nullptr;
     EntityManagerBase *entityManagerPointer = EntityManagerBase::instanceBase();
@@ -1233,15 +1194,47 @@ AcustomMeshActor *terrainCreator::getNewMeshActor(){
     return meshActor;
 }
 
-float terrainCreator::getHeightFor(FVector2D &pos){
-    FVector pos3d(pos.X, pos.Y, 0.0f);
-    return getHeightFor(pos3d);
-    
+
+
+
+
+
+
+
+/***
+ * 
+ * ---- DEPRECATED TERRAIN METHODS -----
+ * 
+ 
+
+/// @brief will always create a qudratic terrain
+/// @param world world to spawn in / debug draw in
+/// @param meters size in meters
+void terrainCreator::createTerrain(UWorld *world, int meters){
+    std::vector<terrainHillSetup> none;
+    createTerrain(world, meters, none);
 }
 
+/// @brief will always create a qudratic terrain
+/// @param world world to spawn in / debug draw in
+/// @param meters size in meters
+/// @param predefinedHillDataVecFlatArea chunks to keep a certain height forced, may vary because of
+/// bezier smoothening.
+void terrainCreator::createTerrain(
+    UWorld *world,
+    int meters,
+    std::vector<terrainHillSetup> &predefinedHillDataVecFlatArea //flat area
+){
+    worldPointer = world;
 
+    int chunks = floor(meters / terrainConstants::CHUNKSIZE); //to chunks
+    createArray(chunks);
 
+    //NEW
+    setupMap.createChunkMap(chunks);
+    setupFromChunkMapQuadPart(setupMap, 0, 0, chunks);
 
-void terrainCreator::createRoads(UWorld* world){
-    //roadmaker.createRoads(this, world, map.size());
+    smooth3dMap();
+    flattenChunksForHillData(predefinedHillDataVecFlatArea); // override after smooth height, clamp upper limit
 }
+*/

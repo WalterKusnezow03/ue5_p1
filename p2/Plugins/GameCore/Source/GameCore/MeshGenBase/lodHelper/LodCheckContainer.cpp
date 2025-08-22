@@ -67,7 +67,7 @@ void LodCheckContainer::checkLod(){
 
 ELod LodCheckContainer::lodLevelByDistanceTo(bool &isEdgeCase){
     ELod outLod = ELod::lodFar;
-    std::vector<ELod> vec = AcustomMeshActorBase::lodVector();
+    std::vector<ELod> vec = LodConstants::lodVector();
 
     if(vec.size() > 0){
         int smallestEdgeDistance = -1;

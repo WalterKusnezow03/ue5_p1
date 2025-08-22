@@ -11,14 +11,21 @@
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h"
 
+#include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
+
 #include <map>
 
+class ChunkParserStorageInterface;
 
 /// @brief will parse a chunk to a terrain mesh data 
 /// with all its layers for the custom mesh actor to use
 /// will also write immidiate to disk
 /// will be able to update a mesh actor
 class TERRAINPLUGIN_API ChunkParser {
+
+private:
+    //allows ChunkParserStorageInterface to use the get mesh data reference method
+    friend class ChunkParserStorageInterface;
 
 public:
     ChunkParser();
@@ -32,7 +39,11 @@ public:
 
     FVector GetActorLocation();
 
+    //set id for meshdata saving!
     void setChunkId(int inId);
+    int getChunkId();
+
+    
 
     //do not modify, do not delete, read only. Might be nullptr
     //might get invalid if other meshdata is added. Dont.
@@ -46,13 +57,32 @@ public:
     bool WaterActorNeededFlagged();
     FVector GetWaterActorLocation();
 
+    //flag default is false
+    //once Copied its marked false!, Single shot flag!
+    bool OutpostFlagCreationNeeded();
+
     ///mark used by actor to prevent mesh update if not needed
     void SetUsedMeshDataByActorFlag(bool flag);
 
     /// will tell whether in use by actor is flagged
     bool IsUsedByActor();
 
+
+    /// ---- API FOR STORAGE INTERFACE ----
+    void SetActorLocation(FVector &location);
+    void SetWaterActorNeededFlag(bool flag, FVector &location);
+    void SetOutpostFlagNeeded(bool flag);
+
 private:
+
+    //used by meshdata saving, dont use manually if not needed
+    MeshData &findMeshDataReference(
+        materialEnum type,
+        ELod lodLevel,
+        bool raycastOnLayer
+    );
+
+
     int chunkId = 0;
     bool navmeshNodesAdded = false;
 
@@ -61,6 +91,10 @@ private:
 
     bool currentlyUsedByActor = false;
     FVector actorLocation;
+
+    bool flagOutpostNeeded = false;
+
+
 
     std::vector<FVector> navmeshNodes;
     std::vector< std::vector<FVector>> navmeshConvexHulls;
@@ -94,18 +128,5 @@ private:
 
     void addRandomNodesToNavmesh(TArray<FVectorTouple> &touples);
 
-    MeshData &findMeshDataReference(
-        materialEnum type,
-        ELod lodLevel,
-        bool raycastOnLayer
-    );
-
-    std::vector<ELod> lodVector(){
-        std::vector<ELod> types = {
-            ELod::lodNear,
-            ELod::lodMiddle,
-            ELod::lodFar
-        };
-        return types;
-    }
+    void createBuildingIfNeeded(TerrainChunkSetup &package);
 };

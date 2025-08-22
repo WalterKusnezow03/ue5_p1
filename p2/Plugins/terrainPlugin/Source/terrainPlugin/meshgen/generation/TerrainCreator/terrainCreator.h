@@ -25,7 +25,7 @@ public:
 	terrainCreator();
 	~terrainCreator();
 
-	void debugCreateTerrain(UWorld *world);
+	
 	void debugCreateTerrain(UWorld *world, int meters);
 
 	static const bool PLOTTING_ENABLED = false; // false;
@@ -60,8 +60,8 @@ public:
 
 	//new mesh data copying
 	void createTerrainAndSetupChunkParserMap(
-		ChunkParserMap &mapToFillDataTo,
-		int chunksAxis
+		TerrainChunkMap &heightMap,
+		ChunkParserMap &mapToFillDataTo
 	);
 	void applyTerrainDataIntoChunkParserMapCache(
 		ChunkParserMap &mapToFillDataTo
@@ -101,10 +101,8 @@ private:
 
 	std::vector<std::vector<chunk>> map;
 
-	
-	
-	
-	
+
+	void createArray(int chunks);
 	void smooth3dMap();
 	void smooth3dMap(FVector &a, FVector &b, int iterations);
 
@@ -138,6 +136,7 @@ private:
 	void createChunkAtIfNotCreatedYet(int x, int y);
 
 	//--- terrain type apply helpers ---
+	void randomizeTerrainTypes();
 	void randomizeTerrainTypes(UWorld *world);
 	void applyTerrainTypeBetween(FVector &a, FVector &b, ETerrainType typeIn);
 	
@@ -188,5 +187,5 @@ private:
 
 	//NEW
 	TerrainChunkMap setupMap;
-	void setupFromChunkMap(TerrainChunkMap &ref, int x, int y, int numChunksSide);
+	void setupFromChunkMapQuadPart(TerrainChunkMap &ref, int x, int y, int numChunksSide);
 };

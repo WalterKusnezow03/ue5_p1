@@ -4,6 +4,7 @@
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 #include "GameCore/DebugHelper.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
+#include "GameCore/world/worldLevelBase.h"
 
 ActorManager::ActorManager(){
     worldContext = nullptr;
@@ -17,8 +18,10 @@ void ActorManager::BeginPlay(FString worldLevelString, UWorld *world){
     findMaxChunkViewDistanceOnBeginPlay();
     worldContext = world;
 
-    ChunkMapStorageInterface storageInterface;
-    terrainHeaderFileWasFound = storageInterface.Load(worldLevelString, chunkHeaderMap);
+    chunkMeshDataParserMap.setWorldLevelName(worldLevelString);
+
+    //load header map (not all chunks may be generated all at once, header map needed)
+    terrainHeaderFileWasFound = chunkHeaderMap.Load(worldLevelString);
 
     if(!terrainHeaderFileWasFound){
         chunkHeaderMap.createChunkMap(chunksForGame);
@@ -37,10 +40,28 @@ void ActorManager::BeginPlay(FString worldLevelString, UWorld *world){
     }
 }
 
+// Override EndPlay
+void ActorManager::EndPlay(){
+
+    //save world header
+    chunkHeaderMap.Save();
+
+    //save world
+    chunkMeshDataParserMap.saveWorldLevel();
+
+}
+
 void ActorManager::loadWorldMeshData(FString worldLevelString){
     //try to load Chunk Data into chunkparser map.
     if(chunkMeshDataParserMap.loadWorldLevel(worldLevelString, chunkHeaderMap)){
         DebugHelper::logMessage("ActorManager: Chunks loaded from SSD");
+        
+        if(instantTerrainActorApply){
+            applyChunkmeshDataCompletly();
+            DebugHelper::logMessage("ActorManager: terrain loading from SSD finished!");
+        }
+
+
     }else{
         DebugHelper::logMessage("ActorManager: terrain generation needed!");
         generateTerrain();
@@ -49,8 +70,11 @@ void ActorManager::loadWorldMeshData(FString worldLevelString){
 
 //chunkMap must be already loaded / setup!
 void ActorManager::generateTerrain(){
+    //push data into terrain generator
+
+    //setup chunk parser map
     chunkMeshDataParserMap.createArray(chunksForGame);
-    terraincreator.createTerrainAndSetupChunkParserMap(chunkMeshDataParserMap, chunksForGame);
+    terraincreator.createTerrainAndSetupChunkParserMap(chunkHeaderMap, chunkMeshDataParserMap);
 
     //debug wise gen all at once
     //later with updates.
@@ -80,6 +104,13 @@ void ActorManager::applyChunkmeshDataCompletly(){
             if (actor){
                 actor->UpdateMeshDataAndPosition(*currentParserPackage);
                 madeActors++;
+            }
+
+            //create outposts
+            //single fire create outpost, once!
+            if(currentParserPackage->OutpostFlagCreationNeeded()){
+                FVector outpostLocation = currentParserPackage->GetActorLocation();
+                worldLevelBase::addOutpostAt(outpostLocation);
             }
 
             //create water

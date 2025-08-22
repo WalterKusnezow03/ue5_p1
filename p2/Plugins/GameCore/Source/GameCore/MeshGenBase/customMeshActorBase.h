@@ -250,7 +250,7 @@ protected:
 public:
 	static int layerByMaterialEnum(materialEnum type);
 	
-	static std::vector<ELod> lodVector();
+	
 	static std::vector<ETerrainType> terrainVector();
 
 	static materialEnum groundMaterialFor(ETerrainType terraintype);

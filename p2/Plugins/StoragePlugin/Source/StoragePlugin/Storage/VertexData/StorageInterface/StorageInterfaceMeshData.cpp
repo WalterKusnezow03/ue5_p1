@@ -65,11 +65,14 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     int32 uvCount = UV0.Num();
     int32 triangleCount = Triangles.Num();
 
-    FString message = FString::Printf(
-        TEXT("Storage Interface MeshData write buffer sizes (%d), (%d), (%d), (%d)"),
-        vertexCount, normalCount, uvCount, triangleCount
-    );
-    DebugHelper::logMessage(message);
+    if(debugLog){
+        FString message = FString::Printf(
+            TEXT("Storage Interface MeshData write buffer sizes (%d), (%d), (%d), (%d)"),
+            vertexCount, normalCount, uvCount, triangleCount
+        );
+        DebugHelper::logMessage(message);
+    }
+    
 
     //int32 is 4 bytes
     //MUST BE THE SAME IN LOADING METHOD!
@@ -254,14 +257,16 @@ void StorageInterfaceMeshData::LoadMeshData(
     }
     PrintBinary(bytes);
 
-    uint8 *Ptr = bytes.GetData(); //at 0 offset.
+    bool endReachedIgnore = false;
+    uint8 *Ptr = bytes.GetData(); // at 0 offset.
     LoadIntoMeshBuffers(
         bytes,
         Ptr,
         Vertecies,
         Normals,
         UV0,
-        Triangles
+        Triangles,
+        endReachedIgnore
     );
 }
 
@@ -272,7 +277,8 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     TArray<FVector> &Vertecies,
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
-    TArray<int32> &Triangles
+    TArray<int32> &Triangles,
+    bool &endReached
 ){
     //load info data
     int32 vertexCount = 0;
@@ -283,11 +289,14 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     loadInfoData(Ptr, vertexCount, normalCount, uvCount, triangleCount);
 
     //debug
-    FString message = FString::Printf(
-        TEXT("Storage Interface MeshData loaded buffer sizes (%d), (%d), (%d), (%d)"),
-        vertexCount, normalCount, uvCount, triangleCount
-    );
-    DebugHelper::logMessage(message);
+    if(debugLog){
+        FString message = FString::Printf(
+            TEXT("Storage Interface MeshData loaded buffer sizes (%d), (%d), (%d), (%d)"),
+            vertexCount, normalCount, uvCount, triangleCount
+        );
+        DebugHelper::logMessage(message);
+    }
+    
 
     //SET SIZE VERY IMPORTANT
     Vertecies.SetNumUninitialized(vertexCount);
@@ -316,10 +325,13 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     //if(totalSize != sizeof(uint8) * Bytes.Num()){
     if(totalSize > sizeof(uint8) * Bytes.Num()){ //check if reaching out of bounds with Pointer.
         DebugHelper::logMessage("Storage Interface MeshData Exceeded byte size");
+        endReached = true;
         return;
     }
+    if(totalSize == sizeof(uint8) * Bytes.Num()){
+        endReached = true;
+    }
 
-    
     /*
     FMemory::Memcpy (
         void* Dest,
@@ -472,7 +484,20 @@ void StorageInterfaceMeshData::Test(){
 
     //print
     PrintBuffers(vertexBuffer, normalBuffer, uvBuffer, triangleBuffer);
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 void StorageInterfaceMeshData::PrintBuffers(
     TArray<FVector> &Vertecies,

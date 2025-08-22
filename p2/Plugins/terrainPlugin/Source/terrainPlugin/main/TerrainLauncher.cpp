@@ -23,6 +23,16 @@ void ATerrainLauncher::BeginPlay(){
     actorManager.BeginPlay(worldLevelString, GetWorld());
 }
 
+// Override EndPlay
+void ATerrainLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    //actor manager save data
+    actorManager.EndPlay();
+
+    //super endplay
+    Super::EndPlay(EndPlayReason);
+}
+
+
 void ATerrainLauncher::Tick(float deltatime){
     Super::Tick(deltatime);
     actorManager.Tick(deltatime);

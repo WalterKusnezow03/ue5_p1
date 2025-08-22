@@ -1,7 +1,8 @@
 #include "ChunkParserMap.h"
+#include "GameCore/DebugHelper.h"
 
 ChunkParserMap::ChunkParserMap(){
-    worldLevelName = TEXT("WorldLevel1");
+    
 }
 
 ChunkParserMap::~ChunkParserMap(){
@@ -34,9 +35,20 @@ void ChunkParserMap::createArray(int chunksPerAxis){
 }
 
 
+
+/// ----- SAVE AND LOAD INTERFACE -----
+
 void ChunkParserMap::saveWorldLevel(){
     //TODO!
     ChunkParserStorageInterface interface;
+    TArray<ChunkParser *> allChunksToSave = allChunksForSetup(); //to save
+    for (int i = 0; i < allChunksToSave.Num(); i++){
+        //is id already set? Needed inside Storage Interface!
+        ChunkParser *current = allChunksToSave[i];
+        if(current){
+            interface.Save(worldLevelName, *current);
+        }
+    }
 }
 
 
@@ -45,23 +57,33 @@ bool ChunkParserMap::loadWorldLevel(FString name, TerrainChunkMap &loadedHeaderM
     setWorldLevelName(name);
     int countChunksToLoad = loadedHeaderMap.countTotalCunks();
     int sizeMapAxis = loadedHeaderMap.countPerAxis();
-    createArray(sizeMapAxis); //inner map needs to be set up!
+
+    DebugHelper::logMessage(FString::Printf(TEXT("Storage Interface Chunk Parser Map Try loading Chunks %d "), countChunksToLoad));
+    createArray(sizeMapAxis); // inner map needs to be set up!
 
     //for all chunks
     int loadedSuccesfully = 0;
     ChunkParserStorageInterface interface;
-    for (int i = 0; i < sizeMapAxis; i++){
-        for (int j = 0; j < sizeMapAxis; j++){
-            // load chunk
-            ChunkParser &refChunkparser = findByIndex(i,j);
-            if(interface.Load(name, refChunkparser)){
+
+    TArray<ChunkParser *> chunksToLoad = allChunksForSetup();
+    for (int i = 0; i < chunksToLoad.Num(); i++){
+        ChunkParser *currentChunkParser = chunksToLoad[i];
+        if(currentChunkParser){
+            if(interface.Load(worldLevelName, *currentChunkParser)){
                 loadedSuccesfully++;
             }
         }
     }
 
+
+    FString message = FString::Printf(TEXT("Storage Interface Loaded World: (%d / %d)"), loadedSuccesfully, countChunksToLoad);
+    DebugHelper::logMessage(message);
+
     return loadedSuccesfully == countChunksToLoad;
 }
+
+
+
 
 ChunkParser &ChunkParserMap::findById(int id){
     int i = 0;

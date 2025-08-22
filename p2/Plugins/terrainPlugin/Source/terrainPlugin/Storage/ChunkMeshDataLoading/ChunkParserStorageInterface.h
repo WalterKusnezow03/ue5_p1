@@ -19,5 +19,29 @@ public:
     bool Load(FString worldLevelname, ChunkParser &chunkData);
 
 private:
-    int materialToId(materialEnum type);
+    FString makePath(FString worldLevelName, int chunkId);
+
+    /// gets all mesh data pointers from chunkData for loading and saving. 
+    /// keeps the order consistent so no errors can happen. Empty MeshData are saved empty. 
+    /// the mesh data lod and material are saved implicitly by order of this meshdata array.
+    /// if the order doesnt change. Nothing changes and it keeps working.
+    TArray<MeshData *> MeshDataOrderedForSavingAndLoading(
+        ChunkParser &chunkData
+    );
+
+    ///bytes size of header data (actor locations, water locations ...)
+    int headerInfoDataSize();
+
+    //will write the chunk info data into the byte array
+    void WriteChunkInfoData(
+        TArray<uint8> &bytes,
+        ChunkParser &chunkData
+    );
+
+    //will load the chunk info data into the chunkdata object, from the given pointer(should be at 0)
+    //pointer will be increased for later use!
+    void LoadChunkInfoData(
+        uint8 *&Ptr, 
+        ChunkParser &chunkData
+    );
 };

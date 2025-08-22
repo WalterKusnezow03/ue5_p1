@@ -12,7 +12,13 @@ public:
     ChunkParserMap();
     ~ChunkParserMap();
 
+    // Should be set on start to ensure consistent naming
+    // if not loaded, the world has no name. bad.
     void setWorldLevelName(FString name);
+
+    // --- Storage Interface Integrated here: SaveInterface ---
+    // A Chunkparser Map can save and load itself from storage
+    // Changes to the terrain are not tracked yet!
     void saveWorldLevel();
     bool loadWorldLevel(FString name, TerrainChunkMap &loadedHeaderMap);
 

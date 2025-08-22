@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "GameCore/MeshGenBase/customMeshActorBase.h"
 
 #include "CoreMinimal.h"
 #include "GameCore/util/FVectorTouple.h"
@@ -12,7 +13,8 @@
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 #include "AssetPlugin/gameStart/assetManager.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
-#include "GameCore/MeshGenBase/customMeshActorBase.h"
+
+#include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 // Sets default values
 AcustomMeshActorBase::AcustomMeshActorBase()
@@ -124,7 +126,7 @@ void AcustomMeshActorBase::createTerrainFrom2DMap(
     
     FVector originVec(0, 0, 0);
 
-    std::vector<ELod> lods = lodVector();
+    std::vector<ELod> lods = LodConstants::lodVector();
     int prevLodStep = 1; //x++ y++ default as expected
     for (int lodStep = 0; lodStep < lods.size(); lodStep++)
     {
@@ -388,7 +390,7 @@ void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
 /// @brief reloads all meshes, raycast, no raycast, all meshdata, all materials all lod submeshes!
 /// call this method when replacing mesh data or changing the lod!
 void AcustomMeshActorBase::ReloadMeshAndApplyAllMaterials(){
-    std::vector<ELod> lodLevels = lodVector();
+    std::vector<ELod> lodLevels = LodConstants::lodVector();
     std::vector<materialEnum> materials = MaterialEnumHelper::materialVector();
     for (int i = 0; i < lodLevels.size(); i++){
         ELod lod = lodLevels[i];
@@ -418,7 +420,7 @@ void AcustomMeshActorBase::initLodMeshesOnBeginPlay(){
     meshLodContainers[ELod::lodNear].overrideMeshPair(Mesh, MeshNoRaycast);
 
     // create others
-    std::vector<ELod> lods = lodVector();
+    std::vector<ELod> lods = LodConstants::lodVector();
     for (int i = 0; i < lods.size(); i++){
         ELod iLod = lods[i];
         if(iLod != ELod::lodNear){
@@ -570,7 +572,7 @@ void AcustomMeshActorBase::updateMesh(
 /// @param type type of material for this layer, will be raycast enabled by default!
 void AcustomMeshActorBase::replaceMeshData(MeshData &meshdata, materialEnum type){
     //all lod levels included
-    std::vector<ELod> lodvector = AcustomMeshActorBase::lodVector();
+    std::vector<ELod> lodvector = LodConstants::lodVector();
     for (int i = 0; i < lodvector.size(); i++){
         replaceMeshData(meshdata, type, lodvector[i]);
     }
@@ -723,16 +725,7 @@ std::vector<ETerrainType> AcustomMeshActorBase::terrainVector(){
  * 
  */
 
-/// @brief creates a vector of all types from the enum in ascending order from near to far
-/// @return 
-std::vector<ELod> AcustomMeshActorBase::lodVector(){
-    std::vector<ELod> types = {
-        ELod::lodNear,
-        ELod::lodMiddle,
-        ELod::lodFar
-    };
-    return types;
-}
+
 
 
 ///@brief will find the LOD distance to the given position and disable the actor if lod is far

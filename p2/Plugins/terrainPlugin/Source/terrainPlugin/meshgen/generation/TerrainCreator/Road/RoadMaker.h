@@ -44,4 +44,5 @@ private:
 
 
     terrainCreator *terrainCreatorPtr = nullptr;
+    AcustomMeshActor *getNewMeshActor();
 };

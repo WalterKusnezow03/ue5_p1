@@ -14,6 +14,10 @@ public:
 
     /// @brief starts a world or tries to find from storage
     void BeginPlay(FString worldLevelString, UWorld *world);
+    
+    /// @brief end play - must be called from terrain launcher!
+    void EndPlay();
+
     void Tick(float deltatime);
 
 private:

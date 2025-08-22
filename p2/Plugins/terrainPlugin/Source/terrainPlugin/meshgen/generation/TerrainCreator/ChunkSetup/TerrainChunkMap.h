@@ -18,7 +18,7 @@ public:
     /// @param chunksIn 
     void createChunkMap(int chunksIn);
 
-    /// @brief gets a quad within the given bounds
+    /// @brief gets a quad within the given bounds from start(x,y) + (chunks, chunks)
     TArray<FTerrainChunkAttributes *> getQuad(int x, int y, int chunksToCopy);
 
     /// @brief gets all chunks
@@ -36,7 +36,13 @@ public:
     /// @brief creates string information 
     FString toString();
 
+    // --- Save and Load Interface ---
+    void Save();
+    bool Load(FString worldName);
+
 private:
+    FString worldLevelNameSaved;
+
     void override(int i, int j, FTerrainChunkAttributes &attributes);
 
     void verfiyChunks(int chunksIn);
@@ -59,6 +65,7 @@ private:
 
     void verifyIndex(int &index);
     int clampIndex(int index);
+    bool indexIsValid(int i, int j);
 
     /// @brief chunks per single Quad axis. 10 chunks, 10*10 map = 100!
     int chunks = 10;
@@ -70,4 +77,8 @@ private:
     int clampIndexInset(int index);
 
 
+
+    //call AFTER Hill generation!
+    void createRandomOutpostFlags();
+    void createRandomOutpostFlagAndSmoothArea();
 };

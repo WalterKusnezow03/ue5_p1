@@ -1,5 +1,6 @@
 #include "RoadMaker.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
+#include "GameCore/EntityGC/EntityManagerBase.h"
 
 
 RoadMaker::RoadMaker(){
@@ -267,3 +268,5 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
 
 
 }
+
+

@@ -89,7 +89,7 @@ void ChunkMapStorageInterface::makeBinary(
 
 
 FString ChunkMapStorageInterface::makePath(FString worldName){
-    FString fileName = FString::Printf(TEXT("Terrain/worldHeaders/worldHeader_%s.bin"), *worldName);
+    FString fileName = FString::Printf(TEXT("Terrain/%s/worldHeader/worldHeader_%s.bin"), *worldName, *worldName);
     FString Path = FPaths::ProjectSavedDir() + fileName;
     return Path;
 }

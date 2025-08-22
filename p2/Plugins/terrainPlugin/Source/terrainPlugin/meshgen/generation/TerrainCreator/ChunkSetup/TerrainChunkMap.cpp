@@ -10,6 +10,24 @@ TerrainChunkMap::~TerrainChunkMap(){
 
 }
 
+// --- Storage Interface ---
+bool TerrainChunkMap::Load(FString worldLevelName){
+    worldLevelNameSaved = worldLevelName;
+
+    ChunkMapStorageInterface storageInterface;
+    return storageInterface.Load(worldLevelNameSaved, *this);
+}
+
+void TerrainChunkMap::Save(){
+    ChunkMapStorageInterface storageInterface;
+    storageInterface.Save(worldLevelNameSaved, *this);
+}
+
+
+
+
+// --- Class methods ---
+
 int TerrainChunkMap::countTotalCunks(){
     return getAll().Num();
 }
@@ -22,6 +40,7 @@ void TerrainChunkMap::createChunkMap(int chunksIn){
     verfiyChunks(chunksIn);
     createArray();
     createRandomHeightMap();
+    createRandomOutpostFlags();
 }
 
 void TerrainChunkMap::verfiyChunks(int chunksIn){
@@ -44,7 +63,8 @@ void TerrainChunkMap::createArray(){
 }
 
 void TerrainChunkMap::createRandomHeightMap(){
-    int layers = 12;
+    //jeder chunk soll z.b. im schnitt 20 erhöhungen bekommen.
+    int layers = chunks * 3;
     createRandomHeightMapChunkWide(layers);
 }
 
@@ -136,6 +156,56 @@ void TerrainChunkMap::applyHillData(terrainHillSetup &hillData){
 }
 
 
+void TerrainChunkMap::createRandomOutpostFlags(){
+    int max = chunks / 5;
+    for (int i = 0; i < max; i++){
+        createRandomOutpostFlagAndSmoothArea();
+    }
+}
+
+void TerrainChunkMap::createRandomOutpostFlagAndSmoothArea(){
+    int i = FVectorUtil::randomNumber(insetHillData, chunks - insetHillData);
+    int j = FVectorUtil::randomNumber(insetHillData, chunks - insetHillData);
+    FTerrainChunkAttributes &attributes = find(i, j);
+
+    //flag outpost
+    attributes.outpostFlagged = true;
+
+    //set height same around area
+    int bound = 1;
+    TArray<FTerrainChunkAttributes *> quadToEvenHeight = getQuad(
+        i - bound, 
+        j - bound, 
+        bound * 2 + 1 //extent to top corner
+    );
+    if(quadToEvenHeight.Num() <= 0){
+        return;
+    }
+
+    //find average height and flag building needed
+    float heightTotal = 0.0f;
+    for (int c = 0; c < quadToEvenHeight.Num(); c++)
+    {
+        FTerrainChunkAttributes *currentAttributes = quadToEvenHeight[c];
+        if(currentAttributes){
+            heightTotal += currentAttributes->height;
+
+            //flag building needed around outpost.
+            currentAttributes->buildingFlagged = true;
+        }
+    }
+
+    //override height
+    float heightAverageToSet = heightTotal / quadToEvenHeight.Num();
+    for (int c = 0; c < quadToEvenHeight.Num(); c++)
+    {
+        FTerrainChunkAttributes *currentAttributes = quadToEvenHeight[c];
+        if(currentAttributes){
+            currentAttributes->height = heightAverageToSet;
+        }
+    }
+}
+
 FTerrainChunkAttributes &TerrainChunkMap::find(int i, int j){
     verifyIndex(i);
     verifyIndex(j);
@@ -148,16 +218,24 @@ void TerrainChunkMap::override(FTerrainChunkAttributes &attributes, int i, int j
     innerMap[i][j] = attributes;
 }
 
+/// @brief makes index VALID IN BOUNDS
+/// @param index 
 void TerrainChunkMap::verifyIndex(int &index){
     index = std::max(index, 0);
-    index = std::min(chunks - 1, index);
+    index = std::min(innerMap.Num() - 1, index);
 }
+
 
 int TerrainChunkMap::clampIndex(int index){
     verifyIndex(index);
     return index;
 }
 
+bool TerrainChunkMap::indexIsValid(int i, int j){
+    //is okay to check because false result is there before oob idnex would be reached
+    return i >= 0 && j >= 0 &&
+           i < innerMap.Num() && j < innerMap[i].Num();
+}
 
 int TerrainChunkMap::clampIndexInset(int index){
     index = std::max(index, insetHillData);
@@ -175,20 +253,24 @@ TArray<FTerrainChunkAttributes *> TerrainChunkMap::getQuad(
     int yEnd = y + chunksToCopy + 1;
     verifyIndex(x);
     verifyIndex(y);
-    verifyIndex(xEnd);
+    verifyIndex(xEnd); //makes valid in bounds
     verifyIndex(yEnd);
 
     TArray<FTerrainChunkAttributes *> outArray;
-    outArray.SetNum((xEnd - x) * (yEnd - y));
-    for (int i = x; i < xEnd; i++)
+    for (int i = x; i <= xEnd; i++)
     {
-        for (int j = y; j < yEnd; j++){
-            FTerrainChunkAttributes &ref = find(i, j);
-            outArray.Add(&ref);
+        for (int j = y; j <= yEnd; j++){
+            if(indexIsValid(i,j)){
+                FTerrainChunkAttributes &ref = find(i, j);
+                outArray.Add(&ref);
+            }
+            
         }
     }
     return outArray;
 }
+
+
 
 
 // ---- api storage interface -----
@@ -228,3 +310,10 @@ FString TerrainChunkMap::toString(){
     }
     return outString;
 }
+
+
+
+
+
+
+

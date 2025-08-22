@@ -3866,6 +3866,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/MatrixTree/ETreeType.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/TerrainMeshDataParser/ChunkParser.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodConstants.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/customMeshActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/customWaterActor.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/water/customWaterActor.h \
@@ -3912,7 +3913,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerGeneric.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodConstants.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/TerrainLauncher.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/worldCache/ChunkParserMap.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/customMeshActor.cpp \
@@ -3920,7 +3921,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/PathFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.cpp \

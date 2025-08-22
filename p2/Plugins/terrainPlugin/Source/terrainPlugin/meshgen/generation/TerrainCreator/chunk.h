@@ -74,6 +74,7 @@ public:
     void updateTerrainTypeBySpecialHeights();
 
     void markCreateOutpostTrue();
+    void markBuildingCreateTrueAndBlockTrees();
 
     void blockAreaForFoliage(
         FVector &v0,
@@ -102,12 +103,14 @@ private:
     bool wasCreated = false;
     ETerrainType savedTerrainType = ETerrainType::ETropical;
     bool createOutpost = false;
+    bool blockTrees = false;
+    bool createBuilding = false;
 
     std::vector<std::vector<FVector>> innerMap;
     std::vector<std::vector<bool>> innerMapFreePositions;
     int x;
     int y;
-    bool blockTrees = false;
+    
 
     int clampInnerIndex(int a);
 

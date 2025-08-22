@@ -2,6 +2,7 @@
 #include "ChunkParser.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 #include "PathFinder/pathFinding/PathFinder.h"
+#include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 ChunkParser::ChunkParser(){
 
@@ -20,6 +21,9 @@ void ChunkParser::setChunkId(int inId){
     chunkId = inId;
 }
 
+int ChunkParser::getChunkId(){
+    return chunkId;
+}
 
 MeshDataMap *ChunkParser::findMeshDataMap(ELod lod){
     if(meshLodContainers.find(lod) != meshLodContainers.end()){
@@ -31,6 +35,7 @@ MeshDataMap *ChunkParser::findMeshDataMap(ELod lod){
 void ChunkParser::createTerrainFrom2DMap(FVector &positionChunk, TerrainChunkSetup &package){
     actorLocation = positionChunk;
     thisTerrainType = package.getTerrainType(); // must be set before mesh gen!
+    flagOutpostNeeded = package.OutPostFlagged(); //save outpost flag for later creation!
 
     createTerrainFrom2DMap(package.mapReference());
     
@@ -45,8 +50,7 @@ void ChunkParser::createTerrainFrom2DMap(FVector &positionChunk, TerrainChunkSet
 
 
     //package.createOutPostIfFlagged(GetWorld());
-
-    
+    createBuildingIfNeeded(package);
 }
 
 
@@ -64,7 +68,7 @@ void ChunkParser::createTerrainFrom2DMap(
     
     FVector originVec(0, 0, 0);
 
-    std::vector<ELod> lods = lodVector();
+    std::vector<ELod> lods = LodConstants::lodVector();
     int prevLodStep = 1; //x++ y++ default as expected
     for (int lodStep = 0; lodStep < lods.size(); lodStep++)
     {
@@ -385,6 +389,16 @@ void ChunkParser::addNodesToNavMeshIfNeeded(UWorld *world){
 
 
 
+
+/// ----- BUILDING CREATION ------
+void ChunkParser::createBuildingIfNeeded(TerrainChunkSetup &package){
+    //TODO: REFACTURE BUILDING / ROOM ACTOR!
+    if(package.BuildingFlagged()){
+        DebugHelper::logMessage("Chunk Parser: Room Creation NOT REFACTURED");
+    }
+}
+
+
 /// ----- WATER ACTOR FLAGS ------
 void ChunkParser::flagWaterActorNeeded(FVector &location){
     waterActorNeeded = true;
@@ -399,6 +413,12 @@ FVector ChunkParser::GetWaterActorLocation(){
     return waterActorLocation;
 }
 
+bool ChunkParser::OutpostFlagCreationNeeded(){
+    bool copy = flagOutpostNeeded;
+    flagOutpostNeeded = false;
+    return copy;
+}
+
 
 
 
@@ -410,4 +430,17 @@ void ChunkParser::SetUsedMeshDataByActorFlag(bool flag){
 
 bool ChunkParser::IsUsedByActor(){
     return currentlyUsedByActor;
+}
+
+
+/// ---- API FOR STORAGE INTERFACE ----
+void ChunkParser::SetActorLocation(FVector &location){
+    actorLocation = location;
+}
+void ChunkParser::SetWaterActorNeededFlag(bool flag, FVector &location){
+    waterActorLocation = location;
+    waterActorNeeded = flag;
+}
+void ChunkParser::SetOutpostFlagNeeded(bool flag){
+    flagOutpostNeeded = flag;
 }

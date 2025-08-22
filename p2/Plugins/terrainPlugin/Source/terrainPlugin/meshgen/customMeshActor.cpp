@@ -17,6 +17,7 @@
 #include "GameCore/DebugHelper.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
+#include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 #include "GameCore/world/worldLevelBase.h"
 
@@ -188,6 +189,7 @@ void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
     releaseChunkParserPointer();
     chunkParserPointer = &parser;
 
+    //copy mesh data
     for(auto &pair : meshLodContainers){
         ELod ilod = pair.first;
         if(MeshDataMap *meshDataMapCache = parser.findMeshDataMap(ilod)){
@@ -200,6 +202,20 @@ void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
             parser.addNodesToNavMeshIfNeeded(GetWorld());
         }
     }
+
+    
+    /*
+    Created by actor manager already!
+    if(parser.WaterActorNeededFlagged()){
+        FVector waterLocation = parser.GetWaterActorLocation();
+        int scaleCm = terrainConstants::CHUNKSIZE * terrainConstants::ONEMETER;
+        AcustomWaterActor::createWaterPane(
+            worldPointer,
+            location,
+            scaleCm
+        );
+    }*/
+
     
     setMaterialBehaiviour(materialEnum::grassMaterial); //no split
     enableLodListening(); //works as expected now.
@@ -558,7 +574,7 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
         materialEnum::redsandMaterial,
         materialEnum::sandMaterial
     };
-    std::vector<ELod> lods = lodVector();
+    std::vector<ELod> lods = LodConstants::lodVector();
     int sizeHole = 200;
     FVector direction(0, 0, -200); //-20
     for (int i = 0; i < hitMaterials.size(); i++){

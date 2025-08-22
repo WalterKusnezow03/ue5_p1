@@ -16,6 +16,7 @@ public:
     static void makeInstance(UWorld *world);
 
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
 
 private:
