@@ -123,7 +123,7 @@ void AplayerScript::debugPathFinder(){
 
     DebugHelper::showLineBetween(GetWorld(), posA, own, FColor::Yellow);
 
-    PathFinder *in = PathFinder::instance();
+    APathFinder *in = APathFinder::instance();
     if(in != nullptr){
         std::vector<FVector> drawPath = in->getPath(posA, own);
         for (int i = 1; i < drawPath.size(); i++){

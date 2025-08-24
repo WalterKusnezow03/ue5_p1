@@ -3919,6 +3919,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/customMeshActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/PathFinder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/UnrealEditor/Inc/PathFinder/UHT/PathFinder.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.cpp \

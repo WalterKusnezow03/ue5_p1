@@ -83,8 +83,6 @@ void worldLevel::resetWorld(){
         isTerrainInited = false;
     }
 
-    FPathFinderModule::EndPathFinder();
-
     assetManager::EndGame();
 
 }
@@ -93,14 +91,16 @@ void worldLevel::resetWorld(){
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
     EntityManager::BeginPlay(); //very important
-    
+
+    FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
+
     gamePausedFlag = false;
     bool debugCreate = true; // dont create terrain for debugging
     // disabled for debugging
     if(debugCreate){
         if (!isTerrainInited && world != nullptr){
             int meters = 200 * 1; //200
-            createTerrain(world, meters); // 100m
+            createTerrain(world, WorldName); // 100m
             
         }
     }
@@ -109,7 +109,7 @@ void worldLevel::initWorld(UWorld *world){
     DebugCreateRooms(world);
 
     //edge collector must be added here later
-    createPathFinder(world);
+    createPathFinder(world, WorldName);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
     humanBotsOnStart(world, 1);
@@ -161,8 +161,8 @@ void worldLevel::createOutpostsRequested(UWorld *world){
 /**
  * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start
  */
-void worldLevel::createPathFinder(UWorld *WorldIn){
-    FPathFinderModule::StartPathFinder(WorldIn);
+void worldLevel::createPathFinder(UWorld *WorldIn, FString worldName){
+    FPathFinderModule::StartPathFinder(WorldIn, worldName);
 }
 
 
@@ -205,29 +205,16 @@ OutpostManager * worldLevel::outpostManager(){
 /// @brief creates the terrain if not yet created
 /// @param world world to spawn in
 /// @param meters meters of the terrain targeted
-void worldLevel::createTerrain(UWorld *world, int meters){
+void worldLevel::createTerrain(UWorld *world, FString worldName){
     if(isTerrainInited){
         return;
     }
-
-
-
-
-
-
     if(world != nullptr){
         isTerrainInited = true;
-        ATerrainLauncher::makeInstance(world);
+        ATerrainLauncher::makeInstance(world, worldName);
     }
 }
 
-
-int worldLevel::getGroundHeight(FVector &pos){
-    if(terrainPointer != nullptr){
-        return terrainPointer->getHeightFor(pos);
-    }
-    return pos.Z;
-}
 
 
 /**
@@ -238,36 +225,7 @@ int worldLevel::getGroundHeight(FVector &pos){
  * 
  */
 void worldLevel::Tick(float DeltaTime){
-    if(isTerrainInited){
-        //tick terrain creation if not done yet by player distance
-        if(terrainPointer != nullptr){
-            
-            //is tested
-            //debugTerrainHeight();
-        }
-
-        //tick sync tick tasks from pathfinder
-        PathFinder *p = PathFinder::instance();
-        if(p != nullptr){
-            p->Tick();
-
-
-            if(false){
-                if(UWorld *world = GetWorld()){
-                    if(!nodesWereShown){
-                        p->debugShowAllNodes(world);
-                        nodesWereShown = true;
-                    }
-                }
-            }
-            
-            
-        }
-    }
-
-
-    //tick player ui timer based actions
-    //customUiComponentTickHandler::Tick(DeltaTime); //TICKED BY AACTOR NOW
+    //nothing to be ticked here.
 }
 
 UWorld *worldLevel::GetWorld(){

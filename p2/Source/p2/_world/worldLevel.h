@@ -25,7 +25,6 @@ public:
 
 	static void initWorld(UWorld *world);
 
-	static int getGroundHeight(FVector &pos);
 
 	static void Tick(float DeltaTime);
 
@@ -42,7 +41,7 @@ private:
 	static void debugTerrainHeight();
 	static void debugStoragePlugin();
 
-	static void createTerrain(UWorld *world, int meters);
+	static void createTerrain(UWorld *world, FString worldName);
 	static UWorld *GetWorld();
 
 	worldLevel();
@@ -51,7 +50,7 @@ private:
 	static void createOutpostsRequested(UWorld *world);
 
 	//pathfinder init edge collection
-	static void createPathFinder(UWorld *WorldIn);
+	static void createPathFinder(UWorld *WorldIn, FString worldName);
 
 	static void humanBotsOnStart(UWorld *worldIn, int count);
 

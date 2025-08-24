@@ -304,7 +304,7 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     UV0.SetNumUninitialized(uvCount);
     Triangles.SetNumUninitialized(triangleCount);
 
-    //copy mesh data based on infoData (make void* its cooler)
+    //copy mesh data based on infoData
     int infoBytesSize = getInfoBytesSize();
 
 
@@ -414,7 +414,7 @@ FString StorageInterfaceMeshData::makePath(
     int lod
 ){
     FString fileName = FString::Printf(TEXT("Terrain/Chunk_%.d_Layer_%.d_Lod_%d.bin"), chunkId, layer, lod);
-    FString Path = FPaths::ProjectSavedDir() + fileName;
+    FString Path = BaseDir(TEXT("debugPathfromMeshData")) + fileName;
     return Path;
 }
 

@@ -19,4 +19,6 @@ protected:
         TArray<uint8> &Bytes
     );
 
+    /// @brief will create a path with the world string, ends with a slash "/": somepath/-appendyourinnerPath-
+    FString BaseDir(FString worldLevelName);
 };

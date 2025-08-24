@@ -4,7 +4,7 @@ ATerrainLauncher::ATerrainLauncher(){
     PrimaryActorTick.bCanEverTick = true; //needed for tick update
 }
 
-void ATerrainLauncher::makeInstance(UWorld *world){
+void ATerrainLauncher::makeInstance(UWorld *world, FString WorldLevelName){
     if(world != nullptr){
 
         UClass *toSpawn = ATerrainLauncher::StaticClass();
@@ -12,15 +12,26 @@ void ATerrainLauncher::makeInstance(UWorld *world){
             
             FActorSpawnParameters SpawnParams;
             FVector Location;
-            AActor *spawned = world->SpawnActor<AActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams);   
+            AActor *spawned = world->SpawnActor<AActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams); 
+            if(spawned){
+
+                ATerrainLauncher *casted = Cast<ATerrainLauncher>(spawned);
+                if(casted){
+                    casted->launch(WorldLevelName);
+                }
+            }
         }
     }
 }
 
+void ATerrainLauncher::launch(FString WorldLevelName){
+    actorManager.BeginPlay(WorldLevelName, GetWorld());
+}
+
+
 void ATerrainLauncher::BeginPlay(){
     Super::BeginPlay();
-    FString worldLevelString = TEXT("World1");
-    actorManager.BeginPlay(worldLevelString, GetWorld());
+    
 }
 
 // Override EndPlay

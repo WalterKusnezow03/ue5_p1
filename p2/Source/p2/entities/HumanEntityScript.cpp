@@ -298,7 +298,7 @@ void AHumanEntityScript::findOutPostNearby(){
 /// OVERRIDEN
 void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
     if(attackTypeIs(EAttackType::ESniper) && towardsPlayer){
-        PathFinder *p = PathFinder::instance(GetWorld());
+        APathFinder *p = APathFinder::instance(GetWorld());
         if(p != nullptr){
             FVector newTarget = p->findFurthestConnectedNodeFrom(targetLocation);
             Super::requestNewPathTo(newTarget, towardsPlayer);

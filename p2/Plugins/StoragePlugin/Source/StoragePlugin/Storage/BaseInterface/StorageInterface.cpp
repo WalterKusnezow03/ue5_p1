@@ -30,3 +30,12 @@ bool StorageInterface::LoadBinaryData(
     // Load
     return FFileHelper::LoadFileToArray(Bytes, *Path);
 }
+
+
+
+// ------ PATH -------
+FString StorageInterface::BaseDir(FString worldLevelName){
+    FString preString = FPaths::ProjectSavedDir(); //ends with a single "/"
+    preString += FString::Printf(TEXT("%s/"), *worldLevelName); //also ends with a single "/"
+    return preString;
+}

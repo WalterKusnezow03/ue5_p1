@@ -3819,9 +3819,18 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/arm64/UnrealEditor/Development/PathFinder/Module.PathFinder.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/arm64/UnrealEditor/Development/PathFinder/Definitions.PathFinder.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/EdgeCollector.cpp \
-  Runtime/Core/Public/CoreMinimal.h Runtime/Engine/Public/EngineUtils.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/UnrealEditor/Inc/PathFinder/UHT/PathFinder.gen.cpp \
+  Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/PathFinder.h \
+  Runtime/Core/Public/CoreMinimal.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/UnrealEditor/Inc/PathFinder/UHT/PathFinder.generated.h \
   Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/UnrealEditor/Inc/PathFinder/UHT/PathFinder.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/EdgeCollector.cpp \
+  Runtime/Engine/Public/EngineUtils.h \
   Runtime/CoreUObject/Public/Templates/SubclassOf.h \
   Runtime/Engine/Classes/Engine/EngineTypes.h \
   Runtime/Engine/Classes/GameFramework/Actor.h \
@@ -3837,7 +3846,6 @@
   Runtime/Engine/Classes/Engine/StaticMeshActor.h \
   Runtime/Engine/Classes/AI/Navigation/NavigationTypes.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StaticMeshActor.generated.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   Runtime/MeshDescription/Public/MeshDescription.h \
   Runtime/Core/Public/Algo/Accumulate.h Runtime/Core/Public/CoreTypes.h \
   Runtime/Core/Public/Templates/Invoke.h Runtime/Core/Public/Algo/Copy.h \
@@ -3893,7 +3901,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshDescription.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/PathFinder.h \
   Runtime/Engine/Classes/Kismet/GameplayStatics.h \
   Runtime/CoreUObject/Public/UObject/Interface.h \
   Runtime/Engine/Public/CollisionQueryParams.h \
@@ -3927,12 +3934,13 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/PathFinder.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/priorityList.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/priorityQueue.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/raycastTasks/raycastTask.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/storageInterface/PathFinderStorageInterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/priorityList.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/priorityQueue.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/pathFinding/raycastTasks/raycastTask.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/Public/PathFinderModule.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/Public/PathFinderModule.h \
-  Runtime/Core/Public/Modules/ModuleManager.h
+  Runtime/Core/Public/Modules/ModuleManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Source/PathFinder/storageInterface/PathFinderStorageInterface.cpp

@@ -208,7 +208,7 @@ void EntityManager::addActorToIgnoredAllParams(AActor *actor){
     if(actor != nullptr){
         //collisionIgnoreParams.AddIgnoredActor(actor);
     
-        if(PathFinder *p = PathFinder::instance()){
+        if(APathFinder *p = APathFinder::instance()){
             p->addActorToIgnoreRaycastParams(actor);
             
         }

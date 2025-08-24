@@ -13,12 +13,14 @@ class TERRAINPLUGIN_API ATerrainLauncher : public AActor{
 public:
     ATerrainLauncher();
 
-    static void makeInstance(UWorld *world);
+    static void makeInstance(UWorld *world, FString WorldLevelName);
 
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
 
 private:
+    void launch(FString WorldLevelName);
+
     ActorManager actorManager;
 };
