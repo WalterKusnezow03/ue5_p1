@@ -26,7 +26,7 @@ void UButtonBase::createButton(){
     scalebox = NewObject<UScaleBox>(this);
     
     if(button && scalebox){
-        scalebox->SetStretch(EStretch::ScaleToFit); // Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
+        scalebox->SetStretch(EStretch::ScaleToFit); //Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
         button->AddChild(scalebox); //so button sichtbar
 
         WAS_INIT_FLAG = true;

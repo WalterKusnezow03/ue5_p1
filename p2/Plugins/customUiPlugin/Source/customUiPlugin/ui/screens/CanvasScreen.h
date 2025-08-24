@@ -37,7 +37,7 @@ public:
     void AddClickListenedItem(UcustomUiComponentBase *ptr);
     void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
-    /// @brief added child AUTOMATICALLY addet to click and visibilty and Tick DISPATCH!
+    /// @brief added child AUTOMATICALLY added to click and visibilty and Tick DISPATCH!
     /// @param item 
     void AddChild(UcustomUiComponentBase *item);
     /// @brief 

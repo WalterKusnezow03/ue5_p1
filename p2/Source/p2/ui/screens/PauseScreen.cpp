@@ -17,10 +17,20 @@ void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
     createBackgroundBlurAndDefaultColor();
     createMenu();
     createButtons();
+
+    debugCreateTextBox();
 }
 
-
-
+void UPauseScreen::debugCreateTextBox(){
+    if(menu){
+        debugTextBox = NewObject<UTextBoxBase>(this);
+        if(debugTextBox){
+            debugTextBox->init(); 
+            menu->AddChild(debugTextBox); // add child to super
+        }
+    }
+    
+}
 
 void UPauseScreen::createMenu(){
     if(menu == nullptr && baseCanvas != nullptr){

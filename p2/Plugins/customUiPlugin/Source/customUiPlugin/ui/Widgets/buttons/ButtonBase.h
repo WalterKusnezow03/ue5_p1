@@ -49,10 +49,10 @@ public:
 protected:
 
     UButton *button = nullptr;
-    UScaleBox *scalebox = nullptr; //inside button. Use to add your childs
+    UScaleBox *scalebox = nullptr; //inside button. Use to add your childs, macht button sichtbar
 
     UPROPERTY()
-    UCallback *callbackPointer = nullptr;
+    UCallback *callbackPointer = nullptr; //callback on click
 
     UPROPERTY()
     UCallback *callbackPointerOnHovered = nullptr;

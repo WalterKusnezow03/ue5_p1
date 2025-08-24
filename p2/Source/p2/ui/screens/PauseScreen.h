@@ -7,9 +7,10 @@
 #include "Components/BackgroundBlur.h"
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
-
-
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
+
+//debug
+#include "customUiPlugin/ui/Widgets/textBox/TextBoxBase.h"
 
 #include "PauseScreen.generated.h"
 
@@ -37,4 +38,7 @@ private:
     void createExitButton();
     void createLoadoutScreenButton();
 
+
+    UTextBoxBase *debugTextBox = nullptr;
+    void debugCreateTextBox();
 };

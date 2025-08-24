@@ -33,6 +33,18 @@ void ULoadoutScreen::init(UPlayerUiBase &ref){
 
 /// @brief creates base layout AND TRACKS COMPLETE LAYOUT IN CLICK LISTENING - AND ALL CHILDREN!
 void ULoadoutScreen::createBaseLayout(){
+    
+    halfSplitBase = NewObject<UPresetHalfSplitLayout>(this);
+    if(halfSplitBase){
+
+        //TRACK IN CUTSOM CLICK DISPATCHING AND VISIBLITY
+        //OWNS ALL ELEMENTS
+        halfSplitBase->init(); //VERY IMPORTANT
+        AddChild(halfSplitBase, FVector2D(20.0f, 20.0f));
+    }
+
+    /*
+    //OLD
     if(baseCanvas != nullptr){
         halfSplitBase = NewObject<UPresetHalfSplitLayout>(this);
 
@@ -52,7 +64,7 @@ void ULoadoutScreen::createBaseLayout(){
                 }
             }
         }
-    }
+    }*/
     
 }
 

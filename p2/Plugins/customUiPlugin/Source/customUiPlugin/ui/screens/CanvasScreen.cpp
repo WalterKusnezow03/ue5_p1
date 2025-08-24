@@ -24,7 +24,7 @@ void UCanvasScreen::AddChild(UcustomUiComponentBase *item){
     AddChild(item, FVector2D(0, 0));
 }
 
-/// @brief adds a child to the UCanvasPanel with a offset
+/// @brief adds a child to the UCanvasPanel with a offset, listens for click automatically!
 /// @param item 
 /// @param offset 
 void UCanvasScreen::AddChild(UcustomUiComponentBase *item, FVector2D offset){

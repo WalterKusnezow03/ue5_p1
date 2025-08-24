@@ -1503,6 +1503,7 @@ void APathFinder::Node::setConvexNeighborB(Node *n){
         addTangentialNeighbor(n);
     }
 }
+
 /// @brief adds a node to the tangential connected neighbors, will allow duplicate add. Node is closed means
 /// its closed. No need for searching in O(n) when adding. 
 /// will add thread safely

@@ -4004,6 +4004,14 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextAndImageBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/TextBased/TextAndImageBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextAndImageBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextBoxBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/textBox/TextBoxBase.h \
+  Runtime/UMG/Public/Components/EditableTextBox.h \
+  Runtime/Slate/Public/Widgets/Text/ISlateEditableTextWidget.h \
+  Runtime/Slate/Public/Framework/Application/IMenu.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ISlateEditableTextWidget.generated.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/EditableTextBox.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextBoxBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextButton.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/TextButton.generated.h \
@@ -5225,15 +5233,12 @@
   Runtime/Slate/Public/Widgets/Layout/SHeader.h \
   Runtime/Slate/Public/Widgets/Layout/SGridPanel.h \
   Runtime/Slate/Public/Widgets/Layout/SUniformGridPanel.h \
-  Runtime/Slate/Public/Framework/Application/IMenu.h \
   Runtime/Slate/Public/Widgets/Input/SMenuAnchor.h \
   Runtime/Slate/Public/Framework/MultiBox/MultiBoxDefs.h \
   Runtime/Slate/Public/Widgets/Layout/SMenuOwner.h \
   Runtime/Slate/Public/Framework/MultiBox/MultiBox.h \
   Runtime/Slate/Public/Framework/MultiBox/MultiBoxBuilder.h \
   Runtime/Slate/Public/Framework/MultiBox/MultiBoxExtender.h \
-  Runtime/Slate/Public/Widgets/Text/ISlateEditableTextWidget.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ISlateEditableTextWidget.generated.h \
   Runtime/Slate/Public/Widgets/Text/SMultiLineEditableText.h \
   Runtime/Slate/Public/Widgets/Layout/SScrollBar.h \
   Runtime/Slate/Public/Widgets/Input/SMultiLineEditableTextBox.h \
@@ -5320,8 +5325,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/SpinBox.generated.h \
   Runtime/UMG/Public/Components/EditableText.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/EditableText.generated.h \
-  Runtime/UMG/Public/Components/EditableTextBox.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/EditableTextBox.generated.h \
   Runtime/UMG/Public/Components/MultiLineEditableText.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/MultiLineEditableText.generated.h \
   Runtime/UMG/Public/Components/MultiLineEditableTextBox.h \
@@ -5566,4 +5569,6 @@
   Runtime/UMG/Public/Animation/WidgetAnimation.h \
   Runtime/UMG/Public/Animation/WidgetAnimationBinding.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimationBinding.generated.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/textBox/TextBoxBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/Text/UiTextStyle.h

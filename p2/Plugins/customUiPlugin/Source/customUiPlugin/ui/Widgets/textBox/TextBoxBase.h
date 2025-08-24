@@ -1,0 +1,53 @@
+
+#pragma once
+
+
+#include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/ui/Widgets/callback/callback.h"
+#include "Components/ScaleBox.h"
+#include "Components/EditableTextBox.h"
+
+#include "TextBoxBase.generated.h"
+
+UCLASS()
+class CUSTOMUIPLUGIN_API UTextBoxBase : public UcustomUiComponentBase {
+    GENERATED_BODY()
+
+public:
+    //call needed on construct
+    virtual void init() override;
+
+    virtual UWidget *baseLayoutPointer() override{
+        return scalebox; //button //scalebox(wrong)
+    }
+
+    void SetHintText(FString hint);
+
+    /// set up delegate when finished writing
+    void SetCallBack(FSimpleDelegate onFinished);
+
+protected:
+
+private:
+    void createTextBox();
+    void setDesignDefault();
+    void setupCallback();
+
+    //callback on click
+    UPROPERTY()
+    UCallback *callbackPointer = nullptr;
+
+    //ui components
+    UEditableTextBox *TextBox = nullptr;
+    UScaleBox *scalebox = nullptr; //makes anything visible, text box must be inside!
+
+    FString innerTextSaved;
+
+    UFUNCTION()
+    void OnTextChangedHandler(const FText &Text);
+
+    UFUNCTION()
+    void OnTextCommittedHandler(const FText &Text, ETextCommit::Type CommitMethod);
+
+};
+
