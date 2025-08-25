@@ -3,15 +3,23 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Components/VerticalBox.h"
+#include "customUiPlugin/ui/screens/CanvasScreen.h"
 
 
-void UPresetCornersLayout::init(UCanvasPanel &canvasIn){
+void UPresetCornersLayout::init(UCanvasScreen *canvasIn){
     if(WAS_INIT_FLAG){
         return;
     }
-
-    parentPanel = &canvasIn;
-    createSubLayouts();
+    
+    if(canvasIn){
+        UWidget *baseCanvas = canvasIn->baseLayoutPointer();
+        UCanvasPanel *casted = Cast<UCanvasPanel>(baseCanvas);
+        if(casted){
+            parentPanel = casted;
+            createSubLayouts();
+        }
+        WAS_INIT_FLAG = true;
+    }
 }
 
 

@@ -5,9 +5,10 @@
 #include "CoreMinimal.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
+#include "EGameState.h"
 #include "GameCore/world/worldLevelBase.h"
 
+class ATerrainLauncher;
 
 /**
  * saves the world data and nesecarry instance pointers 
@@ -17,14 +18,25 @@
  */
 class P2_API worldLevel : public worldLevelBase
 {
+private:
+	worldLevel();
+	~worldLevel();
+
+	static EGameState currentGameState;
+	static ATerrainLauncher *terrainLauncher;
+
 public:
+	//call to init the world.
+	static void initWorld(UWorld *world);
+
+	//api for game launch screen / game mode base
+	static void clearGameSession();
+	static void setGameState(EGameState state);
+
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
 	
 	static void resetWorld();
-
-	static void initWorld(UWorld *world);
-
 
 	static void Tick(float DeltaTime);
 
@@ -38,14 +50,13 @@ public:
 
 
 private:
-	static void debugTerrainHeight();
+	
 	static void debugStoragePlugin();
 
 	static void createTerrain(UWorld *world, FString worldName);
 	static UWorld *GetWorld();
 
-	worldLevel();
-	~worldLevel();
+	
 
 	static void createOutpostsRequested(UWorld *world);
 
@@ -58,13 +69,14 @@ private:
 	static class OutpostManager *outpostManagerPointer;
 
 	//terrain
-	static class terrainCreator *terrainPointer;
 	static bool isTerrainInited;
 
 	//bots
 	static bool areBotsInited;
 	static bool nodesWereShown;
+	static bool gamePausedFlag;
 
+	
 	static void DebugCreateRooms(UWorld *world);
 
 	static void DebugCreatedoor(UWorld *world);
@@ -82,7 +94,7 @@ private:
 
 	static void debugMatrix();
 
-	static bool gamePausedFlag;
+	
 
 	static void debugBezier(UWorld *world);
 

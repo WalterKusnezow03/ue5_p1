@@ -21,4 +21,10 @@ protected:
 
     /// @brief will create a path with the world string, ends with a slash "/": somepath/-appendyourinnerPath-
     FString BaseDir(FString worldLevelName);
+
+    /// @brief will create a path within the project save dir "/" at end.
+    FString BaseDir();
+
+
+    void PrintBinary(TArray<uint8> &bytes, FString message);
 };

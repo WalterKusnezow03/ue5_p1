@@ -189,6 +189,7 @@ std::vector<int> AlertManager::subscribedActorsInAreaByIndex(FVector &location, 
     return entitiesInAreaByIndex;
 }
 
+
 void AlertManager::subscribeToAlert(AEntityScript *pointer){
     if(pointer != nullptr){
         if(findIndex(pointer) == -1){

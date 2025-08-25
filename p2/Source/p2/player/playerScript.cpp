@@ -44,13 +44,9 @@ void AplayerScript::BeginPlay()
 
     //setTeam(referenceManager::TEAM_PLAYER);
     setTeam(teamEnum::playerTeam);
-
     setupBoneController(); 
 
     EntityManager *entityMananger = worldLevel::entityManager();
-
-    //TESTING THROWABLE WEAPONS FROM CODE ---> works as expected!
-    
     Aweapon *weapon = nullptr;
     if(entityMananger != nullptr){
         //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);

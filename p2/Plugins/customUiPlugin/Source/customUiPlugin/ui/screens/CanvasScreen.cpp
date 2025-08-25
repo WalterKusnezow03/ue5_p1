@@ -12,9 +12,9 @@
 
 ///@brief sets up the canvas, the player ui parent is 
 void UCanvasScreen::init(UPlayerUiBase &refin){
-    playerUiParent = &refin;
+    //playerUiParent = &refin;
+    saveParent(refin);
     createBaseCanvas();
-
 }
 
 /// ---- Adding items ----

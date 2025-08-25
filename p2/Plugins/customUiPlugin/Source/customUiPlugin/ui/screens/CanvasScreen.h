@@ -12,12 +12,14 @@
 
 class UPlayerUiBase;
 
-UCLASS()
 
+///@brief Base Canvas screen class, use AddChild() method to add any child to the canvas.
+UCLASS()
 class CUSTOMUIPLUGIN_API UCanvasScreen : public UcustomUiComponentBase {
     GENERATED_BODY()
 public:
 
+    //must be called from derived class!
     virtual void init(UPlayerUiBase &refin);
 
     // --- CUSTOM DISPATCHER -> OVERRIDE ---
@@ -34,8 +36,6 @@ public:
     /// @param deltatime 
     virtual void Tick(float deltatime) override;
 
-    void AddClickListenedItem(UcustomUiComponentBase *ptr);
-    void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
     /// @brief added child AUTOMATICALLY added to click and visibilty and Tick DISPATCH!
     /// @param item 
@@ -46,6 +46,13 @@ public:
     void AddChild(UcustomUiComponentBase *item, FVector2D offset);
 
 protected:
+    void createBackgroundBlur();
+    void createBackgroundBlurAndDefaultColor();
+
+private: //not protected for a reason!
+
+    void AddClickListenedItem(UcustomUiComponentBase *ptr);
+    void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
     UCanvasPanel *baseCanvas = nullptr;
 
@@ -57,8 +64,7 @@ protected:
     UBackgroundBlur *backgroundBlur = nullptr;
     UBorder *backgroundColor = nullptr;
 
-    void createBackgroundBlur();
-    void createBackgroundBlurAndDefaultColor();
+    
 
     void createBackgroundOverlay();
     void createColoredBackground();

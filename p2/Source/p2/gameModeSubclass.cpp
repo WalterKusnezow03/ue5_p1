@@ -15,6 +15,8 @@
 #include "UObject/SoftObjectPath.h"
 #include "UObject/ConstructorHelpers.h"
 #include "AssetPlugin/gamestart/AssetLoader.h"
+
+#include "p2/_world/EGameState.h"
 #include "p2/_world/worldLevel.h"
 
 
@@ -32,9 +34,7 @@ AgameModeSubclass::AgameModeSubclass()
 
 }
 
-// ----- DEFAULT METHODS -----
-//will create edge collector and path finder instance on start!
-
+// ----- DEFAULT BEGIN PLAY -----
 
 void AgameModeSubclass::BeginPlay()
 {
@@ -46,19 +46,24 @@ void AgameModeSubclass::BeginPlay()
     AssetLoader a(GetWorld());
     a.loadAssets();
 
+    worldLevel::setGameState(EGameState::EGameLaunchScreen);
 
-    /**
-     * CREATE WORLD LEVEL 
-     * 
-     * must be moved to begin play to prevent bugs with asset spawning
-     */
-    worldLevel::initWorld(GetWorld());
+    /// ---- TODO: PLAYER LÄDT / END LEVEL WITH UI ! ---- LOOP ÜBERLEGEN, FREE TERRAIn, FREE PATH FINDER!
+    bool debugBlockWorldCreation = true;
+    if (debugBlockWorldCreation)
+    {
+        /**
+         * CREATE WORLD LEVEL
+         *
+         * must be in begin play to prevent bugs with asset spawning, NOT in constructor.
+         */
+        worldLevel::initWorld(GetWorld());
+    }
 }
 
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
     worldLevel::resetWorld(); //clears all instances of assets etc. All memory release
-    FString s = FString::Printf(TEXT("DEBUG END PLAY"));
-    DebugHelper::logMessage(s);
+    DebugHelper::logMessage(TEXT("DEBUG END PLAY"));
 }

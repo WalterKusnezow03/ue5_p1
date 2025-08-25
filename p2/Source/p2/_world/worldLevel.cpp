@@ -31,8 +31,11 @@
 #include "PathFinder/Public/PathFinderModule.h"
 #include "IkHumanoidModell/actor/IkDebugActor.h"
 
-#include "StoragePlugin/Storage/VertexData/StorageInterface/StorageInterfaceMeshData.h"
+//testing storage plugin
+#include "StoragePlugin/Storage/Test/TestStorageInterface.h"
 #include "terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h"
+
+
 
 #include "terrainPlugin/main/TerrainLauncher.h"
 
@@ -42,26 +45,27 @@
 template class TVector<FVector2D>;
 
 worldLevel::worldLevel()
-{
-    
+{   
 }
 
 worldLevel::~worldLevel()
-{
-    
+{ 
 }
 
 //static vars init:
+EGameState worldLevel::currentGameState = EGameState::EGameLaunchScreen;
 bool worldLevel::isTerrainInited = false;
+ATerrainLauncher *worldLevel::terrainLauncher = nullptr;
 
 OutpostManager *worldLevel::outpostManagerPointer = nullptr;
-terrainCreator *worldLevel::terrainPointer = nullptr;
+
 bool worldLevel::nodesWereShown = false;
 
 bool worldLevel::areBotsInited = false;
 
 bool worldLevel::gamePausedFlag = false;
 
+/// --- GAME CLOSE ALL ---
 /// IS RESET FROM GAME MODE SUBCLASS, MUST BE CALLED ON END PLAY!
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
@@ -77,11 +81,7 @@ void worldLevel::resetWorld(){
         delete outpostManagerPointer;
         outpostManagerPointer = nullptr;
     }
-    if(terrainPointer != nullptr){
-        delete terrainPointer;
-        terrainPointer = nullptr;
-        isTerrainInited = false;
-    }
+    terrainLauncher = nullptr;
 
     assetManager::EndGame();
 
@@ -95,15 +95,7 @@ void worldLevel::initWorld(UWorld *world){
     FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
 
     gamePausedFlag = false;
-    bool debugCreate = true; // dont create terrain for debugging
-    // disabled for debugging
-    if(debugCreate){
-        if (!isTerrainInited && world != nullptr){
-            int meters = 200 * 1; //200
-            createTerrain(world, WorldName); // 100m
-            
-        }
-    }
+    createTerrain(world, WorldName); 
 
     //create rooms
     DebugCreateRooms(world);
@@ -211,7 +203,12 @@ void worldLevel::createTerrain(UWorld *world, FString worldName){
     }
     if(world != nullptr){
         isTerrainInited = true;
-        ATerrainLauncher::makeInstance(world, worldName);
+        if(terrainLauncher == nullptr){
+            terrainLauncher = ATerrainLauncher::makeInstance(world, worldName);
+        }else{
+            //if a world switch is wanted the terrain launcher is not killed
+            terrainLauncher->BeginAndLoad(worldName);
+        }
     }
 }
 
@@ -636,24 +633,6 @@ void worldLevel::createCar(UWorld *world){
 
 
 
-void worldLevel::debugTerrainHeight(){
-    if(false){
-        return;
-    }
-
-    if(terrainPointer != nullptr){
-        FVector playerLocation = PlayerInfo::playerLocation();
-        float a = playerLocation.Z;
-        float b = terrainPointer->getHeightFor(playerLocation);
-
-        FString message = FString::Printf(
-            TEXT("terrain height %.2f -> player pos %.2f"),
-            b, a
-        );
-    
-        DebugHelper::showScreenMessage(message);
-    }
-}
 
 
 void worldLevel::createBoneActorDebug(UWorld *world){
@@ -667,9 +646,39 @@ void worldLevel::createBoneActorDebug(UWorld *world){
 
 
 void worldLevel::debugStoragePlugin(){
-    StorageInterfaceMeshData storage;
-    storage.Test();
 
+    //all inner plugin types
+    TestStorageInterface interfacePlugin;
+    interfacePlugin.Test();
+
+    //other
     ChunkMapStorageInterface storageMap;
     storageMap.Test();
 }
+
+
+
+void worldLevel::setGameState(EGameState state){
+    currentGameState = state;
+}
+
+
+
+//clear game session
+void worldLevel::clearGameSession(){
+    //to reset:
+    //Pathfinder: Yes
+    //Terrain: Yes
+    //Outpost: Yes
+    //EntityGc: No
+
+    if(terrainLauncher){
+        terrainLauncher->EndAndSave();
+        isTerrainInited = false;
+    }
+    if(APathFinder *pathfinder = APathFinder::instance()){
+
+    }
+
+}
+

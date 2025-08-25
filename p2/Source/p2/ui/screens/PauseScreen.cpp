@@ -33,7 +33,7 @@ void UPauseScreen::debugCreateTextBox(){
 }
 
 void UPauseScreen::createMenu(){
-    if(menu == nullptr && baseCanvas != nullptr){
+    if(menu == nullptr){
         menu = NewObject<UVbox>(this);
 
         if(menu){

@@ -37,8 +37,10 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCanvasScreen_Statics::Class_MetaDataParams[] = {
+		{ "Comment", "///@brief Base Canvas screen class, use AddChild() method to add any child to the canvas.\n" },
 		{ "IncludePath", "ui/screens/CanvasScreen.h" },
 		{ "ModuleRelativePath", "ui/screens/CanvasScreen.h" },
+		{ "ToolTip", "@brief Base Canvas screen class, use AddChild() method to add any child to the canvas." },
 	};
 #endif
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UCanvasScreen_Statics::StaticCppClassTypeInfo = {
@@ -79,9 +81,9 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UCanvasScreen, UCanvasScreen::StaticClass, TEXT("UCanvasScreen"), &Z_Registration_Info_UClass_UCanvasScreen, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCanvasScreen), 2027493564U) },
+		{ Z_Construct_UClass_UCanvasScreen, UCanvasScreen::StaticClass, TEXT("UCanvasScreen"), &Z_Registration_Info_UClass_UCanvasScreen, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCanvasScreen), 760953785U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_3602927119(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_643447393(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

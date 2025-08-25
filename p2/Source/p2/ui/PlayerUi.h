@@ -12,6 +12,7 @@
 #include "p2/ui/screens/enum/EScreenEnum.h"
 #include "customUiPlugin/ui/ScreenStack/ScreenOpenStack.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
+#include "p2/ui/screens/gameLaunch/GameLaunchScreen.h"
 
 #include "PlayerUi.generated.h"
 
@@ -94,5 +95,5 @@ protected:
 	UPlayerHud *playerHud;
 	UPauseScreen *pauseScreen;
 	ULoadoutScreen *loadoutScreen;
-
+	UGameLaunchScreen *gameLaunchScreen;
 };

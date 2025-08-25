@@ -9,9 +9,8 @@
 
 
 void UPlayerHud::init(UPlayerUiBase &refin){
-    saveParent(refin);
-
-    createBaseCanvas(); //super.
+    //init base
+    Super::init(refin);
 
     createBasePlayerHud();
     createAmmunitionHudElement();
@@ -21,12 +20,12 @@ void UPlayerHud::init(UPlayerUiBase &refin){
 
 /// ----- PLAYER HUD SECTION ----- START
 void UPlayerHud::createBasePlayerHud(){
-    if(baseCanvas){
-        playerHudCornerLayout = NewObject<UPresetCornersLayout>(this);
-        if(playerHudCornerLayout){
-            playerHudCornerLayout->init(*baseCanvas);
-        }
+    
+    playerHudCornerLayout = NewObject<UPresetCornersLayout>(this);
+    if(playerHudCornerLayout){
+        playerHudCornerLayout->init(this);
     }
+    
 }
 
 
