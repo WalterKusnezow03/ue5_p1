@@ -54,14 +54,19 @@ private: //not protected for a reason!
     void AddClickListenedItem(UcustomUiComponentBase *ptr);
     void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
+    UPROPERTY()
     UCanvasPanel *baseCanvas = nullptr;
 
     void createBaseCanvas();
     void updateCanvasScale(UWorld *world);
 
-
+    UPROPERTY()
     UOverlay *baseOverlay = nullptr;
+
+    UPROPERTY()
     UBackgroundBlur *backgroundBlur = nullptr;
+
+    UPROPERTY()
     UBorder *backgroundColor = nullptr;
 
     

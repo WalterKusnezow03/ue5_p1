@@ -27,7 +27,13 @@ public:
 
     /// @brief adds any child, not in click listening!
     /// @param any
-    virtual void AddChild(UWidget *any);
+    virtual void AddChild(UWidget *any) override;
+
+    ///@brief removes a child from click listening and inner container
+    virtual void RemoveChild(UcustomUiComponentBase *item) override;
+
+    ///@brief must be overriden - trys to remove child from container
+    virtual void RemoveChild(UWidget *any) override;
 
 private:
     void initHboxIfNeeded();

@@ -12,6 +12,8 @@ void EmptyLinkFunctionForGeneratedCodePresetCornersLayout() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UPresetCornersLayout();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UPresetCornersLayout_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UVbox_NoRegister();
+	UMG_API UClass* Z_Construct_UClass_UCanvasPanel_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UPresetCornersLayout::StaticRegisterNativesUPresetCornersLayout()
@@ -28,6 +30,31 @@ void EmptyLinkFunctionForGeneratedCodePresetCornersLayout() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_topLeft_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_topLeft;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_topRight_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_topRight;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_bottomLeft_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_bottomLeft;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_bottomRight_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_bottomRight;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_topCenter_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_topCenter;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_parentPanel_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_parentPanel;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
@@ -43,6 +70,51 @@ void EmptyLinkFunctionForGeneratedCodePresetCornersLayout() {}
 		{ "ToolTip", "preset corners layout with vertical boxes" },
 	};
 #endif
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topLeft_MetaData[] = {
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topLeft = { "topLeft", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, topLeft), Z_Construct_UClass_UVbox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topLeft_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topLeft_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topRight_MetaData[] = {
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topRight = { "topRight", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, topRight), Z_Construct_UClass_UVbox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topRight_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topRight_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomLeft_MetaData[] = {
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomLeft = { "bottomLeft", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, bottomLeft), Z_Construct_UClass_UVbox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomLeft_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomLeft_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomRight_MetaData[] = {
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomRight = { "bottomRight", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, bottomRight), Z_Construct_UClass_UVbox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomRight_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomRight_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topCenter_MetaData[] = {
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topCenter = { "topCenter", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, topCenter), Z_Construct_UClass_UVbox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topCenter_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topCenter_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_parentPanel_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ui/alignmentPresets/PresetCornersLayout.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_parentPanel = { "parentPanel", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UPresetCornersLayout, parentPanel), Z_Construct_UClass_UCanvasPanel_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_parentPanel_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_parentPanel_MetaData)) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UPresetCornersLayout_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topLeft,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topRight,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomLeft,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_bottomRight,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_topCenter,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPresetCornersLayout_Statics::NewProp_parentPanel,
+	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UPresetCornersLayout_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UPresetCornersLayout>::IsAbstract,
 	};
@@ -52,13 +124,13 @@ void EmptyLinkFunctionForGeneratedCodePresetCornersLayout() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_UPresetCornersLayout_Statics::PropPointers,
 		nullptr,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
+		UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::PropPointers),
 		0,
-		0,
-		0x001000A0u,
+		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UPresetCornersLayout_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UPresetCornersLayout_Statics::Class_MetaDataParams))
 	};
 	UClass* Z_Construct_UClass_UPresetCornersLayout()
@@ -81,9 +153,9 @@ void EmptyLinkFunctionForGeneratedCodePresetCornersLayout() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_alignmentPresets_PresetCornersLayout_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UPresetCornersLayout, UPresetCornersLayout::StaticClass, TEXT("UPresetCornersLayout"), &Z_Registration_Info_UClass_UPresetCornersLayout, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UPresetCornersLayout), 2216155054U) },
+		{ Z_Construct_UClass_UPresetCornersLayout, UPresetCornersLayout::StaticClass, TEXT("UPresetCornersLayout"), &Z_Registration_Info_UClass_UPresetCornersLayout, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UPresetCornersLayout), 3861826801U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_alignmentPresets_PresetCornersLayout_h_4065496359(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_alignmentPresets_PresetCornersLayout_h_487796785(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_alignmentPresets_PresetCornersLayout_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_alignmentPresets_PresetCornersLayout_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

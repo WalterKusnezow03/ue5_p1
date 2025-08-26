@@ -108,29 +108,6 @@ void UPresetHalfSplitLayout::showRightSideLayoutAtIndex(int i){
             currentRightPanelVisible = i;
         }
 
-        /*
-        DEPRECATED
-        
-        ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
-        //ESlateVisibility::Hidden;
-
-        UVerticalBox *second = pair.second;
-        if(second != nullptr){
-            second->SetVisibility(newStatus);
-
-            //disable children:
-            int32 Count = second->GetChildrenCount();
-            for (int32 child = 0; child < Count; ++child)
-            {
-                UWidget* ChildPtr = second->GetChildAt(child);
-                if(ChildPtr){
-                    UButtonBase *casted = Cast<UButtonBase>(ChildPtr);
-                    if(casted){
-                        casted->setVisible(visible);
-                    }
-                }
-            }
-        }*/
     }
 }
 
@@ -154,8 +131,7 @@ void UPresetHalfSplitLayout::addChildToHeadLine(UcustomUiComponentBase *any){
 }
 
 void UPresetHalfSplitLayout::addChildToLeftVertical(UcustomUiComponentBase *any){
-    //addChildToLeftVertical(any.baseLayoutPointer()); //DEPRACTED
-
+    
     if(leftVertical != nullptr && any != nullptr){
         leftVertical->AddChild(any);
     }
@@ -165,7 +141,6 @@ void UPresetHalfSplitLayout::addChildToLeftVertical(UcustomUiComponentBase *any)
 /// @param any 
 /// @param index 
 void UPresetHalfSplitLayout::addChildToRightVertical(UcustomUiComponentBase *any, int index){
-    //addChildToRightVertical(any.baseLayoutPointer(), index); //DEPRACTED
 
     if(any){
         if(rightPanels.find(index) == rightPanels.end()){
@@ -180,41 +155,3 @@ void UPresetHalfSplitLayout::addChildToRightVertical(UcustomUiComponentBase *any
         }   
     }
 }
-
-/*
-DEPRECATED
-
-void UPresetHalfSplitLayout::addChildToRightVertical(UWidget *any, int index){
-    if(any != nullptr){
-        //create and add if needed
-        if(rightPanels.find(index) == rightPanels.end()){
-            rightPanels[index] = NewObject<UVerticalBox>(this);
-            rightLeftContainer->AddChildToHorizontalBox(rightPanels[index]); //add vertical box to side
-        }
-        //add item.
-        UVerticalBox *targetedLayout = rightPanels[index];
-        if(targetedLayout != nullptr){
-            targetedLayout->AddChildToVerticalBox(any);
-        }
-
-        
-    }
-}
-
-
-void UPresetHalfSplitLayout::addChildToHeadLine(UWidget *any){
-    if(headLineHorizontal != nullptr && any != nullptr){
-        headLineHorizontal->AddChildToHorizontalBox(any);
-    }
-}
-
-void UPresetHalfSplitLayout::addChildToLeftVertical(UWidget *any){
-    if(leftVertical != nullptr && any != nullptr){
-        leftVertical->AddChildToVerticalBox(any);
-    }
-}
-*/
-    
-
-
-

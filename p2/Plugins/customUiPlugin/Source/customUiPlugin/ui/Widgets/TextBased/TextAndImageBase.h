@@ -32,10 +32,13 @@ public:
 protected:
     bool isHorizontal = false;
 
+    UPROPERTY()
     UHbox *baseHorizontalBox = nullptr;
     
-
+    UPROPERTY()
     UTextBlock *TextBlock;
+
+    UPROPERTY()
     UImage *Image;
 
     void createImage();

@@ -27,6 +27,7 @@ class CUSTOMUIPLUGIN_API UButtonBase : public UcustomUiComponentBase
     GENERATED_BODY()
 
 public:
+    //call after construct!
     virtual void init() override;
 
     virtual UWidget *baseLayoutPointer() override{
@@ -48,7 +49,10 @@ public:
 
 protected:
 
+    UPROPERTY()
     UButton *button = nullptr;
+
+    UPROPERTY()
     UScaleBox *scalebox = nullptr; //inside button. Use to add your childs, macht button sichtbar
 
     UPROPERTY()

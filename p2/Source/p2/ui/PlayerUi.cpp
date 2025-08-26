@@ -44,11 +44,8 @@ void UPlayerUi::init(UWorld *world){
     createBasePlayerHud();
     createPauseScreen();
     createLoadoutScreen();
+    createGameLaunchScreen();
 }
-
-
-
-
 
 ///@brief creates the player hud
 void UPlayerUi::createBasePlayerHud(){
@@ -73,6 +70,14 @@ void UPlayerUi::createLoadoutScreen(){
     if(loadoutScreen){
         loadoutScreen->init(*this);
         loadoutScreen->setVisible(false);
+    }
+}
+
+void UPlayerUi::createGameLaunchScreen(){
+    gameLaunchScreen = NewObject<UGameLaunchScreen>(this);
+    if(gameLaunchScreen){
+        gameLaunchScreen->init(*this);
+        gameLaunchScreen->setVisible(false);
     }
 }
 
@@ -114,7 +119,7 @@ void UPlayerUi::updateMissionTextTimed(FString message){
 
 
 
-//player interact api
+// --- player interact Open Screen api ---
 
 void UPlayerUi::openPauseScreen(){
     if(playerHud){
@@ -146,6 +151,17 @@ void UPlayerUi::openLoadoutScreen(){
     }
     openedScreenStack.open(loadoutScreen);
 }
+
+
+void UPlayerUi::openGameLaunchScreen(){
+    if(playerHud){
+        playerHud->setVisible(false);
+    }
+    openedScreenStack.open(gameLaunchScreen);
+}
+
+
+
 
 
 

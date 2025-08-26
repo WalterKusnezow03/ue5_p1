@@ -14,6 +14,8 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextBoxBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextBoxBase_NoRegister();
 	SLATECORE_API UEnum* Z_Construct_UEnum_SlateCore_ETextCommit();
+	UMG_API UClass* Z_Construct_UClass_UEditableTextBox_NoRegister();
+	UMG_API UClass* Z_Construct_UClass_UScaleBox_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	DEFINE_FUNCTION(UTextBoxBase::execOnTextCommittedHandler)
@@ -142,6 +144,14 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_callbackPointer_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointer;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_TextBox_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_TextBox;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_scalebox_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_scalebox;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -168,8 +178,26 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer = { "callbackPointer", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, callbackPointer), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData[] = {
+		{ "Comment", "//ui components\n" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ui/Widgets/textBox/TextBoxBase.h" },
+		{ "ToolTip", "ui components" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox = { "TextBox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, TextBox), Z_Construct_UClass_UEditableTextBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ui/Widgets/textBox/TextBoxBase.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox = { "scalebox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, scalebox), Z_Construct_UClass_UScaleBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UTextBoxBase_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UTextBoxBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UTextBoxBase>::IsAbstract,
@@ -186,7 +214,7 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		UE_ARRAY_COUNT(FuncInfo),
 		UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::PropPointers),
 		0,
-		0x001000A0u,
+		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::Class_MetaDataParams))
 	};
 	UClass* Z_Construct_UClass_UTextBoxBase()
@@ -209,9 +237,9 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 1984508378U) },
+		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 290697836U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_1163306757(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_4293934386(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

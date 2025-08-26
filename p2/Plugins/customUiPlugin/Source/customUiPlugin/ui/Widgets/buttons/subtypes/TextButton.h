@@ -21,13 +21,14 @@ public:
     virtual void init() override;
 
     void setText(FString textIn);
-
+    FString getText();
 
     virtual bool dispatchClick() override;
 
 private:
-
+    UPROPERTY()
     UTextBlock *TextBlock = nullptr;
+    
     FString textInternalCopy;
     void createTextAndAddToButton();
 

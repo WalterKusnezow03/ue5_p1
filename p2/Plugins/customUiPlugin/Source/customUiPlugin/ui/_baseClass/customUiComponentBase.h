@@ -17,7 +17,7 @@ class CUSTOMUIPLUGIN_API UcustomUiComponentBase : public UObject{
 
 public:
     // --- CALL ON ANY DERIVED BEFORE USING! ---
-    //construct
+    //after construct:
     virtual void init(){
         WAS_INIT_FLAG = true;
     }
@@ -27,13 +27,14 @@ public:
     }
 
 
-    // --- manual click dispatch ---
+    // --- manual click dispatch, must be overriden if has childs!---
+    //OVERRIDE THIS METHOD!
     virtual bool dispatchClick(){
         return false;
     }
 
     /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
-    /// invisible too!
+    /// invisible too! - OVERRIDE THIS METHOD!
     /// @param visible 
     virtual void setVisible(bool visible) {
         setVisible(baseLayoutPointer(), visible);

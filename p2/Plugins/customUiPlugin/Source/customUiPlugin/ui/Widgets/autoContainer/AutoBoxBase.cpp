@@ -51,3 +51,16 @@ void UAutoBoxBase::AddChild(UcustomUiComponentBase *item){
         attachedItems.Add(item);
     }
 }
+
+
+void UAutoBoxBase::RemoveChild(UcustomUiComponentBase *item){
+    if(item){
+        int32 Index = -1;
+        if (attachedItems.Find(item, Index)){
+            //swap with back, pop
+            int32 lastIndex = attachedItems.Num() - 1;
+            attachedItems[Index] = attachedItems[lastIndex];
+            attachedItems.Pop();
+        }
+    }
+}

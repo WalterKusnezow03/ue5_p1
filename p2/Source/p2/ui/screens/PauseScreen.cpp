@@ -19,8 +19,10 @@ void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
     createButtons();
 
     debugCreateTextBox();
+    debugCreateGameLaunchButton();
 }
 
+// ---- DEBUG: MARK REMOVE ----
 void UPauseScreen::debugCreateTextBox(){
     if(menu){
         debugTextBox = NewObject<UTextBoxBase>(this);
@@ -31,6 +33,38 @@ void UPauseScreen::debugCreateTextBox(){
     }
     
 }
+
+void UPauseScreen::debugCreateGameLaunchButton(){
+   
+    if(menu != nullptr && playerUiParent != nullptr){
+        debugGameLaunchButton = NewObject<UTextButton>(this);
+
+        if(debugGameLaunchButton){
+            debugGameLaunchButton->init();
+            debugGameLaunchButton->setText("Game Launcher"); //exit
+
+            //set callback here
+            //cast to sub ui class because of function
+            UPlayerUi *casted = Cast<UPlayerUi>(playerUiParent);
+            if(casted){
+                debugGameLaunchButton->SetCallBack(
+                    FSimpleDelegate::CreateUObject(casted, &UPlayerUi::openGameLaunchScreen)
+                );
+            }
+
+            
+
+            menu->AddChild(debugGameLaunchButton); //automatically listened in click dispatcher because menu is listed
+        }
+    }
+
+
+
+}
+
+
+
+
 
 void UPauseScreen::createMenu(){
     if(menu == nullptr){

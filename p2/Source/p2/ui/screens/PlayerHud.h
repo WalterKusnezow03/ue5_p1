@@ -29,9 +29,16 @@ public:
 private:
 
     //HUD SECTION
+    UPROPERTY()
     UPresetCornersLayout *playerHudCornerLayout;
+
+    UPROPERTY()
     UTextAndImage *ammunitionTextAndImage;
+
+    UPROPERTY()
     UTextAndImage *healthTextAndImage;
+
+    UPROPERTY()
     UImageOverlayed *topWaringElement;
 
     void createBasePlayerHud();

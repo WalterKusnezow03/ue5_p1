@@ -36,3 +36,20 @@ void UVbox::AddChild(UWidget *any){
         baseVBox->AddChildToVerticalBox(any);
     }
 }
+
+
+
+///@brief removes a child from click listening and inner container
+void UVbox::RemoveChild(UcustomUiComponentBase *item){
+    if(item){
+        Super::RemoveChild(item);
+        RemoveChild(item->baseLayoutPointer());
+    }
+}
+
+///@brief must be overriden
+void UVbox::RemoveChild(UWidget *any){
+    if(any && baseVBox){
+        baseVBox->RemoveChild(any);
+    }
+}

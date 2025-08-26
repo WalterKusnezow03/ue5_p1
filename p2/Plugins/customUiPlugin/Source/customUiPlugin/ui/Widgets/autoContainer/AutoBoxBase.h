@@ -33,7 +33,7 @@ public:
     /// @param deltatime 
     void Tick(float deltatime) override;
 
-    /// @brief adds a child to click listening!
+    /// @brief adds a child to the layout and adds to custom click listening!
     /// @param item 
     virtual void AddChild(UcustomUiComponentBase *item);
 
@@ -41,6 +41,14 @@ public:
     /// @param any
     virtual void AddChild(UWidget *any){}; //MUST BE OVERRIDEN
 
+
+    ///@brief removes a child from click listening
+    virtual void RemoveChild(UcustomUiComponentBase *item);
+
+    ///@brief must be overriden
+    virtual void RemoveChild(UWidget *any){};
+
 protected:
+    UPROPERTY()
     TArray<UcustomUiComponentBase *> attachedItems;
 };

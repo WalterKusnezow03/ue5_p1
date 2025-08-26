@@ -25,6 +25,7 @@ public:
     void setText(FString message);
 
 protected:
+    UPROPERTY()
     UImageOverlayedBase *background;
 
     virtual void createImageOverlayedBackground();

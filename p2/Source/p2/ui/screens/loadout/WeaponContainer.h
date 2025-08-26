@@ -22,13 +22,17 @@ class UPlayerUiBase;
  * - remember to track in canvasscreen!
  */
 UCLASS()
-class UWeaponContainer : public UcustomUiComponentBase{
+class P2_API UWeaponContainer : public UcustomUiComponentBase{
     GENERATED_BODY()
 
 public:
 
+    //do not use 
     virtual void init() override;
     void init(UPlayerUiBase &refin) override;
+    //do not use end
+
+    //use for proper Loadout update on interaction!
     void init(int index, LoadoutHelper &parentLoadout);
 
     virtual UWidget *baseLayoutPointer(){
@@ -68,10 +72,16 @@ public:
     
 
 private:
+    UPROPERTY()
     UHbox *baseHorizontalBox = nullptr;
 
+    UPROPERTY()
     UImageOverlayedButton *weaponPreviewImageButton = nullptr;
+
+    UPROPERTY()
     UImageOverlayedButton *attachmentSightImageButton = nullptr;
+
+    UPROPERTY()
     UImageOverlayedButton *attachmentMuzzleImageButton = nullptr;
 
     void createLayout();

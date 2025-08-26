@@ -28,9 +28,13 @@ public:
     
 
 private:
+    UPROPERTY()
     UVbox *menu = nullptr;
     
+    UPROPERTY()
     UTextButton *exitButton = nullptr;
+
+    UPROPERTY()
     UTextButton *loadoutScreenButton = nullptr;
 
     void createMenu();
@@ -39,6 +43,13 @@ private:
     void createLoadoutScreenButton();
 
 
+    // ---- DEBUG ----
+
+    UPROPERTY()
     UTextBoxBase *debugTextBox = nullptr;
     void debugCreateTextBox();
+
+    UPROPERTY()
+    UTextButton *debugGameLaunchButton = nullptr;
+    void debugCreateGameLaunchButton();
 };

@@ -66,11 +66,16 @@ public:
 	UFUNCTION()
 	void openPauseScreen();
 
-	/// @brief important to override!
+	/// @brief important to override! - hides menu for play, shows HUD
 	virtual void openGameScreen() override;
 
+	/// @brief opens the loadout screen.
 	UFUNCTION()
 	void openLoadoutScreen();
+
+	/// @brief opens the game launch screen
+	UFUNCTION()
+	void openGameLaunchScreen();
 
 	//UFUNCTION()
 	//void closeLatestScreen();
@@ -87,6 +92,7 @@ protected:
 	void createBasePlayerHud();
 	void createPauseScreen();
 	void createLoadoutScreen();
+	void createGameLaunchScreen();
 
 	virtual void showPlayerCursor(bool show) override;
 

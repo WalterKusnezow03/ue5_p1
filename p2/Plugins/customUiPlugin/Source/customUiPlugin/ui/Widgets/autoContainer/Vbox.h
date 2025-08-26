@@ -25,8 +25,12 @@ public:
     /// @param any 
     virtual void AddChild(UWidget *any) override;
 
-    //not needed here: happens in auto box parent!
-    //virtual void setVisible(bool flag) override;
+
+    ///@brief removes a child from click listening and inner container
+    virtual void RemoveChild(UcustomUiComponentBase *item) override;
+
+    ///@brief must be overriden - trys to remove child from container
+    virtual void RemoveChild(UWidget *any) override;
 
 private:
     void initVboxIfNeeded();

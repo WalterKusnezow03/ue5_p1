@@ -64,13 +64,21 @@ private:
     void createSubLayouts();
 
     /// @brief TRACKS ALL CHILDS ALSO FOR CLICK LISTENING AND TICK!!
+    UPROPERTY()
     UVbox *baseVertical = nullptr; //base layout for all sublayouts
 
     //INNER CONTAINERS DO NOT TICK! AGREGATION NOT OWNERSHIP
+    UPROPERTY()
     UHbox *rightLeftContainer = nullptr;
-    UVbox *rightVertical = nullptr; //deprecated.
+
+    UPROPERTY()
+    UVbox *rightVertical = nullptr;
     std::map<int, UVbox *> rightPanels; //iterierbar / changable machen
+    
+    UPROPERTY()
     UVbox *leftVertical = nullptr;
+
+    UPROPERTY()
     UHbox *headLineHorizontal = nullptr;
 
     int currentRightPanelVisible = -1;

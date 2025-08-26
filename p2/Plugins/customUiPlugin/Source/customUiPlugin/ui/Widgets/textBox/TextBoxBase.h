@@ -38,7 +38,10 @@ private:
     UCallback *callbackPointer = nullptr;
 
     //ui components
+    UPROPERTY()
     UEditableTextBox *TextBox = nullptr;
+
+    UPROPERTY()
     UScaleBox *scalebox = nullptr; //makes anything visible, text box must be inside!
 
     FString innerTextSaved;

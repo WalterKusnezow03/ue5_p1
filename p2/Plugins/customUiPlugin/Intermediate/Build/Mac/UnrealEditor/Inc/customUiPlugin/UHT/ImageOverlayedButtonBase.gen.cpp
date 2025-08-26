@@ -10,6 +10,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeImageOverlayedButtonBase() {}
 // Cross Module References
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UButtonBase();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UImageOverlayedBase_NoRegister();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UImageOverlayedButtonBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UImageOverlayedButtonBase_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
@@ -28,6 +29,11 @@ void EmptyLinkFunctionForGeneratedCodeImageOverlayedButtonBase() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_background_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_background;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
@@ -43,6 +49,15 @@ void EmptyLinkFunctionForGeneratedCodeImageOverlayedButtonBase() {}
 		{ "ToolTip", "is an button with an text and an image, wraps an imageOverlay class object" },
 	};
 #endif
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UImageOverlayedButtonBase_Statics::NewProp_background_MetaData[] = {
+		{ "ModuleRelativePath", "ui/Widgets/buttons/subtypes/ImageOverlayedButtonBase.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UImageOverlayedButtonBase_Statics::NewProp_background = { "background", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UImageOverlayedButtonBase, background), Z_Construct_UClass_UImageOverlayedBase_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UImageOverlayedButtonBase_Statics::NewProp_background_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UImageOverlayedButtonBase_Statics::NewProp_background_MetaData)) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UImageOverlayedButtonBase_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UImageOverlayedButtonBase_Statics::NewProp_background,
+	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UImageOverlayedButtonBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UImageOverlayedButtonBase>::IsAbstract,
 	};
@@ -52,13 +67,13 @@ void EmptyLinkFunctionForGeneratedCodeImageOverlayedButtonBase() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_UImageOverlayedButtonBase_Statics::PropPointers,
 		nullptr,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
+		UE_ARRAY_COUNT(Z_Construct_UClass_UImageOverlayedButtonBase_Statics::PropPointers),
 		0,
-		0,
-		0x001000A0u,
+		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UImageOverlayedButtonBase_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UImageOverlayedButtonBase_Statics::Class_MetaDataParams))
 	};
 	UClass* Z_Construct_UClass_UImageOverlayedButtonBase()
@@ -81,9 +96,9 @@ void EmptyLinkFunctionForGeneratedCodeImageOverlayedButtonBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_ImageOverlayedButtonBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UImageOverlayedButtonBase, UImageOverlayedButtonBase::StaticClass, TEXT("UImageOverlayedButtonBase"), &Z_Registration_Info_UClass_UImageOverlayedButtonBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UImageOverlayedButtonBase), 4071345377U) },
+		{ Z_Construct_UClass_UImageOverlayedButtonBase, UImageOverlayedButtonBase::StaticClass, TEXT("UImageOverlayedButtonBase"), &Z_Registration_Info_UClass_UImageOverlayedButtonBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UImageOverlayedButtonBase), 272690746U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_ImageOverlayedButtonBase_h_2029784750(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_ImageOverlayedButtonBase_h_4022939013(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_ImageOverlayedButtonBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_ImageOverlayedButtonBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

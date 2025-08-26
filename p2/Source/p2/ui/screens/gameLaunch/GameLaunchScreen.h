@@ -5,6 +5,7 @@
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
+#include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
 
 #include "GameLaunchScreen.generated.h"
 
@@ -21,11 +22,24 @@ public:
     
     virtual void init(UPlayerUiBase &ref);
 
+
+    UFUNCTION()
+    void launchWorld(FString world);
+
+protected:
+
+
 private:
 
     //layout hbox inside vbox
+    UPROPERTY()
     UVbox *menuVbox = nullptr;
+
+    UPROPERTY()
     UHbox *baseHbox = nullptr;
+
+    UPROPERTY()
+    UWorldList *worldListPicker = nullptr;
 
     void createBaseLayout();
     void createMenu();

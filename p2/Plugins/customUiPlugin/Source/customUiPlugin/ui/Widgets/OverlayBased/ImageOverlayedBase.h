@@ -37,8 +37,13 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 protected:
+    UPROPERTY()
     UOverlay *baseOverlay = nullptr;
+
+    UPROPERTY()
     UTextBlock *TextBlock = nullptr;
+
+    UPROPERTY()
     UImage *Image = nullptr;
 
     class timer textTimer;

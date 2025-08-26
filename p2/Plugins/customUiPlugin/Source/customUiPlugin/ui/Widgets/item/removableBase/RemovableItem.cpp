@@ -1,0 +1,53 @@
+#include "RemovableItem.h"
+
+
+void URemovableItem::init(){
+    if(WAS_INIT_FLAG){
+        return;
+    }
+    Super::init();
+    createLayout();
+}
+
+bool URemovableItem::dispatchClick(){
+    return baseHBox != nullptr && baseHBox->dispatchClick();
+}
+
+
+void URemovableItem::setVisible(bool visible){
+    if(baseHBox){
+        baseHBox->setVisible(visible);
+    }
+}
+
+
+void URemovableItem::createLayout(){
+    baseHBox = NewObject<UHbox>(this);
+    baseHBox->init();
+
+    hboxLeft = NewObject<UHbox>(this);
+    hboxLeft->init();
+
+    hboxRight = NewObject<UHbox>(this);
+    hboxRight->init();
+
+    baseHBox->AddChild(hboxLeft);
+    baseHBox->AddChild(hboxRight);
+
+    removeButton = NewObject<UTextButton>(this);
+    removeButton->init();
+    removeButton->setText(TEXT("Remove"));
+    hboxRight->AddChild(removeButton);
+}
+
+void URemovableItem::AddChild(UcustomUiComponentBase *widget){
+    if(widget && hboxLeft){
+        hboxLeft->AddChild(widget);
+    }
+}
+
+void URemovableItem::SetRemoveCallback(FSimpleDelegate delegate){
+    if(removeButton){
+        removeButton->SetCallBack(delegate);
+    }
+}

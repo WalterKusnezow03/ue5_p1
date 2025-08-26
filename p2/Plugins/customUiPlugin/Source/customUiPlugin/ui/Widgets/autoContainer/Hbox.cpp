@@ -39,3 +39,20 @@ void UHbox::AddChild(UWidget *any){
         baseHBox->AddChildToHorizontalBox(any);
     }
 }
+
+
+
+///@brief removes a child from click listening
+void UHbox::RemoveChild(UcustomUiComponentBase *item){
+    if(item){
+        Super::RemoveChild(item);
+        RemoveChild(item->baseLayoutPointer());
+    }
+}
+
+///@brief must be overriden
+void UHbox::RemoveChild(UWidget *any){
+    if(any && baseHBox){
+        baseHBox->RemoveChild(any);
+    }
+}

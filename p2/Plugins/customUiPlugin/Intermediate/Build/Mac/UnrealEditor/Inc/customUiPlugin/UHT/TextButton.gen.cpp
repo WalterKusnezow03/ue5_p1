@@ -12,6 +12,7 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UButtonBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextButton();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextButton_NoRegister();
+	UMG_API UClass* Z_Construct_UClass_UTextBlock_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UTextButton::StaticRegisterNativesUTextButton()
@@ -28,6 +29,11 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_TextBlock_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_TextBlock;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
@@ -41,6 +47,16 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 		{ "ModuleRelativePath", "ui/Widgets/buttons/subtypes/TextButton.h" },
 	};
 #endif
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ui/Widgets/buttons/subtypes/TextButton.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock = { "TextBlock", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextButton, TextBlock), Z_Construct_UClass_UTextBlock_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData)) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UTextButton_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock,
+	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UTextButton_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UTextButton>::IsAbstract,
 	};
@@ -50,13 +66,13 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_UTextButton_Statics::PropPointers,
 		nullptr,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
+		UE_ARRAY_COUNT(Z_Construct_UClass_UTextButton_Statics::PropPointers),
 		0,
-		0,
-		0x001000A0u,
+		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UTextButton_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UTextButton_Statics::Class_MetaDataParams))
 	};
 	UClass* Z_Construct_UClass_UTextButton()
@@ -79,9 +95,9 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextButton, UTextButton::StaticClass, TEXT("UTextButton"), &Z_Registration_Info_UClass_UTextButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextButton), 692229013U) },
+		{ Z_Construct_UClass_UTextButton, UTextButton::StaticClass, TEXT("UTextButton"), &Z_Registration_Info_UClass_UTextButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextButton), 2712855258U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_2503577724(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_4080356733(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

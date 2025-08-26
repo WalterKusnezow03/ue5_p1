@@ -30,8 +30,10 @@ public:
 
 private:
 
-
+    UPROPERTY()
     UTextButton *exitButton;
+
+    UPROPERTY()
     UPresetHalfSplitLayout *halfSplitBase;
 
     void createBaseLayout();

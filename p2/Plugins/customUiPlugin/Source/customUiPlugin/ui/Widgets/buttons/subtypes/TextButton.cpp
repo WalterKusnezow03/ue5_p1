@@ -43,6 +43,9 @@ void UTextButton::setText(FString textIn){
     }
 }
 
+FString UTextButton::getText(){
+    return textInternalCopy;
+}
 
 /**
  * debug
