@@ -9,6 +9,7 @@
 
 #include "TextBoxBase.generated.h"
 
+/// @brief is a textbox abstracktion, saves the current string typed.
 UCLASS()
 class CUSTOMUIPLUGIN_API UTextBoxBase : public UcustomUiComponentBase {
     GENERATED_BODY()

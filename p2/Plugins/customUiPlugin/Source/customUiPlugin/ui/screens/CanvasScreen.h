@@ -40,10 +40,21 @@ public:
     /// @brief added child AUTOMATICALLY added to click and visibilty and Tick DISPATCH!
     /// @param item 
     void AddChild(UcustomUiComponentBase *item);
-    /// @brief 
+    /// @brief adds a item at a offset screen position
     /// @param item 
     /// @param offset 
     void AddChild(UcustomUiComponentBase *item, FVector2D offset);
+
+    /// @brief adds a item, aligned at a screen anchor (0,0) top left, (1,1) bottom right
+    /// and aligment of content likewise, gravity / pivot moved in range (0,1)
+    /// @param item 
+    /// @param screenAnchor screen pos as scalar
+    /// @param aligment pivot of item as scalar
+    void AddChild(
+        UcustomUiComponentBase *item,
+        FVector2D screenAnchor, // corner top left (0,0), bottom right (1,1)
+        FVector2D aligment      // gravity / pivot of item (0,0.5), make centered on y
+    );
 
 protected:
     void createBackgroundBlur();

@@ -7,6 +7,7 @@ void URemovableItem::init(){
     }
     Super::init();
     createLayout();
+    createRemoveButton();
 }
 
 bool URemovableItem::dispatchClick(){
@@ -34,10 +35,16 @@ void URemovableItem::createLayout(){
     baseHBox->AddChild(hboxLeft);
     baseHBox->AddChild(hboxRight);
 
-    removeButton = NewObject<UTextButton>(this);
-    removeButton->init();
-    removeButton->setText(TEXT("Remove"));
-    hboxRight->AddChild(removeButton);
+    
+}
+
+void URemovableItem::createRemoveButton(){
+    if(!removeButton && hboxRight){
+        removeButton = NewObject<UTextButton>(this);
+        removeButton->init();
+        removeButton->setText(TEXT("Remove"));
+        hboxRight->AddChild(removeButton);
+    }
 }
 
 void URemovableItem::AddChild(UcustomUiComponentBase *widget){

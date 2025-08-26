@@ -49,6 +49,33 @@ void UCanvasScreen::AddChild(UcustomUiComponentBase *item, FVector2D offset){
     }
 }
 
+void UCanvasScreen::AddChild(
+    UcustomUiComponentBase *item,
+    FVector2D screenAnchor, //corner top left (0,0), bottom right (1,1)
+    FVector2D alignment //gravity / pivot of item (0,0.5), make centered on y
+){
+    if(item && baseCanvas){
+        UWidget *basePointer = item->baseLayoutPointer();
+        if(basePointer){
+            AddClickListenedItem(item);
+
+            UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(basePointer));
+            if(CanvasSlot != nullptr){
+                CanvasSlot->SetAnchors(FAnchors(screenAnchor.X, screenAnchor.Y));  //anchror from 2d(0,1) range
+                CanvasSlot->SetAlignment(alignment); //content alignment / pivot from 2d(0,1) range
+                CanvasSlot->SetAutoSize(true); //idk tbh
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 // --- CLICK AND VISIBILITY DISPATCH ----
 

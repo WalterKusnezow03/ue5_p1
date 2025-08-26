@@ -166,8 +166,10 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::Class_MetaDataParams[] = {
+		{ "Comment", "/// @brief is a textbox abstracktion, saves the current string typed.\n" },
 		{ "IncludePath", "ui/Widgets/textBox/TextBoxBase.h" },
 		{ "ModuleRelativePath", "ui/Widgets/textBox/TextBoxBase.h" },
+		{ "ToolTip", "@brief is a textbox abstracktion, saves the current string typed." },
 	};
 #endif
 #if WITH_METADATA
@@ -237,9 +239,9 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 290697836U) },
+		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 2322464066U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_4293934386(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_2570979732(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

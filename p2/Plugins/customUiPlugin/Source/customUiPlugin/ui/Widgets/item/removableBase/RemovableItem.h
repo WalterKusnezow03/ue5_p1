@@ -38,6 +38,7 @@ public:
 
 private:
     void createLayout();
+    void createRemoveButton();
 
     UPROPERTY()
     UHbox *baseHBox = nullptr;

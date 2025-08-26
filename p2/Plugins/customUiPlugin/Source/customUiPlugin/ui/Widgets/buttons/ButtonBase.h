@@ -68,5 +68,8 @@ protected:
     void createPressedCallbackIfNeeded();
     void createHoveredAndUnHoveredCallbackIfNeeded();
 
-    void disableUMGClicks();
+
+
+private:
+    void SetupButtonStyle();
 };

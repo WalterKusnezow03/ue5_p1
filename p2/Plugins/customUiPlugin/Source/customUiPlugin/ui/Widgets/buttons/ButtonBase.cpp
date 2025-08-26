@@ -18,6 +18,7 @@ void UButtonBase::init(){
         return;
     }
     createButton();
+    SetupButtonStyle();
 }
 
 void UButtonBase::createButton(){
@@ -32,7 +33,7 @@ void UButtonBase::createButton(){
         WAS_INIT_FLAG = true;
         // scalebox->AddChild(button); //kleiner test, sichtbar aber anderer inhalt von scale box nicht mehr
 
-        //disableUMGClicks();
+        
     }
 }
 
@@ -40,11 +41,6 @@ void UButtonBase::createButton(){
  * ---- click dispatch manual -----
  */
 
-void UButtonBase::disableUMGClicks(){
-    if(button){
-        button->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-    }
-}
 
 /// @brief tests if this button was hit on click!
 /// @return 
@@ -126,6 +122,8 @@ void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
             callbackPointer->SetCallback(callbackIn);
         
             /*
+            //unreal click dispatcher is broken
+
             //DEBUG using custom click dispatcher
             return;
 
@@ -232,3 +230,21 @@ void UButtonBase::createHoveredAndUnHoveredCallbackIfNeeded(){
     
 }
 
+
+
+
+// --- COLOR CHANGE --- -> BROKEN! (Manuel hover needed, dispatch)
+
+void UButtonBase::SetupButtonStyle(){
+
+    //default style modified
+    FButtonStyle styleDefault = button->GetStyle();
+    FSlateBrush brushCopy = styleDefault.Normal;
+    brushCopy.TintColor = FSlateColor(UiColors::buttonDefaultRed);
+
+    styleDefault.SetHovered(brushCopy);
+    button->SetStyle(styleDefault);
+
+    //FButtonStyle::SetNormal(const FSlateBrush &InNormal)
+
+}

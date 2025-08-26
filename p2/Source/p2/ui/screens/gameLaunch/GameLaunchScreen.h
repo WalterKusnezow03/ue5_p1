@@ -36,11 +36,11 @@ private:
     UVbox *menuVbox = nullptr;
 
     UPROPERTY()
-    UHbox *baseHbox = nullptr;
+    UHbox *topHbox = nullptr;
 
     UPROPERTY()
     UWorldList *worldListPicker = nullptr;
 
-    void createBaseLayout();
+    void createTopBar();
     void createMenu();
 };
