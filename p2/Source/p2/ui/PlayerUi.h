@@ -59,7 +59,16 @@ class P2_API UPlayerUi : public UPlayerUiBase
 {
 	GENERATED_BODY()
 
+private:
+	//one ui there anyway, simplifies launching the game
+	//by moving away ui code from player.
+	static UPlayerUi *instancePtr;  //must be inited as nullptr and cleaned on game end!
+
 public:
+	virtual void BeginDestroy() override;
+
+	static UPlayerUi *currentInstance();
+
 	static UPlayerUi *createNewInstance(UWorld *world);
 	virtual void init(UWorld *world) override;
 
@@ -88,6 +97,7 @@ public:
 
 
 protected:
+	bool screenSwitchAllowed();
 
 	void createBasePlayerHud();
 	void createPauseScreen();
@@ -102,4 +112,7 @@ protected:
 	UPauseScreen *pauseScreen;
 	ULoadoutScreen *loadoutScreen;
 	UGameLaunchScreen *gameLaunchScreen;
+
+
+
 };

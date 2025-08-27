@@ -19,7 +19,7 @@
 
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
-#include "p2/ui/PlayerUi.h"
+
 #include "p2/player/minimap/Minimap.h"
 
 #include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
@@ -118,8 +118,7 @@ private:
 
 
 	//UI
-	UPlayerUi *uiInstance = nullptr;
-	void createUserInterface();
+	
 	virtual void openPauseMenu() override;
 	void updateUi();
 	void updateAmmunitionUi();

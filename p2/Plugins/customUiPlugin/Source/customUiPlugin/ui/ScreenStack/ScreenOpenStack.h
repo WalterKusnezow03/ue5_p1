@@ -20,6 +20,8 @@ public:
 
     void Tick(float deltatime);
 
+    bool ScreenAlreadyOpen(UCanvasScreen *item);
+
 private:
     std::vector<UCanvasScreen *> opened;
     

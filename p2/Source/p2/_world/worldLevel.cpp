@@ -53,7 +53,7 @@ worldLevel::~worldLevel()
 }
 
 //static vars init:
-EGameState worldLevel::currentGameState = EGameState::EGameLaunchScreen;
+
 bool worldLevel::isTerrainInited = false;
 ATerrainLauncher *worldLevel::terrainLauncher = nullptr;
 
@@ -90,6 +90,8 @@ void worldLevel::resetWorld(){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
+    gameStateManager.UpdateGameState(EGameState::EGamePlay);
+
     EntityManager::BeginPlay(); //very important
 
     FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
@@ -657,10 +659,6 @@ void worldLevel::debugStoragePlugin(){
 }
 
 
-
-void worldLevel::setGameState(EGameState state){
-    currentGameState = state;
-}
 
 
 

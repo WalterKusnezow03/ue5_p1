@@ -24,11 +24,28 @@ void ScreenOpenStack::dispatchClick(){
     }
 }
 
+bool ScreenOpenStack::ScreenAlreadyOpen(UCanvasScreen *item){
+    if(item != nullptr){
+        if(opened.size() > 0){
+            if(opened.back() == item){
+                item->setVisible(true);
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 /// @brief opens a new ucanvas screen, marks others ivisible, new item visible
 /// @param item 
 void ScreenOpenStack::open(UCanvasScreen *item){
-    if(item){
+    if(item){   
+        //check if might be already open
+        if(ScreenAlreadyOpen(item)){
+            return;
+        }
+
+        //open
         for (int i = 0; i < opened.size(); i++){
             UCanvasScreen *current = opened[i];
             if(current != nullptr){

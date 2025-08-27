@@ -16,9 +16,11 @@
 #include "UObject/ConstructorHelpers.h"
 #include "AssetPlugin/gamestart/AssetLoader.h"
 
+
+// Game Launch
 #include "p2/_world/EGameState.h"
 #include "p2/_world/worldLevel.h"
-
+#include "p2/_world/gameStateManager/GameStateManager.h"
 
 
 //constructor
@@ -40,17 +42,19 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
 
-    /**
-     * ASSET LOADER
-     */
+    //load all assets
     AssetLoader a(GetWorld());
     a.loadAssets();
 
-    worldLevel::setGameState(EGameState::EGameLaunchScreen);
+    //launch ui from here, not from player
+    UPlayerUi::createNewInstance(GetWorld());
+
+    //opens game launch screen
+    worldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
 
     /// ---- TODO: PLAYER LÄDT / END LEVEL WITH UI ! ---- LOOP ÜBERLEGEN, FREE TERRAIn, FREE PATH FINDER!
-    bool debugBlockWorldCreation = true;
-    if (debugBlockWorldCreation)
+    bool debugAllowWorldCreation = true;
+    if (debugAllowWorldCreation)
     {
         /**
          * CREATE WORLD LEVEL

@@ -11,8 +11,14 @@
 
 #include "p2/entityManager/referenceManager.h"
 
+UPlayerUi *UPlayerUi::instancePtr = nullptr;
+
 //instance maker with init call!
 UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
+    if(instancePtr){
+        return instancePtr; //if not nullptr, the existing instance is returned
+    }
+
     if(world != nullptr){
         
         UClass *blueprint = UPlayerUi::StaticClass();
@@ -22,6 +28,7 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
             if (newUiInstance != nullptr)
             {
                 newUiInstance->init(world);
+                UPlayerUi::instancePtr = newUiInstance;
                 return newUiInstance;
             }
         }
@@ -29,7 +36,14 @@ UPlayerUi* UPlayerUi::createNewInstance(UWorld *world){
     return nullptr;
 }
 
+UPlayerUi *UPlayerUi::currentInstance(){
+    return instancePtr;
+}
 
+void UPlayerUi::BeginDestroy(){
+    UPlayerUi::instancePtr = nullptr;
+    Super::BeginDestroy();
+}
 
 //constructor like
 void UPlayerUi::init(UWorld *world){
@@ -122,11 +136,13 @@ void UPlayerUi::updateMissionTextTimed(FString message){
 // --- player interact Open Screen api ---
 
 void UPlayerUi::openPauseScreen(){
-    if(playerHud){
-        playerHud->setVisible(false);
+    if(screenSwitchAllowed()){
+        if(playerHud){
+            playerHud->setVisible(false);
+        }
+        openedScreenStack.open(pauseScreen);
+        showPlayerCursor(true);
     }
-    openedScreenStack.open(pauseScreen);
-    showPlayerCursor(true);
 }
 
 void UPlayerUi::openGameScreen(){
@@ -146,24 +162,30 @@ void UPlayerUi::openGameScreen(){
 }
 
 void UPlayerUi::openLoadoutScreen(){
-    if(playerHud){
-        playerHud->setVisible(false);
+    if(screenSwitchAllowed()){
+        if(playerHud){
+            playerHud->setVisible(false);
+        }
+        openedScreenStack.open(loadoutScreen);
     }
-    openedScreenStack.open(loadoutScreen);
 }
 
 
 void UPlayerUi::openGameLaunchScreen(){
-    if(playerHud){
-        playerHud->setVisible(false);
+    if(screenSwitchAllowed()){
+        if(playerHud){
+            playerHud->setVisible(false);
+        }
+        openedScreenStack.open(gameLaunchScreen);
     }
-    openedScreenStack.open(gameLaunchScreen);
+    
 }
 
 
 
-
-
+bool UPlayerUi::screenSwitchAllowed(){
+    return openedScreenStack.ScreenAlreadyOpen(gameLaunchScreen) == false;
+}
 
 void UPlayerUi::showPlayerCursor(bool show){
     referenceManager::showPlayerCursor(show);

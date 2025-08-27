@@ -88,4 +88,7 @@ protected:
 	ScreenOpenStack openedScreenStack;
 
     void createTickActor(UWorld *world);
+
+private:
+	bool bMouseLeftIsPressed = false;
 };

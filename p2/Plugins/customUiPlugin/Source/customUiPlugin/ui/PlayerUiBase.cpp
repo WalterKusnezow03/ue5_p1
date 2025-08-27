@@ -22,7 +22,8 @@ void UPlayerUiBase::init(UWorld *world){
     createTickActor(world);
     CreateCanvasPanel();
 
-    AddToViewport();  // Fügt das UI zur Anzeige hinzu
+    //Add this ui to the viewport so it becomes visible!
+    AddToViewport();
 }
 
 
@@ -95,10 +96,14 @@ void UPlayerUiBase::updateClickDispatch(){
     //click dispatch!
     TSet<FKey> PressedButtons = FSlateApplication::Get().GetPressedMouseButtons();
     if (PressedButtons.Contains(EKeys::LeftMouseButton)) {
-        // Linksklick ist aktuell gedrückt
-        RegisterCursorClick();
-        DebugHelper::showScreenMessage("SLATE CLICK REGISTERED", FColor::Red);
-        return;
+        if(!bMouseLeftIsPressed){
+            // Linksklick ist aktuell gedrückt und war es vorher nicht
+            RegisterCursorClick();
+            DebugHelper::showScreenMessage("UPlayerUiBase: SLATE CLICK REGISTERED", FColor::Red);    
+        }
+        bMouseLeftIsPressed = true;
+    }else{
+        bMouseLeftIsPressed = false;
     }
 
     //Hover dispatch

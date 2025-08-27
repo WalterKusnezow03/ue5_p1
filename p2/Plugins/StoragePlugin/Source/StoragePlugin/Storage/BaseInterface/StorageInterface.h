@@ -13,6 +13,8 @@ public:
     void RemoveSubDir(FString subDir);
 
 protected:
+    bool SubDirAllowed(FString subDir);
+
     bool SaveBinaryData(
         FString path,
         TArray<uint8> &Bytes

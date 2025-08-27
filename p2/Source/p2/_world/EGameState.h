@@ -6,5 +6,6 @@ UENUM()
 enum class EGameState
 {
     EGameLaunchScreen,
+    EPauseScreen,
     EGamePlay
 };

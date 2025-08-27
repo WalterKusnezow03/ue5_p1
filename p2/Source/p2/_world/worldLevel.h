@@ -6,6 +6,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
 #include "EGameState.h"
+#include "p2/_world/gameStateManager/GameStateManager.h"
 #include "GameCore/world/worldLevelBase.h"
 
 class ATerrainLauncher;
@@ -22,7 +23,7 @@ private:
 	worldLevel();
 	~worldLevel();
 
-	static EGameState currentGameState;
+	
 	static ATerrainLauncher *terrainLauncher;
 
 public:
@@ -31,7 +32,7 @@ public:
 
 	//api for game launch screen / game mode base
 	static void clearGameSession();
-	static void setGameState(EGameState state);
+	
 
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
@@ -47,7 +48,7 @@ public:
 	static bool gamePausedByPlayer();
 	static void setGamePaused(bool in);
 
-
+	static GameStateManager gameStateManager;
 
 private:
 	
@@ -76,7 +77,7 @@ private:
 	static bool nodesWereShown;
 	static bool gamePausedFlag;
 
-	
+
 	static void DebugCreateRooms(UWorld *world);
 
 	static void DebugCreatedoor(UWorld *world);

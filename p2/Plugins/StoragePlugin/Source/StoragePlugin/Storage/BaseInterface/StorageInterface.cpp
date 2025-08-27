@@ -58,7 +58,14 @@ FString StorageInterface::BaseDir(){
 /// @param subDir 
 void StorageInterface::RemoveSubDir(FString subDir){
     FString completePath = BaseDir() + subDir;
+    if(!SubDirAllowed(subDir)){
+        DebugHelper::logMessage("StorageInterface Remove Failed: Subdir illegal ", subDir);
+    }
 
+    /*
+    Known Issue: Doesnt delete the directory itself for reasons i dont understand!
+    Also the print doesnt appear but content of folders ARE removed.    
+    */
     IFileManager& fileManager = IFileManager::Get();
     if(fileManager.DirectoryExists(*completePath)){
         bool deleteRecursive = true; //yes, if not enabled, and the folder is not empty, nothign will happen.
@@ -68,14 +75,34 @@ void StorageInterface::RemoveSubDir(FString subDir){
             /*RequireExists= (no exception thrown if false)*/false, 
             /*Tree=*/deleteRecursive
         )){
-            DebugHelper::logMessage("StorageInterface Removed Directory: ", completePath);
+            DebugHelper::logMessage("StorageInterface Removed inner content of Directory: ", completePath);
         }
+
+        if(fileManager.DeleteDirectory(
+            *completePath, 
+            /*RequireExists= (no exception thrown if false)*/false, 
+            /*Tree=*/false
+        )){
+            DebugHelper::logMessage("StorageInterface Removed root of Directory: ", completePath);
+        }
+
+
     }
 
 }
 
+bool StorageInterface::SubDirAllowed(FString subDir)
+{
+    FString Normalized = BaseDir() + subDir;
+    FPaths::NormalizeDirectoryName(Normalized);
+    FPaths::CollapseRelativeDirectories(Normalized);
 
+    FString Root = BaseDir();
+    FPaths::NormalizeDirectoryName(Root);
 
+    // Prüfen, dass Normalized mit Root beginnt
+    return Normalized.StartsWith(Root);
+}
 
 // ------ HELPERS -------
 

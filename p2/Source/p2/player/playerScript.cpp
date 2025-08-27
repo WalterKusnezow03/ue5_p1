@@ -61,7 +61,7 @@ void AplayerScript::BeginPlay()
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
 
-    createUserInterface();
+    
     createMiniMap();
 }
 
@@ -588,14 +588,12 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
  * --- ui ---
  * 
  */
-void AplayerScript::createUserInterface(){
-    if(uiInstance == nullptr){
-        uiInstance = UPlayerUi::createNewInstance(GetWorld());
-    }
-}
+
 
 void AplayerScript::openPauseMenu(){
     Super::openPauseMenu();
+
+    UPlayerUi *uiInstance = UPlayerUi::currentInstance();
     if (uiInstance != nullptr)
     {
         if(isPaused){
@@ -618,7 +616,7 @@ void AplayerScript::updateUi(){
 }
 
 void AplayerScript::updateAmmunitionUi(){
-    if(uiInstance != nullptr){
+    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
         //ammunition of weapon
         FString ammunitionText = playerInventory.ammuntionUiStringOfWeapon();
         uiInstance->updateAmmunitionText(ammunitionText);
@@ -626,17 +624,18 @@ void AplayerScript::updateAmmunitionUi(){
         //mags left
 
     }
+
 }
 
 
 void AplayerScript::updateHealthUi(){
-    if(uiInstance != nullptr){
+    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
         uiInstance->updateHealthText(health);
     }
 }
 
 void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
-    if(uiInstance != nullptr){
+    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
         FString message = entered ? "Outpost Area Entered" : "Outpost Area left";
 
         if(entered){
