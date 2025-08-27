@@ -38,7 +38,7 @@ void UPlayerUi::init(UWorld *world){
     }
     isInited = true;
 
-    //the root widget must be a canvas panel in bp!
+    //Must be called to be added to viewport!
     Super::init(world);
 
     createBasePlayerHud();

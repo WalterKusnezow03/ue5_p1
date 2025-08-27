@@ -21,6 +21,8 @@ void UPlayerUiBase::init(UWorld *world){
 
     createTickActor(world);
     CreateCanvasPanel();
+
+    AddToViewport();  // Fügt das UI zur Anzeige hinzu
 }
 
 

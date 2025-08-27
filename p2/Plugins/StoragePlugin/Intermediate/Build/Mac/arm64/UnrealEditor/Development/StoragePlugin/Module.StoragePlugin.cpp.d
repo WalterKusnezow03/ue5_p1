@@ -3826,6 +3826,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.h \
   Runtime/Core/Public/Misc/FileHelper.h \
+  Runtime/Core/Public/HAL/FileManager.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainVertex.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainNormal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainUv.h \

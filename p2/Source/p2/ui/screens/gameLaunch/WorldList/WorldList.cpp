@@ -43,10 +43,13 @@ void UWorldList::createLayout(){
     }
 }
 
+bool UWorldList::CanAddWorld(FString name){
+    return !worldNames.Contains(name);
+}
 
 ///@brief external add world, saves world name, if not contained yet!
 void UWorldList::AddWorld(FString name){
-    if(!worldNames.Contains(name)){
+    if(CanAddWorld(name)){
         AddWorldInternal(name);
         worldNames.Add(name);
         SaveWorldListToStorage();
@@ -72,12 +75,14 @@ void UWorldList::removeWorld(URemovableTextButton *item){
 
     //remove from string list
     FString worldName = item->GetText();
+    bool wasFound = false;
     if (worldNames.Num() > 0)
     {
         int32 IndexName;
         if (worldNames.Find(worldName, IndexName)){
             worldNames[IndexName] = worldNames[worldNames.Num() - 1];
             worldNames.Pop();
+            wasFound = true;
         }
     }
 
@@ -96,6 +101,9 @@ void UWorldList::removeWorld(URemovableTextButton *item){
 
     //save changes made
     SaveWorldListToStorage();
+    if(wasFound){
+        RemoveWorldDataFromStorage(worldName);
+    }
 }
 
 URemovableTextButton *UWorldList::makeRemovableTextButton(FString name){
@@ -190,4 +198,11 @@ void UWorldList::LoadWorldListFromStorage(){
 void UWorldList::SaveWorldListToStorage(){
     WorldListStorageInterface interface;
     interface.Save(worldNames);
+}
+
+
+
+void UWorldList::RemoveWorldDataFromStorage(FString name){
+    WorldListStorageInterface interface;
+    interface.DeleteWorld(name);
 }

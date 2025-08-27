@@ -83,3 +83,8 @@ void UTextBoxBase::SetCallBack(FSimpleDelegate onFinished){
         callbackPointer->SetCallback(onFinished);
     }
 }
+
+
+FString UTextBoxBase::GetText(){
+    return innerTextSaved;
+}

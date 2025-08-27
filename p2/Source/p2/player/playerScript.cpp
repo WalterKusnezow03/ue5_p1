@@ -591,9 +591,6 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
 void AplayerScript::createUserInterface(){
     if(uiInstance == nullptr){
         uiInstance = UPlayerUi::createNewInstance(GetWorld());
-        if(uiInstance != nullptr){
-            uiInstance->AddToViewport();  // Fügt das UI zur Anzeige hinzu
-        }
     }
 }
 

@@ -1,5 +1,13 @@
 #include "GameLaunchScreen.h"
 #include "GameCore/DebugHelper.h"
+#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
+
+#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
+#include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
 
 void UGameLaunchScreen::init(UPlayerUiBase &ref){
     if(WAS_INIT_FLAG){
@@ -48,9 +56,13 @@ void UGameLaunchScreen::createMenu(){
     if (menuVbox)
     {
         //baseHbox->AddChild(menuVbox);
-        AddChild(menuVbox, FVector2D(0.5f, 0.0f), FVector2D(0.5f, 0.0f)); //to top center, align center
+        AddChild(
+            menuVbox, 
+            FVector2D(0.5f, 0.1f), //pivot locationScalar
+            FVector2D(0.5f, 0.0f)  //privot weight scalar
+        ); //to top center, align center
 
-        //create textbox for new world.
+        createTypeFieldForWorldCreation();
 
         //world list
         worldListPicker = NewObject<UWorldList>(this);
@@ -60,10 +72,58 @@ void UGameLaunchScreen::createMenu(){
     
 }
 
+void UGameLaunchScreen::createTypeFieldForWorldCreation(){
+    if(!menuVbox){
+        //must be created at this point
+        return;
+    }
+
+    //create textbox for new world.
+    createBarHbox = NewObject<UHbox>(this);
+    createBarHbox->init();
+    menuVbox->AddChild(createBarHbox);
+
+    typeFieldWorld = NewObject<UTextBoxBase>(this);
+    typeFieldWorld->init();
+    typeFieldWorld->SetHintText("Type a World Name");
+    createBarHbox->AddChild(typeFieldWorld);
+
+    typeFieldConfirmButton = NewObject<UImageOverlayedButton>(this);
+    typeFieldConfirmButton->init();
+    typeFieldConfirmButton->setImage(textureEnum::healthIcon);
+    typeFieldConfirmButton->SetCallBack(
+        FSimpleDelegate::CreateUObject(this, &UGameLaunchScreen::createAndLaunchWorldFromTypeField)
+    );
+    createBarHbox->AddChild(typeFieldConfirmButton);
+
+    //FSimpleDelegate::CreateUObject(uclassInstance*, &<classname>::<methodname>)
+    /*FSimpleDelegate::CreateLambda([uclassInstance*, SomeValue]()
+    {
+        uclassInstance->SomeUFunction(SomeValue);
+    }*/
+
+
+
+
+}
+
+
+
+
+
+void UGameLaunchScreen::createAndLaunchWorldFromTypeField(){
+    if(worldListPicker && typeFieldWorld){
+        FString name = typeFieldWorld->GetText();
+        if(worldListPicker->CanAddWorld(name)){
+            worldListPicker->AddWorld(name); //update ui, save name to storage
+            launchWorld(name);
+        }
+    }
+}
 
 void UGameLaunchScreen::launchWorld(FString world){
     FString message = FString::Printf(TEXT("UGameLaunchScreen Launch World: %s"), *world);
 
     DebugHelper::logMessage(message);
-    DebugHelper::showScreenMessage(message, FColor::Green);
+    DebugHelper::showScreenMessage(message, FColor::Purple);
 }

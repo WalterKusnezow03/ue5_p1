@@ -1,5 +1,6 @@
 #include "StorageInterface.h"
-#include "Misc/FileHelper.h"
+#include "Misc/FileHelper.h" //save load
+#include "HAL/FileManager.h" //remove
 #include "StoragePlugin/Storage/VertexData/TerrainVertex.h"
 #include "StoragePlugin/Storage/VertexData/TerrainNormal.h"
 #include "StoragePlugin/Storage/VertexData/TerrainUv.h"
@@ -46,8 +47,34 @@ FString StorageInterface::BaseDir(FString worldLevelName){
 
 
 FString StorageInterface::BaseDir(){
-    return FPaths::ProjectSavedDir();
+    return FPaths::ProjectSavedDir() //has "/" at end
+    + TEXT("StorageInterfaceSaved/");
 }
+
+
+// ----- REMOVE DIR ------
+
+/// @brief requieres a subdir path to start with the name, no trailing slash needed
+/// @param subDir 
+void StorageInterface::RemoveSubDir(FString subDir){
+    FString completePath = BaseDir() + subDir;
+
+    IFileManager& fileManager = IFileManager::Get();
+    if(fileManager.DirectoryExists(*completePath)){
+        bool deleteRecursive = true; //yes, if not enabled, and the folder is not empty, nothign will happen.
+        // true = rekursiv löschen
+        if(fileManager.DeleteDirectory(
+            *completePath, 
+            /*RequireExists= (no exception thrown if false)*/false, 
+            /*Tree=*/deleteRecursive
+        )){
+            DebugHelper::logMessage("StorageInterface Removed Directory: ", completePath);
+        }
+    }
+
+}
+
+
 
 
 // ------ HELPERS -------

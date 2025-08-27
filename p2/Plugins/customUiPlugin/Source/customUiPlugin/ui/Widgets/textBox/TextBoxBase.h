@@ -27,6 +27,9 @@ public:
     /// set up delegate when finished writing
     void SetCallBack(FSimpleDelegate onFinished);
 
+    /// gets the current typed text
+    FString GetText();
+
 protected:
 
 private:

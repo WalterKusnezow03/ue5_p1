@@ -44,13 +44,16 @@ public:
 
 
     ///@brief adds the world string if not contained yet,
-    ///makes a new selector in layout, 
+    ///Ui Update: makes a new selector in layout, 
     ///saves additional string to storage
     void AddWorld(FString name);
 
     ///@brief will remove a world from list and storage completly
     UFUNCTION()
     void removeWorld(URemovableTextButton *item);
+
+    ///@brief tells if a world is already present in the world array
+    bool CanAddWorld(FString name);
 
 private:
     UGameLaunchScreen *gameLaunchScreenParent = nullptr;
@@ -91,6 +94,8 @@ private:
     void SaveWorldListToStorage();
 
 
+    ///@brief will remove a complete world Dir from save path
+    void RemoveWorldDataFromStorage(FString worldName);
 
     //auto create a world string
     bool DebugMode = true;

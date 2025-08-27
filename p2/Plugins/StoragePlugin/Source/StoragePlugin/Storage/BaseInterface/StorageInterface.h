@@ -8,6 +8,10 @@ public:
     StorageInterface() {};
     virtual ~StorageInterface() {};
 
+    /// @brief removes a sub dir in saved folder. Start with the name, no prefix or trianling "/" needed.
+    /// @param subDir 
+    void RemoveSubDir(FString subDir);
+
 protected:
     bool SaveBinaryData(
         FString path,

@@ -2,14 +2,17 @@
 
 
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
-#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
-#include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
-#include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
-#include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
+
 
 #include "GameLaunchScreen.generated.h"
 
 class UPlayerUiBase;
+class UHbox;
+class UVbox;
+class UTextBoxBase;
+class UImageOverlayedButton;
+class UWorldList;
+
 /**
  * loadout screen for the player to choose weapons and attachments
  * 
@@ -22,25 +25,46 @@ public:
     
     virtual void init(UPlayerUiBase &ref);
 
-
+    /// @brief launch a world from UWorldList
+    /// @param world 
     UFUNCTION()
     void launchWorld(FString world);
+
+    /// @brief launch a world from creation mode, adds to world list and saves to storage
+    /// @param world 
+    UFUNCTION()
+    void createAndLaunchWorldFromTypeField();
 
 protected:
 
 
 private:
+    //title hbox
+    UPROPERTY()
+    UHbox *topHbox = nullptr;
 
-    //layout hbox inside vbox
+
+    //layout for type new world, create button
+    UPROPERTY()
+    UHbox *createBarHbox = nullptr;
+
+    UPROPERTY()
+    UTextBoxBase *typeFieldWorld = nullptr;
+
+    UPROPERTY()
+    UImageOverlayedButton *typeFieldConfirmButton = nullptr;
+
+    //menu vbox (store bar and list)
     UPROPERTY()
     UVbox *menuVbox = nullptr;
 
     UPROPERTY()
-    UHbox *topHbox = nullptr;
-
-    UPROPERTY()
     UWorldList *worldListPicker = nullptr;
 
+    //screen name bar
     void createTopBar();
+
+    //menu
     void createMenu();
+    void createTypeFieldForWorldCreation();
 };

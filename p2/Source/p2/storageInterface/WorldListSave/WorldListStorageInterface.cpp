@@ -23,3 +23,9 @@ FString WorldListStorageInterface::makePath(){
     FString path = BaseDir() + innerPath;
     return path;
 }
+
+
+
+void WorldListStorageInterface::DeleteWorld(FString name){
+    RemoveSubDir(name);
+}

@@ -11,6 +11,8 @@
  * is an button with an text and an image, wraps an imageOverlay class object
  */
 
+/// @brief is a text button with an image, is_A UImageOverlayedButtonBase, Supports textureEnum, not
+/// just UTexture2D * pointers, uses asset loader plugin
 UCLASS()
 class P2_API UImageOverlayedButton : public UImageOverlayedButtonBase {
 
