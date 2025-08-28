@@ -3944,6 +3944,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.cpp \
@@ -4006,5 +4007,4 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/KismetMathLibrary.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.inl \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.cpp

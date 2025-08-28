@@ -600,8 +600,17 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
         */
     }
 
-
-
+    bool debugDrawHit = true;
+    if(debugDrawHit){
+        FVector up = hitpoint + FVector(0, 0, 200);
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            hitpoint,
+            up,
+            FColor::Purple,
+            1.0f
+        );
+    }
 }
 
 

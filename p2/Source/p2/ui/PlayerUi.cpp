@@ -146,7 +146,7 @@ void UPlayerUi::openPauseScreen(){
 }
 
 void UPlayerUi::openGameScreen(){
-    openedScreenStack.closeAll();
+    openedScreenStack.closeAll(); //very important
     if(playerHud){
         playerHud->setVisible(true);
     }

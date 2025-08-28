@@ -190,6 +190,7 @@ bool ChunkParserStorageInterface::Load(
                 meshDataCurrent.getTrianglesRef(),
                 bEndReached
             );
+            meshDataCurrent.updateBoundsIfNeeded(); //very important here to update bounds from loaded data
         }
         if(bEndReached){
             break;

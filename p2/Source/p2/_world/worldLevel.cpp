@@ -90,14 +90,21 @@ void worldLevel::resetWorld(){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void worldLevel::initWorld(UWorld *world){
+    SetWorld(world);
+
+    FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
+    initWorld(WorldName);
+}
+
+void worldLevel::initWorld(FString WorldName){
     gameStateManager.UpdateGameState(EGameState::EGamePlay);
 
     EntityManager::BeginPlay(); //very important
 
-    FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
-
     gamePausedFlag = false;
-    createTerrain(world, WorldName); 
+
+    UWorld *world = GetWorld();
+    createTerrain(world, WorldName);
 
     //create rooms
     DebugCreateRooms(world);
@@ -135,6 +142,9 @@ void worldLevel::initWorld(UWorld *world){
     createBoneActorDebug(world);
     debugStoragePlugin();
 }
+
+
+
 
 void worldLevel::createOutpostsRequested(UWorld *world){
 

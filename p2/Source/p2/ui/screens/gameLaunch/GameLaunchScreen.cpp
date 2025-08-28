@@ -126,4 +126,17 @@ void UGameLaunchScreen::launchWorld(FString world){
 
     DebugHelper::logMessage(message);
     DebugHelper::showScreenMessage(message, FColor::Purple);
+
+
+    //NEW: using instance ptr, -> objective: remove any parent references
+    //as its not needed. Try to refacture for ui base must be instances 
+    //to create ANY Widgets.
+    
+    if(UPlayerUi *instance = UPlayerUi::currentInstance()){
+        worldLevel::gameStateManager.UpdateGameState(EGameState::EGamePlay);
+        
+        worldLevel::initWorld(world);
+
+        instance->openGameScreen(); //close all
+    }
 }

@@ -29,6 +29,7 @@ private:
 public:
 	//call to init the world.
 	static void initWorld(UWorld *world);
+	static void initWorld(FString worldName);
 
 	//api for game launch screen / game mode base
 	static void clearGameSession();

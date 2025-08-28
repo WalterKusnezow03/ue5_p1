@@ -42,6 +42,9 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
 
+    //set worldLevel UWorld pointer for easier world pointer getting in non aactor classes
+    worldLevel::SetWorld(GetWorld()); //needed for init!
+
     //load all assets
     AssetLoader a(GetWorld());
     a.loadAssets();
@@ -53,7 +56,7 @@ void AgameModeSubclass::BeginPlay()
     worldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
 
     /// ---- TODO: PLAYER LÄDT / END LEVEL WITH UI ! ---- LOOP ÜBERLEGEN, FREE TERRAIn, FREE PATH FINDER!
-    bool debugAllowWorldCreation = true;
+    bool debugAllowWorldCreation = false;
     if (debugAllowWorldCreation)
     {
         /**
