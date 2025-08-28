@@ -12,14 +12,14 @@ void worldLevelBase::addOutpostAt(FVector &pos){
 
 // ---- TODO! ---- ALSO INIT MUSt Be DERIVED!
 void worldLevelBase::EndPlay(){
-    ResetWorld(); 
+    ResetWorldPointer(); 
 }
 
 void worldLevelBase::SetWorld(UWorld *world){
     worldPointer = world;
 }
 
-void worldLevelBase::ResetWorld(){
+void worldLevelBase::ResetWorldPointer(){
     worldPointer = nullptr;
 }
 

@@ -58,6 +58,10 @@ APlayerControllerBase::APlayerControllerBase()
 
 }
 
+bool APlayerControllerBase::IsPaused(){
+    return isPausedFlag;
+}
+
 // Called when the game starts or when spawned
 void APlayerControllerBase::BeginPlay()
 {
@@ -189,7 +193,7 @@ void APlayerControllerBase::MoveRight(float Value)
 
 void APlayerControllerBase::TurnAtRate(float Rate)
 {
-    if(isPaused){
+    if(IsPaused()){
         return;
     }
     float yawRate = Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds();
@@ -199,7 +203,7 @@ void APlayerControllerBase::TurnAtRate(float Rate)
 
 void APlayerControllerBase::LookUpAtRate(float Rate)
 {
-    if(isPaused){
+    if(IsPaused()){
         return;
     }
 
@@ -236,7 +240,7 @@ void APlayerControllerBase::processPendingRecoil(){
 }   
 
 void APlayerControllerBase::Jump(){
-    if(isPaused){
+    if(IsPaused()){
         return;
     }
 
@@ -338,7 +342,6 @@ void APlayerControllerBase::leftMouseUp(){
 
 void APlayerControllerBase::setTeam(teamEnum teamIn){
     this->team = teamIn;
-    // referenceManager::verifyTeam(teamIn);
 }
 
 teamEnum APlayerControllerBase::getTeam(){
@@ -382,11 +385,11 @@ void APlayerControllerBase::showCursor(bool show){
 }
 
 void APlayerControllerBase::setPaused(bool in){
-    isPaused = in;
+    isPausedFlag = in;
 }
 
 void APlayerControllerBase::openPauseMenu(){
-
+    //to be overriden!
 }
 
 

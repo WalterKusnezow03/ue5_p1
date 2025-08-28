@@ -156,9 +156,7 @@ void UPlayerUi::openGameScreen(){
         loadoutScreen->reloadPlayerLoadoutOnUiLeaveIfNeeded();
     }
 
-    //the exit button doesnt do that on its own. Setting the flag to false
-    //is okay.
-    referenceManager::forceSetPlayerPaused(false);
+    
 }
 
 void UPlayerUi::openLoadoutScreen(){

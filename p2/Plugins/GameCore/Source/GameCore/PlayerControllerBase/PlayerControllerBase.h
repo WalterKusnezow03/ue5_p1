@@ -47,6 +47,9 @@ protected:
 	//tracks input for steering vehicles, and unseat
 	InputContainer playerInputContainer;
 
+	/// @brief should be overriden!
+	virtual bool IsPaused();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -109,9 +112,14 @@ protected:
 	int health;
 
 
-	bool isPaused = false;
+	
 
 	void processPendingRecoil();
 	void addPendingRecoil(float value);
 	float pendingRecoil = 0.0f;
+
+
+private:
+	//fall back flag!
+	bool isPausedFlag = false;
 };

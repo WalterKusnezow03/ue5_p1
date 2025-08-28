@@ -52,6 +52,9 @@ protected:
 	//tracks input for steering vehicles, and unseat
 	InputContainer playerInputContainer;
 
+	///overriden from base class!
+	virtual bool IsPaused() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

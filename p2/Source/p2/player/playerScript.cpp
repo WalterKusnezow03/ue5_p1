@@ -24,6 +24,8 @@
 #include "p2/vehicles/vehicle/base/vehicleBase.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
+#include "p2/_world/worldLevel.h"
+
 #include "p2/ui/PlayerUi.h"
 
 
@@ -42,7 +44,7 @@ void AplayerScript::BeginPlay()
 		i->setPlayerReference(this);
 	}
 
-    //setTeam(referenceManager::TEAM_PLAYER);
+    
     setTeam(teamEnum::playerTeam);
     setupBoneController(); 
 
@@ -203,7 +205,7 @@ void AplayerScript::MoveForward(float Value)
 {
     Super::MoveForward(Value);
     
-    if(isPaused){
+    if(IsPaused()){
         return;
     }
  
@@ -229,7 +231,7 @@ void AplayerScript::MoveRight(float Value)
 
 void AplayerScript::Jump(){
     Super::Jump();
-    if (isPaused)
+    if(IsPaused())
     {
         return;
     }
@@ -305,7 +307,7 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    if (isPaused)
+    if(IsPaused())
     {
         //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange)        
         return;
@@ -355,7 +357,7 @@ void AplayerScript::switchToIndex(int index){
 
 
 void AplayerScript::TickWeaponSway(){
-    if(isPaused){
+    if(IsPaused()){
         return;
     }
     Aweapon *current = playerInventory.getItemPointer();
@@ -589,10 +591,18 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
  * 
  */
 
+/// @brief overrides base, return if game is paused in game state manager
+/// @return 
+bool AplayerScript::IsPaused(){
+    return worldLevel::gameStateManager.GameStateIsPaused();
+}
 
 void AplayerScript::openPauseMenu(){
     Super::openPauseMenu();
 
+    worldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
+    
+    /*
     UPlayerUi *uiInstance = UPlayerUi::currentInstance();
     if (uiInstance != nullptr)
     {
@@ -607,7 +617,7 @@ void AplayerScript::openPauseMenu(){
         }
     }else{
         isPaused = false;
-    }
+    }*/
 }
 
 void AplayerScript::updateUi(){

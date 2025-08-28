@@ -57,7 +57,7 @@ void AEntityScript::init(){
 
 
 	//set team
-	//setTeam(referenceManager::TEAM_NEUTRAL);
+
 	setTeam(teamEnum::neutralTeam);
 
 
@@ -698,7 +698,6 @@ void AEntityScript::alarm(){
 
 void AEntityScript::setTeam(teamEnum teamIn){
 	this->team = teamIn;
-	// referenceManager::verifyTeam(teamIn);
 }
 
 teamEnum AEntityScript::getTeam(){

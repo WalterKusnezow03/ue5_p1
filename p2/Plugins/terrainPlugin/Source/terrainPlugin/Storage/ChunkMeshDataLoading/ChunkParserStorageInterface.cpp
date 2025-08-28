@@ -58,6 +58,7 @@ void ChunkParserStorageInterface::WriteChunkInfoData(
     TArray<uint8> &bytes,
     ChunkParser &chunkData
 ){
+    //Bin layout [actorLocation, waterLocation, waterFlag, outpostFlag]
     bytes.SetNumUninitialized(bytes.Num() + headerInfoDataSize()); //set new byte num (should not be needed, count 0)
     uint8 *Ptr = bytes.GetData();
     /*
@@ -91,6 +92,7 @@ void ChunkParserStorageInterface::LoadChunkInfoData(
     ChunkParser &chunkData
 ){
 
+    //Bin layout [actorLocation, waterLocation, waterFlag, outpostFlag]
     /*
     FMemory::Memcpy ( 
         void* Dest,

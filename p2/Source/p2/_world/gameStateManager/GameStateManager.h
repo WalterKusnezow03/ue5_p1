@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "p2/_world/EGameState.h"
 
+/// @brief reacts to game state changes and propagates to UPlayerUi Instance
 class P2_API GameStateManager {
 
 public:
@@ -14,6 +15,19 @@ public:
     /// @param state 
     void UpdateGameState(EGameState state);
 
+    /// @brief sets the game state if allowed,
+    ///opens the ui
+    void SetGameStatePaused();
+
+    /// @brief switches to pause or closes pause screen, only if currently in play or pause mode!
+    void SwitchGameStatePausedAndChangeUi();
+
+    ///@brief tells if currently paused by player
+    bool GameStateIsPaused();
+
 private:
-    EGameState currentGameState = EGameState::EGameLaunchScreen;
+    bool CanSwitchStates(EGameState stateIn);
+    bool IsInState(EGameState stateIn);
+
+    EGameState currentGameState = EGameState::EGamePlay;
 };

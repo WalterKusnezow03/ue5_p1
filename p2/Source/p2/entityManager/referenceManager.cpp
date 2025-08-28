@@ -17,6 +17,12 @@ referenceManager::referenceManager(){
 referenceManager *referenceManager::instancePointer = nullptr;
 
 
+void referenceManager::EndPlay(){
+    if(instancePointer){
+        delete instancePointer;
+    }
+    instancePointer = nullptr;
+}
 
 referenceManager::~referenceManager()
 {
@@ -48,16 +54,6 @@ AplayerScript *referenceManager::getPlayerPointer(){
 
 
 
-int referenceManager::verifyTeam(int teamIn){
-    if(
-        teamIn == TEAM_ENEMY ||
-        teamIn == TEAM_NEUTRAL ||
-        teamIn == TEAM_PLAYER
-    ){
-        return teamIn;
-    }
-    return TEAM_NEUTRAL;
-}
 
 UWorld *referenceManager::GetWorld(){
     referenceManager *pointer = instance();
@@ -83,15 +79,6 @@ void referenceManager::showPlayerCursor(bool show){
     }
 }
 
-void referenceManager::forceSetPlayerPaused(bool in){
-    referenceManager *pointer = instance();
-    if(pointer != nullptr){
-        AplayerScript *p = pointer->getPlayerPointer();
-        if(p != nullptr){
-            p->setPaused(in);
-        }
-    }
-}
 
 ///@brief reloads the player loadout if the player pointer is available and the loadout was
 ///modified

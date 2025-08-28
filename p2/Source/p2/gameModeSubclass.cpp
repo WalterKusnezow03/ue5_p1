@@ -55,7 +55,7 @@ void AgameModeSubclass::BeginPlay()
     //opens game launch screen
     worldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
 
-    /// ---- TODO: PLAYER LÄDT / END LEVEL WITH UI ! ---- LOOP ÜBERLEGEN, FREE TERRAIn, FREE PATH FINDER!
+    /// ---- PLAYER LOADS / ENDS LEVEL WITH UI ! ----
     bool debugAllowWorldCreation = false;
     if (debugAllowWorldCreation)
     {

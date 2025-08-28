@@ -18,10 +18,10 @@ public:
     ///and resetet on end play if a level switches (which i dont want)
     ///or on end game 
     static void SetWorld(UWorld *world);
-    static void ResetWorld();
+    static void ResetWorldPointer();
     static UWorld *GetWorld();
 
-    void EndPlay();
+    static void EndPlay();
 
 protected:
     static TArray<FVector> outpostsToCreate;

@@ -53,6 +53,7 @@ worldLevel::~worldLevel()
 }
 
 //static vars init:
+GameStateManager worldLevel::gameStateManager;
 
 bool worldLevel::isTerrainInited = false;
 ATerrainLauncher *worldLevel::terrainLauncher = nullptr;
@@ -70,12 +71,11 @@ bool worldLevel::gamePausedFlag = false;
 /// @brief clears all pointers -> call only on very begin or very end of level!
 /// -> entity manager: holds all entities and room, terrain basic assets!
 /// -> outpostManager: holds all outposts and assigns them on request
-/// -> terrainPointer: creates the terrain once and holds the whole mesh for faster ground detection
 /// -> pathfinder singleton instance -> all nodes will be wiped
 /// -> asset manager: all asset data wiped
 void worldLevel::resetWorld(){
-
-    EntityManager::EndPlay(); //very important
+    worldLevelBase::EndPlay();
+    EntityManager::EndPlay(); // very important
 
     if(outpostManagerPointer != nullptr){
         delete outpostManagerPointer;
@@ -84,7 +84,7 @@ void worldLevel::resetWorld(){
     terrainLauncher = nullptr;
 
     assetManager::EndGame();
-
+    referenceManager::EndPlay();
 }
 
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!

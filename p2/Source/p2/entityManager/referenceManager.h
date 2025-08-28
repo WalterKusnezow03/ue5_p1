@@ -13,23 +13,20 @@
 class P2_API referenceManager
 {
 public:
-	//DEPRECATED
-	static const int TEAM_NEUTRAL = 0;
-	static const int TEAM_ENEMY = 1;
-	static const int TEAM_PLAYER = 2;
-	static int verifyTeam(int teamIn);
-	//DEPRECATED
+	
 
-	~referenceManager();
+	
 
 	static referenceManager *instance();
+	/// @brief deletes the reference manager instance
+	static void EndPlay();
 
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
 
 	static void showPlayerCursor(bool show);
-	static void forceSetPlayerPaused(bool in);
+	
 	static void reloadPlayerLoadoutIfNeeded(LoadoutHelper &other);
 
 	static UWorld *GetWorld();
@@ -37,6 +34,7 @@ public:
 private:
 	// private constructor for singleton
 	referenceManager();
+	~referenceManager();
 
 	static class referenceManager *instancePointer;
 

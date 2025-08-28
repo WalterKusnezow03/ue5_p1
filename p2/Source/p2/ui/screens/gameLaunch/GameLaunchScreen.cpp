@@ -9,6 +9,8 @@
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
 
+#include "p2/_world/worldLevel.h"
+
 void UGameLaunchScreen::init(UPlayerUiBase &ref){
     if(WAS_INIT_FLAG){
         return;
@@ -134,7 +136,7 @@ void UGameLaunchScreen::launchWorld(FString world){
     
     if(UPlayerUi *instance = UPlayerUi::currentInstance()){
         worldLevel::gameStateManager.UpdateGameState(EGameState::EGamePlay);
-        
+
         worldLevel::initWorld(world);
 
         instance->openGameScreen(); //close all
