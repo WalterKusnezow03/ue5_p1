@@ -25,6 +25,8 @@
  */
 class ASSETPLUGIN_API assetManager
 {
+private:
+	bool useFakeRTTI = true;
 
 public:
 	static void EndGame();
@@ -74,7 +76,7 @@ public:
 
 
 	//---- FAKE Runtime type info for dynamic enum tracking SECTION ----
-	//(enum static pointer as key seems very dangerous but seems to be fine :-) )
+	//(Works fine.)
 
 	/// @brief E must be Unreal UENUM!, tracks the enum value, enter a name which wasnt used before.
 	template<typename E>
@@ -84,21 +86,24 @@ public:
 			return;
 		}
 
-		///Will work within one session, hot reload might brick this!
-		UEnum* EnumPtr = StaticEnum<E>();
-		if(EnumPtr){
+		FString enumName = EnumName<E>();
+		if(enumName != TEXT("invalidEnum")){
 			//actually new enum
-			if(TrackedEnums.find(EnumPtr) == TrackedEnums.end()){
+			if(TrackedEnums.find(enumName) == TrackedEnums.end()){
 				FNamedEnum<E> *NamedEnum = new FNamedEnum<E>(outername);
-				TrackedEnums[EnumPtr] = NamedEnum;
+				TrackedEnums[enumName] = NamedEnum;
 
-				FString prefix = FString::Printf(TEXT("assetManager Track<E> Tracked : %s"), *outername);
-    			UE_LOG(LogTemp, Log, TEXT("%s"), *prefix);
+				if(bLogEnabled){
+					FString prefix = FString::Printf(TEXT("assetManager Track<E> Tracked : %s"), *outername);
+					UE_LOG(LogTemp, Log, TEXT("%s"), *prefix);
+				}
 				return;
 			}
 		}else{
-			FString prefix = FString::Printf(TEXT("assetManager Track<E>: Name invalid! %s"), *outername);
-    		UE_LOG(LogTemp, Log, TEXT("%s"), *prefix);
+			if(bLogEnabled){
+				FString prefix = FString::Printf(TEXT("assetManager Track<E>: Name invalid! %s"), *outername);
+    			UE_LOG(LogTemp, Log, TEXT("%s"), *prefix);
+			}
 		}
 		// already tracked
 	}
@@ -146,24 +151,50 @@ public:
 	}
 
 private:
+
+	/// @brief makes the outer and inner key to find the assetmanager and internal enum value
+	/// but both as string
 	template<typename E> 
 	bool MakeKeyPair(E e, FString &outerKey, FString &innerKey){
-		UEnum* EnumPtr = StaticEnum<E>();
-		if(TrackedEnums.find(EnumPtr) != TrackedEnums.end()){
-			FNamedEnumBase *NamedEnum = TrackedEnums[EnumPtr];
+	
+		FString enumAsString = EnumName<E>();
+		if (TrackedEnums.find(enumAsString) != TrackedEnums.end())
+		{
+			FNamedEnumBase *NamedEnum = TrackedEnums[enumAsString];
 			if(NamedEnum){
 				FNamedEnum<E> *casted = static_cast<FNamedEnum<E> *>(NamedEnum);
 				if(casted && casted->Contains(e)){
 					outerKey = casted->GetName();
 					innerKey = casted->makeKey(e);
 
-					FString made = FString::Printf(TEXT("assetManager Tracked Key : %s %s"), *outerKey, *innerKey);
-    				UE_LOG(LogTemp, Log, TEXT("%s"), *made);
+					if(bLogEnabled){
+						FString made = FString::Printf(TEXT("assetManager Tracked Key : %s %s"), *outerKey, *innerKey);
+    					UE_LOG(LogTemp, Log, TEXT("%s"), *made);
+					}
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	///@brief enum name read from header definition.
+	///used to store FNamedEnum Structs 
+	template<typename E>
+	FString EnumName(){
+		UEnum* EnumPtr = StaticEnum<E>(); //isA UObject
+		FString outname = TEXT("invalidEnum");
+		if(EnumPtr){
+			//is just as in the Header definition, the enum name.
+			outname = EnumPtr->GetFName().ToString();
+
+			if(bLogEnabled){
+				FString message = FString::Printf(TEXT("assetManager Tracked Enum As String : %s"), *outname);
+				UE_LOG(LogTemp, Log, TEXT("%s"), *message);
+			}
+			
+		}
+		return outname;
 	}
 
 private:
@@ -172,14 +203,16 @@ private:
 
 
 	//tracked FNamedEnum List
-	std::map<UEnum*, FNamedEnumBase *> TrackedEnums;
+	std::map<FString, FNamedEnumBase *> TrackedEnums;
 	std::map<FString, assetManagerGeneric<FString, UObject>*> TrackedMap;
 	void setupDefaultTracker();
 	void Clear();
 
+	bool bLogEnabled = false;
+
 	//---- FAKE RTTI SECTION END ----
 
-	bool useFakeRTTI = true;
+	
 
 	// --- DEPRECATED ---
 
