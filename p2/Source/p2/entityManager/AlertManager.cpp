@@ -20,6 +20,10 @@ AlertManager::~AlertManager()
 {
 }
 
+void AlertManager::EndPlay(){
+    subscribedToAlert.clear();
+}
+
 ///@brief alerts all aactors in a given area
 ///@param world world to get from
 ///@param location center of radius

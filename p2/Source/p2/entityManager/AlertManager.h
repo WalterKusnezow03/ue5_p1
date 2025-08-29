@@ -18,6 +18,7 @@ private:
 	~AlertManager();
 
 public:
+	static void EndPlay();
 
 	static void alertInArea(UWorld *world, FVector location, float radius);
 

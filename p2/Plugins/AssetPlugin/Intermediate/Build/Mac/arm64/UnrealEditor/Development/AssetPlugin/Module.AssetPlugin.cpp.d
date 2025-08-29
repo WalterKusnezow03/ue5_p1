@@ -3821,9 +3821,11 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetPlugin/Definitions.AssetPlugin.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/AssetPlugin.init.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/EAssetType.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/enum/EAssetType.h \
+  Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/entityEnum.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/entityEnum.h \
-  Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/materialEnum.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/materialEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/particleEnum.gen.cpp \
@@ -3842,7 +3844,11 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/AssetManagerTwoGeneric.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/typeindex \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/AssetPathMaker.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetManager.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/AssetPathMaker.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/Private/AssetPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/Public/AssetPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h

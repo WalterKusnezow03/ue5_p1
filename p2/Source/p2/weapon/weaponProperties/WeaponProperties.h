@@ -5,6 +5,7 @@
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "p2/weapon/ammunitionEnum.h"
 
+/// @brief will manage damage, damage by distance and recoil for a weapon
 class P2_API WeaponProperties{
 
 public:

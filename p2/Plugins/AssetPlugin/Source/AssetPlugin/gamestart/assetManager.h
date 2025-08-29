@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h"
+#include "AssetPlugin/gamestart/TAssetManager/AssetManagerTwoGeneric.h"
+
 #include "AssetPlugin/gamestart/assetEnums/entityEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
@@ -11,6 +13,8 @@
 #include "AssetPlugin/gamestart/assetEnums/particleEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/throwableEnum.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+
+#include "AssetPlugin/gamestart/PathMaker/enum/EAssetType.h"
 #include <map>
 
 /**
@@ -52,8 +56,6 @@ public:
 
 
 	//ui
-	UClass *uiBp();
-	void addUiBp(UClass *uclassin);
 
 	UTexture2D *findTexture(textureEnum type);
 	void addTexture(textureEnum type, UTexture2D *texture);
@@ -65,15 +67,19 @@ public:
 	UClass *debugCubeBp();
 
 
+
+
+
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
 
 
+
+
 	//all asset maps
 	assetManagerGeneric<entityEnum, UClass> entityAssets;
-
-	
 	assetManagerGeneric<weaponEnum, UClass> weaponAssets;
 	assetManagerGeneric<throwableEnum, UClass> throwableAssets;
 	assetManagerGeneric<particleEnum, UClass> particleAssets;
@@ -81,9 +87,8 @@ private:
 	assetManagerGeneric<materialEnum, UMaterialInterface> materialAssets;
 	assetManagerGeneric<textureEnum, UTexture2D> textureAssets;
 
-	std::map<weaponEnum, assetManagerGeneric<weaponAttachmentEnum, UClass>> weaponAttachmentAssets;
-
-	UClass *uiBpPointer = nullptr;
+	assetManagerTwoGeneric<weaponEnum, weaponAttachmentEnum, UClass> weaponAttachmentAssets;
+	
 
 	UClass *debugCubePointer = nullptr;
 };

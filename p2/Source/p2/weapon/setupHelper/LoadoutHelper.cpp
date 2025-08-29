@@ -40,13 +40,13 @@ void LoadoutHelper::replace(int index, weaponSetupHelper &other){
     DebugHelper::logMessage(message);
     if (indexIsValid(index))
     {
-        if(!vec[index].isSame(other)){
-            vec[index] = other;
+        weaponSetupHelper &weaponSetupToUpdate = vec[index];
+        if (!weaponSetupToUpdate.isSame(other))
+        {
+            weaponSetupToUpdate = other;
             loadoutWasModifedFlag = true;
         }
-    }
-    else
-    {
+    }else{
         push_back(other);
         loadoutWasModifedFlag = true;
     }

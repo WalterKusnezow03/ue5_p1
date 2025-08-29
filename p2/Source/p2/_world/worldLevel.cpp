@@ -4,6 +4,8 @@
 #include "worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
+#include "p2/entityManager/AlertManager.h"
+
 #include "terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h"
 #include "GameCore/util/TVector.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
@@ -27,6 +29,7 @@
 #include "p2/vehicles/vehicle/vehicleCar.h"
 #include "terrainPlugin/meshgen/generation/bezierCurve.h"
 #include "p2/entityManager/OutPost/Outpost.h"
+
 
 #include "PathFinder/Public/PathFinderModule.h"
 #include "IkHumanoidModell/actor/IkDebugActor.h"
@@ -76,6 +79,7 @@ bool worldLevel::gamePausedFlag = false;
 void worldLevel::resetWorld(){
     worldLevelBase::EndPlay();
     EntityManager::EndPlay(); // very important
+    AlertManager::EndPlay();
 
     if(outpostManagerPointer != nullptr){
         delete outpostManagerPointer;
@@ -678,6 +682,7 @@ void worldLevel::clearGameSession(){
     //Pathfinder: Yes
     //Terrain: Yes
     //Outpost: Yes
+    //Alert Manager: No
     //EntityGc: No
 
     if(terrainLauncher){
@@ -687,6 +692,8 @@ void worldLevel::clearGameSession(){
     if(APathFinder *pathfinder = APathFinder::instance()){
 
     }
+
+
 
 }
 

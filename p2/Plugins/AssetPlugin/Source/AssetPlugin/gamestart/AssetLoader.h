@@ -53,7 +53,7 @@ private:
 	void loadThrower();
 	void loadParticles();
 	void loadMaterials();
-	void loadUI();
+	
 	void loadTextures();
 
 	void loadDebugCube();

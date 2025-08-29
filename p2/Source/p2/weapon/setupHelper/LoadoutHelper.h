@@ -14,10 +14,17 @@ public:
     LoadoutHelper();
     ~LoadoutHelper();
 
+    /// @brief clears the weapon setup
     void clear();
+
+    /// @brief adds a weapon setup
     void push_back(weaponSetupHelper &other);
+
+    ///@brief replaces an index, if index is valid, otherwise pushback the new weapon setup
     void replace(int index, weaponSetupHelper &other);
 
+    ///@brief spawns all weapons with the internal setups and returns a vector of the 
+    ///spawned weapons
     std::vector<Aweapon *> spawnAllWeaponsAndApplyAttachments(UWorld *world);
 
     bool loadOutWasModified();

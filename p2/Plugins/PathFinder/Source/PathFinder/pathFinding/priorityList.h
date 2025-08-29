@@ -5,9 +5,7 @@
 #include "CoreMinimal.h"
 #include "PathFinder.h"
 
-/**
- * 
- */
+///@brief priority list, deprecated. Adds a node in O(n), ruins pathfinder runtime.
 class PATHFINDER_API priorityList
 {
 public:

@@ -13,7 +13,7 @@ template class assetManagerGeneric<throwableEnum, UClass>;
 template class assetManagerGeneric<particleEnum, UClass>;
 template class assetManagerGeneric<materialEnum, UMaterial>;
 template class assetManagerGeneric<weaponAttachmentEnum, UClass>;
-
+template class assetManagerTwoGeneric<weaponEnum, weaponAttachmentEnum, UClass>;
 
 
 assetManager *assetManager::instancePointer = nullptr;
@@ -99,24 +99,12 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
 
 // --- weapon assets ---
 UClass *assetManager::findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment){
-    if(weaponAttachmentAssets.find(weapon) != weaponAttachmentAssets.end()){
-        assetManagerGeneric<weaponAttachmentEnum, UClass> &manager = weaponAttachmentAssets[weapon];
-        return manager.getBp(weaponAttachment);
-    }
-    return nullptr;
+    return weaponAttachmentAssets.getBp(weapon, weaponAttachment);
 }
 
 void assetManager::addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass){
     if(uclass != nullptr){
-        if(weaponAttachmentAssets.find(weapon) != weaponAttachmentAssets.end()){
-            assetManagerGeneric<weaponAttachmentEnum, UClass> &manager = weaponAttachmentAssets[weapon];
-            manager.addBp(weaponAttachment, uclass);
-        }else{
-            assetManagerGeneric<weaponAttachmentEnum, UClass> newManager;
-            weaponAttachmentAssets[weapon] = newManager;
-            assetManagerGeneric<weaponAttachmentEnum, UClass> &ref = weaponAttachmentAssets[weapon];
-            ref.addBp(weaponAttachment, uclass);
-        }
+        weaponAttachmentAssets.addBp(weapon, weaponAttachment, uclass);
     }
 }
 
@@ -148,13 +136,7 @@ void assetManager::addMaterial(materialEnum type, UMaterialInterface *material){
 
 
 // --- ui ---
-UClass *assetManager::uiBp(){
-    return uiBpPointer;
-}
 
-void assetManager::addUiBp(UClass *uclassin){
-    uiBpPointer = uclassin;
-}
 
 
 UTexture2D *assetManager::findTexture(textureEnum type){

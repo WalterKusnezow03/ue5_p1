@@ -450,7 +450,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
 	UWorld *world = GetWorld();
 	if(world != nullptr){
-		APathFinder *p = APathFinder::instance(world);
+		APathFinder *p = APathFinder::instance();
 
 		//ask for path
 		if(p != nullptr){

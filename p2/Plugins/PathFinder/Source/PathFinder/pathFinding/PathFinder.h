@@ -66,9 +66,14 @@ public:
 
 	FCollisionQueryParams collsionParamsLowDetailAndFast();
 
-	static APathFinder *instance(UWorld *worldIn);
+	
+
+	/// @brief returns the current pathfinder insatnce, launch throuh Public->Pathfinder module,
+	/// must have a world level name!
+	/// to avoid passing world argument!
+	/// @return 
 	static APathFinder *instance();
-	//static void deleteInstance();
+	
 
 	void debugShowAllNodes(UWorld *world);
 

@@ -258,22 +258,8 @@ void APathFinder::clearDelegates(){
 
 
 
-/// @brief returns the instance of the poath finder. DO NOT DELETE
-/// CAUTION PATH FINDER MUST BE LAUNCHED THROUGH PATHFINDER MODULE
-APathFinder* APathFinder::instance(UWorld *worldIn){
-    /*if(alreadyHasInstance()){
-        return pathFinderInstance;
-    }
-    APathFinder::makeInstance(worldIn);
-    if(alreadyHasInstance()){
-        return pathFinderInstance;
-    }
-    return nullptr;*/
-    return instance();
-}
-
-/// @brief acces the pathFinder instance, WILL NOT CREATE ONE
-/// BECAUSE WORLD CONTEXT IS NOT PROVIDED, CAN RETURN NULLPTR
+/// @brief acces the pathFinder instance, WILL NOT CREATE ONE, launch pathfinder through pathfinder module!
+/// CAN RETURN NULLPTR
 /// DO NOT DELETE
 /// @return
 APathFinder* APathFinder::instance(){

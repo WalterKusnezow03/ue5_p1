@@ -599,25 +599,7 @@ bool AplayerScript::IsPaused(){
 
 void AplayerScript::openPauseMenu(){
     Super::openPauseMenu();
-
     worldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
-    
-    /*
-    UPlayerUi *uiInstance = UPlayerUi::currentInstance();
-    if (uiInstance != nullptr)
-    {
-        if(isPaused){
-            uiInstance->openGameScreen();
-            isPaused = false;
-        }
-        else
-        {
-            uiInstance->openPauseScreen();
-            isPaused = true;
-        }
-    }else{
-        isPaused = false;
-    }*/
 }
 
 void AplayerScript::updateUi(){

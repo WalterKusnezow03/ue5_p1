@@ -16,6 +16,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "AssetPlugin/gamestart/AssetLoader.h"
 
+//debug
+#include "AssetPlugin/gamestart/PathMaker/AssetPathMaker.h"
 
 // Game Launch
 #include "p2/_world/EGameState.h"
@@ -48,6 +50,8 @@ void AgameModeSubclass::BeginPlay()
     //load all assets
     AssetLoader a(GetWorld());
     a.loadAssets();
+
+    AssetPathMaker::Test();
 
     //launch ui from here, not from player
     UPlayerUi::createNewInstance(GetWorld());

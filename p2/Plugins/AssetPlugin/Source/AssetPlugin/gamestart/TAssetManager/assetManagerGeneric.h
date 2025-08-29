@@ -8,7 +8,8 @@
 /**
  * will save assets in a map and provide nessecarry methods
  * THIS CLASS WILL ONLY RETURN POINTERS AND IS DESIGNED TO HOLD THESE
- * FOR EXAMPLE FOR UCLASS* or UMATERIAL*
+ * FOR EXAMPLE FOR UCLASS* or UMATERIAL*, cannot mark as uproperty, because unreal doesnt support
+ * template uobjects!
  * E is recommended to be an enum!
  * T is recommended to be a UClass type!
  * 
@@ -20,14 +21,22 @@ class ASSETPLUGIN_API assetManagerGeneric
 	static_assert(std::is_enum<E>::value, "must be an enum");
 	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
+protected:
+
+
 public:
 	assetManagerGeneric(){
 
 	}
 	~assetManagerGeneric(){
-		map.Empty();
-		//DebugHelper::logMessage("map cleared");
+
 	}
+
+	
+
+
+
+	// --- ADDING / READING ASSETS ---
 
 	void addBp(E e, T *t){
 		if(t != nullptr){
