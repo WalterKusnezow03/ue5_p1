@@ -21,8 +21,8 @@ template <typename E0, typename E1, typename T>
 class ASSETPLUGIN_API assetManagerTwoGeneric
 {
 
-	static_assert(std::is_enum<E0>::value, "must be an enum");
-    static_assert(std::is_enum<E1>::value, "must be an enum");
+	//static_assert(std::is_enum<E0>::value, "must be an enum");
+    //static_assert(std::is_enum<E1>::value, "must be an enum");
 	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
 public:

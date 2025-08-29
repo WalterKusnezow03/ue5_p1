@@ -21,17 +21,17 @@
 template <typename E, typename T>
 class ASSETPLUGIN_API assetManagerGeneric
 {
-	static_assert(std::is_enum<E>::value, "must be an enum");
+	//static_assert(std::is_enum<E>::value, "must be an enum");
 	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
 protected:
-	void removeFromGC(T *t){
+	void protectFromGC(T *t){
 		if(t){
 			t->AddToRoot();
 		}
 	}
 
-	void addToGC(T *t){
+	void allowGC(T *t){
 		if(t){
 			t->RemoveFromRoot();
 		}
@@ -42,22 +42,27 @@ public:
 
 	}
 	~assetManagerGeneric(){
-
 		//remove all Assets from root
 		for(auto& Pair : map){
 			E Key = Pair.Key;
 			T* Value = Pair.Value;
 			if (Value){
-				addToGC(Value); // add back to GC
+				allowGC(Value); // add back to GC
 			}
 		}
+	}
 
 
+	void addRaw(E e, UObject *ptr){
+		if(ptr){
+			T *casted = Cast<T>(ptr);
+			if(casted){
+				addBp(e, casted);
+			}
+		}
 	}
 
 	
-
-
 
 	// --- ADDING / READING ASSETS ---
 
@@ -69,7 +74,7 @@ public:
 				map.Add(e, t);
 
 				//remove from Unreal GC
-				removeFromGC(t);
+				protectFromGC(t);
 			}
 		}
 	}
