@@ -38,12 +38,12 @@ assetManager* assetManager::instance(){
 
 
 void assetManager::setupDefaultTracker(){
-    Track<entityEnum>("entityEnum");
-    Track<weaponEnum>("weaponEnum");
-    Track<throwableEnum>("throwableEnum");
-    Track<particleEnum>("particleEnum");
-    Track<materialEnum>("materialEnum");
-    Track<textureEnum>("textureEnum");
+    Track<entityEnum>();
+    Track<weaponEnum>();
+    Track<throwableEnum>();
+    Track<particleEnum>();
+    Track<materialEnum>();
+    Track<textureEnum>();
 }
 
 void assetManager::Clear(){

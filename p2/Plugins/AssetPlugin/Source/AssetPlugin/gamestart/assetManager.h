@@ -21,7 +21,14 @@
 #include <map>
 
 /**
+ * Saves assets of any UEnum to any UObject derived class. Supports any enum out of any plugin!
+ * To Add Assets by an Enum,
+ * Simply use the Track<E> method to track a UEnum.
+ * Afterwards you can add or load assets. Make sure you track only assets of a single type
+ * by enum, the add and find method will NOT prevent you from adding and loading anything,
+ * it will cast anything. If you mix UTexture and Umaterials, thats not my problem.
  * 
+ * Some helper functions will abstract that.
  */
 class ASSETPLUGIN_API assetManager
 {
@@ -78,6 +85,14 @@ public:
 	//---- FAKE Runtime type info for dynamic enum tracking SECTION ----
 	//(Works fine.)
 
+	/// @brief E must be Unreal UENUM!, tracks the enum value, name found automatically.
+	///
+	template<typename E>
+	void Track(){
+		FString name = EnumName<E>();
+		Track<E>(name);
+	}
+
 	/// @brief E must be Unreal UENUM!, tracks the enum value, enter a name which wasnt used before.
 	template<typename E>
 	void Track(FString outername){
@@ -121,8 +136,6 @@ public:
 			}
 			assetManagerGeneric<FString, UObject> *manager = TrackedMap[outerKey];
 			if(manager){
-				ptr->AddToRoot(); //Add to root here, removed in generic map later, inside.
-
 				manager->addRaw(innerKey, ptr);
 			}
 		}

@@ -41,6 +41,8 @@ public:
 	assetManagerGeneric(){
 
 	}
+
+	/// @brief destructor will release all ptrs to garbage collection!
 	~assetManagerGeneric(){
 		//remove all Assets from root
 		for(auto& Pair : map){

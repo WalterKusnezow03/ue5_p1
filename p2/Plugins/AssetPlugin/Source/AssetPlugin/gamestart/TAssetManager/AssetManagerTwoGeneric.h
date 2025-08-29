@@ -31,6 +31,7 @@ public:
 
 	}
 
+	/// @brief destructor will release all ptrs to garbage collection!
 	~assetManagerTwoGeneric(){
 		
 	}
@@ -66,7 +67,6 @@ public:
 	}
 
 private:
-	//std::map<E, T*> map;
 
     UPROPERTY()
 	TMap<E0, assetManagerGeneric<E1, T>> map;
