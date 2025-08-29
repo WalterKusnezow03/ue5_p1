@@ -87,7 +87,7 @@ void worldLevel::resetWorld(){
     }
     terrainLauncher = nullptr;
 
-    assetManager::EndGame();
+    assetManager::EndGame(); //very important
     referenceManager::EndPlay();
 }
 

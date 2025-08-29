@@ -6,6 +6,9 @@
 #include <map>
 
 /**
+ * Pointers are added to root, and tracked until this object is killed.
+ * 
+ * 
  * will save assets in a map and provide nessecarry methods
  * THIS CLASS WILL ONLY RETURN POINTERS AND IS DESIGNED TO HOLD THESE
  * FOR EXAMPLE FOR UCLASS* or UMATERIAL*, cannot mark as uproperty, because unreal doesnt support
@@ -22,13 +25,33 @@ class ASSETPLUGIN_API assetManagerGeneric
 	static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
 
 protected:
+	void removeFromGC(T *t){
+		if(t){
+			t->AddToRoot();
+		}
+	}
 
+	void addToGC(T *t){
+		if(t){
+			t->RemoveFromRoot();
+		}
+	}
 
 public:
 	assetManagerGeneric(){
 
 	}
 	~assetManagerGeneric(){
+
+		//remove all Assets from root
+		for(auto& Pair : map){
+			E Key = Pair.Key;
+			T* Value = Pair.Value;
+			if (Value){
+				addToGC(Value); // add back to GC
+			}
+		}
+
 
 	}
 
@@ -44,6 +67,9 @@ public:
 			T **found = map.Find(e);
 			if(found == nullptr){
 				map.Add(e, t);
+
+				//remove from Unreal GC
+				removeFromGC(t);
 			}
 		}
 	}
