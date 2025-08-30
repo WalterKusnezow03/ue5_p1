@@ -26,7 +26,8 @@ void UImageOverlayedButton::setImage(textureEnum type, FVector2D scale){
     if(background){
         assetManager *pointer = assetManager::instance();
         if(pointer != nullptr){
-            UTexture2D *loadedTexture = pointer->findTexture(type);
+            UTexture2D *loadedTexture = pointer->Find<textureEnum, UTexture2D>(type);
+            // pointer->findTexture(type);
             Super::setImage(loadedTexture, scale); //Super::
         }
     }

@@ -148,6 +148,12 @@ public:
 		}
 	}
 
+	/// @brief finds a T by an Enum E, note that T will be tried to be casted,
+	/// use same type as added.
+	/// @tparam E 
+	/// @tparam T 
+	/// @param e 
+	/// @return 
 	template<typename E, typename T> 
 	T* Find(E e){
 		static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");

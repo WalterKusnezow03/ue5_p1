@@ -701,7 +701,9 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 		weaponEnum ownType = weaponType();
 
 		//spawn uclass
-		UClass *foundAttachment = assetManagerInstance->findBp(ownType, EattachmentType);
+		UClass *foundAttachment = 
+			assetManagerInstance->Find<weaponEnum, weaponAttachmentEnum, UClass>(ownType, EattachmentType);
+		// assetManagerInstance->findBp(ownType, EattachmentType);
 		if(foundAttachment != nullptr){
 			FVector location;
 			AActor *actor = entityManager->spawnAactor(GetWorld(), foundAttachment, location);

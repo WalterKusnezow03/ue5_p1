@@ -77,9 +77,12 @@ void AwingsuitMeshActor::initWingsuitMesh(int detail){
 
         assetManager *assetManagerInstance = assetManager::instance();
         if(assetManagerInstance != nullptr){
-            UMaterialInterface *material = assetManagerInstance->findMaterial(
+            UMaterialInterface *material = assetManagerInstance->Find<materialEnum, UMaterial>(
                 materialEnum::wallMaterial
             );
+            // assetManagerInstance->findMaterial(
+            //     materialEnum::wallMaterial
+            //);
 
             ApplyMaterial(
                 meshPointer,

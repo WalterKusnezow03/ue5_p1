@@ -195,10 +195,8 @@ private:
 
 	//loads a uclass from a specific path
 	static UClass* loadUClassBluePrint(FString path);
-	UMaterial *loadMaterial(FString path);
+	
 
-	FString buildPath(FString path, FString bluePrintName);
-	void cleanUpPath(FString &s);
 
 	void loadWeaponAttachments();
 	void loadWeapons();

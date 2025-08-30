@@ -54,69 +54,9 @@ UClass* AssetLoader::loadUClassBluePrint(FString path){
     return nullptr;
 }
 
-UMaterial *AssetLoader::loadMaterial(FString path){
-    // Load the class object dynamically
-    UMaterial* bpObject = LoadObject<UMaterial>(nullptr, *path);
-    
-    // Check if the class was loaded successfully
-    if (bpObject != nullptr)
-    {
-        return bpObject;
-    }
-    return nullptr;
-}
 
 
 
-
-/// @brief passin your path and prefab blueprint name
-/// @param path path like "/Game/Prefabs..."
-/// @param bluePrintName "justTheName" of the file
-/// @return FString path to load from
-FString AssetLoader::buildPath(FString path, FString bluePrintName){
-    FString pathFront = FString::Printf(TEXT("Blueprint'"));
-    //FString room = FString::Printf(TEXT("room"));
-    FString dot = FString::Printf(TEXT("."));
-    FString _C_end = FString::Printf(TEXT("_C'"));
-    
-    FString connect = pathFront;
-    connect.Append(path);
-    connect.Append(bluePrintName);
-    connect.Append(dot);
-    connect.Append(bluePrintName);
-    connect.Append(_C_end);
-
-    cleanUpPath(connect);
-
-    return connect;
-}
-
-
-void AssetLoader::cleanUpPath(FString &s){
-    FString out;
-    out.Reserve(s.Len());
-    TCHAR slash = TEXT('/');
-    TArray<TCHAR> asArray = s.GetCharArray();
-
-    bool found = false;
-    int i = 0;
-    while(i  < asArray.Num()){
-        if(asArray[i] != slash){
-            out.AppendChar(asArray[i]);
-            found = false;
-        }
-        else
-        {
-            if(!found){ //skip any else
-                out.AppendChar(slash);
-            }
-            found = true;
-        }
-        i++;
-    }
-    s = out;
-    //return out;
-}
 
 /// @brief load all entities 
 void AssetLoader::loadEntities(){
@@ -229,58 +169,6 @@ void AssetLoader::loadWeaponAttachments(){
     );
 
 
-    /*
-    if(assetManager *a = assetManager::instance()){
-        AssetPathMaker pathMaker;
-
-        
-        FString reddotString = pathMaker.makeAssetPath(
-            EAssetType::EUClassBlueprint,
-            "Game",
-            "Prefabs/Weapons/attachments",
-            "reddotBp"
-        );
-        UClass *bp = loadUClassBluePrint(reddotString);
-        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::reddot, bp);
-    
-        
-        
-        FString ironsightString = pathMaker.makeAssetPath(
-            EAssetType::EUClassBlueprint,
-            "Game",
-            "Prefabs/Weapons/rifle2",
-            "ironsightbp");
-        UClass *bp1 = loadUClassBluePrint(ironsightString);
-        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
-
-
-        
-        FString reddotStringPistol = FString::Printf(TEXT(
-            "Blueprint'/Game/Prefabs/Weapons/attachments/reddotPistolBp.reddotPistolBp_C'"
-        ));
-        UClass *bp2 = loadUClassBluePrint(reddotStringPistol);
-        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::reddot, bp2);
-
-
-
-
-        FString surpressorString = FString::Printf(TEXT(
-            "Blueprint'/Game/Prefabs/Weapons/attachments/surpressorBp.surpressorBp_C'"
-        ));
-        UClass *bp3 = loadUClassBluePrint(surpressorString);
-        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::muzzle_SoundSurpressor, bp3);
-        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::muzzle_SoundSurpressor, bp3);
-
-        FString muzzleflashSurpressorString = FString::Printf(TEXT(
-            "Blueprint'/Game/Prefabs/Weapons/attachments/MundungsfeuerdampferBp.MundungsfeuerdampferBp_C'"
-        ));
-        UClass *bp4 = loadUClassBluePrint(muzzleflashSurpressorString);
-        a->addBp(weaponEnum::pistol, weaponAttachmentEnum::muzzle_flashSurpressor, bp4);
-        a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::muzzle_flashSurpressor, bp4);
-
-
-        
-    }*/
 }
 
 
@@ -313,29 +201,6 @@ void AssetLoader::loadWeapons(){
     
 
 
-    /*
-    if(assetManager *a = assetManager::instance()){
-        
-        //pistol
-        FString pistolString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/Weapons/pistol/pistolNew/pistolNew.pistolNew_C'"));
-        UClass *bp = loadUClassBluePrint(pistolString);
-        a->addBp(weaponEnum::pistol, bp);
-
-        
-        //ar
-        FString rifleString = FString::Printf(
-            //TEXT("Blueprint'/Game/Prefabs/Weapons/rifle/rifleBp.rifleBp_C'")
-            TEXT("Blueprint'/Game/Prefabs/Weapons/rifle2/rifleBp.rifleBp_C'")
-        );
-        UClass *riflebp = loadUClassBluePrint(rifleString);
-        a->addBp(weaponEnum::assaultRifle, riflebp);
-
-        //thrower
-        UClass *throwerBp = loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'"));
-        a->addBp(weaponEnum::thrower, throwerBp);
-
-    }*/
-
 }
 
 
@@ -350,14 +215,6 @@ void AssetLoader::loadThrowables(){
         "grenadeBp"                   // Just the file name as displayed
     );
     
-    /*
-    if(assetManager *a = assetManager::instance()){
-
-        a->addBp(
-            throwableEnum::greneade_enum,
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'"))
-        );
-    }*/
     
 }
 
@@ -389,24 +246,6 @@ void AssetLoader::loadParticles(){
     );
     
 
-    /*
-    if(assetManager *am = assetManager::instance()){
-
-        am->addBp(
-            particleEnum::smoke_enum, 
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleSmoke.particleSmoke_C'"))
-        );
-
-        am->addBp(
-            particleEnum::fire_enum, 
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleFire.particleFire_C'"))
-        );
-
-        am->addBp(
-            particleEnum::particleNone_enum, 
-            loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleNone.particleNone_C'"))
-        );
-    }*/
 
 
 }
@@ -457,94 +296,6 @@ void AssetLoader::loadMaterials(){
         );
     }
 
-    /*
-    if(assetManager *a = assetManager::instance()){
-
-        //TERRAIN MATERIALS
-        //grass material
-        a->addMaterial(
-            materialEnum::grassMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/grassMaterial.grassMaterial'"))
-        );
-
-        //stone material
-        a->addMaterial(
-            materialEnum::stoneMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/stoneMaterial.stoneMaterial'"))
-        );
-        a->addMaterial(
-            materialEnum::beigeStoneMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/beigeStoneMaterial.beigeStoneMaterial'"))
-        );
-
-        //wing
-        a->addMaterial(
-            materialEnum::wingMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/wingMaterial.wingMaterial'"))
-        );
-
-
-
-
-        //tree material
-        a->addMaterial(
-            materialEnum::treeMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/treeMaterial.treeMaterial'"))
-        );
-        a->addMaterial(
-            materialEnum::palmLeafMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/palmLeafMaterial.palmLeafMaterial'"))
-        );
-
-        //sand material
-        a->addMaterial(
-            materialEnum::sandMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/sandMaterial.sandMaterial'"))
-        );
-        a->addMaterial(
-            materialEnum::redsandMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/redsandMaterial.redsandMaterial'"))
-        );
-        
-        //water material
-        a->addMaterial(
-            materialEnum::waterMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/waterMaterial.waterMaterial'"))
-        );
-
-        //snow material
-        a->addMaterial(
-            materialEnum::snowMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/snowMaterial.snowMaterial'"))
-        );
-
-        //textured material
-        a->addMaterial(
-            materialEnum::_texturedMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/texturedMaterial.texturedMaterial'"))
-        );
-
-        a->addMaterial(
-            materialEnum::prop_alarmBoxMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/terrain/materials/prop_alarmBoxMaterial.prop_alarmBoxMaterial'"))
-        );
-
-        //HOUSE MATERIALS
-        //wall material
-        a->addMaterial(
-            materialEnum::wallMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/rooms/materials/wallMaterial.wallMaterial'"))
-        );
-
-        //glass material
-        a->addMaterial(
-            materialEnum::glassMaterial,
-            loadMaterial(TEXT("Material'/Game/Prefabs/rooms/materials/glassMaterial.glassMaterial'"))
-        );
-
-        
-
-    }*/
 
 }
 
@@ -577,40 +328,6 @@ void AssetLoader::loadTextures(){
     
     
     
-    
-    
-    /*
-    if(assetManager *am = assetManager::instance()){
-
-        am->addTexture(
-            textureEnum::patroneIcon,
-            AssetLoader::loadAsset<UTexture2D>(TEXT(
-                "Texture2D'/Game/Prefabs/icons/patroneIcon.patroneIcon'")
-            )
-        );
-
-        am->addTexture(
-            textureEnum::healthIcon,
-            AssetLoader::loadAsset<UTexture2D>(TEXT(
-                "Texture2D'/Game/Prefabs/icons/healthIcon.healthIcon'")
-            )
-        );
-
-        am->addTexture(
-            textureEnum::enemyMarkerIcon,
-            AssetLoader::loadAsset<UTexture2D>(TEXT(
-                "Texture2D'/Game/Prefabs/icons/enemyMarkerIcon.enemyMarkerIcon'")
-            )
-        );
-
-        am->addTexture(
-            textureEnum::playerMarkerIcon,
-            AssetLoader::loadAsset<UTexture2D>(TEXT(
-                "Texture2D'/Game/Prefabs/icons/playerMarkerIcon.playerMarkerIcon'")
-            )
-        );
-
-    }*/
 }
 
 

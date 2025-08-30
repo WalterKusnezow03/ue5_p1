@@ -221,7 +221,8 @@ UMaterialInterface *AAeroActor::wingMaterialPointer(){
     UMaterialInterface *ptr = nullptr;
     if (assetManager *a = assetManager::instance())
     {
-        ptr = a->findMaterial(materialEnum::wingMaterial);
+        ptr = a->Find<materialEnum, UMaterial>(materialEnum::wingMaterial);
+        // a->findMaterial(materialEnum::wingMaterial);
     }
     return ptr;
 }

@@ -643,7 +643,12 @@ void AcustomMeshActorBase::ApplyMaterial(
     int layer = AcustomMeshActorBase::layerByMaterialEnum(type);
     if (assetManager *e = assetManager::instance())
     {
-        ApplyMaterial(ProceduralMeshComponent, e->findMaterial(type), layer);
+        ApplyMaterial(
+            ProceduralMeshComponent,
+            e->Find<materialEnum, UMaterial>(type),
+
+            //e->findMaterial(type),
+            layer);
     }
 }
 

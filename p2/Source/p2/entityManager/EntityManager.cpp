@@ -243,7 +243,8 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
 
     //else: create
     if(assetManager *a = assetManager::instance()){
-        UClass *bp = a->findBp(entityEnum::entity_enum);
+        UClass *bp = a->Find<entityEnum, UClass>(entityEnum::entity_enum);
+        // a->findBp(entityEnum::entity_enum);
         if(bp != nullptr){
             AActor *actor = spawnAactor(world, bp, Location);
             if(actor != nullptr){
@@ -287,19 +288,23 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 
     
    if(assetManager *a = assetManager::instance()){
-        UClass *bp = a->findBp(entityEnum::human_enum);
-        if(bp != nullptr){
-            AActor *actor = spawnAactor(world, bp, Location);
-            if(actor != nullptr){
-                addActorToIgnoreRaycastParams(actor, team);
-                AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
-                if(casted != nullptr){
-                    casted->SetActorLocation(Location);
-                    casted->init();
-                    casted->setTeam(team);
-                    return casted;
-                }
-            }
+       UClass *bp = a->Find<entityEnum, UClass>(entityEnum::human_enum);
+       // a->findBp(entityEnum::human_enum);
+       if (bp != nullptr)
+       {
+           AActor *actor = spawnAactor(world, bp, Location);
+           if (actor != nullptr)
+           {
+               addActorToIgnoreRaycastParams(actor, team);
+               AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
+               if (casted != nullptr)
+               {
+                   casted->SetActorLocation(Location);
+                   casted->init();
+                   casted->setTeam(team);
+                   return casted;
+               }
+           }
         }
     }
     return nullptr;
@@ -363,7 +368,8 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
 
     UClass *selectedBp = nullptr;
     if(assetManager *a = assetManager::instance()){
-        selectedBp = a->findBp(typeToSpawn);
+        selectedBp = a->Find<weaponEnum, UClass>(typeToSpawn);
+        // a->findBp(typeToSpawn);
     }
 
     if(selectedBp != nullptr){
@@ -430,7 +436,8 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
 
         UClass *fromMap = nullptr;
         if(assetManager *a = assetManager::instance()){
-            fromMap = a->findBp(type);
+            fromMap = a->Find<throwableEnum, UClass>(type);
+            // a->findBp(type);
         }
 
         if(fromMap != nullptr){
@@ -472,7 +479,8 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
     {
         UClass *selectedBp = nullptr;
         if(assetManager *a = assetManager::instance()){
-            selectedBp = a->findBp(weaponEnum::thrower);
+            selectedBp = a->Find<throwableEnum, UClass>(typeToSpawn);
+            // a->findBp(weaponEnum::thrower);
         }
         AActor *spawned = spawnAactor(world, selectedBp, Location);
         weapon = Cast<AthrowerWeapon>(spawned);
@@ -556,7 +564,7 @@ void EntityManager::createDebree(UWorld *world, FVector &location, materialEnum 
 
     assetManager *am = assetManager::instance();
     if(am != nullptr){
-        UMaterialInterface *material = am->findMaterial(materialType);
+        UMaterialInterface *material = am->Find<materialEnum, UMaterial>(materialType); // am->findMaterial(materialType);
         if(material != nullptr){
             FVector dir = FVectorUtil::randomOffset(100);
             float speed = 3000.0f;
@@ -586,7 +594,7 @@ void EntityManager::createParticle(
         UClass *bp = nullptr; // getParticleBp(enumtype);
 
         if(assetManager *am = assetManager::instance()){
-            bp = am->findBp(enumtype);
+            bp = am->Find<particleEnum, UClass>(enumtype); // am->findBp(enumtype);
         }
 
         if(bp != nullptr){
@@ -633,7 +641,8 @@ void EntityManager::createParticle(
         UClass *bp = nullptr; // getParticleBp(enumtype);
 
         if(assetManager *am = assetManager::instance()){
-            bp = am->findBp(particleEnum::particleNone_enum); //none here.
+            bp = am->Find<particleEnum, UClass>(particleEnum::particleNone_enum);
+            // am->findBp(particleEnum::particleNone_enum); //none here.
         }
 
         if(bp != nullptr){
@@ -704,20 +713,20 @@ std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, i
 void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d){
     //implementation needs to be tested!
 
-    if(assetManager *am = assetManager::instance()){
-        FVector location(0, 0, 0);
+   
+    FVector location(0, 0, 0);
 
-        AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
-        if(customMesh != nullptr){
+    AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
+    if(customMesh != nullptr){
 
-            customMesh->createTwoSidedQuad(
-                a, b, c, d,
-                materialEnum::wallMaterial
-            );
-
-        }
+        customMesh->createTwoSidedQuad(
+            a, b, c, d,
+            materialEnum::wallMaterial
+        );
 
     }
+
+    
 }
 
 

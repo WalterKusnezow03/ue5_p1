@@ -164,7 +164,8 @@ void UCustomRenderedTexture::drawMarkers(
         //vector only based
         for(auto &pair : markerMap){
             textureEnum type = pair.first;
-            UTexture2D *texture = manager->findTexture(type);
+            UTexture2D *texture = manager->Find<textureEnum, UTexture2D>(type);
+            // manager->findTexture(type);
             if(texture){
                 TArray<FVector> &positions = pair.second;
                 for(int i = 0; i < positions.Num(); i++){
