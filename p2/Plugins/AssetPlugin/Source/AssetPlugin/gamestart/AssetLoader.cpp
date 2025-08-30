@@ -160,13 +160,80 @@ void AssetLoader::loadEntities(){
 
 
 void AssetLoader::loadWeaponAttachments(){ 
-    
+    /*
+    static void LoadAndSaveAssetToManager(
+		E0 key0, //track in asset manager
+		E1 key1, //track in asset manager
+		FString pluginName, // like "Game" for game or any other plugin name
+		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+		FString assetName //Just the file name as displayed
+	)
+    */
+
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::assaultRifle,      // track in asset manager
+        weaponAttachmentEnum::reddot,  // track in asset manager
+        "Game",                        // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "reddotBp"                     // Just the file name as displayed
+    );
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::assaultRifle,         // track in asset manager
+        weaponAttachmentEnum::iron_sight, // track in asset manager
+        "Game",                           // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/rifle2",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "ironsightbp"                     // Just the file name as displayed
+    );
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::pistol,            // track in asset manager
+        weaponAttachmentEnum::reddot,  // track in asset manager
+        "Game",                        // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "reddotPistolBp"               // Just the file name as displayed
+    );
+
+
+    //supressor 2 times...
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::pistol,                           // track in asset manager
+        weaponAttachmentEnum::muzzle_SoundSurpressor, // track in asset manager
+        "Game",                                       // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments",                // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "surpressorBp"                                // Just the file name as displayed
+    );
+
+
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::assaultRifle,                           // track in asset manager
+        weaponAttachmentEnum::muzzle_SoundSurpressor, // track in asset manager
+        "Game",                                       // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments",                // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "surpressorBp"                                // Just the file name as displayed
+    );
+
+    //muendungs feuer daempfer 2 times
+
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::pistol,                           // track in asset manager
+        weaponAttachmentEnum::muzzle_flashSurpressor, // track in asset manager
+        "Game",                                       // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments",                // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "MundungsfeuerdampferBp"                      // Just the file name as displayed
+    );
+    LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
+        weaponEnum::assaultRifle,                           // track in asset manager
+        weaponAttachmentEnum::muzzle_flashSurpressor, // track in asset manager
+        "Game",                                       // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/attachments",                // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "MundungsfeuerdampferBp"                      // Just the file name as displayed
+    );
+
+
+    /*
     if(assetManager *a = assetManager::instance()){
         AssetPathMaker pathMaker;
 
-        /*FString reddotString = FString::Printf(TEXT(
-            "Blueprint'/Game/Prefabs/Weapons/attachments/reddotBp.reddotBp_C'"
-        ));*/
+        
         FString reddotString = pathMaker.makeAssetPath(
             EAssetType::EUClassBlueprint,
             "Game",
@@ -177,18 +244,12 @@ void AssetLoader::loadWeaponAttachments(){
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::reddot, bp);
     
         
-        /*FString ironsightString = FString::Printf(TEXT(
-            "Blueprint'/Game/Prefabs/Weapons/rifle2/ironsightbp.ironsightbp_C'"
-        ));*/
+        
         FString ironsightString = pathMaker.makeAssetPath(
             EAssetType::EUClassBlueprint,
             "Game",
             "Prefabs/Weapons/rifle2",
-            "ironsightbp"
-        );
-
-
-
+            "ironsightbp");
         UClass *bp1 = loadUClassBluePrint(ironsightString);
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
 
@@ -219,7 +280,7 @@ void AssetLoader::loadWeaponAttachments(){
 
 
         
-    }
+    }*/
 }
 
 

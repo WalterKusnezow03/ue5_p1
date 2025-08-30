@@ -48,7 +48,7 @@ public:
 
 	/// ---- LOAD AND ADD ASSET TO ASSET MANAGER ----
 
-	/// @brief 
+	/// @brief saves an loaded asset with the given enum and key to the asset manager instance
 	/// @tparam E Enum to track in Asset Manager (Entity Enum , Weapon Enum, Texture Enum etc)
 	/// @tparam T Some Type T, UTexture2D, UClass, UMaterial
 	/// @param enumValue key for Enum to track with
@@ -91,6 +91,59 @@ public:
 			}
 		}
 	}
+
+
+
+	/// @brief saves an loaded asset with the given enum and keys (both!) to the asset manager instance
+	/// @tparam E0 and E1 Enum to track in Asset Manager (Entity Enum , Weapon Enum, Texture Enum etc)
+	/// @tparam T Some Type T, UTexture2D, UClass, UMaterial
+	/// @param enumValue key for Enum to track with
+	/// @param pluginName 
+	/// @param innerPath 
+	/// @param assetName 
+	template <typename E0, typename E1, typename T>
+	static void LoadAndSaveAssetToManager(
+		E0 key0, //track in asset manager
+		E1 key1, //track in asset manager
+		FString pluginName, // like "Game" for game or any other plugin name
+		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+		FString assetName //Just the file name as displayed
+	){
+		EAssetType typeAsset;
+		if(FindType<T>(typeAsset)){
+			//make a path
+			AssetPathMaker pathMaker;
+			FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
+
+			//find asset
+			T *loaded = nullptr;
+
+			//explicit class loading
+			if(typeAsset == EAssetType::EUClassBlueprint){
+				UClass *loadedUClass = loadUClassBluePrint(path);
+				if(loadedUClass){
+					loaded = Cast<T>(loadedUClass);
+				}
+			}else{
+				//other asset loading (Any asset, but not for blueprint uclasses)
+				loaded = loadAsset<T>(path);
+			}
+
+			//save asset to asset manager once found
+			if(loaded != nullptr){
+				assetManager *manager = assetManager::instance();
+				if(manager){
+					manager->Add<E0, E1, T>(key0, key1, loaded);
+				}
+			}
+		}
+	}
+
+
+
+
+
+
 
 private:
 
