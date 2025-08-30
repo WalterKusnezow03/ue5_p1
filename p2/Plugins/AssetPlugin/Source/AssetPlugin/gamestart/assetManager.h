@@ -97,13 +97,13 @@ public:
 	template<typename E>
 	void Track(FString outername){
 		if(TrackedMap.find(outername) != TrackedMap.end()){
-			//name is already in use!
+			//name is already in use, or tracked before!!
 			return;
 		}
 
 		FString enumName = EnumName<E>();
 		if(enumName != TEXT("invalidEnum")){
-			//actually new enum
+			//actually new enum, then add
 			if(TrackedEnums.find(enumName) == TrackedEnums.end()){
 				FNamedEnum<E> *NamedEnum = new FNamedEnum<E>(outername);
 				TrackedEnums[enumName] = NamedEnum;
@@ -124,9 +124,13 @@ public:
 	}
 
 
+	// -- Single key find and add --
 	template<typename E, typename T> 
 	void Add(E e, T *ptr){
 		static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
+
+		//track if not tracked before
+		Track<E>();
 
 		FString outerKey;
 		FString innerKey;
@@ -144,6 +148,10 @@ public:
 	template<typename E, typename T> 
 	T* Find(E e){
 		static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
+
+		//track if not tracked before
+		Track<E>();
+
 		FString outerKey;
 		FString innerKey;
 		if(MakeKeyPair(e, outerKey, innerKey)){
@@ -155,6 +163,73 @@ public:
 						T *casted = Cast<T>(ptr);
 						if(casted){
 							return casted;
+						}
+					}
+				}
+			}
+		}
+		return nullptr;
+	}
+
+	// -- Two Key Find And Add
+	template<typename E, typename F, typename T>
+	void Add(E e, F f, T *ptr){
+		static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
+
+		//track if not tracked before
+		Track<E>();
+		Track<F>();
+
+		if(ptr){
+			FString eOuterKey;
+			FString eInnerKey;
+			if(MakeKeyPair(e, eOuterKey, eInnerKey)){
+
+				FString fOuterKey;
+				FString fInnerKey;
+				if(MakeKeyPair(f, fOuterKey, fInnerKey)){
+					//outer key for map, 
+					if(TrackedDoubleKeyMap.find(eOuterKey) == TrackedDoubleKeyMap.end()){
+						TrackedDoubleKeyMap[eOuterKey] =
+							new assetManagerTwoGeneric<FString, FString, UObject>();
+					}
+
+					//inner keys for asset manager
+					assetManagerTwoGeneric<FString, FString, UObject> *manager = TrackedDoubleKeyMap[eOuterKey];
+					if(manager){
+						manager->addBp(eInnerKey, fInnerKey, ptr);
+					}
+				}
+			}
+		}
+	}
+
+
+	template<typename E, typename F, typename T>
+	T* Find(E e, F f){
+		static_assert(std::is_base_of<UObject, T>::value, "must be an UObject");
+
+		//track if not tracked before
+		Track<E>();
+		Track<F>();
+
+		FString eOuterKey;
+		FString eInnerKey;
+		if(MakeKeyPair(e, eOuterKey, eInnerKey)){
+
+			FString fOuterKey;
+			FString fInnerKey;
+			if(MakeKeyPair(f, fOuterKey, fInnerKey)){
+				if(TrackedDoubleKeyMap.find(eOuterKey) != TrackedDoubleKeyMap.end()){
+					//inner keys for asset manager
+					assetManagerTwoGeneric<FString, FString, UObject> *manager = TrackedDoubleKeyMap[eOuterKey];
+					if(manager){
+						UObject *ptr = manager->getBp(eInnerKey, fInnerKey);
+						if(ptr){
+							T *casted = Cast<T>(ptr);
+							if(casted){
+								return casted;
+							}
 						}
 					}
 				}
@@ -210,6 +285,10 @@ private:
 		return outname;
 	}
 
+	
+
+
+
 private:
 	assetManager();
 	static class assetManager *instancePointer;
@@ -218,10 +297,11 @@ private:
 	//tracked FNamedEnum List
 	std::map<FString, FNamedEnumBase *> TrackedEnums;
 	std::map<FString, assetManagerGeneric<FString, UObject>*> TrackedMap;
+	std::map<FString, assetManagerTwoGeneric<FString, FString, UObject> *> TrackedDoubleKeyMap;
 	void setupDefaultTracker();
 	void Clear();
 
-	bool bLogEnabled = false;
+	bool bLogEnabled = true;
 
 	//---- FAKE RTTI SECTION END ----
 

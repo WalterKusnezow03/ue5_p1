@@ -66,12 +66,15 @@ void assetManager::Clear(){
     }
     TrackedMap.clear();
 
+    for(auto &pair : TrackedDoubleKeyMap){
+        assetManagerTwoGeneric<FString, FString, UObject> *ptr = pair.second;
+        if(ptr){
+            delete ptr;
+            pair.second = nullptr;
+        }
+    }
+    TrackedDoubleKeyMap.clear();
 }
-
-
-
-
-
 
 assetManager::assetManager()
 {
@@ -96,6 +99,7 @@ UClass *assetManager::findBp(entityEnum type){
 void assetManager::addBp(entityEnum type, UClass *uclass){
     if(useFakeRTTI){
         Add<entityEnum, UClass>(type, uclass);
+        return;
     }
     
     if(uclass != nullptr){
@@ -117,6 +121,7 @@ UClass *assetManager::findBp(weaponEnum type){
 void assetManager::addBp(weaponEnum type, UClass *uclass){
     if(useFakeRTTI){
         Add<weaponEnum, UClass>(type, uclass);
+        return;
     }
     
     if(uclass != nullptr){
@@ -137,6 +142,7 @@ UClass *assetManager::findBp(throwableEnum type){
 void assetManager::addBp(throwableEnum type, UClass *uclass){
     if(useFakeRTTI){
         Add<throwableEnum, UClass>(type, uclass);
+        return;
     }
 
     if(uclass != nullptr){
@@ -160,6 +166,7 @@ UClass *assetManager::findBp(particleEnum type){
 void assetManager::addBp(particleEnum type, UClass *uclass){
     if(useFakeRTTI){
         Add<particleEnum, UClass>(type, uclass);
+        return;
     }
     
     if(uclass != nullptr){
@@ -170,10 +177,19 @@ void assetManager::addBp(particleEnum type, UClass *uclass){
 
 // --- weapon assets ---
 UClass *assetManager::findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment){
+    if(useFakeRTTI){
+        return Find<weaponEnum, weaponAttachmentEnum, UClass>(weapon, weaponAttachment);
+    }
+
     return weaponAttachmentAssets.getBp(weapon, weaponAttachment);
 }
 
 void assetManager::addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass){
+    if(useFakeRTTI){
+        Add<weaponEnum, weaponAttachmentEnum, UClass>(weapon, weaponAttachment, uclass);
+        return;
+    }
+
     if(uclass != nullptr){
         weaponAttachmentAssets.addBp(weapon, weaponAttachment, uclass);
     }
@@ -205,6 +221,7 @@ UMaterialInterface *assetManager::findMaterial(materialEnum type){
 void assetManager::addMaterial(materialEnum type, UMaterialInterface *material){
     if(useFakeRTTI){
         Add<materialEnum, UMaterialInterface>(type, material);
+        return;
     }
 
     if(material != nullptr){
@@ -228,6 +245,7 @@ UTexture2D *assetManager::findTexture(textureEnum type){
 void assetManager::addTexture(textureEnum type, UTexture2D *texture){
     if(useFakeRTTI){
         Add<textureEnum, UTexture2D>(type, texture);
+        return;
     }
     if(texture != nullptr){
         textureAssets.addBp(type, texture);
