@@ -2,19 +2,14 @@
 
 
 #include "AssetLoader.h"
-#include "AssetPlugin/gamestart/assetManager.h"
+
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 
-#include "AssetPlugin/gamestart/PathMaker/AssetPathMaker.h"
-#include "AssetPlugin/gamestart/PathMaker/enum/EAssetType.h"
 
 
 
-AssetLoader::AssetLoader(UWorld *worldIn)
+AssetLoader::AssetLoader()
 {
-    if(worldIn != nullptr){
-        world = worldIn;
-    }
 }
 
 AssetLoader::~AssetLoader()
@@ -31,7 +26,7 @@ void AssetLoader::loadAssets()
 
     loadWeapons();
     loadWeaponAttachments();
-    loadThrower();
+    loadThrowables();
     loadParticles();
     
     loadTextures();
@@ -39,6 +34,40 @@ void AssetLoader::loadAssets()
 
     loadDebugCube();
 }
+
+
+
+/// @brief Method to load a Blueprint class from a path.
+/// @param path The path to the Blueprint class.
+/// @return The loaded UClass, or nullptr if it fails.
+/// works as expected
+UClass* AssetLoader::loadUClassBluePrint(FString path){
+    // Load the class object dynamically
+    UClass* bpClass = StaticLoadClass(UObject::StaticClass(), nullptr, *path);
+    
+    
+    // Check if the class was loaded successfully
+    if (bpClass != nullptr)
+    {
+        return bpClass; //issues can still occur here when a non blueprint is found but treated like one!
+    }
+    return nullptr;
+}
+
+UMaterial *AssetLoader::loadMaterial(FString path){
+    // Load the class object dynamically
+    UMaterial* bpObject = LoadObject<UMaterial>(nullptr, *path);
+    
+    // Check if the class was loaded successfully
+    if (bpObject != nullptr)
+    {
+        return bpObject;
+    }
+    return nullptr;
+}
+
+
+
 
 /// @brief passin your path and prefab blueprint name
 /// @param path path like "/Game/Prefabs..."
@@ -92,6 +121,23 @@ void AssetLoader::cleanUpPath(FString &s){
 /// @brief load all entities 
 void AssetLoader::loadEntities(){
 
+    LoadAndSaveAssetToManager<entityEnum, UClass>(
+        entityEnum::entity_enum, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/player",        // like: "Prefabs/Weapons/attachments", no trailing slash
+        "entityPrefab"           // Just the file name as displayed
+    );
+
+    LoadAndSaveAssetToManager<entityEnum, UClass>(
+        entityEnum::human_enum, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/player",        // like: "Prefabs/Weapons/attachments", no trailing slash
+        "humanEntityPrefab"           // Just the file name as displayed
+    );
+
+
+
+    /*
     if(assetManager *am = assetManager::instance()){
         FString path = FString::Printf(TEXT("/Game/Prefabs/player/"));
         FString entityString = buildPath(path, "entityPrefab");
@@ -101,69 +147,48 @@ void AssetLoader::loadEntities(){
         FString humanString = FString::Printf(TEXT("Blueprint'/Game/Prefabs/player/humanEntityPrefab.humanEntityPrefab_C'"));
         am->addBp(entityEnum::human_enum, loadUClassBluePrint(humanString));
     
-    }
+    }*/
 
 
 }
 
 
 
-/// @brief Method to load a Blueprint class from a path.
-/// @param path The path to the Blueprint class.
-/// @return The loaded UClass, or nullptr if it fails.
-/// works as expected
-UClass* AssetLoader::loadUClassBluePrint(FString path){
-    // Load the class object dynamically
-    UClass* bpClass = StaticLoadClass(UObject::StaticClass(), nullptr, *path);
+
+
+
+
+
+void AssetLoader::loadWeaponAttachments(){ 
     
-    
-    // Check if the class was loaded successfully
-    if (bpClass != nullptr)
-    {
-        return bpClass; //issues can still occur here when a non blueprint is found but treated like one!
-    }
-    return nullptr;
-}
-
-UMaterial *AssetLoader::loadMaterial(FString path){
-    // Load the class object dynamically
-    UMaterial* bpObject = LoadObject<UMaterial>(nullptr, *path);
-    
-    // Check if the class was loaded successfully
-    if (bpObject != nullptr)
-    {
-        return bpObject;
-    }
-    return nullptr;
-}
-
-
-
-
-
-
-
-void AssetLoader::loadWeaponAttachments(){
     if(assetManager *a = assetManager::instance()){
-        AssetPathMaker maker;
+        AssetPathMaker pathMaker;
 
         /*FString reddotString = FString::Printf(TEXT(
             "Blueprint'/Game/Prefabs/Weapons/attachments/reddotBp.reddotBp_C'"
         ));*/
-        FString reddotString = maker.makeAssetPath(
+        FString reddotString = pathMaker.makeAssetPath(
             EAssetType::EUClassBlueprint,
             "Game",
             "Prefabs/Weapons/attachments",
             "reddotBp"
         );
-
         UClass *bp = loadUClassBluePrint(reddotString);
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::reddot, bp);
     
         
-        FString ironsightString = FString::Printf(TEXT(
+        /*FString ironsightString = FString::Printf(TEXT(
             "Blueprint'/Game/Prefabs/Weapons/rifle2/ironsightbp.ironsightbp_C'"
-        ));
+        ));*/
+        FString ironsightString = pathMaker.makeAssetPath(
+            EAssetType::EUClassBlueprint,
+            "Game",
+            "Prefabs/Weapons/rifle2",
+            "ironsightbp"
+        );
+
+
+
         UClass *bp1 = loadUClassBluePrint(ironsightString);
         a->addBp(weaponEnum::assaultRifle, weaponAttachmentEnum::iron_sight, bp1);
 
@@ -203,6 +228,31 @@ void AssetLoader::loadWeaponAttachments(){
 /// @brief loads all weapons to the entity manager
 void AssetLoader::loadWeapons(){
 
+    LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::pistol,                 // track in asset manager
+        "Game",                             // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/pistol/pistolNew", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "pistolNew"                         // Just the file name as displayed
+    );
+
+    LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::assaultRifle,                 // track in asset manager
+        "Game",                             // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/rifle2", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "rifleBp"                         // Just the file name as displayed
+    );
+
+
+    LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::thrower,            // track in asset manager
+        "Game",                         // like "Game" for game or any other plugin name
+        "Prefabs/Throwables",           // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "defaultthrower"                // Just the file name as displayed
+    );
+    
+
+
+    /*
     if(assetManager *a = assetManager::instance()){
         
         //pistol
@@ -223,23 +273,30 @@ void AssetLoader::loadWeapons(){
         UClass *throwerBp = loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/defaultthrower.defaultthrower_C'"));
         a->addBp(weaponEnum::thrower, throwerBp);
 
-    }
+    }*/
 
 }
 
 
-/// @brief load thrower and throwables
+/// @brief load throwables
 /// @param entityManager entity manager
-void AssetLoader::loadThrower(){
+void AssetLoader::loadThrowables(){
     
+    LoadAndSaveAssetToManager<throwableEnum, UClass>(
+        throwableEnum::greneade_enum, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/Throwables",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "grenadeBp"                   // Just the file name as displayed
+    );
     
+    /*
     if(assetManager *a = assetManager::instance()){
 
         a->addBp(
             throwableEnum::greneade_enum,
             loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/Throwables/grenadeBp.grenadeBp_C'"))
         );
-    }
+    }*/
     
 }
 
@@ -249,6 +306,29 @@ void AssetLoader::loadThrower(){
 /// @param entityManager to set in
 void AssetLoader::loadParticles(){
     
+    LoadAndSaveAssetToManager<particleEnum, UClass>(
+        particleEnum::smoke_enum, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/particle",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "particleSmoke"                   // Just the file name as displayed
+    );
+
+    LoadAndSaveAssetToManager<particleEnum, UClass>(
+        particleEnum::fire_enum, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/particle",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "particleFire"           // Just the file name as displayed
+    );
+
+    LoadAndSaveAssetToManager<particleEnum, UClass>(
+        particleEnum::particleNone_enum, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/particle",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "particleNone"           // Just the file name as displayed
+    );
+    
+
+    /*
     if(assetManager *am = assetManager::instance()){
 
         am->addBp(
@@ -265,7 +345,7 @@ void AssetLoader::loadParticles(){
             particleEnum::particleNone_enum, 
             loadUClassBluePrint(TEXT("Blueprint'/Game/Prefabs/particle/particleNone.particleNone_C'"))
         );
-    }
+    }*/
 
 
 }
@@ -276,7 +356,47 @@ void AssetLoader::loadParticles(){
 
 /// @brief loads all materials needed
 void AssetLoader::loadMaterials(){
-    
+    /*
+    Default call:
+
+    LoadAndSaveAssetToManager<materialEnum, UMaterial>(
+        materialEnum::grassMaterial, 
+        "Game", //plugin name or "Game" 
+        "Prefabs/terrain/materials", //inner path, not trailing slash
+        "grassMaterial" //asset name just as displayed
+    );*/
+
+    //CAUTION:
+    //since im saving all materials in the same folder:
+    std::map<materialEnum, FString> assetNames;
+    assetNames[materialEnum::grassMaterial] = "grassMaterial";
+    assetNames[materialEnum::stoneMaterial] = "stoneMaterial";
+    assetNames[materialEnum::beigeStoneMaterial] = "beigeStoneMaterial";
+    assetNames[materialEnum::wingMaterial] = "wingMaterial";
+    assetNames[materialEnum::treeMaterial] = "treeMaterial";
+    assetNames[materialEnum::palmLeafMaterial] = "palmLeafMaterial";
+    assetNames[materialEnum::sandMaterial] = "sandMaterial";
+    assetNames[materialEnum::redsandMaterial] = "redsandMaterial";
+    assetNames[materialEnum::waterMaterial] = "waterMaterial";
+
+    assetNames[materialEnum::snowMaterial] = "snowMaterial";
+    assetNames[materialEnum::_texturedMaterial] = "texturedMaterial";
+    assetNames[materialEnum::prop_alarmBoxMaterial] = "prop_alarmBoxMaterial";
+    assetNames[materialEnum::wallMaterial] = "wallMaterial";
+    assetNames[materialEnum::glassMaterial] = "glassMaterial";
+
+    for(auto &pair : assetNames){
+        materialEnum typeEnum = pair.first;
+        FString nameAsset = pair.second;
+        LoadAndSaveAssetToManager<materialEnum, UMaterial>(
+            typeEnum, 
+            "Game", //plugin name or "Game" 
+            "Prefabs/terrain/materials", //inner path, not trailing slash
+            nameAsset //asset name just as displayed
+        );
+    }
+
+    /*
     if(assetManager *a = assetManager::instance()){
 
         //TERRAIN MATERIALS
@@ -363,7 +483,7 @@ void AssetLoader::loadMaterials(){
 
         
 
-    }
+    }*/
 
 }
 
@@ -373,6 +493,32 @@ void AssetLoader::loadMaterials(){
 
 
 void AssetLoader::loadTextures(){
+    
+    //icons directory
+    std::map<textureEnum, FString> assetNames;
+    assetNames[textureEnum::patroneIcon] = "patroneIcon";
+    assetNames[textureEnum::healthIcon] = "healthIcon";
+    assetNames[textureEnum::enemyMarkerIcon] = "enemyMarkerIcon";
+    assetNames[textureEnum::playerMarkerIcon] = "playerMarkerIcon";
+
+    for(auto &pair : assetNames){
+        textureEnum typeEnum = pair.first;
+        FString nameAsset = pair.second;
+        LoadAndSaveAssetToManager<textureEnum, UTexture2D>(
+            typeEnum, 
+            "Game", //plugin name or "Game" 
+            "Prefabs/icons", //inner path, not trailing slash
+            nameAsset //asset name just as displayed
+        );
+    }
+    
+    
+    
+    
+    
+    
+    
+    /*
     if(assetManager *am = assetManager::instance()){
 
         am->addTexture(
@@ -403,7 +549,7 @@ void AssetLoader::loadTextures(){
             )
         );
 
-    }
+    }*/
 }
 
 

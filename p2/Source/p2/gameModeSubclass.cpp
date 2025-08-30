@@ -47,8 +47,8 @@ void AgameModeSubclass::BeginPlay()
     //set worldLevel UWorld pointer for easier world pointer getting in non aactor classes
     worldLevel::SetWorld(GetWorld()); //needed for init!
 
-    //load all assets
-    AssetLoader a(GetWorld());
+    //load all assets (saved to asset manager single ton)
+    AssetLoader a;
     a.loadAssets();
 
     AssetPathMaker::Test();

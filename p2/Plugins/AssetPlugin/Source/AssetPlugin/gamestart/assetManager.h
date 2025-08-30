@@ -24,6 +24,9 @@
  * Saves assets of any UEnum to any UObject derived class. Supports any enum out of any plugin!
  * To Add Assets by an Enum,
  * Simply use the Track<E> method to track a UEnum.
+ * (If Using Find and Add method, the template types E and F must be UEnums, but are
+ * tracked automatically!)
+ * 
  * Afterwards you can add or load assets. Make sure you track only assets of a single type
  * by enum, the add and find method will NOT prevent you from adding and loading anything,
  * it will cast anything. If you mix UTexture and Umaterials, thats not my problem.
