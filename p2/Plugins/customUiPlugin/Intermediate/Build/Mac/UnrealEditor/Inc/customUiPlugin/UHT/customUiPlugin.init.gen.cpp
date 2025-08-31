@@ -17,13 +17,13 @@ void EmptyLinkFunctionForGeneratedCodecustomUiPlugin_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0x137A6BEF,
-				0xF1CDCEFC,
+				0x639E424B,
+				0x7DCA8DBE,
 				METADATA_PARAMS(nullptr, 0)
 			};
 			UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_customUiPlugin.OuterSingleton, PackageParams);
 		}
 		return Z_Registration_Info_UPackage__Script_customUiPlugin.OuterSingleton;
 	}
-	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_customUiPlugin(Z_Construct_UPackage__Script_customUiPlugin, TEXT("/Script/customUiPlugin"), Z_Registration_Info_UPackage__Script_customUiPlugin, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x137A6BEF, 0xF1CDCEFC));
+	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_customUiPlugin(Z_Construct_UPackage__Script_customUiPlugin, TEXT("/Script/customUiPlugin"), Z_Registration_Info_UPackage__Script_customUiPlugin, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x639E424B, 0x7DCA8DBE));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

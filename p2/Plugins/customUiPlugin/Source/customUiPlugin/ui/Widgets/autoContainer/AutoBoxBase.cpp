@@ -47,11 +47,14 @@ void UAutoBoxBase::Tick(float deltatime){
 /// @brief adds a child to click listening and visibility propagation if not null
 /// @param item 
 void UAutoBoxBase::AddChild(UcustomUiComponentBase *item){
-    if(item){
+    if(item && CanAddChild(item)){
         attachedItems.Add(item);
     }
 }
 
+bool UAutoBoxBase::CanAddChild(UcustomUiComponentBase *ptr){
+    return ptr != nullptr && !attachedItems.Contains(ptr);
+}
 
 void UAutoBoxBase::RemoveChild(UcustomUiComponentBase *item){
     if(item){
@@ -64,3 +67,4 @@ void UAutoBoxBase::RemoveChild(UcustomUiComponentBase *item){
         }
     }
 }
+

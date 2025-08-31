@@ -3959,6 +3959,11 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/CanvasScreen.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiComponentBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiPlugin.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/GridBox.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/GridBox.h \
+  Runtime/UMG/Public/Components/GridPanel.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/GridPanel.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/GridBox.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Hbox.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Hbox.h \
   Runtime/UMG/Public/Components/HorizontalBox.h \
@@ -4040,6 +4045,10 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/ScreenStack/ScreenOpenStack.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/TickUpdate/UiActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/AutoBoxBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/GridBox.cpp \
+  Runtime/UMG/Public/Components/GridSlot.h \
+  Runtime/Slate/Public/Widgets/Layout/SGridPanel.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/GridSlot.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Hbox.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Vbox.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/ButtonBase.cpp \
@@ -5240,7 +5249,6 @@
   Runtime/Slate/Public/Widgets/Text/SRichTextBlock.h \
   Runtime/Slate/Public/Widgets/Layout/SBox.h \
   Runtime/Slate/Public/Widgets/Layout/SHeader.h \
-  Runtime/Slate/Public/Widgets/Layout/SGridPanel.h \
   Runtime/Slate/Public/Widgets/Layout/SUniformGridPanel.h \
   Runtime/Slate/Public/Widgets/Input/SMenuAnchor.h \
   Runtime/Slate/Public/Framework/MultiBox/MultiBoxDefs.h \
@@ -5309,10 +5317,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/UniformGridSlot.generated.h \
   Runtime/UMG/Public/Components/UniformGridPanel.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/UniformGridPanel.generated.h \
-  Runtime/UMG/Public/Components/GridSlot.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/GridSlot.generated.h \
-  Runtime/UMG/Public/Components/GridPanel.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/GridPanel.generated.h \
   Runtime/UMG/Public/Components/ScrollBoxSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ScrollBoxSlot.generated.h \
   Runtime/UMG/Public/Components/ScrollBox.h \

@@ -44,38 +44,6 @@ public:
 	~assetManager();
 
 
-	//entity
-	UClass *findBp(entityEnum type);
-	void addBp(entityEnum type, UClass *asset);
-
-
-	//weapon
-	UClass *findBp(weaponEnum type);
-	void addBp(weaponEnum type, UClass *asset);
-
-	//throwables
-	UClass *findBp(throwableEnum type);
-	void addBp(throwableEnum type, UClass *asset);
-
-	//particles
-	UClass *findBp(particleEnum type);
-	void addBp(particleEnum type, UClass *asset);
-
-
-	//all materials
-	UMaterialInterface *findMaterial(materialEnum type);
-	void addMaterial(materialEnum type, UMaterialInterface *material);
-
-	//weapon attachments
-	UClass *findBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment);
-	void addBp(weaponEnum weapon, weaponAttachmentEnum weaponAttachment, UClass *uclass);
-
-
-	//ui
-
-	UTexture2D *findTexture(textureEnum type);
-	void addTexture(textureEnum type, UTexture2D *texture);
-
 
 
 
@@ -304,7 +272,7 @@ private:
 
 
 	//tracked FNamedEnum List
-	std::map<FString, FNamedEnumBase *> TrackedEnums;
+	std::map<FString, FNamedEnumBase *> TrackedEnums; //saving base pointer because RTTI is NOT ALLOWED!
 	std::map<FString, assetManagerGeneric<FString, UObject>*> TrackedMap;
 	std::map<FString, assetManagerTwoGeneric<FString, FString, UObject> *> TrackedDoubleKeyMap;
 	void setupDefaultTracker();

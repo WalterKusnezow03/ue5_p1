@@ -51,4 +51,6 @@ public:
 protected:
     UPROPERTY()
     TArray<UcustomUiComponentBase *> attachedItems;
+
+    bool CanAddChild(UcustomUiComponentBase *ptr);
 };

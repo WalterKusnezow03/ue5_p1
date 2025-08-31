@@ -26,21 +26,24 @@ void UWorldList::init(UGameLaunchScreen *launcher){
 
 
 bool UWorldList::dispatchClick(){
-    return baseVBox != nullptr && baseVBox->dispatchClick();
+    return baseGridBox != nullptr && baseGridBox->dispatchClick();
 }
 
 void UWorldList::setVisible(bool visible){
-    if(baseVBox){
-        baseVBox->setVisible(visible);
+    if(baseGridBox){
+        baseGridBox->setVisible(visible);
     }
 }
 
 
 void UWorldList::createLayout(){
-    if(!baseVBox){
-        baseVBox = NewObject<UVbox>(this);
-        baseVBox->init();
+    
+    if(!baseGridBox){
+        baseGridBox = NewObject<UGridBox>(this);
+        baseGridBox->init();
     }
+
+
 }
 
 bool UWorldList::CanAddWorld(FString name){
@@ -61,20 +64,21 @@ void UWorldList::AddWorld(FString name){
 /// @brief intern Add World, NOT SAVED, just for button creation
 /// @param name 
 void UWorldList::AddWorldInternal(FString name){
-    if(baseVBox){
-        URemovableTextButton *button = makeRemovableTextButton(name);
-        itemsInUse.Add(button);
-        baseVBox->AddChild(button);
+    if(baseGridBox){
+        TArray<UcustomUiComponentBase *> newRow = makeButtonPair(name);
+        baseGridBox->AddRow(newRow);
+        //AddRow(TArray<UcustomUiComponentBase *> &items)
     }
 }
 
-void UWorldList::removeWorld(URemovableTextButton *item){
+
+void UWorldList::removeWorld(UTextButton *item){
     if(!item){
         return;
     }
 
     //remove from string list
-    FString worldName = item->GetText();
+    FString worldName = item->getText();
     bool wasFound = false;
     if (worldNames.Num() > 0)
     {
@@ -86,17 +90,24 @@ void UWorldList::removeWorld(URemovableTextButton *item){
         }
     }
 
-    //remove from in use item pointer list
-    if(baseVBox){
-        baseVBox->RemoveChild(item);
+    //remove row from grid and free all items
+    if(baseGridBox){
+        TArray<UcustomUiComponentBase *> removed = baseGridBox->RemovedItemsFromRemoveRow(item);
+        for (int i = 0; i < removed.Num(); i++){
+            if(removed[i]){
+                UTextButton *casted = Cast<UTextButton>(removed[i]);
+                if(casted){
+                    textButtonsFree.Add(casted);
+                }
 
-        //remove from use array
-        int32 Index;
-        if (itemsInUse.Find(item, Index)){
-            itemsInUse[Index] = itemsInUse[itemsInUse.Num() - 1];
-            itemsInUse.Pop();
+                //remove from use array
+                int32 Index;
+                if (textButtonsInUse.Find(casted, Index)){
+                    textButtonsInUse[Index] = textButtonsInUse[textButtonsInUse.Num() - 1];
+                    textButtonsInUse.Pop();
+                }
+            }
         }
-        itemsFree.Add(item);
     }
 
     //save changes made
@@ -106,50 +117,60 @@ void UWorldList::removeWorld(URemovableTextButton *item){
     }
 }
 
-URemovableTextButton *UWorldList::makeRemovableTextButton(FString name){
-    URemovableTextButton *Ptr = nullptr;
-    if(itemsFree.Num() > 0){
-        Ptr = itemsFree[itemsFree.Num() - 1];
-        itemsFree.Pop();
-    }else{
-        Ptr = NewObject<URemovableTextButton>(this);
-        Ptr->init();
-    }
 
-    if(Ptr){
-        Ptr->SetText(name);
 
-        //FSimpleDelegate::CreateUObject(uclassInstance*, &<classname>::<methodname>)
-        /*FSimpleDelegate::CreateLambda([uclassInstance*, SomeValue]()
-        {
-            uclassInstance->SomeUFunction(SomeValue);
-        }*/
 
-        //update callback: Click and Launch world!
+TArray<UcustomUiComponentBase*> UWorldList::makeButtonPair(FString name){
+    UTextButton *worldButton = PopFromFreeList();
+    UTextButton *removeButton = PopFromFreeList();
 
-        //remove callback
-        FSimpleDelegate removeDelegate = FSimpleDelegate::CreateLambda([this, Ptr]()
-            {
-                this->removeWorld(Ptr);
-            }
-        );
-        Ptr->SetRemoveCallback(removeDelegate);
-        
+    if(worldButton){
+        worldButton->setText(name);
 
         //start world Callback
         if(gameLaunchScreenParent){
-            FSimpleDelegate startWorldDelegate = FSimpleDelegate::CreateLambda([this, Ptr]()
+            FSimpleDelegate startWorldDelegate = FSimpleDelegate::CreateLambda([this, worldButton]()
                 {
-                    FString worldName = Ptr->GetText();
+                    FString worldName = worldButton->getText();
                     this->gameLaunchScreenParent->launchWorld(worldName);
                 }
             );
-            Ptr->SetTextButtonCallBack(startWorldDelegate);
+            worldButton->SetCallBack(startWorldDelegate);
         }
-        
 
-
+        if(removeButton){
+            removeButton->setText("Delete");
+    
+            //remove callback, push world button for name!
+            FSimpleDelegate removeDelegate = FSimpleDelegate::CreateLambda([this, worldButton]()
+                {
+                    this->removeWorld(worldButton);
+                }
+            );
+            removeButton->SetCallBack(removeDelegate);
+        }
     }
+
+    TArray<UcustomUiComponentBase *> outArray;
+    if(worldButton)
+        outArray.Add(worldButton);
+
+    if(removeButton)
+        outArray.Add(removeButton);
+
+    return outArray;
+}
+
+UTextButton *UWorldList::PopFromFreeList(){
+    UTextButton *Ptr = nullptr;
+    if(textButtonsFree.Num() > 0){
+        Ptr = textButtonsFree[textButtonsFree.Num() - 1];
+        textButtonsFree.Pop();
+    }else{
+        Ptr = NewObject<UTextButton>(this);
+        Ptr->init();
+    }
+    textButtonsInUse.Add(Ptr);
     return Ptr;
 }
 

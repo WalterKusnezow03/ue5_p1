@@ -161,11 +161,11 @@ void UCustomRenderedTexture::drawMarkers(
         
         bool centerPivot = true;
 
-        //vector only based
+        //vector only based drawing
         for(auto &pair : markerMap){
             textureEnum type = pair.first;
             UTexture2D *texture = manager->Find<textureEnum, UTexture2D>(type);
-            // manager->findTexture(type);
+            
             if(texture){
                 TArray<FVector> &positions = pair.second;
                 for(int i = 0; i < positions.Num(); i++){
@@ -181,10 +181,10 @@ void UCustomRenderedTexture::drawMarkers(
         }  
 
         
-        //matrix based
+        //matrix based daring (with rotation)
         for(auto &pair : markerMapMatrix){
             textureEnum type = pair.first;
-            UTexture2D *texture = manager->findTexture(type);
+            UTexture2D *texture = manager->Find<textureEnum, UTexture2D>(type);
             if(texture){
                 TArray<MMatrix> &positions = pair.second;
                 for(int i = 0; i < positions.Num(); i++){

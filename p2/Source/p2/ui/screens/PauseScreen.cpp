@@ -18,20 +18,29 @@ void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
     createMenu();
     createButtons();
 
-    debugCreateTextBox();
+    debug();
     debugCreateGameLaunchButton();
 }
 
 // ---- DEBUG: MARK REMOVE ----
-void UPauseScreen::debugCreateTextBox(){
+void UPauseScreen::debug(){
     if(menu){
-        debugTextBox = NewObject<UTextBoxBase>(this);
-        if(debugTextBox){
-            debugTextBox->init(); 
-            menu->AddChild(debugTextBox); // add child to super
+        gridBox = NewObject<UGridBox>(this);
+        gridBox->init(2, 2);
+        menu->AddChild(gridBox);
+
+        int count = 10;
+        for (int i = 0; i < count; i++){
+            UTextButton *someButton = NewObject<UTextButton>(this);
+            someButton->init();
+            someButton->setText(FString::Printf(TEXT("Grid B(%d)"), i));
+            gridBox->AddChild(someButton);
         }
+
+
+        //remove 1 first for debug (should remove button(2,3))
+        gridBox->RemoveRow(1);
     }
-    
 }
 
 void UPauseScreen::debugCreateGameLaunchButton(){

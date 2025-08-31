@@ -4,7 +4,10 @@
 
 
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
-#include "p2/ui/screens/gameLaunch/WorldList/item/RemovableTextButton.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/GridBox.h"
+
+//#include "p2/ui/screens/gameLaunch/WorldList/item/RemovableTextButton.h"
+#include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "customUiPlugin/ui/Widgets/textBox/TextBoxBase.h"
 
 #include "WorldList.generated.h"
@@ -36,8 +39,8 @@ public:
     virtual void setVisible(bool visible) override;
 
     virtual UWidget *baseLayoutPointer() override{
-        if(baseVBox){
-            return baseVBox->baseLayoutPointer();
+        if(baseGridBox){
+            return baseGridBox->baseLayoutPointer();
         }
         return nullptr;
     }
@@ -50,7 +53,7 @@ public:
 
     ///@brief will remove a world from list and storage completly
     UFUNCTION()
-    void removeWorld(URemovableTextButton *item);
+    void removeWorld(UTextButton *item);
 
     ///@brief tells if a world is already present in the world array
     bool CanAddWorld(FString name);
@@ -58,17 +61,26 @@ public:
 private:
     UGameLaunchScreen *gameLaunchScreenParent = nullptr;
 
+
+    //new
     UPROPERTY()
-    UVbox *baseVBox = nullptr;
+    UGridBox *baseGridBox = nullptr;
+
 
     UPROPERTY()
     UTextBoxBase *searchBar = nullptr;
 
-    UPROPERTY()
-    TArray<URemovableTextButton *> itemsFree;
+
 
     UPROPERTY()
-    TArray<URemovableTextButton *> itemsInUse;
+    TArray<UTextButton *> textButtonsFree;
+    UPROPERTY()
+    TArray<UTextButton *> textButtonsInUse;
+
+    TArray<UcustomUiComponentBase *> makeButtonPair(FString name);
+    UTextButton *PopFromFreeList();
+
+
 
     TArray<FString> worldNames;
 
@@ -98,5 +110,5 @@ private:
     void RemoveWorldDataFromStorage(FString worldName);
 
     //auto create a world string
-    bool DebugMode = true;
+    bool DebugMode = false;
 };

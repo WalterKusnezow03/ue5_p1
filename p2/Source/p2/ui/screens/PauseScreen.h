@@ -10,6 +10,7 @@
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 
 //debug
+#include "customUiPlugin/ui/Widgets/autoContainer/GridBox.h"
 #include "customUiPlugin/ui/Widgets/textBox/TextBoxBase.h"
 
 #include "PauseScreen.generated.h"
@@ -44,10 +45,9 @@ private:
 
 
     // ---- DEBUG ----
-
     UPROPERTY()
-    UTextBoxBase *debugTextBox = nullptr;
-    void debugCreateTextBox();
+    UGridBox *gridBox = nullptr;
+    void debug();
 
     UPROPERTY()
     UTextButton *debugGameLaunchButton = nullptr;
