@@ -15,3 +15,11 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
     // MySlateWidget = SNew(SSlateWidgetBase); //hier class name vom slate einfügen
     // return MySlateWidget.ToSharedRef();
 }
+
+
+
+void UWidgetSlateWrapperBase::Tick(float deltatime){
+    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+        ptr->Tick(deltatime);
+    }
+}

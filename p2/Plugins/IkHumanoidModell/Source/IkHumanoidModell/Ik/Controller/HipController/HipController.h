@@ -5,6 +5,8 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "CoreMath/animation/TargetInterpolator.h"
 #include "CoreMath/animation/RotationInterpolator.h"
+#include "CoreMath/animation/FRotatorInterpolator.h"
+#include "CoreMath/animation/FVectorInterpolator.h"
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 
@@ -91,10 +93,12 @@ private:
     void updateInterpolatorLocomotion();
     void updateForwardTargetWorld(FVector &targetWorld);
     void updateBackwardTargetLocal(FVector &targetLocal);
-    TargetInterpolator interpolatorForwardWorld;
-    TargetInterpolator interpolatorBackwardLocal;
-
-    TargetInterpolator interpolatorHipRotation;
+    
+    
+    //TargetInterpolator interpolatorForwardWorld;
+    //TargetInterpolator interpolatorBackwardLocal;
+    FVectorInterpolator interpolatorForwardWorld;
+    FVectorInterpolator interpolatorBackwardLocal;
 
     void setupBackwardInterpolation();
     void setupForwardInterpolation();
@@ -150,7 +154,13 @@ private:
     bool DEBUG_SLOWTIME = false;  // true;
     void TickHipRotation(float deltatime);
     bool anyBackwardPhase();
+
+    //old
     RotationInterpolator hipRotationInterpolator;
+
+    //new - is more buggy
+    //FRotatorInterpolator hipRotationInterpolator;
+
     bool rotationSet = false;
     bool locomotionStopRequestedOnceRotationIsFinished = false;
     FVector forwardTrajectory();

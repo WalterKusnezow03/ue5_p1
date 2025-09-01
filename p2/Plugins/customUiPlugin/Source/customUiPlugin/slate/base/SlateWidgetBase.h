@@ -33,6 +33,10 @@ public:
     /// @brief if you change something, call this method to redraw the widget
     void MarkForRedraw();
 
+    using SCompoundWidget::Tick;
+    /// @brief widget can be ticked from UcustomUiComponent context owning this slate widget!
+    virtual void Tick(float deltatime);
+
 private:
 
     //draw polygons

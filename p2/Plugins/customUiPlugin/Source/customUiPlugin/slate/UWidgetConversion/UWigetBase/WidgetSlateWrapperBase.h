@@ -13,6 +13,10 @@ class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public UWidget
     GENERATED_BODY()
 
 public:
+
+    //Tick if Slate Mesh Data is animated (External tick from UCustomUi Component Base or derived is needed!)
+    virtual void Tick(float deltatime);
+
     virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 
 

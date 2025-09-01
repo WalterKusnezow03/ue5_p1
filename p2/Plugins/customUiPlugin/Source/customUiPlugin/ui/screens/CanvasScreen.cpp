@@ -17,6 +17,19 @@ void UCanvasScreen::init(UPlayerUiBase &refin){
     createBaseCanvas();
 }
 
+/// ---- Tick update children ---- 
+void UCanvasScreen::Tick(float deltatime){
+    for (int i = 0; i < listenForclickItems.Num(); i++){
+        if(UcustomUiComponentBase *current = listenForclickItems[i]){
+            current->Tick(deltatime);
+        }
+    }
+}
+
+
+
+
+
 /// ---- Adding items ----
 
 /// @brief adds a child to the UCanvasPanel
@@ -105,15 +118,6 @@ void UCanvasScreen::setVisible(bool visible){
 
     //UcustomUiComponentBase::setVisible(baseCanvas, visible);
     UcustomUiComponentBase::setVisibleNoCollsion(baseCanvas, visible);
-}
-
-
-void UCanvasScreen::Tick(float deltatime){
-    for (int i = 0; i < listenForclickItems.Num(); i++){
-        if(UcustomUiComponentBase *current = listenForclickItems[i]){
-            current->Tick(deltatime);
-        }
-    }
 }
 
 

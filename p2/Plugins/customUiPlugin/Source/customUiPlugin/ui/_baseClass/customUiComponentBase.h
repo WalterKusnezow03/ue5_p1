@@ -49,7 +49,7 @@ public:
     virtual void BeginDestroy() override
     {
         //remove tick from tick handler
-        disableTick();
+        TICK_ENABLED = false;
 
         Super::BeginDestroy();
     }
@@ -59,15 +59,6 @@ public:
         if(!TICK_ENABLED){
             return;
         }
-    }
-
-    //deprecated flag.
-    void enableTick(){
-        TICK_ENABLED = true;
-    }
-
-    void disableTick(){
-        TICK_ENABLED = false;
     }
 
     //--- Ticker section end ---
@@ -120,7 +111,8 @@ protected:
         return VISIBLE_FLAG;
     }
 
+protected:
+    bool TICK_ENABLED = true; //true by default!
 private:
-    bool TICK_ENABLED = false;
     bool VISIBLE_FLAG = true;
 };

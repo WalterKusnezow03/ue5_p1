@@ -31,6 +31,14 @@ void SSlateWidgetBase::DebugCreatePolygonsOnConstruct(){
     polygon.AppendClosedShape(shape);
 }
 
+// ---- external Tick ----
+void SSlateWidgetBase::Tick(float deltatime){
+
+}
+
+
+
+
 // ---- Redraw request -----
 void SSlateWidgetBase::MarkForRedraw(){
     Invalidate(EInvalidateWidgetReason::Paint);
@@ -150,8 +158,8 @@ void SSlateWidgetBase::DrawPolygon(
     );
 
 
-    FString message = FString::Printf(TEXT("SlateWidgetBase: Draw Polygon (%d)"), vertecies.Num());
-    UiDebugHelper::logMessage(message);
+    //FString message = FString::Printf(TEXT("SlateWidgetBase: Draw Polygon (%d)"), vertecies.Num());
+    //UiDebugHelper::logMessage(message);
 
     /*
     FSlateDrawElement::MakeCustomVerts(

@@ -62,5 +62,6 @@ private:
 
     void addToParentPanelAndInit(UcustomUiComponentBase *item, FVector2D anchor, FVector2D alignment);
 
+    UPROPERTY()
     TArray<UcustomUiComponentBase *> elements;
 };

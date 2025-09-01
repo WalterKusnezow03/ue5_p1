@@ -55,7 +55,6 @@ void UImageOverlayedBase::createText(){
 void UImageOverlayedBase::setText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
-        Super::disableTick();
     }
 }
 
@@ -66,8 +65,6 @@ void UImageOverlayedBase::setTextTimed(FString message, float time){
 
         bool resetsItself = false;
         textTimer.Begin(time, resetsItself);
-        //enable tick if not yet enabled
-        Super::enableTick();
     }
 }
 

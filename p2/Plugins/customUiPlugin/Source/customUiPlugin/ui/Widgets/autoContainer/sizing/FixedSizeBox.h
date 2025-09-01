@@ -20,7 +20,15 @@ public:
         return SizeBox;
     };
 
-    
+    virtual void Tick(float DeltaTime) override{
+        if(!TICK_ENABLED){
+            return;
+        }
+        Super::Tick(DeltaTime);
+        if(child){
+            child->Tick(DeltaTime);
+        }
+    }
 
     virtual bool dispatchClick() override;
 

@@ -4,11 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "RotationInterpolator.h"
+
+#include "FVectorInterpolator.h"
+#include "FRotatorInterpolator.h"
+
+
 /**
  * 
  */
 class COREMATH_API TargetInterpolator
 {
+private:
+	FVectorInterpolator vectorInterpolator;
+	FRotatorInterpolator rotatorInterpolator;
+
 public:
 	TargetInterpolator();
 	~TargetInterpolator();
@@ -74,6 +84,8 @@ public:
 	void useHermiteSplineInterpolation(bool flag);
 
 protected:
+	
+
 	bool useHermiteSplineFlag = true; //true by default
 
 	FVector from;

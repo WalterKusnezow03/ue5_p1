@@ -24,3 +24,10 @@ void UCustomUiSlateWidgetBase::MakeBaseLayout(){
 void UCustomUiSlateWidgetBase::MakeWidget(){
     widget = NewObject<UWidgetSlateWrapperBase>();
 }
+
+
+void UCustomUiSlateWidgetBase::Tick(float deltatime){
+    if(widget){
+        widget->Tick(deltatime);
+    }
+}
