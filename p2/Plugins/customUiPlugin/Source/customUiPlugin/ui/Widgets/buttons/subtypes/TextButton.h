@@ -25,6 +25,8 @@ public:
 
     virtual bool dispatchClick() override;
 
+    bool CompareText(FString textIn);
+
 private:
     UPROPERTY()
     UTextBlock *TextBlock = nullptr;

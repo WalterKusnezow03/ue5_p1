@@ -7,6 +7,8 @@
 
 #include "GameCore/DebugHelper.h"
 
+#include "p2/_world/PlayerStatManager/PlayerStatus.h"
+
 
 void UPlayerHud::init(UPlayerUiBase &refin){
     //init base
@@ -90,25 +92,21 @@ void UPlayerHud::createTopWarningElement(){
 /// ----- PLAYER HUD SECTION ----- END
 
 //PUBLIC API
-
-void UPlayerHud::updateAmmunitionText(int number){
-    FString message = FString::Printf(TEXT("%d"), number);
-    updateAmmunitionText(message);
+void UPlayerHud::Update(FPlayerStatus &playerStatusStruct){
+    updateAmmunitionText(playerStatusStruct.AmmunitionString());
+    updateHealthText(playerStatusStruct.HealthString());
 }
 
 void UPlayerHud::updateAmmunitionText(FString message){
     if(ammunitionTextAndImage){
         ammunitionTextAndImage->setText(message);
     }
-    
 }
 
-void UPlayerHud::updateHealthText(int health){
+void UPlayerHud::updateHealthText(FString message){
     if(healthTextAndImage){
-        FString toText = FString::Printf(TEXT("%d"), health);
-        healthTextAndImage->setText(toText);
+        healthTextAndImage->setText(message);
     }
-    
 }
 
 

@@ -35,6 +35,11 @@ public:
     ///@brief must be overriden - trys to remove child from container
     virtual void RemoveChild(UWidget *any) override;
 
+protected:
+    virtual void UpdatePadding(UWidget *widget) override;
+
+    virtual void UpdateSlotForCustomSlate(UWidget *widget);
+
 private:
     void initHboxIfNeeded();
     UHorizontalBox *baseHBox = nullptr;

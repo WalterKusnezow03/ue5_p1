@@ -351,11 +351,7 @@ float playerInventory::wslot::recoilValue(){
 Aweapon *playerInventory::getItemPointer(){
     //return weaponPointer;
     if(currentIndexIsValid()){
-        playerInventory::wslot *currentSolt = weaponVector[currentIndex];
-        if(currentSolt != nullptr){
-            return currentSolt->weaponPointer;
-        }
-        
+        return getItemPointerAtIndex(currentIndex);
     }
     return nullptr;
 }
@@ -371,29 +367,26 @@ Aweapon *playerInventory::getItemPointerAtIndex(int index){
     return nullptr;
 }
 
+
 int playerInventory::currentIndexNum(){
     return currentIndex;
 }
 
-/**
- * 
- * API FOR UI
- * 
- */
-FString playerInventory::ammuntionUiStringOfWeapon(){
-    FString message = "";
-    if(currentIndexIsValid()){
-        Aweapon *current = weaponVector.at(currentIndex)->weaponPointer;
-        if(current){
-            int leftInMag = current->getBulletsInMag();
-            int magSize = current->getMagSize();
 
-            message += FString::Printf(
-                TEXT("%d | %d"),
-                leftInMag,
-                magSize
-            );
-        }
+
+// --- APi for ui changes ---
+int playerInventory::currentAmmunition(){
+    Aweapon *currentWeapon = getItemPointer();
+    if(currentWeapon){
+        return currentWeapon->getBulletsInMag();
     }
-    return message;
+    return 0;
 }
+int playerInventory::currentLeftAmmnutionInMag(){
+    Aweapon *currentWeapon = getItemPointer();
+    if(currentWeapon){
+        return currentWeapon->getMagSize();
+    }
+    return 0;
+}
+

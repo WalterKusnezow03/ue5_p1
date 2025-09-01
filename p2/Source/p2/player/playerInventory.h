@@ -20,6 +20,9 @@ public:
 	void aim(bool aim);
 	void releaseShoot();
 	void dropWeapon();
+
+	/// @brief swicthes to an index, hides the current weapon
+	/// @param index 
 	void selectIndex(int index);
 
 	void dropAllWeaponsToObjectPool();
@@ -33,8 +36,13 @@ public:
 	Aweapon *getItemPointer();
 	Aweapon *getItemPointerAtIndex(int index);
 
-	FString ammuntionUiStringOfWeapon();
+	//ui interface
+	int currentAmmunition();
+	int currentLeftAmmnutionInMag();
 
+	
+
+	///@brief current index in inventory selected
 	int currentIndexNum();
 
 private:

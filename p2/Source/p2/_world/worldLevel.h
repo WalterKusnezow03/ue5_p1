@@ -7,6 +7,7 @@
 #include "p2/entityManager/OutPost/OutpostManager.h"
 #include "EGameState.h"
 #include "p2/_world/gameStateManager/GameStateManager.h"
+#include "p2/_world/PlayerStatManager/PlayerStatusManager.h"
 #include "GameCore/world/worldLevelBase.h"
 
 class ATerrainLauncher;
@@ -49,7 +50,11 @@ public:
 	static bool gamePausedByPlayer();
 	static void setGamePaused(bool in);
 
+	/// @brief for ui chnages, open loading screen, pause, etc
 	static GameStateManager gameStateManager;
+
+	/// for player hud changes
+	static PlayerStatusManager playerStatusManager;
 
 private:
 	

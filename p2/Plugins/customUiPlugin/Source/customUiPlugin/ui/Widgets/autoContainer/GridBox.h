@@ -17,13 +17,11 @@ class CUSTOMUIPLUGIN_API UGridBox : public UAutoBoxBase {
     GENERATED_BODY()
 
 public:
+    using UAutoBoxBase::init;
     virtual void init() override;
-    virtual void init(UPlayerUiBase &refin) override;
-
     virtual void init(int i, int j);
 
-
-
+public:
     virtual void AddChild(UcustomUiComponentBase *item) override;
     virtual void AddChild(UWidget *any) override;
 
@@ -46,9 +44,22 @@ public:
     /// @param numRow 
     void RemoveRow(int numRow);
 
+    ///@brief shows or hides a row if an item is found, hides or shows row the item belongs to
+    void SetRowVisible(UcustomUiComponentBase *item, bool show);
+
+    ///@brief hides / collapses or shows a row by index if in bound
+    void SetRowVisible(int i, bool show);
+
+    ///@brief hides / collapses or shows all rows
+    void SetAllRowsVisible(bool show);
+
+
     ///@brief removes a child from click listening
     virtual void RemoveChild(UcustomUiComponentBase *item) override;
     virtual void RemoveChild(UWidget *item) override;
+
+protected:
+    virtual void UpdatePadding(UWidget *item) override;
 
 private:
     

@@ -9,7 +9,12 @@
 #include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
 
+#include "customUiPlugin/ui/Widgets/autoContainer/sizing/FixedSizeBox.h"
 #include "p2/_world/worldLevel.h"
+
+//debug
+#include "customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.h"
+
 
 void UGameLaunchScreen::init(UPlayerUiBase &ref){
     if(WAS_INIT_FLAG){
@@ -38,6 +43,10 @@ void UGameLaunchScreen::createTopBar(){
 
         text->SetText(FText::FromString(TEXT("Game Launch Screen")));
         topHbox->AddChild(text);
+
+
+
+
     }
 }
 
@@ -57,12 +66,12 @@ void UGameLaunchScreen::createMenu(){
     menuVbox->init();
     if (menuVbox)
     {
-        //baseHbox->AddChild(menuVbox);
+        
         AddChild(
-            menuVbox, 
-            FVector2D(0.5f, 0.1f), //pivot locationScalar
-            FVector2D(0.5f, 0.0f)  //privot weight scalar
-        ); //to top center, align center
+            menuVbox,
+            FVector2D(0.5f, 0.1f), // pivot locationScalar
+            FVector2D(0.5f, 0.0f)  // privot weight scalar
+        );                     // to top center, align center
 
         createTypeFieldForWorldCreation();
 
@@ -70,6 +79,20 @@ void UGameLaunchScreen::createMenu(){
         worldListPicker = NewObject<UWorldList>(this);
         worldListPicker->init(this);
         menuVbox->AddChild(worldListPicker);
+
+
+        FVector2D pad(10, 10);
+        menuVbox->SetPadding(pad);
+        
+        //menuVbox->SetItemsFillHorizontal();
+
+
+
+        //debug custom slate widgets
+        UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+        newWidgetSlateBased->init();
+        menuVbox->AddChild(newWidgetSlateBased);
+
     }
     
 }
@@ -81,10 +104,13 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
     }
 
     //create textbox for new world.
+
+    //hbox containing it
     createBarHbox = NewObject<UHbox>(this);
     createBarHbox->init();
     menuVbox->AddChild(createBarHbox);
 
+    //type field 
     typeFieldWorld = NewObject<UTextBoxBase>(this);
     typeFieldWorld->init();
     typeFieldWorld->SetHintText("Type a World Name");
@@ -103,9 +129,6 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
     {
         uclassInstance->SomeUFunction(SomeValue);
     }*/
-
-
-
 
 }
 

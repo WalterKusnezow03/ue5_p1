@@ -145,6 +145,10 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointer;
 #if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_callbackPointerTextChanged_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointerTextChanged;
+#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_TextBox_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_TextBox;
@@ -181,6 +185,12 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer = { "callbackPointer", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, callbackPointer), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer_MetaData)) };
 #if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged_MetaData[] = {
+		{ "ModuleRelativePath", "ui/Widgets/textBox/TextBoxBase.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged = { "callbackPointerTextChanged", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, callbackPointerTextChanged), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged_MetaData)) };
+#if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData[] = {
 		{ "Comment", "//ui components\n" },
 		{ "EditInline", "true" },
@@ -198,6 +208,7 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox = { "scalebox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, scalebox), Z_Construct_UClass_UScaleBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UTextBoxBase_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox,
 	};
@@ -239,9 +250,9 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 2322464066U) },
+		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 763492676U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_2570979732(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_3595975646(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

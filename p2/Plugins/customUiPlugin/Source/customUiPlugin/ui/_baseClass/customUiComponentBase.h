@@ -21,11 +21,15 @@ public:
     virtual void init(){
         WAS_INIT_FLAG = true;
     }
+
+    //does not need to be public by default, made public if needed
+protected:    
     virtual void init(UPlayerUiBase &refin){
         saveParent(refin);
         WAS_INIT_FLAG = true;
     }
 
+public:
 
     // --- manual click dispatch, must be overriden if has childs!---
     //OVERRIDE THIS METHOD!
@@ -33,7 +37,7 @@ public:
         return false;
     }
 
-    /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
+    /// @brief marks self as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too! - OVERRIDE THIS METHOD!
     /// @param visible 
     virtual void setVisible(bool visible) {
@@ -73,16 +77,20 @@ public:
         playerUiParent = &ref;
     }
 
-    //MUST BE OVERRIDEN!
+    //MUST BE OVERRIDEN!!!
     virtual UWidget *baseLayoutPointer(){
         return nullptr;
     }
+
 
 protected:
     UPlayerUiBase *playerUiParent = nullptr;
 
     bool WAS_INIT_FLAG = false;
 
+    /// @brief hides a widget, if not visible, COLLAPSED
+    /// @param any 
+    /// @param visible 
     void setVisible(UWidget *any, bool visible){
         if(any != nullptr){
             //ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;

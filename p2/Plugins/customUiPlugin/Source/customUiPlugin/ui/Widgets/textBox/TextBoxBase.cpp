@@ -48,13 +48,21 @@ void UTextBoxBase::setupCallback(){
 
     //finished event
     callbackPointer = NewObject<UCallback>(this);
+    callbackPointerTextChanged = NewObject<UCallback>(this);
 }
+
+
 
 
 
 void UTextBoxBase::OnTextChangedHandler(const FText &Text){
     innerTextSaved = Text.ToString();
     DebugHelper::showScreenMessage(FString::Printf(TEXT("Text: %s"), *innerTextSaved), FColor::Green);
+
+
+    if(callbackPointerTextChanged){
+        callbackPointerTextChanged->UCallbackFunction();
+    }
 }
 
 void UTextBoxBase::OnTextCommittedHandler(
@@ -81,6 +89,12 @@ void UTextBoxBase::SetHintText(FString hint){
 void UTextBoxBase::SetCallBack(FSimpleDelegate onFinished){
     if(callbackPointer){
         callbackPointer->SetCallback(onFinished);
+    }
+}
+
+void UTextBoxBase::SetCallBackTextUpdate(FSimpleDelegate onChanged){
+    if(callbackPointerTextChanged){
+        callbackPointerTextChanged->SetCallback(onChanged);
     }
 }
 

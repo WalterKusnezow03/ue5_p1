@@ -5,7 +5,7 @@
 #include "p2/weapon/weapon.h"
 #include "playerInventory.h"
 #include "p2/entityManager/EntityManager.h"
-#include "p2/_world/worldLevel.h"
+
 #include "p2/entityManager/referenceManager.h"
 #include "GameCore/DebugHelper.h"
 #include "Animation/AnimSequence.h"
@@ -608,6 +608,15 @@ void AplayerScript::updateUi(){
 }
 
 void AplayerScript::updateAmmunitionUi(){
+    
+    
+    //void updateAmmunition(int number);
+    worldLevel::playerStatusManager.updateAmmunition(
+        playerInventory.currentAmmunition(),
+        playerInventory.currentLeftAmmnutionInMag()
+    );
+
+    /*
     if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
         //ammunition of weapon
         FString ammunitionText = playerInventory.ammuntionUiStringOfWeapon();
@@ -615,15 +624,17 @@ void AplayerScript::updateAmmunitionUi(){
 
         //mags left
 
-    }
+    }*/
 
 }
 
 
 void AplayerScript::updateHealthUi(){
+    worldLevel::playerStatusManager.updateHealth(health);
+    /*
     if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
         uiInstance->updateHealthText(health);
-    }
+    }*/
 }
 
 void AplayerScript::updatePlayerEnteredAreaUi(bool entered){

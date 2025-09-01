@@ -40,7 +40,7 @@ public:
 
     virtual UWidget *baseLayoutPointer() override{
         if(baseGridBox){
-            return baseGridBox->baseLayoutPointer();
+            return baseVbox->baseLayoutPointer();
         }
         return nullptr;
     }
@@ -57,20 +57,26 @@ public:
 
     ///@brief tells if a world is already present in the world array
     bool CanAddWorld(FString name);
+    
+
+    UFUNCTION()
+    void UpdateSearch();
 
 private:
     UGameLaunchScreen *gameLaunchScreenParent = nullptr;
 
 
-    //new
+    
+    UPROPERTY()
+    UVbox *baseVbox = nullptr;
+
+
     UPROPERTY()
     UGridBox *baseGridBox = nullptr;
 
 
     UPROPERTY()
     UTextBoxBase *searchBar = nullptr;
-
-
 
     UPROPERTY()
     TArray<UTextButton *> textButtonsFree;
@@ -80,9 +86,17 @@ private:
     TArray<UcustomUiComponentBase *> makeButtonPair(FString name);
     UTextButton *PopFromFreeList();
 
-
+    bool isRemoveButton(UTextButton *button);
+    bool NameIsValid(FString name);
 
     TArray<FString> worldNames;
+
+    ///finds all world names at their index in worldnames array which start with a targetname, case ignored
+    void filteredWorldNameIndexList(
+        FString targetName,
+        TArray<int> &hasText,
+        TArray<int> &NotHasText
+    );
 
     //called on init to create the base layout
     void createLayout();

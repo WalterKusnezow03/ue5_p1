@@ -27,6 +27,9 @@ public:
     /// set up delegate when finished writing
     void SetCallBack(FSimpleDelegate onFinished);
 
+    /// set up delegate for text changed
+    void SetCallBackTextUpdate(FSimpleDelegate onChanged);
+
     /// gets the current typed text
     FString GetText();
 
@@ -40,6 +43,9 @@ private:
     //callback on click
     UPROPERTY()
     UCallback *callbackPointer = nullptr;
+
+    UPROPERTY()
+    UCallback *callbackPointerTextChanged = nullptr;
 
     //ui components
     UPROPERTY()

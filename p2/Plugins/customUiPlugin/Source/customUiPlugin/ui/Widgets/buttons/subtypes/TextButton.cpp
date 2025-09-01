@@ -47,6 +47,10 @@ FString UTextButton::getText(){
     return textInternalCopy;
 }
 
+bool UTextButton::CompareText(FString textIn){
+    return textIn == textInternalCopy;
+}
+
 /**
  * debug
  */

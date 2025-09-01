@@ -57,6 +57,7 @@ worldLevel::~worldLevel()
 
 //static vars init:
 GameStateManager worldLevel::gameStateManager;
+PlayerStatusManager worldLevel::playerStatusManager;
 
 bool worldLevel::isTerrainInited = false;
 ATerrainLauncher *worldLevel::terrainLauncher = nullptr;

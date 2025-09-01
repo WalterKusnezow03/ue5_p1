@@ -99,24 +99,6 @@ void UPlayerUi::createGameLaunchScreen(){
 
 //public api ui update text
 
-void UPlayerUi::updateAmmunitionText(int number){
-    if(playerHud){
-        playerHud->updateAmmunitionText(number);
-    }
-}
-
-void UPlayerUi::updateAmmunitionText(FString message){
-    if(playerHud){
-        playerHud->updateAmmunitionText(message);
-    }
-}
-
-void UPlayerUi::updateHealthText(int health){
-    if(playerHud){
-        playerHud->updateHealthText(health);
-    }
-}
-
 void UPlayerUi::updateMissionText(FString message){
     if(playerHud){
         playerHud->updateTopWaringElement(message);
@@ -191,6 +173,10 @@ void UPlayerUi::showPlayerCursor(bool show){
 
 
 
-
-
-
+// --- api for hud update ---
+UPlayerHud *UPlayerUi::HudInstance(){
+    if(playerHud){
+        return playerHud;
+    }
+    return nullptr;
+}

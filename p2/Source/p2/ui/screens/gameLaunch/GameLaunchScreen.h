@@ -56,7 +56,7 @@ private:
 
     //menu vbox (store bar and list)
     UPROPERTY()
-    UVbox *menuVbox = nullptr;
+    UVbox *menuVbox = nullptr; //UVbox
 
     UPROPERTY()
     UWorldList *worldListPicker = nullptr;

@@ -1,4 +1,6 @@
 #include "Hbox.h"
+#include "Components/HorizontalBoxSlot.h"
+#include "customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h"
 
 
 //#include "Components/VerticalBox.h"
@@ -37,6 +39,16 @@ void UHbox::AddChild(UWidget *any){
     initHboxIfNeeded(); // if needed for init() skip fallback (not needed to call after construct)
     if (any && baseHBox){
         baseHBox->AddChildToHorizontalBox(any);
+        UpdatePadding(any);
+        //UpdateSlotForCustomSlate(any);
+    }
+}
+
+void UHbox::UpdatePadding(UWidget *widget){
+    if(widget){
+        if(UHorizontalBoxSlot* Slot = Cast<UHorizontalBoxSlot>(widget->Slot)){
+            Slot->SetPadding(makePadding());
+        }
     }
 }
 
@@ -54,5 +66,27 @@ void UHbox::RemoveChild(UcustomUiComponentBase *item){
 void UHbox::RemoveChild(UWidget *any){
     if(any && baseHBox){
         baseHBox->RemoveChild(any);
+    }
+}
+
+
+
+
+/// ---- custom slate integration ----
+void UHbox::UpdateSlotForCustomSlate(UWidget *widget){
+    if(widget){
+        // if derived as custom slate widget set size to be properly drawn.
+        UWidgetSlateWrapperBase *slateWidget = Cast<UWidgetSlateWrapperBase>(widget);
+        if(slateWidget){
+            UHorizontalBoxSlot* Slot = Cast<UHorizontalBoxSlot>(slateWidget->Slot);
+            if(Slot){
+                Slot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+                Slot->SetPadding(FMargin(5));
+                Slot->SetHorizontalAlignment(HAlign_Center);
+                Slot->SetVerticalAlignment(VAlign_Center);
+
+                UE_LOG(LogTemp, Display, TEXT("UHbox Slate Widget manipulated"));
+            }
+        }
     }
 }

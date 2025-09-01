@@ -86,5 +86,6 @@ private: //not protected for a reason!
     void createColoredBackground();
 
     /// @brief listens for click AND Tick
+    UPROPERTY()
     TArray<UcustomUiComponentBase *> listenForclickItems;
 };

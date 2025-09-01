@@ -32,7 +32,25 @@ public:
     ///@brief must be overriden - trys to remove child from container
     virtual void RemoveChild(UWidget *any) override;
 
+    
+    
+    void SetItemsFillHorizontal();
+
+protected:
+    virtual void UpdatePadding(UWidget *widget) override;
+
+    void UpdateAlignmentForAllTrackedItems();
+    void UpdateAlignment(UWidget *item);
+
 private:
+    
     void initVboxIfNeeded();
+    UPROPERTY()
     UVerticalBox *baseVBox = nullptr;
+
+
+    // Left, Right, Center, Fill
+    bool fillHorizontal = false;
+
+    EHorizontalAlignment horizontalAlignmentForItems = EHorizontalAlignment::HAlign_Left; 
 };

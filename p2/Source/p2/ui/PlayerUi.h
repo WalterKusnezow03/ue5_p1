@@ -89,12 +89,11 @@ public:
 	//UFUNCTION()
 	//void closeLatestScreen();
 
-	void updateAmmunitionText(int number);
-	void updateAmmunitionText(FString message);
-	void updateHealthText(int health);
 	void updateMissionText(FString messgae);
 	void updateMissionTextTimed(FString message);
 
+	///@brief current hud instance, do not delete
+	UPlayerHud *HudInstance();
 
 protected:
 	bool screenSwitchAllowed();
@@ -108,10 +107,10 @@ protected:
 
 	//screens
 	bool pauseMenuOpened = false;
-	UPlayerHud *playerHud;
-	UPauseScreen *pauseScreen;
-	ULoadoutScreen *loadoutScreen;
-	UGameLaunchScreen *gameLaunchScreen;
+	UPlayerHud *playerHud = nullptr;
+	UPauseScreen *pauseScreen = nullptr;
+	ULoadoutScreen *loadoutScreen = nullptr;
+	UGameLaunchScreen *gameLaunchScreen = nullptr;
 
 
 

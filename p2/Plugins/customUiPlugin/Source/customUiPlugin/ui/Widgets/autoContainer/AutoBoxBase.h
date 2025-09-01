@@ -48,7 +48,26 @@ public:
     ///@brief must be overriden
     virtual void RemoveChild(UWidget *any){};
 
+    ///@brief will update the padding for all attached items (UcustomUiComponents)
+    void SetPadding(FVector2D &paddingIn);
+
 protected:
+    FVector2D padding;
+
+    FMargin makePadding();
+
+    ///@brief must be overriden!
+    virtual void UpdatePadding(UWidget *widget){};
+
+    /// @brief doesnt have to be override, called from setpadding
+    void UpdatePaddingForAllTrackedItems();
+
+
+
+    /// @brief to be overriden.
+    /// @param widget 
+    virtual void UpdateSlotForCustomSlate(UWidget *widget){};
+
     UPROPERTY()
     TArray<UcustomUiComponentBase *> attachedItems;
 

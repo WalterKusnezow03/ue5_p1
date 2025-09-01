@@ -10,6 +10,7 @@
 
 #include "PlayerHud.generated.h"
 
+struct FPlayerStatus;
 class UPlayerUiBase;
 
 UCLASS()
@@ -19,12 +20,14 @@ public:
     
     virtual void init(UPlayerUiBase &refin) override;
 
-    void updateAmmunitionText(int number);
+    
     void updateAmmunitionText(FString message);
-    void updateHealthText(int health);
+    void updateHealthText(FString health);
 
     void updateTopWaringElement(FString message);
     void updateTopWarningElementTimed(FString message, float timetoLive);
+
+    void Update(FPlayerStatus &playerStatusStruct);
 
 private:
 

@@ -26,33 +26,65 @@ void UWorldList::init(UGameLaunchScreen *launcher){
 
 
 bool UWorldList::dispatchClick(){
-    return baseGridBox != nullptr && baseGridBox->dispatchClick();
+    return baseVbox != nullptr && baseVbox->dispatchClick();
 }
 
 void UWorldList::setVisible(bool visible){
-    if(baseGridBox){
-        baseGridBox->setVisible(visible);
+    if(baseVbox){
+        baseVbox->setVisible(visible);
     }
 }
 
 
 void UWorldList::createLayout(){
-    
-    if(!baseGridBox){
-        baseGridBox = NewObject<UGridBox>(this);
-        baseGridBox->init();
+    if(!baseVbox){
+        baseVbox = NewObject<UVbox>(this); 
+        baseVbox->init();
+        baseVbox->SetItemsFillHorizontal();
     }
 
+    if(!searchBar && baseVbox){
+        searchBar = NewObject<UTextBoxBase>(this);
+        searchBar->init();
+        searchBar->SetHintText("Search world...");
+        baseVbox->AddChild(searchBar);
 
+        //make search update delegate
+        FSimpleDelegate updateTextDelegate = FSimpleDelegate::CreateUObject(this, &UWorldList::UpdateSearch);
+        searchBar->SetCallBackTextUpdate(updateTextDelegate);
+
+        //FSimpleDelegate::CreateUObject(uclassInstance*, &<classname>::<methodname>)
+        /*FSimpleDelegate::CreateLambda([uclassInstance*, SomeValue]()
+        {
+            uclassInstance->SomeUFunction(SomeValue);
+        }*/
+    }
+
+    
+
+    
+    
+    if(!baseGridBox && baseVbox){
+        baseGridBox = NewObject<UGridBox>(this);
+        baseGridBox->init(1,2); //2 columns. (world button and delete button)
+        baseVbox->AddChild(baseGridBox);
+    }
 }
 
 bool UWorldList::CanAddWorld(FString name){
     return !worldNames.Contains(name);
 }
 
+bool UWorldList::NameIsValid(FString name){
+    return name != TEXT("Delete");
+}
+
+
+
 ///@brief external add world, saves world name, if not contained yet!
 void UWorldList::AddWorld(FString name){
     if(CanAddWorld(name)){
+        
         AddWorldInternal(name);
         worldNames.Add(name);
         SaveWorldListToStorage();
@@ -65,6 +97,7 @@ void UWorldList::AddWorld(FString name){
 /// @param name 
 void UWorldList::AddWorldInternal(FString name){
     if(baseGridBox){
+        
         TArray<UcustomUiComponentBase *> newRow = makeButtonPair(name);
         baseGridBox->AddRow(newRow);
         //AddRow(TArray<UcustomUiComponentBase *> &items)
@@ -174,10 +207,88 @@ UTextButton *UWorldList::PopFromFreeList(){
     return Ptr;
 }
 
+bool UWorldList::isRemoveButton(UTextButton *button){
+    if(button){
+        return button->getText() == "Delete";
+    }
+    return false;
+}
+
+/// --- SEARCH INTERFACE ---
+void UWorldList::UpdateSearch(){
+    if(!searchBar){
+        return;
+    }
+    if(!baseGridBox){
+        return;
+    }
+
+    FString name = searchBar->GetText();
+    if (name.Len() <= 0)
+    {
+        //show all
+        baseGridBox->SetAllRowsVisible(true);
+    }
+    else
+    {
+        //filter list
+
+        //filter world list strings
+        TArray<int> hasText;
+        TArray<int> NotHasText;
+        filteredWorldNameIndexList(name, hasText, NotHasText);
+
+        //show rows
+        for (int i = 0; i < hasText.Num(); i++){
+            int index = hasText[i];
+            FString worldNameCompare = worldNames[index];
+
+            for (int buttonIndex = 0; buttonIndex < textButtonsInUse.Num(); buttonIndex++){
+                UTextButton *button = textButtonsInUse[buttonIndex];
+                if(!isRemoveButton(button)){
+                    //show row if text same
+                    if(button->CompareText(worldNameCompare)){
+                        baseGridBox->SetRowVisible(button, true);
+                    }
+                }
+            }
+        }
+
+        //hide rows
+        for (int i = 0; i < NotHasText.Num(); i++){
+            int index = NotHasText[i];
+            FString worldNameCompare = worldNames[index];
+
+            for (int buttonIndex = 0; buttonIndex < textButtonsInUse.Num(); buttonIndex++){
+                UTextButton *button = textButtonsInUse[buttonIndex];
+                if(!isRemoveButton(button)){
+                    //show row if text same
+                    if(button->CompareText(worldNameCompare)){
+                        baseGridBox->SetRowVisible(button, false);
+                    }
+                }
+            }
+        }
+
+    }
+}
 
 
-
-
+void UWorldList::filteredWorldNameIndexList(
+    FString targetName,
+    TArray<int> &hasText,
+    TArray<int> &NotHasText
+){
+    for (int i = 0; i < worldNames.Num(); i++){
+        FString &current = worldNames[i];
+        
+        if (current.StartsWith(targetName, ESearchCase::IgnoreCase)){
+            hasText.Add(i);
+        }else{
+            NotHasText.Add(i);
+        }
+    }
+}
 
 
 /// ----- STORAGE INTERFACE ------

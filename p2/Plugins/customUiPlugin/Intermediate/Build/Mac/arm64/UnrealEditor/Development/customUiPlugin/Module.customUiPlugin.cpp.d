@@ -3959,6 +3959,14 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/CanvasScreen.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiComponentBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiPlugin.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/CustomUiSlateWidgetBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetSlateWrapperBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/CustomUiSlateWidgetBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/FixedSizeBox.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/sizing/FixedSizeBox.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/FixedSizeBox.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/GridBox.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/GridBox.h \
   Runtime/UMG/Public/Components/GridPanel.h \
@@ -4028,9 +4036,21 @@
   Runtime/Engine/Classes/GameFramework/Actor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetSlateWrapperBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public/customUiPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/Debug/UiDebugHelper.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/Debug/UiDebugHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.h \
+  Runtime/SlateCore/Public/Rendering/DrawElements.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetCornersLayout.cpp \
   Runtime/UMG/Public/Components/CanvasPanelSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/CanvasPanelSlot.generated.h \
@@ -4050,6 +4070,9 @@
   Runtime/Slate/Public/Widgets/Layout/SGridPanel.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/GridSlot.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Hbox.cpp \
+  Runtime/UMG/Public/Components/HorizontalBoxSlot.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/HorizontalBoxSlot.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/sizing/FixedSizeBox.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/Vbox.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/ButtonBase.cpp \
   Runtime/UMG/Public/Components/SizeBoxSlot.h \
@@ -5172,7 +5195,6 @@
   Runtime/SlateCore/Public/Trace/SlateMemoryTags.h \
   Runtime/SlateCore/Public/Input/ReplyBase.h \
   Runtime/SlateCore/Public/Input/DragAndDrop.h \
-  Runtime/SlateCore/Public/Rendering/DrawElements.h \
   Runtime/SlateCore/Public/Rendering/RenderingPolicy.h \
   Runtime/SlateCore/Public/Rendering/SlateDrawBuffer.h \
   Runtime/SlateCore/Public/Rendering/SlateRenderer.h \
@@ -5307,8 +5329,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/DragDropOperation.generated.h \
   Runtime/UMG/Public/Components/NamedSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/NamedSlot.generated.h \
-  Runtime/UMG/Public/Components/HorizontalBoxSlot.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/HorizontalBoxSlot.generated.h \
   Runtime/UMG/Public/Components/WrapBoxSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WrapBoxSlot.generated.h \
   Runtime/UMG/Public/Components/WrapBox.h \
