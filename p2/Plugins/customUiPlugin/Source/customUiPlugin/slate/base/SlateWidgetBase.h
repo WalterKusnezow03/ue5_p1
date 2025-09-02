@@ -41,7 +41,7 @@ public:
     ///@brief tells if the cursor is inside this geometry
     bool dispatchClick();
 
-private:
+protected:
 
     //draw polygons
     void DrawAllPolygons(
@@ -49,7 +49,8 @@ private:
         int32 LayerId, //pass from OnPaint, dont change, polygons drawn later will overlap previous ones by default.
         FSlateRenderTransform &RenderTransform
     ) const;
-    
+
+private:
     void DrawPolygon(
         int layerInternal,
         FSlateWindowElementList &OutDrawElements,

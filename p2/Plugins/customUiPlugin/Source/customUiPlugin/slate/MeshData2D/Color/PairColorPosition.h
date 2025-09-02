@@ -15,6 +15,22 @@ struct CUSTOMUIPLUGIN_API FPairColorPosition {
         position = posIn;
     };
 
+    ///@brief updates the position and returns if it changed
+    bool UpdatePosition(FVector2D &pos){
+        bool update = DistanceSquared(pos) >= 1.0f;
+        if(update){
+            position = pos;
+        }
+        return update;
+    }
+
+    ///@brief updates the color and returns if it changed
+    bool UpdateColor(FLinearColor &colorIn){
+        bool update = color != colorIn;
+        color = colorIn;
+        return update;
+    }
+
     FLinearColor color;
     FVector2D position;
 

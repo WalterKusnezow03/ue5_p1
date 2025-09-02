@@ -18,6 +18,7 @@ SlateMeshData &SlateMeshData::operator=(const SlateMeshData &other){
         Vertecies = other.Vertecies;
         Triangles = other.Triangles;
         boundingBox = other.boundingBox;
+        slateVertexCache = other.slateVertexCache;
     }
     return *this;
 }
@@ -71,6 +72,8 @@ void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c){
     Triangles.Add(indexC);
 
     boundingBox.Update(a, b, c);
+
+    FlagCacheUpdateNeeded();
 }
 
 
@@ -122,7 +125,7 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
         boundingBox.Update(c);
     }
 
-
+    FlagCacheUpdateNeeded();
 }
 
 void SlateMeshData::AppendEfficent(
@@ -363,17 +366,24 @@ bool SlateMeshData::isValidVertexIndex(int i){
 
 
 // ---- SLATE Vertecies / MAKE BUFFER FOR DRAW -----
-const TArray<FSlateVertex> SlateMeshData::MakeSlateVertexBuffer(
+void SlateMeshData::FlagCacheUpdateNeeded(){
+    slateVertexCache.MarkCacheUpdateNeededFlagTrue();
+}
+
+const TArray<FSlateVertex> &SlateMeshData::GetSlateVertexBuffer(
     FSlateRenderTransform &RenderTransform
 )const{
 
-    //set size to prevent copy
-    TArray<FSlateVertex> outBuffer;
-    outBuffer.SetNumUninitialized(Vertecies.Num());
+    //get ref, update if changes made
+    TArray<FSlateVertex> &outBuffer = slateVertexCache.mutableCachedBufferRef(Vertecies.Num());
+    if(slateVertexCache.CacheUpdateNeeded()){
+        slateVertexCache.ResetCacheUpdateNeededFlag(); //new calculation made, reset
 
-    for (int i = 0; i < Vertecies.Num(); i++){
-        outBuffer[i] = makeSlateVertex(Vertecies[i], RenderTransform);
+        for (int i = 0; i < Vertecies.Num(); i++){
+            outBuffer[i] = makeSlateVertex(Vertecies[i], RenderTransform);
+        }
     }
+    
     return outBuffer;
 }
 
@@ -415,35 +425,51 @@ void SlateMeshData::UpdateCursorPosition(
     FVector2D &position, 
     bool bDynamicColoring
 ){
+    if(bCursorColorEnabled != bDynamicColoring){
+        FlagCacheUpdateNeeded();
+    }
+    if(cursorColorPair.UpdatePosition(position)){
+        FlagCacheUpdateNeeded();
+    }
+
     bCursorColorEnabled = bDynamicColoring;
-    cursorColorPair.position = position;
 }
 
 void SlateMeshData::UpdateCursorColor(FLinearColor &color){
-    cursorColorPair.color = color;
+    if(cursorColorPair.UpdateColor(color)){
+        FlagCacheUpdateNeeded();
+    }
 }
 
 
 void SlateMeshData::AddAmbientUvColor(
     FVector2D uvPos, 
-    FLinearColor &color
+    FLinearColor color
 ){
-    FVector2D widgetSpace = convertUVToVertexBufferSpace(uvPos);
+    FVector2D widgetSpace = convertUVInvertedToVertexBufferSpace(uvPos);
     FPairColorPosition newPair(color, widgetSpace);
-    ambientColors.Add(newPair);
+    ambientColorsInvertedSpace.Add(newPair);
+    FlagCacheUpdateNeeded();
 }
 
 void SlateMeshData::ClearAmbientColors(){
-    ambientColors.Empty();
+    ambientColorsInvertedSpace.Empty();
+    FlagCacheUpdateNeeded();
 }
 
-FVector2D SlateMeshData::convertUVToVertexBufferSpace(FVector2D &uv){
-    
+
+///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
+///up color calculation because the scalar is found by one division (less operations)
+FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(FVector2D &uv){
+
+    uv.X = 1.0f - uv.X;
+    uv.Y = 1.0f - uv.Y;
+
     //gx = A + t (B - A)
     float dirX = boundingBox.sizeX();
     float dirY = boundingBox.sizeY();
 
-    FVector2D gx = boundingBox.bottomLeft;
+    FVector2D gx = boundingBox.topLeft;
     gx.X += dirX * uv.X; //go in direciton on x and y axis.
     gx.Y += dirY * uv.Y;
 
@@ -459,8 +485,8 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     const FVector2D &pos
 ) const {
     //if empty color buffer and no cursor enabled, return default Color
-    if(!bCursorColorEnabled && ambientColors.Num() <= 0){
-        return FLinearColor::Red;
+    if(!bCursorColorEnabled && ambientColorsInvertedSpace.Num() <= 0){
+        return FLinearColor::Blue;
     }
 
     //A + r (B - A) color needed!
@@ -470,26 +496,25 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     //closest color: 1.0
     //furthest color: 0.0
     FLinearColor accumulatedColor;
-    float minDistance = 0.0f;
-    float maxDistance = 0.0f;
 
-    if(ambientColors.Num() > 0){
+    float totalDistance = 0.0f;
+
+    if(ambientColorsInvertedSpace.Num() > 0){
         TArray<float> distances;
-        distances.SetNumUninitialized(ambientColors.Num());
-        for (int i = 0; i < ambientColors.Num(); i++)
+        distances.SetNumUninitialized(ambientColorsInvertedSpace.Num());
+        for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++)
         {
-            const FPairColorPosition &pair = ambientColors[i];
+            const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
             distances[i] = pair.DistanceSquared(pos);
-            minDistance = std::min(minDistance, distances[i]);
-            maxDistance = std::min(maxDistance, distances[i]);
+            totalDistance += distances[i];
         }
 
         //skalar = distTarget / distAll
-        ConvertToScalarValuesNormalized(distances, minDistance, maxDistance);
-        
-        for (int i = 0; i < ambientColors.Num(); i++){
+        ConvertToScalarValuesNormalized(distances, totalDistance);
+
+        for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++){
             float scalar = distances[i];
-            const FPairColorPosition &pair = ambientColors[i];
+            const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
             accumulatedColor += scalar * pair.color;
         }
     }
@@ -497,20 +522,17 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
 
     //cursor has more weight
     if(bCursorColorEnabled){
-        float distAll = maxDistance - minDistance;
-        float distCursor = cursorColorPair.DistanceSquared(pos);
-
-        bool bDebugSimple = true;
+        
+        bool bDebugSimple = false;
         if(bDebugSimple){
-            if(ambientColors.Num() <= 0){
+            if(ambientColorsInvertedSpace.Num() <= 0){
                 accumulatedColor = FLinearColor::Blue;
             }
             else
             {
-                accumulatedColor = ambientColors[0].color;
+                accumulatedColor = ambientColorsInvertedSpace[0].color;
             }
-
-            
+            return accumulatedColor;
         }
 
         //lin drop
@@ -518,6 +540,7 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
         //float scalar = distCursor / max;
 
         //nach 1/x abschwächen    
+        float distCursor = cursorColorPair.DistanceSquared(pos);
         float eps = 1.0f; // Schutz gegen Division durch 0
         float scalar = 1.0f / (distCursor + eps);
         scalar *= 100.0f;
@@ -534,31 +557,30 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
 ///@brief converts the whole buffer to scalar values and devides its strength by the size
 ///of the buffer
 void SlateMeshData::ConvertToScalarValuesNormalized(
-    TArray<float> &numbers,
-    float minValue,
-    float maxValue
+    TArray<float> &numbers, //distances are already in inverted space
+    float totalDistance
 )const{
-    //skalar = distTarget / distAll
-    float distAll = maxValue - minValue;
-    distAll = std::max(distAll, 0.1f);
-    float countAll = numbers.Num();
-    for (int i = 0; i < numbers.Num(); i++)
-    {
-        numbers[i] = ConvertToScalarValueNormalized(numbers[i], minValue, distAll); //auf skalar bringen
-        numbers[i] /= countAll; //aufteilen auf alle werte
-    }
-}
 
-float SlateMeshData::ConvertToScalarValueNormalized(
-    float number, 
-    float minValue,
-    float rangeDistAll
-)const{
-    if(rangeDistAll <= 0.01f){
-        return 1.0f;
+    //inverts numbers and builds the sum,
+    //then assigns its fraction from [0,1]
+    /*
+    float sum = 0.0f;
+    for (int i = 0; i < numbers.Num(); i++){
+        float inverted = totalDistance - numbers[i];
+        sum += numbers[i];
     }
 
-    //Scalar = DistTarget / DistAll
-    //number - min to move to local space
-    return std::abs((number - minValue) / rangeDistAll);
+    for (int i = 0; i < numbers.Num(); i++){
+        float &d = numbers[i];
+        if(sum > 0.0f){
+            d = d / sum; //weight by all
+        }else{
+            d = 1.0f / numbers.Num();
+        }
+    }*/
+
+    //so ist die gewichtung falsch herum, man kann auch uvs gespiegelt einfügen
+    for (int i = 0; i < numbers.Num(); i++){
+        numbers[i] /= totalDistance;
+    }
 }

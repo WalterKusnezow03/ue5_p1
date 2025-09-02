@@ -28,10 +28,15 @@ void SSlateWidgetBase::DebugCreatePolygonsOnConstruct(){
         FVector2D(300, 300),
         FVector2D(100, 200)
     };
-    polygon.AppendClosedShape(shape, 10); //20 freeze
+    polygon.AppendClosedShape(shape, 10); //20 freeze, 5 to low!
 
-    polygon.SetColor(FLinearColor::Blue);
+    //polygon.SetColor(FLinearColor::Blue);
     polygon.SetCursorColor(FLinearColor::White);
+
+    SlateMeshData &meshdata = polygon.MeshDataRef();
+    meshdata.AddAmbientUvColor(FVector2D(0, 0), FLinearColor::Red);
+    meshdata.AddAmbientUvColor(FVector2D(1, 1), FLinearColor::Blue);
+
 }
 
 // ---- external Tick ----
@@ -154,10 +159,10 @@ void SSlateWidgetBase::DrawPolygon(
     FSlateRenderTransform &RenderTransform
 )const{
 
-    const TArray<FSlateVertex> vertecies = 
+    const TArray<FSlateVertex> &vertecies = 
         polygon
         .MeshDataRefConst()
-        .MakeSlateVertexBuffer(RenderTransform);
+        .GetSlateVertexBuffer(RenderTransform); //const context internally escaped, buffer is cached.
     const TArray<SlateIndex> &triangles = polygon.MeshDataRefConst().TrianglesRefConst();
 
     TArray<FColor> colors;

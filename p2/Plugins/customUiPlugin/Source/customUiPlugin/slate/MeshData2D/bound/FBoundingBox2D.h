@@ -2,7 +2,13 @@
 
 #include "CoreMinimal.h"
 
-
+/// @brief bounding box for 2D Slate mesh data
+/*
+(tl)
+0,0------ 1,0
+|          |
+0,1-------1,1(br)
+*/
 struct CUSTOMUIPLUGIN_API FBoundingBox2D {
 
     FBoundingBox2D();
@@ -18,8 +24,8 @@ struct CUSTOMUIPLUGIN_API FBoundingBox2D {
 
     void Update(FVector2D &v0, FVector2D &v1, FVector2D &v2);
 
-    FVector2D bottomLeft;
-    FVector2D topRight;
+    FVector2D topLeft;
+    FVector2D bottomRight;
 
     float sizeX();
     float sizeY();

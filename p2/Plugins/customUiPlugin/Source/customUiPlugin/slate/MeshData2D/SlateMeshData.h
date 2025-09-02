@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h"
 #include "customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.h"
+#include "customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h"
 
 /// @brief class to store 2D Mesh Data for Slate Ui Polygons
 /// Supports FVector2D and FSlateVertex at the same time.
@@ -44,17 +45,24 @@ public:
     TArray<SlateIndex> &TrianglesRef();
 
     const TArray<FVector2D> &VerteciesRefConst() const;
-    const TArray<FSlateVertex> MakeSlateVertexBuffer(FSlateRenderTransform &RenderTransform) const;
+    const TArray<FSlateVertex> &GetSlateVertexBuffer(FSlateRenderTransform &RenderTransform) const;
     const TArray<SlateIndex> &TrianglesRefConst() const;
 
 
     // --- color dynamic ---
     void UpdateCursorPosition(FVector2D &position, bool bDynamicColoring);
     void UpdateCursorColor(FLinearColor &color);
-    void AddAmbientUvColor(FVector2D position, FLinearColor &color);
+    void AddAmbientUvColor(FVector2D position, FLinearColor color);
     void ClearAmbientColors();
 
 private:
+    //track changes for cache remake
+    void FlagCacheUpdateNeeded();
+
+    //slate vertex buffer cache to prevent calculating when
+    //nothing changed
+    SlateVertexBufferCache slateVertexCache;
+
     //bound
     FBoundingBox2D boundingBox;
 
@@ -68,21 +76,19 @@ private:
     bool bCursorColorEnabled = true;
     int CursorHighLightDistanceSquared = 100 * 100;
     FPairColorPosition cursorColorPair;
-    TArray<FPairColorPosition> ambientColors;
+    TArray<FPairColorPosition> ambientColorsInvertedSpace;
 
-    FVector2D convertUVToVertexBufferSpace(FVector2D &uv);
+    ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
+    ///up color calculation because the scalar is found by one division (less operations)
+    FVector2D convertUVInvertedToVertexBufferSpace(FVector2D &uv);
 
+    ///@brief expects distances the color coordinates, which must be inverted already 
+    /// (see method above:convertUVInvertedToVertexBufferSpace)
     void ConvertToScalarValuesNormalized(
         TArray<float> &numbers,
-        float minValue,
-        float maxValue
+        float totalDistance
     )const;
 
-    float ConvertToScalarValueNormalized(
-        float number,
-        float minValue,
-        float rangeDistAll
-    )const;
 
     //linear colors / gradient
     FLinearColor InterpolatedColorFor(const FVector2D &pos) const;
