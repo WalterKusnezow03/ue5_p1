@@ -180,15 +180,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent *MeshNoRaycast;
 
-	/// @brief saves mesh data per lod level per material int
-	/*std::map<int, MeshDataLod> meshLayersLodMap;
-	std::map<int, MeshDataLod> meshLayersLodMapNoRaycast;
-
-	std::map<ELod, UProceduralMeshComponent *> meshComponentLodMap;
-	std::map<ELod, UProceduralMeshComponent *> meshComponentLodMapNoRaycast;*/
-
-
-	//NEW
+	/// @brief saves mesh data per lod level per material and raycast / no raycast mesh
 	std::map<ELod, ProceduralMeshComponentPair> meshLodContainers;
 
 

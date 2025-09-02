@@ -120,6 +120,10 @@ protected:
 
 
 private:
-	//fall back flag!
+	//fall back flag! 
 	bool isPausedFlag = false;
+
+	
+	void UpdateCursorVisibilityBasedOnPause();
+	bool cursorVisibleFlag = false;
 };

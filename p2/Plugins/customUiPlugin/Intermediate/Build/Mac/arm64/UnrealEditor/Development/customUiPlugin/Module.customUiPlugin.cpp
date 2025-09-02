@@ -24,6 +24,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/Debug/UiDebugHelper.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.cpp"

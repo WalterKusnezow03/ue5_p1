@@ -115,10 +115,9 @@ void APlayerControllerBase::Tick(float DeltaTime)
         cameraRotation(),
         playerLookDir()
     );
-    
+
+    UpdateCursorVisibilityBasedOnPause();
 }
-
-
 
 /**
  * Implemented take damage method from interface, need to override it, this method is not valid yet
@@ -378,11 +377,21 @@ void APlayerControllerBase::showCursor(bool show){
         //game only custom dispatch no ui - CUSTOM DIPATCH CLICKS
         FInputModeGameOnly InputMode;
         PlayerController->SetInputMode(InputMode);
-        
-        
     }
-
 }
+
+void APlayerControllerBase::UpdateCursorVisibilityBasedOnPause(){
+    //based whether is paused or not
+    bool isPausedCurrent = IsPaused();
+    bool changed = isPausedCurrent != cursorVisibleFlag;
+
+    if(changed){
+        showCursor(!cursorVisibleFlag);
+        cursorVisibleFlag = !cursorVisibleFlag;
+    }
+}
+
+
 
 void APlayerControllerBase::setPaused(bool in){
     isPausedFlag = in;

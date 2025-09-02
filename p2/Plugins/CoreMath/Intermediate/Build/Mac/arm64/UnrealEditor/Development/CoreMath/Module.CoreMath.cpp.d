@@ -3819,10 +3819,12 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Intermediate/Build/Mac/arm64/UnrealEditor/Development/CoreMath/Module.CoreMath.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Intermediate/Build/Mac/arm64/UnrealEditor/Development/CoreMath/Definitions.CoreMath.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.h \
   Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/InterpolatorBase/TInterpolator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FVectorInterpolator.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FVectorInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/RotationInterpolator.cpp \

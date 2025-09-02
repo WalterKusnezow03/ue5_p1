@@ -28,16 +28,41 @@ void SSlateWidgetBase::DebugCreatePolygonsOnConstruct(){
         FVector2D(300, 300),
         FVector2D(100, 200)
     };
-    polygon.AppendClosedShape(shape);
+    polygon.AppendClosedShape(shape, 10); //20 freeze
+
+    polygon.SetColor(FLinearColor::Blue);
+    polygon.SetCursorColor(FLinearColor::White);
 }
 
 // ---- external Tick ----
 void SSlateWidgetBase::Tick(float deltatime){
+    FVector2D cursorLocalSpace = CursorPositionLocalSpace();
 
+    if(bDebugLog){
+        UiDebugHelper::showScreenMessage(FString::Printf(
+            TEXT("Cursor Local (%.1f, %.1f)"),
+            cursorLocalSpace.X,
+            cursorLocalSpace.Y),
+            FColor::Red
+        );
+    }
+
+    bool changesRegistered = false;
+    TArray<SlateMeshDataPolygon *> polygons = allPolygonsSorted();
+    for (int i = 0; i < polygons.Num(); i++){
+        
+        if(SlateMeshDataPolygon *current = polygons[i]){
+            //A & w = A, A & f = f
+            //A | w = w, A | f = A
+            changesRegistered = changesRegistered || current->Tick(deltatime);
+            current->UpdateCursorPosition(cursorLocalSpace);
+        }
+    }
+    //not needed, redrawn every frame.
+    if(false && changesRegistered){
+        MarkForRedraw();
+    }
 }
-
-
-
 
 // ---- Redraw request -----
 void SSlateWidgetBase::MarkForRedraw(){
@@ -56,13 +81,10 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
                          const FWidgetStyle& InWidgetStyle,
                          bool bParentEnabled) const
 {
-    //update transform
-    //FSlateRenderTransform NewTransform(FVector2D(100, 50)); // Translation
+    //use transform to transform the vertex buffer of the polygons,
+    //needed each time. Otherwise the Polygon is drawn from root(0,0)
     FSlateRenderTransform RenderTransform = AllottedGeometry.GetAccumulatedRenderTransform();
     
-
-
-
 
     //draw debug box / background red
     if(bDebugDrawBox){
@@ -79,7 +101,7 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
     DrawAllPolygons(
         OutDrawElements,
         LayerId,
-        RenderTransform
+        RenderTransform //for polygon transformation 
     );
 
     return LayerId + 1;
@@ -180,8 +202,18 @@ void SSlateWidgetBase::DrawPolygon(
 
 
 
-
-
+/// --- DATA MANAGEMENT ---
+TArray<SlateMeshDataPolygon *> SSlateWidgetBase::allPolygonsSorted(){
+    TArray<SlateMeshDataPolygon *> outArray;
+    for (int i = 0; i < layersSorted.Num(); i++){
+        int layer = layersSorted[i];
+        if (HasLayer(layer))
+        {
+            outArray.Add(&FindPolygonByLayerInternal(layer));
+        }
+    }
+    return outArray;
+}
 
 void SSlateWidgetBase::SortLayers(){
     TArray<int> allLayers;
@@ -195,7 +227,7 @@ void SSlateWidgetBase::SortLayers(){
 SlateMeshDataPolygon &SSlateWidgetBase::FindPolygonByLayerInternal(int layerId){
     if(!HasLayer(layerId)){
         polygonMap[layerId] = SlateMeshDataPolygon();
-        SortLayers();
+        SortLayers(); //sort layers again.
     }
     return polygonMap[layerId];
 }
@@ -256,3 +288,37 @@ FSlateDrawElement::MakeCustomVerts(
 
 
 */
+
+
+
+
+// --- click dispatch ---
+bool SSlateWidgetBase::dispatchClick(){
+    FGeometry Geometry = GetCachedGeometry();
+    FVector2D cursorPos = CursorPositionScreenSpace();
+
+    FVector2D topLeft = Geometry.LocalToAbsolute(FVector2D(0, 0));
+    FVector2D bottomRight = Geometry.LocalToAbsolute(Geometry.GetLocalSize());
+
+    FVector2D size = bottomRight - topLeft; //AB = B - A
+    topLeft -= size * 0.1f;
+    bottomRight += size * 0.1f;
+
+    bool inBoundsX = cursorPos.X >= topLeft.X && cursorPos.X <= bottomRight.X;
+    bool inBoundsY = cursorPos.Y >= topLeft.Y && cursorPos.Y <= bottomRight.Y;
+
+    return inBoundsX && inBoundsY;
+}
+
+FVector2D SSlateWidgetBase::CursorPositionScreenSpace(){
+    return FSlateApplication::Get().GetCursorPos();
+}
+
+FVector2D SSlateWidgetBase::CursorPositionLocalSpace(){
+    FVector2D screenSpace = CursorPositionScreenSpace();
+    FGeometry Geometry = GetCachedGeometry();
+    return Geometry.AbsoluteToLocal(screenSpace);
+    
+    //FVector2D topLeft = Geometry.LocalToAbsolute(FVector2D(0, 0));
+    //return screenSpace - topLeft; //AB = B - A
+}

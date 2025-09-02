@@ -4046,7 +4046,10 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.h \
   Runtime/SlateCore/Public/Rendering/DrawElements.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.cpp \

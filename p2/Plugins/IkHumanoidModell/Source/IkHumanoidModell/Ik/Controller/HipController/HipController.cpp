@@ -720,9 +720,8 @@ void HipController::setupRotationForNextStep(float radian){
     legLeft.updateLocalForwardMovingDirection(dir);
     legRight.updateLocalForwardMovingDirection(dir);
 
-
-
 }
+
 
 /// @brief will scale velocity immidiate based on radian to rotate in,
 /// must be raw delta rotation add, velocity scalar is made internally

@@ -17,7 +17,7 @@ public:
 
     void Construct(const FArguments& InArgs);
 
-    // Zeichnen überschreiben
+    //Called every frame
     virtual int32 OnPaint(const FPaintArgs& Args,
                           const FGeometry& AllottedGeometry,
                           const FSlateRect& MyCullingRect,
@@ -35,7 +35,11 @@ public:
 
     using SCompoundWidget::Tick;
     /// @brief widget can be ticked from UcustomUiComponent context owning this slate widget!
+    /// ticks all polygons.
     virtual void Tick(float deltatime);
+
+    ///@brief tells if the cursor is inside this geometry
+    bool dispatchClick();
 
 private:
 
@@ -64,13 +68,19 @@ private:
 
 
     bool bDebugDrawBox = false;
+    bool bDebugLog = true;
 
-    
     /// @brief stores polygons by layer id
     std::map<int, SlateMeshDataPolygon> polygonMap;
 
-    /// @brief stores layer numbers in ascending order
+    /// @brief stores layer numbers in ascending order (id from polygonMap)
     TArray<int> layersSorted;
-
+    
+    /// @brief sorts the layers of the polygon map into the layers Sorted array for drawing
     void SortLayers();
+
+    TArray<SlateMeshDataPolygon *> allPolygonsSorted();
+
+    FVector2D CursorPositionScreenSpace();
+    FVector2D CursorPositionLocalSpace();
 };

@@ -162,6 +162,6 @@ void UGameLaunchScreen::launchWorld(FString world){
 
         worldLevel::initWorld(world);
 
-        instance->openGameScreen(); //close all
+        //instance->openGameScreen(); //close all
     }
 }

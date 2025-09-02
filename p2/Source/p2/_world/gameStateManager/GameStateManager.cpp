@@ -29,6 +29,9 @@ void GameStateManager::UpdateGameState(EGameState state){
         if(state == EGameState::EPauseScreen){
             instance->openPauseScreen();
         }
+        if(state == EGameState::EGamePlay){
+            instance->openGameScreen();
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h"
+#include "customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.h"
 
 /// @brief class to store 2D Mesh Data for Slate Ui Polygons
 /// Supports FVector2D and FSlateVertex at the same time.
@@ -8,21 +10,36 @@ class CUSTOMUIPLUGIN_API SlateMeshData {
 
     //SlateIndex = uin16, merken
 
-
 public:
     SlateMeshData();
     ~SlateMeshData();
 
+    SlateMeshData(const SlateMeshData &other);
+    SlateMeshData &operator=(const SlateMeshData &other);
+
+    // --- Append ---
+
     /// @brief adds a triangle to the buffer
     void Append(FVector2D &a, FVector2D &b, FVector2D &c);
+
+    /// @brief adds a triangle to the buffer, and splits it recursively if detail > 0
+    void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, int detail);
 
     ///@brief appends a triangle but looks for nearby vertecies
     void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c);
 
-    ///@brief appends a closed shape, is in clockwise order!
+    ///@brief appends a triangle shaped buffer {(v0,v1,v2)(v1,v2,v3)...}
+    void AppendEfficentTriangleShapedBuffer(TArray<FVector2D> &triangleShapedBuffer);
+
+    ///@brief appends a closed shape, shape MUST be convex like, is in clockwise order!
     void AppendClosedShape(TArray<FVector2D> &shape);
 
+    ///@brief appends a closed shape, shape MUST be convex like, is in clockwise order!, 
+    //detail for recursive triangle split
+    void AppendClosedShape(TArray<FVector2D> &shape, int detail);
 
+
+    // --- Data reference for drawing ---
     TArray<FVector2D> &VerteciesRef();
     TArray<SlateIndex> &TrianglesRef();
 
@@ -30,21 +47,57 @@ public:
     const TArray<FSlateVertex> MakeSlateVertexBuffer(FSlateRenderTransform &RenderTransform) const;
     const TArray<SlateIndex> &TrianglesRefConst() const;
 
-    
+
+    // --- color dynamic ---
+    void UpdateCursorPosition(FVector2D &position, bool bDynamicColoring);
+    void UpdateCursorColor(FLinearColor &color);
+    void AddAmbientUvColor(FVector2D position, FLinearColor &color);
+    void ClearAmbientColors();
 
 private:
-    float epsilon = 1.0f;
+    //bound
+    FBoundingBox2D boundingBox;
 
-    int MaxSizeVertexBuffer = 65535; //numbers max for uint16
+    // Mesh data
+    float epsilon = 1.0f;
+    static constexpr int MaxSizeVertexBuffer = 65535; //vertex number max for uint16
     TArray<FVector2D> Vertecies; //for line draw
     TArray<SlateIndex> Triangles;
 
+    // Color data (const because called on render.)
+    bool bCursorColorEnabled = true;
+    int CursorHighLightDistanceSquared = 100 * 100;
+    FPairColorPosition cursorColorPair;
+    TArray<FPairColorPosition> ambientColors;
+
+    FVector2D convertUVToVertexBufferSpace(FVector2D &uv);
+
+    void ConvertToScalarValuesNormalized(
+        TArray<float> &numbers,
+        float minValue,
+        float maxValue
+    )const;
+
+    float ConvertToScalarValueNormalized(
+        float number,
+        float minValue,
+        float rangeDistAll
+    )const;
+
+    //linear colors / gradient
+    FLinearColor InterpolatedColorFor(const FVector2D &pos) const;
+
+    //Color data end
+
+
+
+    ///@brief tells if a vertex is present by epsilon distance
     bool HasVertex(FVector2D &a, uint16 &outIndex);
 
-    ///@brief may return -1
+    ///@brief may return -1 if buffer empty
     int ClosestVertex(FVector2D &target);
 
-    ///@brief may return -1
+    ///@brief may return -1 if none found
     int ClosestVertexBelowEpsilon(FVector2D &target);
 
     bool isValidVertexIndex(int i);
@@ -58,6 +111,22 @@ private:
         const FSlateRenderTransform &RenderTransform
     ) const;
 
-    //linear colors / gradient
-    FLinearColor InterpolatedColorFor(const FVector2D &pos) const;
+
+
+    // -- triangle detail increase --
+
+    ///@brief splits all triangles from irginal buffer in half and appends it
+    ///in triangle shape to the append buffer, duplicates included!
+    void Split(
+        TArray<FVector2D> &originalBuffer,
+        TArray<FVector2D> &appendToTriangleShapedBuffer
+    );
+
+    ///@brief splits a triangle along its longest edge in halt and
+    ///appends both triangles the buffer (v0,v1,v2) -> {(new,1,2)(0,new,2)}
+    void Split(
+        FVector2D &v0,
+        FVector2D &v1,
+        FVector2D &v2,
+        TArray<FVector2D> &appendToTriangleShapedBuffer);
 };

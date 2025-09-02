@@ -29,6 +29,10 @@ public:
     ///tick override, propagate to slate child
     virtual void Tick(float deltatime) override;
 
+    /// @brief dispatch click override to ask the Slate widget if the cursor is inside the geometry
+    ///method call will come from owning ucustomuicomponent container (canvas, autobox etc.)
+    virtual bool dispatchClick() override;
+
     ///@brief sets the umg size of the widget, for example 200 x 200
     void SetWidgetScale(FVector2D scalePixels);
 

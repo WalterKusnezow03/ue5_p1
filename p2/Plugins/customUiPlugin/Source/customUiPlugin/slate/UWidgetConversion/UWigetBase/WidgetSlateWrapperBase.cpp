@@ -23,3 +23,11 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
         ptr->Tick(deltatime);
     }
 }
+
+
+bool UWidgetSlateWrapperBase::dispatchClick(){
+    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+        return ptr->dispatchClick();
+    }
+    return false;
+}

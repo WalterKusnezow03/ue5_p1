@@ -27,6 +27,9 @@ public:
         return sharedPtr.ToSharedRef();
     }
 
+    ///@brief will tell if the cursor is inside the geometr of this widget
+    bool dispatchClick();
+
 protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
 

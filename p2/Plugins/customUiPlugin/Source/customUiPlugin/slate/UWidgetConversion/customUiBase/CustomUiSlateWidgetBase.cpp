@@ -27,7 +27,14 @@ void UCustomUiSlateWidgetBase::MakeWidget(){
 
 
 void UCustomUiSlateWidgetBase::Tick(float deltatime){
-    if(widget){
+    if(widget && markedVisible()){
         widget->Tick(deltatime);
     }
+}
+
+bool UCustomUiSlateWidgetBase::dispatchClick(){
+    if(widget){
+        return widget->dispatchClick();
+    }
+    return false;
 }

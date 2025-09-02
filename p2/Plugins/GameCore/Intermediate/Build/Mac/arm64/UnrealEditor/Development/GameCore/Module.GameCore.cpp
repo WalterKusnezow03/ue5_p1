@@ -25,7 +25,6 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.cpp"
-#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshDataLod.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerControllerBase/PlayerControllerBase.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Private/GameCore.cpp"

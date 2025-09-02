@@ -602,6 +602,7 @@ void AplayerScript::openPauseMenu(){
     worldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
 }
 
+
 void AplayerScript::updateUi(){
     updateAmmunitionUi();
     updateHealthUi();
@@ -616,25 +617,11 @@ void AplayerScript::updateAmmunitionUi(){
         playerInventory.currentLeftAmmnutionInMag()
     );
 
-    /*
-    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
-        //ammunition of weapon
-        FString ammunitionText = playerInventory.ammuntionUiStringOfWeapon();
-        uiInstance->updateAmmunitionText(ammunitionText);
-
-        //mags left
-
-    }*/
-
 }
 
 
 void AplayerScript::updateHealthUi(){
     worldLevel::playerStatusManager.updateHealth(health);
-    /*
-    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
-        uiInstance->updateHealthText(health);
-    }*/
 }
 
 void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
