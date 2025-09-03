@@ -30,6 +30,8 @@ public:
 	//must have this api to update from outside
 	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) override;
 
+	///@brief local animation offsets (weapon kickback!)
+	virtual FVector LocalAnimationOffset() override;
 
 	// Api
 
@@ -113,4 +115,5 @@ protected:
 
 public:
 	FVector sightOffsetNoRotation();
+	
 };

@@ -5,6 +5,7 @@
 #include "IkHumanoidModell/Ik/Controller/HipController/HipController.h"
 #include "IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.h"
 #include "IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.h"
+#include "IkHumanoidModell/Ik/CarriedItem/Animated/AnimCarriedItemSocket.h"
 #include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
 #include "GameCore/Raycast/query/CollisionTracker.h"
 #include "GameCore/interfaces/Damageinterface.h"
@@ -15,11 +16,11 @@ class IKHUMANOIDMODELL_API HumanoidController {
 
 public:
     HumanoidController();
-    ~HumanoidController();
+    virtual ~HumanoidController();
 
     
-    void defaultSetup(UWorld *world);
-    void Tick(float deltatime);
+    virtual void defaultSetup(UWorld *world);
+    virtual void Tick(float deltatime);
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
     void dropCarriedItem();
 
@@ -58,7 +59,7 @@ public:
     void setDamagedOwner(IDamageinterface *damagedOwnerIn);
 
 
-private:
+protected:
 
     //collision params tracking
     CollisionTracker collisionParamsProvider;
@@ -82,8 +83,7 @@ private:
     TArray<AActor *> actorInChildrenArray();
 
 
-    CarriedItemSocket mainItemSocket;
-    void TickMainCarriedItemSocket(float deltatime);
-
-    
+    //CarriedItemSocket mainItemSocket;
+    AnimCarriedItemSocket mainItemSocket;
+    virtual void TickMainCarriedItemSocket(float deltatime);
 };

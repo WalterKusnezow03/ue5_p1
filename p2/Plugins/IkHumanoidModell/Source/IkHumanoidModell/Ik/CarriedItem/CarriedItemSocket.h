@@ -8,12 +8,12 @@ class IKHUMANOIDMODELL_API CarriedItemSocket {
 
 public:
     CarriedItemSocket();
-    ~CarriedItemSocket();
+    virtual ~CarriedItemSocket();
 
     void attachOrReplaceCarriedItem(IIkCarryInterface *itemIn);
     void dropCarriedItem();
 
-    void Tick(
+    virtual void Tick(
         float deltatime,
         MMatrix &translation,
         MMatrix &orientation //orientation of actor or even combined with limb or camera look direction.
@@ -30,7 +30,10 @@ public:
 
     IIkCarryInterface *attachedItemPointer();
 
-private:
+protected:
+    //just as the method name sais.
+    MMatrix AddTemporaryIIkCarryInterfaceAnimationOffsetToInnerTransformOnTick();
+
     IIkCarryInterface *attachedItem = nullptr;
 
     /// @brief M = T * R <--R doesnt affect translation when multiplying, direction writing to 

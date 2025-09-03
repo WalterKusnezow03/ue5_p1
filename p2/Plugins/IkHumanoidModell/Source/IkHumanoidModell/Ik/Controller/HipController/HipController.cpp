@@ -20,6 +20,10 @@ MMatrix &HipController::getTranslation(){
     return translation;
 }
 
+void HipController::SetTranslation(FVector &target){
+    translation.setTranslation(target);
+}
+
 FVector HipController::GetLocation(){
     return translation.getTranslation();
 }
@@ -839,4 +843,20 @@ bool HipController::locoMotionStateEnabled(){
 void HipController::getActors(TArray<AActor *> &outArray){
     legLeft.getActors(outArray);
     legRight.getActors(outArray);
+}
+
+
+
+
+
+
+
+// -------------- EXPERIMENTAL ------------------
+
+
+// ---- external override ---- (just player)
+void HipController::forceOverrideRotation(FRotator &rotation){
+    orientation.setRotation(rotation);
+
+    //speed may be removed, unclear if player will run on physics!
 }

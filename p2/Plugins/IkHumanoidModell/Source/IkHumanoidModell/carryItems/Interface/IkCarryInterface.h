@@ -32,4 +32,8 @@ public:
 
 	/// @brief must provide this api for outside updates of the actor (but this is just an interface.)
 	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) = 0;
+
+	///@brief must be implemented if local actor position is changed for animations
+	/// (Weapon kickback manual for example)
+	virtual FVector LocalAnimationOffset();
 };

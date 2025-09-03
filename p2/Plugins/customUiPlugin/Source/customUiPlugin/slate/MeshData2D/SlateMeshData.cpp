@@ -44,9 +44,12 @@ const TArray<SlateIndex> &SlateMeshData::TrianglesRefConst()const{
 }
 
 
-
-
-
+void SlateMeshData::Clear(){
+    boundingBox.Reset();
+    Vertecies.Empty();
+    Triangles.Empty();
+    FlagCacheUpdateNeeded();
+}
 
 void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c){
     if(!TriangleCanBeAdded()){
@@ -76,6 +79,35 @@ void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c){
     FlagCacheUpdateNeeded();
 }
 
+void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d){
+    AppendEfficent(a, b, c);
+    AppendEfficent(a, c, d);
+}
+
+void SlateMeshData::AppendQuad(FVector2D &bottomLeft, FVector2D &topRight){
+    /*
+    1-->2
+    |   |
+    0<--3
+    */
+    FVector2D v0(
+        std::min(bottomLeft.X, topRight.X),
+        std::min(bottomLeft.Y, topRight.Y)
+    );
+    FVector2D v1(
+        v0.X,
+        std::max(bottomLeft.Y, topRight.Y)
+    );
+    FVector2D v2(
+        std::max(bottomLeft.X, topRight.X),
+        v1.X
+    );
+    FVector2D v3(
+        v2.X,
+        v0.Y
+    );
+    Append(v0, v1, v2, v3);
+}
 
 void SlateMeshData::AppendEfficentTriangleShapedBuffer(TArray<FVector2D> &triangleShapedBuffer){
     for (int i = 2; i < triangleShapedBuffer.Num(); i += 3){
@@ -376,6 +408,8 @@ const TArray<FSlateVertex> &SlateMeshData::GetSlateVertexBuffer(
 
     //get ref, update if changes made
     TArray<FSlateVertex> &outBuffer = slateVertexCache.mutableCachedBufferRef(Vertecies.Num());
+    
+    //update referenced buffer, is mutable.
     if(slateVertexCache.CacheUpdateNeeded()){
         slateVertexCache.ResetCacheUpdateNeededFlag(); //new calculation made, reset
 
@@ -387,13 +421,25 @@ const TArray<FSlateVertex> &SlateMeshData::GetSlateVertexBuffer(
     return outBuffer;
 }
 
+///@brief makes slate vertex and applies runtime transformation matrix (internal extra matrix)
+/// After color is set!
 FSlateVertex SlateMeshData::makeSlateVertex(
     const FVector2D &Position,
     const FSlateRenderTransform &RenderTransform
 ) const {
-    FVector2f PosAs2F = FVector2f(Position.X, Position.Y);
-    FVector2f UV(0,0); // wenn keine Textur, 0,0 ok
+    //apply color
     FColor Color = InterpolatedColorFor(Position).ToFColor(true);
+
+    //UV - ignored
+    FVector2f UV(0,0); // wenn keine Textur, 0,0 ok
+
+    //apply runtime transform
+    FVector2f PosAs2F(Position.X, Position.Y);
+    if (bHasRuntimeTransformation){
+        ApplyTransformationConstEscape(transformationRuntimeMatrix, PosAs2F);
+    }
+   
+    
 
     //static FSlateVertex Make(
     //  const FSlateRenderTransform& RenderTransform, 
@@ -403,8 +449,6 @@ FSlateVertex SlateMeshData::makeSlateVertex(
     //  const FColor InColor, 
     //  const FColor SecondaryColor = FColor()
     //)
-    
-
     FSlateVertex Vertex = FSlateVertex::Make<ESlateVertexRounding::Disabled>(
         RenderTransform,
         PosAs2F,
@@ -460,6 +504,8 @@ void SlateMeshData::ClearAmbientColors(){
 
 ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
 ///up color calculation because the scalar is found by one division (less operations)
+///is converted to a real position, because mesh data might change but the
+///color vertex should stay in place.
 FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(FVector2D &uv){
 
     uv.X = 1.0f - uv.X;
@@ -583,4 +629,40 @@ void SlateMeshData::ConvertToScalarValuesNormalized(
     for (int i = 0; i < numbers.Num(); i++){
         numbers[i] /= totalDistance;
     }
+}
+
+
+
+
+// ---- transformation ----
+void SlateMeshData::ApplyTransformationImmidiate(MMatrix2D &other){
+    FlagCacheUpdateNeeded();
+    for (int i = 0; i < Vertecies.Num(); i++){
+        ApplyTransformation(other, Vertecies[i]);
+    }
+}
+
+void SlateMeshData::SetRuntimeTransformation(MMatrix2D &other){
+    transformationRuntimeMatrix = other;
+    bHasRuntimeTransformation = true;
+}
+
+void SlateMeshData::ResetRuntimeTransformation(){
+    bHasRuntimeTransformation = false;
+}
+
+void SlateMeshData::ApplyTransformation(MMatrix2D &mat, FVector2D &vertex){
+    vertex = mat * vertex;
+}
+
+/// just if modification is ok because the vertex data belongs to the 
+/// object and slate render data is not cached, also
+/// draw data is cached inside the SlateVertexBufferCache as SlateVertex and NOT
+/// raw Vertexbuffer
+void SlateMeshData::ApplyTransformationConstEscape(
+    const MMatrix2D &mat, 
+    const FVector2f &vertex
+) const {
+    FVector2f &mutableVertex = const_cast<FVector2f&>(vertex);
+    mutableVertex = mat * mutableVertex;
 }

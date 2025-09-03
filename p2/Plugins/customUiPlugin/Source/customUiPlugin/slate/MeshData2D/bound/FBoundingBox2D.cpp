@@ -1,16 +1,19 @@
 #include "FBoundingBox2D.h"
 
 FBoundingBox2D::FBoundingBox2D(){
+    Reset();
+}
+FBoundingBox2D::~FBoundingBox2D(){}
+
+void FBoundingBox2D::Reset(){
     topLeft = FVector2D(0, 0);
     bottomRight = FVector2D(0, 0);
 }
-FBoundingBox2D::~FBoundingBox2D(){}
 
 FBoundingBox2D::FBoundingBox2D(
     TArray<FVector2D> &buffer
 ) {
-    topLeft = FVector2D(0, 0);
-    bottomRight = FVector2D(0, 0);
+    Reset();
     Update(buffer);
 }
 

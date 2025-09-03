@@ -166,24 +166,33 @@ void AplayerScript::Tick(float DeltaTime)
 
 void AplayerScript::TickBoneController(float DeltaTime){
 
+    //return;
+
     //override rotation and location for now
     FVector pos = GetActorLocation();
     FRotator rot = GetActorRotation();
     rot.Pitch = 0.0f;
-    //boneController.debugUpdateTransform(pos, rot);
+    rot.Roll = 0.0f;
 
-    FVector controllerLocation = boneController.GetLocation();
+
+    if(CameraComponent){
+        boneController.OverrideTransformAndCamera(
+            *CameraComponent,
+            pos,
+            rot
+        );
+    }
+    boneController.Tick(DeltaTime);
+
+    /*
     boneController.debugUpdateTransform(pos, rot);
-    //boneController.overrideRotationYaw(rot.Yaw);
-
-
     //update some of the states based on the camera
     if(CameraComponent != nullptr){
         boneController.updateStatesBasedOnCamera(*CameraComponent);
     }
 
     boneController.Tick(DeltaTime, GetWorld());
-
+    */
 
     
     //boneController.debugDrawHeadForward(GetWorld(), DeltaTime);
@@ -206,17 +215,15 @@ void AplayerScript::MoveForward(float Value)
     Super::MoveForward(Value);
     
     if(IsPaused()){
+        //DebugHelper::showScreenMessage("PlayerSctrip: Move Forward PAUSED", FColor::Red);
         return;
     }
  
+    //prints as expected
+    //DebugHelper::showScreenMessage("PlayerSctrip: Move Forward", FColor::Green);
     if ((Controller != nullptr) && (Value != 0.0f))
     {
-        if (sprinting) {
-            boneController.weaponRaisedReadyPosition(); //testing needed
-        }else{
-            boneController.weaponContactPosition();
-        }
-
+        boneController.weaponRaisedReadyPosition(sprinting); //testing needed
     }
 }
 
@@ -282,12 +289,18 @@ void AplayerScript::interact(){
 /// possible
 void AplayerScript::drop(){
     Super::drop();
-    boneController.dropWeapon();
+    //boneController.dropWeapon();
     playerInventory.dropWeapon();
+
+    
+    boneController.dropCarriedItem();
+
+
 
     Aweapon *otherWeaponNow = playerInventory.getItemPointer();
     if(otherWeaponNow != nullptr){
-        boneController.attachCarriedItem(otherWeaponNow);
+        //boneController.attachCarriedItem(otherWeaponNow);
+        boneController.attachOrReplaceCarriedItem(otherWeaponNow);
     }
 }
 
@@ -374,21 +387,37 @@ void AplayerScript::TickWeaponSway(){
 
 
 void AplayerScript::setupBoneController(){
-	
 
-	//init offset for now
+    boneController.defaultSetup(GetWorld());
 
-	FVector offset = GetActorLocation();
-	boneController.SetLocation(offset);
+    //keine ahnung ob das was bringt.
+    if(CameraComponent){
+        float legScaleCM = 100;
+        float armScaleCM = 100;
+        float allScale = legScaleCM + armScaleCM;
+        float allHalf = allScale / 2.0f;
+        allHalf += 5.0f; //add up
+
+        int pushForward = 10;
+        cameraReltiveLocationOriginal = FVector(pushForward, 0, allHalf);
+        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
+    }
+
+
+    /*
+    //init offset for now
+
+    FVector offset = GetActorLocation();
+    boneController.SetLocation(offset);
 
     boneController.setAsPlayerOwnedController(BASE_SPEED); //sehr wichtig!
     boneController.setupWings(GetWorld());
 
     // debug testing meshes
-	float legScaleCM = boneController.legScale();
-	float armScaleCM = boneController.armScale();
-	float legHalfScale = legScaleCM / 2.0f;
-	float armHalfScale = armScaleCM / 2.0f;
+    float legScaleCM = boneController.legScale();
+    float armScaleCM = boneController.armScale();
+    float legHalfScale = legScaleCM / 2.0f;
+    float armHalfScale = armScaleCM / 2.0f;
 
     //set camera to head pos:
     if(CameraComponent){
@@ -400,25 +429,25 @@ void AplayerScript::setupBoneController(){
         cameraReltiveLocationOriginal = FVector(pushForward, 0, allHalf);
         CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
     }
-    
+
 
     int sizeX = 10;
-	int sizeY = 10;
-	int offY = sizeY / 2;
-	offY = 0;
+    int sizeY = 10;
+    int offY = sizeY / 2;
+    offY = 0;
 
     //links arm
-	AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
-	
-	//holding weapon rechts
-	AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
-	AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+    AActor *oberarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+    AActor *unterarm = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+    boneController.attachLimbMeshes(oberarm, unterarm, 3); //hand 1 debug
+
+    //holding weapon rechts
+    AActor *oberarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
+    AActor *unterarm_1 = createLimbPivotAtTop(sizeX, sizeY, armHalfScale, 0);
     boneController.attachLimbMeshes(oberarm_1, unterarm_1, 4); // hand 2 debug
 
 
-    //fingers 
+    //fingers
     if(false){
         int fingerX = 2;
         HandBoneIndexEnum array[] = {
@@ -452,41 +481,41 @@ void AplayerScript::setupBoneController(){
             );
         }
     }
-    
+
 
     //return;
 
 
-	AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
-	
-	AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
-	boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
+    AActor *oberschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+    AActor *unterschenkel = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+    boneController.attachLimbMeshes(oberschenkel, unterschenkel, 1); //foot 1 debug
+
+    AActor *oberschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+    AActor *unterschenkel_1 = createLimbPivotAtTop(sizeX, sizeY, legHalfScale, 0);
+    boneController.attachLimbMeshes(oberschenkel_1, unterschenkel_1, 2); //foot 2 debug
 
     if(false){
         AActor *torsoMesh = createLimbPivotAtTop(sizeX, sizeY * 4, -armScaleCM, 0);
-	    boneController.attachTorso(torsoMesh);
+        boneController.attachTorso(torsoMesh);
     }
-    
+
 
     //foot
-	AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
-	AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
-	boneController.attachPedalFoots(foot1, foot2);
+    AActor *foot1 = createLimbPivotAtTop(20, 10, 10, 10);
+    AActor *foot2 = createLimbPivotAtTop(20, 10, 10, 10);
+    boneController.attachPedalFoots(foot1, foot2);
 
     return;
 
     //head
-	AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
-	boneController.attachHead(headPointer);
+    AActor *headPointer = createLimbPivotAtTop(15, 20, -1 * 25, 0); //-35 flip pivot
+    boneController.attachHead(headPointer);
 
 
-	
 
-	//DEBUG HIDE OWN MESH 
-	
+
+    //DEBUG HIDE OWN MESH
+    */
 }
 
 
@@ -568,6 +597,8 @@ void AplayerScript::TickUpdateWingsuit(float DeltaTime){
         if(!isCamInPlayer){
             switchCamera();
         }
+
+        
     }
 }
 
@@ -646,8 +677,9 @@ void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
 void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
 
     //drop current weapon from bone controller
-    boneController.dropWeapon(); 
-    
+    //boneController.dropWeapon();
+    boneController.dropCarriedItem();
+
     //clear inventory
     playerInventory.dropAllWeaponsToObjectPool();
 
@@ -681,8 +713,10 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
     if(weapon != nullptr){
         playerInventory.addWeaponIfNotInInventory(weapon);
         weapon->pickup(CameraComponent);
-        boneController.dropWeapon(); //drop old weapon(?)
-        boneController.attachCarriedItem(weapon);
+
+        boneController.attachOrReplaceCarriedItem(weapon);
+        // boneController.dropWeapon(); //drop old weapon(?)
+        // boneController.attachCarriedItem(weapon);
     }
 }
 

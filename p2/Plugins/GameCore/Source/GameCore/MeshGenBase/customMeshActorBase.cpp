@@ -103,9 +103,14 @@ void AcustomMeshActorBase::Tick(float DeltaTime)
 }
 
 void AcustomMeshActorBase::disablePhysicscollision(){
+    if(meshLodContainers.find(ELod::lodNear) != meshLodContainers.end()){
+        meshLodContainers[ELod::lodNear].setCollisionEnabled(false);
+    }
+    
+    /*
     if(Mesh){
         Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    }
+    }*/
 }
 
 

@@ -238,6 +238,10 @@ void AcarriedItem::UpdateActorTransform(
 	//DebugHelper::showScreenMessage("IIKCarried Item Update Transform", FColor::Cyan);
 }
 
+FVector AcarriedItem::LocalAnimationOffset(){
+	return actorAnimationOffsetLocal();
+}
+
 // ---- IK INTERFACE API END ----
 
 

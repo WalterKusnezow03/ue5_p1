@@ -49,11 +49,6 @@ public:
 	void overrideStart(FVector fromtarget, FRotator fromRotationIn);
 	void overrideTarget(FVector totarget, FRotator toRotationIn);
 
-
-
-	//void overrideStartSpeedRelative(FRotator rotator);
-	//void overrideTarget(FRotator rotator);
-
 	bool hasReachedTarget();
 	bool hasTargetSetup();
 	void resetReachedflag();
@@ -86,43 +81,9 @@ public:
 protected:
 	
 
-	bool useHermiteSplineFlag = true; //true by default
-
-	FVector from;
-	FVector target;
-
-	FVector prev;
+	float skalar();
 
 	FVector fromWorld;
 	FVector targetWorld;
-
-	FRotator fromRotation;
-	FRotator toRotation;
-
-	float deltaTime = 0.0f;
-	float timeToFrame = 0.0f;
-	bool reached = false;
-	
-	float skalar();
-
-	bool targetSetup = false;
 	bool worldtargetSetup = false;
-
-	static float rotationDirectionShorter(float a, float b);
-	static float wrapAngle180(float angle);
-
-	float shorterAngleSum(FRotator &a, FRotator &b);
-
-
-
-	FVector HermiteInterpolate(float t);
-	FVector HermiteInterpolate(
-		FVector &p0,
-		FVector &p1,
-		FVector &m0, // tangente at p0
-		FVector &m1, // tangente at p1
-		float t
-	);
-
-	void updateReachedFlagBasedOnDistance();
 };

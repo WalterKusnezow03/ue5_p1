@@ -24,6 +24,8 @@
 
 #include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 
+#include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
+
 #include "playerScript.generated.h"
 
 UCLASS()
@@ -106,10 +108,11 @@ private:
 	void TickBoneController(float DeltaTime);
 	void resetFlagsOnTick();
 
-	class BoneController boneController;
-	void setupBoneController();
+	
+	class HumanoidPlayerController boneController;
+	// class BoneController boneController;
 	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
-
+	void setupBoneController();
 
 
 	//WINGSUIT

@@ -26,9 +26,12 @@ void CarriedItemSocket::Tick(
     MMatrix &orientation //orientation of actor or even combined with limb or camera look direction.
 ){
     if(itemIsAttached()){
+        MMatrix transformInnerModified = AddTemporaryIIkCarryInterfaceAnimationOffsetToInnerTransformOnTick();
+
         //M = T * R * M_inner
         MMatrix TR = translation * orientation; //<--lese richtung--
-        MMatrix M = TR * TransformInner;
+        //MMatrix M = TR * TransformInner;
+        MMatrix M = TR * transformInnerModified;
 
         FVector updateLocation = M.getTranslation();
         FRotator updateRotator = M.extractRotator();
@@ -37,14 +40,27 @@ void CarriedItemSocket::Tick(
     }
 }
 
+MMatrix CarriedItemSocket::AddTemporaryIIkCarryInterfaceAnimationOffsetToInnerTransformOnTick(){
+    if (itemIsAttached()){
+        MMatrix copy = TransformInner;
+        FVector offset = copy.getTranslation();
+        offset += attachedItem->LocalAnimationOffset();
+        copy.setTranslation(offset);
+        return copy;
+    }
+    return TransformInner;
+}
+
 /// @brief local translation when updating the socket and carried item position and rotation
 /// @param offset 
 void CarriedItemSocket::setLocalLocation(FVector &offset){
+    //M = T * R <-- lese richtung -- deshalb darf translation rein kopiert werden!
     TransformInner.setTranslation(offset);
 }
 
 
 void CarriedItemSocket::setLocalRotation(FRotator &rotation){
+    //M = T * R <-- lese richtung --, deshlab darf rotation reinkopiert werden!
     TransformInner.setRotation(rotation);
 }
 

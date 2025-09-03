@@ -37,9 +37,11 @@ public:
     FVector GetLocation();
     
 
-    /// @brief places the conroller at a target, foot on ground
+    /// @brief places the conroller at a target, foot on ground (passed target is ground)
     void SetLocation(FVector &target);
 
+    ///@brief overrides the translation
+    void SetTranslation(FVector &target);
 
     // --- entity api ---
     void setStateWalking();
@@ -147,8 +149,9 @@ public:
     /// @brief current look dir from orientation
     FVector lookDirection();
 
-    //debug
+    // -- debug or player control --
     void forceYawAdd(float degree);
+    void forceOverrideRotation(FRotator &rotation);
 
 private:
     bool DEBUG_SLOWTIME = false;  // true;

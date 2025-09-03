@@ -120,6 +120,12 @@ void Aweapon::Tick(float DeltaTime)
 }
 
 
+// --- IK CARRY INTERFACE OVERRIDE
+void Aweapon::UpdateActorTransform(FVector &location, FRotator &rotation){
+	FVector accumulated = location + sightOffsetNoRotation();
+	Super::UpdateActorTransform(accumulated, rotation);
+}
+
 //depreacted
 
 /// @brief Only for player:

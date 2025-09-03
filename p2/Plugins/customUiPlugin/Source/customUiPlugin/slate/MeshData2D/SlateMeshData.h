@@ -4,6 +4,7 @@
 #include "customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h"
 #include "customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.h"
 #include "customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h"
+#include "CoreMath/Matrix/2D/MMatrix2D.h"
 
 /// @brief class to store 2D Mesh Data for Slate Ui Polygons
 /// Supports FVector2D and FSlateVertex at the same time.
@@ -18,10 +19,16 @@ public:
     SlateMeshData(const SlateMeshData &other);
     SlateMeshData &operator=(const SlateMeshData &other);
 
+    /// @brief clears the meshdata completly including cache
+    void Clear();
+
     // --- Append ---
 
     /// @brief adds a triangle to the buffer
     void Append(FVector2D &a, FVector2D &b, FVector2D &c);
+
+    ///@brief appends a quad (2 triangles) to the buffer
+    void Append(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d);
 
     /// @brief adds a triangle to the buffer, and splits it recursively if detail > 0
     void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, int detail);
@@ -39,6 +46,8 @@ public:
     //detail for recursive triangle split
     void AppendClosedShape(TArray<FVector2D> &shape, int detail);
 
+    ///@brief adds a quad between 2 positions
+    void AppendQuad(FVector2D &bottomLeft, FVector2D &topRight);
 
     // --- Data reference for drawing ---
     TArray<FVector2D> &VerteciesRef();
@@ -52,8 +61,23 @@ public:
     // --- color dynamic ---
     void UpdateCursorPosition(FVector2D &position, bool bDynamicColoring);
     void UpdateCursorColor(FLinearColor &color);
+
+    ///@brief once a uv color coordinate is added, it is moved to
+    ///vertex buffer space and wont move, even if the vertex buffer is
+    ///changed, and the bounding box shriks, colors will stay in place
     void AddAmbientUvColor(FVector2D position, FLinearColor color);
     void ClearAmbientColors();
+
+
+    // --- transform ---
+    ///@brief applies a transformation matrix to the buffer, changes
+    ///not resetable
+    void ApplyTransformationImmidiate(MMatrix2D &other);
+
+    ///@brief sets the runtime transformation, applied when a rerender is needed
+    ///can be reset. Original vertex buffer is not touched.
+    void SetRuntimeTransformation(MMatrix2D &other);
+    void ResetRuntimeTransformation();
 
 private:
     //track changes for cache remake
@@ -95,6 +119,18 @@ private:
 
     //Color data end
 
+    //transformaation
+    bool bHasRuntimeTransformation = false;
+    /// @brief matrix to apply at runtime to not manipulate the original buffer!
+    MMatrix2D transformationRuntimeMatrix;
+
+    void ApplyTransformation(MMatrix2D &mat, FVector2D &vertex);
+    void ApplyTransformationConstEscape(
+        const MMatrix2D &mat,
+        const FVector2f &vertex) const;
+
+    //transformation end
+
 
 
     ///@brief tells if a vertex is present by epsilon distance
@@ -112,6 +148,7 @@ private:
 
     FVector2D CenterOf(TArray<FVector2D> &buffer);
 
+    ///@brief will make the slate vertex for a given render transform and vertex
     FSlateVertex makeSlateVertex(
         const FVector2D &ref,
         const FSlateRenderTransform &RenderTransform

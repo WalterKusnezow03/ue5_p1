@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/FRotatorInterpolator.h"
 #include <map>
 #include "RotationStates.h"
 
@@ -30,7 +31,9 @@ private:
     std::map<RotationStates, FRotator> rotationStatesMap;
     RotationStates currentState = RotationStates::ENone;
 
-    TargetInterpolator interpolator;
+    
+    //TargetInterpolator interpolator;
+    FRotatorInterpolator interpolator;
 
     bool transitioning = false;
 };

@@ -165,13 +165,13 @@ void APlayerControllerBase::MoveForward(float Value)
 
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-        if(true){
-            AddMovementInput(Direction, Value);
-        }
+       
+        AddMovementInput(Direction, Value);
+        
     
         isWalking = true;
 
-
+        //DebugHelper::showScreenMessage("PlayerControllerBase: Forward", FColor::Green);
     }
 }
 

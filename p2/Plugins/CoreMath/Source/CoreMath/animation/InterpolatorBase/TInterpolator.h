@@ -44,6 +44,8 @@ public:
         return timeToFrameSaved;
     }
 
+    ///@brief will return whether the target T is reached, otherwise true.
+    ///if no target setup, always true.
     bool hasReachedTarget(){
         if(targetSetup){
             return reached;
@@ -127,9 +129,54 @@ public:
         }
     }
 
+    //experimental.
+    void overrideEndSpeedRelative(T &newEnd){
+        /**
+         * was passiert hier:
+         * alte distanz und time to frame ergeben velocity
+         *
+         * velocity: m/s
+         * newDist: m
+         *
+         * newtime = (m) / (m/s) = m * (s/m) = s
+         * 
+         * metersnew / speed = m * (s/m) = s
+         * 
+         */
+
+        float distanceOld = Distance(from, target);
+        float speed = distanceOld / timeToFrameSaved; //sei distanz 40m und ttf 2s, dann sinds 20ms
+
+        overrideTarget(newEnd);
+
+        // Neue Time-to-Frame berechnen
+        float newDistance = Distance(from, target);
+        float newTimeToFrame = newDistance / speed;
+
+        // Neue deltaTime basierend auf dem alten Fortschritt
+        timeToFrameSaved = newTimeToFrame;
+
+        if(timeToFrameSaved < 0.01f){
+            reached = true;
+        }
+        if(!reached){
+            updateReachedFlagBasedOnDistance();
+        }
+    }
+
+
+
+
+
+
+
 
     bool TargetSetupFlag(){
         return targetSetup;
+    }
+
+    void ResetTargetSetupFlag(){
+        targetSetup = false;
     }
 
     void resetDeltaTime(){

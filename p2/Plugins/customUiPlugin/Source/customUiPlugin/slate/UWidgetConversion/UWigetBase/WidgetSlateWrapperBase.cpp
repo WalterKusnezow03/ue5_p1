@@ -31,3 +31,21 @@ bool UWidgetSlateWrapperBase::dispatchClick(){
     }
     return false;
 }
+
+
+
+void UWidgetSlateWrapperBase::ConstructWidget(){
+    //to be overriden!
+}
+
+
+/// MeshData from internal SSLate widget base, marked dirty automatically - expected that the data is modified, if 
+/// getting data is sucessfull (not nullptr)
+SlateMeshDataPolygon *UWidgetSlateWrapperBase::FindFromSlateWidget(int layer){
+    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+        SlateMeshDataPolygon *ptrFound = &ptr->FindPolygonByLayerInternal(layer);
+        //not sure if dirty mark is needed, drawn every frame anyway.
+        return ptrFound;
+    }
+    return nullptr;
+}

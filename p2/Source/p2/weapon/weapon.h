@@ -48,6 +48,12 @@ protected:
 
 public:
 	
+	//Override from IKCarrayInterface: accumulate sight offset!
+	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) override;
+
+
+
+
 
 	virtual void showWeapon(bool show);
 	/*
@@ -239,7 +245,7 @@ private:
 
 	//api bone controller
 public:
-	FVector sightOffsetNoRotation();
+	//FVector sightOffsetNoRotation();
 
 
 private:

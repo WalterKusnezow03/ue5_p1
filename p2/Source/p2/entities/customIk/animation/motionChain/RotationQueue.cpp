@@ -70,9 +70,13 @@ void RotationQueue::forceSetState(RotationStates state){
 
 FRotator RotationQueue::Tick(float DeltaTime){
     FRotator rotator;
-    if(interpolator.hasTargetSetup() && isTransitioning()){
+    if(
+        //interpolator.hasTargetSetup() 
+        interpolator.TargetSetupFlag()
+        && isTransitioning()){
 
-        rotator = interpolator.interpolateRotationOnly(DeltaTime);
+        rotator = interpolator.interpolate(DeltaTime);
+        // interpolator.interpolateRotationOnly(DeltaTime);
 
         if(interpolator.hasReachedTarget()){
             //done
@@ -89,7 +93,8 @@ FRotator RotationQueue::Tick(float DeltaTime){
 }
 
 void RotationQueue::TickRollPitch(MMatrix &currentOrient, float DeltaTime){
-    if(interpolator.hasTargetSetup() && isTransitioning()){
+    if(interpolator.TargetSetupFlag() && isTransitioning()){
+    //if(interpolator.hasTargetSetup() && isTransitioning()){
         //causes bad lag for reasons i dont know
         float yawCurrentRad = currentOrient.extractYawAngleRad();
         float yawCurrentDeg = MMatrix::degToRadian(yawCurrentRad);

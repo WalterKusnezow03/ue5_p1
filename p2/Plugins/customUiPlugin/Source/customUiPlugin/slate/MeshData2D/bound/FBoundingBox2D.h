@@ -16,6 +16,8 @@ struct CUSTOMUIPLUGIN_API FBoundingBox2D {
     FBoundingBox2D(const FBoundingBox2D & other);
     FBoundingBox2D &operator=(const FBoundingBox2D & other);
 
+    void Reset();
+
     FBoundingBox2D(TArray<FVector2D> &buffer);
 
     void Update(TArray<FVector2D> &buffer);
