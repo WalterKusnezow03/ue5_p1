@@ -2,8 +2,11 @@
 
 #include "customUiPlugin/slate/MeshData2D/SlateMeshData.h"
 
+//constructor.
 void UWidgetProgressBarBase::ConstructWidget(){
+    //Super::ConstructWidget(); //debug
     CreateBar();
+    UiDebugHelper::logMessage("slate: UWidgetProgressBarBase Constructed widget!"); // is called
 }
 
 SlateMeshDataPolygon *UWidgetProgressBarBase::PolygonBackground(){
@@ -23,6 +26,7 @@ void UWidgetProgressBarBase::CreateBar(){
     if(background){
         SlateMeshData &meshData = background->MeshDataRef();
         meshData.AppendQuad(a, b);
+        UiDebugHelper::logMessage("slate: UWidgetProgressBarBase create quad!"); 
     }
 
     SlateMeshDataPolygon *foreGround = PolygonForeGround();
@@ -30,16 +34,22 @@ void UWidgetProgressBarBase::CreateBar(){
     {
         SlateMeshData &meshData = foreGround->MeshDataRef();
         meshData.AppendQuad(a, b);
+        UiDebugHelper::logMessage("slate: UWidgetProgressBarBase create quad 2!");
     }
+
+    SetColorForeground(FLinearColor::Green);
+    SetColorBackground(FLinearColor::Black);
+
+    Tick(0.0f);
 }
 
-void UWidgetProgressBarBase::SetColorBackground(FLinearColor &color){
+void UWidgetProgressBarBase::SetColorBackground(FLinearColor color){
     if(SlateMeshDataPolygon *polygon = PolygonBackground()){
         polygon->SetColor(color);
     }
 }
 
-void UWidgetProgressBarBase::SetColorForeground(FLinearColor &color){
+void UWidgetProgressBarBase::SetColorForeground(FLinearColor color){
     if(SlateMeshDataPolygon *polygon = PolygonForeGround()){
         polygon->SetColor(color);
     }

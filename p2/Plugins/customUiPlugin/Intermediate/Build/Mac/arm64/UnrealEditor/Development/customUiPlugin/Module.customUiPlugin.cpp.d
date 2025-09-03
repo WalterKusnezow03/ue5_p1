@@ -4051,6 +4051,8 @@
   Runtime/Core/Public/Modules/ModuleManager.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/Debug/UiDebugHelper.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/Debug/UiDebugHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/cache/SlateWidgetBoundsCache.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/cache/SlateWidgetBoundsCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.h \
   Runtime/SlateCore/Public/Rendering/DrawElements.h \

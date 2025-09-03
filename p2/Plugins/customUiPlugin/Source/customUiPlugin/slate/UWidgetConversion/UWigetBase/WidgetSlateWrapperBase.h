@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/Widget.h"
+#include "Components/SizeBox.h"
 #include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
 #include "WidgetSlateWrapperBase.generated.h"
 
@@ -10,19 +11,22 @@ class SSlateWidgetBase;
 /// @brief makes the slate base usuable as a UWidget for UMG
 /// Allows direct access to the Custom Slate Mesh Data, to manipulate them.
 UCLASS()
-class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public UWidget
+class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public USizeBox
 {
     GENERATED_BODY()
 
-public: 
-    //post constructor
-    void PostInitProperties() override {
-        ConstructWidget();
-        Super::PostInitProperties(); //DO NOT REMOVE! - causes crash :-)
-    };
+protected:
+    bool bDebugPolygon = true;
 
+    // --- called right after slate widget is build with a number of layers (for now 5) ---
     //Override this to init the slate widget to your liking!
+    //here you can customize your mesh data for the widget, add new layers,
+    //etc. 
     virtual void ConstructWidget();
+    void ApplySizeAfterConstruct(); //very important to call in construct widget or Super::ConstructWidget
+
+public:
+    void SetWidthAndHeight(float x, float y);
 
     //Tick if Slate Mesh Data is animated (External tick from UCustomUi Component Base or derived is needed!)
     //override this method but call super to listen for cursor position
@@ -37,10 +41,29 @@ public:
 
 
     //rebuild function made template
+    /// @brief 
+    /// @tparam TSlateWidgetType 
+    /// @param sharedPtr created and overriden
+    /// @param layers number of mesh data layers to have
+    /// @param base Sbox ref, child added, get ptr from Super::RebeuildWidget
+    /// @return 
     template <typename TSlateWidgetType>
-    TSharedRef<TSlateWidgetType> TRebuildWidget(TSharedPtr<TSlateWidgetType> &sharedPtr){
-        sharedPtr = SNew(TSlateWidgetType); //hier class name vom slate einfügen
-        return sharedPtr.ToSharedRef();
+    TSharedRef<SWidget> TRebuildWidget(
+        TSharedPtr<TSlateWidgetType> &sharedPtr, 
+        int32 layers,
+        TSharedRef<SBox> base
+    ){
+        //sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //hier class name vom slate einfügen
+        //return sharedPtr.ToSharedRef();
+
+        /*
+        from doc:
+        SBox::SetContent ( const TSharedRef< SWidget >& InContent )
+        */
+        
+        sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //create custom T widget
+        base->SetContent(sharedPtr.ToSharedRef()); //apply to size box
+        return base;
     }
 
     /// MeshData from internal SSLate widget base, marked dirty automatically if 

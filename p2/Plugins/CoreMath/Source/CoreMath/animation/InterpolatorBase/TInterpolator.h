@@ -101,6 +101,12 @@ public:
          *
          * velocity: m/s
          * newDist: m
+         * 
+         * x is Time searched at some velocity
+         * newM / x = velocity
+         * newM = velocity * x
+         * x = newM / velocity
+         * 
          *
          * newtime = (m) / (m/s) = m * (s/m) = s
          * 

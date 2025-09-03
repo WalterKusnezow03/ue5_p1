@@ -95,16 +95,16 @@ void SlateMeshData::AppendQuad(FVector2D &bottomLeft, FVector2D &topRight){
         std::min(bottomLeft.Y, topRight.Y)
     );
     FVector2D v1(
-        v0.X,
+        std::min(bottomLeft.X, topRight.X),
         std::max(bottomLeft.Y, topRight.Y)
     );
     FVector2D v2(
         std::max(bottomLeft.X, topRight.X),
-        v1.X
+        std::max(bottomLeft.Y, topRight.Y)
     );
     FVector2D v3(
-        v2.X,
-        v0.Y
+        std::max(bottomLeft.X, topRight.X),
+        std::min(bottomLeft.Y, topRight.Y)
     );
     Append(v0, v1, v2, v3);
 }

@@ -2,21 +2,37 @@
 
 #include "CoreMinimal.h"
 #include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/base/cache/SlateWidgetBoundsCache.h"
 #include "Widgets/SCompoundWidget.h"
 #include <map>
 
 class CUSTOMUIPLUGIN_API SSlateWidgetBase : public SCompoundWidget
 {
+public:
+    
+    void DebugCreatePolygons();
+
 private:
-    bool bDebugCreatePolygons = true;
-    void DebugCreatePolygonsOnConstruct();
+    void createLayer(int i);
+
 
 public:
-    SLATE_BEGIN_ARGS(SSlateWidgetBase) {}
+    //SLATE_BEGIN_ARGS(SSlateWidgetBase) {}
+    //SLATE_END_ARGS()
+
+    SLATE_BEGIN_ARGS(SSlateWidgetBase) 
+        : _NumLayers(1) // Defaultwert hier korrekt
+    {}
+        SLATE_ARGUMENT(int32, NumLayers)
     SLATE_END_ARGS()
 
-    void Construct(const FArguments& InArgs);
 
+    
+
+    //might be overriden to add text (unclear.)
+    virtual void Construct(const FArguments& InArgs);
+
+    /// MUST BE OVERRIDEN HERE
     //Called every frame
     virtual int32 OnPaint(const FPaintArgs& Args,
                           const FGeometry& AllottedGeometry,
@@ -26,7 +42,17 @@ public:
                           const FWidgetStyle& InWidgetStyle,
                           bool bParentEnabled) const override;
 
+    
+
+    /// @brief must be triggered manually if not ticked after mesh data modfication!
+    void UpdateBoundsForSizeCalculation();
+    void ForceUpdateBoundsForSizeCalculation();
+
+    FVector2D Bounds();
+
+    //allows you to modify the internal mesh data drawn.
     SlateMeshDataPolygon &FindPolygonByLayerInternal(int layer);
+
 
     bool HasLayer(int layer) const;
 
@@ -84,4 +110,12 @@ private:
 
     FVector2D CursorPositionScreenSpace();
     FVector2D CursorPositionLocalSpace();
+
+private:
+    const SlateMeshDataPolygon *FindPolygonByLayerInternalConst(int layer) const;
+
+
+
+    // --- Draw size cache --- 
+    SlateWidgetBoundsCache boundsCache;
 };

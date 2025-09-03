@@ -14,6 +14,10 @@
 
 //debug
 #include "customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.h"
+#include "customUiPlugin/slateDerived/bar/WidgetProgressBarBase.h"
+
+#include "customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h"
+
 
 
 void UGameLaunchScreen::init(UPlayerUiBase &ref){
@@ -89,10 +93,25 @@ void UGameLaunchScreen::createMenu(){
 
 
         //debug custom slate widgets
-        UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-        newWidgetSlateBased->init();
-        menuVbox->AddChild(newWidgetSlateBased);
+        if(true){
+            //looks ok
+            UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+            newWidgetSlateBased->init();
+            menuVbox->AddChild(newWidgetSlateBased);
+        }
+        
+        if(true){   
+            //offset
+            UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
+            menuVbox->AddChild(widget);
+                
+        }
 
+        //also offset
+        //debug slate progressbar
+        UWidgetProgressBarBase *bar = NewObject<UWidgetProgressBarBase>(this);
+        bar->SetProgress(0.6f);
+        menuVbox->AddChild(bar);
     }
     
 }

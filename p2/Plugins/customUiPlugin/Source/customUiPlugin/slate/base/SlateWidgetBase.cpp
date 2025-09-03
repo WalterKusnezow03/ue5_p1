@@ -9,15 +9,24 @@ void SSlateWidgetBase::Construct(const FArguments& InArgs)
     // Falls du Inhalte (Text etc.) einfügen willst
     ChildSlot
     [
-        SNullWidget::NullWidget
+        SNullWidget::NullWidget //manual bounding box needed because no child widget is present.
     ];
+    
+    
 
-    if(bDebugCreatePolygons){
-        DebugCreatePolygonsOnConstruct();
+    int32 copy = InArgs._NumLayers;
+    for (int i = 0; i < copy; i++){
+        createLayer(i);
     }
+
+    //DebugCreatePolygons();
 }
 
-void SSlateWidgetBase::DebugCreatePolygonsOnConstruct(){
+void SSlateWidgetBase::createLayer(int i){
+    SlateMeshDataPolygon &ref = FindPolygonByLayerInternal(i);
+}
+
+void SSlateWidgetBase::DebugCreatePolygons(){
 
     SlateMeshDataPolygon &polygon = FindPolygonByLayerInternal(0);
 
@@ -37,6 +46,15 @@ void SSlateWidgetBase::DebugCreatePolygonsOnConstruct(){
     meshdata.AddAmbientUvColor(FVector2D(0, 0), FLinearColor::Red);
     meshdata.AddAmbientUvColor(FVector2D(1, 1), FLinearColor::Blue);
 
+    //debug
+    if(true){
+        int sizeMap = polygonMap.size();
+        UiDebugHelper::logMessage(
+            FString::Printf(TEXT("SlateWidget: size map construct: "), sizeMap)
+        );
+    }
+
+    ForceUpdateBoundsForSizeCalculation();
 }
 
 // ---- external Tick ----
@@ -63,15 +81,58 @@ void SSlateWidgetBase::Tick(float deltatime){
             current->UpdateCursorPosition(cursorLocalSpace);
         }
     }
-    //not needed, redrawn every frame.
-    if(false && changesRegistered){
-        MarkForRedraw();
+    
+
+    UpdateBoundsForSizeCalculation();
+
+    //debug
+    if(true){
+        FVector2D scale = boundsCache.DesiredSize(1.0f);
+        UiDebugHelper::showScreenMessage(
+            FString::Printf(TEXT("SlateWidget Scale %d %d"), scale.X, scale.Y),
+            FColor::Red
+        );
     }
 }
 
 // ---- Redraw request -----
 void SSlateWidgetBase::MarkForRedraw(){
     Invalidate(EInvalidateWidgetReason::Paint);
+    Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+}
+
+
+// ---- Bounds -----
+/*
+FVector2D SSlateWidgetBase::ComputeDesiredSize(float LayoutScaleMultiplier) const {
+    return boundsCache.DesiredSize(LayoutScaleMultiplier);
+}*/
+
+FVector2D SSlateWidgetBase::Bounds(){
+    UpdateBoundsForSizeCalculation();
+    return boundsCache.Size();
+}
+
+void SSlateWidgetBase::UpdateBoundsForSizeCalculation(){
+    //if new bounds needed, recreate:
+    if(boundsCache.UpdateNeeded()){
+        ForceUpdateBoundsForSizeCalculation();
+    }
+}
+
+void SSlateWidgetBase::ForceUpdateBoundsForSizeCalculation(){
+    TArray<SlateMeshDataPolygon *> polygons = allPolygonsSorted();
+    boundsCache.Recreate(polygons);
+
+    //debug
+    FVector2D size = boundsCache.Size();
+    UiDebugHelper::logMessage(
+        FString::Printf(
+            TEXT("slate: SSlateWidgetBase bounds! %.2f %.2f"),
+            size.X,
+            size.Y
+        )
+    );
 }
 
 
@@ -89,7 +150,6 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
     //use transform to transform the vertex buffer of the polygons,
     //needed each time. Otherwise the Polygon is drawn from root(0,0)
     FSlateRenderTransform RenderTransform = AllottedGeometry.GetAccumulatedRenderTransform();
-    
 
     //draw debug box / background red
     if(bDebugDrawBox){
@@ -134,6 +194,18 @@ void SSlateWidgetBase::DrawPolygon(
     int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
     FSlateRenderTransform &RenderTransform
 )const{
+
+    const SlateMeshDataPolygon *polygonFound = FindPolygonByLayerInternalConst(layerInternal);
+    if(polygonFound){
+        DrawPolygon(
+            *polygonFound,
+            OutDrawElements,
+            LayerId,
+            RenderTransform
+        );
+    }
+
+    /*
     if(HasLayer(layerInternal)){
 
         auto it = polygonMap.find(layerInternal);
@@ -149,7 +221,7 @@ void SSlateWidgetBase::DrawPolygon(
             );
         }
 
-    }
+    }*/
 }
 
 void SSlateWidgetBase::DrawPolygon(
@@ -233,9 +305,24 @@ SlateMeshDataPolygon &SSlateWidgetBase::FindPolygonByLayerInternal(int layerId){
     if(!HasLayer(layerId)){
         polygonMap[layerId] = SlateMeshDataPolygon();
         SortLayers(); //sort layers again.
+
+        //FLAG UPDATE NEEDED BECAUSE UNTERNAL MESH DATA MAY GET MODIFIED
+        boundsCache.FlagUpdateNeededTrue();
+        MarkForRedraw(); //very important, changes otherwise NOT REGISTERED (?)
     }
     return polygonMap[layerId];
 }
+
+const SlateMeshDataPolygon *SSlateWidgetBase::FindPolygonByLayerInternalConst(int layer) const {
+    if(HasLayer(layer)){
+        auto it = polygonMap.find(layer);
+        if (it != polygonMap.end()){
+            const SlateMeshDataPolygon& ref = it->second;
+            return &ref;
+        }
+    }
+    return nullptr;
+};
 
 bool SSlateWidgetBase::HasLayer(int layerId) const {
     return polygonMap.find(layerId) != polygonMap.end();

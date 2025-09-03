@@ -81,9 +81,9 @@ void EmptyLinkFunctionForGeneratedCodeWidgetProgressBarBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_bar_WidgetProgressBarBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWidgetProgressBarBase, UWidgetProgressBarBase::StaticClass, TEXT("UWidgetProgressBarBase"), &Z_Registration_Info_UClass_UWidgetProgressBarBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetProgressBarBase), 2009352595U) },
+		{ Z_Construct_UClass_UWidgetProgressBarBase, UWidgetProgressBarBase::StaticClass, TEXT("UWidgetProgressBarBase"), &Z_Registration_Info_UClass_UWidgetProgressBarBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetProgressBarBase), 2613800551U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_bar_WidgetProgressBarBase_h_1422961333(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_bar_WidgetProgressBarBase_h_2514678290(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_bar_WidgetProgressBarBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_bar_WidgetProgressBarBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

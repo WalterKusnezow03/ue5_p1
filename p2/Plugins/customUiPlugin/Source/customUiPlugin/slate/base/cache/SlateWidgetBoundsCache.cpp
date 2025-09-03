@@ -1,0 +1,45 @@
+#include "SlateWidgetBoundsCache.h"
+#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/Private/Debug/UiDebugHelper.h"
+
+
+SlateWidgetBoundsCache::SlateWidgetBoundsCache(){
+    updateNeededFlag = true;
+}
+
+SlateWidgetBoundsCache::~SlateWidgetBoundsCache(){
+
+}
+
+void SlateWidgetBoundsCache::FlagUpdateNeededTrue(){
+    updateNeededFlag = true;
+}
+
+bool SlateWidgetBoundsCache::UpdateNeeded() const {
+    return updateNeededFlag;
+}
+
+void SlateWidgetBoundsCache::Recreate(TArray<SlateMeshDataPolygon*> &polygons){
+    boundsInternal.Reset();
+    updateNeededFlag = false;
+    UiDebugHelper::logMessage(FString::Printf(TEXT("SlateWidgetBoundsCache update (a) %d"), polygons.Num()));
+
+    //make new bounding box.
+    for (int i = 0; i < polygons.Num(); i++)
+    {
+        SlateMeshDataPolygon *current = polygons[i];
+        if(current){
+            boundsInternal.Update(*current);
+            UiDebugHelper::logMessage("SlateWidgetBoundsCache update (b)");
+        }
+    }
+}
+
+FVector2D SlateWidgetBoundsCache::DesiredSize(float scalar) const{
+    FVector2D scaled = boundsInternal.size() * scalar;
+    return scaled;
+}
+
+FVector2D SlateWidgetBoundsCache::Size() const{
+    return DesiredSize(1.0f);
+}

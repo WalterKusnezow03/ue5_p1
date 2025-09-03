@@ -63,10 +63,10 @@ void EmptyLinkFunctionForGeneratedCodeCustomUiSlateWidgetBase() {}
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_widget = { "widget", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UCustomUiSlateWidgetBase, widget), Z_Construct_UClass_UWidgetSlateWrapperBase_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_widget_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_widget_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_baseLayout_MetaData[] = {
-		{ "Comment", "/// @brief widget must be wrapped in SizeBox, otherwise its broken.s\n" },
+		{ "Comment", "/// @brief wrapped for resize\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.h" },
-		{ "ToolTip", "@brief widget must be wrapped in SizeBox, otherwise its broken.s" },
+		{ "ToolTip", "@brief wrapped for resize" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_baseLayout = { "baseLayout", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UCustomUiSlateWidgetBase, baseLayout), Z_Construct_UClass_USizeBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_baseLayout_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UCustomUiSlateWidgetBase_Statics::NewProp_baseLayout_MetaData)) };
@@ -112,9 +112,9 @@ void EmptyLinkFunctionForGeneratedCodeCustomUiSlateWidgetBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_customUiBase_CustomUiSlateWidgetBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UCustomUiSlateWidgetBase, UCustomUiSlateWidgetBase::StaticClass, TEXT("UCustomUiSlateWidgetBase"), &Z_Registration_Info_UClass_UCustomUiSlateWidgetBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCustomUiSlateWidgetBase), 4127014038U) },
+		{ Z_Construct_UClass_UCustomUiSlateWidgetBase, UCustomUiSlateWidgetBase::StaticClass, TEXT("UCustomUiSlateWidgetBase"), &Z_Registration_Info_UClass_UCustomUiSlateWidgetBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCustomUiSlateWidgetBase), 2699984735U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_customUiBase_CustomUiSlateWidgetBase_h_1678349948(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_customUiBase_CustomUiSlateWidgetBase_h_2566753244(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_customUiBase_CustomUiSlateWidgetBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_customUiBase_CustomUiSlateWidgetBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

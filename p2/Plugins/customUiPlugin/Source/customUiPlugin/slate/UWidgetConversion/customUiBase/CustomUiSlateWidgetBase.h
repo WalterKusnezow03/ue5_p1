@@ -47,7 +47,7 @@ private:
     UPROPERTY()
     UWidgetSlateWrapperBase *widget = nullptr;
 
-    /// @brief widget must be wrapped in SizeBox, otherwise its broken.s
+    /// @brief wrapped for resize
     UPROPERTY()
     USizeBox *baseLayout = nullptr;
 

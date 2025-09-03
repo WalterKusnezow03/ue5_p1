@@ -11,7 +11,7 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 // Cross Module References
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetSlateWrapperBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetSlateWrapperBase_NoRegister();
-	UMG_API UClass* Z_Construct_UClass_UWidget();
+	UMG_API UClass* Z_Construct_UClass_USizeBox();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UWidgetSlateWrapperBase::StaticRegisterNativesUWidgetSlateWrapperBase()
@@ -32,7 +32,7 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
 	UObject* (*const Z_Construct_UClass_UWidgetSlateWrapperBase_Statics::DependentSingletons[])() = {
-		(UObject* (*)())Z_Construct_UClass_UWidget,
+		(UObject* (*)())Z_Construct_UClass_USizeBox,
 		(UObject* (*)())Z_Construct_UPackage__Script_customUiPlugin,
 	};
 #if WITH_METADATA
@@ -81,9 +81,9 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWidgetSlateWrapperBase, UWidgetSlateWrapperBase::StaticClass, TEXT("UWidgetSlateWrapperBase"), &Z_Registration_Info_UClass_UWidgetSlateWrapperBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetSlateWrapperBase), 1638614829U) },
+		{ Z_Construct_UClass_UWidgetSlateWrapperBase, UWidgetSlateWrapperBase::StaticClass, TEXT("UWidgetSlateWrapperBase"), &Z_Registration_Info_UClass_UWidgetSlateWrapperBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetSlateWrapperBase), 1304290504U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_2879162316(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_23506001(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

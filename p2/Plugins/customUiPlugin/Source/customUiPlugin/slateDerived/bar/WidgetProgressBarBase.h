@@ -11,12 +11,15 @@ UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetProgressBarBase : public UWidgetSlateWrapperBase{
     GENERATED_BODY()
 
-public:
-    //Custom Constructor override!
+protected:
+    //Custom Constructor override - is called internally from post properties override!
     virtual void ConstructWidget() override;
 
-    void SetColorBackground(FLinearColor &color);
-    void SetColorForeground(FLinearColor &color);
+
+public:
+
+    void SetColorBackground(FLinearColor color);
+    void SetColorForeground(FLinearColor color);
 
     ///@brief set progress of bar, between 0 and 1
     void SetProgress(float num);

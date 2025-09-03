@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/FRotatorInterpolator.h"
 #include "GameCore/interfaces/Interactinterface.h"
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "DoorBase.generated.h"
@@ -31,7 +32,7 @@ protected:
 
     bool bIsOpenState = false;
 
-    TargetInterpolator interpolator; //es braucht eine rotator direction
+    FRotatorInterpolator interpolator; //es braucht eine rotator direction
 
     float timeOfAnimation = 0.5f;
 };
