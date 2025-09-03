@@ -77,6 +77,7 @@ void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c){
     boundingBox.Update(a, b, c);
 
     FlagCacheUpdateNeeded();
+
 }
 
 void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d){
@@ -125,6 +126,7 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
         return;
     }
 
+    bool bNewVerteciesMade = false;
 
     uint16 indexA = Vertecies.Num(); //saved index before adding to buffer. Will be valid.
     if(HasVertex(a, indexA)){
@@ -158,6 +160,8 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
     }
 
     FlagCacheUpdateNeeded();
+
+
 }
 
 void SlateMeshData::AppendEfficent(
@@ -491,7 +495,7 @@ void SlateMeshData::AddAmbientUvColor(
     FLinearColor color
 ){
     FVector2D widgetSpace = convertUVInvertedToVertexBufferSpace(uvPos);
-    FPairColorPosition newPair(color, widgetSpace);
+    FPairColorPosition newPair(color, widgetSpace, uvPos);
     ambientColorsInvertedSpace.Add(newPair);
     FlagCacheUpdateNeeded();
 }
@@ -501,23 +505,34 @@ void SlateMeshData::ClearAmbientColors(){
     FlagCacheUpdateNeeded();
 }
 
+void SlateMeshData::ReCalculateAmbientUvColors(){
+    TArray<FPairColorPosition> copy = ambientColorsInvertedSpace;
+    ClearAmbientColors();
+    for (int i = 0; i < copy.Num(); i++)
+    {
+        FPairColorPosition &current = copy[i];
+        AddAmbientUvColor(current.uv, current.color);
+    }
+    FlagCacheUpdateNeeded();
+}
 
 ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
 ///up color calculation because the scalar is found by one division (less operations)
 ///is converted to a real position, because mesh data might change but the
 ///color vertex should stay in place.
-FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(FVector2D &uv){
+FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(const FVector2D &uv){
 
-    uv.X = 1.0f - uv.X;
-    uv.Y = 1.0f - uv.Y;
+    FVector2D uvCopy = uv;
+    uvCopy.X = 1.0f - uvCopy.X;
+    uvCopy.Y = 1.0f - uvCopy.Y;
 
     //gx = A + t (B - A)
     float dirX = boundingBox.sizeX();
     float dirY = boundingBox.sizeY();
 
     FVector2D gx = boundingBox.topLeft;
-    gx.X += dirX * uv.X; //go in direciton on x and y axis.
-    gx.Y += dirY * uv.Y;
+    gx.X += dirX * uvCopy.X; //go in direciton on x and y axis.
+    gx.Y += dirY * uvCopy.Y;
 
     return gx;
 }

@@ -7,8 +7,8 @@
 
 class SSlateWidgetBase;
 
-/// --- SLATE TO UWIDGET WRAPPER AND BASE CLASS TO CREATE ANY SLATE BASED WIDGETS!---
-/// @brief makes the slate base usuable as a UWidget for UMG
+/// --- SLATE TO UWIDGET WRAPPER AND BASE CLASS TO CREATE ANY CUSTOM SLATE BASED WIDGETS!---
+/// @brief makes the slate base usuable as a USizeBox for UMG
 /// Allows direct access to the Custom Slate Mesh Data, to manipulate them.
 UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public USizeBox
@@ -61,13 +61,13 @@ public:
         SBox::SetContent ( const TSharedRef< SWidget >& InContent )
         */
         
-        sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //create custom T widget
+        sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //create custom slate widget
         base->SetContent(sharedPtr.ToSharedRef()); //apply to size box
         return base;
     }
 
-    /// MeshData from internal SSLate widget base, marked dirty automatically if 
-    /// getting data is sucessfull (not nullptr)
+    /// MeshData from internal SSLate widget base, use in ConstructWidget() to
+    /// create / manipulate the mesh data 
     SlateMeshDataPolygon *FindFromSlateWidget(int layer);
 
 protected:

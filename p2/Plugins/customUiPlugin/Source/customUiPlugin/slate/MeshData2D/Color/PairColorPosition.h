@@ -15,6 +15,29 @@ struct CUSTOMUIPLUGIN_API FPairColorPosition {
         position = posIn;
     };
 
+    FPairColorPosition(
+        FLinearColor &colorIn,
+        FVector2D &posIn,
+        FVector2D &uvIn
+    ) : FPairColorPosition(colorIn, posIn)
+    {
+        uv = uvIn;
+    };
+
+    FPairColorPosition(const FPairColorPosition &other){
+        if(this != &other){
+            *this = other;
+        }
+    }
+    FPairColorPosition &operator=(const FPairColorPosition &other){
+        if(this != &other){
+            color = other.color;
+            position = other.position;
+            uv = other.uv;
+        }
+        return *this;
+    }
+
     ///@brief updates the position and returns if it changed
     bool UpdatePosition(FVector2D &pos){
         bool update = DistanceSquared(pos) >= 1.0f;
@@ -33,6 +56,7 @@ struct CUSTOMUIPLUGIN_API FPairColorPosition {
 
     FLinearColor color;
     FVector2D position;
+    FVector2D uv;
 
     float DistanceSquared(const FVector2D &other) const {
         return FVector2D::DistSquared(other, position);

@@ -13,6 +13,8 @@ class CUSTOMUIPLUGIN_API SlateMeshData {
     //SlateIndex = uin16, merken
 
 public:
+    void ReCalculateAmbientUvColors(); //CALL NEEDED IF ADDED VERTECIES AFTER COLORS!
+
     SlateMeshData();
     ~SlateMeshData();
 
@@ -63,11 +65,10 @@ public:
     void UpdateCursorColor(FLinearColor &color);
 
     ///@brief once a uv color coordinate is added, it is moved to
-    ///vertex buffer space and wont move, even if the vertex buffer is
-    ///changed, and the bounding box shriks, colors will stay in place
-    void AddAmbientUvColor(FVector2D position, FLinearColor color);
+    ///vertex buffer space, and WILL move if the buffer changes.
+    void AddAmbientUvColor(FVector2D uv, FLinearColor color);
     void ClearAmbientColors();
-
+    
 
     // --- transform ---
     ///@brief applies a transformation matrix to the buffer, changes
@@ -104,7 +105,7 @@ private:
 
     ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
     ///up color calculation because the scalar is found by one division (less operations)
-    FVector2D convertUVInvertedToVertexBufferSpace(FVector2D &uv);
+    FVector2D convertUVInvertedToVertexBufferSpace(const FVector2D &uv);
 
     ///@brief expects distances the color coordinates, which must be inverted already 
     /// (see method above:convertUVInvertedToVertexBufferSpace)

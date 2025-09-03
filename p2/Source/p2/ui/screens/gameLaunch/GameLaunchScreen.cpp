@@ -94,24 +94,28 @@ void UGameLaunchScreen::createMenu(){
 
         //debug custom slate widgets
         if(true){
-            //looks ok
+            //is ok - doesnt have size box wrap anymore.
             UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
             newWidgetSlateBased->init();
             menuVbox->AddChild(newWidgetSlateBased);
         }
         
-        if(true){   
-            //offset
-            UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
-            menuVbox->AddChild(widget);
-                
+
+        if(true){
+            //works.
+            //pasted Template into widget ptr internally
+            UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
+            menuVbox->AddChild(newWidgetSlateBased);
         }
 
-        //also offset
-        //debug slate progressbar
-        UWidgetProgressBarBase *bar = NewObject<UWidgetProgressBarBase>(this);
-        bar->SetProgress(0.6f);
-        menuVbox->AddChild(bar);
+        if(false){
+            //weird offset again
+            UWidgetProgressBarBase *bar = NewObject<UWidgetProgressBarBase>(this);
+            bar->SetProgress(0.6f);
+            menuVbox->AddChild(bar);
+        }
+        
     }
     
 }

@@ -13,17 +13,24 @@ class CUSTOMUIPLUGIN_API UCustomUiSlateWidgetBase : public UcustomUiComponentBas
     GENERATED_BODY()
 
 public:
-    virtual void init() override {
+    using UcustomUiComponentBase::init;
+    virtual void init() override;
+
+    template<typename T>
+    void TInit(){
+        static_assert(std::is_base_of<UWidgetSlateWrapperBase, T>::value,
+            "T must derive from UWidgetSlateWrapperBase!");
         if(WAS_INIT_FLAG){
             return;
         }
         Super::init();
-        MakeWidget();
-        MakeBaseLayout();
-    };
+        widget = NewObject<T>(this);
+    }
+
+
 
     virtual UWidget *baseLayoutPointer() override {
-        return baseLayout;
+        return widget;
     }
 
     ///tick override, propagate to slate child
@@ -33,22 +40,15 @@ public:
     ///method call will come from owning ucustomuicomponent container (canvas, autobox etc.)
     virtual bool dispatchClick() override;
 
-    ///@brief sets the umg size of the widget, for example 200 x 200
-    void SetWidgetScale(FVector2D scalePixels);
 
 protected:
     //to be overriden
     virtual void MakeWidget();
 
-    //call AFTER "MakeWidget()" function!
-    void MakeBaseLayout();
 
 private:
     UPROPERTY()
     UWidgetSlateWrapperBase *widget = nullptr;
 
-    /// @brief wrapped for resize
-    UPROPERTY()
-    USizeBox *baseLayout = nullptr;
 
 };
