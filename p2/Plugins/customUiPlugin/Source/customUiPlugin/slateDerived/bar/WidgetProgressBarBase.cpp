@@ -4,7 +4,8 @@
 
 //constructor.
 void UWidgetProgressBarBase::ConstructWidget(){
-    //Super::ConstructWidget(); //debug
+    //bDebugPolygon = false; //from super
+    //Super::ConstructWidget(); // debug
     CreateBar();
     UiDebugHelper::logMessage("slate: UWidgetProgressBarBase Constructed widget!"); // is called
 }

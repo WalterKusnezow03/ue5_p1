@@ -10,6 +10,12 @@ SlatePolygonMap::~SlatePolygonMap(){
 
 }
 
+bool SlatePolygonMap::MarkedDirtyBounds(){
+    bool copy = markedDirty;
+    markedDirty = false;
+    return copy;
+}
+
 SlateMeshDataPolygon &SlatePolygonMap::FindPolygonByLayerInternal(int layerId){
     if(!HasLayer(layerId)){
         polygonMap[layerId] = SlateMeshDataPolygon();
@@ -99,6 +105,7 @@ void SlatePolygonMap::UpdateBoundsForSizeCalculation(){
     //if new bounds needed, recreate:
     if(boundsCache.UpdateNeeded()){
         ForceUpdateBoundsForSizeCalculation();
+        markedDirty = true; //must be applied in owning hbox
     }
 }
 

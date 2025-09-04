@@ -24,15 +24,18 @@ protected:
     //here you can customize your mesh data for the widget, add new layers,
     //etc. 
     virtual void ConstructWidget();
-    void ApplySizeAfterConstruct(); //very important to call in construct widget or Super::ConstructWidget
+    void ApplySizeFromBounds(); //very important to call in construct widget or Super::ConstructWidget
+    void UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
 
-    void TriggerRebuildWidget();
+private:
+    bool bWasConstructed = false;
 
 public:
     void SetWidthAndHeight(float x, float y);
 
-    //Tick if Slate Mesh Data is animated (External tick from UCustomUi Component Base or derived is needed!)
-    //override this method but call super to listen for cursor position
+    // Tick for bounds update
+    // if Slate Mesh Data is animated or changed! (External tick from UCustomUi Component Base or derived is needed!)
+    // override this method but call super to listen for cursor position
     virtual void Tick(float deltatime);
 
     ///@brief will tell if the cursor is inside the geometry of this widget

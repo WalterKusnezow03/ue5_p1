@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "customUiPlugin/slate/base/cache/SlateWidgetBoundsCache.h"
+#include "customUiPlugin/slate/MeshData2D/sharedContainer/cache/SlateWidgetBoundsCache.h"
 #include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
 #include <map>
 
@@ -36,9 +36,13 @@ public:
     
     TArray<SlateMeshDataPolygon *> allPolygonsSortedConst() const;
 
+    /// @brief will tell if the bounds were refreshed and the outer sizebox update is needed
+    bool MarkedDirtyBounds();
+
 private:
-    
-    // --- Draw size cache --- 
+    bool markedDirty = false;
+
+        // --- Draw size cache --- 
     SlateWidgetBoundsCache boundsCache;
 
 

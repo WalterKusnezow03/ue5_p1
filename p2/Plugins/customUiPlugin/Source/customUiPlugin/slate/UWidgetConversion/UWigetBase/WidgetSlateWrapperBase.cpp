@@ -35,8 +35,14 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
         MySlateWidget, //created and overriden
         base //Sbox ref, child added
     ); 
-    ConstructWidget(); //do not remove this, after widget is build, data can be manipulated!
-    ApplySizeAfterConstruct(); //very important
+
+    //Construct a single time, mesh data wont be deleted.
+    if(!bWasConstructed){
+        ConstructWidget(); //do not remove this, can call derived method!
+        ApplySizeFromBounds(); //very important
+        bWasConstructed = true;
+    }
+
     return t;
 }
 
@@ -47,7 +53,19 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
         ptr->Tick(deltatime); //updates cursor position
     }
     polygonMap.Tick(deltatime);
+
+    UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
 }
+
+void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
+    if(polygonMap.MarkedDirtyBounds()){
+        ApplySizeFromBounds();
+    }
+}
+
+
+
+
 
 
 bool UWidgetSlateWrapperBase::dispatchClick(){
@@ -65,9 +83,10 @@ void UWidgetSlateWrapperBase::ConstructWidget(){
     if(bDebugPolygon){
         polygonMap.DebugCreatePolygons();
     }
+    ApplySizeFromBounds();
 }
 
-void UWidgetSlateWrapperBase::ApplySizeAfterConstruct(){
+void UWidgetSlateWrapperBase::ApplySizeFromBounds(){
     FVector2D size = polygonMap.Bounds();
     SetWidthAndHeight(size.X, size.Y);
 }
