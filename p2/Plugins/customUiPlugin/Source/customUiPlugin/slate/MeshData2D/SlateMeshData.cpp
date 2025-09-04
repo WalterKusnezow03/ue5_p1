@@ -440,7 +440,7 @@ FSlateVertex SlateMeshData::makeSlateVertex(
     //apply runtime transform
     FVector2f PosAs2F(Position.X, Position.Y);
     if (bHasRuntimeTransformation){
-        ApplyTransformationConstEscape(transformationRuntimeMatrix, PosAs2F);
+        ApplyTransformationConst(transformationRuntimeMatrix, PosAs2F);
     }
    
     
@@ -660,6 +660,9 @@ void SlateMeshData::ApplyTransformationImmidiate(MMatrix2D &other){
 void SlateMeshData::SetRuntimeTransformation(MMatrix2D &other){
     transformationRuntimeMatrix = other;
     bHasRuntimeTransformation = true;
+    FlagCacheUpdateNeeded(); //updated transform
+
+    UiDebugHelper::logMessage("slate: Set RuntimeTransformation");
 }
 
 void SlateMeshData::ResetRuntimeTransformation(){
@@ -674,10 +677,21 @@ void SlateMeshData::ApplyTransformation(MMatrix2D &mat, FVector2D &vertex){
 /// object and slate render data is not cached, also
 /// draw data is cached inside the SlateVertexBufferCache as SlateVertex and NOT
 /// raw Vertexbuffer
-void SlateMeshData::ApplyTransformationConstEscape(
+void SlateMeshData::ApplyTransformationConst(
     const MMatrix2D &mat, 
-    const FVector2f &vertex
+    FVector2f &vertex
 ) const {
-    FVector2f &mutableVertex = const_cast<FVector2f&>(vertex);
-    mutableVertex = mat * mutableVertex;
+    FVector2f copy = vertex;
+    vertex = mat * vertex;
+
+    //debug
+    UiDebugHelper::logMessage(
+        FString::Printf(TEXT(
+            "slate: SlateMeshData runtime transform (%.2f, %2f) -> (%.2f, %2f)"
+        ),
+        copy.X, copy.Y, vertex.X, vertex.Y
+        )
+    );
+
+
 }

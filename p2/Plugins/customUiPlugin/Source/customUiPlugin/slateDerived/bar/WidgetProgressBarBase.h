@@ -39,4 +39,6 @@ private:
     void CreateBar();
 
     float ClampProgress(float num);
+
+    float debugTime = 0.0f;
 };

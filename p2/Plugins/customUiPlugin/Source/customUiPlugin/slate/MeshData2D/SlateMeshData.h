@@ -98,7 +98,7 @@ private:
     TArray<SlateIndex> Triangles;
 
     // Color data (const because called on render.)
-    bool bCursorColorEnabled = true;
+    bool bCursorColorEnabled = false;
     int CursorHighLightDistanceSquared = 100 * 100;
     FPairColorPosition cursorColorPair;
     TArray<FPairColorPosition> ambientColorsInvertedSpace;
@@ -126,9 +126,9 @@ private:
     MMatrix2D transformationRuntimeMatrix;
 
     void ApplyTransformation(MMatrix2D &mat, FVector2D &vertex);
-    void ApplyTransformationConstEscape(
+    void ApplyTransformationConst(
         const MMatrix2D &mat,
-        const FVector2f &vertex) const;
+        FVector2f &vertex) const;
 
     //transformation end
 

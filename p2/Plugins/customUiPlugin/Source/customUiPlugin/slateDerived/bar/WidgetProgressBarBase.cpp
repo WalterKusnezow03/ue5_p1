@@ -39,8 +39,6 @@ void UWidgetProgressBarBase::CreateBar(){
 
     SetColorForeground(FLinearColor::Green);
     SetColorBackground(FLinearColor::Black);
-
-    Tick(0.0f);
 }
 
 void UWidgetProgressBarBase::SetColorBackground(FLinearColor color){
@@ -96,6 +94,13 @@ bool UWidgetProgressBarBase::dispatchClick(){
 void UWidgetProgressBarBase::Tick(float deltatime){
     Super::Tick(deltatime);
 
+    //debug
 
+    debugTime += deltatime;
+    if(debugTime >= 3.0f){
+        debugTime = 0.0f;
+    }
 
+    float scalar = debugTime / 3.0f; //scalar = distTarget / distAll
+    SetProgress(scalar);
 }

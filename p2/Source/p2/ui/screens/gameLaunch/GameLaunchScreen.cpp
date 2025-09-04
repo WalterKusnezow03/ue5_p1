@@ -102,19 +102,13 @@ void UGameLaunchScreen::createMenu(){
         
 
         if(true){
-            //works.
+            //works - can be ticked.
             //pasted Template into widget ptr internally
             UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
             newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
             menuVbox->AddChild(newWidgetSlateBased);
         }
 
-        if(false){
-            //weird offset again
-            UWidgetProgressBarBase *bar = NewObject<UWidgetProgressBarBase>(this);
-            bar->SetProgress(0.6f);
-            menuVbox->AddChild(bar);
-        }
         
     }
     

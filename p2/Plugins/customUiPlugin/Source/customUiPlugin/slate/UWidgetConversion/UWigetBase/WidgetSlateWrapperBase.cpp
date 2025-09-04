@@ -31,11 +31,8 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
     //get SBox from Parent: USizeBox
     TSharedRef<SBox> base = StaticCastSharedRef<SBox>(Super::RebuildWidget());
 
-
-    int layers = 5; //fixed number.
     TSharedRef<SWidget> t = TRebuildWidget<SSlateWidgetBase>(
         MySlateWidget, //created and overriden
-        layers, //number of mesh data layers to have
         base //Sbox ref, child added
     ); 
     ConstructWidget(); //do not remove this, after widget is build, data can be manipulated!
@@ -47,9 +44,9 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
 
 void UWidgetSlateWrapperBase::Tick(float deltatime){
     if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
-        ptr->Tick(deltatime);
-        //UiDebugHelper::logMessage("UWidgetSlateWrapperBase Tick"); //called
+        ptr->Tick(deltatime); //updates cursor position
     }
+    polygonMap.Tick(deltatime);
 }
 
 
@@ -66,18 +63,13 @@ void UWidgetSlateWrapperBase::ConstructWidget(){
     //to be overriden!
     //DEBUG HERE
     if(bDebugPolygon){
-        if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
-            ptr->DebugCreatePolygons();
-            UiDebugHelper::logMessage("slate: UWidgetSlateWrapperBase Constructed widget!");
-        }
+        polygonMap.DebugCreatePolygons();
     }
 }
 
 void UWidgetSlateWrapperBase::ApplySizeAfterConstruct(){
-    if(MySlateWidget.IsValid()){
-        FVector2D size = MySlateWidget->Bounds();
-        SetWidthAndHeight(size.X, size.Y);
-    }
+    FVector2D size = polygonMap.Bounds();
+    SetWidthAndHeight(size.X, size.Y);
 }
 
 void UWidgetSlateWrapperBase::SetWidthAndHeight(float x, float y){
@@ -91,13 +83,16 @@ void UWidgetSlateWrapperBase::SetWidthAndHeight(float x, float y){
 
 
 
-/// MeshData from internal SSLate widget base, marked dirty automatically - expected that the data is modified, if 
-/// getting data is sucessfull (not nullptr)
+/// MeshData from internal SSLate widget base (from here stored tho.)
 SlateMeshDataPolygon *UWidgetSlateWrapperBase::FindFromSlateWidget(int layer){
-    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+    
+    return &polygonMap.FindPolygonByLayerInternal(layer);
+
+    /*
+    if(SlateWidgetBase *ptr = MySlateWidget.Get()){
         SlateMeshDataPolygon *ptrFound = &ptr->FindPolygonByLayerInternal(layer);
         //not sure if dirty mark is needed, drawn every frame anyway.
         return ptrFound;
     }
-    return nullptr;
+    return nullptr;*/
 }

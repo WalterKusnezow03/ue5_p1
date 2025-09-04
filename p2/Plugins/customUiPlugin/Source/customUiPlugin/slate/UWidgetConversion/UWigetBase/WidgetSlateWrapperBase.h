@@ -3,6 +3,7 @@
 #include "Components/Widget.h"
 #include "Components/SizeBox.h"
 #include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
 #include "WidgetSlateWrapperBase.generated.h"
 
 class SSlateWidgetBase;
@@ -24,6 +25,8 @@ protected:
     //etc. 
     virtual void ConstructWidget();
     void ApplySizeAfterConstruct(); //very important to call in construct widget or Super::ConstructWidget
+
+    void TriggerRebuildWidget();
 
 public:
     void SetWidthAndHeight(float x, float y);
@@ -50,7 +53,6 @@ public:
     template <typename TSlateWidgetType>
     TSharedRef<SWidget> TRebuildWidget(
         TSharedPtr<TSlateWidgetType> &sharedPtr, 
-        int32 layers,
         TSharedRef<SBox> base
     ){
         //sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //hier class name vom slate einfügen
@@ -61,7 +63,7 @@ public:
         SBox::SetContent ( const TSharedRef< SWidget >& InContent )
         */
         
-        sharedPtr = SNew(TSlateWidgetType).NumLayers(layers); //create custom slate widget
+        sharedPtr = SNew(TSlateWidgetType).PolyGonMapPtr(&polygonMap); //create custom slate widget
         base->SetContent(sharedPtr.ToSharedRef()); //apply to size box
         return base;
     }
@@ -74,5 +76,7 @@ protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
 
 private:
+    SlatePolygonMap polygonMap; //By value stored here.
+
     TSharedPtr<SSlateWidgetBase> MySlateWidget;
 };
