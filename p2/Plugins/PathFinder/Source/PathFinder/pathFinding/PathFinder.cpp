@@ -894,7 +894,7 @@ bool APathFinder::canSee(FVector &Start, FVector &End){
 
         //add params from entity manager (contains all bots for example, which can be ignored)
         //part of a bigger context im working on, comment out or provide your own params
-        /*if(EntityManager *e = worldLevel::entityManager()){
+        /*if(EntityManager *e = AworldLevel::entityManager()){
             Params = e->getIgnoredRaycastParams();
         }*/
         Params = collisionIgnoreParams;
@@ -1616,7 +1616,7 @@ void APathFinder::asyncCanSee(Node *a, Node *b){
 
                 //add params from entity manager (contains all bots for example, which can be ignored)
                 //part of a bigger context im working on, comment out or provide your own params
-                /*if(EntityManager *e = worldLevel::entityManager()){
+                /*if(EntityManager *e = AworldLevel::entityManager()){
                     Params = e->getIgnoredRaycastParams();
                 }*/
                 Params = collisionIgnoreParams;

@@ -108,7 +108,7 @@ void AthrowableItem::show(bool show){
 void AthrowableItem::release(){
 	show(false);
 	enablePhysics(false);
-	if(EntityManager *e = worldLevel::entityManager()){
+	if(EntityManager *e = AworldLevel::entityManager()){
 		e->add(this);
 	}
 }

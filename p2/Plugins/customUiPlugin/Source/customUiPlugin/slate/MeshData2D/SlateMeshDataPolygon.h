@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "SlateMeshData.h"
 
+class MMatrix2D;
+
 class CUSTOMUIPLUGIN_API SlateMeshDataPolygon {
 
 public:
@@ -28,6 +30,14 @@ public:
     void SetColor(FLinearColor color);
 
     void SetCursorColor(FLinearColor color);
+
+    void AddAmbientUvColor(FVector2D uv, FLinearColor color);
+
+    void ApplyTransformImmidiate(MMatrix2D &transform);
+
+    void DebugLogColor(){
+        meshData.bLogColor = true;
+    }
 
 protected:
     SlateMeshData meshData;

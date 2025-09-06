@@ -48,7 +48,7 @@ void AplayerScript::BeginPlay()
     setTeam(teamEnum::playerTeam);
     setupBoneController(); 
 
-    EntityManager *entityMananger = worldLevel::entityManager();
+    EntityManager *entityMananger = AworldLevel::entityManager();
     Aweapon *weapon = nullptr;
     if(entityMananger != nullptr){
         //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
@@ -145,8 +145,6 @@ void AplayerScript::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-    //world level chunkTick
-    worldLevel::Tick(DeltaTime);
 
 
     shoot(); //shoot the weapon if needed or release. Method handles both automatically
@@ -265,7 +263,10 @@ void AplayerScript::Jump(){
  * allows the player to interact (for example picking up a weapon by pressing "E")
  */
 void AplayerScript::interact(){
-	Super::interact(); //performs Raycast!
+    if(IsPaused()){
+        return;
+    }
+	Super::interact(); //performs Raycast and sets AActor* interactedActorPointer!!
 
     if(interactedActorPointer){
         Aweapon *weapon = Cast<Aweapon>(interactedActorPointer);
@@ -288,6 +289,9 @@ void AplayerScript::interact(){
 /// @brief drops the weapon from the inventory and bone controller and attaches the new weapon if
 /// possible
 void AplayerScript::drop(){
+    if(IsPaused()){
+        return;
+    }
     Super::drop();
     //boneController.dropWeapon();
     playerInventory.dropWeapon();
@@ -305,12 +309,18 @@ void AplayerScript::drop(){
 }
 
 void AplayerScript::reload(){
+    if(IsPaused()){
+        return;
+    }
     Super::reload();
     playerInventory.reloadWeapon();
 }
 
 void AplayerScript::aim(){
     Super::aim();
+    if(IsPaused()){
+        return;
+    }
     
     playerInventory.aim(aiming);
     boneController.weaponAimDownSight(aiming);
@@ -355,6 +365,9 @@ void AplayerScript::keydown4(){
 }
 
 void AplayerScript::switchToIndex(int index){
+    if(IsPaused()){
+        return;
+    }
     if(playerInventory.currentIndexNum() != index){
         //find index weapon in inventory, pickup
 
@@ -524,7 +537,7 @@ AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFr
 	height *= -1; //orient downwardss
 	
 
-	EntityManager *entitymanagerPointer = worldLevel::entityManager();
+	EntityManager *entitymanagerPointer = AworldLevel::entityManager();
 	if(entitymanagerPointer != nullptr){
 		FVector location(0, 0, 0);
 		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
@@ -625,12 +638,12 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
 /// @brief overrides base, return if game is paused in game state manager
 /// @return 
 bool AplayerScript::IsPaused(){
-    return worldLevel::gameStateManager.GameStateIsPaused();
+    return AworldLevel::gameStateManager.GameStateIsPaused();
 }
 
 void AplayerScript::openPauseMenu(){
     Super::openPauseMenu();
-    worldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
+    AworldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
 }
 
 
@@ -643,7 +656,7 @@ void AplayerScript::updateAmmunitionUi(){
     
     
     //void updateAmmunition(int number);
-    worldLevel::playerStatusManager.updateAmmunition(
+    AworldLevel::playerStatusManager.updateAmmunition(
         playerInventory.currentAmmunition(),
         playerInventory.currentLeftAmmnutionInMag()
     );
@@ -652,7 +665,7 @@ void AplayerScript::updateAmmunitionUi(){
 
 
 void AplayerScript::updateHealthUi(){
-    worldLevel::playerStatusManager.updateHealth(health);
+    AworldLevel::playerStatusManager.updateHealth(health);
 }
 
 void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
@@ -685,6 +698,12 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
 
     //get all new
     std::vector<Aweapon *> newWeapons = loadout.spawnAllWeaponsAndApplyAttachments(GetWorld());
+    
+    //debug
+    DebugHelper::logMessage(
+        FString::Printf(TEXT("AplayerScript reload loadout weapons(%d)"), newWeapons.size())
+    );
+
     // push all to inventory
     FVector playerLocation = GetActorLocation();
     if (newWeapons.size() > 0)

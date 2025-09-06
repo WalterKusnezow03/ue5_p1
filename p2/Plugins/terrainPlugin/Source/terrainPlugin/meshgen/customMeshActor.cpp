@@ -146,7 +146,7 @@ void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
 
             //DEPREACTED WILL BE REPLACED
             /*
-            EntityManager *entityManager = worldLevel::entityManager();
+            EntityManager *entityManager = AworldLevel::entityManager();
             if(entityManager != nullptr){   
                 entityManager->createDebree(GetWorld(), worldhit, materials[i]);
             }
@@ -361,7 +361,7 @@ void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
     float treeDensitySkalar
 ){
     //create trees if not in skelleton record debug mode.
-    if(worldLevelBase::DebugSkelletonRecordMode()){
+    if(AworldLevelBase::DebugSkelletonRecordMode()){
         return;
     }
 

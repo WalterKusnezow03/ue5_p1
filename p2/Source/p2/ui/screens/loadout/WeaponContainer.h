@@ -44,7 +44,7 @@ public:
     }
 
     // --- CUSTOM CLICK AND VISIBILTY override---
-    virtual void setVisible(bool flag) override;
+    virtual void SetVisible(bool flag) override;
     virtual bool dispatchClick() override;
 
     //einfachere Api

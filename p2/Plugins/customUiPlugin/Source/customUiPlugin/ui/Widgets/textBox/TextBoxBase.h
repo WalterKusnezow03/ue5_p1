@@ -19,7 +19,7 @@ public:
     virtual void init() override;
 
     virtual UWidget *baseLayoutPointer() override{
-        return scalebox; //button //scalebox(wrong)
+        return sizeBox; //button //scalebox(wrong)
     }
 
     void SetHintText(FString hint);
@@ -32,6 +32,8 @@ public:
 
     /// gets the current typed text
     FString GetText();
+
+    void SetSize(FVector2D size);
 
 protected:
 
@@ -52,7 +54,8 @@ private:
     UEditableTextBox *TextBox = nullptr;
 
     UPROPERTY()
-    UScaleBox *scalebox = nullptr; //makes anything visible, text box must be inside!
+    USizeBox *sizeBox = nullptr;
+
 
     FString innerTextSaved;
 

@@ -74,7 +74,7 @@ void UPlayerUi::createPauseScreen(){
     pauseScreen = NewObject<UPauseScreen>(this);
     if(pauseScreen){
         pauseScreen->init(*this);
-        pauseScreen->setVisible(false);
+        pauseScreen->SetVisible(false);
     }
     
 }
@@ -83,7 +83,7 @@ void UPlayerUi::createLoadoutScreen(){
     loadoutScreen = NewObject<ULoadoutScreen>(this);
     if(loadoutScreen){
         loadoutScreen->init(*this);
-        loadoutScreen->setVisible(false);
+        loadoutScreen->SetVisible(false);
     }
 }
 
@@ -91,7 +91,7 @@ void UPlayerUi::createGameLaunchScreen(){
     gameLaunchScreen = NewObject<UGameLaunchScreen>(this);
     if(gameLaunchScreen){
         gameLaunchScreen->init(*this);
-        gameLaunchScreen->setVisible(false);
+        gameLaunchScreen->SetVisible(false);
     }
 }
 
@@ -120,17 +120,22 @@ void UPlayerUi::updateMissionTextTimed(FString message){
 void UPlayerUi::openPauseScreen(){
     if(screenSwitchAllowed()){
         if(playerHud){
-            playerHud->setVisible(false);
+            playerHud->SetVisible(false);
         }
         openedScreenStack.open(pauseScreen);
         showPlayerCursor(true);
     }
 }
 
+//called from Pause screen, AworldLevel::gameStateManager flag update needed!
 void UPlayerUi::openGameScreen(){
+
+    AworldLevel::gameStateManager.OverrideGameState(EGameState::EGamePlay);
+
+    // close ui
     openedScreenStack.closeAll(); //very important
     if(playerHud){
-        playerHud->setVisible(true);
+        playerHud->SetVisible(true);
     }
     showPlayerCursor(false);
 
@@ -144,7 +149,7 @@ void UPlayerUi::openGameScreen(){
 void UPlayerUi::openLoadoutScreen(){
     if(screenSwitchAllowed()){
         if(playerHud){
-            playerHud->setVisible(false);
+            playerHud->SetVisible(false);
         }
         openedScreenStack.open(loadoutScreen);
     }
@@ -154,7 +159,7 @@ void UPlayerUi::openLoadoutScreen(){
 void UPlayerUi::openGameLaunchScreen(){
     if(screenSwitchAllowed()){
         if(playerHud){
-            playerHud->setVisible(false);
+            playerHud->SetVisible(false);
         }
         openedScreenStack.open(gameLaunchScreen);
     }

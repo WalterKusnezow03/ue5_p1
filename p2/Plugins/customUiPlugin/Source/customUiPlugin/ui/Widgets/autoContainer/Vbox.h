@@ -19,7 +19,7 @@ public:
         return baseVBox; //button //scalebox(wrong)
     }
 
-    virtual void AddChild(UcustomUiComponentBase *item) override;
+    virtual void AddChild(IBaseUiInterface *item) override;
 
     /// @brief adds ANY child to the vbox, no custom click or visibility listening
     /// @param any 
@@ -27,7 +27,7 @@ public:
 
 
     ///@brief removes a child from click listening and inner container
-    virtual void RemoveChild(UcustomUiComponentBase *item) override;
+    virtual void RemoveChild(IBaseUiInterface *item) override;
 
     ///@brief must be overriden - trys to remove child from container
     virtual void RemoveChild(UWidget *any) override;

@@ -15,7 +15,7 @@ void UVbox::initVboxIfNeeded(){
 
 /// @brief if inited!: adds a item to the vbox and custom visibility changes tracking
 /// @param item not nullptr
-void UVbox::AddChild(UcustomUiComponentBase *item){
+void UVbox::AddChild(IBaseUiInterface *item){
     initVboxIfNeeded(); //if needed for init() skip fallback (not needed to call after construct)
     if(item && baseVBox){
         UWidget *baseOfItem = item->baseLayoutPointer(); //any widget must exist!
@@ -42,7 +42,7 @@ void UVbox::AddChild(UWidget *any){
 
 
 ///@brief removes a child from click listening and inner container
-void UVbox::RemoveChild(UcustomUiComponentBase *item){
+void UVbox::RemoveChild(IBaseUiInterface *item){
     if(item){
         Super::RemoveChild(item);
         RemoveChild(item->baseLayoutPointer());

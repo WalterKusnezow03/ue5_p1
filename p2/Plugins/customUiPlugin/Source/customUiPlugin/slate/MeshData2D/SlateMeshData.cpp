@@ -1,7 +1,7 @@
 #include "SlateMeshData.h"
 
 SlateMeshData::SlateMeshData(){
-
+    bCursorColorEnabled = false;
 }
 
 SlateMeshData::~SlateMeshData(){
@@ -19,6 +19,16 @@ SlateMeshData &SlateMeshData::operator=(const SlateMeshData &other){
         Triangles = other.Triangles;
         boundingBox = other.boundingBox;
         slateVertexCache = other.slateVertexCache;
+
+        ambientColorsInvertedSpace = other.ambientColorsInvertedSpace;
+        bCursorColorEnabled = other.bCursorColorEnabled;
+        cursorColorPair = other.cursorColorPair;
+
+        fullColorEnabled = other.fullColorEnabled;
+        fullColor = other.fullColor;
+
+        bHasRuntimeTransformation = other.bHasRuntimeTransformation;
+        transformationRuntimeMatrix = other.transformationRuntimeMatrix;
     }
     return *this;
 }
@@ -281,12 +291,15 @@ void SlateMeshData::AppendClosedShape(TArray<FVector2D> &shape, int detail){
             //log2(x) = n
             detail = FMath::Log2(x) - 1.0f; //-1 for safety
 
-            UiDebugHelper::logMessage(
-                FString::Printf(
-                    TEXT("SlateMeshData kept buffer size, detail: (%d)"),
-                    detail
-                )
-            );
+            if(false){
+                UiDebugHelper::logMessage(
+                    FString::Printf(
+                        TEXT("SlateMeshData kept buffer size, detail: (%d)"),
+                        detail
+                    )
+                );
+            }
+            
         }
 
         FVector2D center = CenterOf(shape);
@@ -432,7 +445,7 @@ FSlateVertex SlateMeshData::makeSlateVertex(
     const FSlateRenderTransform &RenderTransform
 ) const {
     //apply color
-    FColor Color = InterpolatedColorFor(Position).ToFColor(true);
+    FColor Color = InterpolatedColorFor(Position).ToFColor(true); //true gamma korrektur.(?)
 
     //UV - ignored
     FVector2f UV(0,0); // wenn keine Textur, 0,0 ok
@@ -457,8 +470,8 @@ FSlateVertex SlateMeshData::makeSlateVertex(
         RenderTransform,
         PosAs2F,
         UV,
-        Color,
         Color
+        //,Color
         //,ESlateVertexRounding::Disabled
     );
     return Vertex;
@@ -516,6 +529,15 @@ void SlateMeshData::ReCalculateAmbientUvColors(){
     FlagCacheUpdateNeeded();
 }
 
+void SlateMeshData::SetFullColor(FLinearColor color){
+    fullColorEnabled = true;
+    fullColor = color;
+}
+
+void SlateMeshData::ResetFullColor(){
+    fullColorEnabled = false;
+}
+
 ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
 ///up color calculation because the scalar is found by one division (less operations)
 ///is converted to a real position, because mesh data might change but the
@@ -558,28 +580,48 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     //furthest color: 0.0
     FLinearColor accumulatedColor;
 
-    float totalDistance = 0.0f;
+    if(!fullColorEnabled){
+        float totalDistance = 0.0f;
+        if(ambientColorsInvertedSpace.Num() > 0){
+            TArray<float> distances;
+            distances.SetNumUninitialized(ambientColorsInvertedSpace.Num());
+            for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++)
+            {
+                const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
+                distances[i] = pair.DistanceSquared(pos);
+                totalDistance += distances[i];
+            }
 
-    if(ambientColorsInvertedSpace.Num() > 0){
-        TArray<float> distances;
-        distances.SetNumUninitialized(ambientColorsInvertedSpace.Num());
-        for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++)
-        {
-            const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
-            distances[i] = pair.DistanceSquared(pos);
-            totalDistance += distances[i];
+            //skalar = distTarget / distAll
+            ConvertToScalarValuesNormalized(distances, totalDistance);
+
+            for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++){
+                float scalar = distances[i];
+                const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
+                accumulatedColor += scalar * pair.color;
+
+            
+                if(bLogColor){
+                    UiDebugHelper::logMessage(
+                        FString::Printf(
+                            TEXT("Slate: SlateMeshData: Color scaled %.2f from R_%.2f G_%.2f B_%.2f A_%.2f to R_%.2f G_%.2f B_%.2f A_%.2f"),
+                            scalar,
+                            pair.color.R,
+                            pair.color.G,
+                            pair.color.B,
+                            pair.color.A,
+                            accumulatedColor.R,
+                            accumulatedColor.G,
+                            accumulatedColor.B,
+                            accumulatedColor.A 
+                        )
+                    );
+                }
+            }
         }
-
-        //skalar = distTarget / distAll
-        ConvertToScalarValuesNormalized(distances, totalDistance);
-
-        for (int i = 0; i < ambientColorsInvertedSpace.Num(); i++){
-            float scalar = distances[i];
-            const FPairColorPosition &pair = ambientColorsInvertedSpace[i];
-            accumulatedColor += scalar * pair.color;
-        }
+    }else{
+        accumulatedColor = fullColor;
     }
-    
 
     //cursor has more weight
     if(bCursorColorEnabled){
@@ -596,22 +638,47 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
             return accumulatedColor;
         }
 
-        //lin drop
-        //float max = 100 * 100;
-        //float scalar = distCursor / max;
+        // lin drop
+        // float max = 100 * 100;
+        // scalar = distTarget / distAll;
+        // scalarInv = 1.0 - scalar;
 
-        //nach 1/x abschwächen    
+        //nach 1/x abschwächen   
+        //scalar = 1 / dist, wenn dist = 1: max color 
         float distCursor = cursorColorPair.DistanceSquared(pos);
         float eps = 1.0f; // Schutz gegen Division durch 0
         float scalar = 1.0f / (distCursor + eps);
-        scalar *= 100.0f;
-        scalar = std::min(scalar, 1.0f);
+
+        float intensity = 100.0f;
+        scalar *= intensity;
+
+        scalar = std::min(scalar, 1.0f); //1.0 obere grenze!
 
         accumulatedColor += cursorColorPair.color * scalar;
         accumulatedColor /= 2.0f; // oder dynamisch normalisieren
-        return accumulatedColor;
     }
-    
+
+
+
+    //clamp
+    accumulatedColor.R = FMath::Clamp(accumulatedColor.R, 0.0f, 1.0f);
+    accumulatedColor.G = FMath::Clamp(accumulatedColor.G, 0.0f, 1.0f);
+    accumulatedColor.B = FMath::Clamp(accumulatedColor.B, 0.0f, 1.0f);
+    accumulatedColor.A = 1.0f;
+    // FMath::Clamp(accumulatedColor.A, 0.0f, 1.0f);
+
+    if(bLogColor){
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slate: SlateMeshData: Color Result R_%.2f G_%.2f B_%.2f A_%.2f"),
+                accumulatedColor.R,
+                accumulatedColor.G,
+                accumulatedColor.B,
+                accumulatedColor.A 
+            )
+        );
+    }
+
     return accumulatedColor;
 }
 
@@ -640,9 +707,24 @@ void SlateMeshData::ConvertToScalarValuesNormalized(
         }
     }*/
 
-    //so ist die gewichtung falsch herum, man kann auch uvs gespiegelt einfügen
+    //Gewichtung schon in richtigem space, UV Colors werden GESPIEGELT eingefügt,
+    //deshalb ist der skalar schon im korrekten space (distTarget / distAll) nicht 1.0 - scalar!
     for (int i = 0; i < numbers.Num(); i++){
         numbers[i] /= totalDistance;
+    }
+
+    //check sum
+    if(bLogColor){
+        float sum = 0.0f;
+        for (int i = 0; i < numbers.Num(); i++){
+            sum += numbers[i];
+        }
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slate: SlateMeshData: Color Sum Scalar %.2f"),
+                sum
+            )
+        );
     }
 }
 
@@ -650,11 +732,15 @@ void SlateMeshData::ConvertToScalarValuesNormalized(
 
 
 // ---- transformation ----
-void SlateMeshData::ApplyTransformationImmidiate(MMatrix2D &other){
-    FlagCacheUpdateNeeded();
+void SlateMeshData::ApplyTransformationImmidiate(const MMatrix2D &other){
+    if(other.IsZeroScaleMatrix()){
+        return; //invalid, breaks mesh data
+    }
+
     for (int i = 0; i < Vertecies.Num(); i++){
         ApplyTransformation(other, Vertecies[i]);
     }
+    FlagCacheUpdateNeeded();
 }
 
 void SlateMeshData::SetRuntimeTransformation(MMatrix2D &other){
@@ -662,14 +748,14 @@ void SlateMeshData::SetRuntimeTransformation(MMatrix2D &other){
     bHasRuntimeTransformation = true;
     FlagCacheUpdateNeeded(); //updated transform
 
-    UiDebugHelper::logMessage("slate: Set RuntimeTransformation");
+    //UiDebugHelper::logMessage("slate: Set RuntimeTransformation");
 }
 
 void SlateMeshData::ResetRuntimeTransformation(){
     bHasRuntimeTransformation = false;
 }
 
-void SlateMeshData::ApplyTransformation(MMatrix2D &mat, FVector2D &vertex){
+void SlateMeshData::ApplyTransformation(const MMatrix2D &mat, FVector2D &vertex){
     vertex = mat * vertex;
 }
 
@@ -685,13 +771,16 @@ void SlateMeshData::ApplyTransformationConst(
     vertex = mat * vertex;
 
     //debug
-    UiDebugHelper::logMessage(
-        FString::Printf(TEXT(
-            "slate: SlateMeshData runtime transform (%.2f, %2f) -> (%.2f, %2f)"
-        ),
-        copy.X, copy.Y, vertex.X, vertex.Y
-        )
-    );
+    if(false){
+        UiDebugHelper::logMessage(
+            FString::Printf(TEXT(
+                "slate: SlateMeshData runtime transform (%.2f, %2f) -> (%.2f, %2f)"
+            ),
+            copy.X, copy.Y, vertex.X, vertex.Y
+            )
+        );
+    }
+    
 
 
 }

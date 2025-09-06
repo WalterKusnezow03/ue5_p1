@@ -37,8 +37,8 @@ class P2_API EntityManager : public EntityManagerBase
 {
 private:
 	//deprecated
-	FCollisionQueryParams collisionIgnoreParams;
-	std::map<teamEnum, FCollisionQueryParams> collisionMap;
+	//FCollisionQueryParams collisionIgnoreParams;
+	//std::map<teamEnum, FCollisionQueryParams> collisionMap;
 
 	TCollisionTracker<teamEnum> tCollisionMap;
 

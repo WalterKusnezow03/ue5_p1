@@ -5,23 +5,28 @@
 
 SlateWidgetBoundsCache::SlateWidgetBoundsCache(){
     updateNeededFlag = true;
+    countModified = 1;
 }
 
 SlateWidgetBoundsCache::~SlateWidgetBoundsCache(){
 
 }
 
-void SlateWidgetBoundsCache::FlagUpdateNeededTrue(){
+void SlateWidgetBoundsCache::SetUpdateNeededTrue(){
     updateNeededFlag = true;
+    countModified++;
 }
 
 bool SlateWidgetBoundsCache::UpdateNeeded() const {
-    return updateNeededFlag;
+    //return updateNeededFlag;
+    return countModified > 0;
 }
 
 void SlateWidgetBoundsCache::Recreate(TArray<SlateMeshDataPolygon*> &polygons){
     boundsInternal.Reset();
     updateNeededFlag = false;
+    countModified--;
+    
     UiDebugHelper::logMessage(FString::Printf(TEXT("SlateWidgetBoundsCache update (a) %d"), polygons.Num()));
 
     //make new bounding box.

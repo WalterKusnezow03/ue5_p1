@@ -1,5 +1,6 @@
 #include "SlatePolygonMap.h"
 #include "customUiPlugin/slate/MeshData2D/SlateMeshData.h"
+#include "CoreMath/Matrix/2D/MMatrix2D.h"
 
 
 SlatePolygonMap::SlatePolygonMap(){
@@ -10,26 +11,22 @@ SlatePolygonMap::~SlatePolygonMap(){
 
 }
 
-bool SlatePolygonMap::MarkedDirtyBounds(){
-    bool copy = markedDirty;
-    markedDirty = false;
-    return copy;
-}
 
 SlateMeshDataPolygon &SlatePolygonMap::FindPolygonByLayerInternal(int layerId){
     if(!HasLayer(layerId)){
         polygonMap[layerId] = SlateMeshDataPolygon();
-        SortLayers(); //sort layers again.
+        UpdateSortedLayers(); // sort layers again.
 
         //FLAG UPDATE NEEDED BECAUSE UNTERNAL MESH DATA MAY GET MODIFIED
-        boundsCache.FlagUpdateNeededTrue();
+        boundsCache.SetUpdateNeededTrue();
        
     }
     return polygonMap[layerId];
 }
 
 bool SlatePolygonMap::HasLayer(int layerId) const {
-    return polygonMap.find(layerId) != polygonMap.end();
+    return (polygonMap.find(layerId) != polygonMap.end());
+    //&&layersSorted.Contains(layerId);
 }
 
 
@@ -45,7 +42,6 @@ void SlatePolygonMap::Tick(float deltatime){
             changesRegistered = changesRegistered || copy;
         }
     }
-    UpdateBoundsForSizeCalculation(); //update bounds if needed, modified mesh data.
 }
 
 void SlatePolygonMap::UpdateCursorPosition(FVector2D &cursorLocalSpace){
@@ -73,7 +69,7 @@ void SlatePolygonMap::DebugCreatePolygons(){
         FVector2D(300, 300),
         FVector2D(100, 200)
     };
-    polygon.AppendClosedShape(shape, 10); //20 freeze, 5 to low!
+    polygon.AppendClosedShape(shape, 10); //20 freeze, 5 to low! (10 recursion depth triangle split)
 
     //polygon.SetColor(FLinearColor::Blue);
     polygon.SetCursorColor(FLinearColor::White);
@@ -86,7 +82,7 @@ void SlatePolygonMap::DebugCreatePolygons(){
     if(true){
         int sizeMap = polygonMap.size();
         UiDebugHelper::logMessage(
-            FString::Printf(TEXT("SlateWidget: size map construct: "), sizeMap)
+            FString::Printf(TEXT("SlateWidget: size map construct: %d "), sizeMap)
         );
     }
 
@@ -96,18 +92,18 @@ void SlatePolygonMap::DebugCreatePolygons(){
 
 
 
+
+bool SlatePolygonMap::BoundsUpdated(){
+    return boundsCache.UpdateNeeded();
+}
+
 FVector2D SlatePolygonMap::Bounds(){
-    UpdateBoundsForSizeCalculation();
+    if(boundsCache.UpdateNeeded()){
+        ForceUpdateBoundsForSizeCalculation();
+    }
     return boundsCache.Size();
 }
 
-void SlatePolygonMap::UpdateBoundsForSizeCalculation(){
-    //if new bounds needed, recreate:
-    if(boundsCache.UpdateNeeded()){
-        ForceUpdateBoundsForSizeCalculation();
-        markedDirty = true; //must be applied in owning hbox
-    }
-}
 
 void SlatePolygonMap::ForceUpdateBoundsForSizeCalculation(){
     TArray<SlateMeshDataPolygon *> polygons = allPolygonsSorted();
@@ -161,12 +157,55 @@ TArray<SlateMeshDataPolygon *> SlatePolygonMap::allPolygonsSortedConst() const {
 
 
 
-void SlatePolygonMap::SortLayers(){
+void SlatePolygonMap::UpdateSortedLayers(){
     TArray<int> allLayers;
-    for(auto &pair : polygonMap){
+    for (auto &pair : polygonMap)
+    {
         allLayers.Add(pair.first);
     }
     allLayers.Sort();
     layersSorted = allLayers;
 }
 
+
+
+
+// --- immidate transform ---
+void SlatePolygonMap::ApplyTransformImmidiate(MMatrix2D &transform){
+    TArray<SlateMeshDataPolygon *> array = allPolygonsSorted(); //marked dirty bounds once ref is get
+    for (int i = 0; i < array.Num(); i++){
+        if(SlateMeshDataPolygon *ptr = array[i]){
+            ptr->ApplyTransformImmidiate(transform);
+        }
+    }
+    boundsCache.SetUpdateNeededTrue();
+}
+
+
+void SlatePolygonMap::ScaleToResolutionImmidiate(FVector2D &res){
+    FVector2D currentSize = Bounds();
+
+    // num * x = target
+    // x = target / num
+    MMatrix2D scaleMat;
+    scaleMat.makeIdentity();
+
+    UiDebugHelper::logMessage(
+        FString::Printf(
+            TEXT("SlatePolygonMap (%d): ScaleToResolutionImmidiate(%.2f,%.2f)->(%.2f,%.2f) with (%.2f,%.2f) "),
+            allPolygonsSorted().Num(),
+            currentSize.X, currentSize.Y,
+            res.X, res.Y,
+            res.X / currentSize.X,
+            res.Y / currentSize.Y
+        )
+    );
+
+
+
+    scaleMat.Scale(
+        res.X / currentSize.X,
+        res.Y / currentSize.Y
+    );
+    ApplyTransformImmidiate(scaleMat);
+}

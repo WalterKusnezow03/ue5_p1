@@ -17,6 +17,14 @@ MMatrix2D::~MMatrix2D()
 
 }
 
+bool MMatrix2D::IsZeroScaleMatrix() const {
+    float epsilon = 0.000001f;
+    return std::abs(array[0]) < epsilon &&
+           std::abs(array[1]) < epsilon &&
+           std::abs(array[3]) < epsilon &&
+           std::abs(array[4]) < epsilon;
+}
+
 void MMatrix2D::makeIdentity(){
     makeZero();
     array[0] = 1.0f;

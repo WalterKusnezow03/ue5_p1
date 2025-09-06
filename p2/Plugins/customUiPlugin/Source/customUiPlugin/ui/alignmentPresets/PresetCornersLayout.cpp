@@ -95,13 +95,13 @@ bool UPresetCornersLayout::dispatchClick(){
 /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
 /// invisible too!
 /// @param visible 
-void UPresetCornersLayout::setVisible(bool visible) {
-    Super::setVisible(visible);
+void UPresetCornersLayout::SetVisible(bool visible) {
+    Super::SetVisible(visible);
 
     for (int i = 0; i < elements.Num(); i++){
         UcustomUiComponentBase *current = elements[i];
         if(current){
-            current->setVisible(visible);
+            current->SetVisible(visible);
         }
     }
 }

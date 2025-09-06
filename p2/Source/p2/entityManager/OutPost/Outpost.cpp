@@ -144,7 +144,7 @@ void AOutpost::releaseEntity(AHumanEntityScript *entity){
 		//new team based
 		removeFromMap(entity);
 
-		if(EntityManager *e = worldLevel::entityManager()){
+		if(EntityManager *e = AworldLevel::entityManager()){
 			e->add(entity);
 		}
 		
@@ -176,7 +176,7 @@ void AOutpost::subscribe(AHumanEntityScript *entity){
 /// @brief creates an human entity and subscribes it
 /// @param team team of the entity to set
 void AOutpost::createEntity(teamEnum team){
-	if(EntityManager *e = worldLevel::entityManager()){
+	if(EntityManager *e = AworldLevel::entityManager()){
 	
 		FVector pos = randomOffsetFromActorLocation(400);
 		pos.Z += 100;

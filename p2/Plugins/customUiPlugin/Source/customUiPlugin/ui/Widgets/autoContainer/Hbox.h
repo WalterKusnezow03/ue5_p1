@@ -20,7 +20,7 @@ public:
         return baseHBox; //button //scalebox(wrong)
     }
 
-    virtual void AddChild(UcustomUiComponentBase *item) override;
+    virtual void AddChild(IBaseUiInterface *item) override;
 
     //not needed here: happens in auto box parent!
     //virtual void setVisible(bool flag) override;
@@ -30,7 +30,7 @@ public:
     virtual void AddChild(UWidget *any) override;
 
     ///@brief removes a child from click listening and inner container
-    virtual void RemoveChild(UcustomUiComponentBase *item) override;
+    virtual void RemoveChild(IBaseUiInterface *item) override;
 
     ///@brief must be overriden - trys to remove child from container
     virtual void RemoveChild(UWidget *any) override;

@@ -38,7 +38,7 @@ void AOutpostAlarmPole::projectActorToGround(){
 	FHitResult HitResult;
 
     FCollisionQueryParams ignoreParams;
-    if (EntityManager *e = worldLevel::entityManager()){
+    if (EntityManager *e = AworldLevel::entityManager()){
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
 	}

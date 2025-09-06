@@ -3819,13 +3819,22 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/Module.customUiPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/Definitions.customUiPlugin.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/AutoBoxBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ActorWorldMarker.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/AutoBoxBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/item/actorBased/ActorWorldMarker.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/item/WorldMarker.h \
   Runtime/Core/Public/CoreMinimal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/baseInterface/BaseUiInterface.h \
+  Runtime/CoreUObject/Public/UObject/Interface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/BaseUiInterface.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WorldMarker.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ActorWorldMarker.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/AutoBoxBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/AutoBoxBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/customUiComponentBase.h \
   Runtime/UMG/Public/Components/Widget.h \
-  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
   Runtime/UMG/Public/FieldNotification/FieldNotificationDeclaration.h \
   Runtime/UMG/Public/FieldNotification/FieldId.h \
   Runtime/UMG/Public/FieldNotification/FieldVariant.h \
@@ -3834,10 +3843,8 @@
   Runtime/CoreUObject/Public/UObject/UnrealType.h \
   Runtime/CoreUObject/Public/UObject/Object.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/FieldId.generated.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   Runtime/UMG/Public/FieldNotification/IClassDescriptor.h \
   Runtime/UMG/Public/FieldNotification/IFieldValueChanged.h \
-  Runtime/CoreUObject/Public/UObject/Interface.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/IFieldValueChanged.generated.h \
   Runtime/Core/Public/Misc/Attribute.h \
   Runtime/CoreUObject/Public/Templates/SubclassOf.h \
@@ -3868,8 +3875,12 @@
   Runtime/SlateCore/Public/Types/ISlateMetaData.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetNavigation.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Widget.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/baseInterface/WidgetHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiComponentBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiComponentParent.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/AutoBoxBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/BaseUiInterface.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ButtonBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/ButtonBase.h \
   Runtime/UMG/Public/Components/Button.h \
@@ -4043,11 +4054,16 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/TickUpdate/UiActor.h \
   Runtime/Engine/Classes/GameFramework/Actor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiActor.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiComponentParent.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetProgressBarBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/bar/WidgetProgressBarBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetProgressBarBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetSlateWrapperBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WorldMarker.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WorldMarkerCanvas.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WorldMarkerCanvas.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public/customUiPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h \
@@ -4065,6 +4081,10 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/bar/WidgetProgressBarBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/item/actorBased/ActorWorldMarker.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/WorldToScreenOverlays/item/WorldMarker.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/alignmentPresets/PresetCornersLayout.cpp \
   Runtime/UMG/Public/Components/CanvasPanelSlot.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/CanvasPanelSlot.generated.h \
@@ -5618,4 +5638,5 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimationBinding.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/textBox/TextBoxBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/Text/UiTextStyle.h
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/Text/UiTextStyle.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.cpp

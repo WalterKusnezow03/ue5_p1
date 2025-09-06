@@ -131,11 +131,14 @@ void ProceduralMeshComponentPair::updateMeshRaycast(materialEnum type){
             layer
         );
 
-        FString message = FString::Printf(
-            TEXT(" ProceduralMeshComponentPair update mesh section Raycast %s"), 
-            *MaterialEnumHelper::toString(type)
-        );
-        DebugHelper::showScreenMessage(message, FColor::Orange);
+        if(bLogMessage){
+            FString message = FString::Printf(
+                TEXT(" ProceduralMeshComponentPair update mesh section Raycast %s"), 
+                *MaterialEnumHelper::toString(type)
+            );
+            DebugHelper::showScreenMessage(message, FColor::Orange);
+        }
+        
     }
 }
 
@@ -147,11 +150,15 @@ void ProceduralMeshComponentPair::updateMeshNoRaycast(materialEnum type){
             meshDataReferenceNoRaycast(type),
             layer
         );
-        FString message = FString::Printf(
-            TEXT(" ProceduralMeshComponentPair update mesh section No Raycast %s"), 
-            *MaterialEnumHelper::toString(type)
-        );
-        DebugHelper::showScreenMessage(message, FColor::Orange);
+
+        if(bLogMessage){
+            FString message = FString::Printf(
+                TEXT(" ProceduralMeshComponentPair update mesh section No Raycast %s"), 
+                *MaterialEnumHelper::toString(type)
+            );
+            DebugHelper::showScreenMessage(message, FColor::Orange);
+        }
+        
     }
 }
 
@@ -398,7 +405,7 @@ void ProceduralMeshComponentPair::overrideMeshDataFromBaseAndUpdateMesh(
         noRaycastMeshData = other.noRaycastMeshData;
 
         //debug
-        if(true){
+        if(bLogMessage){
             DebugHelper::logMessage("ProceduralMeshComponentPair Copy Data ", raycastMeshData.size());
         }
 

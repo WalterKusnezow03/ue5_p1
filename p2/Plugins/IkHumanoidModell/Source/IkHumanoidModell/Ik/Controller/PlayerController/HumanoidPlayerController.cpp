@@ -99,8 +99,12 @@ void HumanoidPlayerController::weaponAimDownSight(bool aiming){
         return;
     }
 
-    FString msg = aiming ? TEXT("AIM") : TEXT("HIP");
-    DebugHelper::showScreenMessage("HumanoidPlayerController: switch", msg);
+    
+    if(bLogMessage){
+        FString msg = aiming ? TEXT("AIM") : TEXT("HIP");
+        DebugHelper::showScreenMessage("HumanoidPlayerController: switch", msg);
+    }
+    
 
     //REFACTURE Tmp here
     FVector ads(50, 0, 0);
@@ -116,6 +120,7 @@ void HumanoidPlayerController::weaponAimDownSight(bool aiming){
 
 
 void HumanoidPlayerController::weaponRaisedReadyPosition(bool raise){
+
     if(bDebugBlockPlayerApiCarriedItem){
         return;
     }
@@ -124,8 +129,10 @@ void HumanoidPlayerController::weaponRaisedReadyPosition(bool raise){
         weaponAimDownSight(false);
         return;
     }
-
-    DebugHelper::showScreenMessage("HumanoidPlayerController: switch SPRINT");
+    if(bLogMessage){
+        DebugHelper::showScreenMessage("HumanoidPlayerController: switch SPRINT");
+    }
+    
 
     //REFACTURE Tmp here
     FVector hip(50, 20, -10);
@@ -134,7 +141,13 @@ void HumanoidPlayerController::weaponRaisedReadyPosition(bool raise){
     float timeOfAnimation = 0.5f;
 
     mainItemSocket.MoveToLocal(hip, timeOfAnimation);
-    mainItemSocket.RotateToLocal(pitched, timeOfAnimation);
+
+
+    bool blockPerformance = true;
+    if(blockPerformance){
+        mainItemSocket.RotateToLocal(pitched, timeOfAnimation);
+        return;
+    }
 }
 
 void HumanoidPlayerController::weaponContactPosition(){

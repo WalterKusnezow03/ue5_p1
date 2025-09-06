@@ -11,8 +11,8 @@ void EmptyLinkFunctionForGeneratedCodeAutoBoxBase() {}
 // Cross Module References
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UAutoBoxBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UAutoBoxBase_NoRegister();
-	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UUiComponentParent();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UAutoBoxBase::StaticRegisterNativesUAutoBoxBase()
@@ -39,7 +39,7 @@ void EmptyLinkFunctionForGeneratedCodeAutoBoxBase() {}
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
 	UObject* (*const Z_Construct_UClass_UAutoBoxBase_Statics::DependentSingletons[])() = {
-		(UObject* (*)())Z_Construct_UClass_UcustomUiComponentBase,
+		(UObject* (*)())Z_Construct_UClass_UUiComponentParent,
 		(UObject* (*)())Z_Construct_UPackage__Script_customUiPlugin,
 	};
 #if WITH_METADATA
@@ -76,7 +76,7 @@ void EmptyLinkFunctionForGeneratedCodeAutoBoxBase() {}
 		0,
 		UE_ARRAY_COUNT(Z_Construct_UClass_UAutoBoxBase_Statics::PropPointers),
 		0,
-		0x001000A0u,
+		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UAutoBoxBase_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UAutoBoxBase_Statics::Class_MetaDataParams))
 	};
 	UClass* Z_Construct_UClass_UAutoBoxBase()
@@ -99,9 +99,9 @@ void EmptyLinkFunctionForGeneratedCodeAutoBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UAutoBoxBase, UAutoBoxBase::StaticClass, TEXT("UAutoBoxBase"), &Z_Registration_Info_UClass_UAutoBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UAutoBoxBase), 463711618U) },
+		{ Z_Construct_UClass_UAutoBoxBase, UAutoBoxBase::StaticClass, TEXT("UAutoBoxBase"), &Z_Registration_Info_UClass_UAutoBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UAutoBoxBase), 2653679017U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_1342255603(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_2255813304(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

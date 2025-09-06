@@ -22,12 +22,13 @@ public:
     virtual void init(int i, int j);
 
 public:
-    virtual void AddChild(UcustomUiComponentBase *item) override;
+    virtual void AddChild(IBaseUiInterface *item) override;
     virtual void AddChild(UWidget *any) override;
 
-    virtual void AddChild(UcustomUiComponentBase *item, int i, int j);
+    virtual void AddChild(IBaseUiInterface *item, int i, int j);
     virtual void AddChild(UWidget *widget, int i, int j);
 
+    void AddRow(TArray<IBaseUiInterface *> &items);
     void AddRow(TArray<UcustomUiComponentBase *> &items);
 
     virtual UWidget *baseLayoutPointer() override{
@@ -36,16 +37,16 @@ public:
 
     /// @brief removes a row by an item searched
     /// @param item 
-    void RemoveRow(UcustomUiComponentBase *item);
+    void RemoveRow(IBaseUiInterface *item);
 
-    TArray<UcustomUiComponentBase *> RemovedItemsFromRemoveRow(UcustomUiComponentBase *item);
+    TArray<IBaseUiInterface *> RemovedItemsFromRemoveRow(IBaseUiInterface *item);
 
     /// @brief removes a row by index
     /// @param numRow 
     void RemoveRow(int numRow);
 
     ///@brief shows or hides a row if an item is found, hides or shows row the item belongs to
-    void SetRowVisible(UcustomUiComponentBase *item, bool show);
+    void SetRowVisible(IBaseUiInterface *item, bool show);
 
     ///@brief hides / collapses or shows a row by index if in bound
     void SetRowVisible(int i, bool show);
@@ -55,7 +56,7 @@ public:
 
 
     ///@brief removes a child from click listening
-    virtual void RemoveChild(UcustomUiComponentBase *item) override;
+    virtual void RemoveChild(IBaseUiInterface *item) override;
     virtual void RemoveChild(UWidget *item) override;
 
 protected:
@@ -72,7 +73,7 @@ private:
 
     //UPROPERTY()
     //Row<Column<widget>>
-    TArray<TArray<UcustomUiComponentBase*>> trackedGrid;
+    TArray<TArray<IBaseUiInterface*>> trackedGrid;
 
     void SetupGrid();
 
@@ -85,5 +86,5 @@ private:
     bool RowIndexValid(int i);
     bool RowAtIndexEmpty(int i);
 
-    bool Find(UcustomUiComponentBase *item, int &iOut, int &jOut);
+    bool Find(IBaseUiInterface *item, int &iOut, int &jOut);
 };

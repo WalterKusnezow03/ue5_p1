@@ -169,7 +169,7 @@ void Aparticle::show(bool show){
 void Aparticle::release(){
 	show(false);
 	enabledForTick = false;
-	if (EntityManager *e = worldLevel::entityManager())
+	if (EntityManager *e = AworldLevel::entityManager())
 	{
 		//to implement: release to entity manager for particles
 		e->add(this);

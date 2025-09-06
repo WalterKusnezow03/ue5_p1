@@ -26,10 +26,10 @@ bool UPresetHalfSplitLayout::dispatchClick(){
     return false;
 }
 
-void UPresetHalfSplitLayout::setVisible(bool visible){
-    Super::setVisible(visible);
+void UPresetHalfSplitLayout::SetVisible(bool visible){
+    Super::SetVisible(visible);
     if(baseVertical){
-        baseVertical->setVisible(visible); //NOTIFY ALL CHILDREN
+        baseVertical->SetVisible(visible); //NOTIFY ALL CHILDREN
     }
 }
 
@@ -99,7 +99,7 @@ void UPresetHalfSplitLayout::showRightSideLayoutAtIndex(int i){
         
         UVbox *second = pair.second;
         if(second){
-            second->setVisible(visible); //is propagating listening for clicks to children and
+            second->SetVisible(visible); //is propagating listening for clicks to children and
             //hides base layout!
         }
 

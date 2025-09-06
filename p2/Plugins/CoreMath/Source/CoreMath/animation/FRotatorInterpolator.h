@@ -14,7 +14,7 @@ public:
     virtual FRotator interpolation(FRotator &fromIn, FRotator &toIn, float skalarCurrent) override;
 
     virtual bool endReached() override {
-        return skalar() >= 1.0f;
+        return skalar() >= 1.0f || hasReachedTarget(); //kleiner test, hasReachedTarget() added here.
     }
 
 protected:

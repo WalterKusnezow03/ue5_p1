@@ -34,9 +34,9 @@ void UWeaponContainer::init(int index, LoadoutHelper &parentLoadout){
 }
 
 // --- CUSTOM CLICK AND VISIBILTY ---
-void UWeaponContainer::setVisible(bool flag){
+void UWeaponContainer::SetVisible(bool flag){
     if(baseHorizontalBox){
-        return baseHorizontalBox->setVisible(flag);
+        return baseHorizontalBox->SetVisible(flag);
     }
 }
 

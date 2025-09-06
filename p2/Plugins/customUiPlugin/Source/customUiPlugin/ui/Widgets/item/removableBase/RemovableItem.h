@@ -21,7 +21,7 @@ public:
     /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too!
     /// @param visible
-    virtual void setVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
 
     virtual UWidget *baseLayoutPointer() override{
         if(baseHBox){

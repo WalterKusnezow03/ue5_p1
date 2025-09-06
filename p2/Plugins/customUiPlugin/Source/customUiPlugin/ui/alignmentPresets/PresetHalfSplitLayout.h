@@ -41,7 +41,7 @@ public:
     
     // ---- CLICK DISPATCH AND VISIBILTY ----
     virtual bool dispatchClick() override;
-    virtual void setVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
 
     // --- PURE UNREAL ADDING - NO CLICK DISTPATCHING ---

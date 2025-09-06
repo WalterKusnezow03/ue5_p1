@@ -3918,6 +3918,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerInfo/PlayerInfo.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/worldLevelBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/TerrainLauncher.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/worldCache/ChunkParserMap.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/customMeshActor.cpp \

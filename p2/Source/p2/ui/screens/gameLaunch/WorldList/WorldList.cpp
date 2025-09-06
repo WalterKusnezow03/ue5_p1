@@ -29,9 +29,9 @@ bool UWorldList::dispatchClick(){
     return baseVbox != nullptr && baseVbox->dispatchClick();
 }
 
-void UWorldList::setVisible(bool visible){
+void UWorldList::SetVisible(bool visible){
     if(baseVbox){
-        baseVbox->setVisible(visible);
+        baseVbox->SetVisible(visible);
     }
 }
 
@@ -98,9 +98,8 @@ void UWorldList::AddWorld(FString name){
 void UWorldList::AddWorldInternal(FString name){
     if(baseGridBox){
         
-        TArray<UcustomUiComponentBase *> newRow = makeButtonPair(name);
+        TArray<IBaseUiInterface *> newRow = makeButtonPair(name);
         baseGridBox->AddRow(newRow);
-        //AddRow(TArray<UcustomUiComponentBase *> &items)
     }
 }
 
@@ -125,7 +124,7 @@ void UWorldList::removeWorld(UTextButton *item){
 
     //remove row from grid and free all items
     if(baseGridBox){
-        TArray<UcustomUiComponentBase *> removed = baseGridBox->RemovedItemsFromRemoveRow(item);
+        TArray<IBaseUiInterface *> removed = baseGridBox->RemovedItemsFromRemoveRow(item);
         for (int i = 0; i < removed.Num(); i++){
             if(removed[i]){
                 UTextButton *casted = Cast<UTextButton>(removed[i]);
@@ -153,7 +152,7 @@ void UWorldList::removeWorld(UTextButton *item){
 
 
 
-TArray<UcustomUiComponentBase*> UWorldList::makeButtonPair(FString name){
+TArray<IBaseUiInterface*> UWorldList::makeButtonPair(FString name){
     UTextButton *worldButton = PopFromFreeList();
     UTextButton *removeButton = PopFromFreeList();
 
@@ -184,7 +183,7 @@ TArray<UcustomUiComponentBase*> UWorldList::makeButtonPair(FString name){
         }
     }
 
-    TArray<UcustomUiComponentBase *> outArray;
+    TArray<IBaseUiInterface *> outArray;
     if(worldButton)
         outArray.Add(worldButton);
 

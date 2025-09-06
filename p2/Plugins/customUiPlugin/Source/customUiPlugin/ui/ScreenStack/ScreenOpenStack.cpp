@@ -28,7 +28,7 @@ bool ScreenOpenStack::ScreenAlreadyOpen(UCanvasScreen *item){
     if(item != nullptr){
         if(opened.size() > 0){
             if(opened.back() == item){
-                item->setVisible(true);
+                item->SetVisible(true);
                 return true;
             }
         }
@@ -49,11 +49,11 @@ void ScreenOpenStack::open(UCanvasScreen *item){
         for (int i = 0; i < opened.size(); i++){
             UCanvasScreen *current = opened[i];
             if(current != nullptr){
-                current->setVisible(false);
+                current->SetVisible(false);
             }
         }
         opened.push_back(item);
-        item->setVisible(true);
+        item->SetVisible(true);
     }
 }
 
@@ -63,14 +63,14 @@ void ScreenOpenStack::closeBack(){
         UCanvasScreen *back = opened.back();
         opened.pop_back();
         if(back != nullptr){
-            back->setVisible(false);
+            back->SetVisible(false);
         }
 
         //set latest visible again
         if(opened.size() > 0){
             UCanvasScreen *backNew = opened.back();
             if(backNew != nullptr){
-                backNew->setVisible(true);
+                backNew->SetVisible(true);
             }
         }
 

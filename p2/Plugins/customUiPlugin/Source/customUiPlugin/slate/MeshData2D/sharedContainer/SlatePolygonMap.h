@@ -5,8 +5,7 @@
 #include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
 #include <map>
 
-
-
+class MMatrix2D;
 
 /// @brief Will be stored in UWidget base having Slate Widget,
 /// data is synchronized to slate widget - get on draw.
@@ -26,23 +25,27 @@ public:
 
     void UpdateCursorPosition(FVector2D &pos);
 
+    bool BoundsUpdated();
     FVector2D Bounds();
 
     //allows you to modify the internal mesh data drawn.
+    //marks bounds dirty, use Bounds() method to get new bounds
     SlateMeshDataPolygon &FindPolygonByLayerInternal(int layer);
+
     const SlateMeshDataPolygon *FindPolygonByLayerInternalConst(int layer) const;
 
     TArray<SlateMeshDataPolygon *> allPolygonsSorted();
     
     TArray<SlateMeshDataPolygon *> allPolygonsSortedConst() const;
 
-    /// @brief will tell if the bounds were refreshed and the outer sizebox update is needed
-    bool MarkedDirtyBounds();
+    ///@brief applies a transform to all mesh data immidiately and marks bounds dirty
+    void ApplyTransformImmidiate(MMatrix2D &transform);
+
+    void ScaleToResolutionImmidiate(FVector2D &res);
 
 private:
-    bool markedDirty = false;
 
-        // --- Draw size cache --- 
+    // --- Draw size cache --- 
     SlateWidgetBoundsCache boundsCache;
 
 
@@ -53,7 +56,7 @@ private:
     TArray<int> layersSorted;
     
     /// @brief sorts the layers of the polygon map into the layers Sorted array for drawing
-    void SortLayers();
+    void UpdateSortedLayers();
 
     bool HasLayer(int layerId) const;
 

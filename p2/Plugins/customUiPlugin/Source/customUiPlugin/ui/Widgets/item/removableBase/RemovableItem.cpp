@@ -15,9 +15,9 @@ bool URemovableItem::dispatchClick(){
 }
 
 
-void URemovableItem::setVisible(bool visible){
+void URemovableItem::SetVisible(bool visible){
     if(baseHBox){
-        baseHBox->setVisible(visible);
+        baseHBox->SetVisible(visible);
     }
 }
 

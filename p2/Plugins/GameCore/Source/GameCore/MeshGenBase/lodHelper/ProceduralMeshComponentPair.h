@@ -8,6 +8,8 @@
 /// @brief will store a uprocedural mesh with raycast and without including their mesh
 /// data for all layers
 class GAMECORE_API ProceduralMeshComponentPair : public MeshDataMap {
+private:
+    bool bLogMessage = false;
 
 public:
     ProceduralMeshComponentPair();

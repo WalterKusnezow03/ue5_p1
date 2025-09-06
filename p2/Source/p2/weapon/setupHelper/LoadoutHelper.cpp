@@ -60,7 +60,7 @@ std::vector<Aweapon *> LoadoutHelper::spawnAllWeaponsAndApplyAttachments(UWorld 
     loadoutWasModifedFlag = false;
     std::vector<Aweapon *> outweapons;
     if(world){
-        EntityManager *entityManagerPointer = worldLevel::entityManager();
+        EntityManager *entityManagerPointer = AworldLevel::entityManager();
         if(entityManagerPointer != nullptr){
             for (int i = 0; i < vec.size(); i++){
                 weaponSetupHelper &currentSetupHelper = vec[i];

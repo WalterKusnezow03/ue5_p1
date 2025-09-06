@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Components/Widget.h"
-
+#include "customUiPlugin/baseInterface/WidgetHelper.h"
+#include "customUiPlugin/baseInterface/BaseUiInterface.h"
 #include "customUiComponentBase.generated.h"
 
 class UPlayerUiBase;
@@ -11,7 +12,7 @@ class UPlayerUiBase;
  * (the pointer to the main owning UPlayerUi instance)
  */
 UCLASS()
-class CUSTOMUIPLUGIN_API UcustomUiComponentBase : public UObject{
+class CUSTOMUIPLUGIN_API UcustomUiComponentBase : public UObject, public IBaseUiInterface{
 
     GENERATED_BODY()
 
@@ -31,17 +32,21 @@ protected:
 
 public:
 
+
     // --- manual click dispatch, must be overriden if has childs!---
     //OVERRIDE THIS METHOD!
-    virtual bool dispatchClick(){
+    virtual bool dispatchClick() override {
         return false;
     }
 
     /// @brief marks self as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too! - OVERRIDE THIS METHOD!
     /// @param visible 
-    virtual void setVisible(bool visible) {
-        setVisible(baseLayoutPointer(), visible);
+    virtual void SetVisible(bool visible) override {
+        //setVisible(baseLayoutPointer(), visible);
+        
+        WidgetHelper::SetVisible(baseLayoutPointer(), visible);
+        VISIBLE_FLAG = visible;
     }
 
     //--- Ticker section ---
@@ -55,7 +60,7 @@ public:
     }
 
     ///@brief is called by tick handler if subscribed
-    virtual void Tick(float DeltaTime){
+    virtual void Tick(float DeltaTime) override {
         if(!TICK_ENABLED){
             return;
         }
@@ -69,7 +74,7 @@ public:
     }
 
     //MUST BE OVERRIDEN!!!
-    virtual UWidget *baseLayoutPointer(){
+    virtual UWidget *baseLayoutPointer() override {
         return nullptr;
     }
 
@@ -79,23 +84,6 @@ protected:
 
     bool WAS_INIT_FLAG = false;
 
-    /// @brief hides a widget, if not visible, COLLAPSED
-    /// @param any 
-    /// @param visible 
-    void setVisible(UWidget *any, bool visible){
-        if(any != nullptr){
-            //ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-
-            ESlateVisibility newStatus = visible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
-            // ESlateVisibility::Hidden;
-            any->SetVisibility(newStatus);
-
-            //test
-            any->SetIsEnabled(visible);
-
-            VISIBLE_FLAG = visible;
-        }
-    }
 
 
     void setVisibleNoCollsion(UWidget *any, bool visible){

@@ -9,6 +9,7 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 // Cross Module References
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UBaseUiInterface_NoRegister();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetSlateWrapperBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetSlateWrapperBase_NoRegister();
 	UMG_API UClass* Z_Construct_UClass_USizeBox();
@@ -28,6 +29,7 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+		static const UECodeGen_Private::FImplementedInterfaceParams InterfaceParams[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
@@ -43,6 +45,9 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 		{ "ToolTip", "--- SLATE TO UWIDGET WRAPPER AND BASE CLASS TO CREATE ANY CUSTOM SLATE BASED WIDGETS!---\n@brief makes the slate base usuable as a USizeBox for UMG\nAllows direct access to the Custom Slate Mesh Data, to manipulate them." },
 	};
 #endif
+		const UECodeGen_Private::FImplementedInterfaceParams Z_Construct_UClass_UWidgetSlateWrapperBase_Statics::InterfaceParams[] = {
+			{ Z_Construct_UClass_UBaseUiInterface_NoRegister, (int32)VTABLE_OFFSET(UWidgetSlateWrapperBase, IBaseUiInterface), false },  // 2471973962
+		};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UWidgetSlateWrapperBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UWidgetSlateWrapperBase>::IsAbstract,
 	};
@@ -53,11 +58,11 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 		DependentSingletons,
 		nullptr,
 		nullptr,
-		nullptr,
+		InterfaceParams,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
 		0,
-		0,
+		UE_ARRAY_COUNT(InterfaceParams),
 		0x00B000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UWidgetSlateWrapperBase_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UWidgetSlateWrapperBase_Statics::Class_MetaDataParams))
 	};
@@ -81,9 +86,9 @@ void EmptyLinkFunctionForGeneratedCodeWidgetSlateWrapperBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWidgetSlateWrapperBase, UWidgetSlateWrapperBase::StaticClass, TEXT("UWidgetSlateWrapperBase"), &Z_Registration_Info_UClass_UWidgetSlateWrapperBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetSlateWrapperBase), 2399092647U) },
+		{ Z_Construct_UClass_UWidgetSlateWrapperBase, UWidgetSlateWrapperBase::StaticClass, TEXT("UWidgetSlateWrapperBase"), &Z_Registration_Info_UClass_UWidgetSlateWrapperBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetSlateWrapperBase), 2596137158U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_548795415(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_2353078139(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slate_UWidgetConversion_UWigetBase_WidgetSlateWrapperBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

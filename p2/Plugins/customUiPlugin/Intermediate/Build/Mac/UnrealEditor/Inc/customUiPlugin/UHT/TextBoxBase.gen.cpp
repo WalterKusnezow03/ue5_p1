@@ -15,7 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextBoxBase_NoRegister();
 	SLATECORE_API UEnum* Z_Construct_UEnum_SlateCore_ETextCommit();
 	UMG_API UClass* Z_Construct_UClass_UEditableTextBox_NoRegister();
-	UMG_API UClass* Z_Construct_UClass_UScaleBox_NoRegister();
+	UMG_API UClass* Z_Construct_UClass_USizeBox_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	DEFINE_FUNCTION(UTextBoxBase::execOnTextCommittedHandler)
@@ -153,9 +153,9 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_TextBox;
 #if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_scalebox_MetaData[];
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_sizeBox_MetaData[];
 #endif
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_scalebox;
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_sizeBox;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -200,17 +200,17 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox = { "TextBox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, TextBox), Z_Construct_UClass_UEditableTextBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox_MetaData)) };
 #if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData[] = {
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UTextBoxBase_Statics::NewProp_sizeBox_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "ui/Widgets/textBox/TextBoxBase.h" },
 	};
 #endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox = { "scalebox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, scalebox), Z_Construct_UClass_UScaleBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox_MetaData)) };
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextBoxBase_Statics::NewProp_sizeBox = { "sizeBox", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextBoxBase, sizeBox), Z_Construct_UClass_USizeBox_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_sizeBox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextBoxBase_Statics::NewProp_sizeBox_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UTextBoxBase_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointer,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_callbackPointerTextChanged,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_TextBox,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_scalebox,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextBoxBase_Statics::NewProp_sizeBox,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UTextBoxBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UTextBoxBase>::IsAbstract,
@@ -250,9 +250,9 @@ void EmptyLinkFunctionForGeneratedCodeTextBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 763492676U) },
+		{ Z_Construct_UClass_UTextBoxBase, UTextBoxBase::StaticClass, TEXT("UTextBoxBase"), &Z_Registration_Info_UClass_UTextBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextBoxBase), 2702413342U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_3595975646(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_638158037(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_textBox_TextBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

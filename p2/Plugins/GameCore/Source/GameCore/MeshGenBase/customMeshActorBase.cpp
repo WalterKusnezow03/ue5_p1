@@ -380,7 +380,11 @@ void AcustomMeshActorBase::changeLodBasedOnPlayerPosition(){
     ELod lod = lodLevelByDistanceTo(locationOfPlayer);
     if(lod != currentLodLevel){
         switchToLod(lod);
-        DebugHelper::showScreenMessage("Tick Lod Update");
+
+        if(false){
+            DebugHelper::showScreenMessage("Tick Lod Update");
+        }
+        
     }
     return;
 
@@ -464,15 +468,17 @@ UProceduralMeshComponent *AcustomMeshActorBase::MeshNoRaycastForLod(ELod lod){
 void AcustomMeshActorBase::switchToLod(ELod lod){
     currentLodLevel = lod;
 
-    FString lodString;
-    if(currentLodLevel == ELod::lodNear)
-        lodString = TEXT("switch to lod near");
-    if(currentLodLevel == ELod::lodMiddle)
-        lodString = TEXT("switch to lod middle");
-    if(currentLodLevel == ELod::lodFar)
-        lodString = TEXT("switch to lod far");
-
-    DebugHelper::showScreenMessage(lodString);
+    if(false){
+        FString lodString;
+        if(currentLodLevel == ELod::lodNear)
+            lodString = TEXT("switch to lod near");
+        if(currentLodLevel == ELod::lodMiddle)
+            lodString = TEXT("switch to lod middle");
+        if(currentLodLevel == ELod::lodFar)
+            lodString = TEXT("switch to lod far");
+        DebugHelper::showScreenMessage(lodString);
+    }
+    
 
     for(auto &pair : meshLodContainers){
         ELod pairLod = pair.first;

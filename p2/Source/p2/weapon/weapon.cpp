@@ -189,7 +189,7 @@ void Aweapon::drop(){
 
 void Aweapon::dropToObjectPool(){
 	drop();
-	EntityManager *entityManager = worldLevel::entityManager();
+	EntityManager *entityManager = AworldLevel::entityManager();
 	if(entityManager != nullptr){
 		entityManager->add(this);
 	}
@@ -701,7 +701,7 @@ void Aweapon::spawnAllAvailableAttachments(){
 void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 
 	assetManager *assetManagerInstance = assetManager::instance();
-	EntityManager *entityManager = worldLevel::entityManager();
+	EntityManager *entityManager = AworldLevel::entityManager();
 	if (assetManagerInstance != nullptr && entityManager != nullptr)
 	{
 		weaponEnum ownType = weaponType();

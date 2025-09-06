@@ -3905,6 +3905,9 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/teamEnum.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/trackedActors.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/trackedActors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/worldLevelBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/worldLevelBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
@@ -3949,7 +3952,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/MeshData.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/MeshData/UVMapper2D.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/PlayerControllerBase/PlayerControllerBase.cpp \

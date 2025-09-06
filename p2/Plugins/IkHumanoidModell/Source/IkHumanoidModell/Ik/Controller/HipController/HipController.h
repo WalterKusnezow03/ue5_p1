@@ -159,12 +159,18 @@ private:
     bool anyBackwardPhase();
 
     //old
-    RotationInterpolator hipRotationInterpolator;
+    //RotationInterpolator hipRotationInterpolator;
 
     //new - is more buggy
-    //FRotatorInterpolator hipRotationInterpolator;
+    FRotatorInterpolator hipRotationInterpolator;
 
+    //if rotation set, one rotation must be finished before starting a new one
     bool rotationSet = false;
+    //before ticking the rotation, this time has to be overriden
+    //it can only be overriden once for a single backwards kinematic phase
+    //a rotation has to be completed in a single backwards kinematic / half stance phase!
+    bool rotationTimeOverriden = false; 
+
     bool locomotionStopRequestedOnceRotationIsFinished = false;
     FVector forwardTrajectory();
     float slowDownTimeForDebugRotationStance(float deltatime);
@@ -176,4 +182,7 @@ private:
     //locomotion state
     EHipControllerStates currentControllerState = EHipControllerStates::EIdle;
     bool locoMotionStateEnabled();
+
+    //debug
+    bool AccelerationIsSliding(FVector &acceleration);
 };

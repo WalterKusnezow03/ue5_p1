@@ -43,6 +43,8 @@ public:
 
 	FString asString();
 
+	bool IsZeroScaleMatrix() const;
+
 private:
 	//16 langes array für die 4x4 matrix
 	static constexpr int size = 9;

@@ -94,10 +94,14 @@ void UGameLaunchScreen::createMenu(){
 
         //debug custom slate widgets
         if(true){
-            //is ok - doesnt have size box wrap anymore.
-            UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-            newWidgetSlateBased->init();
-            menuVbox->AddChild(newWidgetSlateBased);
+            //is ok - doesnt have size box wrap anymore. - overlaps to top tho!
+            //UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+            //newWidgetSlateBased->init();
+            //menuVbox->AddChild(newWidgetSlateBased);
+
+
+            UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
+            menuVbox->AddChild((IBaseUiInterface*) widget);
         }
         
 
@@ -105,6 +109,14 @@ void UGameLaunchScreen::createMenu(){
             //works - can be ticked.
             //pasted Template into widget ptr internally
             UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
+            menuVbox->AddChild(newWidgetSlateBased);
+
+            newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
+            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
+            menuVbox->AddChild(newWidgetSlateBased);
+
+            newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
             newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
             menuVbox->AddChild(newWidgetSlateBased);
         }
@@ -163,8 +175,8 @@ void UGameLaunchScreen::createAndLaunchWorldFromTypeField(){
     }
 }
 
-void UGameLaunchScreen::launchWorld(FString world){
-    FString message = FString::Printf(TEXT("UGameLaunchScreen Launch World: %s"), *world);
+void UGameLaunchScreen::launchWorld(FString worldName){
+    FString message = FString::Printf(TEXT("UGameLaunchScreen Launch World: %s"), *worldName);
 
     DebugHelper::logMessage(message);
     DebugHelper::showScreenMessage(message, FColor::Purple);
@@ -175,9 +187,9 @@ void UGameLaunchScreen::launchWorld(FString world){
     //to create ANY Widgets.
     
     if(UPlayerUi *instance = UPlayerUi::currentInstance()){
-        worldLevel::gameStateManager.UpdateGameState(EGameState::EGamePlay);
+        AworldLevel::gameStateManager.UpdateGameState(EGameState::EGamePlay);
 
-        worldLevel::initWorld(world);
+        AworldLevel::initWorld(worldName);
 
         //instance->openGameScreen(); //close all
     }

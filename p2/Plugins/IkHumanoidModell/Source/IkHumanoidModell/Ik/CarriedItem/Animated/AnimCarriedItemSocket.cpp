@@ -73,7 +73,10 @@ void AnimCarriedItemSocket::TryRotateToLocal(FRotator &rotation, float timeFrame
             timeFrame
         );
 
-        DebugHelper::showScreenMessage("Anim Socket Update FRotatorInterpolator ");
+        if(bLogMessage){
+            DebugHelper::showScreenMessage("Anim Socket Update FRotatorInterpolator ");
+        }
+        
         
     }
 }
@@ -88,7 +91,10 @@ void AnimCarriedItemSocket::MoveToLocal(FVector &pos, float timeFrame){
         //-- not tested --
         localLocationInterpolator.overrideEndSpeedRelative(pos);
         //DebugHelper::showScreenMessage("Anim Socket FVectorInterpolator override End Speed relative");
-        DebugHelper::showScreenMessage("Anim Socket Update FRotatorInterpolator Fast");
+        if(bLogMessage){
+            DebugHelper::showScreenMessage("Anim Socket Update FRotatorInterpolator Fast");
+        }
+        
     }
 }
 

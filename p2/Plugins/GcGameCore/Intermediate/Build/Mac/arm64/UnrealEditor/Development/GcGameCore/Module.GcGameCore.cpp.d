@@ -1,4 +1,4 @@
-/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/customUiPlugin.cpp.o: \
+/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Module.GcGameCore.cpp.o: \
   /Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/Engine/SharedPCH.Engine.ShadowErrors.InclOrderUnreal5_1.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineSharedPCH.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/ContainersFwd.h \
@@ -3817,8 +3817,26 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/Definitions.customUiPlugin.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public/customUiPlugin.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Module.GcGameCore.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Definitions.GcGameCore.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT/CollectableInterface.gen.cpp \
+  Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Collection/interface/CollectableInterface.h \
   Runtime/Core/Public/CoreMinimal.h \
+  Runtime/CoreUObject/Public/UObject/Interface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Collection/interface/CollectionProperties.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT/CollectableInterface.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT/GcGameCore.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT/GcLauncher.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Launcher/GcLauncher.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Collection/Collector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Collection/TRecursiveMap/TRecursiveMap.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT/GcLauncher.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Launcher/GcLauncher.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Private/GcGameCore.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Public/GcGameCore.h \
   Runtime/Core/Public/Modules/ModuleManager.h

@@ -12,6 +12,8 @@ public:
     CollisionTracker();
     ~CollisionTracker();
 
+    void Clear();
+
     /// @brief adds a actor to the raycast params if not nullptr
     /// @param actor 
     void AddIgnoredActor(AActor *actor);

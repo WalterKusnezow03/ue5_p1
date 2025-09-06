@@ -35,7 +35,7 @@ void UGridBox::FillArrayIncluding(int iFill, int jFill){
 
     //fill columns
     for (int i = 0; i < trackedGrid.Num(); i++){
-        TArray<UcustomUiComponentBase *> &ref = trackedGrid[i];
+        TArray<IBaseUiInterface *> &ref = trackedGrid[i];
         if(ref.Num() < jTargetNum){
             int diff = jTargetNum - ref.Num();
             for (int j = 0; j < diff; j++){
@@ -47,7 +47,7 @@ void UGridBox::FillArrayIncluding(int iFill, int jFill){
     // fill completly missing rows, inited with nullptr
     for (int i = 0; i < (iTargetNum - trackedGrid.Num()); i++)
     {
-        TArray<UcustomUiComponentBase *> addArray;
+        TArray<IBaseUiInterface *> addArray;
         for (int j = 0; j < jTargetNum; j++){
             addArray.Add(nullptr);
         }
@@ -68,7 +68,7 @@ int UGridBox::NumColumns(){
 }
 
 
-void UGridBox::AddChild(UcustomUiComponentBase *item){
+void UGridBox::AddChild(IBaseUiInterface *item){
     if(item){
         int freeI = 0;
         int freeJ = 0;
@@ -97,7 +97,7 @@ void UGridBox::AddChild(UWidget *any){
 
 
 
-void UGridBox::AddChild(UcustomUiComponentBase *item, int i, int j){
+void UGridBox::AddChild(IBaseUiInterface *item, int i, int j){
     if(item && IsFree(i,j)){
         Super::AddChild(item); //add to click dispatcher!!
 
@@ -124,12 +124,12 @@ void UGridBox::AddChild(UWidget *item, int i, int j){
     }
 }
 
-void UGridBox::AddRow(TArray<UcustomUiComponentBase *> &items){
+void UGridBox::AddRow(TArray<IBaseUiInterface *> &items){
     if(items.Num() > 0){
         int lowestRow = NumRows(); //index will be valid.
         FillArrayIncluding(lowestRow, items.Num() - 1);
         for (int i = 0; i < items.Num(); i++){
-            UcustomUiComponentBase *item = items[i];
+            IBaseUiInterface *item = items[i];
             if(item){
                 AddChild(item, lowestRow, i);
             }
@@ -137,9 +137,19 @@ void UGridBox::AddRow(TArray<UcustomUiComponentBase *> &items){
     }
 }
 
-
-
-
+void UGridBox::AddRow(TArray<UcustomUiComponentBase *> &items){
+    TArray<IBaseUiInterface *> casted;
+    for (int i = 0; i < items.Num(); i++){
+        UcustomUiComponentBase *derived = items[i];
+        if(derived){
+            IBaseUiInterface *castedPtr = Cast<IBaseUiInterface>(derived);
+            if(castedPtr){
+                casted.Add(castedPtr);
+            }
+        }
+    }
+    AddRow(casted);
+}
 
 bool UGridBox::IsFull(){
     int i = 0;
@@ -149,7 +159,7 @@ bool UGridBox::IsFull(){
 
 bool UGridBox::IsFull(int &iOut, int &jOut){
     for (int i = 0; i < trackedGrid.Num(); i++){
-        TArray<UcustomUiComponentBase *> &current = trackedGrid[i];
+        TArray<IBaseUiInterface *> &current = trackedGrid[i];
         for (int j = 0; j < current.Num(); j++){
             if(current[j] == nullptr){
                 iOut = i;
@@ -190,10 +200,10 @@ bool UGridBox::RowAtIndexEmpty(int i){
     return false;
 }
 
-bool UGridBox::Find(UcustomUiComponentBase *item, int &iOut, int &jOut){
+bool UGridBox::Find(IBaseUiInterface *item, int &iOut, int &jOut){
     if(item){
         for (int i = 0; i < trackedGrid.Num(); i++){
-            TArray<UcustomUiComponentBase *> &row = trackedGrid[i];
+            TArray<IBaseUiInterface *> &row = trackedGrid[i];
             for (int j = 0; j < row.Num(); j++){
                 if(row[j] == item){
                     iOut = i;
@@ -207,7 +217,7 @@ bool UGridBox::Find(UcustomUiComponentBase *item, int &iOut, int &jOut){
 }
 
 ///@brief removes a child from click listening and from layout
-void UGridBox::RemoveChild(UcustomUiComponentBase *item){
+void UGridBox::RemoveChild(IBaseUiInterface *item){
     Super::RemoveChild(item); //remove from dispatcher
     if(UWidget *layoutPointer = item->baseLayoutPointer()){
         RemoveChild(layoutPointer);
@@ -225,9 +235,9 @@ void UGridBox::RemoveChild(UWidget *item){
 
     //find in tracked grid and remove, will remove the whole row if empty
     for (int i = 0; i < trackedGrid.Num(); i++){
-        TArray<UcustomUiComponentBase *> &ref = trackedGrid[i];
+        TArray<IBaseUiInterface *> &ref = trackedGrid[i];
         for (int j = 0; j < ref.Num(); j++){
-            UcustomUiComponentBase *current = ref[j];
+            IBaseUiInterface *current = ref[j];
             if(current && current->baseLayoutPointer() == item){
                 ref[j] = nullptr;
             
@@ -245,7 +255,7 @@ void UGridBox::RemoveChild(UWidget *item){
 
 
 
-void UGridBox::RemoveRow(UcustomUiComponentBase *item){
+void UGridBox::RemoveRow(IBaseUiInterface *item){
     int i = 0;
     int j = 0;
     if(Find(item, i, j)){
@@ -253,10 +263,10 @@ void UGridBox::RemoveRow(UcustomUiComponentBase *item){
     }
 }
 
-TArray<UcustomUiComponentBase *> UGridBox::RemovedItemsFromRemoveRow(
-    UcustomUiComponentBase *item
+TArray<IBaseUiInterface *> UGridBox::RemovedItemsFromRemoveRow(
+    IBaseUiInterface *item
 ){
-    TArray<UcustomUiComponentBase *> copyRow; //removed items
+    TArray<IBaseUiInterface *> copyRow; //removed items
     int i = 0;
     int j = 0;
     if(Find(item, i, j)){
@@ -265,9 +275,9 @@ TArray<UcustomUiComponentBase *> UGridBox::RemovedItemsFromRemoveRow(
     }
 
     //clean from nullptr
-    TArray<UcustomUiComponentBase *> cleaned;
+    TArray<IBaseUiInterface *> cleaned;
     for (int index = 0; index < copyRow.Num(); index++){
-        UcustomUiComponentBase *current = copyRow[index];
+        IBaseUiInterface *current = copyRow[index];
         if(current != nullptr){
             cleaned.Add(current);
         }
@@ -280,7 +290,7 @@ TArray<UcustomUiComponentBase *> UGridBox::RemovedItemsFromRemoveRow(
 void UGridBox::RemoveRow(int indexRow){
     if(RowIndexValid(indexRow)){
         //Remove array from grid
-        TArray<UcustomUiComponentBase *> toRemoveCopy = trackedGrid[indexRow];
+        TArray<IBaseUiInterface *> toRemoveCopy = trackedGrid[indexRow];
         trackedGrid.RemoveAt(indexRow); //everything below shifts one up. 
         //IndexRow is now valid index to acess below items
 
@@ -288,7 +298,7 @@ void UGridBox::RemoveRow(int indexRow){
         //remove pointers from u grid panel
         for (int i = 0; i < toRemoveCopy.Num(); i++){
             if(gridBoxLayout){
-                if(UcustomUiComponentBase *wrapper = toRemoveCopy[i]){
+                if(IBaseUiInterface *wrapper = toRemoveCopy[i]){
                     if(UWidget *ptr = wrapper->baseLayoutPointer()){
                         gridBoxLayout->RemoveChild(ptr);
                     }
@@ -299,10 +309,10 @@ void UGridBox::RemoveRow(int indexRow){
 
         //shift lower elements up, starting at removed row, lower shifted up.
         for (int i = indexRow; i < trackedGrid.Num(); i++){
-            TArray<UcustomUiComponentBase *> &toShiftRow = trackedGrid[i];
+            TArray<IBaseUiInterface *> &toShiftRow = trackedGrid[i];
 
             for (int j = 0; j < toShiftRow.Num(); j++){
-                UcustomUiComponentBase *child = toShiftRow[j];
+                IBaseUiInterface *child = toShiftRow[j];
                 if(child){
                     UWidget *uChild = child->baseLayoutPointer();
                     if(uChild){
@@ -324,7 +334,7 @@ void UGridBox::RemoveRow(int indexRow){
 
 
 // Show hide
-void UGridBox::SetRowVisible(UcustomUiComponentBase *item, bool show){
+void UGridBox::SetRowVisible(IBaseUiInterface *item, bool show){
     int i = 0;
     int j = 0;
     if(Find(item, i, j)){
@@ -334,11 +344,11 @@ void UGridBox::SetRowVisible(UcustomUiComponentBase *item, bool show){
 
 void UGridBox::SetRowVisible(int i, bool show){
     if(i >= 0 && i < NumRows()){
-        TArray<UcustomUiComponentBase*> &row = trackedGrid[i]; ///copy data before removal!
+        TArray<IBaseUiInterface*> &row = trackedGrid[i]; ///copy data before removal!
         for (int index = 0; index < row.Num(); index++){
-            UcustomUiComponentBase *itemCurrent = row[index];
+            IBaseUiInterface *itemCurrent = row[index];
             if(itemCurrent){
-                itemCurrent->setVisible(show);
+                itemCurrent->SetVisible(show);
             }
         }
     }

@@ -19,7 +19,7 @@ void UHbox::initHboxIfNeeded(){
 
 /// @brief if inited!: adds a item to the hbox and custom visibility changes tracking
 /// @param item not nullptr
-void UHbox::AddChild(UcustomUiComponentBase *item){
+void UHbox::AddChild(IBaseUiInterface *item){
     initHboxIfNeeded(); // if needed for init() skip fallback (not needed to call after construct)
     if(item && baseHBox){
         UWidget *baseOfItem = item->baseLayoutPointer(); //any widget must exist!
@@ -55,7 +55,7 @@ void UHbox::UpdatePadding(UWidget *widget){
 
 
 ///@brief removes a child from click listening
-void UHbox::RemoveChild(UcustomUiComponentBase *item){
+void UHbox::RemoveChild(IBaseUiInterface *item){
     if(item){
         Super::RemoveChild(item);
         RemoveChild(item->baseLayoutPointer());

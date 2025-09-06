@@ -33,7 +33,7 @@ public:
 
     //custom click dispatch and visibility
     virtual bool dispatchClick() override;
-    virtual void setVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
 
 private:

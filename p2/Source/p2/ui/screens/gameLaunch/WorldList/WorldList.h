@@ -36,7 +36,7 @@ public:
     /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too!
     /// @param visible
-    virtual void setVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
 
     virtual UWidget *baseLayoutPointer() override{
         if(baseGridBox){
@@ -83,7 +83,7 @@ private:
     UPROPERTY()
     TArray<UTextButton *> textButtonsInUse;
 
-    TArray<UcustomUiComponentBase *> makeButtonPair(FString name);
+    TArray<IBaseUiInterface *> makeButtonPair(FString name);
     UTextButton *PopFromFreeList();
 
     bool isRemoveButton(UTextButton *button);

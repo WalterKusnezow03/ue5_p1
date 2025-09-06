@@ -1,7 +1,7 @@
 -c
 -pipe
 -I"."
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Private"
 -I"../Intermediate/Build/Mac/UnrealEditor/Inc/CoreUObject/UHT"
 -I"Runtime/CoreUObject/Public"
 -I"Runtime"
@@ -272,13 +272,14 @@
 -I"Runtime/MovieSceneCapture/Public"
 -I"../Intermediate/Build/Mac/UnrealEditor/Inc/AnimationDataController/UHT"
 -I"Developer/AnimationDataController/Public"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GcGameCore/UHT"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Source/GcGameCore/Public"
 -isystem"ThirdParty/mimalloc/include"
 -isystem"ThirdParty/LibTiff/Source/Mac"
 -isystem"ThirdParty/LibTiff/Source"
 -include-pch "/Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/Engine/SharedPCH.Engine.ShadowErrors.InclOrderUnreal5_1.h.gch"
--include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/Definitions.customUiPlugin.h"
+-include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Definitions.GcGameCore.h"
 -Wall
 -Werror
 -Wdelete-non-virtual-dtor
@@ -333,6 +334,6 @@
 -std=c++17
 -fpch-validate-input-files-content
 -stdlib=libc++
-"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Private/customUiPlugin.cpp"
--MD -MF"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/customUiPlugin.cpp.d"
--o "/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/customUiPlugin/customUiPlugin.cpp.o"
+"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Module.GcGameCore.cpp"
+-MD -MF"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Module.GcGameCore.cpp.d"
+-o "/Users/walterk/Documents/UnrealProjects/p2/Plugins/GcGameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GcGameCore/Module.GcGameCore.cpp.o"

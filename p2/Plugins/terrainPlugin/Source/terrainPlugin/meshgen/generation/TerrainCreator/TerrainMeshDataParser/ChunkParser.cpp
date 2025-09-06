@@ -212,7 +212,7 @@ void ChunkParser::createFoliageAndPushNodesAroundFoliageToNavMesh(
     float treeDensitySkalar
 ){
     //create trees if not in skelleton record debug mode.
-    if(worldLevelBase::DebugSkelletonRecordMode()){
+    if(AworldLevelBase::DebugSkelletonRecordMode()){
         return;
     }
 

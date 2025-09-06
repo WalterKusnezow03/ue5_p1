@@ -17,15 +17,18 @@ void UCanvasScreen::init(UPlayerUiBase &refin){
     createBaseCanvas();
 }
 
-/// ---- Tick update children ---- 
-void UCanvasScreen::Tick(float deltatime){
-    for (int i = 0; i < listenForclickItems.Num(); i++){
-        if(UcustomUiComponentBase *current = listenForclickItems[i]){
-            current->Tick(deltatime);
+
+/// ---- Moving items ----
+void UCanvasScreen::SetScreenPosition(UWidget *widget, FVector2D &ScreenPosition){
+    if(widget){
+        //APPLY OFFSET FROM TOP LEFT CORNER
+        //get owning pointer of ui element and set to a position
+        UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(widget->Slot);
+        if(slot != nullptr){
+            slot->SetPosition(ScreenPosition); //kleiner test, nach innen schieben
         }
     }
 }
-
 
 
 
@@ -33,50 +36,83 @@ void UCanvasScreen::Tick(float deltatime){
 /// ---- Adding items ----
 
 /// @brief adds a child to the UCanvasPanel
-void UCanvasScreen::AddChild(UcustomUiComponentBase *item){
-    AddChild(item, FVector2D(0, 0));
+void UCanvasScreen::AddChild(IBaseUiInterface *item){
+    if(CanAddChild(item)){
+        AddChild(item, FVector2D(0, 0));
+    }
 }
 
-/// @brief adds a child to the UCanvasPanel with a offset, listens for click automatically!
+/// @brief adds a child to the UCanvasPanel with a ScreenPosition, listens for click automatically!
 /// @param item 
 /// @param offset 
-void UCanvasScreen::AddChild(UcustomUiComponentBase *item, FVector2D offset){
+void UCanvasScreen::AddChild(IBaseUiInterface *item, FVector2D ScreenPosition){
     if(item && baseCanvas){
-        UWidget *basePtr = item->baseLayoutPointer();
+
+        if(CanAddChild(item)){
+            Super::AddChild(item); //click listening and widget track!
+            
+            UWidget *basePtr = item->baseLayoutPointer();
+            AddChild(basePtr);
+            // baseCanvas->AddChild(basePtr); //Add BEFORE SLOT* request!
+            SetScreenPosition(basePtr, ScreenPosition);
+        }
+
+        /*
         if(basePtr){
             AddClickListenedItem(item); //Add to dispatcher!
 
             baseCanvas->AddChild(basePtr); //Add BEFORE SLOT* request!
-
-
-            //APPLY OFFSET FROM TOP LEFT CORNER
-
-            //get owning pointer of ui element and set to a position
-            UCanvasPanelSlot *slot = Cast<UCanvasPanelSlot>(basePtr->Slot);
-            if(slot != nullptr){
-                slot->SetPosition(offset); //kleiner test, nach innen schieben
-            }
-        }
-
-        
+            SetScreenPosition(basePtr, ScreenPosition);
+        }*/
     }
 }
 
+
+void UCanvasScreen::AddChild(UWidget *widget){
+    if(widget && baseCanvas){
+        baseCanvas->AddChild(widget); //Add BEFORE SLOT* request!
+    }
+}
+
+
+
+
+
+
 void UCanvasScreen::AddChild(
-    UcustomUiComponentBase *item,
+    IBaseUiInterface *item,
     FVector2D screenAnchor, //corner top left (0,0), bottom right (1,1)
     FVector2D alignment //gravity / pivot of item (0,0.5), make centered on y
 ){
     if(item && baseCanvas){
-        UWidget *basePointer = item->baseLayoutPointer();
-        if(basePointer){
-            AddClickListenedItem(item);
 
-            UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(basePointer));
-            if(CanvasSlot != nullptr){
-                CanvasSlot->SetAnchors(FAnchors(screenAnchor.X, screenAnchor.Y));  //anchror from 2d(0,1) range
-                CanvasSlot->SetAlignment(alignment); //content alignment / pivot from 2d(0,1) range
-                CanvasSlot->SetAutoSize(true); //idk tbh
+        if(CanAddChild(item)){
+            Super::AddChild(item); //click listening
+            
+
+            UWidget *basePointer = item->baseLayoutPointer();
+            if(basePointer){
+                UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(basePointer));
+                if(CanvasSlot != nullptr){
+                    CanvasSlot->SetAnchors(FAnchors(screenAnchor.X, screenAnchor.Y));  //anchror from 2d(0,1) range
+                    CanvasSlot->SetAlignment(alignment); //content alignment / pivot from 2d(0,1) range
+                    CanvasSlot->SetAutoSize(true); //idk tbh
+                }
+            }
+            
+        }
+
+    }
+}
+
+
+void UCanvasScreen::RemoveChild(IBaseUiInterface *item){
+    if(item){
+        Super::RemoveChild(item);
+        if(baseCanvas){
+            UWidget *widget = item->baseLayoutPointer();
+            if(widget){
+                baseCanvas->RemoveChild(widget); //doesnt throw a exception if not contained.
             }
         }
     }
@@ -86,62 +122,6 @@ void UCanvasScreen::AddChild(
 
 
 
-
-
-
-
-// --- CLICK AND VISIBILITY DISPATCH ----
-
-/// @brief dispatch click to all tracked items
-/// @param mousePosition 
-/// @return 
-bool UCanvasScreen::dispatchClick(){
-    for (int i = 0; i < listenForclickItems.Num(); i++){
-        if(UcustomUiComponentBase *current = listenForclickItems[i]){
-            if(current->dispatchClick()){
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-void UCanvasScreen::setVisible(bool visible){
-    for (int i = 0; i < listenForclickItems.Num(); i++){
-        if(UcustomUiComponentBase *current = listenForclickItems[i]){
-            current->setVisible(visible);
-        }
-    }
-
-
-    //UcustomUiComponentBase::setVisible(baseCanvas, visible);
-    UcustomUiComponentBase::setVisibleNoCollsion(baseCanvas, visible);
-}
-
-
-
-
-
-
-
-
-/// @brief ADD EACH BUTTON TO THIS DIPATCH POOL! add item to click dispatcher
-/// @param ptr 
-void UCanvasScreen::AddClickListenedItem(UcustomUiComponentBase *ptr){
-    if(ptr){
-        if(!listenForclickItems.Contains(ptr)){
-            listenForclickItems.Add(ptr);
-        }
-    }
-}
-
-void UCanvasScreen::AddClickListenedItems(TArray<UcustomUiComponentBase *> array){
-    for (int i = 0; i < array.Num(); i++){
-        AddClickListenedItem(array[i]);
-    }
-}
 
 
 

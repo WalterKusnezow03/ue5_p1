@@ -29,7 +29,7 @@ public:
     bool CacheUpdateNeeded() const;
 
 private:
-    TArray<FSlateVertex> cachedBuffer;
+    mutable TArray<FSlateVertex> cachedBuffer; //removes const cast
 
     bool bCacheUpdateNeeded = true;
 };

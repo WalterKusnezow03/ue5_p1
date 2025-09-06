@@ -18,9 +18,14 @@ public:
 
     static AUiActor *createInstance(UWorld *world, UPlayerUiBase *instanceToTick);
 
+	static UWorld *GetWorldFromInstance();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	//Override end play to reset the instance ptr
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -28,4 +33,6 @@ public:
 
 private:
     UPlayerUiBase *uiToUpdate = nullptr;
+
+	static AUiActor *currentInstance;
 };

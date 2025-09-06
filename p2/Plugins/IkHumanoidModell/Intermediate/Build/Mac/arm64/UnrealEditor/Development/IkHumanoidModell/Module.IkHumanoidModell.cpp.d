@@ -3863,6 +3863,9 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Damageinterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkDebugActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/IkHumanoidModell.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/SharedRaycastParamManager.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Intermediate/Build/Mac/UnrealEditor/Inc/IkHumanoidModell/UHT/SharedRaycastParamManager.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.h \
@@ -3913,4 +3916,5 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Private/IkHumanoidModell.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Public/IkHumanoidModell.h \
-  Runtime/Core/Public/Modules/ModuleManager.h
+  Runtime/Core/Public/Modules/ModuleManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.cpp

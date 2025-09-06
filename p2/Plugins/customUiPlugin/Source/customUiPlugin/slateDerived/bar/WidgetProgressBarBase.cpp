@@ -10,67 +10,77 @@ void UWidgetProgressBarBase::ConstructWidget(){
     UiDebugHelper::logMessage("slate: UWidgetProgressBarBase Constructed widget!"); // is called
 }
 
-SlateMeshDataPolygon *UWidgetProgressBarBase::PolygonBackground(){
-    return FindFromSlateWidget(layerBackground);
+//temporary reference, use one at a time!
+SlateMeshDataPolygon &UWidgetProgressBarBase::PolygonBackground(){
+    return FindFromMap(layerBackground);
 }
 
-SlateMeshDataPolygon *UWidgetProgressBarBase::PolygonForeGround(){
-    return FindFromSlateWidget(layerForeGround);
+//temporary reference, use one at a time!
+SlateMeshDataPolygon &UWidgetProgressBarBase::PolygonForeGround(){
+    return FindFromMap(layerForeGround);
 }
 
 
 void UWidgetProgressBarBase::CreateBar(){
     FVector2D a(0, 0);
-    FVector2D b(200, 50);
+    //FVector2D b(200, 50);
+    FVector2D b(1, 1);
 
-    SlateMeshDataPolygon *background = PolygonBackground();
-    if(background){
-        SlateMeshData &meshData = background->MeshDataRef();
-        meshData.AppendQuad(a, b);
-        UiDebugHelper::logMessage("slate: UWidgetProgressBarBase create quad!"); 
-    }
+    SlateMeshDataPolygon &background = PolygonBackground();
+    SlateMeshData &meshData = background.MeshDataRef();
+    meshData.AppendQuad(a, b);
+    
 
-    SlateMeshDataPolygon *foreGround = PolygonForeGround();
-    if (foreGround)
-    {
-        SlateMeshData &meshData = foreGround->MeshDataRef();
-        meshData.AppendQuad(a, b);
-        UiDebugHelper::logMessage("slate: UWidgetProgressBarBase create quad 2!");
-    }
+    SlateMeshDataPolygon &foreGround = PolygonForeGround();
+    SlateMeshData &meshData1 = foreGround.MeshDataRef();
+    meshData1.AppendQuad(a, b);
 
     SetColorForeground(FLinearColor::Green);
-    SetColorBackground(FLinearColor::Black);
+    SetColorBackground(FLinearColor::White);
+    SetResolution(FVector2D(150, 20));
 }
 
 void UWidgetProgressBarBase::SetColorBackground(FLinearColor color){
-    if(SlateMeshDataPolygon *polygon = PolygonBackground()){
-        polygon->SetColor(color);
-    }
+    SlateMeshDataPolygon &background = PolygonBackground();
+    background.SetColor(color);
 }
 
 void UWidgetProgressBarBase::SetColorForeground(FLinearColor color){
-    if(SlateMeshDataPolygon *polygon = PolygonForeGround()){
-        polygon->SetColor(color);
+    SlateMeshDataPolygon &polygon = PolygonForeGround();
+    //polygon.SetColor(color);
+
+    //debug
+    polygon.AddAmbientUvColor(FVector2D(0, 0), color);
+    polygon.AddAmbientUvColor(FVector2D(0, 1), color);
+    polygon.AddAmbientUvColor(FVector2D(1, 0), color);
+    polygon.AddAmbientUvColor(FVector2D(1, 1), color);
+    polygon.AddAmbientUvColor(FVector2D(0.5, 0.5), color);
+    //polygon.DebugLogColor();
+}
+
+void UWidgetProgressBarBase::SetResolution(FVector2D scale){
+    if(polygonMap.IsValid()){
+        polygonMap->ScaleToResolutionImmidiate(scale);
     }
 }
+
 
 
 
 void UWidgetProgressBarBase::SetProgress(float num){
+    // scale for foreground by scalar
     num = ClampProgress(num);
-    if (SlateMeshDataPolygon *polygon = PolygonForeGround()){
-        MMatrix2D scale = MMatrix2D::MakeScaleMatrix(num, 1.0f); //scaled on X axis for now.
-        SlateMeshData &meshData = polygon->MeshDataRef();
-        meshData.SetRuntimeTransformation(scale);
-    }
+    progressCopy = num;
+    MMatrix2D scale = MMatrix2D::MakeScaleMatrix(num, 1.0f); // scaled on X axis for now.
+
+    SlateMeshDataPolygon &polygon = PolygonForeGround();
+    SlateMeshData &meshData = polygon.MeshDataRef();
+    meshData.SetRuntimeTransformation(scale);
+    
 }
 
 void UWidgetProgressBarBase::ResetProgress(){
-    if (SlateMeshDataPolygon *polygon = PolygonForeGround()){
-        SlateMeshData &meshData = polygon->MeshDataRef();
-        //reset matrix instead of rescaling to 1.0f, useless calculation made internally.
-        meshData.ResetRuntimeTransformation();
-    }
+    SetProgress(1.0f);
 }
 
 
@@ -95,13 +105,16 @@ bool UWidgetProgressBarBase::dispatchClick(){
 void UWidgetProgressBarBase::Tick(float deltatime){
     Super::Tick(deltatime);
 
-    //debug
+    if(TickAllowed()){
+        //debug
 
-    debugTime += deltatime;
-    if(debugTime >= 3.0f){
-        debugTime = 0.0f;
+        debugTime += deltatime;
+        if(debugTime >= 3.0f){
+            debugTime = 0.0f;
+        }
+
+        float scalar = debugTime / 3.0f; //scalar = distTarget / distAll
+        SetProgress(scalar);
     }
-
-    float scalar = debugTime / 3.0f; //scalar = distTarget / distAll
-    SetProgress(scalar);
+    
 }

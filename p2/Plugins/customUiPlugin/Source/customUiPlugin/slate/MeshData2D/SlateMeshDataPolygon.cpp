@@ -1,4 +1,5 @@
 #include "SlateMeshDataPolygon.h"
+#include "CoreMath/Matrix/2D/MMatrix2D.h"
 
 SlateMeshDataPolygon::SlateMeshDataPolygon(){
 
@@ -41,14 +42,19 @@ void SlateMeshDataPolygon::UpdateCursorPosition(FVector2D &pos){
 
 
 void SlateMeshDataPolygon::SetColor(FLinearColor color){
-    meshData.ClearAmbientColors();
-    meshData.AddAmbientUvColor(FVector2D(0, 0), color);
-    meshData.AddAmbientUvColor(FVector2D(1, 0), color);
-    meshData.AddAmbientUvColor(FVector2D(0, 1), color);
-    meshData.AddAmbientUvColor(FVector2D(1, 1), color);
+    meshData.SetFullColor(color);
+}
+
+void SlateMeshDataPolygon::AddAmbientUvColor(FVector2D uv, FLinearColor color){
+    meshData.AddAmbientUvColor(uv, color);
 }
 
 void SlateMeshDataPolygon::SetCursorColor(FLinearColor color){
     bDynamicCursorColorEnabled = true;
     meshData.UpdateCursorColor(color);
+}
+
+
+void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){
+    meshData.ApplyTransformationImmidiate(transform);
 }

@@ -113,7 +113,7 @@ void ActorManager::applyChunkmeshDataCompletly(){
             //single fire create outpost, once!
             if(currentParserPackage->OutpostFlagCreationNeeded()){
                 FVector outpostLocation = currentParserPackage->GetActorLocation();
-                worldLevelBase::addOutpostAt(outpostLocation);
+                AworldLevelBase::addOutpostAt(outpostLocation);
             }
 
             //create water

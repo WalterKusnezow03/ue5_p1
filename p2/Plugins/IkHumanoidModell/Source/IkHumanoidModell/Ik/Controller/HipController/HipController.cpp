@@ -310,7 +310,7 @@ void HipController::setupBackwardInterpolation(){
     bool ignored = groundedByDistance();
 
 
-    if(true){
+    if(false){
         DebugHelper::logMessage("hipcontroller: backward start ", localStart);
         DebugHelper::logMessage("hipcontroller: backward end ", localEnd);
     }
@@ -334,9 +334,11 @@ void HipController::setupBackwardInterpolation(){
 
 
     //SETUP ROTATION
-    hipRotationInterpolator.overrideTime(dynamicMotionTime);
-
-
+    if(!rotationTimeOverriden){
+        hipRotationInterpolator.overrideTime(dynamicMotionTime);
+        rotationTimeOverriden = true;
+    }
+    
 }
 
 void HipController::setupForwardInterpolation(){
@@ -357,14 +359,13 @@ void HipController::setupForwardInterpolation(){
     //gx = a + t (b-a)
     FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
     localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m 
-    //achtung hier noch unklar: velocity auch drehen?
-
-
+    //achtung hier noch unklar: velocity auch drehen? nein, in rotated space!
 
     MMatrix orientationInverse = orientation.transposedRotation();
     localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
 
-    //move trajectory to world space
+
+    //move trajectory to world space, from hip starting joint
     FVector worldTrajectory = attachment.inWorldSpace(
         localTrajectory, //forwardDefaultLocalLocomotionFrame,
         translation,
@@ -378,11 +379,12 @@ void HipController::setupForwardInterpolation(){
     //set as target with end and current Starting point (end effector)
     FVector currentEndEffector = attachment.endEffectorWorldLocation();
 
-    if(true){
+    if(false){
         DebugHelper::logMessage("hipcontroller: forward start ", currentEndEffector);
         DebugHelper::logMessage("hipcontroller: forward end ", worldTrajectoryProjected);
     }
     
+    //debug show trajectories.
     DebugHelper::showLineBetween(
         worldPointer, currentEndEffector, currentEndEffector + FVector(0, 0, 30), FColor::Orange, 1.0f
     );
@@ -538,9 +540,7 @@ bool HipController::rightInStancePhase(){
 void HipController::applyStancePhaseSLIPForce(float deltatime){
 
     //move dir for slip force
-    FVector moveDir(1, 0, 0);
-    moveDir = orientation * moveDir;
-
+    FVector moveDir = lookDirection();
 
     TArray<BoneAttachment *> attachmentsToEvaluateForce;
     if(leftInStancePhase()){
@@ -574,17 +574,42 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
         }
     }
 
+    bool b = AccelerationIsSliding(acceleration);
+    if(b){
+        DebugHelper::logMessage("Slip: HipController: CAUTION Gliding: ", acceleration);
+    }
+
     //x(t) = x0 + v0t + 0.5at^2
     //v(t) = v0 + at
     //a(t) = a
-
     //DebugHelper::showScreenMessage("acceleration ", acceleration, FColor::Orange);
-
     velocity += acceleration * deltatime;
 
 
 
     
+}
+
+bool HipController::AccelerationIsSliding(FVector &accelertation){
+    MMatrix rInv = orientation.transposedRotation();
+    FVector localAcceleration = rInv * accelertation;
+
+    //dont allow gliding if rotation is not setup
+    //is a symptom fix, target rotation matrix on legs seems to be bugged sometimes,
+    //creating unexpected yaw rotation.
+    bool bRemoveGlide = true && !rotationSet;
+    if(bRemoveGlide){
+        //could also be damped with 1/x
+        FVector clamped = localAcceleration;
+
+        //das stimmt so nicht, NUR Y, X ist local FORWARD!
+        //clamped.X = 0.0f;
+        clamped.Y = 0.0f;
+        accelertation = orientation * clamped; //override, move world rotation space.
+    }
+
+    float epsilon = 0.00001f;
+    return std::abs(localAcceleration.Y) > epsilon; //nur Y. Nicht X, local X ist forward.
 }
 
 void HipController::applyForceGravity(float deltatime){
@@ -621,23 +646,30 @@ float HipController::animationTimeBasedOnCurrentVelocity(
     FVector &localStart,
     FVector &localEnd
 ){
-    //v = m / s
-
-    //m = dist ab
-    //v = velocity
-    //s = animtime 
-
-    //s = m / v
+    
+    //vTarget = v
+    //mGiven / x = vTarget
+    //mGiven = vTarget * x
+    //mGiven / vTarget = x
 
     float m = FVector::Dist(localStart, localEnd);
     float v = horizontalVelocity();
 
-    float time = m / v;
-
-    //NOCH UNKLAR
-    if(time > motionTime){
-        return motionTime; //default motion time fallback
+    float epsilon = 0.001f; //1cm s
+    if (v < epsilon)
+    {
+        return motionTime; // default fallback
     }
+
+    float time = m / v;
+    DebugHelper::showScreenMessage("hipcontroller dynamic time backward ", (float)time);
+
+
+
+
+
+
+
 
     return time;
 }
@@ -649,7 +681,7 @@ float HipController::animationTimeBasedOnCurrentVelocity(
 // ----- rotation section experimental ------
 FVector HipController::forwardTrajectory(){
     FVector localTrajectory;
-    bool newRotatedTrajectory = true;
+    bool newRotatedTrajectory = true; //debug, false block is deprecated, rotation trajectories are supported.
     if (newRotatedTrajectory)
     {
         localTrajectory = forwardRotatedLocalLocomotionFrame;
@@ -666,7 +698,7 @@ FVector HipController::forwardTrajectory(){
 
 
 FVector HipController::lookDirection(){
-    FVector forwardDefault(1, 0, 0);
+    FVector forwardDefault(1.0, 0.0, 0.0);
     FVector look = orientation * forwardDefault;
     return look.GetSafeNormal(); //for safety
 }
@@ -693,6 +725,7 @@ void HipController::setupRotationForNextStep(float radian){
     if(rotationSet){
         return;
     }
+    DebugHelper::showScreenMessage("hipRotation start!", FColor::Red);
 
     MMatrix addYawMat;
     addYawMat.yawRadAdd(radian);
@@ -736,8 +769,10 @@ void HipController::slowDownBasedOnRotationInRadian(
     float radianInNextStep
 ){
 
+    // --- prüfen ---
     // ----- rotate velocity and scale based on change in cos(angle) in (0,1) ------
     bool rotatevelocity = true;
+
     FVector forward = lookDirection();
     MMatrix deltaRotation;
     deltaRotation.yawRadAdd(radianInNextStep);
@@ -745,12 +780,38 @@ void HipController::slowDownBasedOnRotationInRadian(
     float scalar = FVector::DotProduct(forward, forwardDeltaApplied);
     float slow = scalar > 0.0f ? scalar : 0.0f;
 
+    //alternativ:
+    //kann man radiant (pi/2) auf mit x / pi zu skalaren umwandeln?
+
     if(rotatevelocity){
+        DebugHelper::logMessage("HipController update hVeloity on rotation before ", velocity);
         FVector updatedVelocity2D = forwardDeltaApplied.GetSafeNormal() * velocity.Size() * slow;
         updateHorizontalVelocity(updatedVelocity2D);
-        DebugHelper::logMessage("HipController update hVeloity ");
-        return;
+        DebugHelper::logMessage("HipController update hVeloity on rotation after ", velocity);
+        //return;
     }
+
+    //draw targeted rotation from hip for better understanding!
+    bool bDebugShowRotationTargeted = true;
+    if(bDebugShowRotationTargeted){
+        //current
+        DebugHelper::showLineBetween(
+            worldPointer,
+            forward * 100.0f + GetLocation(),
+            GetLocation(),
+            FColor::Orange,
+            1.0f);
+
+        //targeted
+        DebugHelper::showLineBetween(
+            worldPointer,
+            forwardDeltaApplied * 100.0f + GetLocation(),
+            GetLocation(),
+            FColor::Purple,
+            1.0f
+        );
+    }
+    
 
     // ----- creates sliding glitch: may not be wanted ------
     /*    
@@ -787,11 +848,13 @@ void HipController::TickHipRotation(float deltatime){
     //debug
     //return;
 
-    if(rotationSet && anyBackwardPhase()){
-        if(hipRotationInterpolator.endReached()){
+    if(rotationSet && anyBackwardPhase() && rotationTimeOverriden){
+        if(hipRotationInterpolator.endReached()){ //endReached(),
             rotationSet = false;
-            DebugHelper::logMessage("hipRotation finished!");
-            //DebugHelper::showScreenMessage("hipRotation finished!");
+            rotationTimeOverriden = false;
+
+            //DebugHelper::logMessage("hipRotation finished!");
+            DebugHelper::showScreenMessage("hipRotation finished!");
 
             //reset leg orientation / forward local vector 
             //to tell legs ("we are aligned again, no roll yaw adjustment needed anymore")

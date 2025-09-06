@@ -15,8 +15,11 @@ protected:
     //Custom Constructor override - is called internally from post properties override!
     virtual void ConstructWidget() override;
 
+    float progressCopy = 1.0f;
 
 public:
+    ///@brief sets the widget scale and with literally.
+    void SetResolution(FVector2D scale);
 
     void SetColorBackground(FLinearColor color);
     void SetColorForeground(FLinearColor color);
@@ -33,8 +36,8 @@ public:
 private:
     int layerBackground = 0;
     int layerForeGround = 1;
-    SlateMeshDataPolygon *PolygonBackground();
-    SlateMeshDataPolygon *PolygonForeGround();
+    SlateMeshDataPolygon &PolygonBackground();
+    SlateMeshDataPolygon &PolygonForeGround();
 
     void CreateBar();
 

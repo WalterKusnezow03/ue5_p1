@@ -15,6 +15,9 @@ public:
     /// @param state 
     void UpdateGameState(EGameState state);
 
+    ///@brief for ui plugin to set without further action.
+    void OverrideGameState(EGameState state);
+
     /// @brief sets the game state if allowed,
     ///opens the ui
     void SetGameStatePaused();

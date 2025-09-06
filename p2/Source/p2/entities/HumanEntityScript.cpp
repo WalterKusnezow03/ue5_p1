@@ -54,7 +54,7 @@ void AHumanEntityScript::init(){
     
     //weapon currently hidden
     
-    EntityManager *e = worldLevel::entityManager();
+    EntityManager *e = AworldLevel::entityManager();
     if (e != nullptr && weaponPointer == nullptr)
     {
 
@@ -104,7 +104,7 @@ void AHumanEntityScript::init(){
 
 void AHumanEntityScript::Tick(float DeltaTime){
     Super::Tick(DeltaTime); //entity tick (spotting, path)
-    if(worldLevel::gamePausedByPlayer()){
+    if(AworldLevel::gameStateManager.GameStateIsPaused()){
 		return;
 	}
 
@@ -226,7 +226,7 @@ void AHumanEntityScript::die(){
     humanoidPluginController.dropCarriedItem();
 
     //entity manager
-    EntityManager *entityManager = worldLevel::entityManager();
+    EntityManager *entityManager = AworldLevel::entityManager();
 
     //drop weapon and release
     if (weaponPointer != nullptr)
@@ -261,7 +261,7 @@ void AHumanEntityScript::die(){
 
 /// @brief despawns the entity 
 void AHumanEntityScript::despawn(){
-    if(worldLevel::DebugSkelletonRecordMode()){
+    if(AworldLevel::DebugSkelletonRecordMode()){
         return;
     }
 
@@ -285,7 +285,7 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
 void AHumanEntityScript::findOutPostNearby(){
     if(outpost == nullptr){
         //try find outpost nearby
-        OutpostManager *instance = worldLevel::outpostManager(); // OutpostManager::instance();
+        OutpostManager *instance = AworldLevel::outpostManager(); // OutpostManager::instance();
         if(instance != nullptr){
             instance->tryRequestOutpost(GetWorld(), this); //manager will subscribe the entity on success
         }

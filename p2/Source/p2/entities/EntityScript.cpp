@@ -76,7 +76,7 @@ void AEntityScript::init(){
 void AEntityScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(worldLevel::gamePausedByPlayer()){
+	if(AworldLevel::gameStateManager.GameStateIsPaused()){
 		return;
 	}
 
@@ -84,7 +84,7 @@ void AEntityScript::Tick(float DeltaTime)
 	humanoidPluginController.Tick(DeltaTime);
 	SetActorLocation(humanoidPluginController.GetLocation());
 
-	if(worldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
+	if(AworldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
 		humanoidPluginController.setStateWalking();
 		debugRecordRotationTimer.Tick(DeltaTime);
 		if(debugRecordRotationTimer.timesUp()){
@@ -263,7 +263,7 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		FHitResult HitResult;
 
 
-		if(EntityManager *e = worldLevel::entityManager()){
+		if(EntityManager *e = AworldLevel::entityManager()){
 			//ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 			ignoreParams = e->getIgnoredRaycastParams(getTeam());
 		}
@@ -316,7 +316,7 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 	// Perform the raycast
 	FHitResult HitResult;
 
-	if (EntityManager *e = worldLevel::entityManager())
+	if (EntityManager *e = AworldLevel::entityManager())
 	{
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
@@ -348,7 +348,7 @@ void AEntityScript::projectActorToGround(){
 
 
 	
-	if (EntityManager *e = worldLevel::entityManager())
+	if (EntityManager *e = AworldLevel::entityManager())
 	{
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
@@ -633,7 +633,7 @@ void AEntityScript::die(){
 	
 	resetpath();
 	enableActiveStatus(false);
-	if (EntityManager *e = worldLevel::entityManager())
+	if (EntityManager *e = AworldLevel::entityManager())
 	{
 		e->add(this);
 	}

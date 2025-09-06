@@ -3,6 +3,7 @@
 #include "GameCore/DebugHelper.h"
 #include "customUiPlugin/ui/PlayerUiBase.h"
 
+AUiActor *AUiActor::currentInstance = nullptr;
 
 AUiActor *AUiActor::createInstance(UWorld *world, UPlayerUiBase *ptr){
     if(world){
@@ -16,7 +17,10 @@ AUiActor *AUiActor::createInstance(UWorld *world, UPlayerUiBase *ptr){
             FVector Location(0, 0, 0);
             AUiActor *spawned = world->SpawnActor<AUiActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams);
             if(spawned != nullptr){
-                spawned->uiToUpdate = ptr; //SET TICKED INSTANCE!
+                //SET Player Ui INSTANCE to tick!!
+                spawned->uiToUpdate = ptr; 
+
+                currentInstance = spawned;
                 return spawned;
             }
         }
@@ -31,7 +35,19 @@ AUiActor::AUiActor(){
 
 void AUiActor::BeginPlay(){
     Super::BeginPlay();
-    
+}
+
+
+void AUiActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    currentInstance = nullptr;
+    Super::EndPlay(EndPlayReason);
+}
+
+UWorld *AUiActor::GetWorldFromInstance(){
+    if(currentInstance){
+        return currentInstance->GetWorld();
+    }
+    return nullptr;
 }
 
 void AUiActor::Tick(float DeltaTime){

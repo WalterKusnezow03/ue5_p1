@@ -137,7 +137,7 @@ void AIkActor::SetLocation(FVector &location){
 
 
 void AIkActor::getWeaponOnStart(){
-	EntityManager *e = worldLevel::entityManager();
+	EntityManager *e = AworldLevel::entityManager();
     if (e != nullptr)
     {
 
@@ -184,7 +184,7 @@ AActor *AIkActor::createLimbPivotAtTop(int x, int y, int height, int pushFront){
 	 * DEBUG CREATE FOLLOW LIMBS
 	 */
 
-	EntityManager *entitymanagerPointer = worldLevel::entityManager();
+	EntityManager *entitymanagerPointer = AworldLevel::entityManager();
 	if(entitymanagerPointer != nullptr){
 		FVector location(0, 0, 0);
 		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);

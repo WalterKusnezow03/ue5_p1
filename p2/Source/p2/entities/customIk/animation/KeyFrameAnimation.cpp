@@ -309,7 +309,7 @@ bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &d
 	FCollisionQueryParams ignoreParams;
 	
 	//params to avoid hitting own bones, weapons, etc
-	if(EntityManager *e = worldLevel::entityManager()){
+	if(EntityManager *e = AworldLevel::entityManager()){
 		//example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
 	}

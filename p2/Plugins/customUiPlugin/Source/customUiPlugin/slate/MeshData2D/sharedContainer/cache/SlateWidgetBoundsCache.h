@@ -13,7 +13,7 @@ public:
     SlateWidgetBoundsCache();
     ~SlateWidgetBoundsCache();
 
-    void FlagUpdateNeededTrue();
+    void SetUpdateNeededTrue();
     bool UpdateNeeded() const;
 
     void Recreate(TArray<SlateMeshDataPolygon*> &polygons);
@@ -25,4 +25,7 @@ public:
 private:
     FBoundingBox2D boundsInternal;
     bool updateNeededFlag = true;
+
+    //due to racing conditions, a counter is needed
+    int countModified = 0;
 };

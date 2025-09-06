@@ -1,5 +1,6 @@
 #include "HumanoidController.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
+#include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
 
 HumanoidController::HumanoidController(){
     FVector location(100, 0, 100);
@@ -94,12 +95,24 @@ void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr, bool add)
 void HumanoidController::updateCollisionParams(AActor *actor, bool add){
     if(actor != nullptr){
         if(add){
+            ASharedRaycastParamManager::Add(actor);
+        }else{
+            ASharedRaycastParamManager::Remove(actor);
+        }
+        hipController.updateCollisionParams(ASharedRaycastParamManager::getCollisonParams());
+
+
+
+        //deprecated
+        /*
+        if(add){
             collisionParamsProvider.AddIgnoredActor(actor);
         }else{
             collisionParamsProvider.RemoveIgnoredActor(actor);
         }
         //update params since anything has changed
         hipController.updateCollisionParams(collisionParamsProvider.getCollisonParams());
+        */
     }
 }
 

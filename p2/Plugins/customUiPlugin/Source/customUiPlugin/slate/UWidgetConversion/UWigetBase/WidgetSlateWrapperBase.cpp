@@ -2,6 +2,14 @@
 #include "customUiPlugin/slate/base/SlateWidgetBase.h"
 #include "customUiPlugin/Private/Debug/UiDebugHelper.h"
 
+void UWidgetSlateWrapperBase::InitSharedPolygonMapPtrIfNeeded(){
+    if(!polygonMap.IsValid()){
+        polygonMap = MakeShared<SlatePolygonMap>();
+    }
+}
+
+
+
 
 
 void UWidgetSlateWrapperBase::ReleaseSlateResources(bool bReleaseChildren)
@@ -12,6 +20,7 @@ void UWidgetSlateWrapperBase::ReleaseSlateResources(bool bReleaseChildren)
 
 TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
 {
+    InitSharedPolygonMapPtrIfNeeded();
     /*
     Src Code SizeBox:
 
@@ -25,7 +34,7 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
         }
 
         return MySizeBox.ToSharedRef();
-    }    
+    }
     */
 
     //get SBox from Parent: USizeBox
@@ -39,7 +48,7 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
     //Construct a single time, mesh data wont be deleted.
     if(!bWasConstructed){
         ConstructWidget(); //do not remove this, can call derived method!
-        ApplySizeFromBounds(); //very important
+        UpdateSizeBoxBoundsIfMeshDataMarkedDirty(); //very important
         bWasConstructed = true;
     }
 
@@ -49,18 +58,26 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
 
 
 void UWidgetSlateWrapperBase::Tick(float deltatime){
-    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
-        ptr->Tick(deltatime); //updates cursor position
-    }
-    polygonMap.Tick(deltatime);
+    if(TickAllowed()){
+        if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+            ptr->Tick(deltatime); //updates cursor position
+        }
+        if(polygonMap.IsValid()){
+            polygonMap->Tick(deltatime);
+        }
 
-    UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
+        UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
+    }
+    
 }
 
 void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
-    if(polygonMap.MarkedDirtyBounds()){
-        ApplySizeFromBounds();
+    if(polygonMap.IsValid()){
+        if(polygonMap->BoundsUpdated()){
+            SetWidthAndHeight(polygonMap->Bounds());
+        }
     }
+    
 }
 
 
@@ -81,37 +98,29 @@ void UWidgetSlateWrapperBase::ConstructWidget(){
     //to be overriden!
     //DEBUG HERE
     if(bDebugPolygon){
-        polygonMap.DebugCreatePolygons();
+        if(polygonMap.IsValid()){
+            polygonMap->DebugCreatePolygons();
+        }
     }
-    ApplySizeFromBounds();
-}
-
-void UWidgetSlateWrapperBase::ApplySizeFromBounds(){
-    FVector2D size = polygonMap.Bounds();
-    SetWidthAndHeight(size.X, size.Y);
-}
-
-void UWidgetSlateWrapperBase::SetWidthAndHeight(float x, float y){
-    x = std::max(std::abs(x), 1.0f);
-    y = std::max(std::abs(y), 1.0f);
-    SetWidthOverride(x);
-    SetHeightOverride(y);
 }
 
 
+void UWidgetSlateWrapperBase::SetWidthAndHeight(FVector2D size){
+    size.X = std::max(std::abs(size.X), 1.0);
+    size.Y = std::max(std::abs(size.Y), 1.0);
+    SetWidthOverride(size.X);
+    SetHeightOverride(size.Y);
+    SynchronizeProperties();
 
+    FString msg = FString::Printf(
+        TEXT("UWidgetSlateWrapperBase scale override (%.2f %.2f)"),
+        size.X, size.Y
+    );
+    UiDebugHelper::logMessage(msg);
+}
 
-
-/// MeshData from internal SSLate widget base (from here stored tho.)
-SlateMeshDataPolygon *UWidgetSlateWrapperBase::FindFromSlateWidget(int layer){
-    
-    return &polygonMap.FindPolygonByLayerInternal(layer);
-
-    /*
-    if(SlateWidgetBase *ptr = MySlateWidget.Get()){
-        SlateMeshDataPolygon *ptrFound = &ptr->FindPolygonByLayerInternal(layer);
-        //not sure if dirty mark is needed, drawn every frame anyway.
-        return ptrFound;
-    }
-    return nullptr;*/
+///Temporary reference! - use one at a time!
+SlateMeshDataPolygon &UWidgetSlateWrapperBase::FindFromMap(int layer){
+    InitSharedPolygonMapPtrIfNeeded();
+    return polygonMap->FindPolygonByLayerInternal(layer);
 }

@@ -19,13 +19,14 @@ void UTextBoxBase::createTextBox(){
     TextBox = NewObject<UEditableTextBox>(this);
     SetHintText("Type Something");
 
-    scalebox = NewObject<UScaleBox>();
-    scalebox->SetStretch(EStretch::ScaleToFit);
-    scalebox->AddChild(TextBox);
+    //scalebox = NewObject<UScaleBox>();
+    //scalebox->SetStretch(EStretch::ScaleToFit);
+    //scalebox->AddChild(TextBox);
 
+    sizeBox = NewObject<USizeBox>();
+    sizeBox->SetContent(TextBox);
+    SetSize(FVector2D(300, 70));
 }
-
-
 
 void UTextBoxBase::setDesignDefault(){
     if(TextBox){
@@ -36,6 +37,16 @@ void UTextBoxBase::setDesignDefault(){
     
     }
 }
+
+void UTextBoxBase::SetSize(FVector2D size){
+    if(sizeBox){
+        sizeBox->SetWidthOverride(size.X);   // fester Wert
+        sizeBox->SetHeightOverride(size.Y);   // optional
+    }
+    
+}
+
+
 
 
 

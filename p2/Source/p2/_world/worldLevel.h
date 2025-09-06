@@ -10,6 +10,8 @@
 #include "p2/_world/PlayerStatManager/PlayerStatusManager.h"
 #include "GameCore/world/worldLevelBase.h"
 
+#include "worldLevel.generated.h"
+
 class ATerrainLauncher;
 
 /**
@@ -18,37 +20,36 @@ class ATerrainLauncher;
  * - outpost manager to group enteties in the area
  * - terrain creator to create the terrain and keep 
  */
-class P2_API worldLevel : public worldLevelBase
+UCLASS()
+class P2_API AworldLevel : public AworldLevelBase
 {
-private:
-	worldLevel();
-	~worldLevel();
+	GENERATED_BODY()
 
+private:
 	
-	static ATerrainLauncher *terrainLauncher;
+
+	ATerrainLauncher *terrainLauncher = nullptr;
+	
+	bool bBlockEntities = true;
+	bool bBlockOutPostCreation = true;
+
+	static AworldLevel *InstanceWorldLevel;
 
 public:
 	//call to init the world.
 	static void initWorld(UWorld *world);
 	static void initWorld(FString worldName);
 
-	//api for game launch screen / game mode base
-	static void clearGameSession();
-	
 
-	static EntityManager *entityManager();
-	static OutpostManager *outpostManager();
-	
-	static void resetWorld();
 
-	static void Tick(float DeltaTime);
+	static void MakeInstance(UWorld *world);
 
-	static bool terrainIsInitedFlag(){
-		return isTerrainInited;
-	}
+	AworldLevel();
 
-	static bool gamePausedByPlayer();
-	static void setGamePaused(bool in);
+	virtual void BeginPlay() override;
+	virtual void Tick(float deltatime) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
 
 	/// @brief for ui chnages, open loading screen, pause, etc
 	static GameStateManager gameStateManager;
@@ -56,58 +57,70 @@ public:
 	/// for player hud changes
 	static PlayerStatusManager playerStatusManager;
 
+
+	
+
+	
+
+	static EntityManager *entityManager();
+	static OutpostManager *outpostManager();
+	
+
+	
+
+
+	
+
 private:
 	
-	static void debugStoragePlugin();
+	void debugStoragePlugin();
 
-	static void createTerrain(UWorld *world, FString worldName);
-	static UWorld *GetWorld();
-
+	void createTerrain(FString worldName);
 	
 
-	static void createOutpostsRequested(UWorld *world);
+
+	void createOutpostsRequested();
 
 	//pathfinder init edge collection
-	static void createPathFinder(UWorld *WorldIn, FString worldName);
+	void createPathFinder(FString worldName);
 
-	static void humanBotsOnStart(UWorld *worldIn, int count);
+	void humanBotsOnStart(int count);
 
 	//manager
-	static class OutpostManager *outpostManagerPointer;
+	class OutpostManager *outpostManagerPointer = nullptr;
 
 	//terrain
-	static bool isTerrainInited;
+	bool isTerrainInited;
 
 	//bots
-	static bool areBotsInited;
-	static bool nodesWereShown;
-	static bool gamePausedFlag;
+	bool areBotsInited;
+	bool nodesWereShown;
 
 
-	static void DebugCreateRooms(UWorld *world);
+	void DebugCreateRooms();
 
-	static void DebugCreatedoor(UWorld *world);
+	void DebugCreatedoor();
 
-	static void debugAngleFinder(UWorld *world);
-	static std::vector<FVector2D> findAngles(float lengthAll, std::vector<float> &bones);
+	void debugAngleFinder();
+	std::vector<FVector2D> findAngles(float lengthAll, std::vector<float> &bones);
 
-	static void createGroundPane(UWorld *world);
+	void createGroundPane();
 
-	static void debugCreateWater(UWorld *world);
+	void debugCreateWater();
 
-	static void debugCreateRock(UWorld *world);
+	void debugCreateRock();
 
-	static void debugCreateWingsuitMesh(UWorld *world);
+	void debugCreateWingsuitMesh();
 
-	static void debugMatrix();
+	void debugMatrix();
 
 	
 
-	static void debugBezier(UWorld *world);
+	void debugBezier();
 
-	static void createAeroActor(UWorld *world);
+	void createAeroActor();
 
-	static void createCar(UWorld *world);
+	void createCar();
 
-	static void createBoneActorDebug(UWorld *world);
+	void createBoneActorDebug();
 };

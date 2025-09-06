@@ -11,14 +11,15 @@
 
 AthrowerWeapon::AthrowerWeapon(){
     //constructor
+    PrimaryActorTick.bCanEverTick = true;
     Type = weaponEnum::thrower; //a thrower by default
     throwableTypeToThrow = throwableEnum::greneade_enum;
-    requestNewThrowable();
+    
 }
 
 void AthrowerWeapon::BeginPlay(){
     Super::BeginPlay();
-
+    reload(1);
 }
 
 
@@ -28,18 +29,36 @@ void AthrowerWeapon::Tick(float deltaTime){
 
     Super::Tick(deltaTime);
 
+    //DebugHelper::showScreenMessage("AthrowerWeapon Tick");
 
     //update the position of the item to throw if has bullets left
     if(throwableActorPointer != nullptr){
         throwableActorPointer->SetActorLocation(GetActorLocation());
         throwableActorPointer->SetActorRotation(GetActorRotation());
+
+        DebugHelper::showLineBetween(GetWorld(), GetActorLocation(), throwableActorPointer->GetActorLocation(), FColor::Red);
     }
 }
 
 void AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){ //team enum is ignored here
     //throw an item here instead
 
+    DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected try!");
+    if(throwableActorPointer == nullptr){
+        DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected Throwable Item Invalid!", FColor::Orange);
+        requestNewThrowable();
+    }
+    if(throwableActorPointer == nullptr){
+        DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected Throwable Item STILL Invalid!", FColor::Red);
+    }
+
+
+    
+
     if(Super::canShoot() && throwableActorPointer != nullptr){
+
+        DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected OK!");
+
         //DONT FORGET THESE
         abzugHinten = true;
 		resetCoolTime(cooldownTime());
@@ -68,7 +87,7 @@ void AthrowerWeapon::requestNewThrowable(){
         //request
         throwableActorPointer = nullptr;
 
-        if(EntityManager *e = worldLevel::entityManager()){
+        if(EntityManager *e = AworldLevel::entityManager()){
             FVector a = GetActorLocation();
             throwableActorPointer = e->spawnAthrowable(GetWorld(), a, throwableTypeToThrow);
         }

@@ -6,6 +6,8 @@
 
 /// @brief isA Carried item but supports interpolating between local trajectories
 class IKHUMANOIDMODELL_API AnimCarriedItemSocket : public CarriedItemSocket {
+private:
+    bool bLogMessage = false;
 
 public:
     AnimCarriedItemSocket();

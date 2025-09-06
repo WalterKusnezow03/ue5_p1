@@ -24,6 +24,9 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/_world/gameStateManager/GameStateManager.h"
 
+//gc
+#include "GcGameCore/Launcher/GcLauncher.h"
+
 
 //constructor
 AgameModeSubclass::AgameModeSubclass()
@@ -45,7 +48,10 @@ void AgameModeSubclass::BeginPlay()
     Super::BeginPlay();
 
     //set worldLevel UWorld pointer for easier world pointer getting in non aactor classes
-    worldLevel::SetWorld(GetWorld()); //needed for init!
+    AworldLevel::MakeInstance(GetWorld());
+    //SetWorld(GetWorld()); //needed for init!
+
+    AGcLauncher::MakeInstance(GetWorld());
 
     //load all assets (saved to asset manager single ton)
     AssetLoader a;
@@ -57,7 +63,7 @@ void AgameModeSubclass::BeginPlay()
     UPlayerUi::createNewInstance(GetWorld());
 
     //opens game launch screen
-    worldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
+    AworldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
 
     /// ---- PLAYER LOADS / ENDS LEVEL WITH UI ! ----
     bool debugAllowWorldCreation = false;
@@ -68,13 +74,11 @@ void AgameModeSubclass::BeginPlay()
          *
          * must be in begin play to prevent bugs with asset spawning, NOT in constructor.
          */
-        worldLevel::initWorld(GetWorld());
+        AworldLevel::initWorld(GetWorld());
     }
 }
 
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
-
-    worldLevel::resetWorld(); //clears all instances of assets etc. All memory release
     DebugHelper::logMessage(TEXT("DEBUG END PLAY"));
 }

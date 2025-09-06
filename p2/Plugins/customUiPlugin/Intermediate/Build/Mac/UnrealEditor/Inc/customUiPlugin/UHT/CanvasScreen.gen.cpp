@@ -11,8 +11,7 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 // Cross Module References
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UCanvasScreen();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UCanvasScreen_NoRegister();
-	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase();
-	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UUiComponentParent();
 	UMG_API UClass* Z_Construct_UClass_UBackgroundBlur_NoRegister();
 	UMG_API UClass* Z_Construct_UClass_UBorder_NoRegister();
 	UMG_API UClass* Z_Construct_UClass_UCanvasPanel_NoRegister();
@@ -49,17 +48,12 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_backgroundColor_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_backgroundColor;
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_listenForclickItems_Inner;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_listenForclickItems_MetaData[];
-#endif
-		static const UECodeGen_Private::FArrayPropertyParams NewProp_listenForclickItems;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
 	UObject* (*const Z_Construct_UClass_UCanvasScreen_Statics::DependentSingletons[])() = {
-		(UObject* (*)())Z_Construct_UClass_UcustomUiComponentBase,
+		(UObject* (*)())Z_Construct_UClass_UUiComponentParent,
 		(UObject* (*)())Z_Construct_UPackage__Script_customUiPlugin,
 	};
 #if WITH_METADATA
@@ -72,8 +66,10 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 #endif
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseCanvas_MetaData[] = {
+		{ "Comment", "//not protected for a reason!\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "ui/screens/CanvasScreen.h" },
+		{ "ToolTip", "not protected for a reason!" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseCanvas = { "baseCanvas", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UCanvasScreen, baseCanvas), Z_Construct_UClass_UCanvasPanel_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseCanvas_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseCanvas_MetaData)) };
@@ -98,22 +94,11 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UCanvasScreen_Statics::NewProp_backgroundColor = { "backgroundColor", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UCanvasScreen, backgroundColor), Z_Construct_UClass_UBorder_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_backgroundColor_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_backgroundColor_MetaData)) };
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems_Inner = { "listenForclickItems", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UClass_UcustomUiComponentBase_NoRegister, METADATA_PARAMS(nullptr, 0) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems_MetaData[] = {
-		{ "Comment", "/// @brief listens for click AND Tick\n" },
-		{ "ModuleRelativePath", "ui/screens/CanvasScreen.h" },
-		{ "ToolTip", "@brief listens for click AND Tick" },
-	};
-#endif
-	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems = { "listenForclickItems", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UCanvasScreen, listenForclickItems), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UCanvasScreen_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseCanvas,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_baseOverlay,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_backgroundBlur,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_backgroundColor,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems_Inner,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UCanvasScreen_Statics::NewProp_listenForclickItems,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UCanvasScreen_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UCanvasScreen>::IsAbstract,
@@ -153,9 +138,9 @@ void EmptyLinkFunctionForGeneratedCodeCanvasScreen() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UCanvasScreen, UCanvasScreen::StaticClass, TEXT("UCanvasScreen"), &Z_Registration_Info_UClass_UCanvasScreen, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCanvasScreen), 2674170520U) },
+		{ Z_Construct_UClass_UCanvasScreen, UCanvasScreen::StaticClass, TEXT("UCanvasScreen"), &Z_Registration_Info_UClass_UCanvasScreen, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UCanvasScreen), 1801416960U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_2986258672(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_2162004780(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_CanvasScreen_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

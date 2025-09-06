@@ -26,18 +26,21 @@ SlateVertexBufferCache &SlateVertexBufferCache::operator=(const SlateVertexBuffe
 void SlateVertexBufferCache::UpdateBufferSizeIfNeeded(int32 num) const {
     if(cachedBuffer.Num() < num){
         // Ich weiß, dass Numbers eigentlich nicht const ist
-        TArray<FSlateVertex> &mutableBuffer = const_cast<TArray<FSlateVertex> &>(cachedBuffer);
-        mutableBuffer.SetNum(num);
+        //TArray<FSlateVertex> &mutableBuffer = const_cast<TArray<FSlateVertex> &>(cachedBuffer);
+        //mutableBuffer.SetNum(num);
+
+        cachedBuffer.SetNum(num);
     }
 }
 
 
 TArray<FSlateVertex> &SlateVertexBufferCache::mutableCachedBufferRef(int32 num) const {
     UpdateBufferSizeIfNeeded(num);
-    TArray<FSlateVertex> &mutableBuffer = const_cast<TArray<FSlateVertex> &>(cachedBuffer);
-    return mutableBuffer;
-}
+    //TArray<FSlateVertex> &mutableBuffer = const_cast<TArray<FSlateVertex> &>(cachedBuffer);
+    //return mutableBuffer;
 
+    return cachedBuffer;
+}
 
 ///@brief escapes const and updates flag.
 void SlateVertexBufferCache::ResetCacheUpdateNeededFlag() const{

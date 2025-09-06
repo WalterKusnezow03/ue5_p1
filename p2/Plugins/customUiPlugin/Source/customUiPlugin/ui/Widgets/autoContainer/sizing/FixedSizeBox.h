@@ -35,7 +35,7 @@ public:
     /// @brief marks self as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too! - OVERRIDE THIS METHOD!
     /// @param visible
-    virtual void setVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
 
 
     void OverrideChild(UcustomUiComponentBase *item);

@@ -16,11 +16,15 @@ bool GameStateManager::CanSwitchStates(EGameState stateIn){
     return true;
 }
 
+void GameStateManager::OverrideGameState(EGameState state){
+    currentGameState = state;
+}
+
 void GameStateManager::UpdateGameState(EGameState state){
     if(!CanSwitchStates(state)){
         return;
     }
-    currentGameState = state;
+    OverrideGameState(state);
     UPlayerUi *instance = UPlayerUi::currentInstance();
     if(instance){
         if(state == EGameState::EGameLaunchScreen){    
@@ -58,6 +62,7 @@ bool GameStateManager::IsInState(EGameState stateIn){
 
 
 bool GameStateManager::GameStateIsPaused(){
-    return IsInState(EGameState::EPauseScreen) ||
-           IsInState(EGameState::EGameLaunchScreen);
+    return !IsInState(EGameState::EGamePlay);
+    // IsInState(EGameState::EPauseScreen) ||
+    // IsInState(EGameState::EGameLaunchScreen);
 }

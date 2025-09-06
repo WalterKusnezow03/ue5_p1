@@ -6,6 +6,10 @@ CollisionTracker::CollisionTracker(){
 }
 
 CollisionTracker::~CollisionTracker(){
+    Clear();
+}
+
+void CollisionTracker::Clear(){
     tracked.Empty();
 }
 

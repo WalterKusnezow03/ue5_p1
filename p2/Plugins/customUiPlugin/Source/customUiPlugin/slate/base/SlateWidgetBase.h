@@ -14,21 +14,28 @@ public:
     
 
 private:
-    void createLayer(int i);
 
-    SlatePolygonMap *PolygonMapExternal = nullptr;
+    bool bDebugDrawBox = false;
+    bool bDebugLog = false;
+
+    //SlatePolygonMap *PolygonMapExternal = nullptr;
+    TSharedPtr<SlatePolygonMap> PolygonMapExternal;
 
 public:
     //SLATE_BEGIN_ARGS(SSlateWidgetBase) {}
     //SLATE_END_ARGS()
 
-    SLATE_BEGIN_ARGS(SSlateWidgetBase) 
+    /*SLATE_BEGIN_ARGS(SSlateWidgetBase) 
         : _PolyGonMapPtr(nullptr) // Defaultwert hier korrekt
     {}
         SLATE_ARGUMENT(SlatePolygonMap*, PolyGonMapPtr)
+    SLATE_END_ARGS()*/
+
+    SLATE_BEGIN_ARGS(SSlateWidgetBase) 
+        : _PolyGonMapPtr(nullptr) // Defaultwert hier korrekt
+    {}
+        SLATE_ARGUMENT(TSharedPtr<SlatePolygonMap>, PolyGonMapPtr)
     SLATE_END_ARGS()
-
-
     
 
     //might be overriden to add text (unclear.)
@@ -86,8 +93,7 @@ private:
 
 
 
-    bool bDebugDrawBox = false;
-    bool bDebugLog = true;
+    
 
 
     FVector2D CursorPositionScreenSpace();

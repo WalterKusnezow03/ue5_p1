@@ -13,6 +13,8 @@ class CUSTOMUIPLUGIN_API SlateMeshData {
     //SlateIndex = uin16, merken
 
 public:
+    bool bLogColor = false;
+
     void ReCalculateAmbientUvColors(); //CALL NEEDED IF ADDED VERTECIES AFTER COLORS!
 
     SlateMeshData();
@@ -68,12 +70,15 @@ public:
     ///vertex buffer space, and WILL move if the buffer changes.
     void AddAmbientUvColor(FVector2D uv, FLinearColor color);
     void ClearAmbientColors();
-    
+
+    ///@brief blocks ambient colors
+    void SetFullColor(FLinearColor color);
+    void ResetFullColor();
 
     // --- transform ---
     ///@brief applies a transformation matrix to the buffer, changes
     ///not resetable
-    void ApplyTransformationImmidiate(MMatrix2D &other);
+    void ApplyTransformationImmidiate(const MMatrix2D &other);
 
     ///@brief sets the runtime transformation, applied when a rerender is needed
     ///can be reset. Original vertex buffer is not touched.
@@ -101,6 +106,10 @@ private:
     bool bCursorColorEnabled = false;
     int CursorHighLightDistanceSquared = 100 * 100;
     FPairColorPosition cursorColorPair;
+
+    bool fullColorEnabled = false;
+    FLinearColor fullColor;
+
     TArray<FPairColorPosition> ambientColorsInvertedSpace;
 
     ///@brief converts a uv, to inverted uv and then to vertex buffer space, speeds
@@ -125,7 +134,7 @@ private:
     /// @brief matrix to apply at runtime to not manipulate the original buffer!
     MMatrix2D transformationRuntimeMatrix;
 
-    void ApplyTransformation(MMatrix2D &mat, FVector2D &vertex);
+    void ApplyTransformation(const MMatrix2D &mat, FVector2D &vertex);
     void ApplyTransformationConst(
         const MMatrix2D &mat,
         FVector2f &vertex) const;

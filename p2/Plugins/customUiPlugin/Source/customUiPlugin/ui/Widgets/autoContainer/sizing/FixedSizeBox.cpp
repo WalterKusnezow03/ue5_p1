@@ -44,8 +44,8 @@ bool UFixedSizeBox::dispatchClick(){
 }
 
 
-void UFixedSizeBox::setVisible(bool visible){
+void UFixedSizeBox::SetVisible(bool visible){
     if(child){
-        child->setVisible(visible);
+        child->SetVisible(visible);
     }
 }

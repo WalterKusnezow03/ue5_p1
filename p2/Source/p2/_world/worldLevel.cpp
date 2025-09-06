@@ -43,32 +43,42 @@
 #include "terrainPlugin/main/TerrainLauncher.h"
 
 
+
+
 #include "CoreMinimal.h"
 
 template class TVector<FVector2D>;
 
-worldLevel::worldLevel()
+
+
+
+//static vars init:
+GameStateManager AworldLevel::gameStateManager;
+PlayerStatusManager AworldLevel::playerStatusManager;
+AworldLevel *AworldLevel::InstanceWorldLevel = nullptr;
+
+AworldLevel::AworldLevel() : AworldLevelBase()
 {   
 }
 
-worldLevel::~worldLevel()
-{ 
+void AworldLevel::MakeInstance(UWorld *world){
+    if(world){
+        AworldLevel *created = Make<AworldLevel>(world);
+    }
 }
 
-//static vars init:
-GameStateManager worldLevel::gameStateManager;
-PlayerStatusManager worldLevel::playerStatusManager;
 
-bool worldLevel::isTerrainInited = false;
-ATerrainLauncher *worldLevel::terrainLauncher = nullptr;
+void AworldLevel::BeginPlay(){
+    InstanceWorldLevel = this;
+}
 
-OutpostManager *worldLevel::outpostManagerPointer = nullptr;
+void AworldLevel::Tick(float deltatime){
+    Super::Tick(deltatime);
+    //Nothing to tick here
+    createOutpostsRequested(); //stored in super class
+}
 
-bool worldLevel::nodesWereShown = false;
 
-bool worldLevel::areBotsInited = false;
-
-bool worldLevel::gamePausedFlag = false;
 
 /// --- GAME CLOSE ALL ---
 /// IS RESET FROM GAME MODE SUBCLASS, MUST BE CALLED ON END PLAY!
@@ -77,8 +87,8 @@ bool worldLevel::gamePausedFlag = false;
 /// -> outpostManager: holds all outposts and assigns them on request
 /// -> pathfinder singleton instance -> all nodes will be wiped
 /// -> asset manager: all asset data wiped
-void worldLevel::resetWorld(){
-    worldLevelBase::EndPlay();
+void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    
     EntityManager::EndPlay(); // very important
     AlertManager::EndPlay();
 
@@ -90,88 +100,100 @@ void worldLevel::resetWorld(){
 
     assetManager::EndGame(); //very important
     referenceManager::EndPlay();
+
+    InstanceWorldLevel = nullptr;
+
+    Super::EndPlay(EndPlayReason);
 }
+
+
+
 
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
-void worldLevel::initWorld(UWorld *world){
-    SetWorld(world);
+void AworldLevel::initWorld(UWorld *world){
+    if(!InstanceWorldLevel){
+        MakeInstance(world);
+    }
 
     FString WorldName = TEXT("World1"); // MUST BE SET FROM ANOTHER LEVEL / CHOOSE LEVELS SCREEN
     initWorld(WorldName);
 }
 
-void worldLevel::initWorld(FString WorldName){
+void AworldLevel::initWorld(FString WorldName){
+    if(!InstanceWorldLevel){
+        return; 
+    }
+
     gameStateManager.UpdateGameState(EGameState::EGamePlay);
 
     EntityManager::BeginPlay(); //very important
 
-    gamePausedFlag = false;
 
-    UWorld *world = GetWorld();
-    createTerrain(world, WorldName);
+    InstanceWorldLevel->createTerrain(WorldName);
 
     //create rooms
-    DebugCreateRooms(world);
+    InstanceWorldLevel->DebugCreateRooms();
 
     //edge collector must be added here later
-    createPathFinder(world, WorldName);
+    InstanceWorldLevel->createPathFinder(WorldName);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    humanBotsOnStart(world, 1);
-
-    createOutpostsRequested(world); //stored in super class
+    InstanceWorldLevel->humanBotsOnStart(1);
         
-    createGroundPane(world);
+    InstanceWorldLevel->createGroundPane();
 
     //testing
-    DebugHelper::Debugtest(world);
+    DebugHelper::Debugtest(InstanceWorldLevel->GetWorld());
 
-    //debugBezier(world);
-    //debugAngleFinder(world);
-    //debugCreateWater(world);
-    //debugCreateRock(world);
-    //debugCreateWingsuitMesh(world);
+    //debugBezier();
+    //debugAngleFinder();
+    //debugCreateWater();
+    //debugCreateRock();
+    //debugCreateWingsuitMesh();
 
-    debugMatrix();
+    //InstanceWorldLevel->debugMatrix();
 
 
-    //DebugCreatedoor(world);
-    //debugBezier(world);
+    //DebugCreatedoor();
+    //debugBezier();
 
-    //createAeroActor(world);
-    //createCar(world);
+    //createAeroActor();
+    //createCar();
 
-    //createJointActor(world);
+    //createJointActor();
 
-    createBoneActorDebug(world);
-    debugStoragePlugin();
+    InstanceWorldLevel->createBoneActorDebug();
+    InstanceWorldLevel->debugStoragePlugin();
 }
 
 
 
 
-void worldLevel::createOutpostsRequested(UWorld *world){
+void AworldLevel::createOutpostsRequested(){
+    if(bBlockOutPostCreation){
+        return;
+    }
 
-    for (int i = 0; i < worldLevelBase::outpostsToCreate.Num(); i++){
-        FVector &locationCurrent = worldLevelBase::outpostsToCreate[i];
-        if (OutpostManager *ptr = worldLevel::outpostManager())
+    for (int i = 0; i < outpostsToCreate.Num(); i++){
+        FVector &locationCurrent = outpostsToCreate[i];
+        if (OutpostManager *ptr = outpostManager())
         {
-            AOutpost *outpost = ptr->requestOutpost(world, locationCurrent);
+            AOutpost *outpost = ptr->requestOutpost(GetWorld(), locationCurrent);
             if (outpost)
             {
                 outpost->createAlarmPolesIfNeeded();
             }
         }
     }
-    worldLevelBase::outpostsToCreate.Empty();
+    outpostsToCreate.Empty();
 }
 
 /**
  * ATTENTION: PathFinder Collect edges will only be called from this class and only once on level start
  */
-void worldLevel::createPathFinder(UWorld *WorldIn, FString worldName){
-    FPathFinderModule::StartPathFinder(WorldIn, worldName);
+void AworldLevel::createPathFinder(FString worldName){
+    FPathFinderModule::StartPathFinder(GetWorld(), worldName);
 }
 
 
@@ -186,20 +208,21 @@ void worldLevel::createPathFinder(UWorld *WorldIn, FString worldName){
 
 /// @brief intended for one time use only, do not delete, do not save
 /// @return returns pointer to entitymanager
-EntityManager *worldLevel::entityManager(){
+EntityManager *AworldLevel::entityManager(){
     return EntityManager::instance();
 }
 
 /// @brief returns the outpost manager to ask for the nearest outpost
 /// @return will return the pointer
-OutpostManager * worldLevel::outpostManager(){
-    if(outpostManagerPointer == nullptr){
-        outpostManagerPointer = new OutpostManager();
+OutpostManager * AworldLevel::outpostManager(){
+    if(InstanceWorldLevel){
+        if(InstanceWorldLevel->outpostManagerPointer == nullptr){
+            InstanceWorldLevel->outpostManagerPointer = new OutpostManager();
+        }
+        return InstanceWorldLevel->outpostManagerPointer;
     }
-    return outpostManagerPointer;
+    return nullptr;
 }
-
-
 
 /**
  * 
@@ -214,10 +237,11 @@ OutpostManager * worldLevel::outpostManager(){
 /// @brief creates the terrain if not yet created
 /// @param world world to spawn in
 /// @param meters meters of the terrain targeted
-void worldLevel::createTerrain(UWorld *world, FString worldName){
+void AworldLevel::createTerrain(FString worldName){
     if(isTerrainInited){
         return;
     }
+    UWorld *world = InstanceWorldLevel->GetWorld();
     if(world != nullptr){
         isTerrainInited = true;
         if(terrainLauncher == nullptr){
@@ -231,41 +255,29 @@ void worldLevel::createTerrain(UWorld *world, FString worldName){
 
 
 
-/**
- * 
- * 
- * ----- PLAYER TICK TERRAIN ASYNC CREATION & PATHFINDER TASKS------
- * 
- * 
- */
-void worldLevel::Tick(float DeltaTime){
-    //nothing to be ticked here.
-}
-
-UWorld *worldLevel::GetWorld(){
-    return referenceManager::GetWorld();
-}
 
 /** 
  * 
  * DEBUG HUMAN ENTITIES
  * 
 */
-void worldLevel::humanBotsOnStart(UWorld *worldIn, int count){
-    if(worldIn == nullptr){
+void AworldLevel::humanBotsOnStart(int count){
+    if(bBlockEntities){
         return;
     }
-    if(worldLevel::areBotsInited){
+
+    
+    if(areBotsInited){
         return;
     }
-    worldLevel::areBotsInited = true;
+    areBotsInited = true;
 
     EntityManager *e = entityManager();
     if (e != nullptr)
     {
         for (int i = 0; i < count; i++){
             FVector spawnLocation(-1000, -1000, 100);
-            e->spawnHumanEntity(worldIn, spawnLocation, teamEnum::enemyTeam);
+            e->spawnHumanEntity(GetWorld(), spawnLocation, teamEnum::enemyTeam);
         }
 
         
@@ -278,11 +290,12 @@ void worldLevel::humanBotsOnStart(UWorld *worldIn, int count){
 
 
 //debug method create rooms near world origin
-void worldLevel::DebugCreateRooms(UWorld *world){
-    if(world == nullptr){
+void AworldLevel::DebugCreateRooms(){
+    UWorld *world = GetWorld();
+    if (world == nullptr)
+    {
         return;
     }
-
 
     int roomsizeMeter = 20;
     FVector locationToSpawn(
@@ -301,10 +314,10 @@ void worldLevel::DebugCreateRooms(UWorld *world){
 
 
 
-void worldLevel::debugAngleFinder(UWorld *world){
+void AworldLevel::debugAngleFinder(){
 
     //return;
-
+    UWorld *world = GetWorld();
     /**
      * achtung infinite loop!
      */
@@ -317,7 +330,7 @@ void worldLevel::debugAngleFinder(UWorld *world){
         bones.push_back(part);
     }
 
-    std::vector<FVector2D> output = worldLevel::findAngles(lenghtAll, bones);
+    std::vector<FVector2D> output = AworldLevel::findAngles(lenghtAll, bones);
 
     //draw
     float maxHeight = 0.0f;
@@ -342,7 +355,7 @@ void worldLevel::debugAngleFinder(UWorld *world){
     }
 }
 
-std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float> &bones){
+std::vector<FVector2D> AworldLevel::findAngles(float lengthAll, std::vector<float> &bones){
     std::vector<FVector2D> vec;
     FVector2D axis(lengthAll, 0.0f);
 
@@ -420,7 +433,8 @@ std::vector<FVector2D> worldLevel::findAngles(float lengthAll, std::vector<float
 
 
 
-void worldLevel::createGroundPane(UWorld *world){
+void AworldLevel::createGroundPane(){
+    UWorld *world = GetWorld();
     if(world != nullptr){
 
         int onemeter = 100;
@@ -450,9 +464,10 @@ void worldLevel::createGroundPane(UWorld *world){
 }
 
 
-void worldLevel::debugCreateWater(UWorld *world){
+void AworldLevel::debugCreateWater(){
     return; //DEBUG
 
+    UWorld *world = GetWorld();
     if(world != nullptr){
 
         int scaleMeters = 50 * 100;
@@ -467,9 +482,10 @@ void worldLevel::debugCreateWater(UWorld *world){
 
 
 
-void worldLevel::debugCreateRock(UWorld *world){
+void AworldLevel::debugCreateRock(){
+    UWorld *world = GetWorld();
     if(world != nullptr){
-        EntityManager *pointer = worldLevel::entityManager();
+        EntityManager *pointer = AworldLevel::entityManager();
         if(pointer != nullptr){
 
             RockCreator rock;
@@ -490,8 +506,10 @@ void worldLevel::debugCreateRock(UWorld *world){
 
 
 
-void worldLevel::debugCreateWingsuitMesh(UWorld *world){
-    if(world != nullptr){
+void AworldLevel::debugCreateWingsuitMesh(){
+    UWorld *world = GetWorld();
+    if (world != nullptr)
+    {
         FVector location(0, 0, 0);
         FRotator rotation;
         FActorSpawnParameters params;
@@ -512,7 +530,7 @@ void worldLevel::debugCreateWingsuitMesh(UWorld *world){
 
 
 
-void worldLevel::debugMatrix(){
+void AworldLevel::debugMatrix(){
 
     std::vector<FVector> checkup = {
         FVector(1, 1, 1),
@@ -551,21 +569,12 @@ void worldLevel::debugMatrix(){
 
 
 
-bool worldLevel::gamePausedByPlayer(){
-    return worldLevel::gamePausedFlag;
-}
-
-
-void worldLevel::setGamePaused(bool in){
-    worldLevel::gamePausedFlag = in;
-}
 
 
 
-
-
-void worldLevel::debugBezier(UWorld *world){
-    /*bezierCurve curve;
+void AworldLevel::debugBezier(){
+    /*
+    bezierCurve curve;
 
     FVector2D startingPoint;
     TVector<FVector2D> output;
@@ -591,7 +600,7 @@ void worldLevel::debugBezier(UWorld *world){
             0.0f,
             ref.Y
         );
-        DebugHelper::showLineBetween(world, prev, to3d, FColor::Blue);
+        DebugHelper::showLineBetween(GetWorld(), prev, to3d, FColor::Blue);
         prev = to3d;
     }*/
 
@@ -602,7 +611,8 @@ void worldLevel::debugBezier(UWorld *world){
 
 
 
-void worldLevel::DebugCreatedoor(UWorld *world){
+void AworldLevel::DebugCreatedoor(){
+    UWorld *world = GetWorld();
     if(world){
         FVector location(0, -1000, 0);
         ADoorBase *door = ADoorBase::Construct(world, location);
@@ -615,7 +625,8 @@ void worldLevel::DebugCreatedoor(UWorld *world){
 
 
 
-void worldLevel::createAeroActor(UWorld *world){
+void AworldLevel::createAeroActor(){
+    UWorld *world = GetWorld();
     if(world){
         FVector location(500, -1000, 200);
 
@@ -641,7 +652,8 @@ void worldLevel::createAeroActor(UWorld *world){
 
 
 
-void worldLevel::createCar(UWorld *world){
+void AworldLevel::createCar(){
+    UWorld *world = GetWorld();
     if(world){
         AvehicleCar *car = AvehicleCar::Construct(world);
     }
@@ -652,7 +664,8 @@ void worldLevel::createCar(UWorld *world){
 
 
 
-void worldLevel::createBoneActorDebug(UWorld *world){
+void AworldLevel::createBoneActorDebug(){
+    UWorld *world = GetWorld();
     if(world){
         //AIkActor::CreateInstance(world);
         AIkDebugActor::CreateInstance(world);
@@ -662,7 +675,7 @@ void worldLevel::createBoneActorDebug(UWorld *world){
 
 
 
-void worldLevel::debugStoragePlugin(){
+void AworldLevel::debugStoragePlugin(){
 
     //all inner plugin types
     TestStorageInterface interfacePlugin;
@@ -675,26 +688,4 @@ void worldLevel::debugStoragePlugin(){
 
 
 
-
-
-//clear game session
-void worldLevel::clearGameSession(){
-    //to reset:
-    //Pathfinder: Yes
-    //Terrain: Yes
-    //Outpost: Yes
-    //Alert Manager: No
-    //EntityGc: No
-
-    if(terrainLauncher){
-        terrainLauncher->EndAndSave();
-        isTerrainInited = false;
-    }
-    if(APathFinder *pathfinder = APathFinder::instance()){
-
-    }
-
-
-
-}
 

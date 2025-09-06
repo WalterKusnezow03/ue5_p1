@@ -1,12 +1,14 @@
 #pragma once
 
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/baseInterface/BaseUiInterface.h"
 #include "Components/CanvasPanel.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/VerticalBox.h"
 #include "Components/Border.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
+#include "customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.h"
 
 #include "CanvasScreen.generated.h"
 
@@ -15,16 +17,12 @@ class UPlayerUiBase;
 
 ///@brief Base Canvas screen class, use AddChild() method to add any child to the canvas.
 UCLASS()
-class CUSTOMUIPLUGIN_API UCanvasScreen : public UcustomUiComponentBase {
+class CUSTOMUIPLUGIN_API UCanvasScreen : public UUiComponentParent {
     GENERATED_BODY()
 public:
 
     //must be called from derived class!
     virtual void init(UPlayerUiBase &refin);
-
-    // --- CUSTOM DISPATCHER -> OVERRIDE ---
-    virtual bool dispatchClick() override;
-    virtual void setVisible(bool visible) override;
 
 
     virtual UWidget *baseLayoutPointer() override;
@@ -32,18 +30,17 @@ public:
     void setBackgroundColor(FLinearColor color);
     void setDefaultBackgroundColor();
 
-    /// @brief ticks all children owned
-    /// @param deltatime 
-    virtual void Tick(float deltatime) override;
+    
 
 
     /// @brief added child AUTOMATICALLY added to click and visibilty and Tick DISPATCH!
     /// @param item 
-    void AddChild(UcustomUiComponentBase *item);
+    void AddChild(IBaseUiInterface *item) override;
+    
     /// @brief adds a item at a offset screen position
     /// @param item 
     /// @param offset 
-    void AddChild(UcustomUiComponentBase *item, FVector2D offset);
+    void AddChild(IBaseUiInterface *item, FVector2D offset);
 
     /// @brief adds a item, aligned at a screen anchor (0,0) top left, (1,1) bottom right
     /// and aligment of content likewise, gravity / pivot moved in range (0,1)
@@ -51,19 +48,30 @@ public:
     /// @param screenAnchor screen pos as scalar
     /// @param aligment pivot of item as scalar
     void AddChild(
-        UcustomUiComponentBase *item,
+        IBaseUiInterface *item,
         FVector2D screenAnchor, // corner top left (0,0), bottom right (1,1)
         FVector2D aligment      // gravity / pivot of item (0,0.5), make centered on y
     );
 
+    ///@brief removed from click dispatch and from canvas if stored
+    virtual void RemoveChild(IBaseUiInterface *item) override;
+
+    // --- to be REMOVED ---
+    //raw adding.
+    void AddChild(UWidget *widget);
+
+
 protected:
+    void SetScreenPosition(UWidget *widget, FVector2D &screenPosition);
+   
+
     void createBackgroundBlur();
+
+    /// @brief call if is a ui screen, to have a blurred background darkend.
     void createBackgroundBlurAndDefaultColor();
 
 private: //not protected for a reason!
 
-    void AddClickListenedItem(UcustomUiComponentBase *ptr);
-    void AddClickListenedItems(TArray<UcustomUiComponentBase *> array);
 
     UPROPERTY()
     UCanvasPanel *baseCanvas = nullptr;
@@ -85,7 +93,4 @@ private: //not protected for a reason!
     void createBackgroundOverlay();
     void createColoredBackground();
 
-    /// @brief listens for click AND Tick
-    UPROPERTY()
-    TArray<UcustomUiComponentBase *> listenForclickItems;
 };

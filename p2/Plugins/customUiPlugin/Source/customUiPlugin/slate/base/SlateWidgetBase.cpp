@@ -19,7 +19,7 @@ void SSlateWidgetBase::Construct(const FArguments& InArgs)
 // ---- external Tick ----
 void SSlateWidgetBase::Tick(float deltatime){
     FVector2D cursorLocalSpace = CursorPositionLocalSpace();
-    if(PolygonMapExternal){
+    if(PolygonMapExternal.IsValid()){
         PolygonMapExternal->UpdateCursorPosition(cursorLocalSpace);
     }
 
@@ -85,7 +85,7 @@ void SSlateWidgetBase::DrawAllPolygons(
     FSlateRenderTransform &RenderTransform
 )const{
 
-    if(PolygonMapExternal != nullptr){
+    if(PolygonMapExternal.IsValid()){
         TArray<SlateMeshDataPolygon *> array = PolygonMapExternal->allPolygonsSortedConst();
         for (int i = 0; i < array.Num(); i++){
             const SlateMeshDataPolygon *current = array[i];

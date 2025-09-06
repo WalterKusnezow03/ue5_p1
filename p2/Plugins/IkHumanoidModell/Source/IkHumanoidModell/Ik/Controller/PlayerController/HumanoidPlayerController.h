@@ -12,6 +12,7 @@ class IKHUMANOIDMODELL_API HumanoidPlayerController : public HumanoidController 
 
 private:
     bool bDebugBlockPlayerApiCarriedItem = false;
+    bool bLogMessage = false;
 
 public:
     HumanoidPlayerController();
@@ -33,7 +34,7 @@ public:
     
     
     void weaponAimDownSight(bool aiming);
-    
+
     ///@brief also known as "Hochanschlag"
     void weaponRaisedReadyPosition(bool raise);
     void weaponContactPosition();
