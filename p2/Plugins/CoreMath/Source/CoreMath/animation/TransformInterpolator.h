@@ -13,15 +13,15 @@
 /**
  * 
  */
-class COREMATH_API TargetInterpolator
+class COREMATH_API TransformInterpolator
 {
 private:
 	FVectorInterpolator vectorInterpolator;
 	FRotatorInterpolator rotatorInterpolator;
 
 public:
-	TargetInterpolator();
-	~TargetInterpolator();
+	TransformInterpolator();
+	~TransformInterpolator();
 
 	void setTarget(FVector from, FVector toTarget, float timeToFrameIn);
 	void setTarget(

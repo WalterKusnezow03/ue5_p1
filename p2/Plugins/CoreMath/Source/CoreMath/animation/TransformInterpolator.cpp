@@ -1,32 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TargetInterpolator.h"
+#include "TransformInterpolator.h"
 
-TargetInterpolator::TargetInterpolator()
+TransformInterpolator::TransformInterpolator()
 {
 }
 
-TargetInterpolator::~TargetInterpolator()
+TransformInterpolator::~TransformInterpolator()
 {
 }
 
-void TargetInterpolator::useHermiteSplineInterpolation(bool flag){
+void TransformInterpolator::useHermiteSplineInterpolation(bool flag){
     vectorInterpolator.setHermiteSplineFlag(flag);
 }
 
-bool TargetInterpolator::hasTargetSetup(){
+bool TransformInterpolator::hasTargetSetup(){
     return 
     vectorInterpolator.TargetSetupFlag() ||
     rotatorInterpolator.TargetSetupFlag();
     
 }
 
-void TargetInterpolator::setTarget(FVector fromIn, FVector totarget, float timeToFrameIn){
+void TransformInterpolator::setTarget(FVector fromIn, FVector totarget, float timeToFrameIn){
     vectorInterpolator.setTarget(fromIn, totarget, timeToFrameIn);
 }
 
-void TargetInterpolator::setTarget(
+void TransformInterpolator::setTarget(
 	FVector fromIn, 
 	FVector toTarget, 
 	FRotator fromRotationIn, 
@@ -37,7 +37,7 @@ void TargetInterpolator::setTarget(
     rotatorInterpolator.setTarget(fromRotationIn, toRotationIn, timeToFrameIn);
 }
 
-void TargetInterpolator::setTarget(
+void TransformInterpolator::setTarget(
     FRotator fromRotationIn, 
     FRotator toRotationIn, 
     float timeToFrameIn
@@ -47,44 +47,44 @@ void TargetInterpolator::setTarget(
 
 /// @brief override target of a RUNNING ANIMATION!
 /// @param totarget 
-void TargetInterpolator::overrideTarget(FVector totarget){
+void TransformInterpolator::overrideTarget(FVector totarget){
     vectorInterpolator.overrideTarget(totarget);
 }
 
-void TargetInterpolator::overrideStart(FVector fromtarget){
+void TransformInterpolator::overrideStart(FVector fromtarget){
     vectorInterpolator.overrideStart(fromtarget);
 }
 
-void TargetInterpolator::overrideStart(FRotator fromRotationIn){
+void TransformInterpolator::overrideStart(FRotator fromRotationIn){
     rotatorInterpolator.overrideStart(fromRotationIn);
 }
 
-void TargetInterpolator::overrideStart(FVector fromtarget, FRotator fromRotationIn){
+void TransformInterpolator::overrideStart(FVector fromtarget, FRotator fromRotationIn){
     overrideStart(fromtarget);
     overrideStart(fromRotationIn);
 }
-void TargetInterpolator::overrideTarget(FVector totarget, FRotator toRotationIn){
+void TransformInterpolator::overrideTarget(FVector totarget, FRotator toRotationIn){
     overrideTarget(totarget);
     overrideTarget(toRotationIn);
 }
 
-void TargetInterpolator::overrideTarget(FRotator toRotationIn){
+void TransformInterpolator::overrideTarget(FRotator toRotationIn){
     rotatorInterpolator.overrideTarget(toRotationIn);
 }
 
-void TargetInterpolator::overrideStartSpeedRelative(FVector newStart, FRotator newRoation){
+void TransformInterpolator::overrideStartSpeedRelative(FVector newStart, FRotator newRoation){
     vectorInterpolator.overrideStartSpeedRelative(newStart);
     rotatorInterpolator.overrideTarget(newRoation);
     rotatorInterpolator.overrideTime(vectorInterpolator.TimeToFrame());
 }
 
 
-void TargetInterpolator::overrideStartSpeedRelative(FRotator newRotation){
+void TransformInterpolator::overrideStartSpeedRelative(FRotator newRotation){
     rotatorInterpolator.overrideStartSpeedRelative(newRotation);
 }
 
 
-void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
+void TransformInterpolator::overrideStartSpeedRelative(FVector newStart){
     vectorInterpolator.overrideStartSpeedRelative(newStart);
 }
 
@@ -95,40 +95,40 @@ void TargetInterpolator::overrideStartSpeedRelative(FVector newStart){
 
 
 
-void TargetInterpolator::resetDeltaTime(){
+void TransformInterpolator::resetDeltaTime(){
     vectorInterpolator.resetDeltaTime();
     rotatorInterpolator.resetDeltaTime();
 }
 
 /// @brief sets the time to frame and reached flag is set to false
 /// @param time 
-void TargetInterpolator::setNewTimeToFrame(float time){
+void TransformInterpolator::setNewTimeToFrame(float time){
     vectorInterpolator.overrideTime(time);
     rotatorInterpolator.overrideTime(time);
 }
 
 
-bool TargetInterpolator::hasReachedTarget(){
+bool TransformInterpolator::hasReachedTarget(){
     return vectorInterpolator.hasReachedTarget() && rotatorInterpolator.hasReachedTarget(); //if not setup = true
 }
 
-FVector TargetInterpolator::interpolate(float DeltaTime){
+FVector TransformInterpolator::interpolate(float DeltaTime){
     return vectorInterpolator.interpolate(DeltaTime);
 }
 
 
-FRotator TargetInterpolator::interpolateRotationOnly(float DeltaTime){
+FRotator TransformInterpolator::interpolateRotationOnly(float DeltaTime){
     return rotatorInterpolator.interpolate(DeltaTime);
 }
 
 
-FVector TargetInterpolator::interpolate(float DeltaTime, FRotator &rotationOutgoing){
+FVector TransformInterpolator::interpolate(float DeltaTime, FRotator &rotationOutgoing){
     FVector outpos = interpolate(DeltaTime);
     rotationOutgoing = rotatorInterpolator.interpolate(DeltaTime);
     return outpos;
 }
 
-MMatrix TargetInterpolator::interpolateAndGenerateTransform(float DeltaTime){
+MMatrix TransformInterpolator::interpolateAndGenerateTransform(float DeltaTime){
     MMatrix outMatrix;
     FRotator rotatorOut;
     FVector pos = interpolate(DeltaTime, rotatorOut);
@@ -137,15 +137,15 @@ MMatrix TargetInterpolator::interpolateAndGenerateTransform(float DeltaTime){
     return outMatrix;
 }
 
-float TargetInterpolator::TimeToFrame(){
+float TransformInterpolator::TimeToFrame(){
     return std::max(vectorInterpolator.TimeToFrame(), rotatorInterpolator.TimeToFrame()); //larger one left.
 }
 
-FVector TargetInterpolator::readFromPosition(){
+FVector TransformInterpolator::readFromPosition(){
     return vectorInterpolator.readFrom();
 }
 
-FVector TargetInterpolator::readToPosition(){
+FVector TransformInterpolator::readToPosition(){
     return vectorInterpolator.readTarget();
 }
 
@@ -162,11 +162,11 @@ FVector TargetInterpolator::readToPosition(){
 */
 
 
-void TargetInterpolator::overrideStartWorld(FVector targetIn){
+void TransformInterpolator::overrideStartWorld(FVector targetIn){
     fromWorld = targetIn;
 }
 
-void TargetInterpolator::overrideTargetWorld(FVector targetIn){
+void TransformInterpolator::overrideTargetWorld(FVector targetIn){
     targetWorld = targetIn;
     worldtargetSetup = true;
 }
@@ -175,7 +175,7 @@ void TargetInterpolator::overrideTargetWorld(FVector targetIn){
 /// if the world target is setup, the local target will be also updated, relative to the actor matrix transform
 /// @param newStart new world frame start
 /// @param actor actor with rotation and translation
-void TargetInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatrix &actor){
+void TransformInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatrix &actor){
 
     MMatrix inverse = actor.jordanInverse();
     if (!worldtargetSetup)
@@ -199,7 +199,7 @@ void TargetInterpolator::overrideStartWorldSpeedRelative(FVector newStart, MMatr
 
 
 //for door
-void TargetInterpolator::resetReachedflag(){
+void TransformInterpolator::resetReachedflag(){
     rotatorInterpolator.resetReachedflag();
     vectorInterpolator.resetReachedflag();
 }

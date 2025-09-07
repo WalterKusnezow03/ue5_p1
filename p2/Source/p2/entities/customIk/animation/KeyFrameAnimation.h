@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "FrameProjectContainer.h"
 #include "KeyFrame.h"
@@ -114,8 +114,8 @@ private:
 
 
 
-	class TargetInterpolator interpolator;
-	// class TargetInterpolator interpolator;
+	class TransformInterpolator interpolator;
+	// class TransformInterpolator interpolator;
 	void updateFrameInterpolator();
 
 

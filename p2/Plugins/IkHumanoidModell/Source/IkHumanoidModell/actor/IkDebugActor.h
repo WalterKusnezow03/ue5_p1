@@ -4,7 +4,7 @@
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/HipController.h"
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 #include "IkHumanoidModell/actor/debugEnum/EDebugPart.h"
 
 #include "IkDebugActor.generated.h"
@@ -38,8 +38,8 @@ private:
     HumanoidController humanController;
 
     TwoJointBone bone;
-    TargetInterpolator interpolator;
-    TargetInterpolator interpolator2;
+    TransformInterpolator interpolator;
+    TransformInterpolator interpolator2;
 
     FVector start;
     FVector end;

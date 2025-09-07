@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "p2/entities/customIk/bonePackage/BoneControllerStates.h"
 #include "p2/entities/customIk/animation/GravityInterpolator.h"
@@ -73,7 +73,7 @@ private:
 
 	class KeyFrameAnimation framesA;
 	
-	class TargetInterpolator interpolateB;
+	class TransformInterpolator interpolateB;
 	//class Interpolator interpolateB;
 
 	bool isAnimationAPlaying = true;

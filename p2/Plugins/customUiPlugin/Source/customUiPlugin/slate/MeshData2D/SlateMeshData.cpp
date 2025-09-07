@@ -578,7 +578,7 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
 
     //closest color: 1.0
     //furthest color: 0.0
-    FLinearColor accumulatedColor;
+    FLinearColor accumulatedColor = FLinearColor::Black; //start with black color, otherwise its broken!
 
     if(!fullColorEnabled){
         float totalDistance = 0.0f;
@@ -659,11 +659,8 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     }
 
 
-
-    //clamp
-    accumulatedColor.R = FMath::Clamp(accumulatedColor.R, 0.0f, 1.0f);
-    accumulatedColor.G = FMath::Clamp(accumulatedColor.G, 0.0f, 1.0f);
-    accumulatedColor.B = FMath::Clamp(accumulatedColor.B, 0.0f, 1.0f);
+    // Clamp nur am Ende
+    accumulatedColor = accumulatedColor.GetClamped();
     accumulatedColor.A = 1.0f;
     // FMath::Clamp(accumulatedColor.A, 0.0f, 1.0f);
 

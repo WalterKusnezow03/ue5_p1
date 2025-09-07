@@ -6,7 +6,7 @@
 #include "MotionAction.h"
 #include "p2/entities/customIk/bonePackage/BoneController.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandController.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 
 /**
  * stores states based on the arm motion state enum
@@ -58,7 +58,7 @@ private:
 	ArmMotionStates currentState;
 	std::map<ArmMotionStates, MotionAction> statesMap;
 
-	class TargetInterpolator interpolator;
+	class TransformInterpolator interpolator;
 
 	bool transitioning = false;
 
@@ -116,7 +116,7 @@ public:
 	);
 
 private:
-	class TargetInterpolator hipInterpolator;
+	class TransformInterpolator hipInterpolator;
 	bool hipTransitioning = false;
 	bool setupHipTarget = false;
 

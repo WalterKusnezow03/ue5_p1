@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 #include "CoreMath/animation/FRotatorInterpolator.h"
 #include "GameCore/interfaces/Interactinterface.h"
 #include "terrainPlugin/meshgen/customMeshActor.h"

@@ -621,9 +621,6 @@ void HipController::applyForceGravity(float deltatime){
 
     float currentZheight = translation.getTranslation().Z;
     float groundZheight = latestGroundTruth.Z;
-    
-
-
 
     
     if(currentZheight > groundZheight){
@@ -741,7 +738,7 @@ void HipController::setupRotationForNextStep(float radian){
 
     float timeScaled = 1.0f; //will be overriden on backward interpolation
     hipRotationInterpolator.setTarget(current, end, timeScaled);
-    // FRotator TargetInterpolator::interpolateRotationOnly(float DeltaTime)
+    // FRotator TransformInterpolator::interpolateRotationOnly(float DeltaTime)
 
     rotationSet = true;
 

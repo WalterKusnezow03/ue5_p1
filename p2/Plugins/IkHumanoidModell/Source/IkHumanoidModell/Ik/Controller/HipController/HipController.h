@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "CoreMath/animation/TargetInterpolator.h"
+#include "CoreMath/animation/TransformInterpolator.h"
 #include "CoreMath/animation/RotationInterpolator.h"
 #include "CoreMath/animation/FRotatorInterpolator.h"
 #include "CoreMath/animation/FVectorInterpolator.h"
@@ -97,8 +97,8 @@ private:
     void updateBackwardTargetLocal(FVector &targetLocal);
     
     
-    //TargetInterpolator interpolatorForwardWorld;
-    //TargetInterpolator interpolatorBackwardLocal;
+    //TransformInterpolator interpolatorForwardWorld;
+    //TransformInterpolator interpolatorBackwardLocal;
     FVectorInterpolator interpolatorForwardWorld;
     FVectorInterpolator interpolatorBackwardLocal;
 
