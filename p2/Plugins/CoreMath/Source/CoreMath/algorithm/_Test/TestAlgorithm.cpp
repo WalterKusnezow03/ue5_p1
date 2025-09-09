@@ -7,14 +7,31 @@
 
 
 void TestAlgorithm::LogMessage(FString s){
-    LogMessage(s, " ");
+    FString appendFront = TEXT("TestAlgorithm: ");
+    appendFront += s;
+    CoreMathDebugHelper::logMessage(appendFront);
 }
 
 void TestAlgorithm::LogMessage(FString prefix, FString s){
-    FString appendFront = TEXT("TestAlgorithm: ");
-    appendFront += prefix;
-    CoreMathDebugHelper::logMessage(appendFront, s);
+    prefix += TEXT(" ");
+    prefix += s;
+    LogMessage(prefix);
 }
+
+void TestAlgorithm::LogMessage(FString prefix, bool testSucess){
+
+    FString resultTest = TEXT(" Test ");
+    if (testSucess){
+        resultTest += TEXT("->sucess");
+    }
+    else{
+        resultTest += TEXT("->FAILED");
+    }
+
+    LogMessage(prefix, resultTest);
+}
+
+
 
 // ---- TESTS ----
 
@@ -30,7 +47,7 @@ void TestAlgorithm::TestInnerHullFinder(){
 
     // --- test looks good, as expected ---
 
-    LogMessage("InnerhullFinder", "Start");
+    LogMessage("--- InnerhullFinder Start ---");
 
     TArray<FVector2D> outer{
         FVector2D(0, 0),
@@ -68,7 +85,9 @@ void TestAlgorithm::TestInnerHullFinder(){
     LogMessage("Result inner hull", result);
     LogMessage("Result expected hull", expected);
 
-    LogMessage("InnerhullFinder", "End");;
+    LogMessage("InnerhullFinder inner hull ", result == expected); //true: sucess
+
+    LogMessage("--- InnerhullFinder End ---");
 }
 
 
@@ -76,7 +95,7 @@ void TestAlgorithm::TestInnerHullFinder(){
 
 void TestAlgorithm::TestPolygonHit(){
 
-    LogMessage("Mpolygon intersect", "Start");
+    LogMessage("--- Mpolygon intersect tests Start ---");
     MPolygon polygon;
     TArray<FVector2D> shapeA{
         FVector2D(0, 0),
@@ -98,12 +117,25 @@ void TestAlgorithm::TestPolygonHit(){
     FVector2D A(210, 201);
     FVector2D B(-110, -130);
 
-    if(polygon.DoesIntersect(A,B)){
-        LogMessage("Mpolygon intersect ","test sucess");
-    }else{
-        LogMessage("Mpolygon intersect ","test failed");
-    }
+    LogMessage("Mpolygon intersect line ", polygon.DoesIntersect(A,B)); //true: sucess
 
 
-    LogMessage("Mpolygon intersect", "End");
+
+
+    // -- polygon hit test 1 --
+    MPolygon transformed = polygon;
+    FVector2D move(20, 10);
+    transformed.SetTranslation(move);
+
+    LogMessage("Mpolygon intersect polygon 1 ", polygon.DoesIntersect(transformed));  //true: sucess
+
+    
+    // -- polygon hit test 2 --
+    move = FVector2D(1000, 1000);
+    transformed.SetTranslation(move);
+    LogMessage("Mpolygon intersect polygon 2 ", !polygon.DoesIntersect(transformed));  //false: sucess
+   
+   
+
+    LogMessage("--- Mpolygon intersect tests End ---");
 }

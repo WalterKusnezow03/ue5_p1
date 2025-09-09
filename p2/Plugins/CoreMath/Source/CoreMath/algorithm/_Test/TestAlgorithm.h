@@ -22,12 +22,10 @@ private:
         }
         return output;
     }
-    
+
     static void LogMessage(FString s);
     static void LogMessage(FString prefix, FString s);
-
-
-
+    static void LogMessage(FString prefix, bool testSucess);
 
 private:
     TestAlgorithm() {};

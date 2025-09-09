@@ -9,13 +9,18 @@ public:
     MPolygon();
     ~MPolygon();
 
+    MPolygon(const MPolygon &other);
+    MPolygon &operator=(const MPolygon &other);
+
     ///@brief recommended to start at 0,0, rotated around this point.
     void SetShape(const TArray<FVector2D> &shapeIn);
 
-    bool DoesIntersectClockwiseShape(TArray<FVector2D> &shapeIn);
-    bool DoesIntersect(FVector2D &aWorld, FVector2D &bWorld);
+    bool DoesIntersect(const MPolygon &shapeIn);
+    bool DoesIntersectClockwiseShape(const TArray<FVector2D> &shapeIn);
+    bool DoesIntersect(const FVector2D &aWorld, const FVector2D &bWorld);
 
     /// modify the translation and rotation to check again for hit
+    void SetTranslation(const FVector2D &matrix);
     void SetTranslation(const MMatrix2D &matrix);
     void SetRotation(const MMatrix2D &matrix);
 
@@ -32,22 +37,24 @@ private:
     TArray<FVector2D> shapeTransformed;
     TArray<FVector2D> shapeOriginal;
 
+    FVector2D moveAwayFromIntersection;
+
     bool DoesIntersect(
-        FVector2D &aWorld, // edge 1
-        FVector2D &bWorld,
-        FVector2D &e1, // edge 2
-        FVector2D &e2
+        const FVector2D &aWorld, // edge 1
+        const FVector2D &bWorld,
+        const FVector2D &e1, // edge 2
+        const FVector2D &e2
     );
 
-    float DotProduct(FVector2D &a, FVector2D &b);
+    float DotProduct(const FVector2D &a, const FVector2D &b);
 
     bool SegmentIntersection2D(
-        FVector2D &a0,
-        FVector2D &a1,
-        FVector2D &b0,
-        FVector2D &b1,
+        const FVector2D &a0,
+        const FVector2D &a1,
+        const FVector2D &b0,
+        const FVector2D &b1,
         FVector2D &outIntersection
     );
 
-    FVector2D moveAwayFromIntersection;
+    
 };

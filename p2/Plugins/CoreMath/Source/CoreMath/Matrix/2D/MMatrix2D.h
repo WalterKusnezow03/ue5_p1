@@ -13,12 +13,13 @@ public:
 	MMatrix2D();
 	virtual ~MMatrix2D();
 
-	MMatrix2D(FVector2D &other);
+	MMatrix2D(FVector2D other);
 	
 	MMatrix2D(const MMatrix2D &other);
 	MMatrix2D& operator=(const MMatrix2D &other);
 
-	
+	void SetTranslation(FVector2D vec);
+
 	void operator*=(const MMatrix2D & other);
 	FVector2D operator*(const FVector2D &other) const;
 	FVector2f operator*(const FVector2f &other) const;

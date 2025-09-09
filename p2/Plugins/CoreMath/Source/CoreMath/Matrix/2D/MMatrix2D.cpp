@@ -17,6 +17,20 @@ MMatrix2D::~MMatrix2D()
 
 }
 
+MMatrix2D::MMatrix2D(FVector2D pos){
+    SetTranslation(pos);
+}
+
+void MMatrix2D::SetTranslation(FVector2D vec){
+    /*
+    1 0 tx
+    0 1 ty
+    0  0 1
+    */
+    array[2] = vec.X;
+    array[5] = vec.Y;
+}
+
 bool MMatrix2D::IsZeroScaleMatrix() const {
     float epsilon = 0.000001f;
     return std::abs(array[0]) < epsilon &&

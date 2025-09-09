@@ -41,7 +41,7 @@ void UWorldMarkerComponent::RemoveMarkerFromWorldMarkerCanvas(){
 void UWorldMarkerComponent::BeginDestroy(){
     RemoveMarkerFromWorldMarkerCanvas();
     if(MyMarker && IsValid(MyMarker)){
-        MyMarker->MarkPendingKill(); //marker will be also destroyed. (??? crash here)
+        MyMarker->MarkAsGarbage(); //marker will be also destroyed. (??? crash here)
     }
     MyMarker = nullptr;
 

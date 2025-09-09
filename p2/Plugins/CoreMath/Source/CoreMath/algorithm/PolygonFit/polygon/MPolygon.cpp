@@ -9,10 +9,32 @@ MPolygon::MPolygon(){
 MPolygon::~MPolygon(){
 
 }
+MPolygon::MPolygon(const MPolygon &other){
+    if(this != &other){
+        *this = other;
+    }
+}
+MPolygon &MPolygon::operator=(const MPolygon &other){
+    if(this != &other){
+        myTranslation = other.myTranslation;
+        myRotation = other.myRotation;
+
+        shapeTransformed = other.shapeTransformed;
+        shapeOriginal = other.shapeOriginal;
+
+        moveAwayFromIntersection = other.moveAwayFromIntersection;
+    }
+    return *this;
+}
 
 void MPolygon::SetShape(const TArray<FVector2D> &shapeIn){
     shapeOriginal = shapeIn;
     UpdateTransformedShape();
+}
+
+void MPolygon::SetTranslation(const FVector2D &pos){
+    MMatrix2D mat(pos);
+    SetTranslation(mat);
 }
 
 void MPolygon::SetTranslation(const MMatrix2D &matrix){
@@ -40,7 +62,15 @@ void MPolygon::UpdateTransformedShape(){
     }
 }
 
-bool MPolygon::DoesIntersectClockwiseShape(TArray<FVector2D> &shapeToFit){
+
+
+bool MPolygon::DoesIntersect(
+    const MPolygon &other
+){
+    return DoesIntersectClockwiseShape(other.shapeTransformed);
+}
+
+bool MPolygon::DoesIntersectClockwiseShape(const TArray<FVector2D> &shapeToFit){
     if(shapeToFit.Num() <= 0 || shapeTransformed.Num() <= 0){
         return false;
     }
@@ -58,8 +88,8 @@ bool MPolygon::DoesIntersectClockwiseShape(TArray<FVector2D> &shapeToFit){
 
 
 bool MPolygon::DoesIntersect(
-    FVector2D &aWorld, 
-    FVector2D &bWorld
+    const FVector2D &aWorld, 
+    const FVector2D &bWorld
 ){
     if(shapeTransformed.Num() <= 0){
         return false;
@@ -78,10 +108,10 @@ bool MPolygon::DoesIntersect(
 }
 
 bool MPolygon::DoesIntersect(
-    FVector2D &aWorld, //edge 1
-    FVector2D &bWorld,
-    FVector2D &e1,     //edge 2
-    FVector2D &e2
+    const FVector2D &aWorld, //edge 1
+    const FVector2D &bWorld,
+    const FVector2D &e1,     //edge 2
+    const FVector2D &e2
 ){
     //right left test by normal
     FVector2D edge = bWorld - aWorld;
@@ -107,7 +137,7 @@ bool MPolygon::DoesIntersect(
     {
         //since an inetrsection is detected, one point must be on the negative side of the normal.
         bool e1Outside = DotProduct(edgeNormal, e1Local) < 0.0; //assuming e1 is outside of clockwise ordered shape
-        FVector2D &outsidePoint = e1Outside ? e1 : e2;
+        const FVector2D &outsidePoint = e1Outside ? e1 : e2;
 
         // AB = B - A, transform needed inwards to not intersect
         //(might not be needed for the algorythm)
@@ -120,16 +150,16 @@ bool MPolygon::DoesIntersect(
 }
 
 
-float MPolygon::DotProduct(FVector2D &a, FVector2D &b){
+float MPolygon::DotProduct(const FVector2D &a, const FVector2D &b){
     return a.X * b.X + a.Y * b.Y;
 }
 
 
 bool MPolygon::SegmentIntersection2D(
-    FVector2D &a0_2D,
-    FVector2D &a1_2D,
-    FVector2D &b0_2D,
-    FVector2D &b1_2D,
+    const FVector2D &a0_2D,
+    const FVector2D &a1_2D,
+    const FVector2D &b0_2D,
+    const FVector2D &b1_2D,
     FVector2D &outIntersection_2D
 ){
 
