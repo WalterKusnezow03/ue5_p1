@@ -35,7 +35,20 @@ void TorsoController::setup(
         world
     );
 
-    hipPitch.pitchRadAdd(MMatrix::degToRadian(180));
+    
+}
+
+void TorsoController::ResetAndRebuild(
+    MMatrix &actorTranslation,
+    MMatrix &actorRotation
+){
+    //M = T * R <-- lese richtung --
+    //MMatrix M = actorTranslation * actorRotation;
+    Tick(actorTranslation, actorRotation, 0.0f); //lazy rebuild, must be refactured.
+
+    FString message = TEXT("HumanoidController Rebuild: TorsoController: Rebuild Torso ");
+    message += actorTranslation.getTranslation().ToString();
+    DebugHelper::logMessage(message);
 }
 
 void TorsoController::Tick(

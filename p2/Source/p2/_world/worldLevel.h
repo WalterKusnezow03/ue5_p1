@@ -29,8 +29,8 @@ private:
 	
 
 	ATerrainLauncher *terrainLauncher = nullptr;
-	
-	bool bBlockEntities = true;
+
+	bool bBlockEntities = false; //true (was false for debugging)
 	bool bBlockOutPostCreation = true;
 
 	static AworldLevel *InstanceWorldLevel;

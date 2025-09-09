@@ -52,8 +52,8 @@ private:
 
 public:
     void setupInterpolatedD(
-        FVector &endA,
-        FVector &endB,
+        FVector &endA, //start LOCAL, With rotation
+        FVector &endB, //lift off, LOCAL, with rotation
         FVector &movedir,
         float time,
         float velocity,

@@ -8,19 +8,23 @@
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 #include "customUiPlugin/ui/alignmentPresets/PresetCornersLayout.h"
 
+#include "customUiPlugin/ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h"
+
 #include "PlayerHud.generated.h"
 
 struct FPlayerStatus;
 class UPlayerUiBase;
 
 UCLASS()
-class P2_API UPlayerHud : public UCanvasScreen {
+class P2_API UPlayerHud : public UWorldMarkerCanvas {
+//UCanvasScreen {
     GENERATED_BODY()
 public:
     
     virtual void init(UPlayerUiBase &refin) override;
 
-    
+    virtual void Tick(float deltatime) override;
+
     void updateAmmunitionText(FString message);
     void updateHealthText(FString health);
 

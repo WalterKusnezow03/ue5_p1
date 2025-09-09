@@ -56,6 +56,9 @@ public:
     ///@brief removed from click dispatch and from canvas if stored
     virtual void RemoveChild(IBaseUiInterface *item) override;
 
+    ///@brief removed from canvas AND any IBaseUiInterface having the same widget as ptr.
+    virtual void RemoveChild(UWidget *item) override;
+
     // --- to be REMOVED ---
     //raw adding.
     void AddChild(UWidget *widget);

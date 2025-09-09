@@ -27,6 +27,9 @@
 //gc
 #include "GcGameCore/Launcher/GcLauncher.h"
 
+//debug
+#include "IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.h"
+
 
 //constructor
 AgameModeSubclass::AgameModeSubclass()
@@ -76,8 +79,9 @@ void AgameModeSubclass::BeginPlay()
          */
         AworldLevel::initWorld(GetWorld());
     }
-}
 
+    SlipLiftOffFrameFinder::Test();
+}
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
     DebugHelper::logMessage(TEXT("DEBUG END PLAY"));

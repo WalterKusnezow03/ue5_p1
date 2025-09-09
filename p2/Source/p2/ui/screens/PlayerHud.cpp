@@ -20,7 +20,7 @@ void UPlayerHud::init(UPlayerUiBase &refin){
     createTopWarningElement();
 }
 
-/// ----- PLAYER HUD SECTION ----- START
+/// ----- PLAYER HUD INIT SECTION ----- START
 void UPlayerHud::createBasePlayerHud(){
     
     playerHudCornerLayout = NewObject<UPresetCornersLayout>(this);
@@ -89,7 +89,7 @@ void UPlayerHud::createTopWarningElement(){
     }
 }
 
-/// ----- PLAYER HUD SECTION ----- END
+/// ----- PLAYER HUD INIT SECTION ----- END
 
 //PUBLIC API
 void UPlayerHud::Update(FPlayerStatus &playerStatusStruct){
@@ -121,4 +121,11 @@ void UPlayerHud::updateTopWarningElementTimed(FString message, float timetolive)
     if(topWaringElement){
         topWaringElement->setTextTimed(message, timetolive);
     }
+}
+
+
+/// --- Tick ---
+void UPlayerHud::Tick(float deltatime){
+    Super::Tick(deltatime);
+    
 }

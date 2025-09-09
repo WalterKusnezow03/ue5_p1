@@ -35,6 +35,13 @@ void ASharedRaycastParamManager::EndPlay(const EEndPlayReason::Type EndPlayReaso
     Super::EndPlay(EndPlayReason);
 }
 
+const CollisionTracker *ASharedRaycastParamManager::getShared(){
+    if(instance){
+        return &instance->sharedCollisionParamsProvider;
+    }
+    return nullptr;
+}
+
 /// @brief gets the collison params with ignored actor list internal from 
 /// ASharedRaycastParamManager instance - is all skelletons tracked, so they dont ontop of each other.
 /// carried items tracked too!

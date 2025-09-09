@@ -12,8 +12,16 @@ HumanoidController::~HumanoidController(){
 
 }
 
+void HumanoidController::EnableDebugLogExtended(){
+    hipController.EnableDebugLogExtended();
+}
+
 FVector HumanoidController::GetLocation(){
     return hipController.GetLocation();
+}
+
+FRotator HumanoidController::GetRotation(){
+    return hipController.getOrientation().extractRotator();
 }
 
 FVector HumanoidController::lookDirection(){
@@ -22,6 +30,21 @@ FVector HumanoidController::lookDirection(){
 
 void HumanoidController::SetLocation(FVector &target){
     hipController.SetLocation(target);
+    //rebuild torso once
+    torsoController.Tick(
+        hipController.getTranslation(), // MMatrix &actorTranslation,
+        hipController.getOrientation(), // MMatrix &actorRotation,
+        0.0f
+    );
+}
+
+void HumanoidController::ResetAndRebuild(){
+    TickMainCarriedItemSocket(0.0f);
+    hipController.ResetAndRebuild();
+    torsoController.ResetAndRebuild(
+        hipController.getTranslation(), // MMatrix &actorTranslation,
+        hipController.getOrientation() // MMatrix &actorRotation,
+    );
 }
 
 void HumanoidController::defaultSetup(UWorld *world){

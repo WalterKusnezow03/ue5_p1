@@ -21,7 +21,10 @@ UCLASS()
 class P2_API AHumanEntityScript : public AEntityScript
 {
 	GENERATED_BODY()
-	
+
+private:
+	bool bDebugBlockOutpostRequest = true;
+
 public:
 	AHumanEntityScript();
 	virtual void init() override;

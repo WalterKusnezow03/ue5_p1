@@ -13,8 +13,15 @@
 /// @brief controls two bone attachments and runnign physics based on slip data.
 /// moves the underlying hip 
 class IKHUMANOIDMODELL_API HipController {
+private:
+    bool bExtendedDebugLog = false;
+    bool bDebugBlockLocomotion = false;
+    bool bDebugBlockTick = false;
+    void showExtendedDebugLog(float deltatime);
 
 public:
+    void EnableDebugLogExtended();
+
     HipController();
     ~HipController();
 
@@ -24,6 +31,11 @@ public:
     //setup custom needed
     void setup(float legPart1, float legPart2, float offsetHip, UWorld *world);
 
+    /// @brief resets both legs into default state.
+    void ResetAndRebuild();
+
+    /// @brief tick to update based on locomotion, gravity etc.
+    /// @param deltatime 
     void Tick(float deltatime);
 
 
@@ -57,8 +69,7 @@ private:
     //removed ik carried item
     FCollisionQueryParams collisionParams;
 
-    //
-    float setupLegLength = 0.0f;
+    float setupLegLength = 100.0f; //some value, cant be 0 for setting location.
     float bodyMass = 30.0f; // 10 kg ?
 
     float motionTime = 0.3f; // 0.7f;//0.2f;
@@ -104,6 +115,9 @@ private:
 
     void setupBackwardInterpolation();
     void setupForwardInterpolation();
+    void ApplyVelocityToLocalTrajectory(FVector &localTrajectory);
+    //experimental
+    void RemoveVelocityFromWorldTrajectory(FVector &localTrajectory);
 
     void drawLocation(float deltatime);
 
@@ -135,11 +149,10 @@ private:
 
     //helper for anim time
     float horizontalVelocity();
+    float verticalVelocity();
     float animationTimeBasedOnCurrentVelocity(
         FVector &localStart,
-        FVector &localEnd
-    );
-
+        FVector &localEnd);
 
     //new rotation
 public:
@@ -183,6 +196,18 @@ private:
     EHipControllerStates currentControllerState = EHipControllerStates::EIdle;
     bool locoMotionStateEnabled();
 
-    //debug
-    bool AccelerationIsSliding(FVector &acceleration);
+    ///@brief removes the Y sliding from a vector in world space
+    ///by moving it into local space, keeps forward motion.
+    void RemoveSlidingFromVector(FVector &acceleration);
+
+
+
+    // --- debug tools ---
+    float debugIntervall = 1.0f;
+    float debugIntegratedTime = 0.0f;
+
+    bool DebugHorizontalVelocityOvershoot();
+
+    bool IsInGround();
+    void DebugIsInGround();
 };

@@ -78,13 +78,13 @@ public:
 
 protected:
 
-    void RegisterCursorClick();
+    virtual void OnCursorClick();
 
 	bool isInited = false;
 	UCanvasPanel *baseCanvas = nullptr;
 
 	void CreateCanvasPanel();
-	virtual void showPlayerCursor(bool show);
+	
 	ScreenOpenStack openedScreenStack;
 
     void createTickActor(UWorld *world);

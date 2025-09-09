@@ -366,8 +366,8 @@ bool SlipContainer::debugSkipToCloseframes(FVector a, FVector b){
 
 //new: compensation velocity
 void SlipContainer::setupInterpolatedD(
-    FVector &endA, //start
-    FVector &endB, //lift off
+    FVector &endA, //start LOCAL, With rotation
+    FVector &endB, //lift off, Local, with rotation
     FVector &movedir, 
     float time, 
     float velocityDown,
@@ -394,7 +394,7 @@ void SlipContainer::setupInterpolatedD(
 
     
 
-    float gravityIntegrated = -981 * time; //accumulated gravity acceleration
+    float gravityIntegrated = -981.0f * time; //accumulated gravity acceleration
     float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
 
     //extra gravity to have 

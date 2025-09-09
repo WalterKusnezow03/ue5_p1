@@ -23,6 +23,8 @@ public:
     static void Add(AActor *actor);
     static void Remove(AActor *actor);
 
+    static const CollisionTracker *getShared();
+
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

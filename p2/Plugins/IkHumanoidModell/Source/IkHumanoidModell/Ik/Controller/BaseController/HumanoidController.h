@@ -18,8 +18,15 @@ public:
     HumanoidController();
     virtual ~HumanoidController();
 
-    
+    void EnableDebugLogExtended();
+
     virtual void defaultSetup(UWorld *world);
+
+    void ResetAndRebuild();
+
+    /// @brief call tick function to run locomotion, hip and torso controller, aswell as
+    /// update all carried items.
+    /// @param deltatime 
     virtual void Tick(float deltatime);
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
     void dropCarriedItem();
@@ -34,6 +41,7 @@ public:
     void forceYawAdd(float degree);
 
     FVector GetLocation();
+    FRotator GetRotation();
     FVector lookDirection();
 
     /// @brief will place skelleton at a target, foot on ground

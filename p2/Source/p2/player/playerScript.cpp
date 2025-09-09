@@ -143,7 +143,7 @@ void AplayerScript::debugPathFinder(){
 void AplayerScript::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+    
 
 
 

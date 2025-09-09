@@ -52,6 +52,9 @@ protected:
 
 public:	
 	// Called every frame
+	///@brief processPendingRecoil called,
+	/// PlayerInfo::Update called
+	/// UpdateCursorVisibilityBasedOnPause
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
@@ -123,7 +126,7 @@ private:
 	//fall back flag! 
 	bool isPausedFlag = false;
 
-	
+
 	void UpdateCursorVisibilityBasedOnPause();
 	bool cursorVisibleFlag = false;
 };

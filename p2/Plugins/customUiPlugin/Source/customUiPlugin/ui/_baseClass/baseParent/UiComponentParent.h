@@ -18,7 +18,7 @@ public:
     virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
 
-
+protected:
     /// @brief adds child tracked to Click, Tick and Visibilty Dispatch
     virtual void AddChild(IBaseUiInterface *item);
 
@@ -30,7 +30,7 @@ public:
     /// the widget ptr to the base interface widget ptrs.
     virtual void RemoveChild(UWidget *item);
 
-protected:
+
     bool CanAddChild(IBaseUiInterface *item);
 
     

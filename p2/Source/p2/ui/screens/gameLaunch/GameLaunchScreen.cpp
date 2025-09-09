@@ -13,7 +13,6 @@
 #include "p2/_world/worldLevel.h"
 
 //debug
-#include "customUiPlugin/slate/UWidgetConversion/customUiBase/CustomUiSlateWidgetBase.h"
 #include "customUiPlugin/slateDerived/bar/WidgetProgressBarBase.h"
 
 #include "customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h"
@@ -94,10 +93,7 @@ void UGameLaunchScreen::createMenu(){
 
         //debug custom slate widgets
         if(true){
-            //is ok - doesnt have size box wrap anymore. - overlaps to top tho!
-            //UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-            //newWidgetSlateBased->init();
-            //menuVbox->AddChild(newWidgetSlateBased);
+            
 
 
             UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
@@ -106,19 +102,10 @@ void UGameLaunchScreen::createMenu(){
         
 
         if(true){
-            //works - can be ticked.
-            //pasted Template into widget ptr internally
-            UCustomUiSlateWidgetBase *newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
-            menuVbox->AddChild(newWidgetSlateBased);
 
-            newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
-            menuVbox->AddChild(newWidgetSlateBased);
+            UWidgetProgressBarBase *p = NewObject<UWidgetProgressBarBase>(this);
+            menuVbox->AddChild((IBaseUiInterface*) p);
 
-            newWidgetSlateBased = NewObject<UCustomUiSlateWidgetBase>(this);
-            newWidgetSlateBased->TInit<UWidgetProgressBarBase>();
-            menuVbox->AddChild(newWidgetSlateBased);
         }
 
         

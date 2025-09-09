@@ -81,11 +81,7 @@ void UPlayerUiBase::openGameScreen(){
     //designed to be overriden!
 }
 
-void UPlayerUiBase::showPlayerCursor(bool show){
-    //referenceManager::showPlayerCursor(show);
 
-    //designed to be overriden!
-}
 
 
 /// ----- MANUAL CLICK DISPATCHER ------
@@ -98,7 +94,7 @@ void UPlayerUiBase::updateClickDispatch(){
     if (PressedButtons.Contains(EKeys::LeftMouseButton)) {
         if(!bMouseLeftIsPressed){
             // Linksklick ist aktuell gedrückt und war es vorher nicht
-            RegisterCursorClick();
+            OnCursorClick();
             DebugHelper::showScreenMessage("UPlayerUiBase: SLATE CLICK REGISTERED", FColor::Red);    
         }
         bMouseLeftIsPressed = true;
@@ -110,7 +106,7 @@ void UPlayerUiBase::updateClickDispatch(){
 }
 
 // new manual cursor dispatching clicks!
-void UPlayerUiBase::RegisterCursorClick(){
+void UPlayerUiBase::OnCursorClick(){
     openedScreenStack.dispatchClick();
 }
 

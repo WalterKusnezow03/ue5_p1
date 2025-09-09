@@ -66,18 +66,7 @@ UWorld *referenceManager::GetWorld(){
     return nullptr;
 }
 
-/**
- * ui helper
- */
-void referenceManager::showPlayerCursor(bool show){
-    referenceManager *pointer = instance();
-    if(pointer != nullptr){
-        AplayerScript *p = pointer->getPlayerPointer();
-        if(p != nullptr){
-            p->showCursor(show);
-        }
-    }
-}
+
 
 
 ///@brief reloads the player loadout if the player pointer is available and the loadout was

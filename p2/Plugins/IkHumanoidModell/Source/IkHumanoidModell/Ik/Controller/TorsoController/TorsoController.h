@@ -29,6 +29,11 @@ public:
         UWorld *world
     );
 
+    void ResetAndRebuild(
+        MMatrix &actorTranslation,
+        MMatrix &actorRotation
+    );
+
     void Tick(
         MMatrix &actorTranslation,
         MMatrix &actorRotation,
@@ -47,10 +52,6 @@ public:
 
 private:
     
-
-    //unclear how but it must be somehow shared between the bones.
-    //will maybe be copied every frame.
-    MMatrix hipPitch;
 
     LayeredTwoJointBone partLeft;
     LayeredTwoJointBone partRight;

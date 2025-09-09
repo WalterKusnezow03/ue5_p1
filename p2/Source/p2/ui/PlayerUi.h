@@ -70,8 +70,11 @@ public:
 	static UPlayerUi *currentInstance();
 
 	static UPlayerUi *createNewInstance(UWorld *world);
+
+protected:
 	virtual void init(UWorld *world) override;
 
+public:
 	UFUNCTION()
 	void openPauseScreen();
 
@@ -86,8 +89,6 @@ public:
 	UFUNCTION()
 	void openGameLaunchScreen();
 
-	//UFUNCTION()
-	//void closeLatestScreen();
 
 	void updateMissionText(FString messgae);
 	void updateMissionTextTimed(FString message);
@@ -103,7 +104,7 @@ protected:
 	void createLoadoutScreen();
 	void createGameLaunchScreen();
 
-	virtual void showPlayerCursor(bool show) override;
+	
 
 	//screens
 	bool pauseMenuOpened = false;

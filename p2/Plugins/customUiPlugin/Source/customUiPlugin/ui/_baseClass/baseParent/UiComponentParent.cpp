@@ -85,7 +85,7 @@ void UUiComponentParent::RemoveChildSwapPopBack(IBaseUiInterface *item){
     
     //remove from interface array
     int32 Index = -1;
-    if (trackedChildsInterface.Find(item, Index)){
+    if (trackedChildsInterface.Find(item, Index)){ //remove from tick interfaces.
         //swap with back, pop
         int32 lastIndex = trackedChildsInterface.Num() - 1;
         trackedChildsInterface[Index] = trackedChildsInterface[lastIndex];
@@ -99,7 +99,7 @@ void UUiComponentParent::RemoveChildSwapPopBack(UWidget *widget){
     }
 
     int32 Index = -1;
-    if (trackedChildsAsUWidget.Find(widget, Index))
+    if (trackedChildsAsUWidget.Find(widget, Index)) //remove from tracked uwidgets.
     {
         //swap with back, pop
         int32 lastIndex = trackedChildsAsUWidget.Num() - 1;
@@ -126,6 +126,7 @@ void UUiComponentParent::RemoveChild(UWidget *item){
             }
         }
     }
+    //remove parent interface if found
     RemoveChildSwapPopBack(foundParent);
 
     // remove from UWidget array

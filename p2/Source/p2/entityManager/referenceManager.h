@@ -24,8 +24,6 @@ public:
 	void setPlayerReference(AplayerScript *newPointer);
 	AplayerScript *getPlayerPointer();
 
-
-	static void showPlayerCursor(bool show);
 	
 	static void reloadPlayerLoadoutIfNeeded(LoadoutHelper &other);
 

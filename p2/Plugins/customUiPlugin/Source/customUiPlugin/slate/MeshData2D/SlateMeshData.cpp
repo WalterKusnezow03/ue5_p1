@@ -659,7 +659,7 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     }
 
 
-    // Clamp nur am Ende
+    //clamp color very important
     accumulatedColor = accumulatedColor.GetClamped();
     accumulatedColor.A = 1.0f;
     // FMath::Clamp(accumulatedColor.A, 0.0f, 1.0f);

@@ -11,6 +11,12 @@ public:
     BoneAttachment();
     ~BoneAttachment();
 
+    /// @brief will reset the bone matrices and rebuild it
+    void ResetAndRebuild(
+        MMatrix &translation,
+        MMatrix &orientation
+    );
+
     void setWorld(UWorld *world);
     void setAsLeg();
 
@@ -59,6 +65,8 @@ public:
         float deltatime
     );
 
+    ///@brief projects a world trajectory into local space, derotated,
+    ///into the start effector space of the bone (Inner offset removed.)
     FVector inLocalSpace(
         FVector &worldFrame,
         MMatrix &rootTranslation,
@@ -109,11 +117,37 @@ private:
     SlipContainer container;
 
 public:
+    /// @brief pre calculates thee slip scalar D for slip force, based on the 
+    /// current end effector location and a dynamically calculated lift off frame
+    /// the lift off frame is currently hacked from the current end effector location,
+    /// another overloaded method will fix this issue.
+    /// @param orientation 
+    /// @param localEnd 
+    /// @param time 
+    /// @param velocityDown 
+    /// @param mass 
     void setupSlipDataOnStanceBegin(
         MMatrix &orientation,
-        FVector &localEnd,
+        FVector &defaultForwardFrame,
         float time,
         float velocityDown,
         float mass
     );
+
+
+
+    void setupSlipDataOnStanceBegin(
+        MMatrix &orientation,
+        MMatrix &translation,
+        FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
+        float time,
+        float velocityDown,
+        float mass
+    );
+
+
+
+
+
+
 };

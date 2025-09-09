@@ -24,7 +24,7 @@
 
 
 // Sets default values
-AHumanEntityScript::AHumanEntityScript()
+AHumanEntityScript::AHumanEntityScript() : AEntityScript()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,19 +41,13 @@ void AHumanEntityScript::BeginPlay(){
 }
 
 void AHumanEntityScript::init(){
-    Super::init();
+    Super::init(); //will setup default vars and preoject skelleton to ground.
 
     attackTypeOfBot = EAttackType::EAssault;
-
-    FVector location = GetActorLocation();
-    
-    humanoidPluginController.SetLocation(location);
-
 
     //DebugHelper::showScreenMessage("human init");
     
     //weapon currently hidden
-    
     EntityManager *e = AworldLevel::entityManager();
     if (e != nullptr && weaponPointer == nullptr)
     {
@@ -84,12 +78,6 @@ void AHumanEntityScript::init(){
         }
     }
 
-    //spotting
-    spottedPlayer = false;
-    canSeePlayer = false;
-
-    defaultSpottingTime = 5;
-	setSpottingTime(defaultSpottingTime);
 
     //outpost
     outpost = nullptr;
@@ -283,6 +271,10 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
 
 /// @brief finds an outpost nearby if needed and subscribes to it
 void AHumanEntityScript::findOutPostNearby(){
+    if(bDebugBlockOutpostRequest){
+        return;
+    }
+
     if(outpost == nullptr){
         //try find outpost nearby
         OutpostManager *instance = AworldLevel::outpostManager(); // OutpostManager::instance();

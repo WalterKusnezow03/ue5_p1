@@ -21,6 +21,8 @@
 
 #include "GcGameCore/Launcher/GcLauncher.h"
 
+#include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
+
 #include <map>
 
 
@@ -197,6 +199,12 @@ void EntityManager::add(AcustomMeshActor *meshActorIn){
 
 FCollisionQueryParams EntityManager::getIgnoredRaycastParams(){
     //return collisionIgnoreParams;
+
+    //merge with skelleton collision params
+    const CollisionTracker *tracker = ASharedRaycastParamManager::getShared();
+    if(tracker){
+        return tCollisionMap.getAllCollisionParamsMergedWith(*tracker);
+    }
     return tCollisionMap.getAllCollisonParams();
 }
 
@@ -364,8 +372,11 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
         }
     }*/
 
-    
-   if(assetManager *a = assetManager::instance()){
+
+
+    //object pool will spawn.
+    /*
+    if(assetManager *a = assetManager::instance()){
        UClass *bp = a->Find<entityEnum, UClass>(entityEnum::human_enum);
        // a->findBp(entityEnum::human_enum);
        if (bp != nullptr)
@@ -384,7 +395,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
                }
            }
         }
-    }
+    }*/
     return nullptr;
 }
 

@@ -5,7 +5,7 @@
 ===========================================================================*/
 
 #include "UObject/GeneratedCppIncludes.h"
-#include "customUiPlugin/slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h"
+#include "customUiPlugin/ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeWorldMarkerCanvas() {}
 // Cross Module References
@@ -50,21 +50,21 @@ void EmptyLinkFunctionForGeneratedCodeWorldMarkerCanvas() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWorldMarkerCanvas_Statics::Class_MetaDataParams[] = {
 		{ "Comment", "///@brief will save any kind of \"WidgetSlateWrapperBase\" tied to a world position\n///and render it to thu UCanvasScreen\n///can for example display interaction keys \"E to pickup etc..\"\n/// ---> Will tick world marker manually, no other widget add needed here!\n" },
-		{ "IncludePath", "slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
-		{ "ModuleRelativePath", "slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
+		{ "IncludePath", "ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
+		{ "ModuleRelativePath", "ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
 		{ "ToolTip", "@brief will save any kind of \"WidgetSlateWrapperBase\" tied to a world position\nand render it to thu UCanvasScreen\ncan for example display interaction keys \"E to pickup etc..\"\n ---> Will tick world marker manually, no other widget add needed here!" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_trackedMarkers_Inner = { "trackedMarkers", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UClass_UWorldMarker_NoRegister, METADATA_PARAMS(nullptr, 0) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_trackedMarkers_MetaData[] = {
-		{ "ModuleRelativePath", "slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
+		{ "ModuleRelativePath", "ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
 	};
 #endif
 	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_trackedMarkers = { "trackedMarkers", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UWorldMarkerCanvas, trackedMarkers), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_trackedMarkers_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_trackedMarkers_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_Playercontroller_MetaData[] = {
-		{ "ModuleRelativePath", "slateDerived/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
+		{ "ModuleRelativePath", "ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_Playercontroller = { "Playercontroller", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UWorldMarkerCanvas, Playercontroller), Z_Construct_UClass_APlayerController_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_Playercontroller_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UWorldMarkerCanvas_Statics::NewProp_Playercontroller_MetaData)) };
@@ -106,15 +106,15 @@ void EmptyLinkFunctionForGeneratedCodeWorldMarkerCanvas() {}
 	UWorldMarkerCanvas::UWorldMarkerCanvas(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 	DEFINE_VTABLE_PTR_HELPER_CTOR(UWorldMarkerCanvas);
 	UWorldMarkerCanvas::~UWorldMarkerCanvas() {}
-	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics
+	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics
 	{
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
-	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWorldMarkerCanvas, UWorldMarkerCanvas::StaticClass, TEXT("UWorldMarkerCanvas"), &Z_Registration_Info_UClass_UWorldMarkerCanvas, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWorldMarkerCanvas), 2982357704U) },
+	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo[] = {
+		{ Z_Construct_UClass_UWorldMarkerCanvas, UWorldMarkerCanvas::StaticClass, TEXT("UWorldMarkerCanvas"), &Z_Registration_Info_UClass_UWorldMarkerCanvas, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWorldMarkerCanvas), 3766059569U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_251712824(TEXT("/Script/customUiPlugin"),
-		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_1299263873(TEXT("/Script/customUiPlugin"),
+		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_canvas_WorldMarkerCanvas_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

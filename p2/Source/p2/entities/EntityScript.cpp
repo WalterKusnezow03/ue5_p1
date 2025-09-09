@@ -15,10 +15,13 @@
 #include "GameCore/util/FVectorUtil.h"
 
 
+#include "p2/ui/PlayerUi.h"
+
 
 // Sets default values
 AEntityScript::AEntityScript()
 {
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -33,7 +36,32 @@ void AEntityScript::BeginPlay()
 	BeginPlayHumanoidController();
 
 	init();
+	CreateMarkerOnBeginPlay();
 }
+
+void AEntityScript::CreateMarkerOnBeginPlay(){
+	if(!markerComponent){
+		FVector offset(0, 0, 100);
+		markerComponent = UWorldMarkerComponent::Make(this, offset);
+		if(markerComponent){
+			//add to player Canvas
+			if(UPlayerUi *ui = UPlayerUi::currentInstance()){ //instance will be created from game mode base.
+				UPlayerHud *playerHud = ui->HudInstance();//hud isA worldmarker canvas
+				if(playerHud){
+					playerHud->AddMarker(markerComponent);
+					markerComponent->SetEnabled(true); //not needed
+
+					DebugHelper::logMessage("AEntityScript created marker.");
+				}
+			}
+		}
+
+
+		
+	}
+}
+
+
 
 /// @brief will enable the entity for tick
 /// set the player pointer, 
@@ -46,24 +74,16 @@ void AEntityScript::init(){
 
 	health = 100;
 	spottedPlayer = false;
+	canSeePlayer = false;
+
 	playerPointer = nullptr;
-	defaultSpottingTime = 5;
+
+	defaultSpottingTime = 5.0f;
 	setSpottingTime(defaultSpottingTime);
 	setupRaycastIgnoreParams();
 
-
-    spottedPlayer = false;
-    canSeePlayer = false;
-
-
 	//set team
-
 	setTeam(teamEnum::neutralTeam);
-
-
-	FVector offset = GetActorLocation();
-
-	humanoidPluginController.SetLocation(offset);
 
 	projectActorToGround();
 }
@@ -79,10 +99,11 @@ void AEntityScript::Tick(float DeltaTime)
 	if(AworldLevel::gameStateManager.GameStateIsPaused()){
 		return;
 	}
-
+	
 	//tick bone controller
 	humanoidPluginController.Tick(DeltaTime);
-	SetActorLocation(humanoidPluginController.GetLocation());
+	SetActorLocation(humanoidPluginController.GetLocation()); //override location for markers and pathfinding, all.
+	//SetActorRotation(humanoidPluginController.GetRotation());
 
 	if(AworldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
 		humanoidPluginController.setStateWalking();
@@ -118,11 +139,13 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	canSeePlayer = false; //reset if not reserved for frane update
-	bool withinAngle = withinVisionAngle(playerPointer);
-	bool withinRange = isWithinMaxRange(playerPointer->GetActorLocation());
+	
 
 	// if not spotted yet, check angle, if angle ok, check vision
-	if(withinAngle && withinRange){
+	if(
+		withinVisionAngle(playerPointer) && 
+		isWithinMaxRange(playerPointer->GetActorLocation())
+	){
 		//DebugHelper::showScreenMessage("player vision check");
 		canSeePlayer = performRaycast(playerPointer);
 	}
@@ -134,14 +157,16 @@ void AEntityScript::Tick(float DeltaTime)
 		if(!spottedPlayer){
 			updateSpottingTime(DeltaTime);
 		}
-	}else{
+		DebugHelper::showScreenMessage("can see player");
+	}
+	else
+	{
 		//cant see player
 		if(!spottedPlayer){
 			//cant see, hasnt spotted: reset
 			setSpottingTime(defaultSpottingTime);
 		}
 	}
-
 
 	//moves towards player is spotted and cant see player
 	//moveTowardsPlayer(DeltaTime);
@@ -250,6 +275,7 @@ bool AEntityScript::performRaycast(AActor *target) //because a reference is expe
 		// Get the camera location and rotation
 		FVector End = target->GetActorLocation();
 
+
 		// Define the start and end vectors for the raycast
 		FVector Start = this->GetActorLocation();
 
@@ -353,17 +379,22 @@ void AEntityScript::projectActorToGround(){
 		// ignoreParams = e->getIgnoredRaycastParams(); //example for getting all
 		ignoreParams = e->getIgnoredRaycastParams();
 	}
-	ignoreParams.bTraceComplex = false;
+	ignoreParams.bTraceComplex = true;
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
 	
 	// If the raycast hit something, log the hit actor's name
-	if (bHit)
-	{
-		FVector output = HitResult.ImpactPoint;
-		SetActorLocation(output);
-		humanoidPluginController.SetLocation(output);
+	if(bHit){
+		humanoidPluginController.SetLocation(HitResult.ImpactPoint);
+		SetActorLocation(humanoidPluginController.GetLocation());
+
+
+		//debug
+		humanoidPluginController.EnableDebugLogExtended();
+
 	}
+	//rebuild legs.
+	humanoidPluginController.ResetAndRebuild();
 }
 
 
@@ -402,9 +433,19 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 
 
 void AEntityScript::actUponCurrentAction(float DeltaTime){
-	if(spottedPlayer && !canSeePlayer){
-		actionManager.changeToAction(EActionType::EMoveToPlayer);
+	if(team == teamEnum::enemyTeam){
+		if(spottedPlayer && !canSeePlayer){
+			actionManager.changeToAction(EActionType::EMoveToPlayer);
+		}
 	}
+	if(team == teamEnum::neutralTeam){
+		if(spottedPlayer){
+			actionManager.changeToAction(EActionType::EMoveToPlayer);
+		}
+	}
+	
+	
+	
 
 	EntityAction &currentAction = actionManager.currentAction();
 	if(currentAction.actionType() == EActionType::EMoveToPlayer){
@@ -432,19 +473,19 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 /// @brief will allow the entity to move towards the player
 /// @param deltaTime to calculate the movement speed
 void AEntityScript::moveTowardsPlayer(float deltaTime){
-	if(spottedPlayer && !canSeePlayer){
-		if (!hasNodesInPathLeft() && !pathDelayRunning())
-		{
-			//ask for path
-			if(playerPointer != nullptr ){
-				FVector target = playerPointer->GetActorLocation();
-				requestNewPathTo(target, true);
-			}
+	
+	if (!hasNodesInPathLeft() && !pathDelayRunning())
+	{
+		//ask for path
+		if(playerPointer != nullptr ){
+			FVector target = playerPointer->GetActorLocation();
+			requestNewPathTo(target, true);
 		}
-
-		//move path
-		followpath(deltaTime); 
 	}
+
+	//move path
+	followpath(deltaTime); 
+	
 }
 
 void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
@@ -481,6 +522,8 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 /// @param deltaTime for calculating the movement speed
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
+
+		DebugHelper::showScreenMessage("Following path.");
 
 		FVector currentLocation = humanoidPluginController.GetLocation(); 
 
@@ -523,29 +566,13 @@ bool AEntityScript::hasNodesInPathLeft(){
 /// @param pos position FVector to compare to
 /// @return true or false
 bool AEntityScript::reachedPosition(FVector pos){
-	FVector s = humanoidPluginController.GetLocation();
-
-
-	float dist = FVector::Dist(s, pos);
-	float epsilonDistance = 100;
-	if (dist < epsilonDistance){
-		return true;
-	}
-
-	s.Z = 0;
+	FVector currentLocation = humanoidPluginController.GetLocation();
+	currentLocation.Z = 0;
 	pos.Z = 0;
-	dist = FVector::Dist(s, pos);
-	if (dist < epsilonDistance){
-		return true;
-	}
 
-
-	//2D distance
-	s.Z = 0;
-	pos.Z = 0;
-	return FVector::Dist(s, pos) < epsilonDistance;
-
-	//return false;
+	float dist = FVector::Dist(currentLocation, pos);
+	float epsilonDistance = 50.0f;
+	return dist < epsilonDistance;
 }
 
 
@@ -563,6 +590,7 @@ void AEntityScript::LookAt(AActor *target){
 /// @param TargetLocation target to look at
 void AEntityScript::LookAt(FVector TargetLocation) 
 {
+	/*
     // Calculate the rotation needed to look at the target location
     FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 
@@ -572,18 +600,13 @@ void AEntityScript::LookAt(FVector TargetLocation)
 
     // Apply the rotation to the actor
     SetActorRotation(LookAtRotation);
+	*/
 
 
 	//make humanoid turn
 	humanoidPluginController.LookAt(TargetLocation);
 }
 
-void AEntityScript::showScreenMessage(FString s){
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, s);
-	}
-}
 
 
 
@@ -612,6 +635,12 @@ void AEntityScript::enableActiveStatus(bool enable){
 	activated = enable;
 	enableCollider(enable);
 	SetActorHiddenInGame(!enable);
+
+
+	//show hide marker
+	if(markerComponent){
+		markerComponent->SetEnabled(enable);
+	}
 }
 
 /// @brief will return if entity is activated

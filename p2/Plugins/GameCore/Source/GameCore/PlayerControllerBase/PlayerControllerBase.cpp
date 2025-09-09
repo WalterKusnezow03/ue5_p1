@@ -108,6 +108,7 @@ void APlayerControllerBase::SetupPlayerInputComponent(UInputComponent* PlayerInp
 void APlayerControllerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
     processPendingRecoil();
 
     PlayerInfo::Update(

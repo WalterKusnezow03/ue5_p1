@@ -59,6 +59,13 @@ void TwoJointBone::setup(float a, float b, UWorld *world){
     createLimbsIfNeeded(world, a, b);
 }
 
+void TwoJointBone::ResetAndRebuild(MMatrix &worldMatrix){
+    resetRotations();
+    TickBuildForward(worldMatrix, 0.0f);
+}
+
+
+
 void TwoJointBone::resetRotations(){
     r1.makeIdentity();
     r2.makeIdentity();

@@ -10,6 +10,7 @@ HipController::~HipController(){
 
 }
 
+
 // do not modify 
 MMatrix &HipController::getOrientation(){
     return orientation;
@@ -123,6 +124,11 @@ bool HipController::groundedByDistance(){
 
 void HipController::Tick(float deltatime){
     //TickLocomotion(deltatime);
+    showExtendedDebugLog(deltatime);
+    
+    if(bDebugBlockTick){
+        return;
+    }
 
     FString message;
     if (groundedByDistance()) //new here with locomotion enabled!
@@ -141,6 +147,9 @@ void HipController::Tick(float deltatime){
         }else{
             RebuildLegsEndInPlace(deltatime);
         }
+
+
+
     }
     else
     {
@@ -305,33 +314,67 @@ void HipController::setupBackwardInterpolation(){
     interpolatorBackwardLocal.setTarget(localStart, localEnd, dynamicMotionTime);
 
 
-    //UNKLAR!
-    //NEW HERE: REGISTER VELOCITY KILL 
-    bool ignored = groundedByDistance();
+    // NEW !
+    bool bUseSecondFutureTrajectory = true;
+    if(bUseSecondFutureTrajectory){
+        FVector localTrajectoryNextStep = forwardTrajectory();
+        ApplyVelocityToLocalTrajectory(localTrajectoryNextStep); //move trajectory to future again
+
+        BoneAttachment &otherAttachment = legLeftPlaying ? legRight : legLeft; //same statement but flipped.
+
+        //move next trajectory to world space and project to ground
+        //transformation from hip starting joint (start effector world space)
+        FVector worldTrajectoryB = otherAttachment.inWorldSpace(
+            localTrajectoryNextStep, //forwardDefaultLocalLocomotionFrame,
+            translation,
+            orientation
+        );
+        projectToGround(worldTrajectoryB);
+        //RemoveVelocityFromWorldTrajectory(worldTrajectoryB);
 
 
-    if(false){
-        DebugHelper::logMessage("hipcontroller: backward start ", localStart);
-        DebugHelper::logMessage("hipcontroller: backward end ", localEnd);
+        float velocityDown = verticalVelocity();
+
+        attachment.setupSlipDataOnStanceBegin(
+            orientation,     // MMatrix &orientation
+            translation,     // MMatrix &translation
+            worldTrajectoryB, // FVector & nextTrajectoryOfOtherLegWorldSpace,
+            dynamicMotionTime, // float time,
+            velocityDown,
+            bodyMass
+        );
+
+
+
+
+    }else{
+        // ----- old NO second tracjectory, faked ! -----
+        if(false){
+            DebugHelper::logMessage("hipcontroller: backward start ", localStart);
+            DebugHelper::logMessage("hipcontroller: backward end ", localEnd);
+        }
+
+
+        //PRE CALCULATE D 
+        
+        //A: end effector current relative to hip
+        //B: end effector lift off, when next step touches ground relative to hip -- immer der default aber rückwärts?
+        //komischer hack, muss genau definiert werden!
+
+        FVector b = forwardDefaultLocalLocomotionFrame;
+        float velocityDown = verticalVelocity();
+        attachment.setupSlipDataOnStanceBegin(
+            orientation,
+            b,                 // local end on liftoff - is flipped internally
+            dynamicMotionTime, // motionTime,
+            velocityDown,      // current velocity downwards to overcome
+            bodyMass
+        );
     }
 
 
-    //PRE CALCULATE D 
+
     
-    //A: end effector current relative to hip
-    //B: end effector lift off, when next step touches ground relative to hip -- immer der default aber rückwärts?
-    //komischer hack, muss genau definiert werden!
-
-    FVector b = forwardDefaultLocalLocomotionFrame;
-    float velocityDown = velocity.Z;
-    attachment.setupSlipDataOnStanceBegin(
-        orientation,
-        b, // local end on liftoff - is flipped internally
-        dynamicMotionTime,//motionTime,
-        velocityDown, //current velocity downwards to overcome
-        bodyMass
-    );
-
 
     //SETUP ROTATION
     if(!rotationTimeOverriden){
@@ -346,24 +389,8 @@ void HipController::setupForwardInterpolation(){
 
 
     //move trajectory to future with velocity
-    //FVector localTrajectory = forwardDefaultLocalLocomotionFrame;
-
-    //CAUTION: NEW: Rotated trajectory copy, reset rotation
     FVector localTrajectory = forwardTrajectory();
-
-
-    //move local trajectory into rotation space: apply velocity offset, 
-    //rotate back
-
-    // t motionTime
-    //gx = a + t (b-a)
-    FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
-    localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m 
-    //achtung hier noch unklar: velocity auch drehen? nein, in rotated space!
-
-    MMatrix orientationInverse = orientation.transposedRotation();
-    localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
-
+    ApplyVelocityToLocalTrajectory(localTrajectory);
 
     //move trajectory to world space, from hip starting joint
     FVector worldTrajectory = attachment.inWorldSpace(
@@ -392,8 +419,6 @@ void HipController::setupForwardInterpolation(){
         worldPointer, currentEndEffector, worldTrajectoryProjected , FColor::Yellow, 1.0f
     );
 
-
-    
     interpolatorForwardWorld.setTarget(
         currentEndEffector, 
         worldTrajectoryProjected, 
@@ -402,6 +427,42 @@ void HipController::setupForwardInterpolation(){
 
     //interpolatorForwardWorld.setTarget(currentEndEffector, worldTrajectoryProjected, motionTime);
 }
+
+void HipController::ApplyVelocityToLocalTrajectory(FVector &localTrajectory){
+    //move local trajectory into rotation space: apply velocity offset, 
+    //rotate back, returns local trajectory with velocity added to future
+
+    // t motionTime
+    //gx = a + t (b-a)
+    FVector localTrjectoryRotatedSpace = orientation * localTrajectory;
+    localTrjectoryRotatedSpace += motionTime * velocity; //s * m/s = m 
+    //achtung hier noch unklar: velocity auch drehen? nein, in rotated space!
+
+    MMatrix orientationInverse = orientation.transposedRotation();
+    localTrajectory = orientationInverse * localTrjectoryRotatedSpace;
+}
+
+void HipController::RemoveVelocityFromWorldTrajectory(FVector &worldTrajectory){
+    //Sepcial function just for second trajectory for slip backward setup
+    //with regareds to second leg
+
+    //M = T * R <-- lese richtung
+    //M^-1 = R^-1 * T^-1
+    MMatrix translationInverse = translation.invertedTranslation();
+    MMatrix orientationInverse = orientation.transposedRotation();
+    MMatrix inv = orientationInverse * translationInverse;
+    FVector localTrajectory = inv * worldTrajectory;
+
+    localTrajectory -= motionTime * velocity; //s * m/s = m
+
+    MMatrix M = translation * orientation;
+    worldTrajectory = M * localTrajectory;
+}
+
+
+
+
+
 
 
 void HipController::projectToGround(FVector &worldTarjectory){
@@ -574,10 +635,8 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
         }
     }
 
-    bool b = AccelerationIsSliding(acceleration);
-    if(b){
-        DebugHelper::logMessage("Slip: HipController: CAUTION Gliding: ", acceleration);
-    }
+    RemoveSlidingFromVector(acceleration);
+    
 
     //x(t) = x0 + v0t + 0.5at^2
     //v(t) = v0 + at
@@ -586,13 +645,23 @@ void HipController::applyStancePhaseSLIPForce(float deltatime){
     velocity += acceleration * deltatime;
 
 
+    if(bExtendedDebugLog){
+        FString msg = TEXT("HipController extended DebugLog - ");
+        msg += TEXT("Slip Acceleration: ");
+        msg += acceleration.ToString();
+        DebugHelper::showScreenMessage(msg);
+    }
+
 
     
 }
 
-bool HipController::AccelerationIsSliding(FVector &accelertation){
+void HipController::RemoveSlidingFromVector(FVector &accelertation){
     MMatrix rInv = orientation.transposedRotation();
     FVector localAcceleration = rInv * accelertation;
+
+    float epsilon = 0.00001f;
+    bool bIsSliding = std::abs(localAcceleration.Y) > epsilon;
 
     //dont allow gliding if rotation is not setup
     //is a symptom fix, target rotation matrix on legs seems to be bugged sometimes,
@@ -608,8 +677,9 @@ bool HipController::AccelerationIsSliding(FVector &accelertation){
         accelertation = orientation * clamped; //override, move world rotation space.
     }
 
-    float epsilon = 0.00001f;
-    return std::abs(localAcceleration.Y) > epsilon; //nur Y. Nicht X, local X ist forward.
+    if(bIsSliding){
+        DebugHelper::logMessage("Slip: HipController: CAUTION Gliding: Local:", localAcceleration);
+    }
 }
 
 void HipController::applyForceGravity(float deltatime){
@@ -637,6 +707,10 @@ float HipController::horizontalVelocity(){
     FVector copy = velocity;
     copy.Z = 0.0f;
     return copy.Size();
+}
+
+float HipController::verticalVelocity(){
+    return velocity.Z;
 }
 
 float HipController::animationTimeBasedOnCurrentVelocity(
@@ -887,6 +961,9 @@ void HipController::setStateWalking(){
 
 void HipController::stopLocomotion(){
     currentControllerState = EHipControllerStates::EIdle;
+
+    //debug: remove velocity
+
 }
 
 void HipController::stopLocomotionOnceRotationHasFinished(){
@@ -894,10 +971,9 @@ void HipController::stopLocomotionOnceRotationHasFinished(){
 }
 
 bool HipController::locoMotionStateEnabled(){
-    return currentControllerState == EHipControllerStates::ELocomotion;
+    return currentControllerState == EHipControllerStates::ELocomotion &&
+           !bDebugBlockLocomotion;
 }
-
-
 
 // --- api for get actors:apply damaged owner casted mesh actor ---
 void HipController::getActors(TArray<AActor *> &outArray){
@@ -919,4 +995,156 @@ void HipController::forceOverrideRotation(FRotator &rotation){
     orientation.setRotation(rotation);
 
     //speed may be removed, unclear if player will run on physics!
+}
+
+
+void HipController::ResetAndRebuild(){
+    FRotator none;
+    orientation.setRotation(none);
+
+    legLeft.ResetAndRebuild(translation, orientation);
+    legRight.ResetAndRebuild(translation, orientation);
+    //from header
+    forwardMotion = true;
+    legLeftPlaying = true;
+    forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
+    rotationSet = false;
+
+
+    FString message = TEXT("HumanoidController Rebuild: HipController: Rebuild Hip ");
+    message += GetLocation().ToString();
+    DebugHelper::logMessage(message);
+
+    DebugHelper::showLineBetween(
+        worldPointer,
+        GetLocation(),
+        GetLocation() + FVector(100, 0, 0),
+        FColor::Yellow,
+        100.0f
+    );
+}
+
+// -------------- DEBUG FOR SYMPTOMS ----------------
+
+void HipController::EnableDebugLogExtended(){
+    bExtendedDebugLog = true;
+    
+    //bDebugBlockLocomotion = true;
+    //bDebugBlockTick = true;
+}
+
+void HipController::showExtendedDebugLog(float deltatime){
+    if(bDebugBlockTick){
+        return;
+    }
+
+    if(bExtendedDebugLog){
+        debugIntegratedTime += deltatime;
+        if(debugIntegratedTime < debugIntervall){
+            return;
+        }
+        debugIntegratedTime = 0.0f;
+
+        if(groundedByDistance()){
+            FString msg = TEXT("HipController extended DebugLog - Is Grounded");
+            DebugHelper::showScreenMessage(msg);
+        }else{
+            FString msg = TEXT("HipController extended DebugLog - Is NOT Grounded");
+            DebugHelper::showScreenMessage(msg);
+        }
+
+        DebugIsInGround();
+
+        if(!locoMotionStateEnabled()){
+            if(bExtendedDebugLog){
+                FString msg = TEXT("HipController extended DebugLog - ");
+                msg += TEXT("No locomotion: Horizonal Velocity");
+                msg += FString::Printf(TEXT("%.2f"),horizontalVelocity());
+                DebugHelper::logMessage(msg);
+            }
+        }
+        if(locoMotionStateEnabled()){
+            if(bExtendedDebugLog){
+                float velocityHorizonal = horizontalVelocity();
+                FString msg = TEXT("HipController extended DebugLog - ");
+                msg += TEXT("locomotion: Horizonal Velocity");
+                msg += FString::Printf(TEXT("%.2f"), velocityHorizonal);
+                DebugHelper::logMessage(msg);
+
+                bool bBlockVelocity = true;
+                float maxVelocity = 0.1f;
+                if (velocityHorizonal > maxVelocity)
+                {
+                    FVector vCopy = velocity;
+                    bool dampNeeded = DebugHorizontalVelocityOvershoot();
+                    FVector vCopy1 = velocity;
+                    
+                    FString messageV = TEXT("HipController extended DebugLog - ");
+                    messageV += TEXT("Removed Y from Velocity");
+                    messageV += vCopy.ToString();
+                    messageV += TEXT(" -> ");
+                    messageV += vCopy1.ToString();
+
+                    float yaw = orientation.extractRotator().Yaw;
+                    messageV += FString::Printf(TEXT(" yaw (%.2f)"), yaw);
+
+                    DebugHelper::showScreenMessage(messageV);
+
+                    if(dampNeeded){
+                        FVector copy = velocity;
+                        float scalar = std::min(maxVelocity, velocityHorizonal);
+                        velocity = velocity.GetSafeNormal() * scalar;
+                        velocity.Z = copy.Z;
+
+                        FString messageDamped = TEXT("HipController extended DebugLog - ");
+                        messageDamped += TEXT("Damped Velocity");
+                        messageDamped += velocity.ToString();
+                        DebugHelper::showScreenMessage(messageDamped);
+                    }
+                }
+            }
+            //is fast here, 20.0 cm / s
+        }
+    }
+}
+
+void HipController::DebugIsInGround(){
+    return;
+
+    if(IsInGround()){
+        FVector current = GetLocation();
+        SetLocation(current);
+
+        FString msg = TEXT("HipController extended DebugLog - Fix Ground Stuck");
+        DebugHelper::showScreenMessage(msg);
+    }
+}
+
+bool HipController::IsInGround(){
+    float currentZ = GetLocation().Z;
+    return std::abs(currentZ - latestGroundTruth.Z) <= 100;
+}
+
+bool HipController::DebugHorizontalVelocityOvershoot(){
+    //move horizontal velocity to local rotation space
+    FVector v = velocity;
+    FVector copy = v;
+    v.Z = 0.0f;
+    MMatrix Rinv = orientation.transposedRotation(); //scheinbar richtige rotation
+    FVector vLocal = Rinv * v;
+
+    //remove right left velocity
+    vLocal.Y = 0.0f;
+
+    //move back to world rotation
+    velocity = orientation * vLocal;
+
+    //override
+    velocity.Z = copy.Z;
+
+    if(FVector::DistSquared(velocity, copy) <= 100){ //10cm^2
+        return true;
+    }
+
+    return false;
 }

@@ -119,11 +119,12 @@ void UPlayerUi::updateMissionTextTimed(FString message){
 
 void UPlayerUi::openPauseScreen(){
     if(screenSwitchAllowed()){
-        if(playerHud){
-            playerHud->SetVisible(false);
-        }
+        //if(playerHud){
+        //    playerHud->SetVisible(false);
+        //}
+        openedScreenStack.closeAll(); //player hud is opened just every other screen.
         openedScreenStack.open(pauseScreen);
-        showPlayerCursor(true);
+    
     }
 }
 
@@ -134,10 +135,12 @@ void UPlayerUi::openGameScreen(){
 
     // close ui
     openedScreenStack.closeAll(); //very important
-    if(playerHud){
+    openedScreenStack.open(playerHud);
+
+    //small test: open player hud instead of manual hid / unhide
+    /*if(playerHud){
         playerHud->SetVisible(true);
-    }
-    showPlayerCursor(false);
+    }*/
 
     if(loadoutScreen){
         loadoutScreen->reloadPlayerLoadoutOnUiLeaveIfNeeded();
@@ -148,9 +151,10 @@ void UPlayerUi::openGameScreen(){
 
 void UPlayerUi::openLoadoutScreen(){
     if(screenSwitchAllowed()){
-        if(playerHud){
-            playerHud->SetVisible(false);
-        }
+        //if(playerHud){
+        //    playerHud->SetVisible(false);
+        //}
+        openedScreenStack.closeAll(); //player hud is opened just every other screen.
         openedScreenStack.open(loadoutScreen);
     }
 }
@@ -158,9 +162,9 @@ void UPlayerUi::openLoadoutScreen(){
 
 void UPlayerUi::openGameLaunchScreen(){
     if(screenSwitchAllowed()){
-        if(playerHud){
-            playerHud->SetVisible(false);
-        }
+        //if(playerHud){
+        //    playerHud->SetVisible(false);
+        //}
         openedScreenStack.open(gameLaunchScreen);
     }
     
@@ -172,9 +176,7 @@ bool UPlayerUi::screenSwitchAllowed(){
     return openedScreenStack.ScreenAlreadyOpen(gameLaunchScreen) == false;
 }
 
-void UPlayerUi::showPlayerCursor(bool show){
-    referenceManager::showPlayerCursor(show);
-}
+
 
 
 

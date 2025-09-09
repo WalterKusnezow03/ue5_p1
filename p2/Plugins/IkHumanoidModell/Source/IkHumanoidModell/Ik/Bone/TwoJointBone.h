@@ -9,6 +9,8 @@ public:
     TwoJointBone();
     ~TwoJointBone();
 
+    void ResetAndRebuild(MMatrix &worldMatrix);
+
     void setup(float a, float b, UWorld *world);
     void markTriangleFlipAsWantedForArms();
     void markTriangleFlipAsWantedForLegs();

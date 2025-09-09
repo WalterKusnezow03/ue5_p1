@@ -1,6 +1,7 @@
 #include "BoneAttachment.h"
 
 #include "GameCore/DebugHelper.h"
+#include "IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.h"
 
 
 BoneAttachment::BoneAttachment(){
@@ -351,7 +352,7 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
  * slip force
  */
 
-/// @brief will return the slip data, based if has reached target or not - MIGHT BE DEPRECATED as constraint
+/// @brief will return the slip data, based if has reached target or not 
 /// @param mass 
 /// @return 
 SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
@@ -374,7 +375,7 @@ SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
 //new!
 void BoneAttachment::setupSlipDataOnStanceBegin(
     MMatrix &orientation,
-    FVector &localEnd, //lift off frame
+    FVector &defaultForwardFrame,
     float time,
     float velocityDown,
     float mass
@@ -383,7 +384,6 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     MMatrix r1 = orientation.transposedRotation();
     FVector aLocal = r1 * aWorld;
 
-    FVector bLocal = localEnd;
 
     FVector moveDir(1, 0, 0);
     moveDir = orientation * moveDir;
@@ -393,9 +393,6 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     //so lassen
     bone.clampTarget(aLocal);
 
-    //hier falsch, extenden auf volle dir, nicht clamp! -> falls nicht projected!
-    //bone.clampTarget(bLocal);
-    bone.clampToFullMotionRangeCircle(bLocal); //so besser.
 
 
     /*
@@ -413,18 +410,11 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     ----TODO:----
     Könnte auch durch forward target ersetzt werden, wäre eingeschlossener!!
     */
-    FVector liftOffDefault = localEnd;
-    FVector liftOffHacked = localEnd;
-    liftOffHacked.X = aLocal.X * -1.0f; //1 versuch
-    bLocal = liftOffHacked;  //ACHTUNG: FUNKTIONIErT NICHT BEI ROTIERTEN TRAJEKTORIEN!
+    FVector liftOffDefault = defaultForwardFrame;
+    FVector liftOffHacked = defaultForwardFrame;
+    liftOffHacked.X = aLocal.X * -1.0f; //hack
+    FVector bLocal = liftOffHacked; 
 
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("slip integral: liftOff before (%.2f, %.2f, %.2f), hacked: (%.2f, %.2f, %.2f)"),
-            liftOffDefault.X, liftOffDefault.Y, liftOffDefault.Z,
-            liftOffHacked.X, liftOffHacked.Y, liftOffHacked.Z
-        )
-    );
 
     /**
      * Der lift off frame ist nach der rotation wieder entrotiert,
@@ -441,13 +431,82 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     FVector bWorld = orientation * bLocal;
 
     container.setupInterpolatedD(
-        aWorld,
-        bWorld,
+        aWorld, //local in rotated world space
+        bWorld, //local in rotated world space
         moveDir,
         time,
         velocityDown,
         mass
     );
+}
+
+/// -- new method with regards to next foot step. --
+/// ----> testing needed!
+void BoneAttachment::setupSlipDataOnStanceBegin(
+    MMatrix &orientation,
+    MMatrix &translation,
+    FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
+    float time,
+    float velocityDown,
+    float mass
+){
+    
+    //both trajectories for heel off in local space.
+    FVector currentReached = bone.EndEffectorRelativeLocation(); //no rotation removed, start to end effector vector.
+    MMatrix r1 = orientation.transposedRotation();
+    FVector currentLocalSpace = r1 * currentReached;
+
+    float heelOffEpsilon = 1.0f; //might be changed.
+
+
+
+
+    FVector targetWorld = bone.EndEffectorLocation();
+    SlipLiftOffFrameFinder liftOffFinder;
+    FVector liftOffFrame = liftOffFinder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectoriesNew(
+        targetWorld, // A0 (current foot target / "A_1" in your notes), WORLD SPACE
+        nextTrajectoryOfOtherLegWorldSpace, // B0 (next foot target), WORLD SPACE
+        bone.lengthOfBone(),
+        heelOffEpsilon
+    );
+
+    bool debugLiftOffFrame = true;
+    if(debugLiftOffFrame){
+        //log
+        FVector localSpace = r1 * liftOffFrame; //aLocalRotation = R^-1 * aWorld
+        FString msg = TEXT("Lift off frame: ");
+        msg += liftOffFrame.ToString();
+        DebugHelper::logMessage("SlipLiftOffFrameFinder: BoneAttachment: ",msg);
+
+        //draw
+        /*
+        FVector worldFrame = translation * liftOffFrame;
+        DebugHelper::showLineBetween(
+            worldPointer,
+
+        )*/
+    }
+
+    //move both trajectories to world rotation space and setup slip data
+    FVector startLocalWorldRotationSpace = currentReached; //is already in world Rotation.
+    FVector liftoffLocalWorldRotationSpace = liftOffFrame;
+    // orientation * liftOffFrameLocalNoRotation;
+
+    //must be given by bone controller.
+    FVector moveDir(1, 0, 0);
+    moveDir = orientation * moveDir;
+
+    //setup
+    container.setupInterpolatedD(
+        startLocalWorldRotationSpace, //local in rotated world space
+        liftoffLocalWorldRotationSpace, //local in rotated world space
+        moveDir,
+        time,
+        velocityDown,
+        mass
+    );
+
+
 }
 
 
@@ -489,4 +548,19 @@ float BoneAttachment::distanceFromTarget(){
  */
 void BoneAttachment::getActors(TArray<AActor *> &outArray){
     bone.getActors(outArray);
+}
+
+
+
+
+
+// ---- reset -----
+void BoneAttachment::ResetAndRebuild(
+    MMatrix &translation,
+    MMatrix &orientation
+){
+    //M = T * R * Tinner
+    MMatrix TR = translation * orientation;
+    MMatrix M = TR * innerOffset;
+    bone.ResetAndRebuild(M);
 }

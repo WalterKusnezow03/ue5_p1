@@ -14,6 +14,9 @@
 
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
 
+#include "customUiPlugin/ui/screens/WorldToScreenOverlays/actorComponent/WorldMarkerComponent.h"
+
+
 #include "EntityScript.generated.h"
 
 UCLASS()
@@ -66,9 +69,9 @@ public:
 	void alarm(); //sets spotting status to true
 
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
 
 	//int team;
 	teamEnum team;
@@ -125,8 +128,6 @@ protected:
 
 	
 
-	void showScreenMessage(FString s);
-
 
 	virtual void die();
 	bool activated;
@@ -152,10 +153,15 @@ protected:
 
 
 
-	// new experimental humanoid controller
+	//--humanoid controller--
 	class timer debugRecordRotationTimer;
 	HumanoidController humanoidPluginController;
 
 	void BeginPlayHumanoidController();
 	void TickHumanoidController(float deltatime);
+
+	//--marker--
+	UPROPERTY()
+	UWorldMarkerComponent *markerComponent = nullptr;
+	virtual void CreateMarkerOnBeginPlay();
 };

@@ -83,12 +83,4 @@ private:
 
     int currentRightPanelVisible = -1;
 
-    /*DEPRECATED
-
-    UVerticalBox *baseVertical = nullptr; //base layout for all sublayouts
-    UHorizontalBox *rightLeftContainer = nullptr;
-    UVerticalBox *rightVertical = nullptr; //deprecated.
-    std::map<int, UVerticalBox *> rightPanels; //iterierbar / changable machen
-    UVerticalBox *leftVertical = nullptr;
-    UHorizontalBox *headLineHorizontal = nullptr;*/
 };

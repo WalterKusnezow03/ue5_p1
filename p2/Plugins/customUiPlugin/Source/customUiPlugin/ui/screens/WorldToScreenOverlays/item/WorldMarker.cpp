@@ -1,6 +1,7 @@
 #include "WorldMarker.h"
 #include "customUiPlugin/baseInterface/WidgetHelper.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
+#include "customUiPlugin/ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.h"
 
 
 void UWorldMarker::Tick(float deltatime){
@@ -16,16 +17,57 @@ void UWorldMarker::PostInitProperties(){
     SetMaxDistance(100);
 }
 
+void UWorldMarker::BeginDestroy(){
+    RemoveSelfFromWorldMarkerCanvas(); //remove self completly from canvas, then reset pointers.
+    
+    //it is not clear whether the widget should be killed or not
+    //widget owner ship not known here yet!
+    
+    widget = nullptr;
+    owningInterface = nullptr;
+    Super::BeginDestroy();
+}
+
+void UWorldMarker::RemoveSelfFromWorldMarkerCanvas(){
+    if(parent && IsValid(parent)){
+        parent->RemoveMarker(this);
+        parent = nullptr;
+    }
+}
+
+void UWorldMarker::SetMarkerCanvasPointer(UWorldMarkerCanvas *canvas){
+    parent = canvas;
+}
+
+
+
+
 void UWorldMarker::SetMaxDistance(int distance){
     maxDistanceSquared = (distance * distance);
 }
 
-void UWorldMarker::TrySetWidget(IBaseUiInterface *ptr){
-    if(ptr){
-        if(UWidget *widgetBase = ptr->baseLayoutPointer()){
-            widget = widgetBase;
-            owningInterface = ptr;
+void UWorldMarker::SetWidget(IBaseUiInterface *interfacePtr){
+    if(interfacePtr){
+        if(UWidget *widgetBase = interfacePtr->baseLayoutPointer()){
+            SetWidget(widgetBase); //also resets interface ptr
+            owningInterface = interfacePtr;
         }
+    }
+}
+void UWorldMarker::SetWidget(UWidget *widgetIn){
+    if(widgetIn){
+        owningInterface = nullptr;
+        widget = widgetIn;
+    }
+}
+
+
+
+void UWorldMarker::SetEnabled(bool flag){
+    isEnabled = flag;
+    //hide if not enabled.
+    if(!flag){
+        SetVisible(false);
     }
 }
 
@@ -33,7 +75,7 @@ bool UWorldMarker::IsSetEnabled(){
     return isEnabled;
 }
 
-void UWorldMarker::UpdatePosition(FVector &worldPosIn){
+void UWorldMarker::UpdateWorldPosition(FVector &worldPosIn){
     worldPosition = worldPosIn;
 }
 
@@ -47,9 +89,8 @@ FVector2D &UWorldMarker::screenPositionRef(){
 
 void UWorldMarker::SetVisible(bool flag){
     WidgetHelper::SetVisible(widget, flag);
-
-    //enabled flag hier überschreiben oder nicht! (?unklar.)
-
+    //dont override enabled flag here at all
+    //just for external use
 }
 
 bool UWorldMarker::IsSame(UWidget *ptr){
