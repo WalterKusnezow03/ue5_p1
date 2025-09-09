@@ -335,13 +335,16 @@ void HipController::setupBackwardInterpolation(){
 
         float velocityDown = verticalVelocity();
 
+        FVector fallbackForwardTrajectory = forwardRotatedLocalLocomotionFrame;
+
         attachment.setupSlipDataOnStanceBegin(
             orientation,     // MMatrix &orientation
             translation,     // MMatrix &translation
             worldTrajectoryB, // FVector & nextTrajectoryOfOtherLegWorldSpace,
             dynamicMotionTime, // float time,
             velocityDown,
-            bodyMass
+            bodyMass,
+            fallbackForwardTrajectory //used to fake scalar D if an issue happens
         );
 
 

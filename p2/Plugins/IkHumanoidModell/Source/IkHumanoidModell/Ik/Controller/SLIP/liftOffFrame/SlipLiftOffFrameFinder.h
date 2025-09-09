@@ -21,14 +21,8 @@ public:
     static void Test();
 
 
+    //--- in use currently, stable ---
     FVector FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
-        FVector &worldCurrentFootPosTarget, // A0 (current foot target / "A_1" in your notes)
-        FVector &worldNextFootPosTarget,    // B0 (next foot target)
-        float boneLength,
-        float heelOffEpsilon /* = 10.0f */ // make epsilon configurable
-    );
-
-    FVector FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectoriesNew(
         FVector &worldCurrentFootPosTarget, // A0 (current foot target / "A_1" in your notes)
         FVector &worldNextFootPosTarget,    // B0 (next foot target)
         float boneLength,
@@ -46,6 +40,13 @@ public:
 private:
     void LogResult(
         FString prefix,
+        float closerTSkalar,
+        FVector &localResult //local space to hip
+    );
+
+    void LogResultLocalSpace(
+        FString prefix,
+        FVector &direction,
         float closerTSkalar,
         FVector &localResult //local space to hip
     );

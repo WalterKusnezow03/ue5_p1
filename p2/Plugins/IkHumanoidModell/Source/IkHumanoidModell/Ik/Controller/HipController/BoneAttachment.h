@@ -116,6 +116,8 @@ private:
 
     SlipContainer container;
 
+    bool LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal);
+
 public:
     /// @brief pre calculates thee slip scalar D for slip force, based on the 
     /// current end effector location and a dynamically calculated lift off frame
@@ -142,7 +144,8 @@ public:
         FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
         float time,
         float velocityDown,
-        float mass
+        float mass,
+        FVector &defaultForwardFrameFallback
     );
 
 

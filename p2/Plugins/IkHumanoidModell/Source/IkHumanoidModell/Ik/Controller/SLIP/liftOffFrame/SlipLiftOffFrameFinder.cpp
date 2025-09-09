@@ -1,4 +1,5 @@
 #include "SlipLiftOffFrameFinder.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 SlipLiftOffFrameFinder::SlipLiftOffFrameFinder(){
 
@@ -28,25 +29,38 @@ void SlipLiftOffFrameFinder::LogResult(
     DebugHelper::logMessage(message);
 }
 
+void SlipLiftOffFrameFinder::LogResultLocalSpace(
+    FString prefixInner,
+    FVector &direction,
+    float closerTSkalar,
+    FVector &localResult //local space to hip
+){
+    //just yaw derotation
+    FVector dir2D(direction.X, direction.Y, 0.0f);
+    MMatrix R;
+    R.setRotation(dir2D);
+    MMatrix R1 = R.transposedRotation();
+
+    FVector resultNoRotation = R1 * localResult;
+
+    FString prefix = FString::Printf(TEXT("Result DeRotated: %s"), *prefixInner);
+
+    LogResult(
+        prefix,
+        closerTSkalar,
+        resultNoRotation // local space to hip
+    );
+}
+
+
+
+
 void SlipLiftOffFrameFinder::Test(){
     SlipLiftOffFrameFinder finder;
     FVector worldCurrentFootPosTarget(0, 0, 0); // Target of Leg 1, currently for forward motion reached!
     FVector worldNextFootPosTarget(60, 0, 0);  // Target of Leg 2, next world Trajectory
     float boneLength = 100;
     float epsilonHeelOff = 10.0f; // 10.0f;
-
-    DebugHelper::logMessage("SlipLiftOffFrameFinder TEST -1- STARTED");
-    for (int i = 0; i < 10; i++){
-        worldCurrentFootPosTarget.X += 60;
-        worldNextFootPosTarget.X += 60;
-        finder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
-            worldCurrentFootPosTarget, 
-            worldNextFootPosTarget, 
-            boneLength, 
-            epsilonHeelOff
-        );
-    }
-    DebugHelper::logMessage("SlipLiftOffFrameFinder TEST -1- ENDED");
 
 
     //debug
@@ -77,7 +91,7 @@ void SlipLiftOffFrameFinder::Test(){
         worldNextFootPosTarget.Z += worldCurrentFootPosTarget.Z;
 
         worldNextFootPosTarget.Z += 2 * i; //some step up.
-        finder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectoriesNew(
+        finder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
             worldCurrentFootPosTarget, 
             worldNextFootPosTarget, 
             boneLength, 
@@ -147,7 +161,7 @@ FVector SlipLiftOffFrameFinder::FindRelativeLiftOffFrameBasedOnHeight(
 
 
 
-FVector SlipLiftOffFrameFinder::FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectoriesNew(
+FVector SlipLiftOffFrameFinder::FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
     FVector &worldCurrentFootPosTarget, // A0 (current foot target / "A_1" in your notes)
     FVector &worldNextFootPosTarget,    // B0 (next foot target)
     float boneLength,
@@ -265,7 +279,9 @@ FVector SlipLiftOffFrameFinder::FindLiftOffFrameRelativeLocalToNextHipFromWorldT
 
     float tResult = dot1 < dot2 ? t1 : t2;
     FVector result = dot1 < dot2 ? result1 : result2;
-
+    
+    float tResultOther = dot1 > dot2 ? t1 : t2;
+    FVector resultOther = dot1 > dot2 ? result1 : result2;
 
 
     float debugStepHeight = v.Z;
@@ -275,142 +291,19 @@ FVector SlipLiftOffFrameFinder::FindLiftOffFrameRelativeLocalToNextHipFromWorldT
         result
     );
 
+
+    LogResult(
+        TEXT("Other Result Based New Equation (stepheight: %.2f)"),
+        tResultOther,
+        resultOther
+    );
+
+    LogResultLocalSpace(
+        TEXT("Result Based New Equation Additional Debug: "),
+        v, // FVector &direction,
+        tResult,
+        result // local space to hip
+    );
+
     return result;
-}
-
-// --- buggy ---
-FVector SlipLiftOffFrameFinder::FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
-    FVector &worldCurrentFootPosTarget, // A0 (current foot target / "A_1" in your notes)
-    FVector &worldNextFootPosTarget,    // B0 (next foot target)
-    float boneLength,
-    float heelOffEpsilon /* = 10.0f */   // make epsilon configurable
-){
-
-    // ---- TODO: ANPASSEN ! -----
-
-
-    /*
-    Definitionen:
-    $$
-    A_0 - HipTarget = c; \ 
-    (B_0- A_0) =v; \ 
-    l = l_0 + \epsilon
-    $$
-    */
-    FVector up(0, 0, boneLength);
-    FVector A0 = worldCurrentFootPosTarget;
-    FVector B0 = worldNextFootPosTarget;
-    FVector Hiptarget = B0 + up;
-
-    FVector c = A0 - Hiptarget;
-
-    FVector v = B0 - A0;
-    float l = boneLength + heelOffEpsilon;
-    float l2 = l * l;
-
-    float cv = FVector::DotProduct(c, v);
-
-    float v2 = FVector::DotProduct(v, v);
-    float c2 = FVector::DotProduct(c, c);
-
-    float p = cv / v2;
-    float q = (c2 + l2) / v2;
-    float p2 = p * p;
-    /*
-    Formel:
-    $$
-    t_{1,2} = \frac{cv}{v^2} +-
-    \sqrt{
-    (\frac{-cv}{v^2})^2 - \frac{c^2 + l^2}{v^2}
-    }
-    $$
-    */
-    float sqrtInner = p2 - q;
-    if(sqrtInner <= 0.0000001f){
-        //error.
-        return A0;
-    }
-
-    float sqrt = std::sqrt(sqrtInner);
-
-    float t1 = p + sqrt;
-    float t2 = p - sqrt;
-
-
-
-
-    //--- handle result ---
-    //find closer point to next foor pos
-    FVector resultT1 = worldNextFootPosTarget - t1 * v;
-    FVector resultT2 = worldNextFootPosTarget - t2 * v;
-
-    //move to local space of hip
-    resultT1 += up;
-    resultT2 += up;
-
-
-
-    /**
-     * DENKEN:
-     * Result von -44, könnte relativ zur nächsten hip pos sein, und
-     * muss verschoben werden ???
-     * 
-     
-    bool bMoveTrajectory = false; //vielleicht ist -40 DOCH RICHTIG, es solll ja lokal nach hinten zeigen!
-    if(bMoveTrajectory){
-        resultT1 += v;
-        resultT2 += v;
-    }*/
-
-
-
-
-
-    //float distT1Squared = FVector::DistSquared(worldNextFootPosTarget, resultT1);
-    //float distT2Squared = FVector::DistSquared(worldNextFootPosTarget, resultT2);
-
-    /**
-     * so sollte es stimmen, relativ zum nächsteeen hip point, den lift off frame haben!
-     */
-    float distT1Squared = FVector::DistSquared(Hiptarget, resultT1);
-    float distT2Squared = FVector::DistSquared(Hiptarget, resultT2);
-
-    FVector closer;
-    float closerT = 0.0f;
-    FVector farer;
-    float farerT = 0.0f;
-    if (distT1Squared < distT2Squared){
-        closer = resultT1;
-        closerT = t1;
-        farer = resultT2;
-        farerT = t2;
-    }
-    else{
-        closer = resultT2;
-        closerT = t2;
-        farer = resultT1;
-        farerT = t1;
-    }
-
-    FVector localResult = Hiptarget - closer;
-
-    //closer += up; //test
-
-    LogResult(
-        TEXT("Result CLOSE T "),
-        closerT,
-        localResult
-    );
-
-
-    FVector localResultFar = Hiptarget - farer;
-    LogResult(
-        TEXT("Result FAR T "),
-        farerT,
-        localResultFar
-    );
-
-    return localResult;
-
-
 }

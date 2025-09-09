@@ -440,7 +440,7 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     );
 }
 
-/// -- new method with regards to next foot step. --
+/// -- new method with regards to next foot step. Will calculate the lift off frame dynamically--
 /// ----> testing needed!
 void BoneAttachment::setupSlipDataOnStanceBegin(
     MMatrix &orientation,
@@ -448,7 +448,8 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
     float time,
     float velocityDown,
-    float mass
+    float mass,
+    FVector &defaultForwardFrameFallback
 ){
     
     //both trajectories for heel off in local space.
@@ -460,23 +461,39 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
 
-
+    //lift off frame relative to start effector found, from (0,0,0), rotation space supported.
+    //uses 2 world coordinates as input, returns a local lift off trajectory, which is not derotated.
     FVector targetWorld = bone.EndEffectorLocation();
     SlipLiftOffFrameFinder liftOffFinder;
-    FVector liftOffFrame = liftOffFinder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectoriesNew(
+    FVector liftOffFrame = liftOffFinder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
         targetWorld, // A0 (current foot target / "A_1" in your notes), WORLD SPACE
         nextTrajectoryOfOtherLegWorldSpace, // B0 (next foot target), WORLD SPACE
         bone.lengthOfBone(),
         heelOffEpsilon
     );
 
-    bool debugLiftOffFrame = true;
-    if(debugLiftOffFrame){
+
+
+    //temporary code here, force applied from (0,0,-l) to back:
+    bool preventToCloseFramesCreatingHighScalarD = true;
+    if(preventToCloseFramesCreatingHighScalarD && !LiftOffTrajectoryIsValid(liftOffFrame)){
+        setupSlipDataOnStanceBegin(
+            orientation,
+            defaultForwardFrameFallback,
+            time,
+            velocityDown,
+            mass
+        );
+        return;
+    }
+
+    bool debugLogLiftOffFrame = true;
+    if(debugLogLiftOffFrame){
         //log
         FVector localSpace = r1 * liftOffFrame; //aLocalRotation = R^-1 * aWorld
         FString msg = TEXT("Lift off frame: ");
         msg += liftOffFrame.ToString();
-        DebugHelper::logMessage("SlipLiftOffFrameFinder: BoneAttachment: ",msg);
+        DebugHelper::logMessage("SlipLiftOffFrameFinder was valid: BoneAttachment: ",msg);
 
         //draw
         /*
@@ -512,15 +529,23 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
 
-
-
-
-
-
-
-
-
-
+bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
+    FVector down(0.0f, 0.0f, -1.0f);
+    FVector directionOfLiftOff = liftOffFrameLocal.GetSafeNormal();
+    float minDot = 0.9f;
+    float angle = FVector::DotProduct(directionOfLiftOff, down);
+    if (angle >= minDot){
+        FString message = TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin Fallback to fake trajectory, angle too narrow!");
+        message += FString::Printf(TEXT("%.2f"), MMatrix::radToDegree(angle));
+        DebugHelper::showScreenMessage(message);
+        DebugHelper::logMessage(message);
+        return false;
+    }
+    FString message = FString::Printf(TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), angle);
+    DebugHelper::showScreenMessage(message);
+    DebugHelper::logMessage(message);
+    return true;
+}
 
 /**
  * targte info
