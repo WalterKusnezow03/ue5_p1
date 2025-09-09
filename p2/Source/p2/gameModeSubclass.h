@@ -22,8 +22,5 @@ public:
 
 
 private:
-	
-	
-
-
+	void RunTests();
 };

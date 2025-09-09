@@ -3819,9 +3819,22 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Intermediate/Build/Mac/arm64/UnrealEditor/Development/CoreMath/Module.CoreMath.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Intermediate/Build/Mac/arm64/UnrealEditor/Development/CoreMath/Definitions.CoreMath.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/GrahamScan/GrahamScan2D.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/GrahamScan/GrahamScan2D.h \
+  Runtime/Core/Public/CoreMinimal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyPolygonFitter.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyPolygonFitter.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/InverseHull/InnerHullFinder.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/InverseHull/InnerHullFinder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
+  Runtime/Core/Public/Math/UnrealMathUtility.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Debug/CoreMathDebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.h \
-  Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/InterpolatorBase/TInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FRotatorInterpolator.h \
@@ -3833,7 +3846,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/TransformInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
   Runtime/Core/Public/Math/Rotator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Private/CoreMath.cpp \

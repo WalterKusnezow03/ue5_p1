@@ -50,6 +50,10 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
 
+    //DEBUG
+    RunTests(); 
+
+
     //set worldLevel UWorld pointer for easier world pointer getting in non aactor classes
     AworldLevel::MakeInstance(GetWorld());
     //SetWorld(GetWorld()); //needed for init!
@@ -60,7 +64,7 @@ void AgameModeSubclass::BeginPlay()
     AssetLoader a;
     a.loadAssets();
 
-    AssetPathMaker::Test();
+    
 
     //launch ui from here, not from player
     UPlayerUi::createNewInstance(GetWorld());
@@ -85,4 +89,14 @@ void AgameModeSubclass::BeginPlay()
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
     DebugHelper::logMessage(TEXT("DEBUG END PLAY"));
+}
+
+
+
+
+//---- tests -----
+#include "CoreMath/algorithm/_Test/TestAlgorithm.h"
+void AgameModeSubclass::RunTests(){
+    AssetPathMaker::Test();
+    TestAlgorithm::Test();
 }

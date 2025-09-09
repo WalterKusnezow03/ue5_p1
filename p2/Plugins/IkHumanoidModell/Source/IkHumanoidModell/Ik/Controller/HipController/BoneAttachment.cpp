@@ -535,13 +535,18 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
     float minDot = 0.9f;
     float angle = FVector::DotProduct(directionOfLiftOff, down);
     if (angle >= minDot){
-        FString message = TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin Fallback to fake trajectory, angle too narrow!");
+        FString message = TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin");
+        message += TEXT("Fallback to fake trajectory, angle too narrow!");
+
         message += FString::Printf(TEXT("%.2f"), MMatrix::radToDegree(angle));
         DebugHelper::showScreenMessage(message);
         DebugHelper::logMessage(message);
         return false;
     }
-    FString message = FString::Printf(TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), angle);
+    FString message = FString::Printf(
+        TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), 
+        angle
+    );
     DebugHelper::showScreenMessage(message);
     DebugHelper::logMessage(message);
     return true;
