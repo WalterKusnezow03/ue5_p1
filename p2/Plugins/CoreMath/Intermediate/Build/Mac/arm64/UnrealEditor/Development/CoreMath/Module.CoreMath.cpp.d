@@ -3830,9 +3830,9 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
   Runtime/Core/Public/Math/UnrealMathUtility.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Debug/CoreMathDebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Debug/CoreMathDebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/InterpolatorBase/TInterpolator.h \

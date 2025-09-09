@@ -96,6 +96,8 @@ void TestAlgorithm::TestInnerHullFinder(){
 void TestAlgorithm::TestPolygonHit(){
 
     LogMessage("--- Mpolygon intersect tests Start ---");
+
+    //setup polygon
     MPolygon polygon;
     TArray<FVector2D> shapeA{
         FVector2D(0, 0),
@@ -114,9 +116,10 @@ void TestAlgorithm::TestPolygonHit(){
     shapeA.Append(shapeB);
     polygon.SetShape(shapeA);
 
-    FVector2D A(210, 201);
-    FVector2D B(-110, -130);
+    FVector2D A(200, 200);
+    FVector2D B(-100, -100);
 
+    // -- polygon intersect test --
     LogMessage("Mpolygon intersect line ", polygon.DoesIntersect(A,B)); //true: sucess
 
 
@@ -136,6 +139,5 @@ void TestAlgorithm::TestPolygonHit(){
     LogMessage("Mpolygon intersect polygon 2 ", !polygon.DoesIntersect(transformed));  //false: sucess
    
    
-
     LogMessage("--- Mpolygon intersect tests End ---");
 }

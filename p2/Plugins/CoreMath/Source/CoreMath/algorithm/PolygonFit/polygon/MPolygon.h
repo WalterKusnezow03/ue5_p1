@@ -46,7 +46,6 @@ private:
         const FVector2D &e2
     );
 
-    float DotProduct(const FVector2D &a, const FVector2D &b);
 
     bool SegmentIntersection2D(
         const FVector2D &a0,
@@ -56,5 +55,11 @@ private:
         FVector2D &outIntersection
     );
 
-    
+    ///@brief direct hittesting between two points and a target
+    bool IntersectsPoint(
+        const FVector2D &a0,
+        const FVector2D &a1,
+        const FVector2D &b
+    );
+
 };
