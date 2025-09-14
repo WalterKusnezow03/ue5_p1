@@ -4,6 +4,8 @@
 #include "CoreMath/algorithm/PolygonFit/polygon/MPolygon.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
 #include "CoreMath/Debug/CoreMathDebugHelper.h"
+#include "CoreMath/algorithm/GrahamScan/GrahamScan2D.h"
+#include "CoreMath/algorithm/PolygonFit/GreedyFilledPolygon.h"
 
 
 void TestAlgorithm::LogMessage(FString s){
@@ -37,10 +39,10 @@ void TestAlgorithm::LogMessage(FString prefix, bool testSucess){
 
 void TestAlgorithm::Test(){
 
-    TestInnerHullFinder();
-    TestPolygonHit();
-
-    //CoreMathDebugHelper
+    //TestInnerHullFinder();
+    //TestPolygonHit();
+    //TestPolygonFit();
+    // CoreMathDebugHelper
 }
 
 void TestAlgorithm::TestInnerHullFinder(){
@@ -103,7 +105,7 @@ void TestAlgorithm::TestPolygonHit(){
         FVector2D(0, 0),
         FVector2D(0, 100),
         FVector2D(100, 100),
-        FVector2D(100, 0),
+        FVector2D(100, 0)
     };
 
     TArray<FVector2D> shapeB = shapeA;
@@ -114,6 +116,9 @@ void TestAlgorithm::TestPolygonHit(){
     };
 
     shapeA.Append(shapeB);
+    GrahamScan2D sorter;
+    sorter.ComputeConvexHull(shapeA);
+
     polygon.SetShape(shapeA);
 
     FVector2D A(200, 200);
@@ -127,17 +132,88 @@ void TestAlgorithm::TestPolygonHit(){
 
     // -- polygon hit test 1 --
     MPolygon transformed = polygon;
-    FVector2D move(20, 10);
-    transformed.SetTranslation(move);
+
+    MMatrix2D move;
+    move.SetTranslation(FVector2D(20, 10));
+    transformed.SetTransform(move);
 
     LogMessage("Mpolygon intersect polygon 1 ", polygon.DoesIntersect(transformed));  //true: sucess
 
     
     // -- polygon hit test 2 --
-    move = FVector2D(1000, 1000);
-    transformed.SetTranslation(move);
+
+    move.SetTranslation(FVector2D(1000, 1000));
+    transformed.SetTransform(move);
     LogMessage("Mpolygon intersect polygon 2 ", !polygon.DoesIntersect(transformed));  //false: sucess
    
    
     LogMessage("--- Mpolygon intersect tests End ---");
+}
+
+
+void TestAlgorithm::TestPolygonFit(){
+
+    GreedyFilledPolygon filled;
+    TArray<FVector2D> shapeA{
+        FVector2D(0, 0),
+        FVector2D(0, 200),
+        FVector2D(200, 200),
+        FVector2D(200, 0)
+    };
+    /*
+    TArray<FVector2D> shapeB = shapeA;
+    MMatrix2D R;
+    R.RadAdd(MMatrix2D::degToRadian(45));
+    for (int i = 0; i < shapeB.Num(); i++){
+        shapeB[i] = R * shapeB[i];
+    };
+
+    shapeA.Append(shapeB);
+    GrahamScan2D sorter;
+    sorter.ComputeConvexHull(shapeA);
+    */
+    filled.SetShape(shapeA);
+
+
+
+    TArray<MPolygon> polygons;
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(0, 20),
+            FVector2D(10, 20),
+            FVector2D(20, 0)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(0, 30),
+            FVector2D(30, 30),
+            FVector2D(30, 0)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(0, 10),
+            FVector2D(10, 10),
+            FVector2D(10, 0)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+
+    filled.Add(polygons);
+
+    LogMessage(
+        FString::Printf(TEXT("GreedyFilledPolygon Added(%d)"), filled.PolygonCount())
+    );
 }

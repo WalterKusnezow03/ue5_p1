@@ -190,16 +190,19 @@ void SlatePolygonMap::ScaleToResolutionImmidiate(FVector2D &res){
     MMatrix2D scaleMat;
     scaleMat.makeIdentity();
 
-    UiDebugHelper::logMessage(
-        FString::Printf(
-            TEXT("SlatePolygonMap (%d): ScaleToResolutionImmidiate(%.2f,%.2f)->(%.2f,%.2f) with (%.2f,%.2f) "),
-            allPolygonsSorted().Num(),
-            currentSize.X, currentSize.Y,
-            res.X, res.Y,
-            res.X / currentSize.X,
-            res.Y / currentSize.Y
-        )
-    );
+    if(false){
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("SlatePolygonMap (%d): ScaleToResolutionImmidiate(%.2f,%.2f)->(%.2f,%.2f) with (%.2f,%.2f) "),
+                allPolygonsSorted().Num(),
+                currentSize.X, currentSize.Y,
+                res.X, res.Y,
+                res.X / currentSize.X,
+                res.Y / currentSize.Y
+            )
+        );
+    }
+    
 
 
 

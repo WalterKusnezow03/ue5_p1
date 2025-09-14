@@ -1,4 +1,5 @@
 #include "SlateMeshData.h"
+#include "CoreMath/vector/bound/FBoundingBox2D.h"
 
 SlateMeshData::SlateMeshData(){
     bCursorColorEnabled = false;
@@ -53,6 +54,22 @@ const TArray<SlateIndex> &SlateMeshData::TrianglesRefConst()const{
     return Triangles;
 }
 
+TArray<FVector2f> SlateMeshData::VerteciesAs2f() const{//for line draw
+    TArray<FVector2f> outBuffer;
+    outBuffer.SetNumUninitialized(Triangles.Num());
+    for (int t = 2; t < Triangles.Num(); t++)
+    {
+        const FVector2D &v0 = Vertecies[Triangles[t - 2]];
+        const FVector2D &v1 = Vertecies[Triangles[t - 1]];
+        const FVector2D &v2 = Vertecies[Triangles[t]];
+
+        outBuffer[t - 2] = ConvertTo2f(v0);
+        outBuffer[t - 1] = ConvertTo2f(v1);
+        outBuffer[t] = ConvertTo2f(v2);
+    }
+
+    return outBuffer;
+}
 
 void SlateMeshData::Clear(){
     boundingBox.Reset();
@@ -780,4 +797,14 @@ void SlateMeshData::ApplyTransformationConst(
     
 
 
+}
+
+
+
+FVector2f SlateMeshData::ConvertTo2f(const FVector2D &other) const {
+    FVector2f result(
+        other.X,
+        other.Y
+    );
+    return result;
 }

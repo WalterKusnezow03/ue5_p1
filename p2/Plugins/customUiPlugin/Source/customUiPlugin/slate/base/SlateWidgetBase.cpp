@@ -69,7 +69,8 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
     DrawAllPolygons(
         OutDrawElements,
         LayerId,
-        RenderTransform //for polygon transformation 
+        RenderTransform, //for polygon transformation 
+        AllottedGeometry
     );
 
     return LayerId + 1;
@@ -82,7 +83,8 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
 void SSlateWidgetBase::DrawAllPolygons(
     FSlateWindowElementList& OutDrawElements,
     int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
-    FSlateRenderTransform &RenderTransform
+    FSlateRenderTransform &RenderTransform,
+    const FGeometry& AllottedGeometry
 )const{
 
     if(PolygonMapExternal.IsValid()){
@@ -90,7 +92,7 @@ void SSlateWidgetBase::DrawAllPolygons(
         for (int i = 0; i < array.Num(); i++){
             const SlateMeshDataPolygon *current = array[i];
             if(current){
-                DrawPolygon(*current, OutDrawElements, LayerId, RenderTransform);
+                DrawPolygon(*current, OutDrawElements, LayerId, RenderTransform, AllottedGeometry);
             }   
         }
     }
@@ -102,7 +104,8 @@ void SSlateWidgetBase::DrawPolygon(
     const SlateMeshDataPolygon &polygon,
     FSlateWindowElementList& OutDrawElements,
     int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
-    FSlateRenderTransform &RenderTransform
+    FSlateRenderTransform &RenderTransform,
+    const FGeometry& AllottedGeometry
 )const{
 
     const TArray<FSlateVertex> &vertecies = 
@@ -113,38 +116,58 @@ void SSlateWidgetBase::DrawPolygon(
 
     TArray<FColor> colors;
 
-    //const FSlateBrush* Brush = FCoreStyle::Get().GetBrush("WhiteBrush");
-    //FSlateResourceHandle ResourceHandle(Brush);
 
-    FSlateResourceHandle ResourceHandle; // leer
+    //DEFAULT DRAW
+    if(!polygon.IsFlaggedDrawOutlineOnly()){ 
+        FSlateResourceHandle ResourceHandle; // leer
+        FSlateDrawElement::MakeCustomVerts(
+            OutDrawElements,
+            LayerId,
+            ResourceHandle,
+            vertecies,
+            triangles,
+            nullptr, // InInstanceData
+            0,       // InInstanceOffset
+            1,       // InNumInstances
+            ESlateDrawEffect::None
+        );
+        return;
+    }
 
-    FSlateDrawElement::MakeCustomVerts(
-        OutDrawElements,
-        LayerId,
-        ResourceHandle,
-        vertecies,
-        triangles,
-        nullptr, // InInstanceData
-        0,       // InInstanceOffset
-        1,       // InNumInstances
-        ESlateDrawEffect::None
-    );
 
 
-    //FString message = FString::Printf(TEXT("SlateWidgetBase: Draw Polygon (%d)"), vertecies.Num());
-    //UiDebugHelper::logMessage(message);
 
     /*
-    FSlateDrawElement::MakeCustomVerts(
+    static void MakeLines  
+    (  
+        FSlateWindowElementList & ElementList,  
+        uint32 InLayer,  
+        const FPaintGeometry & PaintGeometry,  
+        TArray < FVector2f > Points,  
+        ESlateDrawEffect InDrawEffects,  
+        const FLinearColor & InTint,  
+        bool bAntialias,  
+        float Thickness  
+    )
+    */
+    const TArray<FVector2f> &twoFBuffer =
+        polygon
+            .MeshDataRefConst()
+            .VerteciesAs2f();
+
+    //draw only outline
+    FSlateDrawElement::MakeLines(
         OutDrawElements,
         LayerId,
-        ResourceHandle,
-        vertecies,
-        triangles,
-        nullptr, // optional: UVs
-        colors, // optional: Colors
-        ESlateDrawEffect::None
-    );*/
+        AllottedGeometry.ToPaintGeometry(),
+        twoFBuffer,
+        ESlateDrawEffect::None,
+        FLinearColor::Red,
+        true, // geschlossene Linie
+        2.0f   // Linienstärke
+    );
+
+    
 }
 
 
@@ -163,16 +186,17 @@ Vertices.Add(FVector2D(100,100));
 Vertices.Add(FVector2D(0,100));
 Vertices.Add(FVector2D(0,0)); // letztes Vertex = Startpunkt, um Polygon zu schließen
 
-FSlateDrawElement::MakeLines(
-    OutDrawElements,
-    LayerId,
-    AllottedGeometry.ToPaintGeometry(),
-    Vertices,
-    ESlateDrawEffect::None,
-    FLinearColor::Red,
-    true, // geschlossene Linie
-    2.f   // Linienstärke
-);
+static void MakeLines  
+(  
+    FSlateWindowElementList & ElementList,  
+    uint32 InLayer,  
+    const FPaintGeometry & PaintGeometry,  
+    TArray < FVector2f > Points,  
+    ESlateDrawEffect InDrawEffects,  
+    const FLinearColor & InTint,  
+    bool bAntialias,  
+    float Thickness  
+) 
 
 
 */

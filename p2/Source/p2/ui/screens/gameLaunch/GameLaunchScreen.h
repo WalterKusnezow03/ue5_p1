@@ -67,4 +67,7 @@ private:
     //menu
     void createMenu();
     void createTypeFieldForWorldCreation();
+
+    //debug
+    void AddDebugElements();
 };

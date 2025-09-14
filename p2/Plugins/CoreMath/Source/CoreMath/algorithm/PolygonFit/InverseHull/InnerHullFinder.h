@@ -14,8 +14,8 @@ public:
 
     void MakeMostInnerHull(TArray<FVector2D> &shape);
 
+    void EliminateOuterHull(TArray<FVector2D> &output);
+    void EliminateOuterHull(TArray<FVector2D> &output, int iterations);
+
 private:
-
-
-
 };

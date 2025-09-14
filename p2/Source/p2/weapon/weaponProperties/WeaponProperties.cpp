@@ -88,15 +88,18 @@ float WeaponProperties::damageFor(FVector &start, FVector &target) const {
     float skalarInverted = 1.0f - skalar;
     float damageOut = maxDamage * skalarInverted;
 
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("WeaponProperties: Damage (DistSquared: %.2f) (MaxDistance: %.2f) (skalar Inv: %2f), (damage: %.2f)"),
-            distSquaredCm,
-            maxRangeCMSquared,
-            skalarInverted,
-            damageOut
-        )
-    );
+    if(false){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("WeaponProperties: Damage (DistSquared: %.2f) (MaxDistance: %.2f) (skalar Inv: %2f), (damage: %.2f)"),
+                distSquaredCm,
+                maxRangeCMSquared,
+                skalarInverted,
+                damageOut
+            )
+        );
+    }
+    
 
     //min 1 either direction
     float sign = maxDamage < 0.0f ? -1.0f : 1.0f;

@@ -12,6 +12,8 @@ private:
     static void TestInnerHullFinder();
     static void TestPolygonHit();
 
+    static void TestPolygonFit();
+
 
     template <typename T>
     static FString makeString(TArray<T> &array){

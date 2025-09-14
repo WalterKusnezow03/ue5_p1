@@ -3847,6 +3847,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipForceCache/SlipForceCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/TransformInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/RotationInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FVectorInterpolator.h \
@@ -3900,6 +3901,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/CarriedItem/Animated/AnimCarriedItemSocket.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/BoneAttachment.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/HipController/HipController.cpp \
@@ -3914,6 +3917,7 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CameraComponent.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/SLIP/SlipForceCache/SlipForceCache.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/LayeredTwoJointBone.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Ik/Controller/TorsoController/TorsoController.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/IkHumanoidModell/Source/IkHumanoidModell/Private/IkHumanoidModell.cpp \

@@ -154,11 +154,14 @@ void TwoJointBone::MoveToTarget(FVector &target){
     FVector2D z(0.0f, -1.0f);//DOWN-Z
     MMatrix lookAtTarget = MMatrix::createRotatorFrom(target, x, z, true, debugYaw, debugPitch);
 
-    DebugHelper::logMessage(FString::Printf(
-        TEXT("MMatrixRotationMaker yaw(%.2f), pitch(%.2f)"),
-        MMatrix::radToDegree(debugYaw),
-        MMatrix::radToDegree(debugPitch))
-    );
+    if(false){
+        DebugHelper::logMessage(FString::Printf(
+            TEXT("MMatrixRotationMaker yaw(%.2f), pitch(%.2f)"),
+            MMatrix::radToDegree(debugYaw),
+            MMatrix::radToDegree(debugPitch))
+        );
+    }
+    
 
 
     //r1 = lookAtTarget;

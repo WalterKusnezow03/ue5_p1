@@ -37,7 +37,7 @@ void LoadoutHelper::push_back(weaponSetupHelper &other){
 void LoadoutHelper::replace(int index, weaponSetupHelper &other){
     //prints properly
     FString message = FString::Printf(TEXT("loadoutLogMessage replace method called, index: %d"), index);
-    DebugHelper::logMessage(message);
+    //DebugHelper::logMessage(message);
     if (indexIsValid(index))
     {
         weaponSetupHelper &weaponSetupToUpdate = vec[index];

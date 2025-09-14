@@ -2,6 +2,8 @@
 
 #include "GameCore/DebugHelper.h"
 #include "IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.h"
+#include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
+#include "IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h"
 
 
 BoneAttachment::BoneAttachment(){
@@ -78,14 +80,6 @@ void BoneAttachment::setupBone(
         offset
     );
 
-    //debug
-    //return;
-
-    container.initDefaultForParameterD(
-        bone.lengthOfBone(),
-        massOfParent,
-        defaultMotionTime
-    );
 }
 
 
@@ -351,11 +345,36 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
 /**
  * slip force
  */
+/// ----- dynamic slipforce -------
+FVector BoneAttachment::StaticSlipVelocity(
+    FVector &lookDir,
+    float velocityDown, 
+    float mass,
+    float deltatime,
+    bool isInStance
+){
 
+    FVector EndEffectorLocalRotationSpace = bone.EndEffectorRelativeLocation();
+
+    return container.StaticSlipVelocity(
+        lookDir,
+        EndEffectorLocalRotationSpace,
+        EndEffectorIsGrounded(),
+        velocityDown,
+        mass,
+        deltatime,
+        isInStance
+    );
+}
+/// ----- dynamic slipforce end -------
+
+
+ // ------ DEPRECATED precalculated slip force: deprecated --------
 /// @brief will return the slip data, based if has reached target or not 
 /// @param mass 
 /// @return 
 SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
+    
     //if reached target: setup
     FVector endEffectorTrajectory = bone.EndEffectorRelativeLocation();
 
@@ -366,13 +385,19 @@ SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
         bone.lengthOfBone(),
         endEffectorTrajectory
     );
-    
+    if(!EndEffectorIsGrounded()){
+        //container.Lock();
+    }
 
     return container;
 }
+// ------ DEPRECATED precalculated slip force: deprecated end --------
 
 
-//new!
+
+
+
+// ------ DEPRECATED precalculated slip force: deprecated --------
 void BoneAttachment::setupSlipDataOnStanceBegin(
     MMatrix &orientation,
     FVector &defaultForwardFrame,
@@ -413,8 +438,12 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     FVector liftOffDefault = defaultForwardFrame;
     FVector liftOffHacked = defaultForwardFrame;
     liftOffHacked.X = aLocal.X * -1.0f; //hack
-    FVector bLocal = liftOffHacked; 
 
+    if(!LiftOffTrajectoryIsValid(liftOffHacked)){
+        //liftOffHacked.X = defaultForwardFrame.X * -1.0f;
+    }
+
+    FVector bLocal = liftOffHacked; 
 
     /**
      * Der lift off frame ist nach der rotation wieder entrotiert,
@@ -445,19 +474,34 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 void BoneAttachment::setupSlipDataOnStanceBegin(
     MMatrix &orientation,
     MMatrix &translation,
+    FVector &otherLegWorldSpace,
     FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
     float time,
     float velocityDown,
+    float velocityHorizontal,
     float mass,
     FVector &defaultForwardFrameFallback
 ){
+    float heelOffEpsilon = 0.0f; //might be changed.
     
     //both trajectories for heel off in local space.
     FVector currentReached = bone.EndEffectorRelativeLocation(); //no rotation removed, start to end effector vector.
     MMatrix r1 = orientation.transposedRotation();
     FVector currentLocalSpace = r1 * currentReached;
 
-    float heelOffEpsilon = 1.0f; //might be changed.
+    float B1 = time;
+    float B2 = B1; //einfacher
+    float F1 = AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
+        otherLegWorldSpace, nextTrajectoryOfOtherLegWorldSpace, velocityHorizontal, velocityDown
+    );
+
+    time = B1 + F1 + B2;
+    DebugHelper::logMessage(
+        FString::Printf(TEXT("time total B1 F1 B2 %.2f"), 
+            time
+        )
+    );
+
 
 
 
@@ -474,46 +518,18 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
 
-    //temporary code here, force applied from (0,0,-l) to back:
-    bool preventToCloseFramesCreatingHighScalarD = true;
-    if(preventToCloseFramesCreatingHighScalarD && !LiftOffTrajectoryIsValid(liftOffFrame)){
-        setupSlipDataOnStanceBegin(
-            orientation,
-            defaultForwardFrameFallback,
-            time,
-            velocityDown,
-            mass
-        );
-        return;
-    }
-
-    bool debugLogLiftOffFrame = true;
-    if(debugLogLiftOffFrame){
-        //log
-        FVector localSpace = r1 * liftOffFrame; //aLocalRotation = R^-1 * aWorld
-        FString msg = TEXT("Lift off frame: ");
-        msg += liftOffFrame.ToString();
-        DebugHelper::logMessage("SlipLiftOffFrameFinder was valid: BoneAttachment: ",msg);
-
-        //draw
-        /*
-        FVector worldFrame = translation * liftOffFrame;
-        DebugHelper::showLineBetween(
-            worldPointer,
-
-        )*/
-    }
 
     //move both trajectories to world rotation space and setup slip data
     FVector startLocalWorldRotationSpace = currentReached; //is already in world Rotation.
     FVector liftoffLocalWorldRotationSpace = liftOffFrame;
-    // orientation * liftOffFrameLocalNoRotation;
+
 
     //must be given by bone controller.
     FVector moveDir(1, 0, 0);
     moveDir = orientation * moveDir;
 
     //setup
+    /*
     container.setupInterpolatedD(
         startLocalWorldRotationSpace, //local in rotated world space
         liftoffLocalWorldRotationSpace, //local in rotated world space
@@ -521,8 +537,17 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
         time,
         velocityDown,
         mass
+    );*/
+    container.setupInterpolatedD(
+        startLocalWorldRotationSpace, //local in rotated world space
+        liftoffLocalWorldRotationSpace, //local in rotated world space
+        moveDir,
+        B1,
+        F1,
+        B2,
+        velocityDown,
+        mass
     );
-
 
 }
 
@@ -532,7 +557,7 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
     FVector down(0.0f, 0.0f, -1.0f);
     FVector directionOfLiftOff = liftOffFrameLocal.GetSafeNormal();
-    float minDot = 0.9f;
+    float minDot = 0.95f;
     float angle = FVector::DotProduct(directionOfLiftOff, down);
     if (angle >= minDot){
         FString message = TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin");
@@ -543,6 +568,11 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
         DebugHelper::logMessage(message);
         return false;
     }
+    FVector up = -1.0f * down;
+    if(FVector::DotProduct(directionOfLiftOff, up) > 0.0f){
+        return false;
+    }
+
     FString message = FString::Printf(
         TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), 
         angle
@@ -551,6 +581,11 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
     DebugHelper::logMessage(message);
     return true;
 }
+// ------ DEPRECATED precalculated slip force: deprecated end --------
+
+
+
+
 
 /**
  * targte info
@@ -593,4 +628,33 @@ void BoneAttachment::ResetAndRebuild(
     MMatrix TR = translation * orientation;
     MMatrix M = TR * innerOffset;
     bone.ResetAndRebuild(M);
+}
+
+
+
+
+
+void BoneAttachment::UpdateGroundTruth(FVector &ground){
+    worldGroundTruth = ground;
+}
+bool BoneAttachment::EndEffectorIsGrounded(){
+    //10 cm
+    FVector location = endEffectorWorldLocation();
+    if(location.Z - worldGroundTruth.Z  < 15.0f){
+        return true;
+    }
+
+    if (FVector::DistSquared(location, worldGroundTruth) < 225.0f)
+    {
+        if(world){
+            DebugHelper::showLineBetween(
+                world,
+                location,
+                location + FVector(0, 0, 20),
+                FColor::Purple
+            );
+        }
+        return true;
+    }
+    return false;
 }

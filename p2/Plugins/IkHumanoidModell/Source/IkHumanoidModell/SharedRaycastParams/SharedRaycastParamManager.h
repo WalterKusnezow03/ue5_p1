@@ -25,6 +25,8 @@ public:
 
     static const CollisionTracker *getShared();
 
+    static UWorld *world();
+
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

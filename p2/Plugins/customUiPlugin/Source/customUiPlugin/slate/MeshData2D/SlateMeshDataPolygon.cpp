@@ -58,3 +58,17 @@ void SlateMeshDataPolygon::SetCursorColor(FLinearColor color){
 void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){
     meshData.ApplyTransformationImmidiate(transform);
 }
+
+
+
+
+
+/// @brief marks for not filled drawing
+/// USE FOR DEBUG ONLY
+void SlateMeshDataPolygon::DrawOutLineOnly(){
+    bDrawOutlineOnly = true;
+}
+
+bool SlateMeshDataPolygon::IsFlaggedDrawOutlineOnly() const {
+    return bDrawOutlineOnly;
+}

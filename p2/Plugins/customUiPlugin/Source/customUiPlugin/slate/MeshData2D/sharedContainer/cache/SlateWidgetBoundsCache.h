@@ -23,7 +23,7 @@ public:
     FVector2D Size() const;
 
 private:
-    FBoundingBox2D boundsInternal;
+    FSlateBoundingBox2D boundsInternal;
     bool updateNeededFlag = true;
 
     //due to racing conditions, a counter is needed

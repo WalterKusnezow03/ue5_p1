@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IkHumanoidModell/Ik/Controller/SLIP/SlipForceCache/SlipForceCache.h"
 
 class IKHUMANOIDMODELL_API SlipContainer {
 
@@ -11,23 +12,10 @@ public:
     SlipContainer(SlipContainer &other);
     SlipContainer &operator=(SlipContainer &other);
 
+    void Lock();
+    bool bIsLocked = false;
 
     void setup(float defaultBoneSize, FVector &currentStartToEndEffector);
-
-    void initDefaultForParameterD(
-        float defaultBoneSize, 
-        float mass,
-        float motionTime
-    );
-
-    void initDefaultForParameterD(
-        FVector &endA, // start
-        FVector &endB, // lift off
-        FVector &movedir,
-        float time,
-        float velocityDown,
-        float mass
-    );
 
 private:
     bool bLogEnabled = false; //disable.
@@ -37,8 +25,14 @@ private:
         FVector &movedir
     );
 
-    float slipSineScalar(
+    FVector forceUnscaled(
         FVector &legdir_featherCurrent,
+        FVector &movedir,
+        bool allowSlipSineScalar
+    );
+
+    float slipSineScalar(
+        const FVector &legdir_featherCurrent,
         FVector &movedir
     );
 
@@ -59,12 +53,34 @@ public:
         float velocity,
         float mass
     );
-    FVector accelerationInterpolated(
+    void setupInterpolatedD(
+        FVector &endA, // start LOCAL, With rotation
+        FVector &endB, // lift off, Local, with rotation
+        FVector &movedir,
+        float B1,
+        float F1,
+        float B2,
+        float velocityDown,
+        float mass
+    );
+
+    FVector velocityInterpolated(
         float deltatime,
         float mass,
         FVector &movedir
     );
 
+
+    //new.
+    FVector StaticSlipVelocity(
+        FVector &moveDir,
+        FVector &currentFootRelative,
+        bool isGrounded,
+        float velocityDown,
+        float mass,
+        float deltatime,
+        bool isInStance
+    );
 
 private:
     //new
@@ -81,12 +97,8 @@ private:
 
     bool slipForceAllowedDotProductUp(FVector &leg);
 
-    //debug
-    void showEstimationVersusRealVelocity();
-    FVector slipVelocityEstimatedInternal;
-    FVector slipVelocityIntegratedInternal;
 
-    float estimateVmin(float timeOfAnimation);
+   
     float avoidDivisionByZero(float value);
 
     FVector forceIntegrated(
@@ -97,12 +109,21 @@ private:
         FVector &b
     );
 
-
+    FVector forceIntegrated(
+        float B1,
+        float F1,
+        float B2,
+        float deltaTime,
+        FVector &moveDir,
+        FVector &a,
+        FVector &b
+    );
 
     //experimental
     void deRotateDirectionsForSlipSine(
         FVector &legDir,
         FVector &forward
     );
-    void hackSigns(FVector &force, FVector &forward);
+
+    SlipForceCache forceCache;
 };

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 
+/// @brief clock wise convex hull maker 2d
 class COREMATH_API GrahamScan2D {
 
 public:

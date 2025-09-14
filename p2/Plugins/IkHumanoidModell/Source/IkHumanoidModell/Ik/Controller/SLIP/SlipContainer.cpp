@@ -2,7 +2,7 @@
 
 
 SlipContainer::SlipContainer(){
-
+    featherComplete = 100.0f; //SOME VALUE MUST BE SETUP, OTHERWISE ALL FORMULAS ARE BROKEN!
 }
 
 SlipContainer::~SlipContainer(){
@@ -31,6 +31,7 @@ SlipContainer &SlipContainer::operator=(SlipContainer &other){
 /// @param defaultBoneSize 
 /// @param currentStartToEndEffector 
 void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffector){
+    bIsLocked = false;
 
     featherComplete = defaultBoneSize;
     featherCurrent = currentStartToEndEffector;
@@ -45,21 +46,32 @@ void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffec
     wasSetup = true;
 }
 
+void SlipContainer::Lock(){
+    bIsLocked = true;
+}
 
 
 
 
 
 
-/// @brief slip force unscaled, no D applied
-/// @param legdir_featherCurrent 
-/// @param movedir 
-/// @return 
 FVector SlipContainer::forceUnscaled(
     FVector &legdir_featherCurrent,
-    FVector &movedir
+    FVector &movedir,
+    bool allowSlipSineScalar //check to allow slip force to back
 ){
-    
+    if(legdir_featherCurrent.Size() > featherComplete){
+        legdir_featherCurrent = legdir_featherCurrent.GetSafeNormal() * featherComplete;
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("slip integral interpolated trajectory resize feather!!: (%.10f, %.10f, %.10f)"),
+                legdir_featherCurrent.X,
+                legdir_featherCurrent.Y,
+                legdir_featherCurrent.Z
+            )
+        );
+    }
+
     /*
 
     Full with D
@@ -92,13 +104,20 @@ FVector SlipContainer::forceUnscaled(
     );
 
    
-    float sinScale = slipSineScalar(legdir_featherCurrent, movedir);
-    forceRaw *= sinScale; //smooth scale force
+    float sinScale = 
+        allowSlipSineScalar ? 
+        slipSineScalar(legdir_featherCurrent, movedir) : 
+        0.0f;
+    
+
+    forceRaw.Z *= (1.0f + sinScale); //smooth scale force
+    forceRaw.X *= sinScale;
+    forceRaw.Y *= sinScale;
 
     //hack positive force only on z
-    forceRaw.Z = std::abs(forceRaw.Z);
+    //forceRaw.Z = std::abs(forceRaw.Z);
 
-    if(bLogEnabled){
+    if(true || bLogEnabled){
         FString message = FString::Printf(
             TEXT("--- slip force result: (%.2f %.2f %.2f), trajectory (%.2f, %.2f, %.2f) move(%.2f %.2f)"),
             forceRaw.X,
@@ -117,20 +136,23 @@ FVector SlipContainer::forceUnscaled(
     return forceRaw;
 }
 
-void SlipContainer::hackSigns(FVector &force, FVector &forward){
-    force.X = std::abs(force.X) * (forward.X > 0 ? 1.0f : -1.0f);
-    force.Y = std::abs(force.Y) * (forward.Y > 0 ? 1.0f : -1.0f);
-
+/// @brief slip force unscaled, no D applied
+/// @param legdir_featherCurrent 
+/// @param movedir 
+/// @return 
+FVector SlipContainer::forceUnscaled(
+    FVector &legdir_featherCurrent,
+    FVector &movedir
+){
+    return forceUnscaled(legdir_featherCurrent, movedir, true);
 }
-
-
 
 /// @brief smooth force with sin angle forward to leg 
 /// @param legdir_featherCurrent 
 /// @param movedir 
 /// @return 
 float SlipContainer::slipSineScalar(
-    FVector &legdir_featherCurrent,
+    const FVector &legdir_featherCurrent,
     FVector &movedir
 ){
     FVector moveNormalized = movedir.GetSafeNormal();
@@ -310,46 +332,150 @@ FVector SlipContainer::forceIntegrated(
     FVector &a,
     FVector &b
 ){
-    if(bLogEnabled){
+    forceCache.ClearFrames();
+    forceCache.SetTime(time);
 
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("slip overcome integral a: (%.2f, %.2f, %.2f) size (%2.f)"),
-                a.X, a.Y, a.Z, a.Size()
-            )
-        );
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("slip overcome integral b: (%.2f, %.2f, %.2f) size (%2.f)"),
-                b.X, b.Y, b.Z, b.Size()
-            )
-        );
-
-    }
-    
-
-    FVector outforce(0, 0, 0);
+    FVector outforce = FVector::ZeroVector;
     deltaTime = std::abs(deltaTime);
     time = std::abs(time);
-    FVector boneCurrentEnd(0, 0, 0);
+    FVector dir = b - a;
+
     for (float i = 0; i <= time; i += deltaTime)
     {
         float scalar = i / time; // distTarget / distAll
-        
-        //if(bLogEnabled) DebugHelper::logMessage(FString::Printf(TEXT("slip scalar: %.2f"), scalar));
-
-        boneCurrentEnd = a + scalar * (b - a);
-        outforce += forceUnscaled(boneCurrentEnd, moveDir);
+    
+        FVector boneCurrentEnd = a + (scalar * dir);
+        FVector foundForce = forceUnscaled(boneCurrentEnd, moveDir);
+        forceCache.AddFrame(foundForce);
+        outforce += foundForce;
 
         DebugHelper::logMessage(
             FString::Printf(
-                TEXT("slip integral interpolated trajectory: (%.2f, %.2f, %.2f) size (%2.f)"),
-                boneCurrentEnd.X, boneCurrentEnd.Y, boneCurrentEnd.Z, boneCurrentEnd.Size()
+                TEXT("slip integral interpolated trajectory: (%s) a(%s) b(%s) scalar(%.2f) time(%.2f) (%.2f feather)"),
+                *boneCurrentEnd.ToString(),
+                *a.ToString(),
+                *b.ToString(),
+                scalar,
+                time,
+                featherComplete
             )
         );
     }
+
+
+
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
+            *outforce.ToString(),
+            *a.ToString(),
+            *b.ToString()
+        )
+    );
+    
     return outforce;
 }
+
+FVector SlipContainer::forceIntegrated(
+    float B1, 
+    float F1, 
+    float B2, 
+    float deltaTime,
+    FVector &moveDir,
+    FVector &a,
+    FVector &b
+){
+
+    float time = B1 + F1 + B2;
+    forceCache.ClearFrames();
+    forceCache.SetTime(time);
+
+    FVector outforce = FVector::ZeroVector;
+    deltaTime = std::abs(deltaTime);
+    time = std::abs(time);
+    FVector dir = b - a;
+
+
+
+    //b1 kinematic phase
+    for (float i = 0; i <= B1; i += deltaTime) {
+
+        float scalar = i / time;
+
+        FVector boneCurrentEnd = a + (scalar * dir);
+        FVector foundForce = forceUnscaled(boneCurrentEnd, moveDir);
+        forceCache.AddFrame(foundForce);
+        outforce += foundForce;
+
+        //only Z, as expected
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip B1 force (%s)"),
+                *foundForce.ToString()
+            )
+        );
+    }
+
+
+    
+    //f1 stance no motion phase
+    for (float i = 0; i <= F1; i += deltaTime) {
+        float scalar = (B1) / time;
+
+        FVector boneCurrentEnd = a + (scalar * dir);
+        FVector foundForce = forceUnscaled(boneCurrentEnd, moveDir);
+        forceCache.AddFrame(foundForce);
+        outforce += foundForce;
+
+        //only Z, as expected
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip F1 static force (%s)"),
+                *foundForce.ToString()
+            )
+        );
+    }
+
+
+    //backward kinematic b2 of other leg, end in place phase
+    for (float i = 0; i <= B2; i += deltaTime) {
+        float scalar = ((B1 + F1) + i) / time;
+
+        FVector boneCurrentEnd = a + (scalar * dir);
+        FVector foundForce = forceUnscaled(boneCurrentEnd, moveDir);
+        forceCache.AddFrame(foundForce);
+        outforce += foundForce;
+
+        //NOT only Z, as expected ??
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip B2 force (%s)"),
+                *foundForce.ToString()
+            )
+        );
+    }
+
+
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
+            *outforce.ToString(),
+            *a.ToString(),
+            *b.ToString()
+        )
+    );
+    
+    return outforce;
+}
+
+
+
+
+
+
+
+
+
 
 
 bool SlipContainer::debugSkipToCloseframes(FVector a, FVector b){
@@ -377,15 +503,10 @@ void SlipContainer::setupInterpolatedD(
         return;
     }
 
-    showEstimationVersusRealVelocity(); //prev auswertung
-    DebugHelper::logMessage("Slip overcome: ----- log end ----");
     DebugHelper::logMessage("Slip overcome: ----- log start ----");
 
-    A = endA;
-    B = endB;
-    time = std::abs(time);
-    timeForInterpolation = time;
-    
+    timeForInterpolation = std::abs(time);
+
     //hack.
     if(false && velocityDown > 0.0f){
         //is up
@@ -394,31 +515,18 @@ void SlipContainer::setupInterpolatedD(
 
     
 
-    float gravityIntegrated = -981.0f * time; //accumulated gravity acceleration
-    float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
+    float gravityIntegrated = -981.0f * time; //accumulated gravity acceleration to compensate
+    
 
-    //extra gravity to have 
-    float vMinOptional = estimateVmin(time); //quasi normal kraft ?
-
-
-    /**
-     * was false! 
-     */
-    if(false){
-        //debug
-        //vMinOptional = 0.0f;
-
-        vMinOptional = velocityWithGravityIntegrated * -1.0f;
-
-        vMinOptional = 0.0f;
-    }
+    //extra gravity removal to have
+    float vMinOptional = 1.0f; // 981.0f; //5cms hoch., sind 5m/s! Achtung XDD
 
     //D >= \frac{\frac{(vmin - v_0 - at) \cdot m}{t}}{F_{raw}(t)}
     //upperfrac = \frac{(- v_0 - at) \cdot m}{t}
-    float upperFrac = ((vMinOptional - gravityIntegrated) * mass) / time;
+    float upperFrac = ((vMinOptional - velocityDown - gravityIntegrated) * mass);
     float lowerFracIntegralZ = 0.0f;
 
-    float dtStep = time / 200.0f; //160 bei tick für time, war 1000
+    float dtStep = time / 400.0f; //160 bei tick für time, war 1000
     FVector lowerFracIntegratedForce = forceIntegrated(
         time,
         dtStep,
@@ -426,15 +534,32 @@ void SlipContainer::setupInterpolatedD(
         endA,
         endB
     );
-    lowerFracIntegralZ = avoidDivisionByZero(lowerFracIntegratedForce.Z);
+    //debug
+    forceCache.Debug("forceCheck", lowerFracIntegratedForce);
+
+    //---- CAUTION makes force value NOT Same!!!!!! -----
+    lowerFracIntegralZ = avoidDivisionByZero(lowerFracIntegratedForce.Z); 
+
+   
 
 
-    float minD = upperFrac / lowerFracIntegralZ;
-    validateD(minD); //validates if needed
+    float minD = upperFrac / (lowerFracIntegralZ * time);
+    //validateD(minD); //validates if needed
     Dcurrent = minD;
 
+    //Update Cache
+    forceCache.SetScalarDAndConvertBufferToVelocity(Dcurrent, mass);
 
+    /// ---- LOG -----
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Slip overcome: movedir: %s"),
+            *movedir.ToString()
+        )
+    );
     DebugHelper::logMessage("Slip overcome: v gravity at t0: ", velocityDown);
+
+    float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
     DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
     DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
     DebugHelper::logMessage("Slip overcome: upper: ", upperFrac);
@@ -446,15 +571,126 @@ void SlipContainer::setupInterpolatedD(
 
     //check equation
 
-    //0 <= v_0 + at +  \frac{D \cdot F_{raw}(t)}{m}t
+    //0 <= v_0 + at +  \frac{D \cdot F_{raw}(t)}{m} \cdot t
     FVector velocityPart(0, 0, gravityIntegrated);
+    velocityPart *= 0;
+
     FVector a = (Dcurrent * lowerFracIntegratedForce) / mass;
-    FVector resultVelocity = velocityPart + a * time;
+    FVector resultVelocity = a * time;
+
+    //100% correct. (?)
+    DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin: ", resultVelocity);
+    DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin in m/s: ", resultVelocity / time);
+
+    
 
     //looks very correct
-    //DebugHelper::logMessage("Slip overcome: RESULT V ESTIMATED: ", resultVelocity);
-    slipVelocityEstimatedInternal = resultVelocity;
+    forceCache.Debug("VelocityCheck ",resultVelocity); 
 
+
+
+
+    // Literally a hack.
+    //--- DEBUG ---
+    /*
+    float minReach = std::abs(gravityIntegrated);
+    if (resultVelocity.Z <= minReach || resultVelocity.Z > minReach)
+    {
+        // v * x = vTarget;
+        //x = vTarget / v
+        float x = minReach / resultVelocity.Z;
+        forceCache.scaleZ(x);
+    }
+    */
+
+    DebugHelper::logMessage("Slip overcome: ----- log end ----");
+}
+
+
+
+//new: compensation velocity
+void SlipContainer::setupInterpolatedD(
+    FVector &endA, //start LOCAL, With rotation
+    FVector &endB, //lift off, Local, with rotation
+    FVector &movedir, 
+    float B1,
+    float F1,
+    float B2,
+    float velocityDown,
+    float mass
+){
+    if(debugSkipToCloseframes(endA, endB)){
+        //DebugHelper::logMessage("Slip B1F1B2 overcome: Skipped to close frames!");
+        return;
+    }
+
+
+    float time = B1 + F1 + B2;
+    timeForInterpolation = std::abs(time);
+
+    float gravityIntegrated = -981.0f * time; //accumulated gravity acceleration to compensate
+    
+
+    //extra gravity removal to have
+    float vMinOptional = 5.0f; // 981.0f; //5cms hoch., sind 5m/s! Achtung XDD
+
+    //D >= \frac{\frac{(vmin - v_0 - at) \cdot m}{t}}{F_{raw}(t)}
+    //upperfrac = \frac{(- v_0 - at) \cdot m}{t}
+    float upperFrac = ((vMinOptional - velocityDown - gravityIntegrated) * mass);
+    float lowerFracIntegralZ = 0.0f;
+
+    float dtStep = time / 400.0f; //160 bei tick für time, war 1000
+    FVector lowerFracIntegratedForce = forceIntegrated(
+        B1,
+        F1,
+        B2,
+        dtStep,
+        movedir,
+        endA,
+        endB
+    );
+    //debug
+    //forceCache.Debug("B1F1B2 forceCheck", lowerFracIntegratedForce);
+
+    //---- CAUTION makes force value NOT Same!!!!!! -----
+    lowerFracIntegralZ = avoidDivisionByZero(lowerFracIntegratedForce.Z); 
+    Dcurrent = upperFrac / (lowerFracIntegralZ * time);
+    
+
+    //Update Cache.
+    forceCache.SetScalarDAndConvertBufferToVelocity(Dcurrent, mass);
+
+    /// ---- LOG -----
+
+    //looks very correct
+
+    //vmin <= v_0 + at +  \frac{D \cdot F_{raw}(t)}{m} \cdot t
+    //0 <= v_0 + at - vmin +  \frac{D \cdot F_{raw}(t)}{m} \cdot t
+    FVector v =
+        FVector(0, 0, (velocityDown + (-981.0f * time) - vMinOptional));
+    FVector a_f = (Dcurrent * lowerFracIntegratedForce) / mass; //\frac{D \cdot F_{raw}(t)}{m}
+    FVector a_v = a_f * time;
+    FVector resultVerticalVelocity = v + a_v;
+    
+    
+    forceCache.Debug("B1F1B2 VelocityCheck Raw Down ", v);
+    //forceCache.PrintBuffer(); //debug
+
+
+
+    
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT(
+                "Slip B1F1B2 cache result: Check Equation v.z m/s (expects around 0.0f): %.1f"
+            ),
+            resultVerticalVelocity.Z
+        )
+    );
+
+    
+
+    //DebugHelper::logMessage("Slip B1F1B2 overcome: ----- log end ----");
 }
 
 /// @brief avoids values too close to 0
@@ -463,23 +699,11 @@ void SlipContainer::setupInterpolatedD(
 float SlipContainer::avoidDivisionByZero(float value){
     float abs = std::abs(value);
     float sign = value >= 0.0f ? 1.0f : -1.0f;
-    abs = std::max(abs, 0.01f);
+    abs = std::max(abs, 0.001f);
     return abs * sign;
 }
 
-/// @brief min velocity to compensate from a timeslot of gravity 
-/// @param timeOfAnimation 
-/// @return 
-float SlipContainer::estimateVmin(float timeOfAnimation){
-    /*
-    0 = v_0 + at
-    
-    v_{min} = v_0 = - at
-    */
-    float a = 981.0f;
 
-    return a * timeOfAnimation;
-}
 
 
 /// @brief container must be setup before !
@@ -487,170 +711,94 @@ float SlipContainer::estimateVmin(float timeOfAnimation){
 /// @param mass 
 /// @param movedir 
 /// @return 
-FVector SlipContainer::accelerationInterpolated(
+FVector SlipContainer::velocityInterpolated(
     float deltatime,
     float mass,
     FVector &movedir
 ){
+    //if(bIsLocked){
+    //    return FVector(0, 0, 0);
+    //}
+
+    if(forceCache.CacheIsSetup()){
+        FVector v = forceCache.Tick(deltatime);
+
+    
+        //FVector v = (force / mass); //DO NOT DO DELTA TIME HERE! SCALING INCLUDED IN D TERM!
+        //* deltatime;
+
+        FString reached = forceCache.endReached() ? TEXT("reached") : TEXT("not reached");
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip cache result ticked velocity(%s) terminated(%s)"),
+                *v.ToString(),
+                *reached
+            )
+        );
+        return v;
+    }
+
     if(!slipForceAllowedDotProductUp(featherCurrent)){
         return FVector(0, 0, 0);
     }
-    
-
     FVector force = Dcurrent * forceUnscaled(featherCurrent, movedir);
 
     //F = m * a
     //a = F / m
     FVector a = force / mass;
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Slip Output velocity %s"), *a.ToString()
+        )
+    );
+    FVector velocity = a * deltatime;
 
-    //debug
-    slipVelocityIntegratedInternal += a * deltatime;
-
-    //debug
-    if(bLogEnabled){
-        
-        FString message = FString::Printf(
-            TEXT("--- slip output: D(%.2f) force(%.2f %.2f %.2f) acceleration(%.2f %.2f %.2f), trajectory(%.2f, %.2f, %2.f) forward(%.2f, %.2f, %.2f)"
-            ),
-            Dcurrent,
-            force.X,
-            force.Y,
-            force.Z,
-            a.X,
-            a.Y,
-            a.Z,
-            featherCurrent.X,
-            featherCurrent.Y,
-            featherCurrent.Z,
-            movedir.X,
-            movedir.Y,
-            movedir.Z
-        );
-        DebugHelper::logMessage(message);
-    }
-
-    if(force.Size() > 0.0f){
-        //DebugHelper::showScreenMessage("positive slip!", FColor::Green);
-    }
-
-    return a;
-}
-
-
-
-
-void SlipContainer::showEstimationVersusRealVelocity(){
-    DebugHelper::logMessage("Slip overcome RESULT -------");
-    DebugHelper::logMessage("Slip overcome RESULT V ESTIMATED: ", slipVelocityEstimatedInternal);
-    DebugHelper::logMessage("Slip overcome RESULT V REAL: ", slipVelocityIntegratedInternal);
-    DebugHelper::logMessage("Slip overcome RESULT -------");
-
-    slipVelocityEstimatedInternal = FVector(0, 0, 0);
-    slipVelocityIntegratedInternal = FVector(0, 0, 0);
+    return velocity;
 }
 
 
 
 
 
-
-
-
-/// ---- Default D calculation for clamping ----
-void SlipContainer::initDefaultForParameterD(
-    FVector &endA, //start
-    FVector &endB, //lift off
-    FVector &movedir, 
-    float time, 
+//small debug function of static slip force
+FVector SlipContainer::StaticSlipVelocity(
+    FVector &moveDir,
+    FVector &currentFootRelative,
+    bool isGrounded,
     float velocityDown,
-    float mass
-){
-    setupInterpolatedD(
-        endA,   // start
-        endB, // lift off
-        movedir,
-        time,
-        velocityDown,
-        mass
-    );
-
-    //copy calculated D
-    DLimit = Dcurrent;
-
-    //debug disable dlimit maker
-    if(false){
-        bDLimitSetup = true;
-    }
-}
-
-/// @brief calculates a Default D value to prevent to high values of numerical or trajectory issues
-/// which are not as expected
-/// @param defaultBoneSize 
-/// @param mass 
-/// @param motionTime 
-void SlipContainer::initDefaultForParameterD(
-    float defaultBoneSize,
     float mass,
-    float motionTime
+    float deltatime,
+    bool isInStance
 ){
-    //dont setup twicce
-    if(bDLimitSetup){
-        return;
+    if(isGrounded){
+        float vMinOptional = 0.0f;
+        float gravityIntegrated = -981.0f * deltatime; // accumulated gravity acceleration to compensate
+
+        /*
+        $$
+        D >= 
+        \frac
+        {(v_{min} - v_0 - aT) \cdot m}      //upper
+        {F_{raw} \cdot T}                //lower
+        $$
+        */
+        float upperFrac = ((vMinOptional - velocityDown - gravityIntegrated) * mass);
+    
+        FVector force = forceUnscaled(currentFootRelative, moveDir, isInStance);
+        force.Z = avoidDivisionByZero(force.Z);
+        float lowerFrac = force.Z * deltatime;
+
+        float D = upperFrac / lowerFrac;
+
+        /*
+        Force to velocity:
+        $$
+        F \cdot \frac{D\cdot t}{m}  >= v
+        $$
+        */
+        float frac = (D * deltatime) / mass;
+        FVector velocity = force * frac;
+        return velocity;
     }
-
-    defaultBoneSize = std::abs(defaultBoneSize);
-    FVector trajectoryNone(0, 0, -1.0f * std::abs(defaultBoneSize));
-
-    MMatrix rotateFront;
-    MMatrix rotateBack;
-
-    float degrees = 20.0f;
-    rotateFront.pitchRadAdd(MMatrix::degToRadian(-degrees));
-    rotateBack.pitchRadAdd(MMatrix::degToRadian(degrees));
-
-    FVector moveDir(1, 0, 0);
-
-    FVector trajectoryFront = rotateFront * trajectoryNone;
-    FVector trajectoryLiftOff = rotateBack * trajectoryNone;
-    float velocityDown = motionTime * -981.0f; //v(t) = v0 + at
-
-
-    //DEBUG BECAUSE D is inconsitent, if gravity added: D: 18, else 500 (as expected)
-    velocityDown = 0.0f;
-
-    //project to ground
-    trajectoryFront.Z = -1.0f * defaultBoneSize; //abs -1
-    trajectoryLiftOff.Z = -1.0f * defaultBoneSize; //abs -1
-
-    initDefaultForParameterD(
-        trajectoryFront,   // start
-        trajectoryLiftOff, // lift off
-        moveDir,
-        motionTime,
-        velocityDown,
-        mass
-    );
-
-    DebugHelper::logMessage("Slip overcome preclamped log --------");
-    DebugHelper::logMessage("Slip overcome: preclamped Time: ", motionTime);
-    DebugHelper::logMessage("Slip overcome: preclamped front: ", trajectoryFront);
-    DebugHelper::logMessage("Slip overcome: preclamped end: ", trajectoryLiftOff);
-    DebugHelper::logMessage("Slip overcome: preclamped D: ", DLimit);
-    DebugHelper::logMessage("Slip overcome preclamped log --------");
-    //Achtung: ist bei 12: offensichtlich falsch! 
-
-}
-
-/// @brief validate D if setup
-/// @param dIn 
-/// @return 
-void SlipContainer::validateD(float &dIn){
-    if(bDLimitSetup){
-        float allowedIncrease = 2.0f;
-        float limitLower = std::abs(DLimit) * -1.0f * allowedIncrease;
-        float limitHigher = std::abs(DLimit) * allowedIncrease;
-
-        dIn = std::max(dIn, limitLower);
-        dIn = std::min(dIn, limitHigher);
-    }
+    return FVector(0, 0, 0);
 }

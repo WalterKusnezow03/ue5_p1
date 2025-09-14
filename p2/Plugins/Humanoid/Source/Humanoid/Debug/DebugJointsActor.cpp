@@ -175,7 +175,7 @@ void ADebugJointsActor::testForwardTmpPluecker(){
                 a,
                 1.0f
             );
-            DebugHelper::logMessage("forward pluecker test ", result);
+            //DebugHelper::logMessage("forward pluecker test ", result);
         }
 
 

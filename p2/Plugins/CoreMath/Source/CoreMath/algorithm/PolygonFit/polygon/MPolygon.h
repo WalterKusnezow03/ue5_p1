@@ -2,10 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
+#include "CoreMath/vector/bound/FBoundingBox2D.h"
 
 class COREMATH_API MPolygon {
 
 public:
+    FVector2D locationCopy;
+
     MPolygon();
     ~MPolygon();
 
@@ -15,14 +18,28 @@ public:
     ///@brief recommended to start at 0,0, rotated around this point.
     void SetShape(const TArray<FVector2D> &shapeIn);
 
-    bool DoesIntersect(const MPolygon &shapeIn);
+    ///@brief recommended to start at 0,0, rotated around this point, use this 
+    /// to force a detail on the polygon!
+    void SetShape(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints);
+    void SetShapeTransformed(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints);
+
+    TArray<FVector2D> facingParentCenter(FVector2D &centerParent);
+
+protected:
+    TArray<FVector2D> IncreaseDetail(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints);
+
+public:
+    bool DoesIntersectIncludingBoundsCheck(const MPolygon &shapeIn);
+    virtual bool DoesIntersect(const MPolygon &shapeIn);
     bool DoesIntersectClockwiseShape(const TArray<FVector2D> &shapeIn);
     bool DoesIntersect(const FVector2D &aWorld, const FVector2D &bWorld);
 
-    /// modify the translation and rotation to check again for hit
-    void SetTranslation(const FVector2D &matrix);
-    void SetTranslation(const MMatrix2D &matrix);
-    void SetRotation(const MMatrix2D &matrix);
+
+    /// modify transform immidiate to check for hit
+    /// removes all older transformations
+    void SetTransform(const MMatrix2D &matrix);
+
+
 
     /// @brief recreates the shapeTransformed buffer for intersection tests.
     /// called automatically on transformation update and shape override (SetShape)
@@ -30,9 +47,47 @@ public:
 
     void CopyShapeTransformed(TArray<FVector2D> &appendTo);
 
-private:
-    MMatrix2D myTranslation;
-    MMatrix2D myRotation;
+    float BoundingArea(){
+        return areaFound;
+    }
+
+    TArray<FVector2D> &internalTransformed(){
+        return shapeTransformed;
+    }
+
+    ///performs a bounds check on this tranformed and other transformed buffer
+    bool IsInBound(const MPolygon &polygon);
+
+
+    //new
+    void AppendClosestTo(FVector2D &center, TArray<FVector2D> &updatedShape);
+
+
+    //new
+    void AppendRightSideBounds(TArray<FVector2D> &appendTo);
+
+    int VertexCount(){
+        return shapeTransformed.Num();
+    }
+
+    ///@brief returns bounding box of transformed vertecies
+    const FBoundingBox2D &boundingBox();
+
+    ///@brief returns local bounds transformed, logicl of tl, br kept.
+    FBoundingBox2D localBoundsTransformed();
+
+
+    FString ToString();
+
+protected:
+    float areaFound = 0.0f;
+    void CalculateArea();
+
+    FBoundingBox2D localBounds;
+    FBoundingBox2D myBounds;
+    void UpdateBounds();
+
+    MMatrix2D myTransform;
 
     TArray<FVector2D> shapeTransformed;
     TArray<FVector2D> shapeOriginal;
@@ -46,6 +101,8 @@ private:
         const FVector2D &e2
     );
 
+    FVector2D EdgeNormal(const FVector2D &connect);
+    FVector2D EdgeNormal(const FVector2D &v0, const FVector2D &v1);
 
     bool SegmentIntersection2D(
         const FVector2D &a0,
@@ -61,5 +118,11 @@ private:
         const FVector2D &a1,
         const FVector2D &b
     );
+
+    FVector2D centerOfTransformedShape();
+
+
+
+    
 
 };

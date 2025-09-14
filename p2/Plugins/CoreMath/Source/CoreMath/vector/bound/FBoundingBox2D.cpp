@@ -1,7 +1,5 @@
 #include "FBoundingBox2D.h"
 
-#include "customUiPlugin/slate/MeshData2D/SlateMeshData.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
 
 FBoundingBox2D::FBoundingBox2D(){
     Reset();
@@ -50,8 +48,30 @@ void FBoundingBox2D::Update(const FVector2D &pos){
 
     bottomRight.X = std::max(bottomRight.X, pos.X);
     bottomRight.Y = std::max(bottomRight.Y, pos.Y);
-
 }
+
+FVector2D FBoundingBox2D::min()const{
+    return topLeft;
+}
+
+FVector2D FBoundingBox2D::max()const{
+    return bottomRight;
+}
+
+FVector2D FBoundingBox2D::minXmaxY() const {
+    return FVector2D(
+        min().X,
+        max().Y
+    );
+}
+
+FVector2D FBoundingBox2D::maxXminY() const {
+    return FVector2D(
+        max().X,
+        min().Y
+    );
+}
+
 
 
 FVector2D FBoundingBox2D::size() const {
@@ -68,15 +88,36 @@ float FBoundingBox2D::sizeY()const{
     return std::abs(bottomRight.Y - topLeft.Y);
 }
 
-
-
-// --- slate mesh data update ---
-void FBoundingBox2D::Update(const SlateMeshData &ref){
-    const TArray<FVector2D> &buffer = ref.VerteciesRefConst();
-    Update(buffer);
+bool FBoundingBox2D::OtherIsInside(const FBoundingBox2D &other){
+    bool allFlags =
+        min().X <= other.min().X &&
+        min().Y <= other.min().Y &&
+        max().X >= other.max().X &&
+        max().Y >= other.max().Y;
+    return allFlags;
 }
 
-void FBoundingBox2D::Update(const SlateMeshDataPolygon &ref){
-    const SlateMeshData &refMeshData = ref.MeshDataRefConst();
-    Update(refMeshData);
+
+FString FBoundingBox2D::ToString() const {
+    FString result = TEXT("Bounds:");
+    result += topLeft.ToString();
+    result += bottomRight.ToString();
+    return result;
+}
+
+
+TArray<FVector2D> FBoundingBox2D::asVertecies(){
+    /*
+    /// @brief min coordinate on x and y
+    FVector2D topLeft;
+    /// @brief max coordiate on x and y
+    FVector2D bottomRight;
+    */
+    TArray<FVector2D> output = {
+        topLeft,
+        FVector2D(topLeft.X, bottomRight.Y),
+        bottomRight,
+        FVector2D(bottomRight.X, topLeft.Y),
+    };
+    return output;
 }

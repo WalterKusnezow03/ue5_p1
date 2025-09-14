@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h"
-#include "customUiPlugin/slate/MeshData2D/bound/FBoundingBox2D.h"
+#include "customUiPlugin/slate/MeshData2D/bound/FSlateBoundingBox2D.h"
 #include "customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
 
@@ -61,6 +61,8 @@ public:
     const TArray<FSlateVertex> &GetSlateVertexBuffer(FSlateRenderTransform &RenderTransform) const;
     const TArray<SlateIndex> &TrianglesRefConst() const;
 
+    TArray<FVector2f> VerteciesAs2f() const; //for line draw
+
 
     // --- color dynamic ---
     void UpdateCursorPosition(FVector2D &position, bool bDynamicColoring);
@@ -94,7 +96,7 @@ private:
     SlateVertexBufferCache slateVertexCache;
 
     //bound
-    FBoundingBox2D boundingBox;
+    FSlateBoundingBox2D boundingBox;
 
     // Mesh data
     float epsilon = 1.0f;
@@ -165,6 +167,8 @@ private:
     ) const;
 
 
+
+    FVector2f ConvertTo2f(const FVector2D &other) const;
 
     // -- triangle detail increase --
 

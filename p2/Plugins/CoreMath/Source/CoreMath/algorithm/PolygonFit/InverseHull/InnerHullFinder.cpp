@@ -11,9 +11,11 @@ InnerHullFinder::~InnerHullFinder(){
 
 
 
+void InnerHullFinder::EliminateOuterHull(TArray<FVector2D> &shape){
+    EliminateOuterHull(shape, 1);
+}
 
-void InnerHullFinder::MakeMostInnerHull(TArray<FVector2D> &shape){
-
+void InnerHullFinder::EliminateOuterHull(TArray<FVector2D> &shape, int iterations){
     //solange der vertex count der hülle, eliminated points >= 3 ist,
     //ist es eine valide most inner hull.
 
@@ -21,8 +23,7 @@ void InnerHullFinder::MakeMostInnerHull(TArray<FVector2D> &shape){
     //convex überig bleibt.
 
     GrahamScan2D scanner;
-    int maxIterations = 100;
-    for (int i = 0; i < maxIterations; i++){
+    for (int i = 0; i < iterations; i++){
         TArray<FVector2D> potentialNewInner;
         scanner.ComputeConvexHull(shape, potentialNewInner);
         if(potentialNewInner.Num() >= 3){
@@ -31,4 +32,9 @@ void InnerHullFinder::MakeMostInnerHull(TArray<FVector2D> &shape){
             return; //finished, no smaller shape found.
         }
     }
+}
+
+
+void InnerHullFinder::MakeMostInnerHull(TArray<FVector2D> &shape){
+    EliminateOuterHull(shape, 100);
 }

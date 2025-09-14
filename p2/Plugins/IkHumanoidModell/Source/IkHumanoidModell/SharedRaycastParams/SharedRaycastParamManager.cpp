@@ -42,6 +42,13 @@ const CollisionTracker *ASharedRaycastParamManager::getShared(){
     return nullptr;
 }
 
+UWorld *ASharedRaycastParamManager::world(){
+    if(instance){
+        return instance->GetWorld();
+    }
+    return nullptr;
+}
+
 /// @brief gets the collison params with ignored actor list internal from 
 /// ASharedRaycastParamManager instance - is all skelletons tracked, so they dont ontop of each other.
 /// carried items tracked too!

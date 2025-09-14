@@ -19,6 +19,13 @@ private:
     bool bDebugBlockTick = false;
     void showExtendedDebugLog(float deltatime);
 
+    void ResetAllLocomotionFlags();
+    bool HipAtGroundLevel();
+
+    bool backwardsKinematicAllowed();
+
+    bool AnyLegGrounded();
+
 public:
     void EnableDebugLogExtended();
 
@@ -125,6 +132,8 @@ private:
 
     void applyForces(float deltatime);
     void applyStancePhaseSLIPForce(float deltatime);
+    void applySlipForceStatic(float deltatime);
+
     void applyForceGravity(float deltatime);
 
     void applyVelocity(float deltatime);
@@ -138,6 +147,7 @@ private:
     bool leftInStancePhase();
     bool rightInStancePhase();
 
+    void RebuildLegsNone(float deltatime);
     void RebuildLegsEndInPlace(float deltatime);
     void RebuildLegsEndInPlaceFaceDown(float deltatime);
 

@@ -3822,15 +3822,18 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/GrahamScan/GrahamScan2D.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/GrahamScan/GrahamScan2D.h \
   Runtime/Core/Public/CoreMinimal.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyPolygonFitter.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyPolygonFitter.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyFilledPolygon.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/GreedyFilledPolygon.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/vector/bound/FBoundingBox2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Debug/CoreMathDebugHelper.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/InverseHull/InnerHullFinder.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/InverseHull/InnerHullFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
   Runtime/Core/Public/Math/UnrealMathUtility.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Debug/CoreMathDebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.cpp \
@@ -3850,4 +3853,5 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/MMatrix.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Private/CoreMath.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Public/CoreMath.h \
-  Runtime/Core/Public/Modules/ModuleManager.h
+  Runtime/Core/Public/Modules/ModuleManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/vector/bound/FBoundingBox2D.cpp

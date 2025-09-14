@@ -14,7 +14,7 @@ public:
     bool Load(FString worldName, APathFinder *pathFinder);
 
 private:
-    bool extendedDebugLog = true;
+    bool extendedDebugLog = false;
 
     FString makePath(FString worldLevelString);
 

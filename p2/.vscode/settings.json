@@ -53,6 +53,7 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "type_traits": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "__memory": "cpp"
     }
 }

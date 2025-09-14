@@ -1,5 +1,7 @@
 #include "MPolygon.h"
 #include "Math/UnrealMathUtility.h"
+#include "CoreMath/algorithm/GrahamScan/GrahamScan2D.h"
+#include "CoreMath/Debug/CoreMathDebugHelper.h"
 
 
 MPolygon::MPolygon(){
@@ -16,12 +18,14 @@ MPolygon::MPolygon(const MPolygon &other){
 }
 MPolygon &MPolygon::operator=(const MPolygon &other){
     if(this != &other){
-        myTranslation = other.myTranslation;
-        myRotation = other.myRotation;
+        myTransform = other.myTransform;
 
         shapeTransformed = other.shapeTransformed;
         shapeOriginal = other.shapeOriginal;
 
+        UpdateBounds();
+
+        //might not be needed.
         moveAwayFromIntersection = other.moveAwayFromIntersection;
     }
     return *this;
@@ -30,39 +34,105 @@ MPolygon &MPolygon::operator=(const MPolygon &other){
 void MPolygon::SetShape(const TArray<FVector2D> &shapeIn){
     shapeOriginal = shapeIn;
     UpdateTransformedShape();
+    CalculateArea();
+    UpdateBounds();
 }
 
-void MPolygon::SetTranslation(const FVector2D &pos){
-    MMatrix2D mat(pos);
-    SetTranslation(mat);
-}
+void MPolygon::SetShape(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints){
+    shapeOriginal = IncreaseDetail(shapeIn, minDistanceBetweenPoints);
 
-void MPolygon::SetTranslation(const MMatrix2D &matrix){
-    myTranslation = matrix;
     UpdateTransformedShape();
+    CalculateArea();
+    UpdateBounds();
 }
 
-void MPolygon::SetRotation(const MMatrix2D &matrix){
-    myRotation = matrix;
-    UpdateTransformedShape();
+void MPolygon::SetShapeTransformed(
+    const TArray<FVector2D> &shapeIn, 
+    int minDistanceBetweenPoints
+){
+    shapeTransformed = IncreaseDetail(shapeIn, minDistanceBetweenPoints);
+    CalculateArea();
+    UpdateBounds();
 }
 
-void MPolygon::UpdateTransformedShape(){
+TArray<FVector2D> MPolygon::IncreaseDetail(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints){
+
+    TArray<FVector2D> newShape;
+    minDistanceBetweenPoints = minDistanceBetweenPoints * minDistanceBetweenPoints;
+
+    for (int i = 1; i < shapeIn.Num(); i++)
+    {
+        const FVector2D &prev = shapeIn[i - 1];
+        const FVector2D &current = shapeIn[i];
+        newShape.Add(prev);
+        float gap = FVector2D::DistSquared(prev, current);
+        if(gap > minDistanceBetweenPoints){
+            FVector2D dir = current - prev; //AB = B - A
+            float tStep = minDistanceBetweenPoints / gap;
+            for (float t = 0.0f; t < 1.0f; t += tStep){
+                FVector2D gt = prev + t * dir;
+                newShape.Add(gt);
+            }
+            //CoreMathDebugHelper::logMessage("SetShape added detail");
+        }
+        newShape.Add(current);
+    }
+    return newShape;
+}
+
+void MPolygon::SetTransform(const MMatrix2D &transform){
     if(shapeOriginal.Num() <= 0){
         return;
     }
+    locationCopy = transform.getTranslation();
+    myTransform = transform;
 
-    //M = T * R <-- lese richtung
-    //rotiert um 0,0, nicht zentrum.
-    MMatrix2D transform = myTranslation * myRotation;
     shapeTransformed.SetNum(shapeOriginal.Num());
     for (int i = 0; i < shapeOriginal.Num(); i++){
         FVector2D copy = shapeOriginal[i];
         shapeTransformed[i] = transform * copy;
     }
+    UpdateBounds();
 }
 
 
+void MPolygon::UpdateTransformedShape(){
+    if(shapeOriginal.Num() <= 0){
+        return;
+    }
+    SetTransform(myTransform);
+}
+
+void MPolygon::CalculateArea(){
+    if(shapeOriginal.Num() <= 1){
+        areaFound = 0.0f;
+        return;
+    }
+    if(shapeOriginal.Num() > 0){
+        FVector2D min = shapeOriginal[0];
+        FVector2D max = min;
+        for (int i = 1; i < shapeOriginal.Num(); i++){
+            FVector2D &current = shapeOriginal[i];
+            min.X = std::min(min.X, current.X);
+            min.Y = std::min(min.Y, current.Y);
+
+            max.X = std::max(max.X, current.X);
+            max.Y = std::max(max.Y, current.Y);
+        }
+
+        areaFound = (max.X - min.X) * (max.Y - min.Y);
+    }
+}
+
+
+
+bool MPolygon::DoesIntersectIncludingBoundsCheck(const MPolygon &shapeIn){
+    if(IsInBound(shapeIn)){
+        //CoreMathDebugHelper::logMessage("MPolygon Child Bound hit");
+        return true;
+    }
+    return DoesIntersect(shapeIn);
+}
 
 bool MPolygon::DoesIntersect(
     const MPolygon &other
@@ -107,22 +177,34 @@ bool MPolygon::DoesIntersect(
     return false;
 }
 
+FVector2D MPolygon::EdgeNormal(const FVector2D &v0, const FVector2D &v1){
+    //is a clock wise rotation, (from left to right)
+    //means the point with dot product < 0, is outside the polygon if shape is clock wise sorted
+    FVector2D connect = v1 - v0;
+    return EdgeNormal(connect);
+}
+
+FVector2D MPolygon::EdgeNormal(const FVector2D &connect){
+    FVector2D edgeNormal(connect.Y, -connect.X);
+    return edgeNormal.GetSafeNormal();
+}
+
+
+
+
 bool MPolygon::DoesIntersect(
     const FVector2D &aWorld, //edge 1
     const FVector2D &bWorld,
     const FVector2D &e1,     //edge 2
     const FVector2D &e2
 ){
-    //right left test by normal
-    FVector2D edge = bWorld - aWorld;
 
-    //is a clock wise rotation, (from left to right)
-    //means the point with dot product < 0, is outside the polygon if shape is clock wise sorted
-    FVector2D edgeNormal(edge.Y, -edge.X); 
+    FVector2D edgeNormal = EdgeNormal(aWorld, bWorld); 
 
     FVector2D e1Local = e1 - aWorld; //kante ins relative system bringen.
     FVector2D e2Local = e2 - aWorld;
 
+    // ---  ---
     FVector2D IntersectionPoint;
     if (SegmentIntersection2D(aWorld, bWorld, e1, e2, IntersectionPoint))
     {
@@ -197,7 +279,7 @@ bool MPolygon::SegmentIntersection2D(
 
 
 
-#include "CoreMath/Debug/CoreMathDebugHelper.h"
+
 bool MPolygon::IntersectsPoint(
     const FVector2D &a0,
     const FVector2D &a1,
@@ -232,13 +314,172 @@ bool MPolygon::IntersectsPoint(
     float t1 = sqrt;
     float t2 = -1.0f * sqrt;
     if((t1 >= 0.0f && t1 <= 1.0f) || (t2 >= 0.0f && t2 <= 1.0f)){
-        CoreMathDebugHelper::logMessage(
+        /*CoreMathDebugHelper::logMessage(
             FString::Printf(
                 TEXT("MPolygon was hitting line!%.2f, a0:%s a1:%s b:%s"),
                 std::max(t1,t2), *a0.ToString(), *a1.ToString(), *b.ToString()
             )
-        );
+        );*/
         return true;
     }
     return false;
+}
+
+
+
+//experimental
+TArray<FVector2D> MPolygon::facingParentCenter(FVector2D &centerParent){
+    FVector2D center = centerOfTransformedShape();
+    FVector2D edge = centerParent - center; //AB = B - A
+
+    TArray<FVector2D> rightOff;
+
+    bool distanceBased = true;
+    if(distanceBased){
+        float distCenter = FVector2D::DistSquared(center, centerParent);
+        for (int i = 0; i < shapeTransformed.Num(); i++){
+            const FVector2D& current = shapeTransformed[i];
+            float distVertex = FVector2D::DistSquared(current, centerParent);
+            
+            if (distVertex < distCenter){
+                rightOff.Add(current);
+            }
+        }
+        return rightOff;
+    }
+
+    for (int i = shapeTransformed.Num() - 1; i >= 0; i--){
+        FVector2D &current = shapeTransformed[i];
+        FVector2D relativeToCenter = current - center; // AB = B - A
+        if(FVector2D::DotProduct(edge, relativeToCenter) >= 0.0f){ //>=0
+            rightOff.Add(current);
+        }
+    }
+    return rightOff;
+}
+
+
+
+
+
+
+
+FVector2D MPolygon::centerOfTransformedShape(){
+    FVector2D result;
+    for (int i = 0; i < shapeTransformed.Num(); i++){
+        result += shapeTransformed[i];
+    }
+    if(shapeTransformed.Num() > 0){
+        result /= shapeTransformed.Num();
+    }
+    return result;
+}
+
+
+
+// --- bounds ---
+bool MPolygon::IsInBound(const MPolygon &polygon){
+
+    //show bounds here.
+    //make bounds test in test algorythm!
+
+    if(myBounds.OtherIsInside(polygon.myBounds)){
+        //CoreMathDebugHelper::logMessage(TEXT("--MPolygon Bounds test--"));
+        //CoreMathDebugHelper::logMessage(TEXT("MPolygon bound outer"), myBounds.ToString());
+        //CoreMathDebugHelper::logMessage(TEXT("MPolygon bound inner"), polygon.myBounds.ToString());
+        return true;
+    }
+    return false;
+
+    //return myBounds.OtherIsInside(polygon.myBounds);
+}
+
+void MPolygon::UpdateBounds(){
+    myBounds.Reset();
+    //Update(const TArray<FVector2D> &buffer);
+    myBounds.Update(internalTransformed());
+
+    localBounds.Reset();
+    localBounds.Update(shapeOriginal);
+}
+
+/// ---- find closest vertecies to center coordinate, add them ----
+
+void MPolygon::AppendClosestTo(FVector2D &center, TArray<FVector2D> &updatedShape){
+    //es müssen die jenigen vertecies gefunden werden
+    //die am nächsten am zentrum liegen
+
+    //am einfachsten ist es, das zentrum dieses polygons zu finden
+    //es orthogonal zur normale zu spalten, und jene vertecies als valide anzunehmen
+    //und diese im urhzeiger sinn zu sortieren
+
+    FVector2D ownCenter = centerOfTransformedShape();
+    FVector2D toCenter = center - ownCenter;
+
+    //um 90 grad neigen und alle
+    TArray<FVector2D> rightOffUnsorted; //unknown order
+    for (int i = 0 ; i < shapeTransformed.Num(); i++){
+        
+        FVector2D &current = shapeTransformed[i];
+        FVector2D relativeToCenter = current - ownCenter; // AB = B - A
+        if(FVector2D::DotProduct(relativeToCenter, toCenter) >= 0.0f){ //>=0
+            rightOffUnsorted.Add(current);
+        }
+    }
+
+    GrahamScan2D scanner;
+    scanner.ComputeConvexHull(rightOffUnsorted);
+    updatedShape.Append(rightOffUnsorted);
+}
+
+
+
+
+// --- new: Append right side bounds to array for new inner shape to fill ---
+void MPolygon::AppendRightSideBounds(TArray<FVector2D> &appendTo){
+    TArray<FVector2D> bound = myBounds.asVertecies();
+    /*
+    FBoundingBox2D::asVertecies(){
+    /// @brief min coordinate on x and y
+    /// FVector2D topLeft;
+    /// @brief max coordiate on x and y
+    /// FVector2D bottomRight;
+    TArray<FVector2D> output = {
+        topLeft,
+        FVector2D(topLeft.X, bottomRight.Y),
+        bottomRight,
+        FVector2D(bottomRight.X, topLeft.Y),
+    };
+    return output;
+    }*/
+    appendTo.Add(bound[2]);
+    appendTo.Add(bound[3]);
+}
+
+const FBoundingBox2D &MPolygon::boundingBox(){
+    return myBounds;
+}
+
+FBoundingBox2D MPolygon::localBoundsTransformed(){
+    FBoundingBox2D copy = localBounds;
+
+    //transform vertecies but keep their logic of top left, top right etc
+    copy.topLeft = myTransform * copy.topLeft;
+    copy.bottomRight = myTransform * copy.bottomRight;
+    return copy;
+}
+
+FString MPolygon::ToString(){
+    FString msg = TEXT("MPolygon tostring original(");
+    for(FVector2D &current : shapeOriginal){
+        msg += current.ToString();
+        msg += TEXT(", ");
+    }
+    msg += TEXT(") transformed (");
+    for(FVector2D &current : shapeTransformed){
+        msg += current.ToString();
+        msg += TEXT(", ");
+    }
+    msg += TEXT(")");
+    return msg;
 }

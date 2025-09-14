@@ -11,6 +11,7 @@ public:
     BoneAttachment();
     ~BoneAttachment();
 
+
     /// @brief will reset the bone matrices and rebuild it
     void ResetAndRebuild(
         MMatrix &translation,
@@ -33,12 +34,16 @@ public:
         float defaultMotionTime
     );
 
+    ///sets the local (forward kinematic, end effector) target by transforming into local space
     void setForwardTargetWorld(
         FVector &targetWorld,
         MMatrix &rootTranslation,
         MMatrix &rootOrientation
     );
+    ///sets the local target for the forward kinematic (end effector)
     void setForwardTargetLocal(FVector &target);
+
+    ///sets the local target for the backward kinematic (from end, moving start effector)
     void setBackwardTargetLocal(FVector &target);
 
     void TickNone(MMatrix &worldRoot, float deltatime);
@@ -61,7 +66,7 @@ public:
 
     void TickForwardKinematicOutOfReachTarget(
         MMatrix &translation,
-        MMatrix &orientation, // könnte temporäre kopie sein
+        MMatrix &orientation, 
         float deltatime
     );
 
@@ -82,6 +87,14 @@ public:
     FVector endEffectorWorldLocation();
 
     SlipContainer &slipData(MMatrix &orientation);
+
+    FVector StaticSlipVelocity(
+        FVector &lookDir,
+        float velocityDown,
+        float mass,
+        float deltatime,
+        bool isInStance
+    );
 
     bool reachedTarget();
     bool reachedTargtZ();
@@ -141,9 +154,11 @@ public:
     void setupSlipDataOnStanceBegin(
         MMatrix &orientation,
         MMatrix &translation,
+        FVector &otherLegWorldSpace,
         FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
         float time,
         float velocityDown,
+        float velocityHorizontal,
         float mass,
         FVector &defaultForwardFrameFallback
     );
@@ -152,5 +167,9 @@ public:
 
 
 
+    void UpdateGroundTruth(FVector &ground);
+    bool EndEffectorIsGrounded();
 
+private:
+    FVector worldGroundTruth;
 };

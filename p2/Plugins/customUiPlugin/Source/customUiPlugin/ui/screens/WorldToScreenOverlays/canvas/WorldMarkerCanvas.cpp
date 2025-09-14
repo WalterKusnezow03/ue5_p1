@@ -115,16 +115,16 @@ void UWorldMarkerCanvas::AddMarker(UWorldMarker *marker){
         trackedMarkers.Add(marker);
         marker->SetMarkerCanvasPointer(this); //set parent, marker can remove itself externally
 
-        UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker marker");
+        //UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker marker");
 
         //check and add widget / base ui interface
         if(IBaseUiInterface *interfaceIsPreferred = marker->interfacePointer()){
             AddChild(interfaceIsPreferred);
-            UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as interface");
+            //UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as interface");
         }else{
             if(UWidget *innerWidget = marker->widgetPointer()){
                 AddChild(innerWidget);
-                UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as uwidget");
+                //UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as uwidget");
             }
         }
     }
@@ -135,7 +135,7 @@ void UWorldMarkerCanvas::AddMarker(UWorldMarkerComponent *actorComponent){
         UWorldMarker *marker = actorComponent->GetMarkerInternal();
         if(marker){
             AddMarker(marker);
-            UiDebugHelper::logMessage("UWorldMarkerCanvas added UActor marker");
+            //UiDebugHelper::logMessage("UWorldMarkerCanvas added UActor marker");
         }
     }
 }

@@ -18,6 +18,7 @@ MMatrix2D::~MMatrix2D()
 }
 
 MMatrix2D::MMatrix2D(FVector2D pos){
+    makeIdentity();
     SetTranslation(pos);
 }
 
@@ -25,10 +26,13 @@ void MMatrix2D::SetTranslation(FVector2D vec){
     /*
     1 0 tx
     0 1 ty
-    0  0 1
+    0 0 1
     */
     array[2] = vec.X;
     array[5] = vec.Y;
+}
+FVector2D MMatrix2D::getTranslation() const {
+    return FVector2D(array[2], array[5]);
 }
 
 bool MMatrix2D::IsZeroScaleMatrix() const {
@@ -200,10 +204,25 @@ MMatrix2D MMatrix2D::MakeScaleMatrix(float scaleX, float scaleY){
 
 /// --- Rotation ---
 
+void MMatrix2D::SetRotation(const FVector2D &other){
+    FVector2D xAxis(1.0f, 0.0f);
+    SetRotation(xAxis, other);
+}
+
+void MMatrix2D::SetRotation(const FVector2D &_axis, const FVector2D &_other){
+
+    FVector2D axis = _axis.GetSafeNormal();
+    FVector2D other = _other.GetSafeNormal();
+
+    float dot = FVector2D::DotProduct(axis, other);
+    float nZ = axis.X * other.Y - axis.Y * other.X; // 2D-"Kreuzprodukt" (entspricht Z-Komponente)
+    float angle = std::atan2(nZ, dot);
+
+    RadAdd(angle);
+}
+
+
 void MMatrix2D::RadAdd(float a){
-    if(a == 0.0f){
-        return;
-    }
     if(a == 0.0f){
         return;
     }

@@ -28,7 +28,7 @@ void UTextAndImage::setImage(textureEnum type, FVector2D scale){
 void UTextAndImage::setImage(FString path){
     if(Image != nullptr){
 
-        DebugHelper::logMessage("ammuntionDebug try load texture");
+        //DebugHelper::logMessage("ammuntionDebug try load texture");
         UTexture2D* loadedTexture = AssetLoader::loadAsset<UTexture2D>(path);
         setImage(loadedTexture);
     }

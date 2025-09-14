@@ -39,8 +39,17 @@ public:
         meshData.bLogColor = true;
     }
 
+    /// @brief marks for not filled drawing
+    /// USE FOR DEBUG ONLY
+    void DrawOutLineOnly();
+
+    /// USE FOR DEBUG ONLY
+    bool IsFlaggedDrawOutlineOnly() const;
+
 protected:
     SlateMeshData meshData;
 
     bool bDynamicCursorColorEnabled = true;
+
+    bool bDrawOutlineOnly = false;
 };

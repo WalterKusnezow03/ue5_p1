@@ -116,7 +116,8 @@ void UWidgetSlateWrapperBase::SetWidthAndHeight(FVector2D size){
         TEXT("UWidgetSlateWrapperBase scale override (%.2f %.2f)"),
         size.X, size.Y
     );
-    UiDebugHelper::logMessage(msg);
+    if(false)
+        UiDebugHelper::logMessage(msg);
 }
 
 ///Temporary reference! - use one at a time!

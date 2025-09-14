@@ -46,7 +46,7 @@ void UButtonBase::createButton(){
 /// @return 
 bool UButtonBase::dispatchClick(){
 
-    DebugHelper::logMessage("UButtonBase try dispatch click");
+    //DebugHelper::logMessage("UButtonBase try dispatch click");
     if (button && markedVisible()) //may be marked invisible: dont do hittest
     {
         TSharedPtr<SWidget> SlateWidget = button->GetCachedWidget();
@@ -84,7 +84,7 @@ bool UButtonBase::dispatchClick(){
                 if(callbackPointer){
                     callbackPointer->UCallbackFunction(); //manual trigger
                 }
-                DebugHelper::logMessage("UButtonBase dispatch try sucess");
+                //DebugHelper::logMessage("UButtonBase dispatch try sucess");
 
                 for(int i = 0; i < 10; i++){
                     DebugHelper::showScreenMessage("UButtonBase dispatch try sucess");
@@ -94,14 +94,16 @@ bool UButtonBase::dispatchClick(){
                 return true;
             }
             
-
-            FString message = FString::Printf(
-                TEXT("UButtonbase dispatch no sucess (%.2f, %.2f)(%.2f %.2f), cursor(%.2f, %.2f)"),
-                topLeft.X, topLeft.Y,
-                bottomRight.X, bottomRight.Y,
-                cursorPos.X, cursorPos.Y
-            );
-            DebugHelper::logMessage(message);
+            if(false){
+                FString message = FString::Printf(
+                    TEXT("UButtonbase dispatch no sucess (%.2f, %.2f)(%.2f %.2f), cursor(%.2f, %.2f)"),
+                    topLeft.X, topLeft.Y,
+                    bottomRight.X, bottomRight.Y,
+                    cursorPos.X, cursorPos.Y
+                );
+                DebugHelper::logMessage(message);
+            }
+            
         }
     }
 

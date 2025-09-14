@@ -28,6 +28,7 @@ void UGameLaunchScreen::init(UPlayerUiBase &ref){
     createBackgroundBlurAndDefaultColor(); //Super
     createTopBar();
     createMenu();
+    AddDebugElements();
 
     DebugHelper::logMessage("UGameLaunchScreen init");
 }
@@ -90,23 +91,6 @@ void UGameLaunchScreen::createMenu(){
         //menuVbox->SetItemsFillHorizontal();
 
 
-
-        //debug custom slate widgets
-        if(true){
-            
-
-
-            UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
-            menuVbox->AddChild((IBaseUiInterface*) widget);
-        }
-        
-
-        if(true){
-
-            UWidgetProgressBarBase *p = NewObject<UWidgetProgressBarBase>(this);
-            menuVbox->AddChild((IBaseUiInterface*) p);
-
-        }
 
         
     }
@@ -180,4 +164,34 @@ void UGameLaunchScreen::launchWorld(FString worldName){
 
         //instance->openGameScreen(); //close all
     }
+}
+
+
+
+
+
+
+// ----- debug ------
+#include "p2/ui/algorithm/DebugUi/GreedyFitWidget.h"
+void UGameLaunchScreen::AddDebugElements(){
+    if(!menuVbox){
+        return;
+    }
+
+    //debug custom slate widgets
+    if(true){
+        UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
+        menuVbox->AddChild((IBaseUiInterface*) widget);
+    }
+    if(true){
+        UWidgetProgressBarBase *p = NewObject<UWidgetProgressBarBase>(this);
+        menuVbox->AddChild((IBaseUiInterface*) p);
+    }
+    if(false){
+        UGreedyFitWidget *widget = NewObject<UGreedyFitWidget>(this);
+        menuVbox->AddChild((IBaseUiInterface*) widget);
+    }
+
+
+
 }
