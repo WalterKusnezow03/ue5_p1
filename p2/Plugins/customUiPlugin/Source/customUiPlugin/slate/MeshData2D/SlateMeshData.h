@@ -6,11 +6,31 @@
 #include "customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
 
+#include "Engine/Texture2D.h"
+#include "Rendering/SlateResourceHandle.h"
+
+//class FResourceHandle;
+//class UTexture2D;
+
 /// @brief class to store 2D Mesh Data for Slate Ui Polygons
 /// Supports FVector2D and FSlateVertex at the same time.
+/// will also hold the texture and provide 
 class CUSTOMUIPLUGIN_API SlateMeshData {
 
     //SlateIndex = uin16, merken
+protected:
+    //drawing brush
+    FSlateBrush textureBrush;
+    FSlateResourceHandle emptyHandle;
+    UTexture2D *texturePtr = nullptr;
+
+public:
+    void SetTexture(UTexture2D *textureIn);
+    void SetTexture(UTexture2D *inTexture, int sizeX, int sizeY);
+
+    ///@brief returns the rsource handle for this object: nesecarry for drawing the texture on the 
+    ///polygon
+    const FSlateResourceHandle &drawingHandle() const;
 
 public:
     bool bLogColor = false;
@@ -165,6 +185,9 @@ private:
         const FVector2D &ref,
         const FSlateRenderTransform &RenderTransform
     ) const;
+
+    ///generates the UV Coordinate clamped based on bounding box
+    FVector2f MakeUV(const FVector2D &vertex) const;
 
 
 

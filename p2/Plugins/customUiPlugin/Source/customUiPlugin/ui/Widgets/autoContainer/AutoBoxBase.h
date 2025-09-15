@@ -23,6 +23,8 @@ public:
     ///@brief must be overriden
     virtual void RemoveChild(UWidget *any){};
 
+    virtual void ReplaceChild(int index, IBaseUiInterface *item) {};
+
     ///@brief will update the padding for all attached items (UcustomUiComponents)
     void SetPadding(FVector2D &paddingIn);
 
@@ -46,5 +48,6 @@ protected:
     UPROPERTY()
     TArray<UcustomUiComponentBase *> attachedItems;
 
+    using UUiComponentParent::CanAddChild;
     bool CanAddChild(UcustomUiComponentBase *ptr);
 };

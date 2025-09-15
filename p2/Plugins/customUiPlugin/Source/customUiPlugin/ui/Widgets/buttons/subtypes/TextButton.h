@@ -27,6 +27,8 @@ public:
 
     bool CompareText(FString textIn);
 
+    virtual UcustomUiComponentBase *DuplicateWidgetInitialized(UObject *parent) override;
+
 private:
     UPROPERTY()
     UTextBlock *TextBlock = nullptr;

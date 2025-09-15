@@ -465,7 +465,7 @@ FSlateVertex SlateMeshData::makeSlateVertex(
     FColor Color = InterpolatedColorFor(Position).ToFColor(true); //true gamma korrektur.(?)
 
     //UV - ignored
-    FVector2f UV(0,0); // wenn keine Textur, 0,0 ok
+    FVector2f UV = MakeUV(Position);
 
     //apply runtime transform
     FVector2f PosAs2F(Position.X, Position.Y);
@@ -576,8 +576,22 @@ FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(const FVector2D &u
     return gx;
 }
 
+FVector2f SlateMeshData::MakeUV(const FVector2D &vertex) const {
+    FVector2f outUv;
 
+    FVector2D relative = vertex - boundingBox.min(); // AB = B - A, from min coordinate
 
+    //scalar = distTarget / distAll
+    int sizeX = boundingBox.sizeX();
+    int sizeY = boundingBox.sizeY();
+
+    outUv.X = relative.X / sizeX;
+    outUv.Y = relative.Y / sizeY;
+
+    outUv.X = FMath::Clamp(outUv.X, 0.0f, 1.0f);
+    outUv.Y = FMath::Clamp(outUv.Y, 0.0f, 1.0f);
+    return outUv;
+}
 
 // ----- Color interpolation ------
 
@@ -807,4 +821,45 @@ FVector2f SlateMeshData::ConvertTo2f(const FVector2D &other) const {
         other.Y
     );
     return result;
+}
+
+
+
+
+
+
+/// ------------- drawing texture -------------
+
+void SlateMeshData::SetTexture(UTexture2D *inTexture){
+    if(inTexture){
+
+        int sizeX = boundingBox.sizeX();
+        int sizeY = boundingBox.sizeY();
+
+        int sizeXValid = sizeX > 0 ? sizeX : inTexture->GetSizeX();
+        int sizeYValid = sizeY > 0 ? sizeY : inTexture->GetSizeY();
+
+        SetTexture(inTexture, sizeXValid, sizeYValid);
+    }
+}
+
+void SlateMeshData::SetTexture(UTexture2D *inTexture, int sizeX, int sizeY){
+    if(inTexture){
+        sizeX = std::max(std::abs(sizeX), 1);
+        sizeY = std::max(std::abs(sizeY), 1);
+        texturePtr = inTexture;
+
+        textureBrush.SetResourceObject(inTexture);
+        textureBrush.ImageSize = FVector2D(sizeX, sizeY);
+    }
+}
+
+const FSlateResourceHandle &SlateMeshData::drawingHandle() const {
+    if(texturePtr != nullptr){
+        //FSlateBrush
+        //const FSlateResourceHandle &	
+        //GetRenderingResource ()
+        return textureBrush.GetRenderingResource();
+    }
+    return emptyHandle;
 }

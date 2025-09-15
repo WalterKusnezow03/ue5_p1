@@ -45,11 +45,9 @@ void UPresetHalfSplitLayout::Tick(float deltatime){
 
 /// @brief creates all sub layouts!
 void UPresetHalfSplitLayout::createSubLayouts(){
-    baseVertical = NewObject<UVbox>(this);
-    baseVertical->init();
+    baseVertical = NewWidgetInitialized<UVbox>(this);
 
-    headLineHorizontal = NewObject<UHbox>(this);
-    headLineHorizontal->init();
+    headLineHorizontal = NewWidgetInitialized<UHbox>(this);
     baseVertical->AddChild(headLineHorizontal);
 
     USpacer *Spacer = createMarginSpacer(20, 20);
@@ -57,12 +55,10 @@ void UPresetHalfSplitLayout::createSubLayouts(){
         baseVertical->AddChild(Spacer);
     }
 
-    rightLeftContainer = NewObject<UHbox>(this);
-    rightLeftContainer->init();
+    rightLeftContainer = NewWidgetInitialized<UHbox>(this);
     baseVertical->AddChild(rightLeftContainer);
 
-    leftVertical = NewObject<UVbox>(this);
-    leftVertical->init();
+    leftVertical = NewWidgetInitialized<UVbox>(this);
     rightLeftContainer->AddChild(leftVertical);
 
 
@@ -72,8 +68,7 @@ void UPresetHalfSplitLayout::createSubLayouts(){
     }
 
     //rigth side, iterable
-    rightVertical = NewObject<UVbox>(this);
-    rightVertical->init();
+    rightVertical = NewWidgetInitialized<UVbox>(this);
     rightLeftContainer->AddChild(rightVertical);
     rightPanels[0] = rightVertical; //erstes panel speichern
 }
@@ -144,8 +139,7 @@ void UPresetHalfSplitLayout::addChildToRightVertical(UcustomUiComponentBase *any
 
     if(any){
         if(rightPanels.find(index) == rightPanels.end()){
-            rightPanels[index] = NewObject<UVbox>(this);
-            rightPanels[index]->init();
+            rightPanels[index] = NewWidgetInitialized<UVbox>(this);
             rightLeftContainer->AddChild(rightPanels[index]); //add vertical box to side
         }
         //add item.

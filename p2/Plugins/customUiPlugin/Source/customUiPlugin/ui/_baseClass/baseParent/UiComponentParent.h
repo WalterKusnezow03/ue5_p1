@@ -18,7 +18,18 @@ public:
     virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
 
+
+    
+    ///@brief dispatches a click and returns the index in IBaseUiInterface Array
+    virtual bool dispatchClick(int &outIndexFirst);
+
+    IBaseUiInterface *BaseInterfaceAtIndex(int i);
+    UWidget *UWidgetAtIndex(int i);
 protected:
+   
+
+    
+
     /// @brief adds child tracked to Click, Tick and Visibilty Dispatch
     virtual void AddChild(IBaseUiInterface *item);
 

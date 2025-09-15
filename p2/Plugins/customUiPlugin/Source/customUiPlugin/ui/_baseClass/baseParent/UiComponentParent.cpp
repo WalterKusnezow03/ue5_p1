@@ -25,18 +25,27 @@ void UUiComponentParent::Tick(float deltatime){
     }
 }
 bool UUiComponentParent::dispatchClick(){
+    int ignored = 0;
+    return dispatchClick(ignored);
+}
+
+bool UUiComponentParent::dispatchClick(int &outIndexFirst){
     bool flag = false;
     for (int i = 0; i < trackedChildsInterface.Num(); i++)
     {
         if(IBaseUiInterface *current = trackedChildsInterface[i]){
             if(current->dispatchClick()){
+                if(!flag){
+                    outIndexFirst = i;
+                }
                 flag = true;
             }
         }
     }
-
     return flag;
 }
+
+
 
 
 void UUiComponentParent::SetVisible(bool visible){
@@ -131,4 +140,20 @@ void UUiComponentParent::RemoveChild(UWidget *item){
 
     // remove from UWidget array
     RemoveChildSwapPopBack(item);
+}
+
+
+
+IBaseUiInterface *UUiComponentParent::BaseInterfaceAtIndex(int i){
+    if(i >= 0 && i < trackedChildsInterface.Num()){
+        return trackedChildsInterface[i];
+    }
+    return nullptr;
+}
+
+UWidget *UUiComponentParent::UWidgetAtIndex(int i){
+    if(i >= 0 && i < trackedChildsAsUWidget.Num()){
+        return trackedChildsAsUWidget[i];
+    }
+    return nullptr;
 }

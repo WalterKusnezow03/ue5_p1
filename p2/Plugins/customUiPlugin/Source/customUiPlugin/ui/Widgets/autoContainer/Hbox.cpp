@@ -70,6 +70,28 @@ void UHbox::RemoveChild(UWidget *any){
 }
 
 
+void UHbox::ReplaceChild(int i, IBaseUiInterface *newInterface){
+    IBaseUiInterface *oldInterface = BaseInterfaceAtIndex(i);
+    if(newInterface && oldInterface){
+
+        UWidget *newChild = newInterface->baseLayoutPointer();
+        UWidget *oldChild = oldInterface->baseLayoutPointer();
+        if (baseHBox && newChild && oldChild)
+        {
+            int32 Index = baseHBox->GetChildIndex(oldChild);
+            if (Index != INDEX_NONE)
+            {
+                baseHBox->RemoveChildAt(Index);
+                baseHBox->InsertChildAt(Index, newChild);
+
+                //remove from dispatch and add
+                Super::RemoveChild(oldInterface);
+                Super::AddChild(newInterface);
+            }
+        }
+        
+    }
+}
 
 
 /// ---- custom slate integration ----

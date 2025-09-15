@@ -508,19 +508,9 @@ void HipController::applyForces(float deltatime){
 
     //unklar ob es hier bleibt
     applyForceGravity(deltatime);
-
     applySlipForce(deltatime);
-
-    /*bool useAnimSlip = false;
-    if(useAnimSlip){
-        applyStancePhaseSLIPForce(deltatime);
-    }else{
-        applySlipForceStatic(deltatime);
-    }*/
-
     applyVelocity(deltatime);
-
-
+    
     //very important
     //rebuild both to update end effectors - is needed in case of backward kinematic.
     RebuildLegsEndInPlace(deltatime);

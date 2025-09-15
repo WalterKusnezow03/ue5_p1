@@ -119,7 +119,10 @@ void SSlateWidgetBase::DrawPolygon(
 
     //DEFAULT DRAW
     if(!polygon.IsFlaggedDrawOutlineOnly()){ 
-        FSlateResourceHandle ResourceHandle; // leer
+        //FSlateResourceHandle ResourceHandle; // leer
+
+        FSlateResourceHandle ResourceHandle = polygon.MeshDataRefConst().drawingHandle();
+
         FSlateDrawElement::MakeCustomVerts(
             OutDrawElements,
             LayerId,
@@ -129,8 +132,7 @@ void SSlateWidgetBase::DrawPolygon(
             nullptr, // InInstanceData
             0,       // InInstanceOffset
             1,       // InNumInstances
-            ESlateDrawEffect::None
-        );
+            ESlateDrawEffect::None);
         return;
     }
 

@@ -4038,6 +4038,12 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiComponentParent.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/VerticalDropDownBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h \
+  Runtime/UMG/Public/Components/ComboBox.h \
+  Runtime/Slate/Public/Widgets/Input/SComboBox.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ComboBox.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/VerticalDropDownBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetProgressBarBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/bar/WidgetProgressBarBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h \
@@ -4048,6 +4054,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/vector/bound/FBoundingBox2D.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
+  Runtime/Engine/Classes/Engine/Texture2D.h \
+  Runtime/SlateCore/Public/Rendering/SlateResourceHandle.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/cache/SlateWidgetBoundsCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetSlateWrapperBase.generated.h \
@@ -4097,6 +4105,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/ScreenStack/ScreenOpenStack.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/TickUpdate/UiActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/AutoBoxBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/GridBox.cpp \
   Runtime/UMG/Public/Components/GridSlot.h \
   Runtime/Slate/Public/Widgets/Layout/SGridPanel.h \
@@ -4690,7 +4699,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SpotLightComponent.generated.h \
   Runtime/Engine/Classes/Engine/StaticMesh.h \
   Runtime/Engine/Classes/Engine/SkeletalMesh.h \
-  Runtime/Engine/Classes/Engine/Texture2D.h \
   Runtime/Engine/Classes/Engine/CollisionProfile.h \
   Runtime/Engine/Classes/Kismet/GameplayStatics.h \
   Runtime/Engine/Classes/Engine/LatentActionManager.h \
@@ -5348,7 +5356,6 @@
   Runtime/Core/Public/Internationalization/FastDecimalFormat.h \
   Runtime/Slate/Public/Widgets/Input/SSpinBox.h \
   Runtime/Slate/Public/Widgets/Input/SSlider.h \
-  Runtime/Slate/Public/Widgets/Input/SComboBox.h \
   Runtime/Slate/Public/Framework/Docking/WorkspaceItem.h \
   Runtime/Slate/Public/Framework/Docking/TabManager.h \
   Runtime/Slate/Public/Framework/Docking/LayoutService.h \
@@ -5397,8 +5404,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Slider.generated.h \
   Runtime/UMG/Public/Components/ProgressBar.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ProgressBar.generated.h \
-  Runtime/UMG/Public/Components/ComboBox.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ComboBox.generated.h \
   Runtime/UMG/Public/Components/ComboBoxString.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ComboBoxString.generated.h \
   Runtime/UMG/Public/Components/ScaleBoxSlot.h \

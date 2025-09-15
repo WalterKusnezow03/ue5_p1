@@ -31,8 +31,7 @@ void UPauseScreen::debug(){
 
         int count = 10;
         for (int i = 0; i < count; i++){
-            UTextButton *someButton = NewObject<UTextButton>(this);
-            someButton->init();
+            UTextButton *someButton = NewWidgetInitialized<UTextButton>(this);
             someButton->setText(FString::Printf(TEXT("Grid B(%d)"), i));
             gridBox->AddChild(someButton);
         }

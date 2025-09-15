@@ -32,8 +32,8 @@ public:
     ///@brief must be overriden - trys to remove child from container
     virtual void RemoveChild(UWidget *any) override;
 
-    
-    
+    virtual void ReplaceChild(int i, IBaseUiInterface *newInterface) override;
+
     void SetItemsFillHorizontal();
 
 protected:

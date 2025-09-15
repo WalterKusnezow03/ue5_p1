@@ -58,6 +58,29 @@ void UVbox::RemoveChild(UWidget *any){
 
 
 
+void UVbox::ReplaceChild(int i, IBaseUiInterface *newInterface){
+    IBaseUiInterface *oldInterface = BaseInterfaceAtIndex(i);
+    if(newInterface && oldInterface){
+
+        UWidget *newChild = newInterface->baseLayoutPointer();
+        UWidget *oldChild = oldInterface->baseLayoutPointer();
+        if (baseVBox && newChild && oldChild)
+        {
+            int32 Index = baseVBox->GetChildIndex(oldChild);
+            if (Index != INDEX_NONE)
+            {
+                baseVBox->RemoveChildAt(Index);
+                baseVBox->InsertChildAt(Index, newChild);
+
+                //remove from dispatch and add
+                Super::RemoveChild(oldInterface);
+                Super::AddChild(newInterface);
+            }
+        }
+        
+    }
+}
+
 
 
 

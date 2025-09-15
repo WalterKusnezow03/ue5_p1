@@ -17,6 +17,38 @@ class CUSTOMUIPLUGIN_API UcustomUiComponentBase : public UObject, public IBaseUi
     GENERATED_BODY()
 
 public:
+    ///@brief template function to create new UcustomUiComponentBase widget and call init()
+    template <typename T>
+    static T *NewWidgetInitialized(UObject *parent){
+        static_assert(std::is_base_of<UcustomUiComponentBase, T>::value, "T must derive from UcustomUiComponentBase");
+        if(parent){
+            T* newWidget = NewObject<T>(parent);
+            newWidget->init();
+            return newWidget;
+        }
+        return nullptr;
+    }
+
+    template<typename T>
+    static T* TDuplicateWidgetInitialized(T *toCopy, UObject *parent){
+        static_assert(std::is_base_of<UcustomUiComponentBase, T>::value, "T must derive from UcustomUiComponentBase");
+        if(toCopy && parent){
+            UcustomUiComponentBase *created = toCopy->DuplicateWidgetInitialized(parent);
+            if(created){
+                T *casted = Cast<T>(created);
+                if(casted){
+                    return casted;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    ///@brief to be overriden!
+    virtual UcustomUiComponentBase* DuplicateWidgetInitialized(UObject *parent){
+        return nullptr;
+    }
+
     // --- CALL ON ANY DERIVED BEFORE USING! ---
     //after construct:
     virtual void init(){
@@ -78,6 +110,9 @@ public:
         return nullptr;
     }
 
+    bool markedVisible(){
+        return VISIBLE_FLAG;
+    }
 
 protected:
     UPlayerUiBase *playerUiParent = nullptr;
@@ -95,12 +130,10 @@ protected:
         }
     }
 
-    bool markedVisible(){
-        return VISIBLE_FLAG;
-    }
+   
+    
 
 protected:
     bool TICK_ENABLED = true; //true by default!
-private:
     bool VISIBLE_FLAG = true;
 };

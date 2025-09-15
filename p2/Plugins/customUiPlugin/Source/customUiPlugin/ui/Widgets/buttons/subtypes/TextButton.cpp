@@ -10,6 +10,17 @@
 
 
 
+UcustomUiComponentBase *UTextButton::DuplicateWidgetInitialized(UObject *parent){
+    if(parent){
+        UTextButton *newButton = NewWidgetInitialized<UTextButton>(parent);
+        if(newButton){
+            newButton->setText(getText());
+            return newButton;
+        }
+    }
+    return nullptr;
+}
+
 void UTextButton::init(){
     if(WAS_INIT_FLAG){
         return;

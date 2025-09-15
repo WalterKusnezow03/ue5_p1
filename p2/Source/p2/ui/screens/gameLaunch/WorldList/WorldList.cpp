@@ -38,14 +38,12 @@ void UWorldList::SetVisible(bool visible){
 
 void UWorldList::createLayout(){
     if(!baseVbox){
-        baseVbox = NewObject<UVbox>(this); 
-        baseVbox->init();
+        baseVbox = NewWidgetInitialized<UVbox>(this);
         baseVbox->SetItemsFillHorizontal();
     }
 
     if(!searchBar && baseVbox){
-        searchBar = NewObject<UTextBoxBase>(this);
-        searchBar->init();
+        searchBar = NewWidgetInitialized<UTextBoxBase>(this);
         searchBar->SetHintText("Search world...");
         baseVbox->AddChild(searchBar);
 
@@ -199,8 +197,7 @@ UTextButton *UWorldList::PopFromFreeList(){
         Ptr = textButtonsFree[textButtonsFree.Num() - 1];
         textButtonsFree.Pop();
     }else{
-        Ptr = NewObject<UTextButton>(this);
-        Ptr->init();
+        Ptr = NewWidgetInitialized<UTextButton>(this);
     }
     textButtonsInUse.Add(Ptr);
     return Ptr;

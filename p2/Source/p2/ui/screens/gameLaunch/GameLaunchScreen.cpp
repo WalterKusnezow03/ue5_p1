@@ -173,6 +173,7 @@ void UGameLaunchScreen::launchWorld(FString worldName){
 
 // ----- debug ------
 #include "p2/ui/algorithm/DebugUi/GreedyFitWidget.h"
+#include "customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h"
 void UGameLaunchScreen::AddDebugElements(){
     if(!menuVbox){
         return;
@@ -192,6 +193,9 @@ void UGameLaunchScreen::AddDebugElements(){
         menuVbox->AddChild((IBaseUiInterface*) widget);
     }
 
-
-
+    if(true){
+        UVerticalDropDownBase *dropDownDebug = NewWidgetInitialized<UVerticalDropDownBase>(this);
+        menuVbox->AddChild(dropDownDebug);
+        dropDownDebug->Debug();
+    }
 }
