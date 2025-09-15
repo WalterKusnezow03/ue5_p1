@@ -83,27 +83,6 @@ void BoneAttachment::setupBone(
 }
 
 
-//default D NEW
-/*
-void BoneAttachment::setupBone(
-    float a, 
-    float b, 
-    UWorld *worldIn, 
-    FVector offset,
-    float defaultMotionTime,
-    MMatrix &orientation,
-    FVector &defaultForward, //forward frame local
-    float time,
-    float mass
-){
-    setupBone(
-        a, 
-        b, 
-        worldIn, 
-        offset
-    );
-    float velocityDown = 0.0f;
-}*/
 
 /// @brief transforms the root, adds inner offset to matrix
 /// @param worldRoot 
@@ -158,6 +137,7 @@ void BoneAttachment::TickForwardKinematic(MMatrix &worldRoot, float deltatime){
     //bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime); //old yaw only start effector
     bone.MoveToTarget(forwardTarget, transformStartEffector, deltatime, localMovingDirectionSaved);
 }
+
 
 
 // new layered kinematics - unklar wie das gesteuert werden soll
@@ -251,24 +231,6 @@ void BoneAttachment::TickKeepEndInWorldPlace(
 
 }
 
-//flipped for falling
-void BoneAttachment::TickKeepEndInWorldPlaceNegHeightTrajectory(
-    MMatrix &translationRoot, 
-    MMatrix &orientationRoot,
-    float deltatime
-){
-    FVector endEffectorWorld = bone.EndEffectorLocation();
-    FVector endEffectorLocal = inLocalSpace(endEffectorWorld, translationRoot, orientationRoot);
-    
-    //slip leg down
-    if(endEffectorLocal.Z > 0.0f){
-        endEffectorLocal *= -1.0f;
-    }
-
-    MMatrix worldRoot = translationRoot * orientationRoot; // M = T * R <-- lese richtung --
-    MMatrix transformStartEffector = startEffectorTransformWorld(worldRoot);
-    bone.MoveToTarget(endEffectorLocal, transformStartEffector, deltatime);
-}
 
 
 
@@ -356,7 +318,7 @@ FVector BoneAttachment::StaticSlipVelocity(
 
     FVector EndEffectorLocalRotationSpace = bone.EndEffectorRelativeLocation();
 
-    return container.StaticSlipVelocity(
+    FVector velocity = container.StaticSlipVelocity(
         lookDir,
         EndEffectorLocalRotationSpace,
         EndEffectorIsGrounded(),
@@ -365,6 +327,13 @@ FVector BoneAttachment::StaticSlipVelocity(
         deltatime,
         isInStance
     );
+
+    //weighted by distance from trajectory
+    float maxDistanceFromTrajectory = 30.0f;
+    float weight = VerticalDistanceFromTrajectoryAsScalar(maxDistanceFromTrajectory);
+    velocity *= weight;
+    DebugHelper::showScreenMessage(FString::Printf(TEXT("Velocity Weighted %.2f"), weight), FColor::Red);
+    return velocity;
 }
 /// ----- dynamic slipforce end -------
 
@@ -385,9 +354,7 @@ SlipContainer &BoneAttachment::slipData(MMatrix &orientation){
         bone.lengthOfBone(),
         endEffectorTrajectory
     );
-    if(!EndEffectorIsGrounded()){
-        //container.Lock();
-    }
+    
 
     return container;
 }
@@ -418,43 +385,11 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     //so lassen
     bone.clampTarget(aLocal);
 
-
-
-    /*
-    ONLY FORWARD WALK
-
-    weil das forward target auch projeziert wird, 
-    und somit nicht das standard forward target ist,
-    könnte es sein dass das einfach gedreht werden muss
-    beim setup,
-    bzw die x länge übernommen und diese gespiegelt, nicht die höhe
-    was wie ein hack wirkt könnte funktionieren!
-
-    JA! Funktioniert!
-
-    ----TODO:----
-    Könnte auch durch forward target ersetzt werden, wäre eingeschlossener!!
-    */
     FVector liftOffDefault = defaultForwardFrame;
     FVector liftOffHacked = defaultForwardFrame;
     liftOffHacked.X = aLocal.X * -1.0f; //hack
 
-    if(!LiftOffTrajectoryIsValid(liftOffHacked)){
-        //liftOffHacked.X = defaultForwardFrame.X * -1.0f;
-    }
-
     FVector bLocal = liftOffHacked; 
-
-    /**
-     * Der lift off frame ist nach der rotation wieder entrotiert,
-     * die Yaw rotation muss entfernt werden und der frame nach hinten gespiegelt werden
-     
-
-    MMatrix removeRotation = orientation.transposedRotation();
-    FVector aLocalDeRotated = removeRotation * aLocal;
-    bLocal.X = aLocalDeRotated.X * -1.0f; //hack spiegel
-    */
-
 
     //MOVE TO WORLD LIFT OFF
     FVector bWorld = orientation * bLocal;
@@ -637,14 +572,30 @@ void BoneAttachment::ResetAndRebuild(
 void BoneAttachment::UpdateGroundTruth(FVector &ground){
     worldGroundTruth = ground;
 }
+
+
+
+float BoneAttachment::VerticalDistanceFromTrajectoryAsScalar(float maxDistance){
+    FVector location = endEffectorWorldLocation();
+    float heightDistance = location.Z - worldGroundTruth.Z;
+    if(heightDistance > 0.0f){
+        float scalar = heightDistance / maxDistance;
+
+        //FMath::Clamp(Value, MinValue, MaxValue);
+        scalar = 1.0f - FMath::Clamp(scalar, 0.0f, 1.0f);
+        return scalar;
+    }
+    return 1.0f;
+}
+
 bool BoneAttachment::EndEffectorIsGrounded(){
     //10 cm
     FVector location = endEffectorWorldLocation();
-    if(location.Z - worldGroundTruth.Z  < 15.0f){
+    if(location.Z - worldGroundTruth.Z  <= 10.0f){
         return true;
     }
 
-    if (FVector::DistSquared(location, worldGroundTruth) < 225.0f)
+    if (FVector::DistSquared(location, worldGroundTruth) < float(10 * 10))
     {
         if(world){
             DebugHelper::showLineBetween(

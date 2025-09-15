@@ -58,12 +58,8 @@ public:
         MMatrix &orientationRoot,
         float deltatime
     );
-    void TickKeepEndInWorldPlaceNegHeightTrajectory(
-        MMatrix &translationRoot,
-        MMatrix &orientationRoot,
-        float deltatime
-    );
-
+    
+    //is not tested
     void TickForwardKinematicOutOfReachTarget(
         MMatrix &translation,
         MMatrix &orientation, 
@@ -95,6 +91,7 @@ public:
         float deltatime,
         bool isInStance
     );
+    float VerticalDistanceFromTrajectoryAsScalar(float maxDistance);
 
     bool reachedTarget();
     bool reachedTargtZ();

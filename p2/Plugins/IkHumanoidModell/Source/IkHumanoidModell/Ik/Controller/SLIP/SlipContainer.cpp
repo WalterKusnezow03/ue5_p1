@@ -31,8 +31,7 @@ SlipContainer &SlipContainer::operator=(SlipContainer &other){
 /// @param defaultBoneSize 
 /// @param currentStartToEndEffector 
 void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffector){
-    bIsLocked = false;
-
+   
     featherComplete = defaultBoneSize;
     featherCurrent = currentStartToEndEffector;
 
@@ -45,11 +44,6 @@ void SlipContainer::setup(float defaultBoneSize, FVector &currentStartToEndEffec
 
     wasSetup = true;
 }
-
-void SlipContainer::Lock(){
-    bIsLocked = true;
-}
-
 
 
 
@@ -716,9 +710,7 @@ FVector SlipContainer::velocityInterpolated(
     float mass,
     FVector &movedir
 ){
-    //if(bIsLocked){
-    //    return FVector(0, 0, 0);
-    //}
+    
 
     if(forceCache.CacheIsSetup()){
         FVector v = forceCache.Tick(deltatime);

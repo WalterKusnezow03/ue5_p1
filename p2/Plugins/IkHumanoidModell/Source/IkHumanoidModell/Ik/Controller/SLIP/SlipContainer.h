@@ -12,8 +12,7 @@ public:
     SlipContainer(SlipContainer &other);
     SlipContainer &operator=(SlipContainer &other);
 
-    void Lock();
-    bool bIsLocked = false;
+  
 
     void setup(float defaultBoneSize, FVector &currentStartToEndEffector);
 

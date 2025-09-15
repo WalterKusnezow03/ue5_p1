@@ -132,10 +132,7 @@ void HipController::Tick(float deltatime){
     }
     UpdateStanceStatus();
 
-    //if(!AnyLegGrounded()){
-    //    TickFalling(deltatime);
-    //    return;
-    //}
+    
 
     if(locoMotionStateEnabled()){
         if(DEBUG_SLOWTIME){
@@ -209,7 +206,6 @@ void HipController::TickFalling(float deltatime){
 
     applyForceGravity(deltatime);
     applyVelocity(deltatime);
-    //RebuildLegsEndInPlaceFaceDown(deltatime);
     RebuildLegsEndInPlace(deltatime);
     //RebuildLegsNone(deltatime);
 
@@ -271,10 +267,6 @@ bool HipController::anyBackwardPhase(){
     return phaseLeft == ELegPhase::EBackward || phaseRight == ELegPhase::EBackward;
 }
 
-
-bool HipController::AnyLegGrounded(){
-    return legLeft.EndEffectorIsGrounded() || legRight.EndEffectorIsGrounded();
-}
 
 bool HipController::backwardsKinematicAllowed(){
     if(!forwardMotion){
@@ -346,93 +338,19 @@ void HipController::updateBackwardTargetLocal(FVector &targetLocal){
 
 /// @brief updates the interpolator for backwards kinematic
 void HipController::setupBackwardInterpolation(){
-    
-
-
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
-
     FVector localStart = attachment.hipRelativeLocationToEndEffector(
         translation,
         orientation
     );
     FVector localEnd = attachment.defaultExtendedEndToStartLocal();
-
-
-    //float dynamicMotionTime = animationTimeBasedOnCurrentVelocity(localStart, localEnd);
     float dynamicMotionTime = AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
         localStart, localEnd, horizontalVelocity()
     );
-    interpolatorBackwardLocal.setTarget(localStart, localEnd, dynamicMotionTime);
-
-
-
-    // ------ precalculated slip force: deprecated --------
-    // NEW !
-    bool bUseSecondFutureTrajectory = true;
-    if(bUseSecondFutureTrajectory){
-        FVector localTrajectoryNextStep = forwardTrajectory();
-        ApplyVelocityToLocalTrajectory(localTrajectoryNextStep); //move trajectory to future again
-
-        BoneAttachment &otherAttachment = legLeftPlaying ? legRight : legLeft; //same statement but flipped.
-
-        //move next trajectory to world space and project to ground
-        //transformation from hip starting joint (start effector world space)
-        FVector worldTrajectoryB = otherAttachment.inWorldSpace(
-            localTrajectoryNextStep, //forwardDefaultLocalLocomotionFrame,
-            translation,
-            orientation
-        );
-        projectToGround(worldTrajectoryB);
-        RemoveVelocityFromWorldTrajectory(worldTrajectoryB);
-
-
-        
-
-        FVector fallbackForwardTrajectory = forwardRotatedLocalLocomotionFrame;
-
-        FVector otherLegWorld = otherAttachment.endEffectorWorldLocation();
-        attachment.setupSlipDataOnStanceBegin(
-            orientation, // MMatrix &orientation
-            translation, // MMatrix &translation
-            otherLegWorld,
-            worldTrajectoryB,  // FVector & nextTrajectoryOfOtherLegWorldSpace,
-            dynamicMotionTime, // float time,
-            verticalVelocity(),
-            horizontalVelocity(),
-            bodyMass,
-            fallbackForwardTrajectory // used to fake scalar D if an issue happens
-        );
-
-
-        
-    }else{
-        // ----- old NO second tracjectory, faked ! -----
-        if(false){
-            DebugHelper::logMessage("hipcontroller: backward start ", localStart);
-            DebugHelper::logMessage("hipcontroller: backward end ", localEnd);
-        }
-
-
-        //PRE CALCULATE D 
-        
-        //A: end effector current relative to hip
-        //B: end effector lift off, when next step touches ground relative to hip -- immer der default aber rückwärts?
-        //komischer hack, muss genau definiert werden!
-
-        FVector b = forwardDefaultLocalLocomotionFrame;
-        float velocityDown = verticalVelocity();
-        attachment.setupSlipDataOnStanceBegin(
-            orientation,
-            b,                 // local end on liftoff - is flipped internally
-            dynamicMotionTime, // motionTime,
-            velocityDown,      // current velocity downwards to overcome
-            bodyMass
-        );
-    }
-    // ------ precalculated slip force: deprecated end --------
-
-
     
+    
+    
+    interpolatorBackwardLocal.setTarget(localStart, localEnd, dynamicMotionTime);
 
     //SETUP ROTATION
     if(!rotationTimeOverriden){
@@ -440,7 +358,18 @@ void HipController::setupBackwardInterpolation(){
         rotationTimeOverriden = true;
     }
     
+    setupBackwardInterpolation(dynamicMotionTime);
 }
+
+//base method
+void HipController::setupBackwardInterpolation(float dynamicMotionTime){
+    //keep empty. not needed here.
+}
+
+
+
+
+
 
 void HipController::setupForwardInterpolation(){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
@@ -580,19 +509,25 @@ void HipController::applyForces(float deltatime){
     //unklar ob es hier bleibt
     applyForceGravity(deltatime);
 
-    bool useAnimSlip = false;
+    applySlipForce(deltatime);
+
+    /*bool useAnimSlip = false;
     if(useAnimSlip){
         applyStancePhaseSLIPForce(deltatime);
     }else{
         applySlipForceStatic(deltatime);
-    }
+    }*/
 
-    //applyForceGravity(deltatime);
     applyVelocity(deltatime);
+
 
     //very important
     //rebuild both to update end effectors - is needed in case of backward kinematic.
     RebuildLegsEndInPlace(deltatime);
+}
+
+void HipController::applySlipForce(float deltatime){
+    applySlipForceStatic(deltatime);
 }
 
 
@@ -601,7 +536,7 @@ void HipController::applyVelocity(float deltatime){
     //debug
     //DebugHelper::showScreenMessage("velocity ", velocity, FColor::Orange);
 
-    applyMaxVelocity();
+    ClampMaxVelocity();
 
     //x(t) = x0 + v0t + fällt weg(0.5at^2)?
     FVector x0 = translation.getTranslation();
@@ -627,19 +562,7 @@ void HipController::RebuildLegsEndInPlace(float deltatime){
     );
 }
 
-//for gravity apply
-void HipController::RebuildLegsEndInPlaceFaceDown(float deltatime){
-    legLeft.TickKeepEndInWorldPlaceNegHeightTrajectory(
-        translation,
-        orientation,
-        deltatime
-    );
-    legRight.TickKeepEndInWorldPlaceNegHeightTrajectory(
-        translation,
-        orientation,
-        deltatime
-    );
-}
+
 
 void HipController::RebuildLegsNone(float deltatime){
     MMatrix transform = translation * orientation;
@@ -659,7 +582,7 @@ void HipController::RebuildLegsNone(float deltatime){
 
 
 //hack
-void HipController::applyMaxVelocity(){
+void HipController::ClampMaxVelocity(){
     FVector2D velocity2D(velocity.X, velocity.Y);
     float maxHorizontalVelocity = 200.0f;
     if(velocity2D.Size() > maxHorizontalVelocity){
@@ -699,7 +622,7 @@ void HipController::applySlipForceStatic(float deltatime){
     );
 
     float div = 1.0f;
-    if (v1.Size() > 0 && v2.Size() > 0)
+    if (v1.Size() > 0.0f && v2.Size() > 0.0f)
     {
         div = 2.0f;
     }
@@ -719,43 +642,6 @@ bool HipController::rightInStancePhase(){
     return phaseRight == ELegPhase::EEndInPlace || phaseRight == ELegPhase::EBackward;
 }
 
-void HipController::applyStancePhaseSLIPForce(float deltatime){
-
-    //move dir for slip force
-    FVector moveDir = lookDirection();
-
-    TArray<BoneAttachment *> attachmentsToEvaluateForce;
-
-    //try disable phase ?
-    if(leftInStancePhase()) attachmentsToEvaluateForce.Add(&legLeft); 
-    if(rightInStancePhase()) attachmentsToEvaluateForce.Add(&legRight);
-    
-
-    FVector velocityAdd;
-    for (int i = 0; i < attachmentsToEvaluateForce.Num(); i++)
-    {
-        BoneAttachment *currentBoneAttachment = attachmentsToEvaluateForce[i];
-        if(currentBoneAttachment){
-            //if the foot is actually grounded apply force
-            SlipContainer &container = currentBoneAttachment->slipData(orientation);
-
-            FVector vTmp = container.velocityInterpolated(
-                deltatime,
-                bodyMass,
-                moveDir
-            );
-            velocityAdd += vTmp;
-            
-        }
-    }
-    
-
-    RemoveSlidingFromVector(velocityAdd);
-
-
-    //velocityAdd /= share;
-    velocity += velocityAdd; // shared between 2 legs.
-}
 
 void HipController::RemoveSlidingFromVector(FVector &accelertation){
     MMatrix rInv = orientation.transposedRotation();
@@ -784,29 +670,9 @@ void HipController::RemoveSlidingFromVector(FVector &accelertation){
 }
 
 void HipController::applyForceGravity(float deltatime){
-    //apply gravity if not below
-    //ground 
-    //maybe by adding extra distance (but not sure) to keep from ground
-
     float gravityScale = 1.0f;
-
-    //if(legLeft.EndEffectorIsGrounded() || legRight.EndEffectorIsGrounded()){
-
-    if(HipAtGroundLevel()){
-        //velocity.Z = std::max(velocity.Z, 0.0);
-        //return;
-        //DebugHelper::showScreenMessage("HipController: leg Grounded, removed gravity!", FColor::Cyan);
-    }
     FVector acceleration(0.0f, 0.0f, -981.0f * gravityScale);
     velocity += acceleration * deltatime;
-
-    /*
-    if(!HipAtGroundLevel()){
-        FVector acceleration(0, 0, -981 * gravityScale);
-        velocity += acceleration * deltatime;
-    }*/
-
-    
 }
 
 
@@ -820,36 +686,6 @@ float HipController::horizontalVelocity(){
 
 float HipController::verticalVelocity(){
     return velocity.Z;
-}
-
-float HipController::animationTimeBasedOnCurrentVelocity(
-    FVector &localStart,
-    FVector &localEnd
-){
-    
-    //vTarget = v
-    //mGiven / x = vTarget
-    //mGiven = vTarget * x
-    //mGiven / vTarget = x
-
-    float m = FVector::Dist(localStart, localEnd);
-    float v = horizontalVelocity();
-
-    float epsilonLower = 0.001f;
-    v = std::max(v, epsilonLower);
-
-
-    float time = m / v;
-    
-    float tEpislonLower = 0.001f;
-    time = std::max(tEpislonLower, time);
-
-    float tEpsilonHigher = 1.0f;
-    time = std::min(tEpsilonHigher, time);
-
-    DebugHelper::showScreenMessage("hipcontroller dynamic time backward ", (float)time);
-    DebugHelper::logMessage(FString::Printf(TEXT("hipcontroller dynamic time backward %.2f"), time));
-    return time;
 }
 
 

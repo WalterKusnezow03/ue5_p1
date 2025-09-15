@@ -12,6 +12,8 @@
 
 /// @brief controls two bone attachments and runnign physics based on slip data.
 /// moves the underlying hip 
+/// ---> this is the base class and will have static slip force handling
+/// (More stable than integral precalculation)
 class IKHUMANOIDMODELL_API HipController {
 private:
     bool bExtendedDebugLog = false;
@@ -24,13 +26,13 @@ private:
 
     bool backwardsKinematicAllowed();
 
-    bool AnyLegGrounded();
+   
 
 public:
     void EnableDebugLogExtended();
 
     HipController();
-    ~HipController();
+    virtual ~HipController();
 
     //default setup
     void setup(UWorld *world);
@@ -72,7 +74,7 @@ public:
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
 
-private:
+protected:
     //removed ik carried item
     FCollisionQueryParams collisionParams;
 
@@ -121,6 +123,7 @@ private:
     FVectorInterpolator interpolatorBackwardLocal;
 
     void setupBackwardInterpolation();
+    virtual void setupBackwardInterpolation(float animationTime);
     void setupForwardInterpolation();
     void ApplyVelocityToLocalTrajectory(FVector &localTrajectory);
     //experimental
@@ -131,11 +134,20 @@ private:
     void projectToGround(FVector &worldTarjectory);
 
     void applyForces(float deltatime);
+
+    /// @brief base slip force method: to be overriden if needed
+    /// @param deltatime 
+    virtual void applySlipForce(float deltatime);
+
     void applyStancePhaseSLIPForce(float deltatime);
+
+    /// @brief is a more simple way of applying the slip force
+    /// without using a integral on backwards kinematic start.
+    /// Works more stable.
+    /// @param deltatime 
     void applySlipForceStatic(float deltatime);
 
     void applyForceGravity(float deltatime);
-
     void applyVelocity(float deltatime);
 
     void validateTransformUpdate(FVector &position);
@@ -151,7 +163,7 @@ private:
     void RebuildLegsEndInPlace(float deltatime);
     void RebuildLegsEndInPlaceFaceDown(float deltatime);
 
-    void applyMaxVelocity();
+    void ClampMaxVelocity();
 
     //debug
     FVector slipAcceleration;
@@ -160,9 +172,7 @@ private:
     //helper for anim time
     float horizontalVelocity();
     float verticalVelocity();
-    float animationTimeBasedOnCurrentVelocity(
-        FVector &localStart,
-        FVector &localEnd);
+   
 
     //new rotation
 public:
@@ -176,7 +186,7 @@ public:
     void forceYawAdd(float degree);
     void forceOverrideRotation(FRotator &rotation);
 
-private:
+protected:
     bool DEBUG_SLOWTIME = false;  // true;
     void TickHipRotation(float deltatime);
     bool anyBackwardPhase();
