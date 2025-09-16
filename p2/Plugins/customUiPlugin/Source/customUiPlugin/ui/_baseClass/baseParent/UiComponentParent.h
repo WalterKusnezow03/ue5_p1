@@ -53,6 +53,8 @@ protected:
     bool CanAddChild(IBaseUiInterface *item);
 
     
+    //CAUTION: TRACKED CHILDS DONT HAVE A ORDER!!!
+    
     TArray<IBaseUiInterface *> trackedChildsInterface; //cannot be marked Uproperty
 
     UPROPERTY()

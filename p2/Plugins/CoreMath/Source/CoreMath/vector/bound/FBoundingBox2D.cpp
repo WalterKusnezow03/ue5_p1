@@ -72,7 +72,9 @@ FVector2D FBoundingBox2D::maxXminY() const {
     );
 }
 
-
+FVector2D FBoundingBox2D::center() const{
+    return (min() + max() / 2.0f);
+}
 
 FVector2D FBoundingBox2D::size() const {
     return FVector2D(sizeX(), sizeY());

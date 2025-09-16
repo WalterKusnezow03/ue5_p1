@@ -43,11 +43,14 @@ public:
 
     void ScaleToResolutionImmidiate(FVector2D &res);
 
+    ///sets the scale extions for the bounds (to make a widget symetrical for example)
+    void SetScaleExtionsion(int extension);
+
+
 private:
 
-    // --- Draw size cache --- 
+    // --- Draw size cache of all polygons ---
     SlateWidgetBoundsCache boundsCache;
-
 
     /// @brief stores polygons by layer id
     std::map<int, SlateMeshDataPolygon> polygonMap;

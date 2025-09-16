@@ -27,4 +27,5 @@ struct CUSTOMUIPLUGIN_API FSlateBoundingBox2D : public FBoundingBox2D{
     void Update(const SlateMeshData &ref);
     void Update(const SlateMeshDataPolygon &ref);
 
+    
 };

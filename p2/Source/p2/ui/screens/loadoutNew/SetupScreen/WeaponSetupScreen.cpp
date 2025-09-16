@@ -22,6 +22,10 @@ void UWeaponSetupScreen::UpdateScreen(weaponSetupHelper &setup){
     }
 }
 
+void UWeaponSetupScreen::OnOpenScreen(){
+    CloseAllPickerMenus();
+}
+
 /// @brief will update the images with the attachments and all.
 void UWeaponSetupScreen::UpdateWeaponAndAttachmentDisplay(){
 
@@ -134,9 +138,18 @@ void UWeaponSetupScreen::CreateLayoutOnInit(){
     SetupWeaponPicker();
     SetupSightPicker();
     SetupGripPicker();
-    SetupMuzzlePicker();
-    
+    SetupMuzzlePicker();   
 }
+
+void UWeaponSetupScreen::CloseAllPickerMenus(){
+    TArray<UVerticalDropDownBase *> pickers = AllLists();
+    for (int i = 0; i < pickers.Num(); i++){
+        if(UVerticalDropDownBase *current = pickers[i]){
+            current->HidePickerMenu();
+        }
+    }
+}
+
 
 void UWeaponSetupScreen::CreateTitleBar(){
     UHbox *topBar = NewWidgetInitialized<UHbox>(this);

@@ -45,15 +45,17 @@ void ScreenOpenStack::open(UCanvasScreen *item){
             return;
         }
 
-        //open
+        //hide all others
         for (int i = 0; i < opened.size(); i++){
             UCanvasScreen *current = opened[i];
             if(current != nullptr){
                 current->SetVisible(false);
             }
         }
+        //open new
         opened.push_back(item);
         item->SetVisible(true);
+        item->OnOpenScreen();
     }
 }
 

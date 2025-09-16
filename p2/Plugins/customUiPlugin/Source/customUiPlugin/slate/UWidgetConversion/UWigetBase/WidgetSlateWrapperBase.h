@@ -37,8 +37,13 @@ private:
     bool bWasConstructed = false;
 
 public:
-    void SetWidthAndHeight(FVector2D size);
+    ///@brief sets the widget scale and with literally.
+    void SetResolution(FVector2D scale);
 
+
+    void SetWidthAndHeightToUniformBounds();
+   
+    void SetWidthAndHeight(FVector2D size);
 
     // ---- IBaseUiInterface ----
 

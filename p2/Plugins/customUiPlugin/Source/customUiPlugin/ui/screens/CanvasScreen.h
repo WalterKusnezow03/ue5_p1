@@ -35,6 +35,9 @@ public:
     /// one is reopended (refresh ui if needed!)
     virtual void OnReOpenScreen() {};
 
+    /// @brief called when the screenstack opens a screen
+    virtual void OnOpenScreen() {};
+
     /// @brief added child AUTOMATICALLY added to click and visibilty and Tick DISPATCH!
     /// @param item 
     void AddChild(IBaseUiInterface *item) override;

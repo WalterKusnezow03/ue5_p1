@@ -5,6 +5,7 @@
 
 class MMatrix2D;
 
+/// @brief will manage a slate mesh data and apply animations to a mesh.
 class CUSTOMUIPLUGIN_API SlateMeshDataPolygon {
 
 public:
@@ -27,12 +28,13 @@ public:
 
     ///Call after manipulating mesh data.
     ///@brief overrides the color buffer to the new color
-    void SetColor(FLinearColor color);
+    void SetFullColor(FLinearColor color);
 
     void SetCursorColor(FLinearColor color);
 
     void AddAmbientUvColor(FVector2D uv, FLinearColor color);
 
+    void SetRuntimeTransformation(MMatrix2D &other);
     void ApplyTransformImmidiate(MMatrix2D &transform);
 
     void DebugLogColor(){
@@ -47,9 +49,17 @@ public:
     bool IsFlaggedDrawOutlineOnly() const;
 
 protected:
+    /// @brief owned mesh data 
     SlateMeshData meshData;
 
+    //dynamic attributes for drawing
     bool bDynamicCursorColorEnabled = true;
-
     bool bDrawOutlineOnly = false;
+
+
+    //animation
+
+
+
+
 };

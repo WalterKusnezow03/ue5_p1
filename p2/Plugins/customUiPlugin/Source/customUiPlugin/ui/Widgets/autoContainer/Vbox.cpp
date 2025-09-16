@@ -106,19 +106,20 @@ void UVbox::SetItemsFillHorizontal(){
     UpdateAlignmentForAllTrackedItems();
 }
 
+//unclear if this even works.
 void UVbox::UpdateAlignmentForAllTrackedItems(){
-    for (int i = 0; i < attachedItems.Num(); i++){
-        UcustomUiComponentBase *current = attachedItems[i];
+    for (int i = 0; i < trackedChildsInterface.Num(); i++){
+        IBaseUiInterface *current = trackedChildsInterface[i];
         if(current){
             UWidget *layoutPtr = current->baseLayoutPointer();
             if(layoutPtr){
-                UpdateAlignment(layoutPtr);
+                UpdateAlignment(layoutPtr);//unclear if this even works.
             }
         }
     }
 }
 
-/// @brief --- DOES NOT WORK ---
+/// @brief --- DOES NOT WORK --- //unclear if this even works.
 /// @param item 
 void UVbox::UpdateAlignment(UWidget *item){
     if(item){

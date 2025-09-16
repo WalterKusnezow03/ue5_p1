@@ -43,6 +43,8 @@ struct COREMATH_API FBoundingBox2D {
     FVector2D minXmaxY() const;
     FVector2D maxXminY() const;
 
+    FVector2D center() const;
+
     bool OtherIsInside(const FBoundingBox2D &other);
 
     FString ToString() const;

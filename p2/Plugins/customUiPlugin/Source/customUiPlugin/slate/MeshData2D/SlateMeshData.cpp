@@ -147,6 +147,27 @@ void SlateMeshData::AppendEfficentTriangleShapedBuffer(TArray<FVector2D> &triang
     }
 }
 
+void SlateMeshData::AppendEfficentQuadShapedBuffer(TArray<FVector2D> &quadShapedBuffer){
+    for (int i = 3; i < quadShapedBuffer.Num(); i += 4){
+        AppendEfficent(
+            quadShapedBuffer[i - 3],
+            quadShapedBuffer[i - 2],
+            quadShapedBuffer[i - 1],
+            quadShapedBuffer[i]
+        );
+    }
+}
+
+
+void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d){
+    /*
+    1b-->2c
+    |   |
+    0a<--3d
+    */
+    AppendEfficent(a, b, c);
+    AppendEfficent(a, c, d);
+}
 
 void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
     if(!TriangleCanBeAdded()){
@@ -356,6 +377,10 @@ void SlateMeshData::AppendClosedShape(TArray<FVector2D> &shape, int detail){
 
 void SlateMeshData::AppendClosedShape(TArray<FVector2D> &shape){
     AppendClosedShape(shape, 0); //no inner split
+}
+
+FVector2D SlateMeshData::CenterOfMesh(){
+    return CenterOf(Vertecies);
 }
 
 FVector2D SlateMeshData::CenterOf(TArray<FVector2D> &buffer){
@@ -762,13 +787,21 @@ void SlateMeshData::ConvertToScalarValuesNormalized(
 // ---- transformation ----
 void SlateMeshData::ApplyTransformationImmidiate(const MMatrix2D &other){
     if(other.IsZeroScaleMatrix()){
-        return; //invalid, breaks mesh data
+        return; //invalid, bricks mesh data
     }
 
     for (int i = 0; i < Vertecies.Num(); i++){
         ApplyTransformation(other, Vertecies[i]);
     }
     FlagCacheUpdateNeeded();
+}
+
+void SlateMeshData::CenterAroundPivotImmidiate(FVector2D &pivot){
+    FVector2D center = CenterOfMesh();
+    FVector2D dir = pivot - center; // AB = B - A
+
+    MMatrix2D move(dir);
+    ApplyTransformationImmidiate(pivot);
 }
 
 void SlateMeshData::SetRuntimeTransformation(MMatrix2D &other){
@@ -862,4 +895,12 @@ const FSlateResourceHandle &SlateMeshData::drawingHandle() const {
         return textureBrush.GetRenderingResource();
     }
     return emptyHandle;
+}
+
+
+
+
+// --- helper ---
+FVector2D SlateMeshData::SizeBounds(){
+    return boundingBox.size();
 }

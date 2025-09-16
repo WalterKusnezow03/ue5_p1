@@ -22,10 +22,21 @@ public:
 
     FVector2D Size() const;
 
+
+    void RemoveExtension();
+    void SetExtension(int size);
+    
+
 private:
     FSlateBoundingBox2D boundsInternal;
     bool updateNeededFlag = true;
 
     //due to racing conditions, a counter is needed
     int countModified = 0;
+
+
+    //size extension of bounds
+    bool hasExtension = false;
+    int prevSize = 0;
+    FVector2D extension;
 };

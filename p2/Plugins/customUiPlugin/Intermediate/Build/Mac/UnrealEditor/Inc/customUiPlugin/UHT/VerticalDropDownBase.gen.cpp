@@ -15,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeVerticalDropDownBase() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UVbox_NoRegister();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UVerticalDropDownBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UVerticalDropDownBase_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetArrowBase_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UVerticalDropDownBase::StaticRegisterNativesUVerticalDropDownBase()
@@ -43,6 +44,10 @@ void EmptyLinkFunctionForGeneratedCodeVerticalDropDownBase() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_topTextButton_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_topTextButton;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_topArrow_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_topArrow;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -77,10 +82,18 @@ void EmptyLinkFunctionForGeneratedCodeVerticalDropDownBase() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topTextButton = { "topTextButton", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UVerticalDropDownBase, topTextButton), Z_Construct_UClass_UTextButton_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topTextButton_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topTextButton_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topArrow_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topArrow = { "topArrow", nullptr, (EPropertyFlags)0x0020080000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UVerticalDropDownBase, topArrow), Z_Construct_UClass_UWidgetArrowBase_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topArrow_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topArrow_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UVerticalDropDownBase_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topSelection,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_selectableList,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topTextButton,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UVerticalDropDownBase_Statics::NewProp_topArrow,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UVerticalDropDownBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UVerticalDropDownBase>::IsAbstract,
@@ -120,9 +133,9 @@ void EmptyLinkFunctionForGeneratedCodeVerticalDropDownBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_DropDownBase_VerticalDropDownBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UVerticalDropDownBase, UVerticalDropDownBase::StaticClass, TEXT("UVerticalDropDownBase"), &Z_Registration_Info_UClass_UVerticalDropDownBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UVerticalDropDownBase), 1678798509U) },
+		{ Z_Construct_UClass_UVerticalDropDownBase, UVerticalDropDownBase::StaticClass, TEXT("UVerticalDropDownBase"), &Z_Registration_Info_UClass_UVerticalDropDownBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UVerticalDropDownBase), 280654902U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_DropDownBase_VerticalDropDownBase_h_1392030247(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_DropDownBase_VerticalDropDownBase_h_238566604(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_DropDownBase_VerticalDropDownBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_DropDownBase_VerticalDropDownBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

@@ -60,8 +60,14 @@ public:
     ///@brief appends a triangle but looks for nearby vertecies
     void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c);
 
+    ///@brief appens a quad (2 triangles) but looks for nearby vertecies
+    void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d);
+
     ///@brief appends a triangle shaped buffer {(v0,v1,v2)(v1,v2,v3)...}
     void AppendEfficentTriangleShapedBuffer(TArray<FVector2D> &triangleShapedBuffer);
+
+    ///@brief appends a triangle shaped buffer {(v0,v1,v2,3)(v0,v1,v2,v3)...}
+    void AppendEfficentQuadShapedBuffer(TArray<FVector2D> &quadShapedBuffer);
 
     ///@brief appends a closed shape, shape MUST be convex like, is in clockwise order!
     void AppendClosedShape(TArray<FVector2D> &shape);
@@ -102,10 +108,18 @@ public:
     ///not resetable
     void ApplyTransformationImmidiate(const MMatrix2D &other);
 
+    ///@brief centers the widget around the pivot immidiatley
+    void CenterAroundPivotImmidiate(FVector2D &pivot);
+
     ///@brief sets the runtime transformation, applied when a rerender is needed
     ///can be reset. Original vertex buffer is not touched.
     void SetRuntimeTransformation(MMatrix2D &other);
     void ResetRuntimeTransformation();
+
+    FVector2D SizeBounds();
+    FVector2D CenterOfMesh();
+
+
 
 private:
     //track changes for cache remake
@@ -178,6 +192,7 @@ private:
 
     bool TriangleCanBeAdded();
 
+    
     FVector2D CenterOf(TArray<FVector2D> &buffer);
 
     ///@brief will make the slate vertex for a given render transform and vertex

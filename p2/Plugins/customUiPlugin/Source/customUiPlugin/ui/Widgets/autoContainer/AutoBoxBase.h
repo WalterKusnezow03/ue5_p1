@@ -45,8 +45,6 @@ protected:
     /// @param widget 
     virtual void UpdateSlotForCustomSlate(UWidget *widget){};
 
-    UPROPERTY()
-    TArray<UcustomUiComponentBase *> attachedItems;
 
     using UUiComponentParent::CanAddChild;
     bool CanAddChild(UcustomUiComponentBase *ptr);

@@ -105,6 +105,27 @@ void UWidgetSlateWrapperBase::ConstructWidget(){
 }
 
 
+
+
+void UWidgetSlateWrapperBase::SetResolution(FVector2D scale){
+    if(polygonMap.IsValid()){
+        polygonMap->ScaleToResolutionImmidiate(scale);
+    }
+}
+
+
+void UWidgetSlateWrapperBase::SetWidthAndHeightToUniformBounds(){
+    if(polygonMap.IsValid()){
+        FVector2D bounds = polygonMap->Bounds();
+
+        float max = std::max(bounds.X, bounds.Y);
+        SetWidthAndHeight(FVector2D(max, max));
+    }
+}   
+
+
+
+
 void UWidgetSlateWrapperBase::SetWidthAndHeight(FVector2D size){
     size.X = std::max(std::abs(size.X), 1.0);
     size.Y = std::max(std::abs(size.Y), 1.0);

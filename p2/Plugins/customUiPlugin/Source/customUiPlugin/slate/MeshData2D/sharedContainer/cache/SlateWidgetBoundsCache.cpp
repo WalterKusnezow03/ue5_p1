@@ -42,9 +42,32 @@ void SlateWidgetBoundsCache::Recreate(TArray<SlateMeshDataPolygon*> &polygons){
 
 FVector2D SlateWidgetBoundsCache::DesiredSize(float scalar) const{
     FVector2D scaled = boundsInternal.size() * scalar;
+    if(hasExtension){
+        scaled += extension;
+    }
+
     return scaled;
 }
 
 FVector2D SlateWidgetBoundsCache::Size() const{
     return DesiredSize(1.0f);
+}
+
+
+
+
+
+// extension of bounds
+// --- symetrical extension to center a widget
+void SlateWidgetBoundsCache::SetExtension(int size){
+    hasExtension = size > 0;
+    extension = FVector2D(size, size);
+    if(prevSize != size){
+        prevSize = size;
+        SetUpdateNeededTrue();
+    }
+}
+
+void SlateWidgetBoundsCache::RemoveExtension(){
+    SetExtension(0);
 }

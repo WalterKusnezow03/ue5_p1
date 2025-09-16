@@ -43,7 +43,7 @@ void UWidgetProgressBarBase::CreateBar(){
 
 void UWidgetProgressBarBase::SetColorBackground(FLinearColor color){
     SlateMeshDataPolygon &background = PolygonBackground();
-    background.SetColor(color);
+    background.SetFullColor(color);
 }
 
 void UWidgetProgressBarBase::SetColorForeground(FLinearColor color){
@@ -59,11 +59,7 @@ void UWidgetProgressBarBase::SetColorForeground(FLinearColor color){
     //polygon.DebugLogColor();
 }
 
-void UWidgetProgressBarBase::SetResolution(FVector2D scale){
-    if(polygonMap.IsValid()){
-        polygonMap->ScaleToResolutionImmidiate(scale);
-    }
-}
+
 
 
 

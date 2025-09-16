@@ -91,7 +91,9 @@ void SlatePolygonMap::DebugCreatePolygons(){
 
 
 
-
+void SlatePolygonMap::SetScaleExtionsion(int extension){
+    boundsCache.SetExtension(extension); //flags update bounds needed internally!
+}
 
 bool SlatePolygonMap::BoundsUpdated(){
     return boundsCache.UpdateNeeded();

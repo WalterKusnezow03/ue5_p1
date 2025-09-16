@@ -4,8 +4,8 @@
 #include "customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
+#include "customUiPlugin/slateDerived/Shapes/ArrowWidget/WidgetArrowBase.h"
 
-#include "Components/ComboBox.h"
 
 #include "VerticalDropDownBase.generated.h"
 
@@ -45,12 +45,17 @@ public:
     ///access pickable items, pointers read only.
     const TArray<IBaseUiInterface *> &AccessListInternalItemsTmp() const;
 
+    void HidePickerMenu();
+
 protected:
     int indexHitFromClickDispatch = -1;
 
     UcustomUiComponentBase *CreateDuplicate(IBaseUiInterface *interface);
 
     void createLayout();
+    void CreateTopSelectionBar();
+
+    
     void SwitchMenuVisibilty();
 
     IBaseUiInterface *selectedItem = nullptr;
@@ -61,8 +66,14 @@ protected:
     UPROPERTY() 
     UVbox *selectableList = nullptr;
 
+
+
+
     UPROPERTY()
     UTextButton *topTextButton = nullptr;
+
+    UPROPERTY()
+    UWidgetArrowBase *topArrow = nullptr;
 
 private:
     TArray<IBaseUiInterface *> fallbackArray;

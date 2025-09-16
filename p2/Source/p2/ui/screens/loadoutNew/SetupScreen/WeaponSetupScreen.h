@@ -31,7 +31,7 @@ public:
 
     virtual bool dispatchClick() override;
 
-    bool MarkedExit();
+    virtual void OnOpenScreen() override;
 
 protected:
     weaponSetupHelper *referencedSetup = nullptr;
@@ -52,7 +52,9 @@ protected:
    
 
 private:
-    bool exitButtonPressed = false;
+    void CloseAllPickerMenus();
+
+    
 
     void ReversePick(weaponEnum typeWeapon);
     void ReversePick(weaponAttachmentEnum typeAttachment);

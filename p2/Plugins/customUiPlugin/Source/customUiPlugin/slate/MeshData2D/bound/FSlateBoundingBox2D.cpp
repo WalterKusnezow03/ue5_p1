@@ -32,3 +32,4 @@ void FSlateBoundingBox2D::Update(const SlateMeshDataPolygon &ref){
     const SlateMeshData &refMeshData = ref.MeshDataRefConst();
     Update(refMeshData);
 }
+

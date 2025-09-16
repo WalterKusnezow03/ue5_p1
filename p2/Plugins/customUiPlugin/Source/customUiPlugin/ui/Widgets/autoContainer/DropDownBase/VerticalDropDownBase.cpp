@@ -102,27 +102,36 @@ UcustomUiComponentBase *UVerticalDropDownBase::CreateDuplicate(IBaseUiInterface 
 }
 
 void UVerticalDropDownBase::createLayout(){
+
     if(!topSelection){
-        
-        topSelection = NewWidgetInitialized<UHbox>(this);
-        if(topSelection && !topTextButton){
-            topTextButton = NewWidgetInitialized<UTextButton>(this);
-            if(topTextButton){
-                topTextButton->setText("Select...");
-                topSelection->AddChild(topTextButton);
-            }
-        }
-        Super::AddChild(topSelection);
-        
+        CreateTopSelectionBar();
         CreateSpacer(20);
     }
     
     if(!selectableList){
-        
         selectableList = NewWidgetInitialized<UVbox>(this);
         Super::AddChild(selectableList);
-        
     }
+}
+
+void UVerticalDropDownBase::CreateTopSelectionBar(){
+    if(!topSelection){   
+        topSelection = NewWidgetInitialized<UHbox>(this);
+    }
+    if(topSelection && !topTextButton){
+        topTextButton = NewWidgetInitialized<UTextButton>(this);
+        if(topTextButton){
+            topTextButton->setText("Select...");
+            topSelection->AddChild(topTextButton);
+        }
+    }
+    if(topSelection && !topArrow){
+        topArrow = NewObject<UWidgetArrowBase>(this); //points to right by default
+        topArrow->AddState(90.0f);
+        topArrow->AddState(-90.0f);
+        topSelection->AddChild((IBaseUiInterface*) topArrow);
+    }
+    Super::AddChild(topSelection);
 }
 
 
@@ -133,6 +142,15 @@ void UVerticalDropDownBase::SwitchMenuVisibilty(){
         selectableList->SetVisible(show);
     }
 }
+
+void UVerticalDropDownBase::HidePickerMenu(){
+    if(selectableList){
+        if(selectableList->markedVisible()){
+            SwitchMenuVisibilty();
+        }
+    }
+}
+
 
 
 

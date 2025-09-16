@@ -18,8 +18,6 @@ protected:
     float progressCopy = 1.0f;
 
 public:
-    ///@brief sets the widget scale and with literally.
-    void SetResolution(FVector2D scale);
 
     void SetColorBackground(FLinearColor color);
     void SetColorForeground(FLinearColor color);

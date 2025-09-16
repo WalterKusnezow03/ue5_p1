@@ -8,14 +8,10 @@ void UAutoBoxBase::SetPadding(FVector2D &paddingIn){
 }
 
 void UAutoBoxBase::UpdatePaddingForAllTrackedItems(){
-    for (int i = 0; i < attachedItems.Num(); i++){
-        UcustomUiComponentBase *current = attachedItems[i];
-        if(current){
-            UWidget *layoutPtr = current->baseLayoutPointer();
-            if(layoutPtr){
-                UpdatePadding(layoutPtr);
-            }
-            
+    for (int i = 0; i < trackedChildsAsUWidget.Num(); i++){
+        UWidget *layoutPtr = trackedChildsAsUWidget[i];
+        if(layoutPtr){
+            UpdatePadding(layoutPtr);
         }
     }
 }

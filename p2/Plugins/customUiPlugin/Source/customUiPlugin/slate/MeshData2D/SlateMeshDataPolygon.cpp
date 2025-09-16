@@ -41,7 +41,7 @@ void SlateMeshDataPolygon::UpdateCursorPosition(FVector2D &pos){
 
 
 
-void SlateMeshDataPolygon::SetColor(FLinearColor color){
+void SlateMeshDataPolygon::SetFullColor(FLinearColor color){
     meshData.SetFullColor(color);
 }
 
@@ -59,6 +59,9 @@ void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){
     meshData.ApplyTransformationImmidiate(transform);
 }
 
+void SlateMeshDataPolygon::SetRuntimeTransformation(MMatrix2D &transform){
+    meshData.SetRuntimeTransformation(transform);
+}
 
 
 

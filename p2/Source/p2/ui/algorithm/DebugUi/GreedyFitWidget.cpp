@@ -41,7 +41,7 @@ void UGreedyFitWidget::AppendIntoLayer(MPolygon &polygon, int layer){
     FLinearColor::Green;
 
     slateMeshPolygon.AppendClosedShape(internalShape);
-    slateMeshPolygon.SetColor(color);
+    slateMeshPolygon.SetFullColor(color);
 
 
 }
