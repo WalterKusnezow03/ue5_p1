@@ -3,6 +3,8 @@
 #include "Components/Widget.h"
 #include "customUiPlugin/baseInterface/WidgetHelper.h"
 #include "customUiPlugin/baseInterface/BaseUiInterface.h"
+
+
 #include "customUiComponentBase.generated.h"
 
 class UPlayerUiBase;
@@ -136,4 +138,26 @@ protected:
 protected:
     bool TICK_ENABLED = true; //true by default!
     bool VISIBLE_FLAG = true;
+
+
+
+    ///----- Pay load for buttons for example -------
+public:
+    /// @brief overriden from interface.
+    /// @return 
+    UPayLoadBase *GetPayLoad() override{
+        return payload;
+    }
+
+
+    ///@brief ownership taken - use getPayload to do funny payload things.
+    void SetPayLoad(UPayLoadBase *item){
+        //mark garbage not needed here nesecerally.
+        payload = item;
+    }
+
+protected:
+    /// @brief payload item, ptr can be derived.
+    UPROPERTY()
+    UPayLoadBase *payload = nullptr;
 };

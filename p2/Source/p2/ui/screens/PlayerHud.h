@@ -21,7 +21,8 @@ class P2_API UPlayerHud : public UWorldMarkerCanvas {
     GENERATED_BODY()
 public:
     
-    virtual void init(UPlayerUiBase &refin) override;
+    //virtual void init(UPlayerUiBase &refin) override;
+    virtual void CreateLayoutOnInit() override;
 
     virtual void Tick(float deltatime) override;
 

@@ -3870,6 +3870,8 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Widget.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/baseInterface/WidgetHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/baseInterface/BaseUiInterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/payload/PayLoadBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PayLoadBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/BaseUiInterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/customUiComponentBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.h \
@@ -3999,6 +4001,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ImageOverlayedButtonBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/subtypes/ImageOverlayedButtonBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/ImageOverlayedButtonBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PayLoadBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/PlayerUiBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/PlayerUiBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/ScreenStack/ScreenOpenStack.h \

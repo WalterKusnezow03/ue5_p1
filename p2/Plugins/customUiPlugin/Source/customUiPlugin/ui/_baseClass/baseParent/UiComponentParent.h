@@ -19,12 +19,20 @@ public:
     virtual void Tick(float deltatime) override;
 
 
-    
+
     ///@brief dispatches a click and returns the index in IBaseUiInterface Array
     virtual bool dispatchClick(int &outIndexFirst);
 
+    ///@brief item at index or nullptr if invalid
     IBaseUiInterface *BaseInterfaceAtIndex(int i);
+
+    ///@brief item at index or nullptr if invalid
     UWidget *UWidgetAtIndex(int i);
+
+
+    /// @brief use only for very special cases where this data is needed!
+    const TArray<IBaseUiInterface *> &AccessInternalItemsTmp() const;
+
 protected:
    
 

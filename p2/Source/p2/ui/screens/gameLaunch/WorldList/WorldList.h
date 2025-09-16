@@ -102,10 +102,7 @@ private:
     void createLayout();
 
 
-    /// @brief creates a new removable text setup, sets up callbacks, or pops from free list,
-    /// but also set upped.
-    /// @param name name for world
-    URemovableTextButton *makeRemovableTextButton(FString name);
+    
 
     /// @brief game launch parent to allow world start calls.
     UGameLaunchScreen *gameLaunchParent = nullptr;

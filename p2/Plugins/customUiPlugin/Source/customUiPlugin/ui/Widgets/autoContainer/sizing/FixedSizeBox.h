@@ -40,7 +40,10 @@ public:
 
     void OverrideChild(UcustomUiComponentBase *item);
 
+
+    
     void SetWidth(int pixels);
+    void SetHeight(int pixels);
 
 private:
     int validatePixels(int num);

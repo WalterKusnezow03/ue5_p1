@@ -36,6 +36,8 @@ public:
 
     void SetItemsFillHorizontal();
 
+    void CreateSpacer(int height);
+
 protected:
     virtual void UpdatePadding(UWidget *widget) override;
 

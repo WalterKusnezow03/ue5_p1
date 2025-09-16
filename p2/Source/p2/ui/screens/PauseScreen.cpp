@@ -10,9 +10,7 @@
 
 
 
-void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
-    Super::init(playerUiParentref);
-
+void UPauseScreen::CreateLayoutOnInit(){
     //createBackgroundBlur();
     createBackgroundBlurAndDefaultColor();
     createMenu();
@@ -21,6 +19,8 @@ void UPauseScreen::init(UPlayerUiBase &playerUiParentref){
     debug();
     debugCreateGameLaunchButton();
 }
+
+
 
 // ---- DEBUG: MARK REMOVE ----
 void UPauseScreen::debug(){

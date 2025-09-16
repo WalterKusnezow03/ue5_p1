@@ -29,7 +29,15 @@ public:
 
     bool loadOutWasModified();
 
+    void markModified(){
+        loadoutWasModifedFlag = true;
+    }
+
     weaponSetupHelper getIfValidIndex(int index);
+
+    std::vector<weaponSetupHelper> &SetupHelpers(){
+        return vec;
+    }
 
 private:
     bool loadoutWasModifedFlag = false;

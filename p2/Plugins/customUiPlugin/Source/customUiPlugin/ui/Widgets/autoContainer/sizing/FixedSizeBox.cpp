@@ -27,6 +27,13 @@ void UFixedSizeBox::OverrideChild(UcustomUiComponentBase *item){
     }
 }
 
+void UFixedSizeBox::SetHeight(int pixels){
+    if(SizeBox){
+        pixels = validatePixels(pixels);
+        SizeBox->SetHeightOverride(pixels);
+    }
+}
+
 void UFixedSizeBox::SetWidth(int pixels){
     if(SizeBox){
         pixels = validatePixels(pixels);

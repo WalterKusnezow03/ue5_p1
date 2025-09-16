@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "customUiPlugin/ui/_baseClass/payload/PayLoadBase.h"
 #include "BaseUiInterface.generated.h"
 
 class UWidget;
@@ -30,4 +31,10 @@ public:
 
 	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
 	virtual UWidget *baseLayoutPointer() = 0;
+
+	///does not need to be implemented but can be.
+	virtual UPayLoadBase *GetPayLoad(){
+		return nullptr;
+	}
+
 };

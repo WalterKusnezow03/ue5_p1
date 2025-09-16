@@ -70,9 +70,15 @@ void weaponSetupHelper::setGripAttachment(weaponAttachmentEnum typein){
 }
 
 
+void weaponSetupHelper::SetAnyAttachmentFilterInternal(weaponAttachmentEnum typeIn){
+    //are filtered anyways and should NOT appear more than once in
+    //Attachment validator!
 
-
-
+    //all calls will never create any issues, only ONE will be true!
+    setSightAttachment(typeIn);
+    setMuzzleAttachment(typeIn);
+    setGripAttachment(typeIn);
+}
 
 //APPLY ATTACHMENT SECTION
 

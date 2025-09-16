@@ -13,6 +13,7 @@ void EmptyLinkFunctionForGeneratedCodecustomUiComponentBase() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UBaseUiInterface_NoRegister();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UcustomUiComponentBase_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UPayLoadBase_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UcustomUiComponentBase::StaticRegisterNativesUcustomUiComponentBase()
@@ -29,6 +30,11 @@ void EmptyLinkFunctionForGeneratedCodecustomUiComponentBase() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_payload_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_payload;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const UECodeGen_Private::FImplementedInterfaceParams InterfaceParams[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -45,6 +51,17 @@ void EmptyLinkFunctionForGeneratedCodecustomUiComponentBase() {}
 		{ "ToolTip", "base functionality each custom ui element should have\n(the pointer to the main owning UPlayerUi instance)" },
 	};
 #endif
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UcustomUiComponentBase_Statics::NewProp_payload_MetaData[] = {
+		{ "Comment", "/// @brief payload item, ptr can be derived.\n" },
+		{ "ModuleRelativePath", "ui/_baseClass/customUiComponentBase.h" },
+		{ "ToolTip", "@brief payload item, ptr can be derived." },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UcustomUiComponentBase_Statics::NewProp_payload = { "payload", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UcustomUiComponentBase, payload), Z_Construct_UClass_UPayLoadBase_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UcustomUiComponentBase_Statics::NewProp_payload_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UcustomUiComponentBase_Statics::NewProp_payload_MetaData)) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UcustomUiComponentBase_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UcustomUiComponentBase_Statics::NewProp_payload,
+	};
 		const UECodeGen_Private::FImplementedInterfaceParams Z_Construct_UClass_UcustomUiComponentBase_Statics::InterfaceParams[] = {
 			{ Z_Construct_UClass_UBaseUiInterface_NoRegister, (int32)VTABLE_OFFSET(UcustomUiComponentBase, IBaseUiInterface), false },  // 2471973962
 		};
@@ -57,11 +74,11 @@ void EmptyLinkFunctionForGeneratedCodecustomUiComponentBase() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_UcustomUiComponentBase_Statics::PropPointers,
 		InterfaceParams,
 		UE_ARRAY_COUNT(DependentSingletons),
 		0,
-		0,
+		UE_ARRAY_COUNT(Z_Construct_UClass_UcustomUiComponentBase_Statics::PropPointers),
 		UE_ARRAY_COUNT(InterfaceParams),
 		0x001000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_UcustomUiComponentBase_Statics::Class_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UClass_UcustomUiComponentBase_Statics::Class_MetaDataParams))
@@ -86,9 +103,9 @@ void EmptyLinkFunctionForGeneratedCodecustomUiComponentBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_customUiComponentBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UcustomUiComponentBase, UcustomUiComponentBase::StaticClass, TEXT("UcustomUiComponentBase"), &Z_Registration_Info_UClass_UcustomUiComponentBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UcustomUiComponentBase), 2700408557U) },
+		{ Z_Construct_UClass_UcustomUiComponentBase, UcustomUiComponentBase::StaticClass, TEXT("UcustomUiComponentBase"), &Z_Registration_Info_UClass_UcustomUiComponentBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UcustomUiComponentBase), 1817189574U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_customUiComponentBase_h_3453559001(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_customUiComponentBase_h_2769717778(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_customUiComponentBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_customUiComponentBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

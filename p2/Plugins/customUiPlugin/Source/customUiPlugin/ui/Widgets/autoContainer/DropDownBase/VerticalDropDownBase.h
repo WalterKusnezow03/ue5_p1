@@ -19,13 +19,22 @@ public:
     virtual void init() override;
 
 
-
+    ///dispatches a click to all children
     virtual bool dispatchClick() override;
+
+    ///@brief may be -1 if none hit in latest clikc dispatch - is resettet each click.
+    int ListIndexHitFromClickDispatch();
+
+    ///@brief returns interface at a certain index from pickable list or nullptr if index oob / list
+    ///not setup.
+    IBaseUiInterface *BaseInterfaceFromListAtIndex(int index);
 
     /// @brief adds the child to the selectable list.
     /// adds child tracked to Click, Tick and Visibilty Dispatch
     /// CAUTION: UcustomUiComponentBase *DuplicateWidgetInitialized(UObject*); MUST BE IMPLEMENTED!
     virtual void AddChild(IBaseUiInterface *item) override;
+
+    void SelectIndex(int index);
 
     IBaseUiInterface *SelectedItemInterface(){
         return selectedItem;
@@ -33,7 +42,12 @@ public:
 
     void Debug();
 
+    ///access pickable items, pointers read only.
+    const TArray<IBaseUiInterface *> &AccessListInternalItemsTmp() const;
+
 protected:
+    int indexHitFromClickDispatch = -1;
+
     UcustomUiComponentBase *CreateDuplicate(IBaseUiInterface *interface);
 
     void createLayout();
@@ -49,4 +63,7 @@ protected:
 
     UPROPERTY()
     UTextButton *topTextButton = nullptr;
+
+private:
+    TArray<IBaseUiInterface *> fallbackArray;
 };

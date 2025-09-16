@@ -71,6 +71,9 @@ void ScreenOpenStack::closeBack(){
             UCanvasScreen *backNew = opened.back();
             if(backNew != nullptr){
                 backNew->SetVisible(true);
+
+                //trigger reopen method: refresh ui if needed
+                backNew->OnReOpenScreen();
             }
         }
 

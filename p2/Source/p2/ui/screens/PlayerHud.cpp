@@ -10,10 +10,8 @@
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
 
-void UPlayerHud::init(UPlayerUiBase &refin){
-    //init base
-    Super::init(refin);
 
+void UPlayerHud::CreateLayoutOnInit(){
     createBasePlayerHud();
     createAmmunitionHudElement();
     createHealthHudElement();

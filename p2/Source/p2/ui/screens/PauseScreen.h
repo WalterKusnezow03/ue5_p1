@@ -23,10 +23,8 @@ class P2_API UPauseScreen : public UCanvasScreen {
     GENERATED_BODY()
 
 public:
-    using UcustomUiComponentBase::init;
-    virtual void init(UPlayerUiBase &playerUiParentref) override;
     
-    
+    virtual void CreateLayoutOnInit() override;
 
 private:
     UPROPERTY()

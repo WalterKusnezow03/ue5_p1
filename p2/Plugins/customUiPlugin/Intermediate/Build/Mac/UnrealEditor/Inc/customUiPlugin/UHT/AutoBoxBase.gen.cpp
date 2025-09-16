@@ -99,9 +99,9 @@ void EmptyLinkFunctionForGeneratedCodeAutoBoxBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UAutoBoxBase, UAutoBoxBase::StaticClass, TEXT("UAutoBoxBase"), &Z_Registration_Info_UClass_UAutoBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UAutoBoxBase), 2653679017U) },
+		{ Z_Construct_UClass_UAutoBoxBase, UAutoBoxBase::StaticClass, TEXT("UAutoBoxBase"), &Z_Registration_Info_UClass_UAutoBoxBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UAutoBoxBase), 1391608285U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_2255813304(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_307790582(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_autoContainer_AutoBoxBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

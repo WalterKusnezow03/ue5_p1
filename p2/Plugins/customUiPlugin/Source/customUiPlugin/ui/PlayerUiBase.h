@@ -62,6 +62,8 @@ public:
 	UFUNCTION()
 	void closeLatestScreen();
 
+	void OpenScreen(UCanvasScreen *someScreen);
+
 
 	UCanvasPanel *canvasPanelPointer();
 
@@ -75,6 +77,9 @@ public:
     virtual void openGameScreen();
 
     void Tick(float deltatime);
+
+	
+	
 
 protected:
 

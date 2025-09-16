@@ -143,7 +143,9 @@ void UUiComponentParent::RemoveChild(UWidget *item){
 }
 
 
-
+/// @brief returns nullptr if index invalid!
+/// @param i 
+/// @return 
 IBaseUiInterface *UUiComponentParent::BaseInterfaceAtIndex(int i){
     if(i >= 0 && i < trackedChildsInterface.Num()){
         return trackedChildsInterface[i];
@@ -156,4 +158,10 @@ UWidget *UUiComponentParent::UWidgetAtIndex(int i){
         return trackedChildsAsUWidget[i];
     }
     return nullptr;
+}
+
+
+/// @brief use only for very special cases where this data is needed!
+const TArray<IBaseUiInterface *> &UUiComponentParent::AccessInternalItemsTmp() const{
+    return trackedChildsInterface;
 }

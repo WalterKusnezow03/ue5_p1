@@ -40,7 +40,7 @@ public:
 	void setMuzzleAttachment(weaponAttachmentEnum typein);
 	void setGripAttachment(weaponAttachmentEnum typein);
 
-	
+	void SetAnyAttachmentFilterInternal(weaponAttachmentEnum typeIn);
 
 private:
 	weaponEnum typeToCreate;

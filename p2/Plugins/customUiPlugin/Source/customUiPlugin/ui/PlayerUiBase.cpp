@@ -69,6 +69,14 @@ void UPlayerUiBase::addToCanvas(UWidget *any){
 }
 
 
+void UPlayerUiBase::OpenScreen(UCanvasScreen *someScreen){
+    if(someScreen){
+        openedScreenStack.open(someScreen);
+    }
+}
+
+
+
 
 void UPlayerUiBase::closeLatestScreen(){
     openedScreenStack.closeBack();

@@ -12,11 +12,14 @@
 
 ///@brief sets up the canvas, the player ui parent is 
 void UCanvasScreen::init(UPlayerUiBase &refin){
+    if(WAS_INIT_FLAG){
+        return;
+    }
     //playerUiParent = &refin;
     saveParent(refin);
     createBaseCanvas();
+    CreateLayoutOnInit(); //empty on purpose
 }
-
 
 /// ---- Moving items ----
 void UCanvasScreen::SetScreenPosition(UWidget *widget, FVector2D &ScreenPosition){

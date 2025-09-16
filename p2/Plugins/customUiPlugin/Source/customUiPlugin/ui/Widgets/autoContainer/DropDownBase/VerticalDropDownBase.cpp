@@ -1,5 +1,7 @@
 #include "VerticalDropDownBase.h"
 
+#include "customUiPlugin/ui/Widgets/autoContainer/sizing/FixedSizeBox.h"
+
 void UVerticalDropDownBase::init(){
     if(WAS_INIT_FLAG){
         return;
@@ -23,8 +25,9 @@ void UVerticalDropDownBase::Debug(){
 
 
 
+///@brief dispatches a click and returns the index of the pressed item inside the 
+///picker list, if any hit!
 bool UVerticalDropDownBase::dispatchClick(){
-
     //handle menu show hide
     if(topSelection){
         if(topSelection->dispatchClick()){
@@ -34,29 +37,55 @@ bool UVerticalDropDownBase::dispatchClick(){
     }
 
 
+    //reset sub menu clicked index
+    indexHitFromClickDispatch = -1; //Reset index
+
     //handle sub menu click
     if(selectableList){
         int indexHit = -1;
         bool dispatched = selectableList->dispatchClick(indexHit);
         if(dispatched){
-            IBaseUiInterface *interface = selectableList->BaseInterfaceAtIndex(indexHit);
-            if(interface && topSelection){
-
-                
-                UcustomUiComponentBase *copy = CreateDuplicate(interface); //isA BaseUiInterface
-
-                if(copy){
-                    //replace widget in top bar.
-                    topSelection->ReplaceChild(0, copy); //replace first index.
-                    selectedItem = interface;
-                }
-            }
+            SelectIndex(indexHit);
+            indexHitFromClickDispatch = indexHit;
         }
         return dispatched;
     }
 
     return false;
 }
+
+
+int UVerticalDropDownBase::ListIndexHitFromClickDispatch(){
+    return indexHitFromClickDispatch;
+}
+
+IBaseUiInterface *UVerticalDropDownBase::BaseInterfaceFromListAtIndex(int index){
+    if(selectableList){
+        return selectableList->BaseInterfaceAtIndex(index);
+    }
+    return nullptr;
+}
+
+
+
+
+
+void UVerticalDropDownBase::SelectIndex(int indexHit){
+    if(!selectableList){
+        return;
+    }
+    IBaseUiInterface *interface = selectableList->BaseInterfaceAtIndex(indexHit);
+    if(interface && topSelection){
+
+        UcustomUiComponentBase *copy = CreateDuplicate(interface); //isA BaseUiInterface
+        if(copy){
+            //replace widget in top bar.
+            topSelection->ReplaceChild(0, copy); //replace first index.
+            selectedItem = interface;
+        }
+    }
+}
+
 
 
 UcustomUiComponentBase *UVerticalDropDownBase::CreateDuplicate(IBaseUiInterface *interface){
@@ -85,7 +114,9 @@ void UVerticalDropDownBase::createLayout(){
         }
         Super::AddChild(topSelection);
         
+        CreateSpacer(20);
     }
+    
     if(!selectableList){
         
         selectableList = NewWidgetInitialized<UVbox>(this);
@@ -114,4 +145,11 @@ void UVerticalDropDownBase::AddChild(IBaseUiInterface *item){
 
 
 
+
+const TArray<IBaseUiInterface *> &UVerticalDropDownBase::AccessListInternalItemsTmp() const{
+    if(selectableList){
+        return selectableList->AccessInternalItemsTmp();
+    }
+    return fallbackArray;
+}
 

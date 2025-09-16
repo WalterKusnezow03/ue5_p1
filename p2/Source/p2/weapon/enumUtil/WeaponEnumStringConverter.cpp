@@ -11,6 +11,15 @@ FString WeaponEnumStringConverter::toString(weaponEnum type){
     return name;
 }
 
+std::vector<weaponEnum> WeaponEnumStringConverter::AllWeaponTypes(){
+    std::vector<weaponEnum> output = {
+        weaponEnum::assaultRifle,
+        weaponEnum::pistol,
+        weaponEnum::thrower
+    };
+    return output;
+}
+
 FString WeaponEnumStringConverter::toString(weaponAttachmentEnum type){
     FString name = FString::Printf(TEXT("<attachment name>"));
     
