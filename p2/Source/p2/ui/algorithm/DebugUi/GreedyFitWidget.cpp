@@ -1,6 +1,6 @@
 #include "GreedyFitWidget.h"
 
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "CoreMath/algorithm/PolygonFit/GreedyFilledPolygon.h"
 
 void UGreedyFitWidget::ConstructWidget(){

@@ -1,5 +1,5 @@
 #include "SlatePolygonMap.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshData.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
 
 

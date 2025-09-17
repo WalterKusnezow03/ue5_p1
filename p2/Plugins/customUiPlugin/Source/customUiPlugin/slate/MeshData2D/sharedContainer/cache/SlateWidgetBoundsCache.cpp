@@ -1,5 +1,5 @@
 #include "SlateWidgetBoundsCache.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "customUiPlugin/Private/Debug/UiDebugHelper.h"
 
 

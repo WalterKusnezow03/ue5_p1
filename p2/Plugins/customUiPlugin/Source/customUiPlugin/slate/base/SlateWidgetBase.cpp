@@ -1,5 +1,6 @@
 #include "SlateWidgetBase.h"
 #include "Rendering/DrawElements.h"
+#include "Fonts/SlateFontInfo.h"
 #include "customUiPlugin/Private/Debug/UiDebugHelper.h"
 
 
@@ -82,7 +83,7 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
 
 void SSlateWidgetBase::DrawAllPolygons(
     FSlateWindowElementList& OutDrawElements,
-    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+    int32 &LayerId, //dont change, polygons drawn later will overlap previous ones by default.
     FSlateRenderTransform &RenderTransform,
     const FGeometry& AllottedGeometry
 )const{
@@ -103,42 +104,67 @@ void SSlateWidgetBase::DrawAllPolygons(
 void SSlateWidgetBase::DrawPolygon(
     const SlateMeshDataPolygon &polygon,
     FSlateWindowElementList& OutDrawElements,
-    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+    int32 &LayerId, //dont change, polygons drawn later will overlap previous ones by default.
     FSlateRenderTransform &RenderTransform,
     const FGeometry& AllottedGeometry
 )const{
+    
+    //DEFAULT DRAW
+    if(polygon.IsFlaggedDrawOutlineOnly()){ 
+        DrawPolygonOutlineOnly(polygon, OutDrawElements, LayerId, AllottedGeometry);
+    }else{
+        DrawPolygonFilled(polygon, OutDrawElements, LayerId, RenderTransform, AllottedGeometry);
+    }
+    LayerId++;
 
+    //draw text ontop
+    DrawText(
+        polygon,
+        OutDrawElements,
+        LayerId + 100, // (higher index to force text to be ontop, 1 is not enough!) 
+        //dont change, polygons drawn later will overlap previous ones by default.
+        AllottedGeometry
+    );
+}
+
+void SSlateWidgetBase::DrawPolygonFilled(
+    const SlateMeshDataPolygon &polygon,
+    FSlateWindowElementList& OutDrawElements,
+    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+    FSlateRenderTransform &RenderTransform,
+    const FGeometry& AllottedGeometry
+)const {
     const TArray<FSlateVertex> &vertecies = 
         polygon
         .MeshDataRefConst()
         .GetSlateVertexBuffer(RenderTransform); //const context internally escaped, buffer is cached.
     const TArray<SlateIndex> &triangles = polygon.MeshDataRefConst().TrianglesRefConst();
 
-    TArray<FColor> colors;
+    //FSlateResourceHandle ResourceHandle; // leer
+
+    FSlateResourceHandle ResourceHandle = polygon.MeshDataRefConst().drawingHandle();
+
+    FSlateDrawElement::MakeCustomVerts(
+        OutDrawElements,
+        LayerId,
+        ResourceHandle,
+        vertecies,
+        triangles,
+        nullptr, //unclear what this is
+        0,       //unclear what this is
+        1,       //unclear what this is
+        ESlateDrawEffect::None //unclear what this is
+    );
+}
 
 
-    //DEFAULT DRAW
-    if(!polygon.IsFlaggedDrawOutlineOnly()){ 
-        //FSlateResourceHandle ResourceHandle; // leer
-
-        FSlateResourceHandle ResourceHandle = polygon.MeshDataRefConst().drawingHandle();
-
-        FSlateDrawElement::MakeCustomVerts(
-            OutDrawElements,
-            LayerId,
-            ResourceHandle,
-            vertecies,
-            triangles,
-            nullptr, // InInstanceData
-            0,       // InInstanceOffset
-            1,       // InNumInstances
-            ESlateDrawEffect::None);
-        return;
-    }
-
-
-
-
+// --- not in use anyway ---
+void SSlateWidgetBase::DrawPolygonOutlineOnly(
+    const SlateMeshDataPolygon &polygon,
+    FSlateWindowElementList& OutDrawElements,
+    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+    const FGeometry& AllottedGeometry
+)const {
     /*
     static void MakeLines  
     (  
@@ -152,85 +178,87 @@ void SSlateWidgetBase::DrawPolygon(
         float Thickness  
     )
     */
-    const TArray<FVector2f> &twoFBuffer =
-        polygon
-            .MeshDataRefConst()
-            .VerteciesAs2f();
+   const TArray<FVector2f> &twoFBuffer =
+   polygon
+       .MeshDataRefConst()
+       .VerteciesAs2f();
 
     //draw only outline
     FSlateDrawElement::MakeLines(
-        OutDrawElements,
-        LayerId,
-        AllottedGeometry.ToPaintGeometry(),
-        twoFBuffer,
-        ESlateDrawEffect::None,
-        FLinearColor::Red,
-        true, // geschlossene Linie
-        2.0f   // Linienstärke
+    OutDrawElements,
+    LayerId,
+    AllottedGeometry.ToPaintGeometry(),
+    twoFBuffer,
+    ESlateDrawEffect::None,
+    FLinearColor::Red,
+    true, // geschlossene Linie
+    2.0f   // Linienstärke
     );
+}
 
-    
+
+
+
+// --- TESTING NEEDED ! ---
+
+void SSlateWidgetBase::DrawText(
+    const SlateMeshDataPolygon &polygon,
+    FSlateWindowElementList& OutDrawElements,
+    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+    const FGeometry& AllottedGeometry
+) const {
+    if(polygon.bHasText()){
+        const SlateTextBase &text = polygon.GetSlateTextConst();
+
+        FVector2D textBounds = text.Bounds();
+        FVector2f textBounds2f(textBounds.X, textBounds.Y);
+        FVector2f pivot(0, 0);
+        if(text.bShouldCenteredInWidget()){
+            const SlateMeshData &data = polygon.MeshDataRefConst();
+            FVector2D center = data.CenterOfMesh();
+            FVector2f center2f(center.X, center.Y);
+
+            pivot = center2f - textBounds2f * 0.5f;
+        }
+        const FSlateFontInfo &fontInfo = text.FontInfo();
+        FColor color = text.Color();
+        FString stringToDisplay = text.GetText();
+
+
+        FVector2f LocalSize = FVector2f(AllottedGeometry.GetLocalSize());
+        FSlateLayoutTransform LayoutTransform(pivot); // pivot ist FVector2f
+
+        FSlateDrawElement::MakeText(
+            OutDrawElements,
+            LayerId,
+            AllottedGeometry.ToPaintGeometry(LocalSize, LayoutTransform),
+            FText::FromString(stringToDisplay),
+            fontInfo,
+            ESlateDrawEffect::None,
+            color
+        );
+        /*
+        FSlateDrawElement::
+        static void MakeText  
+        (  
+            FSlateWindowElementList & ElementList,  
+            uint32 InLayer,  
+            const FPaintGeometry & PaintGeometry,  
+            const FString & InText,  
+            const int32 StartIndex,  
+            const int32 EndIndex,  
+            const FSlateFontInfo & InFontInfo,  
+            ESlateDrawEffect InDrawEffects,  
+            const FLinearColor & InTint  
+        ) 
+        */
+    }
 }
 
 
 
 
 
-
-
-/*
-outline polygon
-
-TArray<FVector2D> Vertices;
-Vertices.Add(FVector2D(0,0));
-Vertices.Add(FVector2D(100,0));
-Vertices.Add(FVector2D(100,100));
-Vertices.Add(FVector2D(0,100));
-Vertices.Add(FVector2D(0,0)); // letztes Vertex = Startpunkt, um Polygon zu schließen
-
-static void MakeLines  
-(  
-    FSlateWindowElementList & ElementList,  
-    uint32 InLayer,  
-    const FPaintGeometry & PaintGeometry,  
-    TArray < FVector2f > Points,  
-    ESlateDrawEffect InDrawEffects,  
-    const FLinearColor & InTint,  
-    bool bAntialias,  
-    float Thickness  
-) 
-
-
-*/
-
-/*
-Filled polygon
-
-TArray<FSlateVertex> Vertices;
-TArray<uint16> Indices;
-
-// Beispiel: Dreieck
-Vertices.Add(FSlateVertex::Make<FVector2D>(FVector2D(0,0), FLinearColor::Red));
-Vertices.Add(FSlateVertex::Make<FVector2D>(FVector2D(100,0), FLinearColor::Red));
-Vertices.Add(FSlateVertex::Make<FVector2D>(FVector2D(50,100), FLinearColor::Red));
-
-Indices.Add(0);
-Indices.Add(1);
-Indices.Add(2);
-
-FSlateDrawElement::MakeCustomVerts(
-    OutDrawElements,
-    LayerId,
-    FCoreStyle::Get().GetBrush("WhiteBrush"),
-    Vertices,
-    Indices,
-    nullptr, // optional: UVs
-    nullptr, // optional: Colors
-    ESlateDrawEffect::None
-);
-
-
-*/
 
 
 

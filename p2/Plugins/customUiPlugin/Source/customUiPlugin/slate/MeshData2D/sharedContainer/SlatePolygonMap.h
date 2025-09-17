@@ -2,17 +2,19 @@
 
 #include "CoreMinimal.h"
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/cache/SlateWidgetBoundsCache.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include <map>
 
 class MMatrix2D;
 
-/// @brief Will be stored in UWidget base having Slate Widget,
-/// data is synchronized to slate widget - get on draw.
+/// @brief Will be stored in UWidget-base class having Slate Widget,
+/// data is synchronized to slate widget via shared ptr - gets internal data on draw.
 /// Later updates cant be applied to SWidgets, but must be rebuild, thats why
 /// the Polygon data is removed from slate!
 /// SWIDGET WILL HOLD POINTER TO THIS DATA - This data Will be Stored by value in the UWidget Owning the 
 /// SWidget. Very easy architecture.
+/// can also have a text over the polygon.
+/// ---- drawing data for SSlateWidgetBase ----
 class CUSTOMUIPLUGIN_API SlatePolygonMap {
 
 public:
@@ -47,6 +49,10 @@ public:
     void SetScaleExtionsion(int extension);
 
 
+    //text
+    bool HasText();
+
+
 private:
 
     // --- Draw size cache of all polygons ---
@@ -65,4 +71,8 @@ private:
 
     void UpdateBoundsForSizeCalculation();
     void ForceUpdateBoundsForSizeCalculation();
+
+
+    //Text
+    
 };

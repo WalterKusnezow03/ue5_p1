@@ -1,7 +1,7 @@
 #include "FSlateBoundingBox2D.h"
 
-#include "customUiPlugin/slate/MeshData2D/SlateMeshData.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 
 FSlateBoundingBox2D::FSlateBoundingBox2D(){
     Reset();

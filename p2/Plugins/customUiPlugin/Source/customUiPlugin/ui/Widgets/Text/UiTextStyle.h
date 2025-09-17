@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Styling/SlateTypes.h"
+#include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
 
 //generates text styles
 class CUSTOMUIPLUGIN_API UiTextStyle {
@@ -11,12 +12,20 @@ public:
     static FSlateFontInfo DefaultFont(){
         FSlateFontInfo fontInfo;
         fontInfo.Size = 25;
-
-        //Roboto
-        FString path = TEXT("/Engine/EngineFonts/Roboto.Roboto");
-        fontInfo.FontObject = LoadObject<UObject>(nullptr, *path);
+        fontInfo.FontObject = DefaultUFont(); // Font Object also Accepts UObject*
         return fontInfo;
+    }
 
+    static UFont *DefaultUFont(){
+        FString path = TEXT("/Engine/EngineFonts/Roboto.Roboto");
+        UObject *ptr = LoadObject<UObject>(nullptr, *path);
+        if(ptr){
+            UFont *casted = Cast<UFont>(ptr);
+            if(casted){
+                return casted;
+            }
+        }
+        return nullptr;
     }
 
     static FTextBlockStyle DefaultTextStyle(){

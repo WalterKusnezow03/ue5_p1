@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
 
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
 #include "Widgets/SCompoundWidget.h"
 #include <map>
 
+/// @brief owned by UWidgetSlateWrapper base. Draws the mesh / polygon data.
 class CUSTOMUIPLUGIN_API SSlateWidgetBase : public SCompoundWidget
 {
 public:
@@ -54,7 +55,7 @@ public:
     
 
 
-    FVector2D Bounds();
+    
 
 
 
@@ -71,7 +72,7 @@ protected:
     //draw polygons
     void DrawAllPolygons(
         FSlateWindowElementList &OutDrawElements,
-        int32 LayerId, //pass from OnPaint, dont change, polygons drawn later will overlap previous ones by default.
+        int32 &LayerId, //pass from OnPaint, dont change, polygons drawn later will overlap previous ones by default.
         FSlateRenderTransform &RenderTransform,
         const FGeometry& AllottedGeometry
     ) const;
@@ -80,7 +81,7 @@ private:
     void DrawPolygon(
         int layerInternal,
         FSlateWindowElementList &OutDrawElements,
-        int32 LayerId, // pass from OnPaint
+        int32 &LayerId, // pass from OnPaint
         FSlateRenderTransform &RenderTransform,
         const FGeometry& AllottedGeometry
     ) const;
@@ -88,10 +89,34 @@ private:
     void DrawPolygon(
         const SlateMeshDataPolygon &polygon,
         FSlateWindowElementList &OutDrawElements,
-        int32 LayerId, // pass from OnPaint
+        int32 &LayerId, // pass from OnPaint
         FSlateRenderTransform &RenderTransform,
         const FGeometry& AllottedGeometry
     ) const;
+
+    void DrawPolygonFilled(
+        const SlateMeshDataPolygon &polygon,
+        FSlateWindowElementList& OutDrawElements,
+        int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+        FSlateRenderTransform &RenderTransform,
+        const FGeometry& AllottedGeometry
+    )const;
+
+
+    void DrawPolygonOutlineOnly(
+        const SlateMeshDataPolygon &polygon,
+        FSlateWindowElementList &OutDrawElements,
+        int32 LayerId, // dont change, polygons drawn later will overlap previous ones by default.
+        const FGeometry &AllottedGeometry
+    ) const;
+
+    void DrawText(
+        const SlateMeshDataPolygon &polygon,
+        FSlateWindowElementList& OutDrawElements,
+        int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
+        const FGeometry& AllottedGeometry
+    ) const;
+
     //draw polygons end
 
 

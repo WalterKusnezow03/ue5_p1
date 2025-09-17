@@ -75,3 +75,22 @@ void SlateMeshDataPolygon::DrawOutLineOnly(){
 bool SlateMeshDataPolygon::IsFlaggedDrawOutlineOnly() const {
     return bDrawOutlineOnly;
 }
+
+
+
+//text
+const SlateTextBase &SlateMeshDataPolygon::GetSlateTextConst() const{
+    return internalText;
+}
+
+SlateTextBase &SlateMeshDataPolygon::GetSlateText(){
+    return internalText;
+}
+
+bool SlateMeshDataPolygon::bHasText()const{
+    return internalText.Lenght() > 0;
+}
+
+void SlateMeshDataPolygon::SetText(FString textIn){
+    internalText.SetText(textIn);
+}

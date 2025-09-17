@@ -1,7 +1,8 @@
 #pragma once 
 
 #include "CoreMinimal.h"
-#include "SlateMeshData.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h"
+#include "customUiPlugin/slate/MeshData2D/Text/SlateTextBase.h"
 
 class MMatrix2D;
 
@@ -48,6 +49,15 @@ public:
     /// USE FOR DEBUG ONLY
     bool IsFlaggedDrawOutlineOnly() const;
 
+
+
+    //Text
+    bool bHasText() const;
+    const SlateTextBase &GetSlateTextConst() const;
+    SlateTextBase &GetSlateText();
+
+    void SetText(FString textIn);
+
 protected:
     /// @brief owned mesh data 
     SlateMeshData meshData;
@@ -56,6 +66,8 @@ protected:
     bool bDynamicCursorColorEnabled = true;
     bool bDrawOutlineOnly = false;
 
+    //text
+    SlateTextBase internalText;
 
     //animation
 

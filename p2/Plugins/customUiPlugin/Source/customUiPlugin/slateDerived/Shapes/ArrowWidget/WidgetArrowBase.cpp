@@ -1,14 +1,16 @@
 #include "WidgetArrowBase.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
+#include "Algo/Reverse.h"
+
 
 //Custom Constructor override - is called internally from post properties override!
 void UWidgetArrowBase::ConstructWidget(){
     CreateMeshOnConstruct();
+    SetupBackground();
     SetDefaultRotation();
 }
 
 
-#include "Algo/Reverse.h"
 void UWidgetArrowBase::CreateMeshOnConstruct(){
     SlateMeshDataPolygon &p = Polygon();
     SlateMeshData &meshData = p.MeshDataRef();
@@ -76,8 +78,30 @@ void UWidgetArrowBase::CreateMeshOnConstruct(){
     //SetWidthAndHeightToUniformBounds(); //broken right now!
 }
 
+#include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
+void UWidgetArrowBase::SetupBackground(){
+    //reset scale extension after new polygon hitting the bounds added.
+    if(polygonMap.IsValid()){
+        FVector2D min(0, 0);
+        FVector2D max = polygonMap->Bounds();
+
+        SlateMeshDataPolygon &polygonBackground = FindFromMap(backgroundLayer);
+        SlateMeshData &data = polygonBackground.MeshDataRef();
+        data.AppendQuad(min, max);
+
+        data.SetFullColor(UiColors::backgroundBlackTransculent);
+
+        polygonMap->SetScaleExtionsion(0);
+    }
+
+}
+
+
+
+
+
 void UWidgetArrowBase::SetDefaultRotation(){
-    SetAnimationTime(0.5f); //some default time
+    SetAnimationTime(0.3f); //some default time
     FRotator t1 = MakeRotator(0.0f);
     FRotator t2 = MakeRotator(0.0f);
     interpolator.setTarget(t1, t2, 0.0f);
@@ -90,7 +114,7 @@ FRotator UWidgetArrowBase::MakeRotator(float deg){
 }
 
 SlateMeshDataPolygon &UWidgetArrowBase::Polygon(){
-    return FindFromMap(layerNum);
+    return FindFromMap(arrowLayer);
 }
 
 //overriden but super call needed
@@ -144,6 +168,11 @@ bool UWidgetArrowBase::dispatchClick(){
 
 void UWidgetArrowBase::AddState(float rotationDeg){
     rotationStates.Add(rotationDeg);
+
+    //immidiatly apply if first state
+    if(rotationStates.Num() == 1){
+        SwitchToNextRotation(0.0f);
+    }
 }
 
 void UWidgetArrowBase::SwitchToNextRotation(){

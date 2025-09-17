@@ -16,6 +16,7 @@ protected:
     //Custom Constructor override - is called internally from post properties override!
     virtual void ConstructWidget() override;
     void CreateMeshOnConstruct();
+    void SetupBackground();
 
 public:
     void AddOrRepalceState(int number, float rotationDeg);
@@ -44,7 +45,8 @@ protected:
     );
 
 private:
-    const int layerNum = 0;
+    const int arrowLayer = 1;
+    const int backgroundLayer = 0;
 
     float animationTimeSet = 0.0f;
     int currentState = 0;

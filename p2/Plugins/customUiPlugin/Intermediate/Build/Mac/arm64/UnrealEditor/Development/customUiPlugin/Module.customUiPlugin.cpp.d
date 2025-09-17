@@ -4045,15 +4045,24 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/Shapes/ArrowWidget/WidgetArrowBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/bound/FSlateBoundingBox2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/Color/PairColorPosition.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/bound/FSlateBoundingBox2D.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/vector/bound/FBoundingBox2D.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/Cache/SlateVertexBufferCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
   Runtime/Engine/Classes/Engine/Texture2D.h \
   Runtime/SlateCore/Public/Rendering/SlateResourceHandle.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Text/SlateTextBase.h \
+  Runtime/Engine/Classes/Engine/Font.h \
+  Runtime/SlateCore/Public/Fonts/CompositeFont.h \
+  Runtime/Engine/Classes/Engine/FontImportOptions.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/FontImportOptions.generated.h \
+  Runtime/SlateCore/Public/Fonts/FontProviderInterface.h \
+  Runtime/CoreUObject/Public/UObject/UObjectGlobals.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/FontProviderInterface.generated.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Font.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/cache/SlateWidgetBoundsCache.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetSlateWrapperBase.generated.h \
@@ -4084,12 +4093,20 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/base/SlateWidgetBase.h \
   Runtime/SlateCore/Public/Rendering/DrawElements.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/bound/FSlateBoundingBox2D.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Cache/SlateteVertexBufferCache.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/bound/FSlateBoundingBox2D.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/Cache/SlateteVertexBufferCache.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/cache/SlateWidgetBoundsCache.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshData.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/MeshData2D/Text/SlateTextBase.cpp \
+  Runtime/SlateCore/Public/Rendering/SlateRenderer.h \
+  Runtime/SlateCore/Public/Fonts/FontMeasure.h \
+  Runtime/SlateCore/Public/Fonts/FontTypes.h \
+  Runtime/SlateCore/Public/Types/SlateVector2.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/Text/UiTextStyle.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/colors/UiColors.h \
+  Runtime/Slate/Public/Framework/Application/SlateApplication.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/bar/WidgetProgressBarBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/slateDerived/Shapes/ArrowWidget/WidgetArrowBase.cpp \
@@ -4104,7 +4121,6 @@
   Runtime/UMG/Public/Blueprint/WidgetTree.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetTree.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/screens/CanvasScreen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/buttons/colors/UiColors.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/screens/WorldToScreenOverlays/actorComponent/WorldMarkerComponent.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/screens/WorldToScreenOverlays/canvas/WorldMarkerCanvas.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/screens/WorldToScreenOverlays/item/WorldMarker.cpp \
@@ -4422,7 +4438,6 @@
   Runtime/Core/Public/Misc/EnumRange.h \
   Runtime/CoreUObject/Public/CoreUObject.h \
   Runtime/CoreUObject/Public/UObject/Script.h \
-  Runtime/CoreUObject/Public/UObject/UObjectGlobals.h \
   Runtime/CoreUObject/Public/UObject/UObjectMarks.h \
   Runtime/CoreUObject/Public/UObject/UObjectBase.h \
   Runtime/CoreUObject/Public/UObject/UObjectBaseUtility.h \
@@ -4768,13 +4783,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/DecalActor.generated.h \
   Runtime/Engine/Public/CanvasItem.h \
   Runtime/SlateCore/Public/Fonts/ShapedTextFwd.h \
-  Runtime/Engine/Classes/Engine/Font.h \
-  Runtime/SlateCore/Public/Fonts/CompositeFont.h \
-  Runtime/Engine/Classes/Engine/FontImportOptions.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/FontImportOptions.generated.h \
-  Runtime/SlateCore/Public/Fonts/FontProviderInterface.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/FontProviderInterface.generated.h \
-  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Font.generated.h \
   Runtime/Engine/Classes/Engine/Canvas.h \
   Runtime/Engine/Public/CanvasTypes.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Canvas.generated.h \
@@ -5222,10 +5230,7 @@
   Runtime/SlateCore/Public/Rendering/ShaderResourceManager.h \
   Runtime/SlateCore/Public/Fonts/FontBulkData.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/FontBulkData.generated.h \
-  Runtime/SlateCore/Public/Fonts/FontTypes.h \
   Runtime/SlateCore/Public/Fonts/FontCache.h \
-  Runtime/SlateCore/Public/Fonts/FontMeasure.h \
-  Runtime/SlateCore/Public/Types/SlateVector2.h \
   Runtime/SlateCore/Public/Brushes/SlateBorderBrush.h \
   Runtime/SlateCore/Public/Brushes/SlateBoxBrush.h \
   Runtime/SlateCore/Public/Brushes/SlateRoundedBoxBrush.h \
@@ -5242,7 +5247,6 @@
   Runtime/SlateCore/Public/Input/DragAndDrop.h \
   Runtime/SlateCore/Public/Rendering/RenderingPolicy.h \
   Runtime/SlateCore/Public/Rendering/SlateDrawBuffer.h \
-  Runtime/SlateCore/Public/Rendering/SlateRenderer.h \
   Runtime/SlateCore/Public/Widgets/IToolTip.h \
   Runtime/SlateCore/Public/Application/SlateWindowHelper.h \
   Runtime/SlateCore/Public/Application/SlateApplicationBase.h \
@@ -5271,7 +5275,6 @@
   Runtime/Slate/Public/Framework/SlateDelegates.h \
   Runtime/Slate/Public/Framework/Application/MenuStack.h \
   Runtime/Slate/Public/Framework/Application/NavigationConfig.h \
-  Runtime/Slate/Public/Framework/Application/SlateApplication.h \
   Runtime/SlateCore/Public/Textures/SlateIcon.h \
   Runtime/Slate/Public/Framework/Commands/InputChord.h \
   Runtime/Slate/Public/Framework/Commands/UIAction.h \
@@ -5649,5 +5652,4 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimationBinding.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/textBox/TextBoxBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/Text/UiTextStyle.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.cpp

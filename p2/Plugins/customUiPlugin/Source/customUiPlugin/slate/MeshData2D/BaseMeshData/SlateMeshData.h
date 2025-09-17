@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "customUiPlugin/slate/MeshData2D/Color/PairColorPosition.h"
-#include "customUiPlugin/slate/MeshData2D/bound/FSlateBoundingBox2D.h"
-#include "customUiPlugin/slate/MeshData2D/Cache/SlateVertexBufferCache.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/Color/PairColorPosition.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/bound/FSlateBoundingBox2D.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/Cache/SlateVertexBufferCache.h"
 #include "CoreMath/Matrix/2D/MMatrix2D.h"
 
 #include "Engine/Texture2D.h"
@@ -117,7 +117,7 @@ public:
     void ResetRuntimeTransformation();
 
     FVector2D SizeBounds();
-    FVector2D CenterOfMesh();
+    FVector2D CenterOfMesh()const;
 
 
 
@@ -193,7 +193,7 @@ private:
     bool TriangleCanBeAdded();
 
     
-    FVector2D CenterOf(TArray<FVector2D> &buffer);
+    FVector2D CenterOf(const TArray<FVector2D> &buffer)const;
 
     ///@brief will make the slate vertex for a given render transform and vertex
     FSlateVertex makeSlateVertex(

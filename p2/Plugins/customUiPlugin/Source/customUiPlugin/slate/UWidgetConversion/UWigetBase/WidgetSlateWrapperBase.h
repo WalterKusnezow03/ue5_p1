@@ -2,7 +2,7 @@
 
 #include "Components/Widget.h"
 #include "Components/SizeBox.h"
-#include "customUiPlugin/slate/MeshData2D/SlateMeshDataPolygon.h"
+#include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
 #include "customUiPlugin/baseInterface/BaseUiInterface.h"
 #include "customUiPlugin/baseInterface/WidgetHelper.h"

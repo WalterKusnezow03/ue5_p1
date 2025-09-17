@@ -379,11 +379,11 @@ void SlateMeshData::AppendClosedShape(TArray<FVector2D> &shape){
     AppendClosedShape(shape, 0); //no inner split
 }
 
-FVector2D SlateMeshData::CenterOfMesh(){
+FVector2D SlateMeshData::CenterOfMesh()const{
     return CenterOf(Vertecies);
 }
 
-FVector2D SlateMeshData::CenterOf(TArray<FVector2D> &buffer){
+FVector2D SlateMeshData::CenterOf(const TArray<FVector2D> &buffer) const{
     FVector2D sum(0, 0);
     int count = buffer.Num();
     if(count <= 0){
@@ -623,8 +623,13 @@ FVector2f SlateMeshData::MakeUV(const FVector2D &vertex) const {
 FLinearColor SlateMeshData::InterpolatedColorFor(
     const FVector2D &pos
 ) const {
+    if(fullColorEnabled){
+        return fullColor;
+    }
+
+
     //if empty color buffer and no cursor enabled, return default Color
-    if(!bCursorColorEnabled && ambientColorsInvertedSpace.Num() <= 0){
+    if(!fullColorEnabled && !bCursorColorEnabled && ambientColorsInvertedSpace.Num() <= 0){
         return FLinearColor::Blue;
     }
 
@@ -675,8 +680,6 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
                 }
             }
         }
-    }else{
-        accumulatedColor = fullColor;
     }
 
     //cursor has more weight
@@ -894,6 +897,12 @@ const FSlateResourceHandle &SlateMeshData::drawingHandle() const {
         //GetRenderingResource ()
         return textureBrush.GetRenderingResource();
     }
+    //fixes color mismatch: mix color with white
+    const FSlateBrush* WhiteBrush = FCoreStyle::Get().GetBrush("WhiteBrush");
+    if(WhiteBrush){
+        return WhiteBrush->GetRenderingResource();
+    }
+
     return emptyHandle;
 }
 
