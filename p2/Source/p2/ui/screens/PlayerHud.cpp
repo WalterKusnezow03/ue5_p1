@@ -97,20 +97,20 @@ void UPlayerHud::Update(FPlayerStatus &playerStatusStruct){
 
 void UPlayerHud::updateAmmunitionText(FString message){
     if(ammunitionTextAndImage){
-        ammunitionTextAndImage->setText(message);
+        ammunitionTextAndImage->SetText(message);
     }
 }
 
 void UPlayerHud::updateHealthText(FString message){
     if(healthTextAndImage){
-        healthTextAndImage->setText(message);
+        healthTextAndImage->SetText(message);
     }
 }
 
 
 void UPlayerHud::updateTopWaringElement(FString message){
     if(topWaringElement){
-        topWaringElement->setText(message);
+        topWaringElement->SetText(message);
     }
 }
 

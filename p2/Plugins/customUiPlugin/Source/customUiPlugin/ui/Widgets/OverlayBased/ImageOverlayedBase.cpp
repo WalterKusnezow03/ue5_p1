@@ -52,7 +52,7 @@ void UImageOverlayedBase::createText(){
 
 
 ///@brief will set the text and kill the text timer if it was enabled
-void UImageOverlayedBase::setText(FString textIn){
+void UImageOverlayedBase::SetText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }
@@ -60,7 +60,7 @@ void UImageOverlayedBase::setText(FString textIn){
 
 void UImageOverlayedBase::setTextTimed(FString message, float time){
     if(TextBlock != nullptr){
-        setText(message);
+        SetText(message);
         textOnEndTimer = FString::Printf(TEXT(""));
 
         bool resetsItself = false;
@@ -78,7 +78,7 @@ void UImageOverlayedBase::TickTextTimer(float deltaTime){
     if(!textTimer.timesUp()){
         textTimer.Tick(deltaTime);
         if(textTimer.timesUp()){
-            setText(textOnEndTimer);
+            SetText(textOnEndTimer);
         }
     }
     

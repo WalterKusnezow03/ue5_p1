@@ -44,10 +44,10 @@ void EmptyLinkFunctionForGeneratedCodeUiComponentParent() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UUiComponentParent_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "/// @brief Abstract Class to track children\n" },
+		{ "Comment", "/// @brief Abstract Class to track children and dispatch click, tick, user input\n" },
 		{ "IncludePath", "ui/_baseClass/baseParent/UiComponentParent.h" },
 		{ "ModuleRelativePath", "ui/_baseClass/baseParent/UiComponentParent.h" },
-		{ "ToolTip", "@brief Abstract Class to track children" },
+		{ "ToolTip", "@brief Abstract Class to track children and dispatch click, tick, user input" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UUiComponentParent_Statics::NewProp_trackedChildsAsUWidget_Inner = { "trackedChildsAsUWidget", nullptr, (EPropertyFlags)0x0000000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UClass_UWidget_NoRegister, METADATA_PARAMS(nullptr, 0) };
@@ -102,9 +102,9 @@ void EmptyLinkFunctionForGeneratedCodeUiComponentParent() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_baseParent_UiComponentParent_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UUiComponentParent, UUiComponentParent::StaticClass, TEXT("UUiComponentParent"), &Z_Registration_Info_UClass_UUiComponentParent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UUiComponentParent), 2482114742U) },
+		{ Z_Construct_UClass_UUiComponentParent, UUiComponentParent::StaticClass, TEXT("UUiComponentParent"), &Z_Registration_Info_UClass_UUiComponentParent, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UUiComponentParent), 1479589489U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_baseParent_UiComponentParent_h_1258703390(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_baseParent_UiComponentParent_h_2381242600(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_baseParent_UiComponentParent_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui__baseClass_baseParent_UiComponentParent_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

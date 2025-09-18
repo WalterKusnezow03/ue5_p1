@@ -32,6 +32,7 @@ public:
     void init(UGameLaunchScreen *launchParent);
 
     virtual bool dispatchClick() override;
+    virtual void Tick(float deltatime) override;
 
     /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too!

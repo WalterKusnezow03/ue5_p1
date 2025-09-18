@@ -24,7 +24,7 @@ public:
 
     virtual UWidget *baseLayoutPointer() override;
 
-    void setText(FString textIn);
+    void SetText(FString textIn);
 
     void setImage(UTexture2D *loadedTexture, FVector2D scale);
     void setImage(UTexture2D *loadedTexture);

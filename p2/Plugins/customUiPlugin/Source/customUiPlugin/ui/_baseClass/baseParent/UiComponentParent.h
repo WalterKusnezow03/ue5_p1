@@ -6,7 +6,7 @@
 
 #include "UiComponentParent.generated.h"
 
-/// @brief Abstract Class to track children
+/// @brief Abstract Class to track children and dispatch click, tick, user input
 UCLASS()
 class CUSTOMUIPLUGIN_API UUiComponentParent : public UcustomUiComponentBase{
 
@@ -17,8 +17,7 @@ public:
     virtual bool dispatchClick() override;
     virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
-
-
+    virtual void dispatchUserInput(UserInput &input) override;
 
     ///@brief dispatches a click and returns the index in IBaseUiInterface Array
     virtual bool dispatchClick(int &outIndexFirst);
@@ -54,7 +53,7 @@ protected:
 
     
     //CAUTION: TRACKED CHILDS DONT HAVE A ORDER!!!
-    
+
     TArray<IBaseUiInterface *> trackedChildsInterface; //cannot be marked Uproperty
 
     UPROPERTY()

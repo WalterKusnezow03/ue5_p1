@@ -27,7 +27,7 @@ public:
         return baseOverlay;
     }
 
-    void setText(FString message);
+    void SetText(FString message);
     void setTextTimed(FString message, float time);
     void setImage(UTexture2D *ptr);
     void setImage(UTexture2D *ptr, FVector2D scale);

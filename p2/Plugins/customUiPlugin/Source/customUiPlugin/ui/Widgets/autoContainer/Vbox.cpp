@@ -36,7 +36,6 @@ void UVbox::AddChild(UWidget *any){
     if(any && baseVBox){
         baseVBox->AddChildToVerticalBox(any);
         UpdatePadding(any);
-        UpdateAlignment(any);
     }
 }
 
@@ -97,43 +96,6 @@ void UVbox::UpdatePadding(UWidget *widget){
     }
 }
 
-
-
-// -- Alignment vbox exclusive --
-
-void UVbox::SetItemsFillHorizontal(){
-    fillHorizontal = true;
-    UpdateAlignmentForAllTrackedItems();
-}
-
-//unclear if this even works.
-void UVbox::UpdateAlignmentForAllTrackedItems(){
-    for (int i = 0; i < trackedChildsInterface.Num(); i++){
-        IBaseUiInterface *current = trackedChildsInterface[i];
-        if(current){
-            UWidget *layoutPtr = current->baseLayoutPointer();
-            if(layoutPtr){
-                UpdateAlignment(layoutPtr);//unclear if this even works.
-            }
-        }
-    }
-}
-
-/// @brief --- DOES NOT WORK --- //unclear if this even works.
-/// @param item 
-void UVbox::UpdateAlignment(UWidget *item){
-    if(item){
-        if (UVerticalBoxSlot* Slot = Cast<UVerticalBoxSlot>(item->Slot))
-        {
-            if(fillHorizontal){
-                Slot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-                Slot->SetHorizontalAlignment(HAlign_Fill);
-            }else{
-                Slot->SetHorizontalAlignment(HAlign_Left); // Left, Right, Center, Fill
-            }
-        }
-    }
-}
 
 
 

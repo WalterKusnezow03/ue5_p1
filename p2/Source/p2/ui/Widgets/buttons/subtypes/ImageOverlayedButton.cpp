@@ -1,7 +1,7 @@
 
 #include "ImageOverlayedButton.h"
 
-
+/*
 //IMPORTANT OVERRIDE
 
 /// @brief creates a DERIVED CLASS instead of default image overlayed base! support ETextureLoading
@@ -10,7 +10,7 @@ void UImageOverlayedButton::createImageOverlayedBackground(){
         background = NewObject<UImageOverlayed>(this);
         background->init();
     }
-}
+}*/
 
 
 

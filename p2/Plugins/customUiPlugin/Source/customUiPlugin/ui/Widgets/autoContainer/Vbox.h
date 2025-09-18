@@ -34,15 +34,14 @@ public:
 
     virtual void ReplaceChild(int i, IBaseUiInterface *newInterface) override;
 
-    void SetItemsFillHorizontal();
+    
 
     void CreateSpacer(int height);
 
 protected:
     virtual void UpdatePadding(UWidget *widget) override;
 
-    void UpdateAlignmentForAllTrackedItems();
-    void UpdateAlignment(UWidget *item);
+    
 
 private:
     

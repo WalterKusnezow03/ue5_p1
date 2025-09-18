@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 
 #include "customUiPlugin/ui/ScreenStack/ScreenOpenStack.h"
+#include "customUiPlugin/UserInputTracking/UserInput.h"
 
 #include "PlayerUiBase.generated.h"
 
@@ -95,5 +96,13 @@ protected:
     void createTickActor(UWorld *world);
 
 private:
-	bool bMouseLeftIsPressed = false;
+
+	UserInput userInput;
+
+public:
+//input key handling:
+
+
+
+
 };

@@ -42,7 +42,7 @@ void URemovableItem::createRemoveButton(){
     if(!removeButton && hboxRight){
         removeButton = NewObject<UTextButton>(this);
         removeButton->init();
-        removeButton->setText(TEXT("Remove"));
+        removeButton->SetText(TEXT("Remove"));
         hboxRight->AddChild(removeButton);
     }
 }

@@ -94,3 +94,30 @@ bool SlateMeshDataPolygon::bHasText()const{
 void SlateMeshDataPolygon::SetText(FString textIn){
     internalText.SetText(textIn);
 }
+
+void SlateMeshDataPolygon::AppendChar(TCHAR &character){
+    internalText.AppendChar(character);
+}
+
+void SlateMeshDataPolygon::RemoveChar(){
+    internalText.RemoveChar();
+}
+
+void SlateMeshDataPolygon::CopyTextData(SlateMeshDataPolygon &other){
+    internalText = other.internalText;
+}
+
+void SlateMeshDataPolygon::ClearText(){
+    internalText.SetText("");
+}
+
+
+
+//rendering
+void SlateMeshDataPolygon::EnableRender(bool bFlag){
+    rendered = bFlag;
+}
+
+bool SlateMeshDataPolygon::bIsEnabled() const{
+    return rendered;
+}

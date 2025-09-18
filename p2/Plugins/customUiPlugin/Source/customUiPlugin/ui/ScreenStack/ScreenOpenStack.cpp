@@ -1,5 +1,5 @@
 #include "ScreenOpenStack.h"
-
+#include "customUiPlugin/UserInputTracking/UserInput.h"
 
 ScreenOpenStack::ScreenOpenStack(){
 
@@ -101,6 +101,16 @@ void ScreenOpenStack::Tick(float deltatime){
         UCanvasScreen *back = opened.back();
         if(back){
             back->Tick(deltatime);
+        }
+    }
+}
+
+
+void ScreenOpenStack::dispatchUserInput(UserInput &input){
+    if(opened.size() > 0){
+        UCanvasScreen *back = opened.back();
+        if(back){
+            back->dispatchUserInput(input);
         }
     }
 }

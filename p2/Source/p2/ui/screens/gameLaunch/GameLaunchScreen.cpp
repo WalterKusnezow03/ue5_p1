@@ -65,12 +65,11 @@ void UGameLaunchScreen::createMenu(){
         FVector2D screenAnchor, //corner top left (0,0), bottom right (1,1)
         FVector2D alignment //gravity / pivot of item (0,0.5), make centered on y
     )*/
-    
-    menuVbox = NewObject<UVbox>(this);
-    menuVbox->init();
+
+    menuVbox = NewWidgetInitialized<UVbox>(this);
     if (menuVbox)
     {
-        
+        //added to base
         AddChild(
             menuVbox,
             FVector2D(0.5f, 0.1f), // pivot locationScalar
@@ -83,12 +82,6 @@ void UGameLaunchScreen::createMenu(){
         worldListPicker = NewObject<UWorldList>(this);
         worldListPicker->init(this);
         menuVbox->AddChild(worldListPicker);
-
-
-        FVector2D pad(10, 10);
-        menuVbox->SetPadding(pad);
-        
-        //menuVbox->SetItemsFillHorizontal();
 
 
 
@@ -106,19 +99,17 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
     //create textbox for new world.
 
     //hbox containing it
-    createBarHbox = NewObject<UHbox>(this);
-    createBarHbox->init();
+    createBarHbox = NewWidgetInitialized<UHbox>(this);
     menuVbox->AddChild(createBarHbox);
 
     //type field 
-    typeFieldWorld = NewObject<UTextBoxBase>(this);
-    typeFieldWorld->init();
+    typeFieldWorld = NewWidgetInitialized<UTextBoxBase>(this);
     typeFieldWorld->SetHintText("Type a World Name");
     createBarHbox->AddChild(typeFieldWorld);
 
-    typeFieldConfirmButton = NewObject<UImageOverlayedButton>(this);
-    typeFieldConfirmButton->init();
-    typeFieldConfirmButton->setImage(textureEnum::healthIcon);
+    typeFieldConfirmButton = NewWidgetInitialized<UImageOverlayedButton>(this);
+    //typeFieldConfirmButton->setImage(textureEnum::healthIcon, FVector2D(100,100));
+    typeFieldConfirmButton->setImage(textureEnum::healthIcon, FVector2D(50, 50));
     typeFieldConfirmButton->SetCallBack(
         FSimpleDelegate::CreateUObject(this, &UGameLaunchScreen::createAndLaunchWorldFromTypeField)
     );
@@ -174,10 +165,13 @@ void UGameLaunchScreen::launchWorld(FString worldName){
 // ----- debug ------
 #include "p2/ui/algorithm/DebugUi/GreedyFitWidget.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h"
+#include "customUiPlugin/slateDerived/TextBased/TextInputSupport/WidgetSlateEditableText.h"
 void UGameLaunchScreen::AddDebugElements(){
     if(!menuVbox){
         return;
     }
+
+    
 
     //debug custom slate widgets
     if(true){
@@ -199,5 +193,8 @@ void UGameLaunchScreen::AddDebugElements(){
         dropDownDebug->Debug();
     }
 
-    
+    if(true){
+        UWidgetSlateEditableText *editable = NewObject<UWidgetSlateEditableText>(this);
+        menuVbox->AddChild((IBaseUiInterface*) editable);
+    }
 }

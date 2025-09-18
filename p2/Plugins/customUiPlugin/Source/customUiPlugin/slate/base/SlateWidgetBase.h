@@ -19,19 +19,12 @@ private:
     bool bDebugDrawBox = false;
     bool bDebugLog = false;
 
+protected:
     //SlatePolygonMap *PolygonMapExternal = nullptr;
     TSharedPtr<SlatePolygonMap> PolygonMapExternal;
 
 public:
-    //SLATE_BEGIN_ARGS(SSlateWidgetBase) {}
-    //SLATE_END_ARGS()
-
-    /*SLATE_BEGIN_ARGS(SSlateWidgetBase) 
-        : _PolyGonMapPtr(nullptr) // Defaultwert hier korrekt
-    {}
-        SLATE_ARGUMENT(SlatePolygonMap*, PolyGonMapPtr)
-    SLATE_END_ARGS()*/
-
+    //must be copied when deriving
     SLATE_BEGIN_ARGS(SSlateWidgetBase) 
         : _PolyGonMapPtr(nullptr) // Defaultwert hier korrekt
     {}
@@ -39,7 +32,7 @@ public:
     SLATE_END_ARGS()
     
 
-    //might be overriden to add text (unclear.)
+    //might be overriden by subclass, but not nesecarrily
     virtual void Construct(const FArguments& InArgs);
 
     /// MUST BE OVERRIDEN HERE
@@ -65,7 +58,7 @@ public:
     virtual void Tick(float deltatime);
 
     ///@brief tells if the cursor is inside this geometry
-    bool dispatchClick();
+    virtual bool dispatchClick();
 
 protected:
 

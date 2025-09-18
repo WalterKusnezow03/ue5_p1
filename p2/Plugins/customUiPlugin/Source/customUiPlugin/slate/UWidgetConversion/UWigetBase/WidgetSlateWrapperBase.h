@@ -6,6 +6,7 @@
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
 #include "customUiPlugin/baseInterface/BaseUiInterface.h"
 #include "customUiPlugin/baseInterface/WidgetHelper.h"
+#include "customUiPlugin/slate/UWidgetConversion/UWigetBase/task/ResolutionUpdateTask.h"
 
 #include "WidgetSlateWrapperBase.generated.h"
 
@@ -19,8 +20,18 @@ class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public USizeBox, public IBase
 {
     GENERATED_BODY()
 
+public:
+    virtual void enableTicklog() override {
+        bDebugTickLog = true;
+    }
+
 protected:
+    bool bDebugTickLog = false;
+
     bool bDebugPolygon = true;
+
+    ///@brief override if another type needed
+    virtual TSharedRef<SWidget> RebuildWidget() override;
 
     // --- called right after slate widget is build with a number of layers (for now 5) ---
     //Override this to init the slate widget to your liking!
@@ -35,19 +46,29 @@ protected:
 
 private:
     bool bWasConstructed = false;
+    FResolutionUpdateTask task;
+    FResolutionUpdateTask taskRawXY;
+    FResolutionUpdateTask taskRawX;
 
 public:
-    ///@brief sets the widget scale and with literally.
+
+    /// --- scaling internal mesh data ! ---
+    ///@brief sets the widget meshdata scale and with literally.
     void SetResolution(FVector2D scale);
+    void SetResolutionXUniform(int scale);
 
+    FVector2D GetResolution();
 
-    void SetWidthAndHeightToUniformBounds();
-   
-    void SetWidthAndHeight(FVector2D size);
+private:
+    /// @brief sets width and height of the sizebox, not the mesh data!
+    void SetWidthAndHeightToUniformBoundsSizeBox();
+    void SetWidthAndHeightSizeBox(FVector2D size);
 
+public:
     // ---- IBaseUiInterface ----
 
-    // Tick for bounds update
+    // Tick for bounds update. VERY IMPORTANT, RESIZE DOESNT WORK WITHOUT IT
+    // NEEDED BECAUSE OF RACING CONDITION
     // if Slate Mesh Data is animated or changed! (External tick from UCustomUi Component Base or derived is needed!)
     // override this method but call super to listen for cursor position
     virtual void Tick(float deltatime) override;
@@ -108,7 +129,7 @@ public:
 
 
 protected:
-    virtual TSharedRef<SWidget> RebuildWidget() override;
+    
 
     
     
@@ -118,8 +139,13 @@ protected:
 
     ///Temporary reference!!!! - use one at a time! MAP MAY GET RESIZED!
     SlateMeshDataPolygon &FindFromMap(int layer);
-
+    
+    
+    
+    TSharedPtr<SSlateWidgetBase> MySlateWidget; //can also hold subtype as expected
 private:
     void InitSharedPolygonMapPtrIfNeeded();
-    TSharedPtr<SSlateWidgetBase> MySlateWidget;
+    
+
+
 };

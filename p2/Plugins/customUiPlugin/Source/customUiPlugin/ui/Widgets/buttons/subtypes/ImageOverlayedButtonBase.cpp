@@ -11,51 +11,38 @@ void UImageOverlayedButtonBase::init(){
     }
     Super::init();
     createImageOverlayedBackground();
-    addBackgroundToBase();
+    //addBackgroundToBase();
 }
 
 /// @brief designed to be overriden by subclass if needed!
 void UImageOverlayedButtonBase::createImageOverlayedBackground(){
     if(!background){
-        background = NewObject<UImageOverlayedBase>(this);
-        background->init();
+        background = NewObject<UWidgetImage>(this);
     }
 }
 
-
-void UImageOverlayedButtonBase::addBackgroundToBase(){
-    if (button && background)
-    {
-        UWidget *base = background->baseLayoutPointer();
-        if(base != nullptr){
-            //button->AddChild(base); //old
-            scalebox->AddChild(base); //add to scalebox instead
-        }
-
-        makeTransparent(); //super
+void UImageOverlayedButtonBase::Tick(float deltatime){
+    Super::Tick(deltatime);
+    if(background){
+        background->Tick(deltatime);
     }
 }
-
-
-
-
-
-//public api wrappers
-
-void UImageOverlayedButtonBase::setText(FString textIn){
-    if(background)
-        background->setText(textIn);
+bool UImageOverlayedButtonBase::dispatchClick(){
+    if(background){
+        return background->dispatchClick();
+    }
+    return false;
 }
-
-
-
 
 void UImageOverlayedButtonBase::setImage(UTexture2D *ptr){
-    setImage(ptr, FVector2D(0.5f, 0.5f));
+    if(background){
+        background->SetImage(ptr);
+    }
 }
 
 
 void UImageOverlayedButtonBase::setImage(UTexture2D *loadedTexture, FVector2D scale){
-    if(background)
-        background->setImage(loadedTexture, scale);
+    if(background){
+        background->SetImage(loadedTexture, scale);
+    }
 }

@@ -5,6 +5,7 @@
 
 //Custom Constructor override - is called internally from post properties override!
 void UWidgetArrowBase::ConstructWidget(){
+    Super::ConstructWidget();
     CreateMeshOnConstruct();
     SetupBackground();
     SetDefaultRotation();
@@ -58,10 +59,10 @@ void UWidgetArrowBase::CreateMeshOnConstruct(){
     
     //scale up to 200
     MMatrix2D globalScale;
-    globalScale.Scale(1.2f);
+    globalScale.Scale(1.1f);
     meshData.ApplyTransformationImmidiate(globalScale);
 
-    int inset = 30;
+    int inset = 10;
     FVector2D centerInset(inset, inset);
     meshData.CenterAroundPivotImmidiate(centerInset);
 

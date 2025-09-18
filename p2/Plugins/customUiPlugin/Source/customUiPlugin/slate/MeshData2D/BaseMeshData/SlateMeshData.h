@@ -26,7 +26,7 @@ protected:
 
 public:
     void SetTexture(UTexture2D *textureIn);
-    void SetTexture(UTexture2D *inTexture, int sizeX, int sizeY);
+    
 
     ///@brief returns the rsource handle for this object: nesecarry for drawing the texture on the 
     ///polygon

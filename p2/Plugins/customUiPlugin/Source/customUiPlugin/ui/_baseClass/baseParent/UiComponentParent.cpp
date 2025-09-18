@@ -45,6 +45,15 @@ bool UUiComponentParent::dispatchClick(int &outIndexFirst){
     return flag;
 }
 
+void UUiComponentParent::dispatchUserInput(UserInput &input){
+    for (int i = 0; i < trackedChildsInterface.Num(); i++)
+    {
+        if(IBaseUiInterface *current = trackedChildsInterface[i]){
+            current->dispatchUserInput(input);
+        }
+    }
+}
+
 
 
 

@@ -3,6 +3,7 @@
 
 #include "customUiPlugin/ui/Widgets/OverlayBased/ImageOverlayedBase.h"
 #include "customUiPlugin/ui/Widgets/buttons/ButtonBase.h"
+#include "customUiPlugin/slateDerived/ImageBased/ImageBase/WidgetImage.h"
 
 #include "ImageOverlayedButtonBase.generated.h"
 
@@ -22,11 +23,22 @@ public:
     void setImage(UTexture2D* type);
     void setImage(UTexture2D* type, FVector2D scale);
 
-    void setText(FString message);
+    //void SetText(FString message);
+
+    virtual UWidget *baseLayoutPointer() override{
+        return background; //will be marked invisble
+    }
+
+    virtual void Tick(float deltatime) override;
+    virtual bool dispatchClick() override;
 
 protected:
     UPROPERTY()
-    UImageOverlayedBase *background;
+    UWidgetImage *background = nullptr;
+
+    //deprecated
+    //UPROPERTY()
+    //UImageOverlayedBase *background;
 
     virtual void createImageOverlayedBackground();
 

@@ -2,6 +2,7 @@
 
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
 
+class UserInput;
 
 class CUSTOMUIPLUGIN_API ScreenOpenStack {
 
@@ -17,6 +18,7 @@ public:
     bool isEmpty();
 
     void dispatchClick();
+    void dispatchUserInput(UserInput &input);
 
     void Tick(float deltatime);
 

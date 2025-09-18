@@ -98,17 +98,14 @@ void UPlayerUiBase::openGameScreen(){
 void UPlayerUiBase::updateClickDispatch(){
 
     //click dispatch!
-    TSet<FKey> PressedButtons = FSlateApplication::Get().GetPressedMouseButtons();
-    if (PressedButtons.Contains(EKeys::LeftMouseButton)) {
-        if(!bMouseLeftIsPressed){
-            // Linksklick ist aktuell gedrückt und war es vorher nicht
-            OnCursorClick();
-            DebugHelper::showScreenMessage("UPlayerUiBase: SLATE CLICK REGISTERED", FColor::Red);    
-        }
-        bMouseLeftIsPressed = true;
-    }else{
-        bMouseLeftIsPressed = false;
+    userInput.UpdateMouseClickState();
+    if(userInput.DispatchClick()){
+        OnCursorClick();
     }
+
+    //keyboard dispatch
+    userInput.UpdateKeyBoardData(GetOwningPlayer());
+    openedScreenStack.dispatchUserInput(userInput);
 
     //Hover dispatch
 }

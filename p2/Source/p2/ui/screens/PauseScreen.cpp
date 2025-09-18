@@ -32,7 +32,7 @@ void UPauseScreen::debug(){
         int count = 10;
         for (int i = 0; i < count; i++){
             UTextButton *someButton = NewWidgetInitialized<UTextButton>(this);
-            someButton->setText(FString::Printf(TEXT("Grid B(%d)"), i));
+            someButton->SetText(FString::Printf(TEXT("Grid B(%d)"), i));
             gridBox->AddChild(someButton);
         }
 
@@ -49,7 +49,7 @@ void UPauseScreen::debugCreateGameLaunchButton(){
 
         if(debugGameLaunchButton){
             debugGameLaunchButton->init();
-            debugGameLaunchButton->setText("Game Launcher"); //exit
+            debugGameLaunchButton->SetText("Game Launcher"); //exit
 
             //set callback here
             //cast to sub ui class because of function
@@ -104,7 +104,7 @@ void UPauseScreen::createExitButton(){
 
         if(exitButton){
             exitButton->init();
-            exitButton->setText("exit"); //exit
+            exitButton->SetText("exit"); //exit
 
             //set callback here
             exitButton->SetCallBack(
@@ -124,7 +124,7 @@ void UPauseScreen::createLoadoutScreenButton(){
 
         if(loadoutScreenButton){
             loadoutScreenButton->init();
-            loadoutScreenButton->setText("Loadout"); //exit
+            loadoutScreenButton->SetText("Loadout"); //exit
 
             //set callback here
             //cast to sub ui class because of function

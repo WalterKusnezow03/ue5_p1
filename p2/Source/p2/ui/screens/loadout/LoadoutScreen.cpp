@@ -46,7 +46,7 @@ void ULoadoutScreen::Createlayout(){
 
     //exit button
     UTextButton *button = NewWidgetInitialized<UTextButton>(this);
-    button->setText("Exit");
+    button->SetText("Exit");
     heading->AddChild(button);
     button->SetCallBack(
         //FSimpleDelegate::CreateUObject(uclassInstance, &<classname>::<methodname>)
@@ -65,7 +65,7 @@ void ULoadoutScreen::Createlayout(){
         std::vector<weaponSetupHelper> &items = loadoutinternal.SetupHelpers();
         for (int i = 0; i < items.size(); i++){
             UTextButton *newButton = NewWidgetInitialized<UTextButton>(this);
-            newButton->setText("none");
+            newButton->SetText("none");
 
             weaponSetupHelper *current = &items[i];
             UWeaponSetupHelperPayload *newPayLoad = NewObject<UWeaponSetupHelperPayload>(newButton);
@@ -104,7 +104,7 @@ void ULoadoutScreen::RefreshButtonByOwnPayLoad(UTextButton *button){
                 if(helper){
                     weaponEnum typeWeapon = helper->getWeaponTypeToCreate();
                     FString displayName = WeaponEnumStringConverter::toString(typeWeapon);
-                    button->setText(displayName);
+                    button->SetText(displayName);
                 }
             }
         }

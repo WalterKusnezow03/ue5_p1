@@ -14,7 +14,7 @@ UcustomUiComponentBase *UTextButton::DuplicateWidgetInitialized(UObject *parent)
     if(parent){
         UTextButton *newButton = NewWidgetInitialized<UTextButton>(parent);
         if(newButton){
-            newButton->setText(getText());
+            newButton->SetText(GetText());
             return newButton;
         }
     }
@@ -25,36 +25,24 @@ void UTextButton::init(){
     if(WAS_INIT_FLAG){
         return;
     }
-    Super::init();
     createTextAndAddToButton();
-    setUpCallbackHover();
 }
 
 void UTextButton::createTextAndAddToButton(){
-    if(button != nullptr){
-        TextBlock = NewObject<UTextBlock>(this);
-        TextBlock->SetAutoWrapText(true);
-
-        /*
-        button
-        --- scalebox
-        ------ text
-        */
-
-        scalebox->AddChild(TextBlock);
-
-        setText("button");
+    if(TextBlock == nullptr){
+        TextBlock = NewObject<UWidgetSlateText>(this);
+        SetText("button");
     }
 }
 
-void UTextButton::setText(FString textIn){
+void UTextButton::SetText(FString textIn){
     textInternalCopy = textIn;
     if(TextBlock != nullptr){
-        TextBlock->SetText(FText::FromString(textIn));
+        TextBlock->SetText(textIn);
     }
 }
 
-FString UTextButton::getText(){
+FString UTextButton::GetText(){
     return textInternalCopy;
 }
 
@@ -66,64 +54,23 @@ bool UTextButton::CompareText(FString textIn){
  * debug
  */
 bool UTextButton::dispatchClick(){
-    bool found = Super::dispatchClick();
-    if(found){
-        DebugHelper::showScreenMessage(FString::Printf(TEXT("PRESSED BUTTON: %s"), *textInternalCopy), FColor::Orange);
-    }
-    return found;
-}
-
-/**
- * callback api
- */
-void UTextButton::setDesignHovered(){
-    
-    if(button){
-        button->SetBackgroundColor(UiColors::buttonWhite);
-    }
+   
     if(TextBlock){
-        TextBlock->SetColorAndOpacity(FSlateColor(UiColors::buttonBlack));
+        if(TextBlock->dispatchClick()){
+            UiDebugHelper::showScreenMessage("UTextButton Click", FColor::Green);
+            TriggerCallback();
+            return true;
+        }
     }
 
-
-
-    //Debug
-    if(false){
-        DebugHelper::logMessage("dispatch cursor DEBUG!");
-        dispatchClick();
-    }
-    
-}
-
-void UTextButton::setDesignDefault(){
-    if(button){
-        makeTransparent(); //super
-    }
-    if(TextBlock){
-        TextBlock->SetColorAndOpacity(FSlateColor(UiColors::buttonWhite));
-    }
+    return false;
 }
 
 
-void UTextButton::setUpCallbackHover(){
-
-
-
-    SetCallBackOnHovered(
-        // on hover
-        FSimpleDelegate::CreateLambda([this](){
-            if(this){
-                this->setDesignHovered();
-            } 
-        }),
-
-        // on unhover
-        FSimpleDelegate::CreateLambda([this](){
-            if(this){
-                this->setDesignDefault();
-            } 
-        })
-    );
-
-    setDesignDefault();
+void UTextButton::Tick(float deltatime){
+    Super::Tick(deltatime);
+    if (TextBlock)
+    {
+        TextBlock->Tick(deltatime);
+    }
 }

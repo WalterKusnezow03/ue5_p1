@@ -868,33 +868,17 @@ FVector2f SlateMeshData::ConvertTo2f(const FVector2D &other) const {
 
 void SlateMeshData::SetTexture(UTexture2D *inTexture){
     if(inTexture){
-
-        int sizeX = boundingBox.sizeX();
-        int sizeY = boundingBox.sizeY();
-
-        int sizeXValid = sizeX > 0 ? sizeX : inTexture->GetSizeX();
-        int sizeYValid = sizeY > 0 ? sizeY : inTexture->GetSizeY();
-
-        SetTexture(inTexture, sizeXValid, sizeYValid);
-    }
-}
-
-void SlateMeshData::SetTexture(UTexture2D *inTexture, int sizeX, int sizeY){
-    if(inTexture){
-        sizeX = std::max(std::abs(sizeX), 1);
-        sizeY = std::max(std::abs(sizeY), 1);
         texturePtr = inTexture;
-
         textureBrush.SetResourceObject(inTexture);
-        textureBrush.ImageSize = FVector2D(sizeX, sizeY);
     }
 }
 
 const FSlateResourceHandle &SlateMeshData::drawingHandle() const {
     if(texturePtr != nullptr){
         //FSlateBrush
-        //const FSlateResourceHandle &	
+        //const FSlateResourceHandle &
         //GetRenderingResource ()
+        UiDebugHelper::logMessage("SlateMeshData texture ok");
         return textureBrush.GetRenderingResource();
     }
     //fixes color mismatch: mix color with white

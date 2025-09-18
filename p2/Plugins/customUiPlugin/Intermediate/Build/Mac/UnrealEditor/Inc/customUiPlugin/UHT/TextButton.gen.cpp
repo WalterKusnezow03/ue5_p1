@@ -12,7 +12,7 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UButtonBase();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextButton();
 	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UTextButton_NoRegister();
-	UMG_API UClass* Z_Construct_UClass_UTextBlock_NoRegister();
+	CUSTOMUIPLUGIN_API UClass* Z_Construct_UClass_UWidgetSlateText_NoRegister();
 	UPackage* Z_Construct_UPackage__Script_customUiPlugin();
 // End Cross Module References
 	void UTextButton::StaticRegisterNativesUTextButton()
@@ -53,7 +53,7 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 		{ "ModuleRelativePath", "ui/Widgets/buttons/subtypes/TextButton.h" },
 	};
 #endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock = { "TextBlock", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextButton, TextBlock), Z_Construct_UClass_UTextBlock_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData)) };
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock = { "TextBlock", nullptr, (EPropertyFlags)0x0040000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UTextButton, TextBlock), Z_Construct_UClass_UWidgetSlateText_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UTextButton_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UTextButton_Statics::NewProp_TextBlock,
 	};
@@ -95,9 +95,9 @@ void EmptyLinkFunctionForGeneratedCodeTextButton() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UTextButton, UTextButton::StaticClass, TEXT("UTextButton"), &Z_Registration_Info_UClass_UTextButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextButton), 567854800U) },
+		{ Z_Construct_UClass_UTextButton, UTextButton::StaticClass, TEXT("UTextButton"), &Z_Registration_Info_UClass_UTextButton, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UTextButton), 2517684834U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_2950958502(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_2601883009(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_subtypes_TextButton_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

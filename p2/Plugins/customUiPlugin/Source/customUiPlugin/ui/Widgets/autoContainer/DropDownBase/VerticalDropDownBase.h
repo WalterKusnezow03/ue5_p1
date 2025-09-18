@@ -18,6 +18,18 @@ GENERATED_BODY()
 public:
     virtual void init() override;
 
+    //debug
+    virtual void Tick(float deltatime) override {
+        Super::Tick(deltatime);
+
+
+        ////////// -------- ISSUE HERE ! -------- //////////
+
+        //fixes the issue of selected item! Is not ticked!!!
+        //if(selectedCopy){
+        //    selectedCopy->Tick(deltatime);
+        //}
+    }
 
     ///dispatches a click to all children
     virtual bool dispatchClick() override;
@@ -55,10 +67,14 @@ protected:
     void createLayout();
     void CreateTopSelectionBar();
 
-    
+
     void SwitchMenuVisibilty();
 
+    /// @brief actual item from list
     IBaseUiInterface *selectedItem = nullptr;
+
+    /// @brief copy of item
+    IBaseUiInterface *selectedCopy = nullptr;
 
     UPROPERTY() 
     UHbox *topSelection = nullptr;
@@ -77,4 +93,15 @@ protected:
 
 private:
     TArray<IBaseUiInterface *> fallbackArray;
+
+
+
+
+    int topSelectedResX = 100;
+    int topResY = 40;
+    
+    void RescaleAsTopItem(IBaseUiInterface *item);
+    void RescaleAsListItem(IBaseUiInterface *item);
+    void RescaleIfPossible(IBaseUiInterface *item, FVector2D scale);
+    void RescaleXIfPossible(IBaseUiInterface *item, int scaleX);
 };

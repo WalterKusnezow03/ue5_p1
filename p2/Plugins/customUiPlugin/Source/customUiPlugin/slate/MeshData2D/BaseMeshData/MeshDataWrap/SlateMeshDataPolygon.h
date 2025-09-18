@@ -57,6 +57,16 @@ public:
     SlateTextBase &GetSlateText();
 
     void SetText(FString textIn);
+    void ClearText();
+    void AppendChar(TCHAR &character);
+    void RemoveChar();
+
+    void CopyTextData(SlateMeshDataPolygon &oldPolygon);
+
+
+    //rendering
+    void EnableRender(bool bFlag);
+    bool bIsEnabled() const;
 
 protected:
     /// @brief owned mesh data 
@@ -71,7 +81,6 @@ protected:
 
     //animation
 
-
-
-
+    //render block
+    bool rendered = true;
 };

@@ -192,7 +192,7 @@ void SlatePolygonMap::ScaleToResolutionImmidiate(FVector2D &res){
     MMatrix2D scaleMat;
     scaleMat.makeIdentity();
 
-    if(false){
+    if(true){
         UiDebugHelper::logMessage(
             FString::Printf(
                 TEXT("SlatePolygonMap (%d): ScaleToResolutionImmidiate(%.2f,%.2f)->(%.2f,%.2f) with (%.2f,%.2f) "),

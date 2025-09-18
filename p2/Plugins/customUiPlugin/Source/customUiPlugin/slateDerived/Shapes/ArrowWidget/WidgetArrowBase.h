@@ -13,6 +13,7 @@ class CUSTOMUIPLUGIN_API UWidgetArrowBase : public UWidgetSlateWrapperBase{
     GENERATED_BODY()
 
 protected:
+    //call super!
     //Custom Constructor override - is called internally from post properties override!
     virtual void ConstructWidget() override;
     void CreateMeshOnConstruct();

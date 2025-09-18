@@ -15,7 +15,7 @@ void UVerticalDropDownBase::Debug(){
         UTextButton *button = NewWidgetInitialized<UTextButton>(this);
         if(button){
             FString text = FString::Printf(TEXT("item %d"), i);
-            button->setText(text);
+            button->SetText(text);
             AddChild(button);
         }
     }
@@ -34,6 +34,27 @@ bool UVerticalDropDownBase::dispatchClick(){
             SwitchMenuVisibilty();
             return true;
         }
+
+        //debug
+        if(selectedCopy){
+            if(UWidget *w = selectedCopy->baseLayoutPointer()){
+                UWidgetSlateWrapperBase *casted = Cast<UWidgetSlateWrapperBase>(w);
+                if(casted){
+                    UiDebugHelper::logMessage(
+                        FString::Printf(
+                            TEXT("UVerticalDropDownBase top item scale %s, targeted %s"),
+                            *casted->GetResolution().ToString(),
+                            *FVector2D(topSelectedResX,topResY).ToString()
+                        )
+                    );
+                }else{
+                    UiDebugHelper::logMessage("UVerticalDropDownBase item not castable");
+                }
+            }else{
+                UiDebugHelper::logMessage("UVerticalDropDownBase item nullptr");
+            }
+        }
+        
     }
 
 
@@ -79,9 +100,15 @@ void UVerticalDropDownBase::SelectIndex(int indexHit){
 
         UcustomUiComponentBase *copy = CreateDuplicate(interface); //isA BaseUiInterface
         if(copy){
+            
             //replace widget in top bar.
             topSelection->ReplaceChild(0, copy); //replace first index.
             selectedItem = interface;
+
+            //resize
+            selectedCopy = copy;
+            selectedCopy->enableTicklog();
+            RescaleAsTopItem(selectedCopy);
         }
     }
 }
@@ -117,12 +144,24 @@ void UVerticalDropDownBase::createLayout(){
 void UVerticalDropDownBase::CreateTopSelectionBar(){
     if(!topSelection){   
         topSelection = NewWidgetInitialized<UHbox>(this);
+        Super::AddChild(topSelection);
     }
+
+    
+
     if(topSelection && !topTextButton){
         topTextButton = NewWidgetInitialized<UTextButton>(this);
         if(topTextButton){
-            topTextButton->setText("Select...");
+            RescaleAsTopItem(topTextButton);
+            topTextButton->SetText("Select...");
             topSelection->AddChild(topTextButton);
+
+
+            //debug
+            if(UWidgetSlateText *t = topTextButton->SlateTextBlock()){
+                //t->enableTicklog();
+            }
+            
         }
     }
     if(topSelection && !topArrow){
@@ -130,8 +169,10 @@ void UVerticalDropDownBase::CreateTopSelectionBar(){
         topArrow->AddState(90.0f);
         topArrow->AddState(-90.0f);
         topSelection->AddChild((IBaseUiInterface*) topArrow);
+
+        topArrow->SetResolution(FVector2D(topResY, topResY));
     }
-    Super::AddChild(topSelection);
+    
 }
 
 
@@ -157,6 +198,7 @@ void UVerticalDropDownBase::HidePickerMenu(){
 void UVerticalDropDownBase::AddChild(IBaseUiInterface *item){
     createLayout();
     if(selectableList){
+        RescaleAsListItem(item);
         selectableList->AddChild(item);
     }
 }
@@ -171,3 +213,48 @@ const TArray<IBaseUiInterface *> &UVerticalDropDownBase::AccessListInternalItems
     return fallbackArray;
 }
 
+
+
+
+
+// rescaling helper
+
+void UVerticalDropDownBase::RescaleAsTopItem(IBaseUiInterface *item){
+    RescaleIfPossible(item, FVector2D(topSelectedResX, topResY));
+}
+void UVerticalDropDownBase::RescaleAsListItem(IBaseUiInterface *item){
+    RescaleXIfPossible(item, topSelectedResX + topResY); //arrow button is squared anyway
+}
+   
+
+void UVerticalDropDownBase::RescaleIfPossible(IBaseUiInterface *item, FVector2D scale){
+    if(item){
+        UWidgetSlateWrapperBase *casted = Cast<UWidgetSlateWrapperBase>(item);
+        if(casted){
+            casted->SetResolution(scale);
+        }else{
+            UWidget *base = item->baseLayoutPointer();
+            casted = Cast<UWidgetSlateWrapperBase>(base);
+            if(casted){
+                casted->SetResolution(scale);
+                UiDebugHelper::logMessage("UVerticalDropDownBase rescaled item");
+            }
+        }
+    }
+}
+
+
+void UVerticalDropDownBase::RescaleXIfPossible(IBaseUiInterface *item, int scaleX){
+    if(item){
+        UWidgetSlateWrapperBase *casted = Cast<UWidgetSlateWrapperBase>(item);
+        if(casted){
+            casted->SetResolutionXUniform(scaleX);
+        }else{
+            UWidget *base = item->baseLayoutPointer();
+            casted = Cast<UWidgetSlateWrapperBase>(base);
+            if(casted){
+                casted->SetResolutionXUniform(scaleX);
+            }
+        }
+    }
+}

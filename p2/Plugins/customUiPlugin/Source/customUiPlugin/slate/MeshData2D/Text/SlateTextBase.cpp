@@ -17,6 +17,28 @@ SlateTextBase::~SlateTextBase(){
 }
 
 
+SlateTextBase::SlateTextBase(const SlateTextBase &other){
+    if(this != &other){
+        LoadDefaultFont();
+        colorSet = FColor::White;
+        *this = other;
+    }
+}
+
+SlateTextBase &SlateTextBase::operator=(const SlateTextBase &other){
+    if(this != &other){
+        sizeSaved = other.sizeSaved;
+        fontSet = other.fontSet;
+        text = other.text;
+        maxSizeSetup = other.maxSizeSetup;
+        maxSizePixels = other.maxSizePixels;
+        fontInfo = other.fontInfo;
+        colorSet = other.colorSet;
+        bCenteredFlag = other.bCenteredFlag;
+    }
+    return *this;
+}
+
 void SlateTextBase::LoadDefaultFont(){
     //load default font here and set
     UFont *none = UiTextStyle::DefaultUFont();
@@ -48,9 +70,9 @@ void SlateTextBase::SetFont(UFont *font){
     if(font){
         fontSet = font;
         RefreshFont();
-        UiDebugHelper::logMessage("SlateTextBase did set font");
+        //UiDebugHelper::logMessage("SlateTextBase did set font");
     }else{
-        UiDebugHelper::logMessage("SlateTextBase could not set font");
+        //UiDebugHelper::logMessage("SlateTextBase could not set font");
     }
 }
 
@@ -88,40 +110,67 @@ void SlateTextBase::SetText(FString textIn){
     text = textIn;
 
     //will refresh size, and font if needed.
-    if (maxWidthSetup)
-    {
-        SetFitMaxWidthPixels(maxWidthPixelSaved); //refresh with cached known value
+    if (maxSizeSetup){
+        //SetFitMaxWidthPixels(maxWidthPixelSaved); //refresh with cached known value
+        SetFitMaxSize(maxSizePixels);
+    }
+}
+
+void SlateTextBase::AppendChar(TCHAR &character){
+    text += character;
+    //will refresh size, and font if needed.
+    if (maxSizeSetup){
+        //SetFitMaxWidthPixels(maxWidthPixelSaved); //refresh with cached known value
+        SetFitMaxSize(maxSizePixels);
+    }
+}
+void SlateTextBase::RemoveChar(){
+    if(Lenght() > 0){
+        text.LeftChopInline(1);
+        if (maxSizeSetup){
+            //SetFitMaxWidthPixels(maxWidthPixelSaved); //refresh with cached known value
+            SetFitMaxSize(maxSizePixels);
+        }
     }
 }
 
 
-void SlateTextBase::SetFitMaxWidthPixels(int widthPixels){
 
-    if(widthPixels > 0){
+
+void SlateTextBase::SetFitMaxSize(const FVector2D &maxSize){
+    if(maxSize.X > 0.0f && maxSize.Y > 0.0f){
+        maxSizeSetup = true;
+        maxSizePixels = maxSize;
 
         FSlateRenderer *renderer = FSlateApplication::Get().GetRenderer();
         if(renderer){
+            UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 1");
             //FSlateRenderer::GetFontMeasureService
             FVector2D TextSize = BoundsSlate();
             if (TextSize.X > 0.0f)
             {
                 float foundWidthPixels = SlateToPixelSize(TextSize.X);
+                float foundHeightPixels = SlateToPixelSize(TextSize.Y);
 
-                //size.X * a = max
-                //a = max / size.X
-                float scalar = widthPixels / foundWidthPixels;
-                float heightSlateSize = scalar * TextSize.Y;
-                SetTextSize(heightSlateSize);
+                //size * a = max
+                //a = max / size
+                float scalarX = maxSize.X / foundWidthPixels;
+                float scalarY = maxSize.Y / foundHeightPixels;
 
+                // den kleineren Faktor nehmen, sonst läuft Text über
+                float scalar = std::min(scalarX, scalarY);
 
-                //Copy pixel data for max width
-                maxWidthSetup = true;
-                maxWidthPixelSaved = widthPixels;
+                // Textgröße mit diesem Faktor skalieren
+                float newHeightPixels = 0.7f * scalar * TextSize.Y; //scale down to prevent spill (0.7)
+
+                SetTextSizePixels(newHeightPixels);
+                // SetTextSize(newHeightSlate);
+                // is not printed
+                UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 2");
             }
         }
-    }
 
-    
+    }
 }
 
 
@@ -155,6 +204,14 @@ FVector2D SlateTextBase::BoundsSlate() const {
     FSlateRenderer *renderer = FSlateApplication::Get().GetRenderer();
     if(renderer){
         FVector2D TextSize = renderer->GetFontMeasureService()->Measure(text, fontInfo);
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("SlateTextBase Measured %s -> %s"),
+                *text,
+                *TextSize.ToString()
+            )
+        );
+
         return TextSize;
     }
     return FVector2D(0, 0);

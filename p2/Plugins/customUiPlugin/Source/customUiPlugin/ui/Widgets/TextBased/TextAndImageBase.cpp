@@ -32,7 +32,7 @@ void UTextAndImageBase::init(){
     baseHorizontalBox->init();
 
     createText();
-    setText("new text box image");
+    SetText("new text box image");
     createImage();
 
 
@@ -63,7 +63,7 @@ void UTextAndImageBase::createImage(){
 
 
 
-void UTextAndImageBase::setText(FString textIn){
+void UTextAndImageBase::SetText(FString textIn){
     if(TextBlock != nullptr){
         TextBlock->SetText(FText::FromString(textIn));
     }

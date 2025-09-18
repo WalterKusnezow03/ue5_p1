@@ -19,13 +19,13 @@ void URemovableTextButton::createText(){
 
 void URemovableTextButton::SetText(FString Text){
     if(textButton){
-        textButton->setText(Text);
+        textButton->SetText(Text);
     }
 }
 
 FString URemovableTextButton::GetText(){
     if(textButton){
-        return textButton->getText();
+        return textButton->GetText();
     }
     return TEXT("emptyRemovableText");
 }

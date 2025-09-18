@@ -108,7 +108,10 @@ void SSlateWidgetBase::DrawPolygon(
     FSlateRenderTransform &RenderTransform,
     const FGeometry& AllottedGeometry
 )const{
-    
+    if(!polygon.bIsEnabled()){
+        return; //rendering disabled.
+    }
+
     //DEFAULT DRAW
     if(polygon.IsFlaggedDrawOutlineOnly()){ 
         DrawPolygonOutlineOnly(polygon, OutDrawElements, LayerId, AllottedGeometry);
@@ -212,6 +215,7 @@ void SSlateWidgetBase::DrawText(
 
         FVector2D textBounds = text.Bounds();
         FVector2f textBounds2f(textBounds.X, textBounds.Y);
+        
         FVector2f pivot(0, 0);
         if(text.bShouldCenteredInWidget()){
             const SlateMeshData &data = polygon.MeshDataRefConst();
@@ -237,6 +241,10 @@ void SSlateWidgetBase::DrawText(
             ESlateDrawEffect::None,
             color
         );
+
+
+
+
         /*
         FSlateDrawElement::
         static void MakeText  

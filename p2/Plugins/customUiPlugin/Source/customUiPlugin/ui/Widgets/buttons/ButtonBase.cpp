@@ -17,15 +17,25 @@ void UButtonBase::init(){
     if(WAS_INIT_FLAG){
         return;
     }
+    Super::init();
     createButton();
-    SetupButtonStyle();
 }
 
-void UButtonBase::createButton(){
-    button = NewObject<UButton>(this); 
 
-    scalebox = NewObject<UScaleBox>(this);
-    
+void UButtonBase::createScaleBox(){
+    if(!scalebox){
+        scalebox = NewObject<UScaleBox>(this);
+        scalebox->SetStretch(EStretch::ScaleToFit);
+    }
+}
+
+
+void UButtonBase::createButton(){
+    createScaleBox();
+    if(!button){
+        button = NewObject<UButton>(this);
+    }
+
     if(button && scalebox){
         scalebox->SetStretch(EStretch::ScaleToFit); //Skaliert den Text automatisch --- ScaleToFill odr ScaleToFit
         button->AddChild(scalebox); //so button sichtbar
@@ -81,10 +91,8 @@ bool UButtonBase::dispatchClick(){
             bool inBoundsY = mousePositionIn.Y >= topLeft.Y && mousePositionIn.Y <= bottomRight.Y;
             */
             if(inBoundsX && inBoundsY){
-                if(callbackPointer){
-                    callbackPointer->UCallbackFunction(); //manual trigger
-                }
-                //DebugHelper::logMessage("UButtonBase dispatch try sucess");
+                TriggerCallback();
+                // DebugHelper::logMessage("UButtonBase dispatch try sucess");
 
                 for(int i = 0; i < 10; i++){
                     DebugHelper::showScreenMessage("UButtonBase dispatch try sucess");
@@ -116,41 +124,28 @@ bool UButtonBase::dispatchClick(){
 
 ///@brief sets the callback for onlick, REMOVES the old callback!
 void UButtonBase::SetCallBack(FSimpleDelegate callbackIn){
-    if(button != nullptr){
-        //create callback object
-        createPressedCallbackIfNeeded();
-        if (callbackPointer != nullptr)
-        {
-            callbackPointer->SetCallback(callbackIn);
-        
-            /*
-            //unreal click dispatcher is broken
+    
+    //create callback object
+    createPressedCallbackIfNeeded();
+    if (callbackPointer != nullptr)
+    {
+        callbackPointer->SetCallback(callbackIn);
+    }
+    
+}
 
-            //DEBUG using custom click dispatcher
-            return;
-
-            //reagiert besser
-            button->SetClickMethod(EButtonClickMethod::MouseDown);
-            //button->OnReleased.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
-
-            button->OnClicked.RemoveDynamic(callbackPointer, &UCallback::UCallbackFunction); //delete old, replace!
-            button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
-
-            button->SetIsEnabled(true);
-
-            //schlechter
-            //button->SetClickMethod(EButtonClickMethod::DownAndUp);//button reagiert ohne schlecht...
-            //button->OnClicked.AddDynamic(callbackPointer, &UCallback::UCallbackFunction);
-
-            DebugHelper::logMessage("debugCallback created"); //printed
-            */
-        }
+void UButtonBase::TriggerCallback(){
+    if(callbackPointer){
+        callbackPointer->UCallbackFunction(); //manual trigger
     }
 }
 
+
+
+
 void UButtonBase::createPressedCallbackIfNeeded(){
     if(callbackPointer == nullptr){
-        callbackPointer = NewObject<UCallback>(button); //only a new one if needed
+        callbackPointer = NewObject<UCallback>(this); //only a new one if needed
     }
 }
 
@@ -165,88 +160,5 @@ void UButtonBase::reloadCallback(){
 
 
 
-void UButtonBase::makeTransparent(){
-    if(button){
-        button->SetBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.2f)); // Vollständig transparent
-    }
-    
-}
 
 
-/**
- * --- hovered callback ---
- */
-
-
-void UButtonBase::SetCallBackOnHovered(
-    FSimpleDelegate onHoveredDelegate,
-    FSimpleDelegate onUnHoveredDelegate
-){
-    //Debug
-    return;
-
-    if(button != nullptr){
-        createHoveredAndUnHoveredCallbackIfNeeded();
-
-        //"OnHovered, OnUnhovered" in doc
-        if(callbackPointerOnHovered != nullptr){
-            callbackPointerOnHovered->SetCallback(onHoveredDelegate);
-
-            button->OnHovered.RemoveDynamic(
-                callbackPointerOnHovered, 
-                &UCallback::UCallbackFunction
-            ); //delete old, replace!
-            button->OnHovered.AddDynamic(
-                callbackPointerOnHovered, 
-                &UCallback::UCallbackFunction
-            );
-        }
-        if(callbackPointerOnUnHovered != nullptr){
-            callbackPointerOnUnHovered->SetCallback(onUnHoveredDelegate);
-
-            button->OnUnhovered.RemoveDynamic(
-                callbackPointerOnUnHovered, 
-                &UCallback::UCallbackFunction
-            ); //delete old, replace!
-            button->OnUnhovered.AddDynamic(
-                callbackPointerOnUnHovered, 
-                &UCallback::UCallbackFunction
-            );
-        }
-        
-
-    }
-    
-}
-
-void UButtonBase::createHoveredAndUnHoveredCallbackIfNeeded(){
-    //create callback object
-    if(button){
-        if(callbackPointerOnHovered == nullptr){
-            callbackPointerOnHovered = NewObject<UCallback>(button); //only a new one if needed
-        }
-        if(callbackPointerOnUnHovered == nullptr){
-            callbackPointerOnUnHovered = NewObject<UCallback>(button); //only a new one if needed
-        }
-    }
-    
-}
-
-
-
-
-// --- COLOR CHANGE --- -> BROKEN! (Manuel hover needed, dispatch)
-
-void UButtonBase::SetupButtonStyle(){
-
-    //default style modified
-    FButtonStyle styleDefault = button->GetStyle();
-    FSlateBrush brushCopy = styleDefault.Normal;
-    brushCopy.TintColor = FSlateColor(UiColors::buttonDefaultRed);
-
-    styleDefault.SetHovered(brushCopy);
-    button->SetStyle(styleDefault);
-
-    //FButtonStyle::SetNormal(const FSlateBrush &InNormal)
-
-}

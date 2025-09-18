@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "customUiPlugin/ui/_baseClass/payload/PayLoadBase.h"
+#include "customUiPlugin/UserInputTracking/UserInput.h"
 #include "BaseUiInterface.generated.h"
 
 class UWidget;
@@ -29,6 +30,9 @@ public:
 	virtual bool dispatchClick() = 0;
 	virtual void SetVisible(bool flag) = 0;
 
+	//does not have to be overriden.
+	virtual void dispatchUserInput(UserInput &input) {};
+
 	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
 	virtual UWidget *baseLayoutPointer() = 0;
 
@@ -37,4 +41,8 @@ public:
 		return nullptr;
 	}
 
+
+
+	//debug
+	virtual void enableTicklog() {};
 };

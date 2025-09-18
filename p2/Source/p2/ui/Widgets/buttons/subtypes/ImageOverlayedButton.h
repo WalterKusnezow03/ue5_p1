@@ -25,5 +25,5 @@ public:
     void setImage(textureEnum type, FVector2D scale);
 
 protected:
-    virtual void createImageOverlayedBackground() override;
+    //virtual void createImageOverlayedBackground() override;
 };

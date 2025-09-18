@@ -159,7 +159,7 @@ void UWeaponSetupScreen::CreateTitleBar(){
         UTextButton *exitButton = NewWidgetInitialized<UTextButton>(this);
 
         if(exitButton){
-            exitButton->setText("Exit"); //exit
+            exitButton->SetText("Exit"); //exit
 
             //set callback here
             exitButton->SetCallBack(
@@ -207,7 +207,7 @@ void UWeaponSetupScreen::SetupWeaponPicker(){
             FString displayName = WeaponEnumStringConverter::toString(typeWeapon);
 
             UTextButton *button = NewWidgetInitialized<UTextButton>(this);
-            button->setText(displayName);
+            button->SetText(displayName);
 
             UWeaponTypePayLoad *payload = NewObject<UWeaponTypePayLoad>(this);
             payload->SetType(typeWeapon);
@@ -281,7 +281,7 @@ UTextButton *UWeaponSetupScreen::MakeWeaponAttachMentButton(weaponAttachmentEnum
     FString displayName = WeaponEnumStringConverter::toString(typeAttachment);
 
     UTextButton *button = NewWidgetInitialized<UTextButton>(this);
-    button->setText(displayName);
+    button->SetText(displayName);
 
     UWeaponAttachmentPayLoad *payload = NewObject<UWeaponAttachmentPayLoad>(this);
     payload->SetType(typeAttachment);

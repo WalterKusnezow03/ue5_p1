@@ -11,6 +11,7 @@ void UWorldList::init(){
     Super::init();
     createLayout();
     LoadWorldListFromStorage();
+    DebugHelper::logMessage("UWorldList init");
 }
 
 void UWorldList::init(UGameLaunchScreen *launcher){
@@ -23,7 +24,11 @@ void UWorldList::init(UGameLaunchScreen *launcher){
     }
 }
 
-
+void UWorldList::Tick(float deltatime){
+    if(baseVbox){
+        baseVbox->Tick(deltatime);
+    }
+}
 
 bool UWorldList::dispatchClick(){
     return baseVbox != nullptr && baseVbox->dispatchClick();
@@ -39,7 +44,7 @@ void UWorldList::SetVisible(bool visible){
 void UWorldList::createLayout(){
     if(!baseVbox){
         baseVbox = NewWidgetInitialized<UVbox>(this);
-        baseVbox->SetItemsFillHorizontal();
+        
     }
 
     if(!searchBar && baseVbox){
@@ -108,7 +113,7 @@ void UWorldList::removeWorld(UTextButton *item){
     }
 
     //remove from string list
-    FString worldName = item->getText();
+    FString worldName = item->GetText();
     bool wasFound = false;
     if (worldNames.Num() > 0)
     {
@@ -155,21 +160,22 @@ TArray<IBaseUiInterface*> UWorldList::makeButtonPair(FString name){
     UTextButton *removeButton = PopFromFreeList();
 
     if(worldButton){
-        worldButton->setText(name);
+        worldButton->SetText(name);
 
         //start world Callback
         if(gameLaunchScreenParent){
             FSimpleDelegate startWorldDelegate = FSimpleDelegate::CreateLambda([this, worldButton]()
                 {
-                    FString worldName = worldButton->getText();
+                    FString worldName = worldButton->GetText();
                     this->gameLaunchScreenParent->launchWorld(worldName);
+                    DebugHelper::logMessage("Try launch world!");
                 }
             );
             worldButton->SetCallBack(startWorldDelegate);
         }
 
         if(removeButton){
-            removeButton->setText("Delete");
+            removeButton->SetText("Delete");
     
             //remove callback, push world button for name!
             FSimpleDelegate removeDelegate = FSimpleDelegate::CreateLambda([this, worldButton]()
@@ -205,7 +211,7 @@ UTextButton *UWorldList::PopFromFreeList(){
 
 bool UWorldList::isRemoveButton(UTextButton *button){
     if(button){
-        return button->getText() == "Delete";
+        return button->GetText() == "Delete";
     }
     return false;
 }
@@ -291,6 +297,8 @@ void UWorldList::filteredWorldNameIndexList(
 /// @brief Loading world list on start
 void UWorldList::LoadWorldListFromStorage(){
 
+    DebugHelper::logMessage("UWorldList try load");
+
     //loads all worlds from storage, otherwise create a new one if debug mode on
     WorldListStorageInterface interface;
     if(interface.Load(worldNames)){
@@ -303,16 +311,18 @@ void UWorldList::LoadWorldListFromStorage(){
         }
 
         //add a debug string to see a world was loaded.
-        if(worldNames.Num() > 0){
+        if(worldNames.Num() == 0){
             if(DebugMode){
                 AddWorld(TEXT("AdditionalDebugString"));
                 return;
             }
         }
-
-
-       
+    }else{
+        AddWorld(TEXT("None"));
+        DebugHelper::logMessage("UWorldlist failed to load worlds!");
     }
+
+    DebugHelper::logMessage(FString::Printf(TEXT("UWorldlist loaded(%d)"), worldNames.Num()));
 
 
     //add a string if no world was loaded for visibility.

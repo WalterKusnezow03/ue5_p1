@@ -31,23 +31,20 @@ public:
     virtual void init() override;
 
     virtual UWidget *baseLayoutPointer() override{
-        return button; //button //scalebox(wrong)
+        return scalebox; //button //scalebox(wrong)
     }
 
     void SetCallBack(FSimpleDelegate callbackIn);
 
     void reloadCallback();
-    void makeTransparent();
+    
 
-    void SetCallBackOnHovered(
-        FSimpleDelegate onHoveredDelegate,
-        FSimpleDelegate onUnHoveredDelegate
-    );
 
     //NEW
     virtual bool dispatchClick() override;
 
 protected:
+    void TriggerCallback();
 
     UPROPERTY()
     UButton *button = nullptr;
@@ -58,18 +55,10 @@ protected:
     UPROPERTY()
     UCallback *callbackPointer = nullptr; //callback on click
 
-    UPROPERTY()
-    UCallback *callbackPointerOnHovered = nullptr;
-
-    UPROPERTY()
-    UCallback *callbackPointerOnUnHovered = nullptr;
-
+    void createScaleBox();
     void createButton();
     void createPressedCallbackIfNeeded();
-    void createHoveredAndUnHoveredCallbackIfNeeded();
+   
 
 
-
-private:
-    void SetupButtonStyle();
 };

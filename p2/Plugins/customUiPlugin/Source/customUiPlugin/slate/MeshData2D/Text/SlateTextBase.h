@@ -13,16 +13,25 @@ public:
     SlateTextBase();
     ~SlateTextBase();
 
+    SlateTextBase(const SlateTextBase &other);
+    SlateTextBase &operator=(const SlateTextBase &other);
+
+
     void SetFont(UFont *font);
     void SetTextSizePixels(float size);
     void SetTextSize(float size);
 
     void SetColor(FColor colorIn);
+    
     void SetCenteredInWidget(bool bCentered);
-
-    void SetFitMaxWidthPixels(int widthPixels);
+    
+    /// @brief max size in pixels
+    /// @param maxSize 
+    void SetFitMaxSize(const FVector2D &maxSize);
 
     void SetText(FString textIn);
+    void AppendChar(TCHAR &character);
+    void RemoveChar();
 
     int Lenght() const;
     const FString &GetText() const;
@@ -40,8 +49,10 @@ protected:
 
     FString text;
 
-    bool maxWidthSetup = false;
-    float maxWidthPixelSaved = 100.0f;
+
+    //new max size
+    bool maxSizeSetup = false;
+    FVector2D maxSizePixels;
 
     FSlateFontInfo fontInfo;
 

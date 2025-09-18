@@ -29,6 +29,8 @@ void UHbox::AddChild(IBaseUiInterface *item){
             //add to hbox
             //baseHBox->AddChildToHorizontalBox(baseOfItem);
             AddChild(baseOfItem);
+        }else{
+            UiDebugHelper::logMessage("UHbox Could not add child!");
         }
     }
 }
@@ -86,16 +88,18 @@ void UHbox::ReplaceChild(int i, IBaseUiInterface *newInterface){
                 UWidget *current = baseHBox->GetChildAt(j);
                 afterIndex.Add(current);
             }
-            //remove from hbox and listening
+            //remove from hbox and listening, interface found automatically.
             RemoveChild(replaced);
 
             // --- complicated process here because Umg is weird again and shifts widgets :-) ---
-            //remove all
+            //remove all from index after replaced child
             for(UWidget *item : afterIndex){
                 baseHBox->RemoveChild(item);
             }
-            //add new child in front
-            baseHBox->AddChild(newItem);
+
+            //add new child in front +
+            AddChild(newInterface); // + add to click, tick dispatch if needed, AS INTERFACE FOR DISPATCH!
+            
 
             //append old childs after new item
             for(UWidget *item : afterIndex){

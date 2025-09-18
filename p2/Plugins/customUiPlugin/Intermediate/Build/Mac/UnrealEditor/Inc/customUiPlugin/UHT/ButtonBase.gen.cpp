@@ -43,14 +43,6 @@ void EmptyLinkFunctionForGeneratedCodeButtonBase() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_callbackPointer_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointer;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_callbackPointerOnHovered_MetaData[];
-#endif
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointerOnHovered;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_callbackPointerOnUnHovered_MetaData[];
-#endif
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_callbackPointerOnUnHovered;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -89,26 +81,10 @@ void EmptyLinkFunctionForGeneratedCodeButtonBase() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointer = { "callbackPointer", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UButtonBase, callbackPointer), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointer_MetaData)) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnHovered_MetaData[] = {
-		{ "Comment", "//callback on click\n" },
-		{ "ModuleRelativePath", "ui/Widgets/buttons/ButtonBase.h" },
-		{ "ToolTip", "callback on click" },
-	};
-#endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnHovered = { "callbackPointerOnHovered", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UButtonBase, callbackPointerOnHovered), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnHovered_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnHovered_MetaData)) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnUnHovered_MetaData[] = {
-		{ "ModuleRelativePath", "ui/Widgets/buttons/ButtonBase.h" },
-	};
-#endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnUnHovered = { "callbackPointerOnUnHovered", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UButtonBase, callbackPointerOnUnHovered), Z_Construct_UClass_UCallback_NoRegister, METADATA_PARAMS(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnUnHovered_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnUnHovered_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UButtonBase_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UButtonBase_Statics::NewProp_button,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UButtonBase_Statics::NewProp_scalebox,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointer,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnHovered,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UButtonBase_Statics::NewProp_callbackPointerOnUnHovered,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UButtonBase_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<UButtonBase>::IsAbstract,
@@ -148,9 +124,9 @@ void EmptyLinkFunctionForGeneratedCodeButtonBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_ButtonBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UButtonBase, UButtonBase::StaticClass, TEXT("UButtonBase"), &Z_Registration_Info_UClass_UButtonBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UButtonBase), 2238872622U) },
+		{ Z_Construct_UClass_UButtonBase, UButtonBase::StaticClass, TEXT("UButtonBase"), &Z_Registration_Info_UClass_UButtonBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UButtonBase), 3938944202U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_ButtonBase_h_1641438082(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_ButtonBase_h_284506775(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_ButtonBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_Widgets_buttons_ButtonBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
