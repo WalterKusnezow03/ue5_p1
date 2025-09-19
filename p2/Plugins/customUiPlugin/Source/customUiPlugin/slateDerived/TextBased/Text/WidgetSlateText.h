@@ -17,9 +17,12 @@ public:
 
 
 protected:
+    FVector2D setupScale();
+    FVector2D MaxTextSize(FVector2D &bound);
+    FVector2D MaxTextSizeDefault();
+
     virtual void ConstructWidget() override;
     void CreateTextBox();
-
 
     SlateMeshDataPolygon &PolygonAtTextLayer();
     int textLayer = 0;

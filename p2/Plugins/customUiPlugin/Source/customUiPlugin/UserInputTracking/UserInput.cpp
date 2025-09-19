@@ -8,6 +8,8 @@ UserInput::~UserInput(){
 
 }
 
+//mouse
+
 void UserInput::UpdateMouseClickState(){
     //click dispatch!
     TSet<FKey> PressedButtons = FSlateApplication::Get().GetPressedMouseButtons();
@@ -27,6 +29,16 @@ bool UserInput::DispatchClick(){
     bool copy = dispatchClickNeeded;
     dispatchClickNeeded = false;
     return copy;
+}
+
+
+
+
+
+//keys
+bool UserInput::HasAnyKeyboardInput(){
+    bool anyInteraction = pressedBackspace || pressedEnter || pressed.Num() > 0;
+    return anyInteraction;
 }
 
 bool UserInput::PressedBackspace(){

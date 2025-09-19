@@ -211,19 +211,9 @@ void SSlateWidgetBase::DrawText(
     const FGeometry& AllottedGeometry
 ) const {
     if(polygon.bHasText()){
-        const SlateTextBase &text = polygon.GetSlateTextConst();
-
-        FVector2D textBounds = text.Bounds();
-        FVector2f textBounds2f(textBounds.X, textBounds.Y);
         
-        FVector2f pivot(0, 0);
-        if(text.bShouldCenteredInWidget()){
-            const SlateMeshData &data = polygon.MeshDataRefConst();
-            FVector2D center = data.CenterOfMesh();
-            FVector2f center2f(center.X, center.Y);
-
-            pivot = center2f - textBounds2f * 0.5f;
-        }
+        const SlateTextBase &text = polygon.GetSlateTextConst();
+        FVector2f pivot = polygon.SlateTextPivot2f();
         const FSlateFontInfo &fontInfo = text.FontInfo();
         FColor color = text.Color();
         FString stringToDisplay = text.GetText();

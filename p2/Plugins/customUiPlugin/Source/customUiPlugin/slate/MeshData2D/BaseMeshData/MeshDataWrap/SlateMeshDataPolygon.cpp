@@ -83,6 +83,22 @@ const SlateTextBase &SlateMeshDataPolygon::GetSlateTextConst() const{
     return internalText;
 }
 
+
+FVector2f SlateMeshDataPolygon::SlateTextPivot2f() const {
+    FVector2D as2D = SlateTextPivot();
+    return FVector2f(as2D.X, as2D.Y);
+}
+
+FVector2D SlateMeshDataPolygon::SlateTextPivot() const {
+    FVector2D pivot(0, 0);
+    if(internalText.bShouldCenteredInWidget()){
+        FVector2D textBounds = internalText.Bounds();
+        FVector2D center = meshData.CenterOfMesh();
+        pivot = center - textBounds * 0.5f;
+    }
+    return pivot;
+}
+
 SlateTextBase &SlateMeshDataPolygon::GetSlateText(){
     return internalText;
 }

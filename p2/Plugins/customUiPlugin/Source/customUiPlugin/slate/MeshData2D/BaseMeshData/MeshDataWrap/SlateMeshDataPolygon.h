@@ -56,6 +56,9 @@ public:
     const SlateTextBase &GetSlateTextConst() const;
     SlateTextBase &GetSlateText();
 
+    FVector2f SlateTextPivot2f() const;
+    FVector2D SlateTextPivot() const;
+
     void SetText(FString textIn);
     void ClearText();
     void AppendChar(TCHAR &character);

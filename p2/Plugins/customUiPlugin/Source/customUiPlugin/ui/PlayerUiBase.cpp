@@ -105,7 +105,10 @@ void UPlayerUiBase::updateClickDispatch(){
 
     //keyboard dispatch
     userInput.UpdateKeyBoardData(GetOwningPlayer());
-    openedScreenStack.dispatchUserInput(userInput);
+    if(userInput.HasAnyKeyboardInput()){
+        openedScreenStack.dispatchUserInput(userInput);
+    }
+    
 
     //Hover dispatch
 }

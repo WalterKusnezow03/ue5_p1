@@ -29,13 +29,33 @@ public:
 
 protected:
     
+    //hint text adding
+    virtual void ConstructWidget() override;
 
     // ---- keyboard handling ----
     virtual void dispatchUserInput(UserInput &input) override;
 
 private:
-    
-
     void SetFocusKeyboard(bool bEnabled);
     bool bKeyBoardFocusFlag = false;
+    bool bCursorVisible = false;
+
+    SlateMeshDataPolygon &PolygonAtTextCursorLayer();
+    SlateMeshDataPolygon &PolygonAtHintTextLayer();
+
+
+    float cursorWidth = 3.0f;
+    float cursorIntervall = 0.5f;
+    float deltaTimeIntegrated = 0.0f;
+    void SetCursorVisible(bool visible);
+    void SwitchCursorVisibility();
+    void UpdateHintTextVisibilty();
+    void UpdateTextCursorPosition();
+
+    void CursorLocationAndHeigth(
+        FVector2D &cursorLocation,
+        float &cursorHeight
+    );
+
+    bool TextIsEmpty();
 };

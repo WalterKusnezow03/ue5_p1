@@ -13,6 +13,21 @@ SlateMeshDataPolygon &UWidgetSlateText::PolygonAtTextLayer(){
     return FindFromMap(textLayer);
 }
 
+FVector2D UWidgetSlateText::setupScale(){
+    int widthWidget = 120;
+    int heightWidtet = 40;
+    return FVector2D(widthWidget, heightWidtet);
+}
+
+FVector2D UWidgetSlateText::MaxTextSizeDefault(){
+    FVector2D bound = setupScale();
+    return MaxTextSize(bound);
+}
+
+FVector2D UWidgetSlateText::MaxTextSize(FVector2D &bound){
+    return bound * 0.8f;
+}
+
 
 
 void UWidgetSlateText::CreateTextBox(){
@@ -20,11 +35,9 @@ void UWidgetSlateText::CreateTextBox(){
     polygon.SetFullColor(UiColors::backgroundBlackTransculent);
 
     //create some mesh default mesh
-    int widthWidget = 120;
-    int heightWidtet = 40;
     SlateMeshData &meshdata = polygon.MeshDataRef();
     FVector2D tl(0, 0);
-    FVector2D br(widthWidget, heightWidtet);
+    FVector2D br = setupScale();
     meshdata.AppendQuad(tl, br);
 
     SlateTextBase &text = polygon.GetSlateText();
@@ -32,7 +45,7 @@ void UWidgetSlateText::CreateTextBox(){
     text.SetCenteredInWidget(true);
 
     //text always fits inside bounds set, shrinks.
-    FVector2D maxBoundText = br * 0.8f;
+    FVector2D maxBoundText = MaxTextSizeDefault();
     text.SetFitMaxSize(maxBoundText);
 }
 

@@ -309,7 +309,7 @@ void SlateMeshData::AppendClosedShape(TArray<FVector2D> &shape, int detail){
     if(shape.Num() > 0){
 
         //precalculate count triangles, cap detail if buffer overflow of 65535
-        //not precise, taking suplicate vertecies ok
+        //not precise, taking duplicate vertecies ok
         
         //vertecies closed at center at worst = v(n) = n * 3
 

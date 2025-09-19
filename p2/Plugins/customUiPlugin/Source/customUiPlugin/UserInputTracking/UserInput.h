@@ -17,6 +17,8 @@ public:
     ///invalid once UpdateKeyBoardData() is called.
     const TArray<TCHAR> &GetPressedKeys() const;
 
+    bool HasAnyKeyboardInput();
+
 private:
     bool bMouseLeftIsPressed = false;
     bool dispatchClickNeeded = false;
