@@ -15,6 +15,7 @@ public:
     void SetText(FString text);
     FString GetText();
 
+    //virtual void SetResolution(FVector2D scale) override;
 
 protected:
     FVector2D setupScale();

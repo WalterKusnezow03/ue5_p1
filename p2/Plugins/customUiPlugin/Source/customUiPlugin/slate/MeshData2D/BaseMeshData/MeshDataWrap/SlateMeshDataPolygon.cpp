@@ -9,6 +9,23 @@ SlateMeshDataPolygon::~SlateMeshDataPolygon(){
 
 }
 
+
+SlateMeshDataPolygon::SlateMeshDataPolygon(const SlateMeshDataPolygon &other){
+    if(this != &other){
+        *this = other;
+    }
+}
+SlateMeshDataPolygon &SlateMeshDataPolygon::operator=(const SlateMeshDataPolygon &other){
+    if(this != &other){
+        meshData = other.meshData;
+        bDynamicCursorColorEnabled = other.bDynamicCursorColorEnabled;
+        bDrawOutlineOnly = other.bDrawOutlineOnly;
+        internalText = other.internalText;
+        rendered = other.rendered;
+    }
+    return *this;
+}
+
 void SlateMeshDataPolygon::AppendClosedShape(TArray<FVector2D> &shape){
     meshData.AppendClosedShape(shape);
 }
@@ -57,6 +74,12 @@ void SlateMeshDataPolygon::SetCursorColor(FLinearColor color){
 
 void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){
     meshData.ApplyTransformationImmidiate(transform);
+
+    //update text.
+    if(meshData.blockedTransformUpdates() == false){
+        internalText.TransformFitMaxSize(transform);
+    }
+    
 }
 
 void SlateMeshDataPolygon::SetRuntimeTransformation(MMatrix2D &transform){
@@ -91,11 +114,18 @@ FVector2f SlateMeshDataPolygon::SlateTextPivot2f() const {
 
 FVector2D SlateMeshDataPolygon::SlateTextPivot() const {
     FVector2D pivot(0, 0);
+
+    FVector2D textBounds = internalText.Bounds();
+    FVector2D center = meshData.CenterOfMesh();
+    pivot = center - textBounds * 0.5f;
     if(internalText.bShouldCenteredInWidget()){
-        FVector2D textBounds = internalText.Bounds();
-        FVector2D center = meshData.CenterOfMesh();
-        pivot = center - textBounds * 0.5f;
+        return pivot;
     }
+
+    if(internalText.bShouldCenterVertical()){
+        pivot.X = 0;
+    }
+
     return pivot;
 }
 

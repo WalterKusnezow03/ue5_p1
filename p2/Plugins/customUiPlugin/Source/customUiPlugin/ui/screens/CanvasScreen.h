@@ -21,6 +21,10 @@ class CUSTOMUIPLUGIN_API UCanvasScreen : public UUiComponentParent {
     GENERATED_BODY()
 public:
 
+    virtual bool UsesUserInput(){
+        return true;
+    }
+
     //must be called from derived class!
     virtual void init(UPlayerUiBase &refin);
 

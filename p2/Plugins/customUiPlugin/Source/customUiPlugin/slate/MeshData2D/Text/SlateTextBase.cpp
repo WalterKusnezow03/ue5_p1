@@ -35,6 +35,7 @@ SlateTextBase &SlateTextBase::operator=(const SlateTextBase &other){
         fontInfo = other.fontInfo;
         colorSet = other.colorSet;
         bCenteredFlag = other.bCenteredFlag;
+        bCenteredVertical = other.bCenteredVertical;
     }
     return *this;
 }
@@ -65,6 +66,21 @@ void SlateTextBase::SetCenteredInWidget(bool bCentered){
 bool SlateTextBase::bShouldCenteredInWidget() const{
     return bCenteredFlag;
 }
+
+
+void SlateTextBase::SetCenteredVertical(bool bCentered){
+    SetCenteredInWidget(false);
+    bCenteredVertical = bCentered;
+}
+
+bool SlateTextBase::bShouldCenterVertical() const {
+    return bCenteredVertical;
+}
+
+
+
+
+
 
 void SlateTextBase::SetFont(UFont *font){
     if(font){
@@ -134,6 +150,15 @@ void SlateTextBase::RemoveChar(){
     }
 }
 
+
+void SlateTextBase::TransformFitMaxSize(const MMatrix2D &scale){
+    if(maxSizeSetup){
+        //cheesy way of scaling but is fine (?)
+        FVector2D size = maxSizePixels;
+        size = scale * size;
+        SetFitMaxSize(size);
+    }
+}
 
 
 

@@ -20,11 +20,16 @@ class P2_API UPlayerHud : public UWorldMarkerCanvas {
 //UCanvasScreen {
     GENERATED_BODY()
 public:
+
+    virtual bool UsesUserInput() override {
+        return false;
+    }
     
     //virtual void init(UPlayerUiBase &refin) override;
     virtual void CreateLayoutOnInit() override;
 
     virtual void Tick(float deltatime) override;
+    virtual bool dispatchClick() override;
 
     void updateAmmunitionText(FString message);
     void updateHealthText(FString health);

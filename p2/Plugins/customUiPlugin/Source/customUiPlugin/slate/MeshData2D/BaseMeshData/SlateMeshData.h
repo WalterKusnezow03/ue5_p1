@@ -120,8 +120,22 @@ public:
     FVector2D CenterOfMesh()const;
 
 
+     /// @brief blocks any ApplyTransformImmidiate, for example for text cursor, no stretch.
+    /// Default is false, any transform allowed.
+    /// @param flag 
+    void SetBlockTransformImmidiate(bool flag){
+        protectedAgainstImmidiateTransform = flag;
+    }
+
+    bool blockedTransformUpdates(){
+        return protectedAgainstImmidiateTransform;
+    }
 
 private:
+    //resize block, default false
+    bool protectedAgainstImmidiateTransform = false;
+
+
     //track changes for cache remake
     void FlagCacheUpdateNeeded();
 

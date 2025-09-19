@@ -8,6 +8,7 @@ void UVerticalDropDownBase::init(){
     }
     Super::init();
     createLayout();
+    HidePickerMenu();
 }
 
 void UVerticalDropDownBase::Debug(){
@@ -33,28 +34,7 @@ bool UVerticalDropDownBase::dispatchClick(){
         if(topSelection->dispatchClick()){
             SwitchMenuVisibilty();
             return true;
-        }
-
-        //debug
-        if(selectedCopy){
-            if(UWidget *w = selectedCopy->baseLayoutPointer()){
-                UWidgetSlateWrapperBase *casted = Cast<UWidgetSlateWrapperBase>(w);
-                if(casted){
-                    UiDebugHelper::logMessage(
-                        FString::Printf(
-                            TEXT("UVerticalDropDownBase top item scale %s, targeted %s"),
-                            *casted->GetResolution().ToString(),
-                            *FVector2D(topSelectedResX,topResY).ToString()
-                        )
-                    );
-                }else{
-                    UiDebugHelper::logMessage("UVerticalDropDownBase item not castable");
-                }
-            }else{
-                UiDebugHelper::logMessage("UVerticalDropDownBase item nullptr");
-            }
-        }
-        
+        }        
     }
 
 
@@ -63,6 +43,10 @@ bool UVerticalDropDownBase::dispatchClick(){
 
     //handle sub menu click
     if(selectableList){
+        if(!selectableList->markedVisible()){
+            return false;
+        }
+
         int indexHit = -1;
         bool dispatched = selectableList->dispatchClick(indexHit);
         if(dispatched){
@@ -107,7 +91,7 @@ void UVerticalDropDownBase::SelectIndex(int indexHit){
 
             //resize
             selectedCopy = copy;
-            selectedCopy->enableTicklog();
+            //selectedCopy->enableTicklog();
             RescaleAsTopItem(selectedCopy);
         }
     }

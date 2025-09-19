@@ -789,6 +789,9 @@ void SlateMeshData::ConvertToScalarValuesNormalized(
 
 // ---- transformation ----
 void SlateMeshData::ApplyTransformationImmidiate(const MMatrix2D &other){
+    if(protectedAgainstImmidiateTransform){
+        return;
+    }
     if(other.IsZeroScaleMatrix()){
         return; //invalid, bricks mesh data
     }
@@ -835,7 +838,7 @@ void SlateMeshData::ApplyTransformationConst(
     vertex = mat * vertex;
 
     //debug
-    if(false){
+    if(true){
         UiDebugHelper::logMessage(
             FString::Printf(TEXT(
                 "slate: SlateMeshData runtime transform (%.2f, %2f) -> (%.2f, %2f)"

@@ -10,6 +10,8 @@ public:
     ScreenOpenStack();
     ~ScreenOpenStack();
 
+    bool CurrentScreenUsesUserInput();
+
     void open(UCanvasScreen *item);
     void closeBack();
 
@@ -26,5 +28,6 @@ public:
 
 private:
     std::vector<UCanvasScreen *> opened;
-    
+
+    UCanvasScreen *latestScreen();
 };

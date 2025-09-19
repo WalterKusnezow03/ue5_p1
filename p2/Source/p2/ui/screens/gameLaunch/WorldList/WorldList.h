@@ -9,42 +9,29 @@
 //#include "p2/ui/screens/gameLaunch/WorldList/item/RemovableTextButton.h"
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "customUiPlugin/ui/Widgets/textBox/TextBoxBase.h"
+#include "p2/ui/screens/gameLaunch/WorldList/rtti/WorldButtonPayload.h"
 
 #include "WorldList.generated.h"
+
 
 class UGameLaunchScreen;
 
 ///will create a selectable world list from storage, save it, and launch a game if wanted
 ///also manages adding new worlds
 UCLASS()
-class P2_API UWorldList : public UcustomUiComponentBase {
+class P2_API UWorldList : public UVbox {
 
     GENERATED_BODY()
 
 public:
     //do not use.
-    using UcustomUiComponentBase::init;
+    using UVbox::init;
 
     //do not use.
     virtual void init() override;
 
     //use!
     void init(UGameLaunchScreen *launchParent);
-
-    virtual bool dispatchClick() override;
-    virtual void Tick(float deltatime) override;
-
-    /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
-    /// invisible too!
-    /// @param visible
-    virtual void SetVisible(bool visible) override;
-
-    virtual UWidget *baseLayoutPointer() override{
-        if(baseGridBox){
-            return baseVbox->baseLayoutPointer();
-        }
-        return nullptr;
-    }
 
 
     ///@brief adds the world string if not contained yet,
@@ -63,21 +50,43 @@ public:
     UFUNCTION()
     void UpdateSearch();
 
+    ///@brief sets width of searchbar -> slate widget setResolution
+    void SetWidth(int width);
+
 private:
-    UGameLaunchScreen *gameLaunchScreenParent = nullptr;
+    //--- scaling ---
+    int widthWanted = 100;
+    bool widthSetup = false;
+    void UpdateScaleIfPossible(IBaseUiInterface *interface, FVector2D resolution);
+    //--- scaling ---
 
-
-    
+    //---button shared rtti (prevents seperate inuse / free list)---
     UPROPERTY()
-    UVbox *baseVbox = nullptr;
+    UWorldButtonPayload *removeAttribute = nullptr;
 
+    UPROPERTY()
+    UWorldButtonPayload *worldNameAttribute = nullptr;
+
+    void UpdatePayLoadWorldButton(UTextButton *worldButton);
+    void UpdatePayLoadRemoveButton(UTextButton *removeButton);
+    bool IsWorldNameButton(UTextButton *button);
+    void UpdateWidthAuto(UTextButton *current);
+    void UpdateWidthWorldButton(IBaseUiInterface *interface);
+    void UpdateWidthRemoveButton(IBaseUiInterface *interface);
+    //---button shared rtti ---
+
+    // parent to call launch world on
+    UGameLaunchScreen *gameLaunchScreenParent = nullptr;
 
     UPROPERTY()
     UGridBox *baseGridBox = nullptr;
 
 
     UPROPERTY()
-    UTextBoxBase *searchBar = nullptr;
+    UWidgetSlateEditableText *searchBar = nullptr;
+
+    //UPROPERTY()
+    //UTextBoxBase *searchBar = nullptr;
 
     UPROPERTY()
     TArray<UTextButton *> textButtonsFree;

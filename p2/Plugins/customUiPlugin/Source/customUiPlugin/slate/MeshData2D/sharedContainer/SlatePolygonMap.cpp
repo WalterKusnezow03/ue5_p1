@@ -174,6 +174,7 @@ void SlatePolygonMap::UpdateSortedLayers(){
 
 // --- immidate transform ---
 void SlatePolygonMap::ApplyTransformImmidiate(MMatrix2D &transform){
+
     TArray<SlateMeshDataPolygon *> array = allPolygonsSorted(); //marked dirty bounds once ref is get
     for (int i = 0; i < array.Num(); i++){
         if(SlateMeshDataPolygon *ptr = array[i]){

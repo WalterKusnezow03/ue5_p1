@@ -40,6 +40,9 @@ public:
     
     TArray<SlateMeshDataPolygon *> allPolygonsSortedConst() const;
 
+
+    
+
     ///@brief applies a transform to all mesh data immidiately and marks bounds dirty
     void ApplyTransformImmidiate(MMatrix2D &transform);
 
@@ -73,6 +76,4 @@ private:
     void ForceUpdateBoundsForSizeCalculation();
 
 
-    //Text
-    
 };

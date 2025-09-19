@@ -13,25 +13,19 @@ ScreenOpenStack::~ScreenOpenStack(){
 void ScreenOpenStack::dispatchClick(){
     //DebugHelper::logMessage("CLICK WAS REGISTERED Screen Stack");
     //DebugHelper::showScreenMessage("CLICK WAS REGISTERED Screen Stack");
-    if(opened.size() > 0){
-        UCanvasScreen *back = opened.back();
-        if(back){
-            if(back->dispatchClick()){
-                //DebugHelper::logMessage("CLICK WAS DISPATCHED");
-                //DebugHelper::showScreenMessage("CLICK WAS DISPATCHED Screen Stack");
-            }
-        }
+    if(UCanvasScreen *back = latestScreen()){
+        bool result = back->dispatchClick();
     }
 }
 
 bool ScreenOpenStack::ScreenAlreadyOpen(UCanvasScreen *item){
     if(item != nullptr){
-        if(opened.size() > 0){
-            if(opened.back() == item){
-                item->SetVisible(true);
-                return true;
-            }
+
+        if(UCanvasScreen *back = latestScreen()){
+            item->SetVisible(true);
+            return true;
         }
+        
     }
     return false;
 }
@@ -97,20 +91,35 @@ bool ScreenOpenStack::isEmpty(){
 
 ///@brief ticks all children on the latest screen
 void ScreenOpenStack::Tick(float deltatime){
-    if(opened.size() > 0){
-        UCanvasScreen *back = opened.back();
-        if(back){
-            back->Tick(deltatime);
-        }
+    if(UCanvasScreen *back = latestScreen()){
+        back->Tick(deltatime);
     }
 }
 
 
 void ScreenOpenStack::dispatchUserInput(UserInput &input){
+    if(UCanvasScreen *back = latestScreen()){
+        back->dispatchUserInput(input);
+    }
+    
+}
+
+
+bool ScreenOpenStack::CurrentScreenUsesUserInput(){
+    
+    if(UCanvasScreen *back = latestScreen()){
+        return back->UsesUserInput();
+    }
+
+
+    return false;
+}
+
+
+UCanvasScreen *ScreenOpenStack::latestScreen(){
     if(opened.size() > 0){
         UCanvasScreen *back = opened.back();
-        if(back){
-            back->dispatchUserInput(input);
-        }
+        return back;
     }
+    return nullptr;
 }

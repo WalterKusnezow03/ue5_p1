@@ -37,10 +37,10 @@ void EmptyLinkFunctionForGeneratedCodeWidgetImage() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWidgetImage_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "///@brief wont do anything except providing a simple box with a text.\n///will setup design, font etc on its own. Default design.\n" },
+		{ "Comment", "///@brief wont do anything except displaying an image with an background\n" },
 		{ "IncludePath", "slateDerived/ImageBased/ImageBase/WidgetImage.h" },
 		{ "ModuleRelativePath", "slateDerived/ImageBased/ImageBase/WidgetImage.h" },
-		{ "ToolTip", "@brief wont do anything except providing a simple box with a text.\nwill setup design, font etc on its own. Default design." },
+		{ "ToolTip", "@brief wont do anything except displaying an image with an background" },
 	};
 #endif
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UWidgetImage_Statics::StaticCppClassTypeInfo = {
@@ -81,9 +81,9 @@ void EmptyLinkFunctionForGeneratedCodeWidgetImage() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_ImageBased_ImageBase_WidgetImage_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWidgetImage, UWidgetImage::StaticClass, TEXT("UWidgetImage"), &Z_Registration_Info_UClass_UWidgetImage, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetImage), 895569827U) },
+		{ Z_Construct_UClass_UWidgetImage, UWidgetImage::StaticClass, TEXT("UWidgetImage"), &Z_Registration_Info_UClass_UWidgetImage, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWidgetImage), 868146968U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_ImageBased_ImageBase_WidgetImage_h_933505286(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_ImageBased_ImageBase_WidgetImage_h_2401506956(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_ImageBased_ImageBase_WidgetImage_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_slateDerived_ImageBased_ImageBase_WidgetImage_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

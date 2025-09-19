@@ -97,20 +97,27 @@ void UPlayerUiBase::openGameScreen(){
 /// @brief manually registers clicks for UMG UI! Needed to be updated every frame!
 void UPlayerUiBase::updateClickDispatch(){
 
-    //click dispatch!
-    userInput.UpdateMouseClickState();
-    if(userInput.DispatchClick()){
-        OnCursorClick();
+
+    //check if wanted
+    if(openedScreenStack.CurrentScreenUsesUserInput()){
+        //click dispatch!
+        userInput.UpdateMouseClickState();
+        if(userInput.DispatchClick()){
+            OnCursorClick();
+        }
+
+        //keyboard dispatch
+        userInput.UpdateKeyBoardData(GetOwningPlayer());
+        if(userInput.HasAnyKeyboardInput()){
+            openedScreenStack.dispatchUserInput(userInput);
+        }
+        
+
+        //Hover dispatch
     }
 
-    //keyboard dispatch
-    userInput.UpdateKeyBoardData(GetOwningPlayer());
-    if(userInput.HasAnyKeyboardInput()){
-        openedScreenStack.dispatchUserInput(userInput);
-    }
+
     
-
-    //Hover dispatch
 }
 
 // new manual cursor dispatching clicks!

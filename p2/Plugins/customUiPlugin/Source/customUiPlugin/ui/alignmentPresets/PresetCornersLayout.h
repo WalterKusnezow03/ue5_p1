@@ -19,28 +19,19 @@ public:
     using UcustomUiComponentBase::init;
     void init(UCanvasScreen *parentPanelIn);
 
-    void addChildToTopLeft(UWidget *any);
-    void addChildToTopRight(UWidget *any);
-    void addChildToBottomLeft(UWidget *any);
-    void addChildToBottomRight(UWidget *any);
-    void addChildToTopCenter(UWidget *any);
 
-    void addChildToTopLeft(UcustomUiComponentBase *any);
-    void addChildToTopRight(UcustomUiComponentBase *any);
-    void addChildToBottomLeft(UcustomUiComponentBase *any);
-    void addChildToBottomRight(UcustomUiComponentBase *any);
-    void addChildToTopCenter(UcustomUiComponentBase *any);
+    void addChildToTopLeft(IBaseUiInterface *any);
+    void addChildToTopRight(IBaseUiInterface *any);
+    void addChildToBottomLeft(IBaseUiInterface *any);
+    void addChildToBottomRight(IBaseUiInterface *any);
+    void addChildToTopCenter(IBaseUiInterface *any);
 
-    //custom click dispatch and visibility
-    virtual bool dispatchClick() override;
-    virtual void SetVisible(bool visible) override;
-    virtual void Tick(float deltatime) override;
+    
 
 private:
     void createSubLayouts();
 
-    void addChildTo(UVbox *box, UWidget *any);
-    void addChildTo(UVbox *box, UcustomUiComponentBase *any);
+    void addChildTo(UVbox *box, IBaseUiInterface *any);
 
     UPROPERTY()
     UVbox *topLeft = nullptr;
@@ -58,10 +49,8 @@ private:
     UVbox *topCenter = nullptr;
 
     UPROPERTY()
-    UCanvasPanel *parentPanel = nullptr;
+    UCanvasScreen *parentPanel = nullptr;
 
-    void addToParentPanelAndInit(UcustomUiComponentBase *item, FVector2D anchor, FVector2D alignment);
+    void addToParentPanel(IBaseUiInterface *item, FVector2D anchor, FVector2D alignment);
 
-    UPROPERTY()
-    TArray<UcustomUiComponentBase *> elements;
 };

@@ -1,6 +1,7 @@
 #include "WorldList.h"
 
 #include "p2/storageInterface/WorldListSave/WorldListStorageInterface.h"
+#include "p2/ui/screens/gameLaunch/WorldList/rtti/WorldButtonPayload.h"
 #include "p2/ui/screens/gameLaunch/GameLaunchScreen.h"
 
 
@@ -24,33 +25,16 @@ void UWorldList::init(UGameLaunchScreen *launcher){
     }
 }
 
-void UWorldList::Tick(float deltatime){
-    if(baseVbox){
-        baseVbox->Tick(deltatime);
-    }
-}
 
-bool UWorldList::dispatchClick(){
-    return baseVbox != nullptr && baseVbox->dispatchClick();
-}
 
-void UWorldList::SetVisible(bool visible){
-    if(baseVbox){
-        baseVbox->SetVisible(visible);
-    }
-}
 
 
 void UWorldList::createLayout(){
-    if(!baseVbox){
-        baseVbox = NewWidgetInitialized<UVbox>(this);
-        
-    }
-
-    if(!searchBar && baseVbox){
-        searchBar = NewWidgetInitialized<UTextBoxBase>(this);
+    
+    if(!searchBar){
+        searchBar = NewObject<UWidgetSlateEditableText>(this);
         searchBar->SetHintText("Search world...");
-        baseVbox->AddChild(searchBar);
+        AddChild((IBaseUiInterface*) searchBar);
 
         //make search update delegate
         FSimpleDelegate updateTextDelegate = FSimpleDelegate::CreateUObject(this, &UWorldList::UpdateSearch);
@@ -67,10 +51,10 @@ void UWorldList::createLayout(){
 
     
     
-    if(!baseGridBox && baseVbox){
+    if(!baseGridBox){
         baseGridBox = NewObject<UGridBox>(this);
         baseGridBox->init(1,2); //2 columns. (world button and delete button)
-        baseVbox->AddChild(baseGridBox);
+        AddChild(baseGridBox);
     }
 }
 
@@ -184,8 +168,15 @@ TArray<IBaseUiInterface*> UWorldList::makeButtonPair(FString name){
                 }
             );
             removeButton->SetCallBack(removeDelegate);
+        
         }
     }
+
+    //update scale
+    UpdateWidthWorldButton(worldButton);
+    UpdateWidthRemoveButton(removeButton);
+    UpdatePayLoadWorldButton(worldButton);
+    UpdatePayLoadRemoveButton(removeButton);
 
     TArray<IBaseUiInterface *> outArray;
     if(worldButton)
@@ -343,4 +334,100 @@ void UWorldList::SaveWorldListToStorage(){
 void UWorldList::RemoveWorldDataFromStorage(FString name){
     WorldListStorageInterface interface;
     interface.DeleteWorld(name);
+}
+
+
+
+
+
+
+
+/// ----- SCALING -------
+void UWorldList::SetWidth(int width){
+    //set with of search bar fixed
+    UpdateScaleIfPossible(searchBar, FVector2D(width, 30));
+    widthWanted = width;
+    widthSetup = true;
+
+    for (int i = 0; i < textButtonsInUse.Num(); i++){
+        UTextButton *current = textButtonsInUse[i];
+        if(current){
+            UpdateWidthAuto(current);
+        }
+    }
+}
+
+void UWorldList::UpdateWidthAuto(UTextButton *current){
+    if(current){
+        if(IsWorldNameButton(current)){
+            UpdateWidthWorldButton(current);
+        }else{
+            UpdateWidthRemoveButton(current);
+        }
+    }
+}
+
+void UWorldList::UpdateWidthWorldButton(IBaseUiInterface *interface){
+    if(widthSetup){
+        int widthWorldText = widthWanted * 0.6f;
+        UpdateScaleIfPossible(interface, FVector2D(widthWorldText, 30));
+    }
+}
+void UWorldList::UpdateWidthRemoveButton(IBaseUiInterface *interface){
+    if(widthSetup){
+        int widthWorldText = widthWanted * 0.6f;
+        int widthDeleteText = widthWanted - widthWorldText;
+        UpdateScaleIfPossible(interface, FVector2D(widthDeleteText, 30));
+    }
+}
+
+void UWorldList::UpdateScaleIfPossible(IBaseUiInterface *interface, FVector2D resolution){
+    if(interface){
+        //try to find slate widget
+        UWidgetSlateWrapperBase *casted = Cast<UWidgetSlateWrapperBase>(interface);
+        if(!casted){
+            UWidget *base = interface->baseLayoutPointer();
+            if(base){
+                casted = Cast<UWidgetSlateWrapperBase>(base);
+            }
+        }
+        if(casted){
+            casted->SetResolution(resolution);
+        }
+    }
+}
+
+
+
+// -- FAKE RTTI --
+void UWorldList::UpdatePayLoadWorldButton(UTextButton *worldButton){
+    if(worldButton){
+        if(!worldNameAttribute){
+            worldNameAttribute = NewObject<UWorldButtonPayload>();
+            worldNameAttribute->SetTypeWorldNameButton();
+        }
+        worldButton->SetPayLoad(worldNameAttribute);
+    }
+}
+void UWorldList::UpdatePayLoadRemoveButton(UTextButton *removeButton){
+    if(removeButton){
+        if(!removeAttribute){
+            removeAttribute = NewObject<UWorldButtonPayload>();
+            removeAttribute->SetTypeRemoveButton();
+        }
+        removeButton->SetPayLoad(removeAttribute);
+    }
+}
+
+bool UWorldList::IsWorldNameButton(UTextButton *button){
+    if(button){
+        UPayLoadBase *payload = button->GetPayLoad();
+        if(payload){
+            UWorldButtonPayload *casted = Cast<UWorldButtonPayload>(payload);
+            if(casted){
+                return casted->IsWorldNameButton();
+            }
+        }
+    }
+    return false;
 }

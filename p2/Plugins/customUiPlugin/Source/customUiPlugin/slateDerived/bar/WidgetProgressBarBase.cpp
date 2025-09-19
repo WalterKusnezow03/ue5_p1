@@ -14,9 +14,6 @@ void UWidgetProgressBarBase::ConstructWidget(){
     if(true){
         SlateMeshDataPolygon &p = PolygonBackground();
         SlateTextBase &text = p.GetSlateText();
-        text.SetText("AAAaAAAA");
-        text.SetCenteredInWidget(true);
-        text.SetTextSize(30.0f);
     }
 
 

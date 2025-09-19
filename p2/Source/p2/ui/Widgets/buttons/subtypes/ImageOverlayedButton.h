@@ -20,6 +20,15 @@ class P2_API UImageOverlayedButton : public UImageOverlayedButtonBase {
 
 public:
 
+    //debug
+    virtual bool dispatchClick() override {
+        if(Super::dispatchClick()){
+            DebugHelper::showScreenMessage("UImageOverlayedButton pressed");
+            return true;
+        }
+        return false;
+    }
+
     using UImageOverlayedButtonBase::setImage; // <- holt die Basisklassen-Funktion zurück, verdeckung verhindert
     void setImage(textureEnum type);
     void setImage(textureEnum type, FVector2D scale);

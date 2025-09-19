@@ -66,6 +66,8 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
             polygonMap->Tick(deltatime);
         }
 
+        //---- resolution update needed in tick because of racing condition ----
+        //the widget will not update if not made one frame later.
         if(task.MarkedDirty() && polygonMap.IsValid()){
             polygonMap->ScaleToResolutionImmidiate(task.scaleToSet);
             UiDebugHelper::logMessage(

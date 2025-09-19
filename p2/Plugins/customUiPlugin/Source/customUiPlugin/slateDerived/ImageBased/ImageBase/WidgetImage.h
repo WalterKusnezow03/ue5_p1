@@ -5,8 +5,7 @@
 #include "customUiPlugin/slate/UWidgetConversion/UWigetBase/WidgetSlateWrapperBase.h"
 #include "WidgetImage.generated.h"
 
-///@brief wont do anything except providing a simple box with a text.
-///will setup design, font etc on its own. Default design.
+///@brief wont do anything except displaying an image with an background
 UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetImage : public UWidgetSlateWrapperBase{
     GENERATED_BODY()

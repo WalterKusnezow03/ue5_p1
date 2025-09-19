@@ -70,6 +70,8 @@ protected:
 
     void SwitchMenuVisibilty();
 
+    bool bMenuVisible = false;
+
     /// @brief actual item from list
     IBaseUiInterface *selectedItem = nullptr;
 

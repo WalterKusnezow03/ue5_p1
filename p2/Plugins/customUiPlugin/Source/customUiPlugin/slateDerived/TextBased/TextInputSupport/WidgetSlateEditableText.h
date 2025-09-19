@@ -11,6 +11,7 @@
 #include "customUiPlugin/UserInputTracking/UserInput.h"
 
 #include "customUiPlugin/slateDerived/TextBased/Text/WidgetSlateText.h"
+#include "customUiPlugin/ui/Widgets/callback/callback.h"
 
 #include "WidgetSlateEditableText.generated.h"
 
@@ -26,6 +27,11 @@ public:
     virtual bool dispatchClick() override;
     virtual void Tick(float deltatime) override;
 
+    void SetHintText(FString text);
+
+    void SetCallBackTextUpdate(FSimpleDelegate updateTextDelegate);
+
+    //virtual void SetResolution(FVector2D vec) override;
 
 protected:
     
@@ -36,6 +42,11 @@ protected:
     virtual void dispatchUserInput(UserInput &input) override;
 
 private:
+
+    //sync hint override
+    bool hintChanged = false;
+    FString hintTextWanted;
+
     void SetFocusKeyboard(bool bEnabled);
     bool bKeyBoardFocusFlag = false;
     bool bCursorVisible = false;
@@ -49,6 +60,9 @@ private:
     float deltaTimeIntegrated = 0.0f;
     void SetCursorVisible(bool visible);
     void SwitchCursorVisibility();
+
+    void UpdateAllPolygonData();
+    void UpdateMainTextVisibilty();
     void UpdateHintTextVisibilty();
     void UpdateTextCursorPosition();
 
@@ -58,4 +72,12 @@ private:
     );
 
     bool TextIsEmpty();
+
+
+    //callback
+    void OnTextChanged();
+    void CreateCallbackObjectIfNeeded();
+
+    UPROPERTY()
+    UCallback *callbackPointer = nullptr; //callback on click
 };

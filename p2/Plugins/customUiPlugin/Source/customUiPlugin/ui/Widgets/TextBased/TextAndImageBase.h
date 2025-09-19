@@ -7,6 +7,8 @@
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
+#include "customUiPlugin/slateDerived/TextBased/Text/WidgetSlateText.h"
+#include "customUiPlugin/slateDerived/ImageBased/ImageBase/WidgetImage.h"
 
 #include "TextAndImageBase.generated.h"
 
@@ -29,19 +31,33 @@ public:
     void setImage(UTexture2D *loadedTexture, FVector2D scale);
     void setImage(UTexture2D *loadedTexture);
 
+
+
+    virtual bool dispatchClick() override;
+    virtual void Tick(float deltatime) override;
+
 protected:
     bool isHorizontal = false;
 
     UPROPERTY()
     UHbox *baseHorizontalBox = nullptr;
     
+    
+
     UPROPERTY()
+    UWidgetSlateText *TextBlock;
+
+    UPROPERTY()
+    UWidgetImage *Image;
+
+
+    /*UPROPERTY()
     UTextBlock *TextBlock;
 
     UPROPERTY()
-    UImage *Image;
+    UImage *Image;*/
 
     void createImage();
     void createText();
-    bool correctInitialized();
+    
 };

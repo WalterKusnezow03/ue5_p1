@@ -12,6 +12,7 @@ class UVbox;
 class UTextBoxBase;
 class UImageOverlayedButton;
 class UWorldList;
+class UWidgetSlateEditableText;
 
 /**
  * loadout screen for the player to choose weapons and attachments
@@ -40,6 +41,8 @@ protected:
 
 
 private:
+    int WidthOfLayout = 300;
+
     //title hbox
     UPROPERTY()
     UHbox *topHbox = nullptr;
@@ -49,8 +52,11 @@ private:
     UPROPERTY()
     UHbox *createBarHbox = nullptr;
 
+    //UPROPERTY()
+    //UTextBoxBase *typeFieldWorld = nullptr;
     UPROPERTY()
-    UTextBoxBase *typeFieldWorld = nullptr;
+    UWidgetSlateEditableText *typeFieldWorld = nullptr;
+    
 
     UPROPERTY()
     UImageOverlayedButton *typeFieldConfirmButton = nullptr;

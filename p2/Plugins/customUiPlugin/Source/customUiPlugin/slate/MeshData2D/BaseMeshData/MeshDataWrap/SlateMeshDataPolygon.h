@@ -13,6 +13,9 @@ public:
     SlateMeshDataPolygon();
     ~SlateMeshDataPolygon();
 
+    SlateMeshDataPolygon(const SlateMeshDataPolygon &other);
+    SlateMeshDataPolygon &operator=(const SlateMeshDataPolygon &other);
+
     ///@brief appends a closed shape to the internal Meshdata
     void AppendClosedShape(TArray<FVector2D> &shape);
     void AppendClosedShape(TArray<FVector2D> &shape, int detail);
@@ -71,6 +74,7 @@ public:
     void EnableRender(bool bFlag);
     bool bIsEnabled() const;
 
+
 protected:
     /// @brief owned mesh data 
     SlateMeshData meshData;
@@ -86,4 +90,5 @@ protected:
 
     //render block
     bool rendered = true;
+
 };

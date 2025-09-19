@@ -41,12 +41,14 @@ void UWidgetSlateText::CreateTextBox(){
     meshdata.AppendQuad(tl, br);
 
     SlateTextBase &text = polygon.GetSlateText();
-    text.SetColor(FColor::White);
-    text.SetCenteredInWidget(true);
-
     //text always fits inside bounds set, shrinks.
     FVector2D maxBoundText = MaxTextSizeDefault();
     text.SetFitMaxSize(maxBoundText);
+    
+    text.SetColor(FColor::White);
+    text.SetCenteredInWidget(true);
+
+    
 }
 
 
@@ -61,3 +63,21 @@ FString UWidgetSlateText::GetText(){
     const SlateTextBase &internalText = p.GetSlateTextConst();
     return internalText.GetText();
 }
+
+
+/*
+void UWidgetSlateText::SetResolution(FVector2D res){
+    Super::SetResolution(res);
+    UpdateTextHeightFromBounds(res);
+}
+
+void UWidgetSlateText::UpdateTextHeightFromBounds(FVector2D &bound){
+
+    //update text
+    SlateTextBase &text = polygon.GetSlateText();
+
+    //text always fits inside bounds set, shrinks.
+    FVector2D maxBoundText = MaxTextSize(bound);
+    text.SetFitMaxSize(maxBoundText);
+   
+}*/

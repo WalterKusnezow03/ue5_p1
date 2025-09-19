@@ -31,21 +31,14 @@ void UPlayerHud::createBasePlayerHud(){
 
 void UPlayerHud::createAmmunitionHudElement(){
     if(playerHudCornerLayout){
-        ammunitionTextAndImage = NewObject<UTextAndImage>(this);
-
+        ammunitionTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
         if(ammunitionTextAndImage){
-            ammunitionTextAndImage->init();
-
             ammunitionTextAndImage->setImage(
                 textureEnum::patroneIcon,
                 FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
             );
 
-            UWidget *pointerOfTextImageLayout = ammunitionTextAndImage->baseLayoutPointer();
-            if(pointerOfTextImageLayout != nullptr){
-                
-                playerHudCornerLayout->addChildToBottomRight(pointerOfTextImageLayout);
-            }
+            playerHudCornerLayout->addChildToBottomRight(ammunitionTextAndImage);
         }
     }
     
@@ -54,18 +47,14 @@ void UPlayerHud::createAmmunitionHudElement(){
 void UPlayerHud::createHealthHudElement(){
     if(playerHudCornerLayout){
 
-        healthTextAndImage = NewObject<UTextAndImage>(this);
+        healthTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
         if(healthTextAndImage){
-            healthTextAndImage->init();
             healthTextAndImage->setImage(
                 textureEnum::healthIcon,
                 FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
             );
 
-            UWidget *pointerOfTextImageLayout = healthTextAndImage->baseLayoutPointer();
-            if(pointerOfTextImageLayout != nullptr){
-                playerHudCornerLayout->addChildToBottomLeft(pointerOfTextImageLayout);
-            }
+            playerHudCornerLayout->addChildToBottomLeft(healthTextAndImage);
         }
     }
     
@@ -73,14 +62,11 @@ void UPlayerHud::createHealthHudElement(){
 
 void UPlayerHud::createTopWarningElement(){
     if(playerHudCornerLayout){
-        topWaringElement = NewObject<UImageOverlayed>(this);
+        topWaringElement = NewWidgetInitialized<UImageOverlayed>(this);
         if(topWaringElement){
-            topWaringElement->init();
+            
+            playerHudCornerLayout->addChildToTopCenter(topWaringElement);
 
-            UWidget *basePointerOfLayout = topWaringElement->baseLayoutPointer();
-            if(basePointerOfLayout != nullptr){
-                playerHudCornerLayout->addChildToTopCenter(basePointerOfLayout);
-            }
 
             updateTopWaringElement("top element");
         }
@@ -125,5 +111,8 @@ void UPlayerHud::updateTopWarningElementTimed(FString message, float timetolive)
 /// --- Tick ---
 void UPlayerHud::Tick(float deltatime){
     Super::Tick(deltatime);
-    
+}
+
+bool UPlayerHud::dispatchClick(){
+    return false; //no click in hud.
 }

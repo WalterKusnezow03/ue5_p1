@@ -54,7 +54,7 @@ public:
 
     /// --- scaling internal mesh data ! ---
     ///@brief sets the widget meshdata scale and with literally.
-    void SetResolution(FVector2D scale);
+    virtual void SetResolution(FVector2D scale);
     void SetResolutionXUniform(int scale);
 
     FVector2D GetResolution();

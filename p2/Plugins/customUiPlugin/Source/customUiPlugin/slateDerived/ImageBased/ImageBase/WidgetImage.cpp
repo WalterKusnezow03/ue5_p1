@@ -22,6 +22,7 @@ void UWidgetImage::CreateImageBase(){
 
     meshdataBackground.AppendQuad(tl, br);
     meshdataBackground.SetFullColor(UiColors::backgroundBlackTransculent);
+
 }
 
 SlateMeshDataPolygon &UWidgetImage::PolygonAtImageLayer(){
