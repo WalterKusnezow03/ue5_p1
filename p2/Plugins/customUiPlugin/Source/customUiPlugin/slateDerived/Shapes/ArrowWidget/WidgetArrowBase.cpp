@@ -104,7 +104,7 @@ void UWidgetArrowBase::SetupBackground(){
 void UWidgetArrowBase::SetDefaultRotation(){
     SetAnimationTime(0.3f); //some default time
     FRotator t1 = MakeRotator(0.0f);
-    FRotator t2 = MakeRotator(0.0f);
+    FRotator t2 = MakeRotator(-90.0f);
     interpolator.setTarget(t1, t2, 0.0f);
 }
 
@@ -172,7 +172,7 @@ void UWidgetArrowBase::AddState(float rotationDeg){
 
     //immidiatly apply if first state
     if(rotationStates.Num() == 1){
-        SwitchToNextRotation(0.0f);
+        //SwitchToNextRotationImmidiate();
     }
 }
 
@@ -189,7 +189,21 @@ void UWidgetArrowBase::SwitchToNextRotation(float timeOfAnimation){
     if(rotationStates.Num() > 0){
         currentState = (currentState + 1) % rotationStates.Num();
     }
+}
+
+void UWidgetArrowBase::SwitchToNextRotationImmidiate(){
+
+    //creates currently bugged state, center invalid.
+
+    FRotator next = NextStateRotator();
+
+    SlateMeshDataPolygon &p = Polygon();
+    SlateMeshData &meshData = p.MeshDataRef();
     
+    MMatrix2D M = MakeRotationMatrixAroundCenter(meshData.CenterOfMesh(), next);
+    meshData.SetRuntimeTransformation(M);
+
+    UiDebugHelper::logMessage("UWidgetArrowBase Switch Immidiate");
 }
 
 FRotator UWidgetArrowBase::NextStateRotator(){

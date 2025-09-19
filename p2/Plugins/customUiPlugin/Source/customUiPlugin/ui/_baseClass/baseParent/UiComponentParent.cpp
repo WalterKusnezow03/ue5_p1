@@ -25,11 +25,19 @@ void UUiComponentParent::Tick(float deltatime){
     }
 }
 bool UUiComponentParent::dispatchClick(){
+    if(!markedVisible()){
+        return false;
+    }
+
     int ignored = 0;
     return dispatchClick(ignored);
 }
 
 bool UUiComponentParent::dispatchClick(int &outIndexFirst){
+    if(!markedVisible()){
+        return false;
+    }
+    
     bool flag = false;
     for (int i = 0; i < trackedChildsInterface.Num(); i++)
     {

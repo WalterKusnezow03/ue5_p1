@@ -29,6 +29,11 @@ void UVerticalDropDownBase::Debug(){
 ///@brief dispatches a click and returns the index of the pressed item inside the 
 ///picker list, if any hit!
 bool UVerticalDropDownBase::dispatchClick(){
+    if(!markedVisible()){
+        return false;
+    }
+    
+    
     //handle menu show hide
     if(topSelection){
         if(topSelection->dispatchClick()){

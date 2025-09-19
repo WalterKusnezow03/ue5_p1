@@ -81,6 +81,9 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
         if(taskRawX.MarkedDirty()){
             SetResolutionXUniform(taskRawX.scaleToSet.X);
         }
+        if(taskRawY.MarkedDirty()){
+            SetResolutionYUniform(taskRawY.scaleToSet.Y);
+        }
 
         UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
     }
@@ -169,6 +172,22 @@ void UWidgetSlateWrapperBase::SetResolutionXUniform(int scale){
         }
     }
     taskRawX.Update(FVector2D(scale,0));
+}
+
+void UWidgetSlateWrapperBase::SetResolutionYUniform(int scale){
+    if(polygonMap.IsValid()){
+        if(bWasConstructed){
+            FVector2D bounds = polygonMap->Bounds();
+            if(bounds.Y <= 0.0f){
+                return;
+            }
+            float a = scale / bounds.Y;
+            bounds *= a;
+            SetResolution(bounds);
+            return;
+        }
+    }
+    taskRawY.Update(FVector2D(0,scale));
 }
 
 

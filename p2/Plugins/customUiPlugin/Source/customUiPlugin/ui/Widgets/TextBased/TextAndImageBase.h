@@ -42,14 +42,13 @@ protected:
     UPROPERTY()
     UHbox *baseHorizontalBox = nullptr;
     
-    
-
     UPROPERTY()
     UWidgetSlateText *TextBlock;
 
     UPROPERTY()
     UWidgetImage *Image;
 
+    bool uniformScalingSetup = false;
 
     /*UPROPERTY()
     UTextBlock *TextBlock;

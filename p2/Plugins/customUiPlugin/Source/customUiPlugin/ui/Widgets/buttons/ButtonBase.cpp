@@ -55,9 +55,11 @@ void UButtonBase::createButton(){
 /// @brief tests if this button was hit on click!
 /// @return 
 bool UButtonBase::dispatchClick(){
-
+    if(!markedVisible()){
+        return false;
+    }
     //DebugHelper::logMessage("UButtonBase try dispatch click");
-    if (button && markedVisible()) //may be marked invisible: dont do hittest
+    if (button) //may be marked invisible: dont do hittest
     {
         TSharedPtr<SWidget> SlateWidget = button->GetCachedWidget();
 

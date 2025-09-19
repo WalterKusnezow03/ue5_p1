@@ -29,6 +29,7 @@ public:
 
     void SwitchToNextRotation();
     void SwitchToNextRotation(float timeOfAnimation);
+    void SwitchToNextRotationImmidiate();
     void SetAnimationTime(float time);
 
     void AddState(float rotationDeg);

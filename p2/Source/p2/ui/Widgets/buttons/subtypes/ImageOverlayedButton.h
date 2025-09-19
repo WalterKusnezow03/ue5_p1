@@ -22,6 +22,9 @@ public:
 
     //debug
     virtual bool dispatchClick() override {
+        if(!markedVisible()){
+            return false;
+        }
         if(Super::dispatchClick()){
             DebugHelper::showScreenMessage("UImageOverlayedButton pressed");
             return true;

@@ -130,6 +130,9 @@ void ULoadoutScreen::FillOrLoadLoadout(){
 
 
 bool ULoadoutScreen::dispatchClick(){
+    if(!markedVisible()){
+        return false;
+    }
     bool flag = Super::dispatchClick();
     bool here = false;
 

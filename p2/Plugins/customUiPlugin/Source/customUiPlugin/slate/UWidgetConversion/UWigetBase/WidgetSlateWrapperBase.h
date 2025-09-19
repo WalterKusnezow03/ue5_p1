@@ -49,6 +49,7 @@ private:
     FResolutionUpdateTask task;
     FResolutionUpdateTask taskRawXY;
     FResolutionUpdateTask taskRawX;
+    FResolutionUpdateTask taskRawY;
 
 public:
 
@@ -56,6 +57,7 @@ public:
     ///@brief sets the widget meshdata scale and with literally.
     virtual void SetResolution(FVector2D scale);
     void SetResolutionXUniform(int scale);
+    void SetResolutionYUniform(int scale);
 
     FVector2D GetResolution();
 

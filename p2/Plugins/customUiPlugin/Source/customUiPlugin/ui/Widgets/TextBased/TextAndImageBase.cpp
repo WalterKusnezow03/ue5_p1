@@ -33,10 +33,13 @@ void UTextAndImageBase::init(){
     createText();
     createImage();
     SetText("new text box image");
-
+    uniformScalingSetup = false;
 }
 
 bool UTextAndImageBase::dispatchClick(){
+    if(!markedVisible()){
+        return false;
+    }
     return baseHorizontalBox != nullptr && baseHorizontalBox->dispatchClick();
 }
 
@@ -44,9 +47,24 @@ void UTextAndImageBase::Tick(float deltatime){
     Super::Tick(deltatime);
     if (baseHorizontalBox)
     {
-        UiDebugHelper::logMessage("UTextAndImageBase tick");
+        //UiDebugHelper::logMessage("UTextAndImageBase tick"); is ticked.
         baseHorizontalBox->Tick(deltatime);
     }
+
+    //set text and image same height, can only happen in tick
+    //because slate widget building is not game thread :)
+    if(TextBlock && Image){
+        if(!uniformScalingSetup){
+            //set image height same to text block
+            FVector2D resText = TextBlock->GetResolution();
+            if(resText.Y > 0.0f){
+                Image->SetResolutionYUniform(resText.Y);
+                uniformScalingSetup = true;
+            }
+        }
+    }
+
+
 }
 
 

@@ -54,7 +54,9 @@ bool UTextButton::CompareText(FString textIn){
  * debug
  */
 bool UTextButton::dispatchClick(){
-   
+    if(!markedVisible()){
+        return false;
+    }
     if(TextBlock){
         if(TextBlock->dispatchClick()){
             UiDebugHelper::showScreenMessage("UTextButton Click", FColor::Green);

@@ -45,12 +45,10 @@ void UWorldList::createLayout(){
         {
             uclassInstance->SomeUFunction(SomeValue);
         }*/
+
+        CreateSpacer(40);
     }
 
-    
-
-    
-    
     if(!baseGridBox){
         baseGridBox = NewObject<UGridBox>(this);
         baseGridBox->init(1,2); //2 columns. (world button and delete button)

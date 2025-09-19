@@ -314,7 +314,9 @@ TArray<UVerticalDropDownBase *> UWeaponSetupScreen::AttachmentLists(){
 //overriden from super - custom dispatch needed here for handling picker lists readable.
 bool UWeaponSetupScreen::dispatchClick(){
 
-
+    if(!markedVisible()){
+        return false;
+    }
 
     //check all selectable lists
     TArray<UVerticalDropDownBase *> pickers = AllLists();
