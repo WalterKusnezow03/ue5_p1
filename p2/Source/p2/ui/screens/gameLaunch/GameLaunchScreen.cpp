@@ -6,7 +6,6 @@
 #include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Vbox.h"
 
-#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
 #include "p2/ui/screens/gameLaunch/WorldList/WorldList.h"
 
 #include "customUiPlugin/ui/Widgets/autoContainer/sizing/FixedSizeBox.h"
@@ -82,47 +81,58 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
         return;
     }
 
-    //create textbox for new world.
-
-
     //create info text
 
+    //scaling
+    int UniFormButtonScale = HeightTopBar;
+    int WidthTypeBox = WidthOfLayout - UniFormButtonScale;
+    FVector2D resTypeBox(WidthTypeBox, HeightTopBar);
+    FVector2D resTypeButton(UniFormButtonScale, UniFormButtonScale);
 
-
-    //hbox containing it
+    //create hbox containing it
     createBarHbox = NewWidgetInitialized<UHbox>(this);
     menuVbox->AddChild(createBarHbox);
 
     //type field 
     typeFieldWorld = NewObject<UWidgetSlateEditableText>(this);
     typeFieldWorld->SetHintText("Type a World Name");
+    typeFieldWorld->SetResolution(resTypeBox);
+
+    typeFieldConfirmButton = NewObject<UWidgetImageExtended>(this);
+    typeFieldConfirmButton->SetImage(textureEnum::healthIcon, FVector2D(50, 50));
+    typeFieldConfirmButton->SetResolution(resTypeButton);
+
     createBarHbox->AddChild((IBaseUiInterface*) typeFieldWorld);
+    createBarHbox->AddChild((IBaseUiInterface*) typeFieldConfirmButton);
 
-    typeFieldConfirmButton = NewWidgetInitialized<UImageOverlayedButton>(this);
-    //typeFieldConfirmButton->setImage(textureEnum::healthIcon, FVector2D(100,100));
-    typeFieldConfirmButton->setImage(textureEnum::healthIcon, FVector2D(50, 50));
-    typeFieldConfirmButton->SetCallBack(
-        FSimpleDelegate::CreateUObject(this, &UGameLaunchScreen::createAndLaunchWorldFromTypeField)
-    );
-    createBarHbox->AddChild(typeFieldConfirmButton);
-
-    //FSimpleDelegate::CreateUObject(uclassInstance*, &<classname>::<methodname>)
-    /*FSimpleDelegate::CreateLambda([uclassInstance*, SomeValue]()
-    {
-        uclassInstance->SomeUFunction(SomeValue);
-    }*/
 
 }
 
 
-
-
+bool UGameLaunchScreen::dispatchClick(){
+    bool result = Super::dispatchClick();
+    bool resultB = false;
+    if (typeFieldConfirmButton)
+    {
+        if(typeFieldConfirmButton->dispatchClick()){
+            createAndLaunchWorldFromTypeField();
+            resultB = true;
+        }
+    }
+    return result || resultB;
+}
 
 void UGameLaunchScreen::createAndLaunchWorldFromTypeField(){
     DebugHelper::logMessage("UGameLaunchScreen try create world");
     if (worldListPicker && typeFieldWorld)
     {
         FString name = typeFieldWorld->GetText();
+        if(name.Len() <= 0){
+            //Invalid
+            DebugHelper::showScreenMessage("world name invalid!");
+            return;
+        }
+
         DebugHelper::logMessage("UGameLaunchScreen try create world: ", name);
         if(worldListPicker->CanAddWorld(name)){
             worldListPicker->AddWorld(name); //update ui, save name to storage

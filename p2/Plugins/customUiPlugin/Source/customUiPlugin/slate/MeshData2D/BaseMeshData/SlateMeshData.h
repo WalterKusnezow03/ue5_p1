@@ -57,6 +57,9 @@ public:
     /// @brief adds a triangle to the buffer, and splits it recursively if detail > 0
     void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, int detail);
 
+    /// @brief adds a triangle to the buffer, and splits it recursively if detail > 0
+    void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d, int detail);
+
     ///@brief appends a triangle but looks for nearby vertecies
     void AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c);
 
@@ -78,6 +81,9 @@ public:
 
     ///@brief adds a quad between 2 positions
     void AppendQuad(FVector2D &bottomLeft, FVector2D &topRight);
+
+    ///@brief adds a quad between 2 positions and creates inner triangles for detailed cursor color shading
+    void AppendQuad(FVector2D &bottomLeft, FVector2D &topRight, int detail);
 
     // --- Data reference for drawing ---
     TArray<FVector2D> &VerteciesRef();

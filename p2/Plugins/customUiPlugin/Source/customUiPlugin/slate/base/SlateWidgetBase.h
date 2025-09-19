@@ -60,6 +60,8 @@ public:
     ///@brief tells if the cursor is inside this geometry
     virtual bool dispatchClick();
 
+    bool IsHovered();
+
 protected:
 
     //draw polygons

@@ -127,6 +127,13 @@ void UCanvasScreen::RemoveChild(UWidget *widget){
 
 
 
+#include "customUiPlugin/baseInterface/WidgetHelper.h"
+void UCanvasScreen::SetVisible(bool visible){
+    Super::SetVisible(visible);
+    if(baseCanvas){
+        WidgetHelper::SetVisible(baseCanvas, visible);
+    }
+}
 
 /// @brief creates the canvas for this screen
 void UCanvasScreen::createBaseCanvas(){

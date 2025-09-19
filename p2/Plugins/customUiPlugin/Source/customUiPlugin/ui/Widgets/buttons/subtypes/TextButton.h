@@ -43,6 +43,7 @@ public:
         return TextBlock;
     }
 
+
 private:
 
     UPROPERTY()

@@ -5,9 +5,10 @@
 void UWidgetSlateText::ConstructWidget(){
     Super::ConstructWidget();
     CreateTextBox();
+
+    //debug
+    SetCursorColorEnabled(true);
 }
-
-
 
 SlateMeshDataPolygon &UWidgetSlateText::PolygonAtTextLayer(){
     return FindFromMap(textLayer);
@@ -38,7 +39,8 @@ void UWidgetSlateText::CreateTextBox(){
     SlateMeshData &meshdata = polygon.MeshDataRef();
     FVector2D tl(0, 0);
     FVector2D br = setupScale();
-    meshdata.AppendQuad(tl, br);
+    int detail = 9; //recursion split
+    meshdata.AppendQuad(tl, br, detail);
 
     SlateTextBase &text = polygon.GetSlateText();
     //text always fits inside bounds set, shrinks.
@@ -64,6 +66,10 @@ FString UWidgetSlateText::GetText(){
     return internalText.GetText();
 }
 
+
+void UWidgetSlateText::OnHover(){
+    //nothing in here yet.
+}
 
 /*
 void UWidgetSlateText::SetResolution(FVector2D res){

@@ -10,8 +10,6 @@ void UWidgetSlateWrapperBase::InitSharedPolygonMapPtrIfNeeded(){
 
 
 
-
-
 void UWidgetSlateWrapperBase::ReleaseSlateResources(bool bReleaseChildren)
 {
     Super::ReleaseSlateResources(bReleaseChildren);
@@ -70,10 +68,10 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
         //the widget will not update if not made one frame later.
         if(task.MarkedDirty() && polygonMap.IsValid()){
             polygonMap->ScaleToResolutionImmidiate(task.scaleToSet);
-            UiDebugHelper::logMessage(
+            /*UiDebugHelper::logMessage(
                 FString::Printf(TEXT("UWidgetSlateWrapperBase process Scale set task %s"), 
                 *task.scaleToSet.ToString())
-            );
+            );*/
         }
         if(taskRawXY.MarkedDirty()){
             SetResolution(taskRawXY.scaleToSet);
@@ -86,6 +84,8 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
         }
 
         UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
+
+        IsHoveredTick();
     }
     if(bDebugTickLog){
         UiDebugHelper::showScreenMessage("UWidgetSlateWrapper base tick log", FColor::Green);
@@ -98,13 +98,39 @@ void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
         //testing needed here!
         if (polygonMap->BoundsUpdated())
         {
-            UiDebugHelper::logMessage("UWidgetSlateWrapperBase bounds update 2");
+            //UiDebugHelper::logMessage("UWidgetSlateWrapperBase bounds update 2");
             SetWidthAndHeightSizeBox(polygonMap->Bounds());
         }
     }
     
 }
 
+
+void UWidgetSlateWrapperBase::IsHoveredTick(){
+    if(Super::IsHovered()){
+        OnHover();
+        return;
+    }
+
+    if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
+        if(ptr->IsHovered()){
+            OnHover();
+            return;
+        }
+    }
+}
+
+void UWidgetSlateWrapperBase::OnHover(){
+    //empty here.
+}
+
+
+void UWidgetSlateWrapperBase::SetCursorColorEnabled(bool flag){
+    if(polygonMap.IsValid()){
+        polygonMap->SetCursorColorEnabled(flag);
+        UiDebugHelper::logMessage("SetCursorColor enaled UWidgetSlateWrapperBase");
+    }
+}
 
 
 

@@ -54,6 +54,7 @@
         "algorithm": "cpp",
         "type_traits": "cpp",
         "typeindex": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "iterator": "cpp"
     }
 }

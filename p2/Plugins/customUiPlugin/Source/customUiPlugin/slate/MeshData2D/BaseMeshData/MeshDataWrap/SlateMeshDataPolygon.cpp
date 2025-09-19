@@ -67,9 +67,15 @@ void SlateMeshDataPolygon::AddAmbientUvColor(FVector2D uv, FLinearColor color){
 }
 
 void SlateMeshDataPolygon::SetCursorColor(FLinearColor color){
-    bDynamicCursorColorEnabled = true;
+    SetCursorColorEnabled(true);
     meshData.UpdateCursorColor(color);
 }
+
+void SlateMeshDataPolygon::SetCursorColorEnabled(bool flag){
+    bDynamicCursorColorEnabled = flag;
+}
+
+
 
 
 void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){

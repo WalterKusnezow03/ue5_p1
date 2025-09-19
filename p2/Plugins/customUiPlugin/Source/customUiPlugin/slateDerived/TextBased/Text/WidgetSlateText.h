@@ -15,9 +15,12 @@ public:
     void SetText(FString text);
     FString GetText();
 
-    //virtual void SetResolution(FVector2D scale) override;
+    
 
 protected:
+    virtual void OnHover() override;
+
+
     FVector2D setupScale();
     FVector2D MaxTextSize(FVector2D &bound);
     FVector2D MaxTextSizeDefault();
@@ -25,7 +28,10 @@ protected:
     virtual void ConstructWidget() override;
     void CreateTextBox();
 
-    SlateMeshDataPolygon &PolygonAtTextLayer();
+    
     int textLayer = 0;
+
+    //virtual void SetResolution(FVector2D scale) override;
+    SlateMeshDataPolygon &PolygonAtTextLayer();
 
 };

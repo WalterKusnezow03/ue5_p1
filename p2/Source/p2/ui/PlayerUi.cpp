@@ -118,19 +118,26 @@ void UPlayerUi::updateMissionTextTimed(FString message){
 // --- player interact Open Screen api ---
 
 void UPlayerUi::openPauseScreen(){
-    if(screenSwitchAllowed()){
+    DebugHelper::logMessage("UPlayerUi try open pause");
+    if (screenSwitchAllowed())
+    {
         //if(playerHud){
         //    playerHud->SetVisible(false);
         //}
         openedScreenStack.closeAll(); //player hud is opened just every other screen.
         openedScreenStack.open(pauseScreen);
-    
+        DebugHelper::logMessage("UPlayerUi open pause");
+    }
+    else
+    {
+        DebugHelper::logMessage("UPlayerUi try open pause failed, game launch still open.");
     }
 }
 
 //called from Pause screen, AworldLevel::gameStateManager flag update needed!
 void UPlayerUi::openGameScreen(){
 
+    DebugHelper::logMessage("UPlayerUi open game screen");
     AworldLevel::gameStateManager.OverrideGameState(EGameState::EGamePlay);
 
     // close ui
@@ -161,19 +168,20 @@ void UPlayerUi::openLoadoutScreen(){
 
 
 void UPlayerUi::openGameLaunchScreen(){
-    if(screenSwitchAllowed()){
+    DebugHelper::logMessage("UPlayerUi open game launch screen");
+    if (screenSwitchAllowed())
+    {
         //if(playerHud){
         //    playerHud->SetVisible(false);
         //}
         openedScreenStack.open(gameLaunchScreen);
     }
-    
 }
 
 
 
 bool UPlayerUi::screenSwitchAllowed(){
-    return openedScreenStack.ScreenAlreadyOpen(gameLaunchScreen) == false;
+    return openedScreenStack.ScreenIsOpenTop(gameLaunchScreen) == false;
 }
 
 

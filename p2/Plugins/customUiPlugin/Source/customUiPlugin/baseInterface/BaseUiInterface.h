@@ -40,9 +40,11 @@ public:
 	virtual UPayLoadBase *GetPayLoad(){
 		return nullptr;
 	}
-
-
-
 	//debug
 	virtual void enableTicklog() {};
+
+	
+	virtual void OnHover() {};
+
+
 };

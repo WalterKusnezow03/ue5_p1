@@ -27,6 +27,9 @@ public:
 
     void UpdateCursorPosition(FVector2D &pos);
 
+    ///enabled for all polygons
+    void SetCursorColorEnabled(bool flag);
+
     bool BoundsUpdated();
     FVector2D Bounds();
 

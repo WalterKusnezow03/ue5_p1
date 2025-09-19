@@ -4,7 +4,7 @@
 #include "customUiPlugin/ui/PlayerUiBase.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
-#include "p2/ui/Widgets/buttons/subtypes/ImageOverlayedButton.h"
+
 #include "Components/CanvasPanelSlot.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "p2/entityManager/referenceManager.h"

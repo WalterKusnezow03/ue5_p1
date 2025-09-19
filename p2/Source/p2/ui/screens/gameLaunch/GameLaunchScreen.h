@@ -2,7 +2,7 @@
 
 
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
-
+#include "p2/ui/Widgets/ImageBased/WidgetImageExtended.h"
 
 #include "GameLaunchScreen.generated.h"
 
@@ -26,6 +26,8 @@ public:
     
     virtual void init(UPlayerUiBase &ref);
 
+    virtual bool dispatchClick() override;
+
     /// @brief launch a world from UWorldList
     /// @param world 
     UFUNCTION()
@@ -37,11 +39,14 @@ public:
     void createAndLaunchWorldFromTypeField();
 
 
+
+
 protected:
 
 
 private:
     int WidthOfLayout = 300;
+    int HeightTopBar = 40;
 
     //title hbox
     UPROPERTY()
@@ -59,7 +64,7 @@ private:
     
 
     UPROPERTY()
-    UImageOverlayedButton *typeFieldConfirmButton = nullptr;
+    UWidgetImageExtended *typeFieldConfirmButton = nullptr;
 
     //menu vbox (store bar and list)
     UPROPERTY()

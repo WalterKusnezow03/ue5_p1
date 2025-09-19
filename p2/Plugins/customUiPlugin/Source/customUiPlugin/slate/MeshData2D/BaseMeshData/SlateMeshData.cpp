@@ -3,6 +3,9 @@
 
 SlateMeshData::SlateMeshData(){
     bCursorColorEnabled = false;
+
+    FLinearColor c(1.0f, 1.0f, 1.0f, 0.5f);
+    UpdateCursorColor(c);
 }
 
 SlateMeshData::~SlateMeshData(){
@@ -137,6 +140,31 @@ void SlateMeshData::AppendQuad(FVector2D &bottomLeft, FVector2D &topRight){
     Append(v0, v1, v2, v3);
 }
 
+void SlateMeshData::AppendQuad(FVector2D &bottomLeft, FVector2D &topRight, int detail){
+    /*
+    1-->2
+    |   |
+    0<--3
+    */
+   FVector2D v0(
+        std::min(bottomLeft.X, topRight.X),
+        std::min(bottomLeft.Y, topRight.Y)
+    );
+    FVector2D v1(
+        std::min(bottomLeft.X, topRight.X),
+        std::max(bottomLeft.Y, topRight.Y)
+    );
+    FVector2D v2(
+        std::max(bottomLeft.X, topRight.X),
+        std::max(bottomLeft.Y, topRight.Y)
+    );
+    FVector2D v3(
+        std::max(bottomLeft.X, topRight.X),
+        std::min(bottomLeft.Y, topRight.Y)
+    );
+    AppendEfficent(v0, v1, v2, v3, detail);
+}
+
 void SlateMeshData::AppendEfficentTriangleShapedBuffer(TArray<FVector2D> &triangleShapedBuffer){
     for (int i = 2; i < triangleShapedBuffer.Num(); i += 3){
         AppendEfficent(
@@ -210,6 +238,13 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
     FlagCacheUpdateNeeded();
 
 
+}
+
+void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c, FVector2D &d, int detail){
+    //split one time already: -1
+    detail--;
+    AppendEfficent(a, b, c, detail);
+    AppendEfficent(a, c, d, detail);
 }
 
 void SlateMeshData::AppendEfficent(
@@ -539,7 +574,9 @@ void SlateMeshData::UpdateCursorPosition(
 }
 
 void SlateMeshData::UpdateCursorColor(FLinearColor &color){
-    if(cursorColorPair.UpdateColor(color)){
+    color.A = 0.0f; //remove alpha channel for color only, no alpha.
+    if (cursorColorPair.UpdateColor(color))
+    {
         FlagCacheUpdateNeeded();
     }
 }
@@ -623,9 +660,9 @@ FVector2f SlateMeshData::MakeUV(const FVector2D &vertex) const {
 FLinearColor SlateMeshData::InterpolatedColorFor(
     const FVector2D &pos
 ) const {
-    if(fullColorEnabled){
+    /*if(fullColorEnabled){
         return fullColor;
-    }
+    }*/
 
 
     //if empty color buffer and no cursor enabled, return default Color
@@ -640,6 +677,11 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     //closest color: 1.0
     //furthest color: 0.0
     FLinearColor accumulatedColor = FLinearColor::Black; //start with black color, otherwise its broken!
+    if(fullColorEnabled){
+        accumulatedColor = fullColor;
+    }
+
+
 
     if(!fullColorEnabled){
         float totalDistance = 0.0f;
@@ -721,7 +763,12 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
     //clamp color very important
     accumulatedColor = accumulatedColor.GetClamped();
     accumulatedColor.A = 1.0f;
-    // FMath::Clamp(accumulatedColor.A, 0.0f, 1.0f);
+
+    //hot fix
+    if(fullColorEnabled){
+        accumulatedColor.A = fullColor.A;
+    }
+    
 
     if(bLogColor){
         UiDebugHelper::logMessage(

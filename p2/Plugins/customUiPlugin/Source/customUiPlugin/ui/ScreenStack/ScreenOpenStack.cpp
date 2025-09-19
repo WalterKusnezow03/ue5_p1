@@ -18,12 +18,25 @@ void ScreenOpenStack::dispatchClick(){
     }
 }
 
+
+bool ScreenOpenStack::ScreenIsOpenTop(UCanvasScreen *item){
+    if(item != nullptr){
+        if(UCanvasScreen *back = latestScreen()){
+            
+            return back == item;
+        }
+    }
+    return false;
+}
+
 bool ScreenOpenStack::ScreenAlreadyOpen(UCanvasScreen *item){
     if(item != nullptr){
 
         if(UCanvasScreen *back = latestScreen()){
-            item->SetVisible(true);
-            return true;
+            if(back == item){
+                item->SetVisible(true);
+                return true;
+            }
         }
         
     }
@@ -80,8 +93,9 @@ void ScreenOpenStack::closeAll(){
     while(!isEmpty()){
         closeBack();
     }
+    UiDebugHelper::logMessage(
+        FString::Printf(TEXT("UPlayerUi screenstack count: %d"), opened.size()));
 }
-
 
 bool ScreenOpenStack::isEmpty(){
     return opened.size() <= 0;

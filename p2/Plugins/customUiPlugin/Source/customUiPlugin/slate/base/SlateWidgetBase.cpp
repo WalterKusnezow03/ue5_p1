@@ -263,6 +263,10 @@ void SSlateWidgetBase::DrawText(
 
 // --- click dispatch ---
 bool SSlateWidgetBase::dispatchClick(){
+    return IsHovered();
+}
+
+bool SSlateWidgetBase::IsHovered(){
     FGeometry Geometry = GetCachedGeometry();
     FVector2D cursorPos = CursorPositionScreenSpace();
 
@@ -278,6 +282,8 @@ bool SSlateWidgetBase::dispatchClick(){
 
     return inBoundsX && inBoundsY;
 }
+
+
 
 FVector2D SSlateWidgetBase::CursorPositionScreenSpace(){
     return FSlateApplication::Get().GetCursorPos();

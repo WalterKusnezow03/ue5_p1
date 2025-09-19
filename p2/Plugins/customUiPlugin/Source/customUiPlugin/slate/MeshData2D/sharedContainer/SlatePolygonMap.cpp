@@ -55,6 +55,15 @@ void SlatePolygonMap::UpdateCursorPosition(FVector2D &cursorLocalSpace){
     }
 }
 
+void SlatePolygonMap::SetCursorColorEnabled(bool flag){
+    TArray<SlateMeshDataPolygon *> polygons = allPolygonsSorted();
+    for (int i = 0; i < polygons.Num(); i++){
+        if(SlateMeshDataPolygon *current = polygons[i]){
+            current->SetCursorColorEnabled(flag);
+        }
+    }
+}
+
 
 
 

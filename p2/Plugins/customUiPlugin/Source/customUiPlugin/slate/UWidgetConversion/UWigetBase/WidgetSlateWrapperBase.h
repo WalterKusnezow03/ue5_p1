@@ -25,6 +25,9 @@ public:
         bDebugTickLog = true;
     }
 
+    ///disbaled by default.
+    void SetCursorColorEnabled(bool flag);
+
 protected:
     bool bDebugTickLog = false;
 
@@ -43,6 +46,10 @@ protected:
     bool TickAllowed(){
         return bWasConstructed;
     }
+
+    //hover function, called in tick if hovered.
+    virtual void IsHoveredTick();
+    virtual void OnHover() override;
 
 private:
     bool bWasConstructed = false;

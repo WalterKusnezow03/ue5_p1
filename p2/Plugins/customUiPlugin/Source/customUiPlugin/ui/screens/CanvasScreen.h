@@ -25,6 +25,8 @@ public:
         return true;
     }
 
+    virtual void SetVisible(bool visible) override;
+
     //must be called from derived class!
     virtual void init(UPlayerUiBase &refin);
 

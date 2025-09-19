@@ -24,9 +24,11 @@ public:
 
     void Tick(float deltatime);
 
-    bool ScreenAlreadyOpen(UCanvasScreen *item);
-
+    
+    bool ScreenIsOpenTop(UCanvasScreen *item);
 private:
+
+    bool ScreenAlreadyOpen(UCanvasScreen *item);
     std::vector<UCanvasScreen *> opened;
 
     UCanvasScreen *latestScreen();

@@ -29,6 +29,7 @@ public:
 
     ///@brief expects cursor in local space.
     void UpdateCursorPosition(FVector2D &pos);
+    void SetCursorColorEnabled(bool flag);
 
     ///Call after manipulating mesh data.
     ///@brief overrides the color buffer to the new color
