@@ -15,13 +15,15 @@ public:
     void SetText(FString text);
     FString GetText();
 
-    
+    /// @brief default size of widget
+    /// @return 
+    FVector2D setupScale();
 
 protected:
     virtual void OnHover() override;
 
 
-    FVector2D setupScale();
+    
     FVector2D MaxTextSize(FVector2D &bound);
     FVector2D MaxTextSizeDefault();
 

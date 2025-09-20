@@ -28,10 +28,8 @@ public:
 
     void SetText(FString textIn);
 
-    void setImage(UTexture2D *loadedTexture, FVector2D scale);
     void setImage(UTexture2D *loadedTexture);
-
-
+    void setImage(UTexture2D *loadedTexture, FVector2D scale);
 
     virtual bool dispatchClick() override;
     virtual void Tick(float deltatime) override;

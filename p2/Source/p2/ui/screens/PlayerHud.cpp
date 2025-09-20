@@ -34,8 +34,7 @@ void UPlayerHud::createAmmunitionHudElement(){
         ammunitionTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
         if(ammunitionTextAndImage){
             ammunitionTextAndImage->setImage(
-                textureEnum::patroneIcon,
-                FVector2D(0.25f, 1.0f) //scale quad texture to be long again.
+                textureEnum::patroneIcon
             );
 
             playerHudCornerLayout->addChildToBottomRight(ammunitionTextAndImage);
@@ -50,8 +49,7 @@ void UPlayerHud::createHealthHudElement(){
         healthTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
         if(healthTextAndImage){
             healthTextAndImage->setImage(
-                textureEnum::healthIcon,
-                FVector2D(0.8f, 0.7f) //scale quad texture to be long again.
+                textureEnum::healthIcon
             );
 
             playerHudCornerLayout->addChildToBottomLeft(healthTextAndImage);
@@ -62,13 +60,11 @@ void UPlayerHud::createHealthHudElement(){
 
 void UPlayerHud::createTopWarningElement(){
     if(playerHudCornerLayout){
-        topWaringElement = NewWidgetInitialized<UImageOverlayed>(this);
+        topWaringElement = NewWidgetInitialized<UTextButton>(this);
         if(topWaringElement){
-            
             playerHudCornerLayout->addChildToTopCenter(topWaringElement);
 
-
-            updateTopWaringElement("top element");
+            updateTopWarningElementTimed("top element", 1.0f);
         }
     }
 }
@@ -96,21 +92,30 @@ void UPlayerHud::updateHealthText(FString message){
 
 void UPlayerHud::updateTopWaringElement(FString message){
     if(topWaringElement){
+        topWaringElement->SetVisible(true);
         topWaringElement->SetText(message);
     }
 }
 
 ///@brief updates the top text but will reset it after the time to live has exceeded
 void UPlayerHud::updateTopWarningElementTimed(FString message, float timetolive){
-    if(topWaringElement){
-        topWaringElement->setTextTimed(message, timetolive);
-    }
+    updateTopWaringElement(message);
+    topWarningTime = timetolive;
 }
-
 
 /// --- Tick ---
 void UPlayerHud::Tick(float deltatime){
     Super::Tick(deltatime);
+
+    DebugHelper::showScreenMessage("PlayerHud Tick");
+
+    if(topWarningTime > 0.0f){
+        topWarningTime -= deltatime;
+        if(topWarningTime <= 0.0f){
+            topWarningTime = 0.0f;
+            topWaringElement->SetVisible(false);
+        }
+    }
 }
 
 bool UPlayerHud::dispatchClick(){

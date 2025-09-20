@@ -27,7 +27,6 @@ void UWidgetSlateEditableText::ConstructWidget(){
     textInternal.SetColor(color);
     
     UpdateTextCursorPosition();
-    SetCursorVisible(false);
 
 
 
@@ -45,6 +44,7 @@ void UWidgetSlateEditableText::ConstructWidget(){
     }
 
     UpdateAllPolygonData();
+    SetCursorVisible(false);
 }
 
 SlateMeshDataPolygon &UWidgetSlateEditableText::PolygonAtTextCursorLayer(){
@@ -69,6 +69,7 @@ void UWidgetSlateEditableText::SwitchTextToLayer(int layer){
 bool UWidgetSlateEditableText::dispatchClick(){
     bool result = Super::dispatchClick();
     SetFocusKeyboard(result);
+    UpdateTextCursorPosition();
     return result;
 }
 
@@ -191,7 +192,7 @@ void UWidgetSlateEditableText::CursorLocationAndHeigth(
         const SlateTextBase &textInternal = hintLayer.GetSlateTextConst();
         FVector2D textBounds = textInternal.Bounds(); //height
 
-        cursorHeight = textBounds.Y;
+        cursorHeight = textBounds.Y * 0.9f;
     }
     else
     {
@@ -201,7 +202,7 @@ void UWidgetSlateEditableText::CursorLocationAndHeigth(
         const SlateTextBase &textInternal = textLayer.GetSlateTextConst();
         FVector2D textBounds = textInternal.Bounds();
 
-        cursorHeight = textBounds.Y;
+        cursorHeight = textBounds.Y * 0.9f;
         cursorLocation = pivot + FVector2D(textBounds.X, 0.0f); //at end of text
     }
 }

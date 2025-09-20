@@ -49,14 +49,7 @@ void UGameLaunchScreen::createMenu(){
         menuVbox = NewWidgetInitialized<UVbox>(this);
         if (menuVbox)
         {
-            //new method with pivot and gravity
-            /*
-            void UCanvasScreen::AddChild(
-                UcustomUiComponentBase *item,
-                FVector2D screenAnchor, //corner top left (0,0), bottom right (1,1)
-                FVector2D alignment //gravity / pivot of item (0,0.5), make centered on y
-            )*/
-            //added to base
+            //add to canvas
             AddChild(
                 menuVbox,
                 FVector2D(0.5f, 0.1f), // pivot locationScalar
@@ -64,13 +57,8 @@ void UGameLaunchScreen::createMenu(){
             );                     // to top center, align center
 
             createTypeFieldForWorldCreation();
-
-            //world list
-            worldListPicker = NewObject<UWorldList>(this);
-            worldListPicker->init(this);
-            worldListPicker->SetWidth(WidthOfLayout);
-
-            menuVbox->AddChild(worldListPicker);
+            menuVbox->CreateSpacer(30);
+            createWorldList();
         }
     }
 }
@@ -95,7 +83,7 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
 
     //type field 
     typeFieldWorld = NewObject<UWidgetSlateEditableText>(this);
-    typeFieldWorld->SetHintText("Type a World Name");
+    typeFieldWorld->SetHintText("Create new world");
     typeFieldWorld->SetResolution(resTypeBox);
 
     typeFieldConfirmButton = NewObject<UWidgetImageExtended>(this);
@@ -104,9 +92,18 @@ void UGameLaunchScreen::createTypeFieldForWorldCreation(){
 
     createBarHbox->AddChild((IBaseUiInterface*) typeFieldWorld);
     createBarHbox->AddChild((IBaseUiInterface*) typeFieldConfirmButton);
-
-
 }
+
+void UGameLaunchScreen::createWorldList(){
+    //world list
+    worldListPicker = NewObject<UWorldList>(this);
+    worldListPicker->init(this);
+    worldListPicker->SetWidth(WidthOfLayout);
+    menuVbox->AddChild(worldListPicker);
+}
+
+
+
 
 
 bool UGameLaunchScreen::dispatchClick(){
@@ -177,6 +174,7 @@ void UGameLaunchScreen::AddDebugElements(){
         return;
     }
 
+    return;
 
     menuVbox->CreateSpacer(200);
     

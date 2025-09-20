@@ -29,6 +29,7 @@ public:
 	virtual void Tick(float DeltaTime) = 0;
 	virtual bool dispatchClick() = 0;
 	virtual void SetVisible(bool flag) = 0;
+	virtual bool markedVisible() = 0;
 
 	//does not have to be overriden.
 	virtual void dispatchUserInput(UserInput &input) {};

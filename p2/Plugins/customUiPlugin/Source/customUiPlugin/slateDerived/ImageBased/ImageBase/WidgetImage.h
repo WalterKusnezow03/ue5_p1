@@ -16,6 +16,8 @@ public:
     void SetImage(UTexture2D *image);
     void SetImage(UTexture2D *image, FVector2D fixedRes);
 
+    
+
     void RemoveImage();
 
     virtual void Tick(float deltatime) override;
@@ -30,4 +32,5 @@ protected:
     SlateMeshDataPolygon &PolygonAtImageLayer();
     int imageLayer = 0;
 
+    bool bDebugFlag = false;
 };

@@ -23,7 +23,8 @@ public class p2 : ModuleRules
 			"IkHumanoidModell",
 			"customUiPlugin",
 			"StoragePlugin",
-			"GcGameCore"
+			"GcGameCore",
+			"CustomMaterialPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

@@ -19,6 +19,11 @@ UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public USizeBox, public IBaseUiInterface
 {
     GENERATED_BODY()
+protected:
+    virtual void PostInitProperties() override;
+    virtual void BeginDestroy() override;
+    int id = 0;
+    static int idGlobal;
 
 public:
     virtual void enableTicklog() override {
@@ -29,8 +34,9 @@ public:
     void SetCursorColorEnabled(bool flag);
 
 protected:
-    bool bDebugTickLog = false;
+    bool bMarkedVisible = true;
 
+    bool bDebugTickLog = false;
     bool bDebugPolygon = true;
 
     ///@brief override if another type needed
@@ -41,6 +47,7 @@ protected:
     //here you can customize your mesh data for the widget, add new layers,
     //etc. 
     virtual void ConstructWidget();
+    void ProcessScalingTasks();
     void UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
 
     bool TickAllowed(){
@@ -88,7 +95,14 @@ public:
 
     virtual void SetVisible(bool flag) override{
         WidgetHelper::SetVisible(this, flag);
+        bMarkedVisible = flag;
     }
+
+    virtual bool markedVisible() override{
+        return bMarkedVisible;
+    }
+
+
 
     virtual UWidget *baseLayoutPointer() override {
         return this;

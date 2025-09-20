@@ -7,7 +7,11 @@
 /// be ticked. Very Important.
 struct CUSTOMUIPLUGIN_API FResolutionUpdateTask {
 
-    FResolutionUpdateTask(){}
+    FResolutionUpdateTask(){
+        scaleToSet.X = 0.0f;
+        scaleToSet.Y = 0.0f;
+        taskDirty = false;
+    }
     ~FResolutionUpdateTask(){}
 
     FResolutionUpdateTask(FVector2D &scale){

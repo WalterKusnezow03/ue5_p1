@@ -10,7 +10,6 @@ class UPlayerUiBase;
 class UHbox;
 class UVbox;
 class UTextBoxBase;
-class UImageOverlayedButton;
 class UWorldList;
 class UWidgetSlateEditableText;
 
@@ -79,6 +78,7 @@ private:
     //menu
     void createMenu();
     void createTypeFieldForWorldCreation();
+    void createWorldList();
 
     //debug
     void AddDebugElements();

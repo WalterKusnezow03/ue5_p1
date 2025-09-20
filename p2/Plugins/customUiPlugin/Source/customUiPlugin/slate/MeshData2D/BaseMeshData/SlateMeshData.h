@@ -85,6 +85,9 @@ public:
     ///@brief adds a quad between 2 positions and creates inner triangles for detailed cursor color shading
     void AppendQuad(FVector2D &bottomLeft, FVector2D &topRight, int detail);
 
+    ///@brief appens a triangle shaped vertex buffer
+    void AppendTriangleShapedBuffer(TArray<FVector2D> &buffer);
+
     // --- Data reference for drawing ---
     TArray<FVector2D> &VerteciesRef();
     TArray<SlateIndex> &TrianglesRef();

@@ -46,7 +46,7 @@ void UWorldList::createLayout(){
             uclassInstance->SomeUFunction(SomeValue);
         }*/
 
-        CreateSpacer(40);
+        CreateSpacer(10);
     }
 
     if(!baseGridBox){

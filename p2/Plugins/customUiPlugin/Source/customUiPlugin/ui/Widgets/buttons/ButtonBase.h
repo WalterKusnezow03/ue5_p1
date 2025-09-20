@@ -13,12 +13,7 @@
 
 
 /**
- * button with scaled content
- * 
- * button (base)
- * -->scale box (scales content to parent)
- * --->content inside scale box
- * 
+ * button base - meant as abstract class.
  */
 
 UCLASS()
@@ -27,36 +22,15 @@ class CUSTOMUIPLUGIN_API UButtonBase : public UcustomUiComponentBase
     GENERATED_BODY()
 
 public:
-    //call after construct!
-    virtual void init() override;
-
-    virtual UWidget *baseLayoutPointer() override{
-        return scalebox; //button //scalebox(wrong)
-    }
 
     void SetCallBack(FSimpleDelegate callbackIn);
-
-    void reloadCallback();
-    
-
-
-    //NEW
-    virtual bool dispatchClick() override;
 
 protected:
     void TriggerCallback();
 
     UPROPERTY()
-    UButton *button = nullptr;
-
-    UPROPERTY()
-    UScaleBox *scalebox = nullptr; //inside button. Use to add your childs, macht button sichtbar
-
-    UPROPERTY()
     UCallback *callbackPointer = nullptr; //callback on click
 
-    void createScaleBox();
-    void createButton();
     void createPressedCallbackIfNeeded();
    
 

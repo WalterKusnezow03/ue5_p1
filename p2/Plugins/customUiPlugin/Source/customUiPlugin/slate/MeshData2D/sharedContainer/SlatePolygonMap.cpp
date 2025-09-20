@@ -195,6 +195,10 @@ void SlatePolygonMap::ApplyTransformImmidiate(MMatrix2D &transform){
 
 
 void SlatePolygonMap::ScaleToResolutionImmidiate(FVector2D &res){
+
+    //widget not initialized yet!
+
+    ForceUpdateBoundsForSizeCalculation();
     FVector2D currentSize = Bounds();
 
     // num * x = target

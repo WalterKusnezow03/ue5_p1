@@ -27,6 +27,7 @@ public:
 
     virtual bool dispatchClick() override;
 
+
     /// @brief slate widgets MUST be ticked if they are changed in scale to recognize the change.
     /// @param deltatime 
     virtual void Tick(float deltatime) override;

@@ -20,7 +20,6 @@ public:
     
     using UTextAndImageBase::setImage; // <- holt die Basisklassen-Funktion zurück, verdeckung verhindert
     void setImage(textureEnum type);
-    void setImage(textureEnum type, FVector2D scale);
     void setImage(FString path);
 
 };

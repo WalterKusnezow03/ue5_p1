@@ -96,7 +96,30 @@ void UTextAndImageBase::SetText(FString textIn){
 /// @brief sets the image texture from utexture2D* if not nullptr!
 /// @param loadedTexture 
 void UTextAndImageBase::setImage(UTexture2D *loadedTexture){
-    setImage(loadedTexture, FVector2D(50,50));
+
+    if (loadedTexture && TextBlock)
+    {
+        //align to textblock height
+        FVector2D res = TextBlock->GetResolution();
+        float height = res.Y;
+        FVector2D setupRes = TextBlock->setupScale();
+        if(height <= 0.0f){
+            height = setupRes.Y;
+        }
+
+        if(height > 0.0f){
+            //a * x = target
+            //x = target / a
+
+            float scaleX = loadedTexture->GetSizeX();
+            float scaleY = loadedTexture->GetSizeY();
+            float x = height / scaleY;
+            FVector2D resImage(scaleX, scaleY);
+            resImage *= x;
+            setImage(loadedTexture, resImage);
+        }
+    }
+    //setImage(loadedTexture, FVector2D(50,50));
 }
 
 void UTextAndImageBase::setImage(UTexture2D *loadedTexture, FVector2D scale){

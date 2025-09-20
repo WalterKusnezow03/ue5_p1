@@ -2,22 +2,75 @@
 #include "customUiPlugin/slate/base/SlateWidgetBase.h"
 #include "customUiPlugin/Private/Debug/UiDebugHelper.h"
 
+int UWidgetSlateWrapperBase::idGlobal = 0;
+
+
+
 void UWidgetSlateWrapperBase::InitSharedPolygonMapPtrIfNeeded(){
     if(!polygonMap.IsValid()){
         polygonMap = MakeShared<SlatePolygonMap>();
     }
 }
 
+void UWidgetSlateWrapperBase::PostInitProperties(){
+    /*
+    Debug log for better understanding:
 
+    LogTemp: UWidgetSlateWrapperBase debug lifecycle - PostInitProperties id(0)
+    LogTemp: UWidgetSlateWrapperBase debug lifecycle - PostInitProperties id(1)
+    LogTemp: UWidgetSlateWrapperBase::SetResolution, debug lifecycle (1) polygonmap valid and constructed X=50.000 Y=50.000
+    LogTemp: UWidgetSlateWrapperBase::SetResolution, debug lifecycle (1) polygonmap valid and constructed X=8.294 Y=40.000
+    LogTemp: UWidgetSlateWrapperBase debug lifecycle - RebuildWidget id(0)
+    LogTemp: UWidgetSlateWrapperBase debug lifecycle - RebuildWidget id(1)
+    
+    //--> first: PostInitProperties: Create Widget here.
+    //--> second: Set Resolution now is valid because mesh data already will be created
+    //--> third: RebuildWidget -> Rebuild widget can be done now without any issues, mesh data created
+    //--> if first and second would switch: Creating the Widget as NewObject<T> would not allow
+    //resize right after that.
+
+    //resize / set resolution still managed in tick 
+    //apparently it still is weird.
+    */
+
+
+
+    //happens before rebuild widget.
+    id = idGlobal++;
+    InitSharedPolygonMapPtrIfNeeded();
+    UiDebugHelper::logMessage(
+        FString::Printf(TEXT("UWidgetSlateWrapperBase debug lifecycle - PostInitProperties id(%d)"), id)
+    );
+
+    //---- Must be called here: earliest entry point before building widget ----
+    //since post init properties is 
+    //callid before rebuild widget:
+    //Construct a single time, mesh data wont be deleted.
+    if(!bWasConstructed){
+        ConstructWidget(); //do not remove this, can call derived method!
+        UpdateSizeBoxBoundsIfMeshDataMarkedDirty(); //very important
+        bWasConstructed = true;
+    }
+
+    Super::PostInitProperties();
+}
+
+void UWidgetSlateWrapperBase::BeginDestroy(){
+    idGlobal = 0;
+    Super::BeginDestroy();
+}
 
 void UWidgetSlateWrapperBase::ReleaseSlateResources(bool bReleaseChildren)
 {
-    Super::ReleaseSlateResources(bReleaseChildren);
     MySlateWidget.Reset(); //sets ptr to nullptr
+    Super::ReleaseSlateResources(bReleaseChildren);
 }
 
 TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
 {
+    UiDebugHelper::logMessage(
+        FString::Printf(TEXT("UWidgetSlateWrapperBase debug lifecycle - RebuildWidget id(%d)"), id)
+    );
     InitSharedPolygonMapPtrIfNeeded();
     /*
     Src Code SizeBox:
@@ -43,12 +96,7 @@ TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
         base //Sbox ref, child added
     ); 
 
-    //Construct a single time, mesh data wont be deleted.
-    if(!bWasConstructed){
-        ConstructWidget(); //do not remove this, can call derived method!
-        UpdateSizeBoxBoundsIfMeshDataMarkedDirty(); //very important
-        bWasConstructed = true;
-    }
+    
 
     return t;
 }
@@ -64,24 +112,7 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
             polygonMap->Tick(deltatime);
         }
 
-        //---- resolution update needed in tick because of racing condition ----
-        //the widget will not update if not made one frame later.
-        if(task.MarkedDirty() && polygonMap.IsValid()){
-            polygonMap->ScaleToResolutionImmidiate(task.scaleToSet);
-            /*UiDebugHelper::logMessage(
-                FString::Printf(TEXT("UWidgetSlateWrapperBase process Scale set task %s"), 
-                *task.scaleToSet.ToString())
-            );*/
-        }
-        if(taskRawXY.MarkedDirty()){
-            SetResolution(taskRawXY.scaleToSet);
-        }
-        if(taskRawX.MarkedDirty()){
-            SetResolutionXUniform(taskRawX.scaleToSet.X);
-        }
-        if(taskRawY.MarkedDirty()){
-            SetResolutionYUniform(taskRawY.scaleToSet.Y);
-        }
+        ProcessScalingTasks();
 
         UpdateSizeBoxBoundsIfMeshDataMarkedDirty();
 
@@ -92,13 +123,45 @@ void UWidgetSlateWrapperBase::Tick(float deltatime){
     }
 }
 
+void UWidgetSlateWrapperBase::ProcessScalingTasks(){
+    //---- resolution update needed in tick because of racing condition,
+    // sometimes the widget doesnt react to the resize, because the polygon map is not
+    // created yet. ----
+
+    //the widget will not update if not made one frame later.
+    if(polygonMap.IsValid() && task.MarkedDirty()){
+        polygonMap->ScaleToResolutionImmidiate(task.scaleToSet);
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("UWidgetSlateWrapperBase process Scale set task %s"), 
+                *task.scaleToSet.ToString()
+            )
+        );
+    }
+    if(taskRawXY.MarkedDirty()){
+        UiDebugHelper::logMessage(
+            FString::Printf(TEXT("UWidgetSlateWrapperBase raw scale process %s"), 
+            *taskRawXY.scaleToSet.ToString())
+        );
+        SetResolution(taskRawXY.scaleToSet);
+    }
+    if(taskRawX.MarkedDirty()){
+        SetResolutionXUniform(taskRawX.scaleToSet.X);
+    }
+    if(taskRawY.MarkedDirty()){
+        SetResolutionYUniform(taskRawY.scaleToSet.Y);
+    }
+}
+
+
+
+
+
 void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
     if(polygonMap.IsValid()){
-
-        //testing needed here!
+        //is tested.
         if (polygonMap->BoundsUpdated())
         {
-            //UiDebugHelper::logMessage("UWidgetSlateWrapperBase bounds update 2");
             SetWidthAndHeightSizeBox(polygonMap->Bounds());
         }
     }
@@ -137,6 +200,9 @@ void UWidgetSlateWrapperBase::SetCursorColorEnabled(bool flag){
 
 
 bool UWidgetSlateWrapperBase::dispatchClick(){
+    if(!markedVisible()){
+        return false;
+    }
     if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
         return ptr->dispatchClick();
     }
@@ -170,14 +236,26 @@ FVector2D UWidgetSlateWrapperBase::GetResolution(){
 
 void UWidgetSlateWrapperBase::SetResolution(FVector2D scale){
     
-    
+    //the scaling task system is still needed in tick - for reasons i dont know this
+    //method apparently can be called before PostInitProperties.
     if(bWasConstructed && polygonMap.IsValid()){
         task.Update(scale);
-    }else{
+        UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("UWidgetSlateWrapperBase::SetResolution, debug lifecycle (%d) polygonmap valid and constructed %s"),
+                id,
+                *scale.ToString()
+            )
+        );
+    }
+    else
+    {
         taskRawXY.Update(scale);
     }
-    
-    
+
+
+    //debug
+    //ProcessScalingTasks();
 }
 
 void UWidgetSlateWrapperBase::SetResolutionXUniform(int scale){
@@ -197,7 +275,7 @@ void UWidgetSlateWrapperBase::SetResolutionXUniform(int scale){
             return;
         }
     }
-    taskRawX.Update(FVector2D(scale,0));
+    //taskRawX.Update(FVector2D(scale,0));
 }
 
 void UWidgetSlateWrapperBase::SetResolutionYUniform(int scale){
@@ -213,7 +291,7 @@ void UWidgetSlateWrapperBase::SetResolutionYUniform(int scale){
             return;
         }
     }
-    taskRawY.Update(FVector2D(0,scale));
+    //taskRawY.Update(FVector2D(0,scale));
 }
 
 

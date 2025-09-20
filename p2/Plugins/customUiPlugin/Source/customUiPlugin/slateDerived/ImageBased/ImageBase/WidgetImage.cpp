@@ -52,9 +52,22 @@ void UWidgetImage::SetImage(UTexture2D *image, FVector2D fixedRes){
 
     if(image){
         SetImage(image);
-        SetResolution(validateResolution(fixedRes));
+        SetResolution(validateResolution(fixedRes)); //scales meshdata too
+
+        /*UiDebugHelper::logMessage(
+            FString::Printf(
+                TEXT("UWidgetImage Image Set %s, Res: %s"),
+                *image->GetName(),
+                *fixedRes.ToString()
+            )
+        );*/
+        bDebugFlag = true;
     }
 }
+
+
+
+
 
 FVector2D UWidgetImage::validateResolution(FVector2D &other){
     FVector2D out(
@@ -67,7 +80,11 @@ FVector2D UWidgetImage::validateResolution(FVector2D &other){
 
 void UWidgetImage::Tick(float deltatime){
     Super::Tick(deltatime);
-    UiDebugHelper::logMessage(
-        FString::Printf(TEXT("UWidgetImage tick, res %s"), *GetResolution().ToString())
-    );
+
+    if(bDebugFlag){
+        bDebugFlag = false;
+        UiDebugHelper::logMessage(
+            FString::Printf(TEXT("UWidgetImage updated tick, res %s"), *GetResolution().ToString())
+        );
+    }
 }

@@ -112,7 +112,7 @@ public:
         return nullptr;
     }
 
-    bool markedVisible(){
+    virtual bool markedVisible() override{
         return VISIBLE_FLAG;
     }
 

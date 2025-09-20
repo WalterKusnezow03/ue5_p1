@@ -102,7 +102,7 @@ void UWidgetArrowBase::SetupBackground(){
 
 
 void UWidgetArrowBase::SetDefaultRotation(){
-    SetAnimationTime(0.3f); //some default time
+    SetAnimationTime(0.2f); //some default time
     FRotator t1 = MakeRotator(0.0f);
     FRotator t2 = MakeRotator(-90.0f);
     interpolator.setTarget(t1, t2, 0.0f);

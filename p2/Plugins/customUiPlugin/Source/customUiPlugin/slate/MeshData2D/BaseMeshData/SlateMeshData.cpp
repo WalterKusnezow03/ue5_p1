@@ -81,6 +81,17 @@ void SlateMeshData::Clear(){
     FlagCacheUpdateNeeded();
 }
 
+void SlateMeshData::AppendTriangleShapedBuffer(TArray<FVector2D> &buffer){
+    for (int i = 2; i < buffer.Num(); i += 3){
+        FVector2D &v0 = buffer[i - 2];
+        FVector2D &v1 = buffer[i - 1];
+        FVector2D &v2 = buffer[i];
+        AppendEfficent(v0, v1, v2);
+    }
+}
+
+
+
 void SlateMeshData::Append(FVector2D &a, FVector2D &b, FVector2D &c){
     if(!TriangleCanBeAdded()){
         return;
@@ -213,8 +224,6 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
         boundingBox.Update(a);
     }
 
-
-
     uint16 indexB = Vertecies.Num(); //saved index before adding to buffer. Will be valid.
     if(HasVertex(b, indexB)){
         Triangles.Add(indexB);
@@ -223,9 +232,6 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
         Triangles.Add(indexB);
         boundingBox.Update(b);
     }
-
-
-
     uint16 indexC = Vertecies.Num(); //saved index before adding to buffer. Will be valid.
     if(HasVertex(c, indexC)){
         Triangles.Add(indexC);
@@ -236,7 +242,6 @@ void SlateMeshData::AppendEfficent(FVector2D &a, FVector2D &b, FVector2D &c){
     }
 
     FlagCacheUpdateNeeded();
-
 
 }
 
