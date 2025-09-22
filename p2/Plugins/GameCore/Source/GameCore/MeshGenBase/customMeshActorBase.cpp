@@ -487,7 +487,15 @@ void AcustomMeshActorBase::switchToLod(ELod lod){
         ref.setHiddenInGame(hide);
     }
 
+    OnLodSwitch();
 }
+
+void AcustomMeshActorBase::OnLodSwitch(){
+
+}
+
+
+
 
 /// @brief updates mesh section completely and apply material
 /// @param lod 

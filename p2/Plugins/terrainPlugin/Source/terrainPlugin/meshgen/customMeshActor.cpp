@@ -54,7 +54,7 @@ void AcustomMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
     setTeam(teamEnum::neutralTeam); //nesecarry for being shot of everyone
-    
+    CreateFoliageInstanceComponent();
 }
 
 // Called every frame
@@ -131,10 +131,7 @@ void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
 void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
     FVector localHit = worldToLocalHit(worldhit);
 
-    //iterate all layers, if hit: create debree
-    
-
-    
+    //iterate all layers, if hit: create debree    
     std::vector<materialEnum> materials = MaterialEnumHelper::materialVector();
     for (int i = 0; i < materials.size(); i++){
         MeshData &meshdata = findMeshDataReference(
@@ -233,52 +230,6 @@ void AcustomMeshActor::releaseChunkParserPointer(){
     }
     chunkParserPointer = nullptr;
 }
-	
-
-
-
-
-
-
-
-
-
-
-// --- deprecated setup ---
-void AcustomMeshActor::createTerrainFrom2DMap(TerrainChunkSetup &package){
-
-    thisTerrainType = package.getTerrainType(); //must be set before mesh gen!
-
-    Super::createTerrainFrom2DMap(
-        package.mapReference(),
-        thisTerrainType
-    );
-    setMaterialBehaiviour(materialEnum::grassMaterial); //no split
-
-
-    TArray<FVectorTouple> &touples = package.freeFoliagePositionsRef();
-
-    if(package.createTrees() && (thisTerrainType != ETerrainType::EOcean)){ 
-        float percentDensity = package.treeDensitySkalar();
-        createFoliageAndPushNodesAroundFoliageToNavMesh(touples, percentDensity);
-    }else{
-        addRandomNodesToNavmesh(touples);
-    }
-
-
-    package.createOutPostIfFlagged(GetWorld());
-
-    LISTEN_FOR_LOD_PLAYER = true;
-}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -347,122 +298,6 @@ void AcustomMeshActor::createCube(
 }
 
 
-
-
-
-
-
-/// @brief create foliage and append it to the output mesh data, the output mesh data will
-/// get its position from the actor. The touples expected to be in local coordinate system
-/// @param touples lcoation and normal in a touple
-/// @param outputAppend for example a terrain mesh to create trees on
-void AcustomMeshActor::createFoliageAndPushNodesAroundFoliageToNavMesh(
-    TArray<FVectorTouple> &touples,
-    float treeDensitySkalar
-){
-    //create trees if not in skelleton record debug mode.
-    if(AworldLevelBase::DebugSkelletonRecordMode()){
-        return;
-    }
-
-    // iterate over touples
-    // determine normal angle and apply foliage, rocks, trees accordingly
-    if (touples.Num() < 1){
-        return;
-    }
-
-    //saves the vertical locations to later choose random once and remove from list
-    std::vector<FVector> potentialLocations;
-    Super::filterTouplesForVerticalVectors(
-        touples,
-        potentialLocations
-    );
-
-    //create trees at random valid locations
-    std::vector<FVector> pickedLocationsForNavmesh;
-
-
-    //int chunkScaleOneAxisInMeter = chunkScaleOneAxisLengthCm / 100;
-    //int limit = chunkScaleOneAxisInMeter / 2; // tree count
-
-    int limit = treeDensitySkalar * touples.Num();
-    DebugHelper::logMessage("tree density limit: ", limit);
-    //limit = 10;
-
-    for (int i = 0; i < limit; i++){
-
-        int index = FVectorUtil::randomNumber(0, potentialLocations.size() - 1);
-        if (index < potentialLocations.size() && index >= 0)
-        {
-            FVector vertex = potentialLocations[index];
-            pickedLocationsForNavmesh.push_back(vertex); //tree position added to navmesh
-            createTreeAndSaveToMesh(vertex);
-            
-            
-            //potentialLocations.erase(potentialLocations.begin() + index);
-            potentialLocations[index] = potentialLocations.back();
-            potentialLocations.pop_back();
-        }
-    }
-
-
-    //add all points around foliage to navmesh to allow the bots to move over the terrain better
-    if (APathFinder *f = APathFinder::instance())
-    {
-        //um um 90 grad zu drehen, x und y tauschen, einen negieren
-        //(a,b) (-b,a) (-a,-b) (b, -a)
-        std::vector<FVector> offsets = {
-            FVector(50, 50, 70),
-            FVector(-50, 50, 70),
-            FVector(50, -50, 70),
-            FVector(-50, -50, 70),
-        };
-    
-        //f->addNewNodeVector(pickedLocationsForNavmesh, offsets);
-        FVector ownLocationOffset = GetActorLocation();
-        for (int i = 0; i < pickedLocationsForNavmesh.size(); i++)
-        {
-            std::vector<FVector> convexHull;
-            FVector &currentLocation = pickedLocationsForNavmesh[i];
-            for (int j = 0; j < offsets.size(); j++)
-            {
-                convexHull.push_back(offsets[j] + currentLocation + ownLocationOffset);
-            }
-            f->addConvexHull(convexHull);
-        }
-
-        DebugHelper::logMessage("debugPathfinder added nodes to mesh", pickedLocationsForNavmesh.size() * 4);
-    }
-
-    ReloadMeshAndApplyAllMaterials();
-
-}
-
-
-
-
-//new!
-
-void AcustomMeshActor::createTreeAndSaveToMesh(FVector &location){
-    
-    tree.generate(thisTerrainType); 
-    
-    MeshData &currentTreeStemMesh = tree.meshDataStemByReference();
-    MeshData &currentLeafMesh = tree.meshDataLeafByReference();
-
-    currentTreeStemMesh.offsetAllvertecies(location);
-    currentLeafMesh.offsetAllvertecies(location);
-
-    materialEnum stemTargetMaterial = currentTreeStemMesh.targetMaterial(); //very important to have!
-    materialEnum leafTargetMaterial = currentLeafMesh.targetMaterial();
-
-    MeshData &meshDataStem = findMeshDataReference(stemTargetMaterial, ELod::lodNear, true);
-    MeshData &meshDataLeaf = findMeshDataReference(leafTargetMaterial, ELod::lodNear, false); //noraycast
-
-    meshDataStem.append(currentTreeStemMesh);
-    meshDataLeaf.append(currentLeafMesh);
-    
-}
 
 
 
@@ -674,71 +509,64 @@ void AcustomMeshActor::debugDrawMeshData(MeshData &meshdata){
     meshdata.debugDrawMesh(currentTransform, GetWorld());
 }
 
-/**
- * 
- * 
- * ----- shading function for foliage ------ DEPRECATED
- * 
- * 
- */
-std::vector<materialEnum> AcustomMeshActor::foliageMaterials(){
-    std::vector<materialEnum> output = {
-        materialEnum::palmLeafMaterial
-    };
-    return output;
+
+
+
+
+
+
+/// ----- foliage instancer -----
+void AcustomMeshActor::CreateFoliageInstanceComponent(){
+    if(!grassInstancer){
+        if(UStaticMesh *mesh = StaticMeshForInstancer()){
+
+            grassInstancer = NewObject<UMovingFoliageInstancerComponent>(this);
+            int childsMax = 40;
+            grassInstancer->Init(childsMax, mesh, this);
+            UpdateFoliageInstanceComponent();
+        }else{
+            DebugHelper::logMessage("AcustomMeshActor::CreateFoliageInstanceComponent failed to load ustaticmesh");
+        }
+    }
 }
 
+UStaticMesh *AcustomMeshActor::StaticMeshForInstancer(){
+    UStaticMesh* DefaultCube = LoadObject<UStaticMesh>(
+        nullptr,
+        TEXT("/Engine/BasicShapes/Cube.Cube")
+    );
+    return DefaultCube;
+}
 
-
-
-
-
-
-
-
-
-
-/*
------ not sure if needed ------
-*/
-
-void AcustomMeshActor::addRandomNodesToNavmesh(TArray<FVectorTouple> &touples){
-    /**
-     * ADD NODES TO NAVMESH
-     */
-    int size = touples.Num();
-    if(size <= 0){
-        return;
-    }
-
-    
-    int count = touples.Num();
-    std::set<int> indices;
-    for (int i = 0; i < count; i++){
-        int newIndex = FVectorUtil::randomNumber(0, size) % size;
-        indices.insert(newIndex);
-    }
-
-    int limit = 30;
-    
-    std::vector<FVector> picked;
-    for (auto &ref : indices)
-    {
-        if(ref >= 0 && ref < size){
-            picked.push_back(touples[ref].first()); //first is location
-            limit--;
-            if(limit <= 0){
-                break;
-            }
+void AcustomMeshActor::OnLodSwitch(){
+    if(currentLodLevel == ELod::lodNear){
+        UpdateFoliageInstanceComponent();
+    }else{
+        if(grassInstancer){
+            grassInstancer->HideAll();
         }
     }
+}
 
-    if(picked.size() > 0){
-        // add all normal centers to navmesh to allow the bots to move over the terrain
-        if (APathFinder *f = APathFinder::instance())
-        {
-            FVector offset(0, 0, 70);
-            f->addNewNodeVector(picked, offset);
-        }
+void AcustomMeshActor::UpdateFoliageInstanceComponent(){
+    //get grass positions
+    if(grassInstancer){
+        bool raycastOnLayer = true;
+        MeshData &data = findMeshDataReference(
+            materialEnum::grassMaterial,
+            ELod::lodNear,
+            raycastOnLayer
+        );
+        const TArray<FVector> &positions = data.getVerteciesRef();
+        grassInstancer->Update(positions);
+
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("AcustomMeshActor::UpdateFoliageInstanceComponent count %d"),
+                positions.Num()
+            )
+        );
     }
+    
+
 }

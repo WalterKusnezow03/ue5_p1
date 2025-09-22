@@ -102,6 +102,14 @@ FString AssetPathMaker::makeAssetPath(
     return path;
 }
 
+
+
+
+
+
+
+
+
 FString AssetPathMaker::ToString(EAssetType type){
     if(type == EAssetType::EUClassBlueprint){
         return TEXT("Blueprint");

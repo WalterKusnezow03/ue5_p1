@@ -7,15 +7,14 @@
 #include "UObject/GeneratedCppIncludes.h"
 #include "CustomMaterialPlugin/Materials/Nodes/NodeBase.h"
 #include "../../Source/Runtime/Engine/Classes/Materials/MaterialExpression.h"
-#include "CustomMaterialPlugin/Materials/Nodes/InputExpression/ExpressionInputNamed.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeNodeBase() {}
 // Cross Module References
 	CUSTOMMATERIALPLUGIN_API UClass* Z_Construct_UClass_UNodeBase();
 	CUSTOMMATERIALPLUGIN_API UClass* Z_Construct_UClass_UNodeBase_NoRegister();
-	CUSTOMMATERIALPLUGIN_API UScriptStruct* Z_Construct_UScriptStruct_FExpressionInputNamed();
 	ENGINE_API UClass* Z_Construct_UClass_UMaterialExpression();
 	ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FExpressionInput();
+	ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FExpressionOutput();
 	UPackage* Z_Construct_UPackage__Script_CustomMaterialPlugin();
 // End Cross Module References
 	void UNodeBase::StaticRegisterNativesUNodeBase()
@@ -32,11 +31,16 @@ void EmptyLinkFunctionForGeneratedCodeNodeBase() {}
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
-		static const UECodeGen_Private::FStructPropertyParams NewProp_expressionArray_Inner;
+		static const UECodeGen_Private::FStructPropertyParams NewProp_expressionInputArray_Inner;
 #if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_expressionArray_MetaData[];
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_expressionInputArray_MetaData[];
 #endif
-		static const UECodeGen_Private::FArrayPropertyParams NewProp_expressionArray;
+		static const UECodeGen_Private::FArrayPropertyParams NewProp_expressionInputArray;
+		static const UECodeGen_Private::FStructPropertyParams NewProp_expressionOutputArray_Inner;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_expressionOutputArray_MetaData[];
+#endif
+		static const UECodeGen_Private::FArrayPropertyParams NewProp_expressionOutputArray;
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_FallbackInput_MetaData[];
 #endif
@@ -58,13 +62,22 @@ void EmptyLinkFunctionForGeneratedCodeNodeBase() {}
 		{ "ToolTip", "@brief deriving from material expression node for materials." },
 	};
 #endif
-	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray_Inner = { "expressionArray", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UScriptStruct_FExpressionInputNamed, METADATA_PARAMS(nullptr, 0) }; // 563481622
+	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray_Inner = { "expressionInputArray", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UScriptStruct_FExpressionInput, METADATA_PARAMS(nullptr, 0) };
 #if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray_MetaData[] = {
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray_MetaData[] = {
 		{ "ModuleRelativePath", "Materials/Nodes/NodeBase.h" },
 	};
 #endif
-	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray = { "expressionArray", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UNodeBase, expressionArray), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray_MetaData)) }; // 563481622
+	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray = { "expressionInputArray", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UNodeBase, expressionInputArray), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray_MetaData)) };
+	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray_Inner = { "expressionOutputArray", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, 0, Z_Construct_UScriptStruct_FExpressionOutput, METADATA_PARAMS(nullptr, 0) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray_MetaData[] = {
+		{ "Comment", "// TArray f\xc3\xbcr Outputs\n" },
+		{ "ModuleRelativePath", "Materials/Nodes/NodeBase.h" },
+		{ "ToolTip", "TArray f\xc3\xbcr Outputs" },
+	};
+#endif
+	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray = { "expressionOutputArray", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UNodeBase, expressionOutputArray), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UNodeBase_Statics::NewProp_FallbackInput_MetaData[] = {
 		{ "Comment", "//input example\n" },
@@ -74,8 +87,10 @@ void EmptyLinkFunctionForGeneratedCodeNodeBase() {}
 #endif
 	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UNodeBase_Statics::NewProp_FallbackInput = { "FallbackInput", nullptr, (EPropertyFlags)0x0010000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UNodeBase, FallbackInput), Z_Construct_UScriptStruct_FExpressionInput, METADATA_PARAMS(Z_Construct_UClass_UNodeBase_Statics::NewProp_FallbackInput_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UNodeBase_Statics::NewProp_FallbackInput_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UNodeBase_Statics::PropPointers[] = {
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray_Inner,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionArray,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray_Inner,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionInputArray,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray_Inner,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_expressionOutputArray,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UNodeBase_Statics::NewProp_FallbackInput,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UNodeBase_Statics::StaticCppClassTypeInfo = {
@@ -116,9 +131,9 @@ void EmptyLinkFunctionForGeneratedCodeNodeBase() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_NodeBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UNodeBase, UNodeBase::StaticClass, TEXT("UNodeBase"), &Z_Registration_Info_UClass_UNodeBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UNodeBase), 2261231137U) },
+		{ Z_Construct_UClass_UNodeBase, UNodeBase::StaticClass, TEXT("UNodeBase"), &Z_Registration_Info_UClass_UNodeBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UNodeBase), 1643300955U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_NodeBase_h_1785855750(TEXT("/Script/CustomMaterialPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_NodeBase_h_3363837381(TEXT("/Script/CustomMaterialPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_NodeBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_NodeBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

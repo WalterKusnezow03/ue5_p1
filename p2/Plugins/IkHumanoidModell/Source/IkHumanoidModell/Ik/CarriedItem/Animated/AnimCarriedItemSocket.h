@@ -8,6 +8,7 @@
 class IKHUMANOIDMODELL_API AnimCarriedItemSocket : public CarriedItemSocket {
 private:
     bool bLogMessage = false;
+    bool bBlockRoation = true; //Debug
 
 public:
     AnimCarriedItemSocket();

@@ -56,6 +56,9 @@ void SlipLiftOffFrameFinder::LogResultLocalSpace(
 
 
 void SlipLiftOffFrameFinder::Test(){
+
+    return;
+
     SlipLiftOffFrameFinder finder;
     FVector worldCurrentFootPosTarget(0, 0, 0); // Target of Leg 1, currently for forward motion reached!
     FVector worldNextFootPosTarget(60, 0, 0);  // Target of Leg 2, next world Trajectory

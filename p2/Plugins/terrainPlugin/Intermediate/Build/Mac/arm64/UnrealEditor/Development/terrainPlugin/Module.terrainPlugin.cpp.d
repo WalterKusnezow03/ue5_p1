@@ -3867,6 +3867,23 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/TerrainMeshDataParser/ChunkParser.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodConstants.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/FoliageInstancing/MovingFoliageInstancerComponent.h \
+  Runtime/Engine/Classes/Components/InstancedStaticMeshComponent.h \
+  Runtime/Core/Public/Stats/Stats.h \
+  Runtime/Engine/Public/EngineDefines.h \
+  Runtime/Engine/Public/HitProxies.h Runtime/Core/Public/Misc/Guid.h \
+  Runtime/Engine/Classes/Engine/TextureStreamingTypes.h \
+  Runtime/Engine/Classes/Components/StaticMeshComponent.h \
+  Runtime/Engine/Public/Elements/SMInstance/SMInstanceManager.h \
+  Runtime/Core/Public/Containers/ArrayView.h \
+  Runtime/Engine/Public/Elements/SMInstance/SMInstanceElementId.h \
+  Runtime/CoreUObject/Public/UObject/GCObject.h \
+  Runtime/Engine/Public/InstancedStaticMeshDelegates.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SMInstanceElementId.generated.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SMInstanceManager.generated.h \
+  Runtime/Engine/Public/PrimitiveInstanceUpdateCommand.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/InstancedStaticMeshComponent.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/MovingFoliageInstancerComponent.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/customMeshActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/customWaterActor.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/water/customWaterActor.h \
@@ -3884,6 +3901,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Interactinterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/DoorBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/ETreeType.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/MovingFoliageInstancerComponent.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/roomProcedural.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/roomActor/roomProcedural.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TTouple.h \
@@ -3910,6 +3928,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/TerrainLauncher.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/terrainPlugin.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/FoliageInstancing/MovingFoliageInstancerComponent.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/management/ActorManager.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerBase.h \

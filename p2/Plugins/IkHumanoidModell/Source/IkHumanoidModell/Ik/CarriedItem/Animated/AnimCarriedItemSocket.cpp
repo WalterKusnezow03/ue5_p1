@@ -2,7 +2,7 @@
 
 
 AnimCarriedItemSocket::AnimCarriedItemSocket(){
-
+    localRotationInterpolator.SetUsePrimitiveInterpolationTrue();
 }
 
 AnimCarriedItemSocket::~AnimCarriedItemSocket(){
@@ -38,14 +38,17 @@ void AnimCarriedItemSocket::TickAnimation(float DeltaTime){
     }
 
 
-    if(
-        localRotationInterpolator.TargetSetupFlag() &&
-        !localRotationInterpolator.hasReachedTarget()
-    ){
-        rotationCopy = localRotationInterpolator.interpolate(DeltaTime);
-            
-        setLocalRotation(rotationCopy);
+    if(!bBlockRoation){
+        if(
+            localRotationInterpolator.TargetSetupFlag() &&
+            !localRotationInterpolator.hasReachedTarget()
+        ){
+            rotationCopy = localRotationInterpolator.interpolate(DeltaTime);
+                
+            setLocalRotation(rotationCopy);
+        }
     }
+    
     
     
 }
@@ -66,6 +69,10 @@ void AnimCarriedItemSocket::TryMoveToLocal(FVector &pos, float timeFrame){
 
 ///@brief rotate relative to the inner socket rotation
 void AnimCarriedItemSocket::TryRotateToLocal(FRotator &rotation, float timeFrame){
+    if(bBlockRoation){
+        return;
+    }
+
     if(localRotationInterpolator.hasReachedTarget()){ //true even if no setup
         localRotationInterpolator.setTarget(
             rotationCopy, // updated each frame, always up to date
@@ -101,6 +108,9 @@ void AnimCarriedItemSocket::MoveToLocal(FVector &pos, float timeFrame){
 ///@brief rotate relative to the inner socket rotation
 void AnimCarriedItemSocket::RotateToLocal(FRotator &rotation, float timeFrame){
     //localRotationInterpolator.overrideEndSpeedRelative(rotation);
+    if(bBlockRoation){
+        return;
+    }
 
     if(localRotationInterpolator.hasReachedTarget()){
         TryRotateToLocal(rotation, timeFrame);

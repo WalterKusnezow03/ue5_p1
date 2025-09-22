@@ -169,7 +169,7 @@ void SlateTextBase::SetFitMaxSize(const FVector2D &maxSize){
 
         FSlateRenderer *renderer = FSlateApplication::Get().GetRenderer();
         if(renderer){
-            UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 1");
+            //UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 1");
             //FSlateRenderer::GetFontMeasureService
             FVector2D TextSize = BoundsSlate();
             if (TextSize.X > 0.0f)
@@ -191,7 +191,7 @@ void SlateTextBase::SetFitMaxSize(const FVector2D &maxSize){
                 SetTextSizePixels(newHeightPixels);
                 // SetTextSize(newHeightSlate);
                 // is not printed
-                UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 2");
+                //UiDebugHelper::logMessage("SlateTextBase UpdateText Width to fit 2");
             }
         }
 
@@ -229,13 +229,13 @@ FVector2D SlateTextBase::BoundsSlate() const {
     FSlateRenderer *renderer = FSlateApplication::Get().GetRenderer();
     if(renderer){
         FVector2D TextSize = renderer->GetFontMeasureService()->Measure(text, fontInfo);
-        UiDebugHelper::logMessage(
+        /*UiDebugHelper::logMessage(
             FString::Printf(
                 TEXT("SlateTextBase Measured %s -> %s"),
                 *text,
                 *TextSize.ToString()
             )
-        );
+        );*/
 
         return TextSize;
     }

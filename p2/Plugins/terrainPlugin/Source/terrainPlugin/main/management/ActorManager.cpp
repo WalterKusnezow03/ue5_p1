@@ -196,6 +196,7 @@ void ActorManager::Tick(float deltatime){
     //request list as TArray<ChunkParser> request list -----> will provide mesh data map 
     //to ameshactor instance!
 
+    //is not tested at all
     if(!instantTerrainActorApply){
         UpdateMeshActorLists();
         updateMeshActorsBasedOnPlayerLocation(playerLocationChunkSpace);

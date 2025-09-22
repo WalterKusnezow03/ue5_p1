@@ -1,0 +1,129 @@
+#include "WKVertexShaderBase.h"
+
+int32 UWKVertexShaderBase::MakeConstant(FMaterialCompiler *compiler, float num){
+    return compiler->Constant(num);
+}
+
+//UWKVertexShaderBase::
+
+int32 UWKVertexShaderBase::GetUV(
+    FMaterialCompiler* Compiler, 
+    int32 UVIndex, 
+    bool bFractional, 
+    bool bUnMirror //idk what that is for
+)
+{
+    return Compiler->TextureCoordinate(UVIndex, bFractional, bUnMirror);
+}
+
+
+
+
+int32 UWKVertexShaderBase::GetWorldPosition(
+    FMaterialCompiler* Compiler, 
+    EWorldPositionIncludedOffsets WorldPositionMode
+)
+{
+    return Compiler->WorldPosition(WorldPositionMode);
+}
+
+
+int32 UWKVertexShaderBase::GetLocalPosition(FMaterialCompiler* Compiler){
+    //FMaterialCompiler::ObjectWorldPosition
+    int32 objectWorld = GetObjectPosition(Compiler);
+    int32 vertexWorld = GetWorldPosition(Compiler);
+    return Compiler->Sub(vertexWorld, objectWorld);
+}
+
+int32 UWKVertexShaderBase::MakeVector2D(FMaterialCompiler *Compiler, int32 X, int32 Y){
+    int32 XY = Compiler->AppendVector(X, Y); // 2D Vector: (x, y)
+    return XY;
+}
+
+int32 UWKVertexShaderBase::MakeVector3D(FMaterialCompiler *Compiler, int32 X, int32 Y, int32 Z){ //as layers.
+    int32 XY = Compiler->AppendVector(X, Y); // 2D Vector: (x, y)
+    int32 XYZ = Compiler->AppendVector(XY,Z); // 3D Vector: (x, y, z)
+    return XYZ;
+}
+
+
+int32 UWKVertexShaderBase::WorldPosX(FMaterialCompiler *Compiler){
+    int32 worldPos = GetWorldPosition(Compiler);
+    int32 x = Compiler->ComponentMask(worldPos, true, false, false, false); // x,y,z,h
+    return x;
+}
+
+int32 UWKVertexShaderBase::WorldPosY(FMaterialCompiler *Compiler)
+{
+    int32 worldPos = GetWorldPosition(Compiler);
+    int32 y = Compiler->ComponentMask(worldPos, false, true, false, false); // x,y,z,h
+    return y;
+}
+
+int32 UWKVertexShaderBase::WorldPosZ(FMaterialCompiler *Compiler){
+    int32 worldPos = GetWorldPosition(Compiler);
+    int32 z = Compiler->ComponentMask(worldPos, false, false, true, false); // x,y,z,h
+    return z;
+}
+
+int32 UWKVertexShaderBase::QuadraticHorizontalDistanceFromOrigin(FMaterialCompiler *Compiler){
+    int32 worldPos = GetWorldPosition(Compiler);
+    int32 x = WorldPosX(Compiler);
+    int32 y = WorldPosY(Compiler);
+
+    int32 x2 = Compiler->Mul(x, x);
+    int32 y2 = Compiler->Mul(y, y);
+
+    int32 sum = Compiler->Add(x2, y2);
+    int32 distance = Compiler->SquareRoot(sum);
+
+    return distance;
+}
+
+int32 UWKVertexShaderBase::GetObjectPosition(FMaterialCompiler* Compiler)
+{
+    return Compiler->ObjectWorldPosition();
+}
+
+int32 UWKVertexShaderBase::GetVertexColor(FMaterialCompiler* Compiler)
+{
+    return Compiler->VertexColor();
+}
+
+int32 UWKVertexShaderBase::GetVertexNormal(FMaterialCompiler* Compiler)
+{
+    return Compiler->VertexNormal();
+}
+
+// Vertex-Tangent
+int32 UWKVertexShaderBase::GetVertexTangent(FMaterialCompiler* Compiler)
+{
+    return Compiler->VertexTangent();
+}
+
+// Spielzeit
+int32 UWKVertexShaderBase::GetTime(FMaterialCompiler* Compiler, bool bPeriodic, bool bRealTime)
+{
+    return Compiler->GameTime(bPeriodic, bRealTime);
+}
+
+//scaled time
+int32 UWKVertexShaderBase::ScaledTime(FMaterialCompiler *Compiler, float scalar){
+    return Compiler->Mul(
+        GetTime(Compiler), //t,t
+        MakeConstant(Compiler, scalar)
+    );
+}
+
+
+
+// Kamerarichtung
+int32 UWKVertexShaderBase::GetCameraVector(FMaterialCompiler* Compiler)
+{
+    return Compiler->CameraVector();
+}
+
+int32 UWKVertexShaderBase::GetScreenPositionAsPixel(FMaterialCompiler* Compiler)
+{
+    return Compiler->GetPixelPosition(); // Liefert 0..1 UVs über den Screen
+}

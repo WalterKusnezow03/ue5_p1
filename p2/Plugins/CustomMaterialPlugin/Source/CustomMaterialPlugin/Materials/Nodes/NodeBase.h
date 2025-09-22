@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 #include "Materials/MaterialExpression.h"
 #include "MaterialCompiler.h"
-#include "CustomMaterialPlugin/Materials/Nodes/InputExpression/ExpressionInputNamed.h"
 
 #include "NodeBase.generated.h"
 
@@ -19,23 +18,25 @@ protected:
 
     //setup intput array
     // CPP
-    virtual void PostInitProperties() override
-    {
-        Super::PostInitProperties();
-        SetupInputsOnConstruct();
-    }
+    virtual void PostInitProperties() override;
 
     /// @brief override this method to add more inputs.
     virtual void SetupInputsOnConstruct(){
-        expressionArray.Empty();
-        FExpressionInputNamed newInput;
-        expressionArray.Add(newInput);
+        //empty for derivation override
+    }
+
+    virtual void SetupOutputsOnConstruct(){
+        //empty for derivation override
     }
 
 
 
     UPROPERTY()
-    TArray<FExpressionInputNamed> expressionArray;
+    TArray<FExpressionInput> expressionInputArray;
+
+    // TArray für Outputs
+    UPROPERTY()
+    TArray<FExpressionOutput> expressionOutputArray;
 
 public:
     
@@ -47,49 +48,27 @@ public:
 
 
 #if WITH_EDITOR
-    virtual FString NodeName() const {
-        return TEXT("UNodeBase");
-    }
+    virtual FString NodeName() const;
 
+    virtual void GetCaption(TArray<FString> &OutCaptions) const override;
 
+    virtual FString GetDescription() const override;
 
-    virtual void GetCaption(TArray<FString>& OutCaptions) const override {
-        OutCaptions.Add(NodeName());
-    }
+    ///----- intput ------
 
-    virtual FString GetDescription() const override {
-        return TEXT("UNodeBase description");
-    }
+    virtual const TArray<FExpressionInput *> GetInputs() override;
 
+    virtual FExpressionInput *GetInput(int32 index) override;
 
+    virtual FName GetInputName(int32 index) const override;
 
+    /// ----- output ------
 
-    virtual const TArray<FExpressionInput*> GetInputs() override
-    {
-        //return InputArray;
-        TArray<FExpressionInput *> outArray;
-        for (int i = 0; i < expressionArray.Num(); i++){
-            FExpressionInputNamed &current = expressionArray[i];
-            outArray.Add(current.ExpressionInputAsPtr());
-        }
-        return outArray;
-    }
+    // Rückgabe aller Outputs
+    virtual TArray<FExpressionOutput> &GetOutputs() override;
 
-    virtual FExpressionInput* GetInput(int32 index) override
-    {
-        if(index >= 0 && index < expressionArray.Num()){
-            return expressionArray[index].ExpressionInputAsPtr();
-        }
+    //Returns the output at specified index is valid
+    FExpressionOutput *GetOutput(int32 OutputIndex);
 
-        return nullptr;
-    }
-
-    virtual FName GetInputName(int32 index) const override
-    {
-        if(index >= 0 && index < expressionArray.Num()){
-            return expressionArray[index].asFName();
-        }
-        return NAME_None;
-    }
 #endif
 };

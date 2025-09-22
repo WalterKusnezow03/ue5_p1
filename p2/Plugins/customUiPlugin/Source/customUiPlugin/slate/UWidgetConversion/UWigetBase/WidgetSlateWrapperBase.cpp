@@ -38,9 +38,9 @@ void UWidgetSlateWrapperBase::PostInitProperties(){
     //happens before rebuild widget.
     id = idGlobal++;
     InitSharedPolygonMapPtrIfNeeded();
-    UiDebugHelper::logMessage(
+    /*UiDebugHelper::logMessage(
         FString::Printf(TEXT("UWidgetSlateWrapperBase debug lifecycle - PostInitProperties id(%d)"), id)
-    );
+    );*/
 
     //---- Must be called here: earliest entry point before building widget ----
     //since post init properties is 
@@ -68,9 +68,9 @@ void UWidgetSlateWrapperBase::ReleaseSlateResources(bool bReleaseChildren)
 
 TSharedRef<SWidget> UWidgetSlateWrapperBase::RebuildWidget()
 {
-    UiDebugHelper::logMessage(
+    /*UiDebugHelper::logMessage(
         FString::Printf(TEXT("UWidgetSlateWrapperBase debug lifecycle - RebuildWidget id(%d)"), id)
-    );
+    );*/
     InitSharedPolygonMapPtrIfNeeded();
     /*
     Src Code SizeBox:
@@ -131,31 +131,42 @@ void UWidgetSlateWrapperBase::ProcessScalingTasks(){
     //the widget will not update if not made one frame later.
     if(polygonMap.IsValid() && task.MarkedDirty()){
         polygonMap->ScaleToResolutionImmidiate(task.scaleToSet);
-        UiDebugHelper::logMessage(
-            FString::Printf(
-                TEXT("UWidgetSlateWrapperBase process Scale set task %s"), 
-                *task.scaleToSet.ToString()
-            )
-        );
+
+        if(ResolutionReached(task.scaleToSet)){
+            task.MarkExecuted();
+            /*UiDebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("UWidgetSlateWrapperBase process Scale set task %s"), 
+                    *task.scaleToSet.ToString()
+                )
+            );*/
+        }
     }
     if(taskRawXY.MarkedDirty()){
-        UiDebugHelper::logMessage(
+        /*UiDebugHelper::logMessage(
             FString::Printf(TEXT("UWidgetSlateWrapperBase raw scale process %s"), 
             *taskRawXY.scaleToSet.ToString())
-        );
+        );*/
         SetResolution(taskRawXY.scaleToSet);
+        taskRawXY.MarkExecuted();
     }
     if(taskRawX.MarkedDirty()){
         SetResolutionXUniform(taskRawX.scaleToSet.X);
+        taskRawX.MarkExecuted();
     }
     if(taskRawY.MarkedDirty()){
         SetResolutionYUniform(taskRawY.scaleToSet.Y);
+        taskRawY.MarkExecuted();
     }
 }
 
-
-
-
+bool UWidgetSlateWrapperBase::ResolutionReached(const FVector2D &target){
+    FVector2D current = GetResolution();
+    float epsilon = 10;
+    current.X -= epsilon;
+    current.Y -= epsilon;
+    return current.X >= target.X && current.Y >= target.Y;
+}
 
 void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
     if(polygonMap.IsValid()){
@@ -191,7 +202,7 @@ void UWidgetSlateWrapperBase::OnHover(){
 void UWidgetSlateWrapperBase::SetCursorColorEnabled(bool flag){
     if(polygonMap.IsValid()){
         polygonMap->SetCursorColorEnabled(flag);
-        UiDebugHelper::logMessage("SetCursorColor enaled UWidgetSlateWrapperBase");
+        //UiDebugHelper::logMessage("SetCursorColor enaled UWidgetSlateWrapperBase");
     }
 }
 
@@ -240,13 +251,13 @@ void UWidgetSlateWrapperBase::SetResolution(FVector2D scale){
     //method apparently can be called before PostInitProperties.
     if(bWasConstructed && polygonMap.IsValid()){
         task.Update(scale);
-        UiDebugHelper::logMessage(
+        /*UiDebugHelper::logMessage(
             FString::Printf(
                 TEXT("UWidgetSlateWrapperBase::SetResolution, debug lifecycle (%d) polygonmap valid and constructed %s"),
                 id,
                 *scale.ToString()
             )
-        );
+        );*/
     }
     else
     {
@@ -316,12 +327,14 @@ void UWidgetSlateWrapperBase::SetWidthAndHeightSizeBox(FVector2D size){
     SetHeightOverride(size.Y);
     SynchronizeProperties();
 
-    FString msg = FString::Printf(
-        TEXT("UWidgetSlateWrapperBase scale override (%.2f %.2f)"),
-        size.X, size.Y
-    );
-    if(true)
+    if(false){
+        FString msg = FString::Printf(
+            TEXT("UWidgetSlateWrapperBase scale override (%.2f %.2f)"),
+            size.X, size.Y
+        );
         UiDebugHelper::logMessage(msg);
+    }
+    
 }
 
 ///Temporary reference! - use one at a time!

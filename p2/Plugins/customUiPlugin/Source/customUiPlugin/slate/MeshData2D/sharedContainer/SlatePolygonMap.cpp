@@ -121,14 +121,14 @@ void SlatePolygonMap::ForceUpdateBoundsForSizeCalculation(){
     boundsCache.Recreate(polygons);
 
     //debug
-    FVector2D size = boundsCache.Size();
+    /*FVector2D size = boundsCache.Size();
     UiDebugHelper::logMessage(
         FString::Printf(
             TEXT("slate: SSlateWidgetBase bounds! %.2f %.2f"),
             size.X,
             size.Y
         )
-    );
+    );*/
 }
 
 
@@ -206,7 +206,7 @@ void SlatePolygonMap::ScaleToResolutionImmidiate(FVector2D &res){
     MMatrix2D scaleMat;
     scaleMat.makeIdentity();
 
-    if(true){
+    if(false){
         UiDebugHelper::logMessage(
             FString::Printf(
                 TEXT("SlatePolygonMap (%d): ScaleToResolutionImmidiate(%.2f,%.2f)->(%.2f,%.2f) with (%.2f,%.2f) "),

@@ -191,9 +191,9 @@ protected:
 	UProceduralMeshComponent *MeshNoRaycastForLod(ELod lod);
 	void switchToLod(ELod lod);
 	void initLodMeshesOnBeginPlay();
-
 	void ReloadMeshForMaterialByLod(ELod lod, materialEnum material);
-	
+
+	virtual void OnLodSwitch();
 
 	//allows custom mesh without Lod
 	void updateMesh(

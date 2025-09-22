@@ -10,7 +10,6 @@ FRotatorInterpolator::~FRotatorInterpolator(){
 
 
 float FRotatorInterpolator::Distance(FRotator &a, FRotator &b){
-    bool bUseQuat = true;
     if(bUseQuat){
         //using quat just as interpolation
         FQuat QuatA = a.Quaternion();
@@ -34,7 +33,13 @@ FRotator FRotatorInterpolator::interpolation(FRotator &fromIn, FRotator &toIn, f
     //of rotation. In theory it could be also a vector from R1 * xAxis to R2 * axis, interpolated and 
     //a look matrix generated. I dont know anymore if i tested that but i sticked to FQuat slerp for a reason.
     //it works, no one cares i guess...
-    
+    if(bUseQuat){
+        return QuatInterpolation(fromIn, toIn, skalarCurrent);
+    }
+    return PrimitveInterpolation(fromIn, toIn, skalarCurrent);
+}
+
+FRotator FRotatorInterpolator::QuatInterpolation(FRotator &fromIn, FRotator &toIn, float skalarCurrent){
     // Convert to quaternions
     FQuat fromQuat = fromIn.Quaternion();
     FQuat toQuat = toIn.Quaternion();
@@ -49,11 +54,16 @@ FRotator FRotatorInterpolator::interpolation(FRotator &fromIn, FRotator &toIn, f
     return resultQuat.Rotator();
 }
 
-
-
-
-
-
+FRotator FRotatorInterpolator::PrimitveInterpolation(FRotator &fromIn, FRotator &toIn, float skalarCurrent){
+    float deltaRoll = toIn.Roll - fromIn.Roll;
+    float deltaPitch = toIn.Pitch - fromIn.Pitch;
+    float deltaYaw = toIn.Yaw - fromIn.Yaw;
+    FRotator result = fromIn;
+    result.Roll += deltaRoll * skalarCurrent;
+    result.Pitch += deltaPitch * skalarCurrent;
+    result.Yaw += deltaYaw * skalarCurrent;
+    return result;
+}
 
 float FRotatorInterpolator::wrapAngle180(float angle) {
     angle = std::fmod(angle + 180.0f, 360.0f);

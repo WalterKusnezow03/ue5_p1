@@ -424,6 +424,23 @@ void MatrixTree::generateLeafs(TreeProperties &properties){
 
 void MatrixTree::generateLeaf(MMatrix &offset){
     MMatrix rotation = randomRotator();
+
+    //debug
+    //does indeed generate random rotations.
+    if(false){
+        if(countLog > 0){
+            countLog--;
+            FRotator r = rotation.extractRotator();
+            FString m = r.ToString();
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("MatrixTree Leaf Rotation: %s"),
+                    *m
+                )
+            );
+        }
+    }
+
     MMatrix offsetFinal = offset * rotation; //M = T * R <-- lese richtung --
 
     FVectorShape shape = leafShapeByEnum(treeType);

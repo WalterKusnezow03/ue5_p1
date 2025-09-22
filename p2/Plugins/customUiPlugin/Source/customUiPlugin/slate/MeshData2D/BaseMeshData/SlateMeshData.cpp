@@ -933,7 +933,7 @@ const FSlateResourceHandle &SlateMeshData::drawingHandle() const {
         //FSlateBrush
         //const FSlateResourceHandle &
         //GetRenderingResource ()
-        UiDebugHelper::logMessage("SlateMeshData texture ok");
+        //UiDebugHelper::logMessage("SlateMeshData texture ok");
         return textureBrush.GetRenderingResource();
     }
     //fixes color mismatch: mix color with white

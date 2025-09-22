@@ -3747,20 +3747,16 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/CustomMaterialPlugin/Definitions.CustomMaterialPlugin.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/CustomMaterialPlugin.init.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/ExpressionInputNamed.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/InputExpression/ExpressionInputNamed.h \
-  Runtime/Core/Public/CoreMinimal.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/ExpressionInputNamed.generated.h \
-  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
-  Runtime/../../Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/NodeBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/NodeBase.h \
+  Runtime/Core/Public/CoreMinimal.h \
   Runtime/Engine/Classes/Materials/MaterialExpression.h \
   Runtime/Engine/Public/MaterialCompiler.h \
   Runtime/Core/Public/Misc/Guid.h Runtime/Engine/Public/MaterialShared.h \
   Runtime/Engine/Classes/Materials/MaterialExpressionSpeedTree.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionSpeedTree.generated.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   Runtime/Engine/Classes/Materials/MaterialExpressionTextureSample.h \
   Runtime/Engine/Classes/Materials/MaterialExpressionWorldPosition.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionWorldPosition.generated.h \
@@ -3770,12 +3766,20 @@
   Runtime/Engine/Classes/Materials/MaterialExpressionViewProperty.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionViewProperty.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/NodeBase.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.gen.cpp \
+  Runtime/../../Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/foliage/WKLeafShader.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/water/WKWaterShader.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/foliage/WKLeafShader.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/NodeBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/water/WKWaterShader.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Private/CustomMaterialPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Public/CustomMaterialPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h

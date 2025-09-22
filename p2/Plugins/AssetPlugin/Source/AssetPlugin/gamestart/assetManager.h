@@ -278,7 +278,7 @@ private:
 	void setupDefaultTracker();
 	void Clear();
 
-	bool bLogEnabled = true;
+	bool bLogEnabled = false;
 
 	//---- FAKE RTTI SECTION END ----
 

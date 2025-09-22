@@ -27,7 +27,7 @@ void SlateWidgetBoundsCache::Recreate(TArray<SlateMeshDataPolygon*> &polygons){
     updateNeededFlag = false;
     countModified--;
     
-    UiDebugHelper::logMessage(FString::Printf(TEXT("SlateWidgetBoundsCache update (a) %d"), polygons.Num()));
+    //UiDebugHelper::logMessage(FString::Printf(TEXT("SlateWidgetBoundsCache update (a) %d"), polygons.Num()));
 
     //make new bounding box.
     for (int i = 0; i < polygons.Num(); i++)
@@ -35,7 +35,7 @@ void SlateWidgetBoundsCache::Recreate(TArray<SlateMeshDataPolygon*> &polygons){
         SlateMeshDataPolygon *current = polygons[i];
         if(current){
             boundsInternal.Update(*current);
-            UiDebugHelper::logMessage("SlateWidgetBoundsCache update (b)");
+            //UiDebugHelper::logMessage("SlateWidgetBoundsCache update (b)");
         }
     }
 }

@@ -3830,6 +3830,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/materialEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/particleEnum.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/particleEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/staticMeshEnum.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/staticMeshEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/textureEnum.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/textureEnum.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT/throwableEnum.gen.cpp \

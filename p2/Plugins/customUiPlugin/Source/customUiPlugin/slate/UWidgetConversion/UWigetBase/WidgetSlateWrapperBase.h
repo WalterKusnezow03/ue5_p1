@@ -80,6 +80,8 @@ private:
     void SetWidthAndHeightToUniformBoundsSizeBox();
     void SetWidthAndHeightSizeBox(FVector2D size);
 
+    bool ResolutionReached(const FVector2D &target);
+
 public:
     // ---- IBaseUiInterface ----
 

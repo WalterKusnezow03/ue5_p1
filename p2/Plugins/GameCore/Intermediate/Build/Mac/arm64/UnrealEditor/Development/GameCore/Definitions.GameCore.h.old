@@ -376,5 +376,22 @@
 #define MOVIESCENECAPTURE_API DLLIMPORT
 #define ANIMATIONDATACONTROLLER_API DLLIMPORT
 #define PROCEDURALMESHCOMPONENT_API DLLIMPORT
+#define BLUTILITY_API DLLIMPORT
+#define EDITORSCRIPTINGUTILITIES_API DLLIMPORT
+#define WITH_CLOTH_COLLISION_DETECTION 1
+#define INCLUDE_CHAOS UE_DEPRECATED_MACRO(5.1, "INCLUDE_CHAOS is deprecated and should always be considered 1.") 1
+#define WITH_CHAOS UE_DEPRECATED_MACRO(5.1, "WITH_CHAOS is deprecated and should always be considered 1.") 1
+#define WITH_CHAOS_CLOTHING UE_DEPRECATED_MACRO(5.1, "WITH_CHAOS_CLOTHING is deprecated and should always be considered 1.") 1
+#define WITH_CHAOS_NEEDS_TO_BE_FIXED UE_DEPRECATED_MACRO(5.1, "WITH_CHAOS_NEEDS_TO_BE_FIXED is deprecated and should always be considered 1.") 1
+#define WITH_PHYSX UE_DEPRECATED_MACRO(5.1, "WITH_PHYSX is deprecated and should always be considered 1.") 1
+#define WITH_PHYSX_COOKING UE_DEPRECATED_MACRO(5.1, "WITH_PHYSX_COOKING is deprecated and should always be considered 0.") 0
+#define PHYSICS_INTERFACE_PHYSX UE_DEPRECATED_MACRO(5.1, "PHYSICS_INTERFACE_PHYSX is deprecated and should always be considered 0.") 0
+#define WITH_APEX UE_DEPRECATED_MACRO(5.1, "WITH_APEX is deprecated and should always be considered 0.") 0
+#define WITH_APEX_CLOTHING UE_DEPRECATED_MACRO(5.1, "WITH_APEX_CLOTHING is deprecated and should always be considered 0.") 0
+#define WITH_NVCLOTH UE_DEPRECATED_MACRO(5.1, "WITH_NVCLOTH is deprecated and should always be considered 0.") 0
+#define WITH_IMMEDIATE_PHYSX UE_DEPRECATED_MACRO(5.1, "WITH_IMMEDIATE_PHYSX is deprecated and should always be considered 0.") 0
+#define WITH_CUSTOM_SQ_STRUCTURE UE_DEPRECATED_MACRO(5.1, "WITH_CUSTOM_SQ_STRUCTURE is deprecated and should always be considered 0.") 0
+#define STATICMESHEDITOR_API DLLIMPORT
 #define GAMECORE_API DLLEXPORT
 #define ASSETPLUGIN_API DLLIMPORT
+#define COREMATH_API DLLIMPORT

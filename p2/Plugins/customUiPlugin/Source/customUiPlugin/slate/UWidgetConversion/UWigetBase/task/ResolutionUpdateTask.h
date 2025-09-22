@@ -27,8 +27,10 @@ struct CUSTOMUIPLUGIN_API FResolutionUpdateTask {
     }
 
     bool MarkedDirty(){
-        bool copy = taskDirty;
+        return taskDirty;
+    }
+
+    void MarkExecuted(){
         taskDirty = false;
-        return copy;
     }
 };
