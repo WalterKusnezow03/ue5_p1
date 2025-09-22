@@ -16,10 +16,11 @@ void UWKLeafShader::SetupInputsOnConstruct(){
     dynamic->SetScalarParameterValue(FName("LowerZValueBounds_float"), 10.0f);
     dynamic->SetScalarParameterValue(FName("HigherZValueBounds_float"), 50.0f);
     */
-
+    FExpressionInput lowZInput;
     lowZInput.InputName = FName(TEXT("LowerZValueBounds_float"));
     expressionInputArray.Add(lowZInput);
 
+    FExpressionInput highZInput;
     highZInput.InputName = FName(TEXT("HigherZValueBounds_float"));
     expressionInputArray.Add(highZInput);
 }
@@ -42,15 +43,19 @@ FString UWKLeafShader::NodeName() const {
 
 /// --- input read ---
 int32 UWKLeafShader::LowerZ(FMaterialCompiler *Compiler){
-    if(lowZInput.Expression){
-        return lowZInput.Compile(Compiler); //reverse compile to back. Interesting.
+    bool ok = true;
+    int32 result = CompileInput(Compiler, inputLowLayer, ok);
+    if(ok){
+        return result;
     }
     return MakeConstant(Compiler, 0.0f);
 }
 
 int32 UWKLeafShader::HigherZ(FMaterialCompiler *Compiler){
-    if(highZInput.Expression){
-        return highZInput.Compile(Compiler); //reverse compile to back. Interesting.
+    bool ok = true;
+    int32 result = CompileInput(Compiler, inputHighZLayer, ok);
+    if(ok){
+        return result;
     }
     return MakeConstant(Compiler, 300.0f); //3m als max wert (?)
 }
@@ -108,10 +113,7 @@ int32 UWKLeafShader::CompileVertexShader(FMaterialCompiler *Compiler){
     int32 sinTimeNormalizedWobble = Compiler->Add(sinTimeNormalized, MakeConstant(Compiler, wobbleAllowBack));
     
     
-    
     int32 DistortTimed = Compiler->Mul(DistortionScalar, sinTimeNormalizedWobble);
-
-    
 
     //output as vertex offset on x and y
     int32 windDir = MakeVector2D(

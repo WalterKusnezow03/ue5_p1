@@ -1,47 +1,5 @@
 #pragma once
 
-
-
-
-/*
-UV-Koordinaten
-Compiler->TextureCoordinate(UVIndex, bFractional)
-Gibt dir die UVs vom Mesh (pro Vertex interpoliert). UVIndex = 0 ist Standard.
-
-World Position
-Compiler->WorldPosition(EWorldPositionIncludedOffsets WorldPositionIncludedOffsets)
-Liefert die Weltposition (verschiedene Varianten: absolut, ohne Offset, etc.).
-Object Position / Vertex Position
-
-
-Compiler->ObjectWorldPosition() oder Compiler->VertexColor()
-Zugriff auf Vertex-Farbe oder Objektposition.
-Vertex Normal / Tangent
-
-
-Compiler->VertexNormal(), Compiler->VertexTangent()
-Zugriff auf Mesh-Normalen/Tangenten.
-
-
-Time
-Compiler->GameTime(bPeriodic, bRealTime)
-Zugriff auf Material-Zeit (für Animationen).
-
-
-Camera Vector
-Compiler->CameraVector()
-Normalisierter Blickvektor von Kamera zum Pixel.
-
-
-ScreenPosition
-Compiler->ScreenPosition(...)
-Position in Screenspace, für PostProcess/Screen-Effekte.
-
-*/
-
-
-#pragma once
-
 #include "CoreMinimal.h"
 #include "Materials/MaterialExpression.h"
 #include "MaterialCompiler.h"
@@ -89,11 +47,17 @@ public:
     int32 MakeVector2D(FMaterialCompiler *Compiler, int32 X, int32 Y);
     int32 MakeVector3D(FMaterialCompiler *Compiler, int32 X, int32 Y, int32 Z);
 
+    //make const vector
+    int32 MakeConstant2D(FMaterialCompiler *Compiler, float x, float y);
+    int32 MakeConstant3D(FMaterialCompiler *Compiler, float x, float y, float z);
+
+
     int32 WorldPosX(FMaterialCompiler *Compiler);
     int32 WorldPosY(FMaterialCompiler *Compiler);
     int32 WorldPosZ(FMaterialCompiler *Compiler);
 
     int32 QuadraticHorizontalDistanceFromOrigin(FMaterialCompiler *Compiler);
+    int32 SizeVector2D(FMaterialCompiler *Compiler, int32 X, int32 Y);
 
     // Objektposition
     int32 GetObjectPosition(FMaterialCompiler *Compiler);
@@ -115,7 +79,6 @@ public:
 
     // Kamerarichtung
     int32 GetCameraVector(FMaterialCompiler *Compiler);
-    int32 GetScreenPositionAsPixel(FMaterialCompiler *Compiler);
-
+    
 #endif
 };

@@ -5,7 +5,7 @@
 ===========================================================================*/
 
 #include "UObject/GeneratedCppIncludes.h"
-#include "CustomMaterialPlugin/Materials/Nodes/water/WKWaterShader.h"
+#include "CustomMaterialPlugin/Materials/Nodes/VertexShaders/water/WKWaterShader.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeWKWaterShader() {}
 // Cross Module References
@@ -51,15 +51,15 @@ void EmptyLinkFunctionForGeneratedCodeWKWaterShader() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKWaterShader_Statics::Class_MetaDataParams[] = {
 		{ "HideCategories", "Object Object Object Object" },
-		{ "IncludePath", "Materials/Nodes/water/WKWaterShader.h" },
-		{ "ModuleRelativePath", "Materials/Nodes/water/WKWaterShader.h" },
+		{ "IncludePath", "Materials/Nodes/VertexShaders/water/WKWaterShader.h" },
+		{ "ModuleRelativePath", "Materials/Nodes/VertexShaders/water/WKWaterShader.h" },
 	};
 #endif
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKWaterShader_Statics::NewProp_Amplitude_MetaData[] = {
 		{ "Category", "UWKWaterShader" },
 		{ "Comment", "/// ---- Changable attributes of the water ----\n" },
-		{ "ModuleRelativePath", "Materials/Nodes/water/WKWaterShader.h" },
+		{ "ModuleRelativePath", "Materials/Nodes/VertexShaders/water/WKWaterShader.h" },
 		{ "ToolTip", "---- Changable attributes of the water ----" },
 	};
 #endif
@@ -67,14 +67,14 @@ void EmptyLinkFunctionForGeneratedCodeWKWaterShader() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKWaterShader_Statics::NewProp_IntervallSlowDown_MetaData[] = {
 		{ "Category", "UWKWaterShader" },
-		{ "ModuleRelativePath", "Materials/Nodes/water/WKWaterShader.h" },
+		{ "ModuleRelativePath", "Materials/Nodes/VertexShaders/water/WKWaterShader.h" },
 	};
 #endif
 	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UWKWaterShader_Statics::NewProp_IntervallSlowDown = { "IntervallSlowDown", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UWKWaterShader, IntervallSlowDown), METADATA_PARAMS(Z_Construct_UClass_UWKWaterShader_Statics::NewProp_IntervallSlowDown_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UWKWaterShader_Statics::NewProp_IntervallSlowDown_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKWaterShader_Statics::NewProp_DistanceBetweenWaves_MetaData[] = {
 		{ "Category", "UWKWaterShader" },
-		{ "ModuleRelativePath", "Materials/Nodes/water/WKWaterShader.h" },
+		{ "ModuleRelativePath", "Materials/Nodes/VertexShaders/water/WKWaterShader.h" },
 	};
 #endif
 	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UWKWaterShader_Statics::NewProp_DistanceBetweenWaves = { "DistanceBetweenWaves", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UWKWaterShader, DistanceBetweenWaves), METADATA_PARAMS(Z_Construct_UClass_UWKWaterShader_Statics::NewProp_DistanceBetweenWaves_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UWKWaterShader_Statics::NewProp_DistanceBetweenWaves_MetaData)) };
@@ -116,15 +116,15 @@ void EmptyLinkFunctionForGeneratedCodeWKWaterShader() {}
 	UWKWaterShader::UWKWaterShader(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 	DEFINE_VTABLE_PTR_HELPER_CTOR(UWKWaterShader);
 	UWKWaterShader::~UWKWaterShader() {}
-	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_water_WKWaterShader_h_Statics
+	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_water_WKWaterShader_h_Statics
 	{
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
-	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_water_WKWaterShader_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWKWaterShader, UWKWaterShader::StaticClass, TEXT("UWKWaterShader"), &Z_Registration_Info_UClass_UWKWaterShader, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKWaterShader), 283614587U) },
+	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_water_WKWaterShader_h_Statics::ClassInfo[] = {
+		{ Z_Construct_UClass_UWKWaterShader, UWKWaterShader::StaticClass, TEXT("UWKWaterShader"), &Z_Registration_Info_UClass_UWKWaterShader, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKWaterShader), 3135764398U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_water_WKWaterShader_h_52749603(TEXT("/Script/CustomMaterialPlugin"),
-		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_water_WKWaterShader_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_water_WKWaterShader_h_Statics::ClassInfo),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_water_WKWaterShader_h_2992323531(TEXT("/Script/CustomMaterialPlugin"),
+		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_water_WKWaterShader_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_water_WKWaterShader_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

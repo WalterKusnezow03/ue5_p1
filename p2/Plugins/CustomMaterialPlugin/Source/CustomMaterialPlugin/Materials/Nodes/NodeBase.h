@@ -62,6 +62,10 @@ public:
 
     virtual FName GetInputName(int32 index) const override;
 
+    /// @brief compiles input or returns Constant 0
+    int32 CompileInput(FMaterialCompiler *Compiler, int32 index);
+    int32 CompileInput(FMaterialCompiler *Compiler, int32 index, bool &sucess);
+
     /// ----- output ------
 
     // Rückgabe aller Outputs

@@ -4,7 +4,14 @@ int32 UWKVertexShaderBase::MakeConstant(FMaterialCompiler *compiler, float num){
     return compiler->Constant(num);
 }
 
-//UWKVertexShaderBase::
+int32 UWKVertexShaderBase::MakeConstant2D(FMaterialCompiler *Compiler, float x, float y){
+    return Compiler->Constant2(x,y);
+}
+
+int32 UWKVertexShaderBase::MakeConstant3D(FMaterialCompiler *Compiler, float x, float y, float z){
+    return Compiler->Constant3(x,y,z);
+}
+
 
 int32 UWKVertexShaderBase::GetUV(
     FMaterialCompiler* Compiler, 
@@ -71,14 +78,26 @@ int32 UWKVertexShaderBase::QuadraticHorizontalDistanceFromOrigin(FMaterialCompil
     int32 x = WorldPosX(Compiler);
     int32 y = WorldPosY(Compiler);
 
+    return SizeVector2D(Compiler, x, y);
+    /*
     int32 x2 = Compiler->Mul(x, x);
     int32 y2 = Compiler->Mul(y, y);
 
     int32 sum = Compiler->Add(x2, y2);
     int32 distance = Compiler->SquareRoot(sum);
 
+    return distance;*/
+}
+
+int32 UWKVertexShaderBase::SizeVector2D(FMaterialCompiler *Compiler, int32 X, int32 Y){
+    int32 x2 = Compiler->Mul(X, X);
+    int32 y2 = Compiler->Mul(Y, Y);
+    int32 sum = Compiler->Add(x2, y2);
+    int32 distance = Compiler->SquareRoot(sum);
     return distance;
 }
+
+
 
 int32 UWKVertexShaderBase::GetObjectPosition(FMaterialCompiler* Compiler)
 {
@@ -121,9 +140,4 @@ int32 UWKVertexShaderBase::ScaledTime(FMaterialCompiler *Compiler, float scalar)
 int32 UWKVertexShaderBase::GetCameraVector(FMaterialCompiler* Compiler)
 {
     return Compiler->CameraVector();
-}
-
-int32 UWKVertexShaderBase::GetScreenPositionAsPixel(FMaterialCompiler* Compiler)
-{
-    return Compiler->GetPixelPosition(); // Liefert 0..1 UVs über den Screen
 }

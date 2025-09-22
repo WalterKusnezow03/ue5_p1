@@ -4,7 +4,7 @@
 #include "Materials/MaterialExpression.h"
 #include "MaterialCompiler.h"
 
-#include "CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h"
+#include "CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h"
 
 #include "WKWaterShader.generated.h"
 

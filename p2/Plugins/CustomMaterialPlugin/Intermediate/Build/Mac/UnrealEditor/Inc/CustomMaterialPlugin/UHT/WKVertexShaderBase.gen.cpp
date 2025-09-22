@@ -5,7 +5,7 @@
 ===========================================================================*/
 
 #include "UObject/GeneratedCppIncludes.h"
-#include "CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h"
+#include "CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeWKVertexShaderBase() {}
 // Cross Module References
@@ -38,8 +38,8 @@ void EmptyLinkFunctionForGeneratedCodeWKVertexShaderBase() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKVertexShaderBase_Statics::Class_MetaDataParams[] = {
 		{ "HideCategories", "Object Object Object" },
-		{ "IncludePath", "Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h" },
-		{ "ModuleRelativePath", "Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h" },
+		{ "IncludePath", "Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h" },
+		{ "ModuleRelativePath", "Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h" },
 	};
 #endif
 	const FCppClassTypeInfoStatic Z_Construct_UClass_UWKVertexShaderBase_Statics::StaticCppClassTypeInfo = {
@@ -75,15 +75,15 @@ void EmptyLinkFunctionForGeneratedCodeWKVertexShaderBase() {}
 	UWKVertexShaderBase::UWKVertexShaderBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 	DEFINE_VTABLE_PTR_HELPER_CTOR(UWKVertexShaderBase);
 	UWKVertexShaderBase::~UWKVertexShaderBase() {}
-	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_vertexShaderBase_WKVertexShaderBase_h_Statics
+	struct Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_ShaderBase_vertexShaderBase_WKVertexShaderBase_h_Statics
 	{
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
-	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWKVertexShaderBase, UWKVertexShaderBase::StaticClass, TEXT("UWKVertexShaderBase"), &Z_Registration_Info_UClass_UWKVertexShaderBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKVertexShaderBase), 1934098945U) },
+	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_ShaderBase_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo[] = {
+		{ Z_Construct_UClass_UWKVertexShaderBase, UWKVertexShaderBase::StaticClass, TEXT("UWKVertexShaderBase"), &Z_Registration_Info_UClass_UWKVertexShaderBase, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKVertexShaderBase), 659716698U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_vertexShaderBase_WKVertexShaderBase_h_2577974468(TEXT("/Script/CustomMaterialPlugin"),
-		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_ShaderBase_vertexShaderBase_WKVertexShaderBase_h_1493242240(TEXT("/Script/CustomMaterialPlugin"),
+		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_ShaderBase_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_ShaderBase_vertexShaderBase_WKVertexShaderBase_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

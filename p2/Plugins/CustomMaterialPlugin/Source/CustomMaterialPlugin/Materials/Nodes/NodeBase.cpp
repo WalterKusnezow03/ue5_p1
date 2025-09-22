@@ -54,6 +54,38 @@ FName UNodeBase::GetInputName(int32 index) const
     return NAME_None;
 }
 
+
+
+int32 UNodeBase::CompileInput(FMaterialCompiler *Compiler, int32 index){
+    bool ignored = true;
+    return CompileInput(Compiler, index, ignored);
+}
+
+/// @brief compiles input or returns INDEX_NONE, flag marked false if any issue occured!
+int32 UNodeBase::CompileInput(FMaterialCompiler *Compiler, int32 index, bool &bSuccess){
+    if(index != INDEX_NONE){
+        FExpressionInput *Input = GetInput(index);
+        if(Input){
+            if(Input->Expression){
+                int32 result = Input->Compile(Compiler);
+                bSuccess = (result != INDEX_NONE);
+                return result;
+            }
+        }
+    }
+    bSuccess = false;
+    return INDEX_NONE;
+}
+
+
+
+
+
+
+
+
+
+
 /// ----- output ------
 
 // Rückgabe aller Outputs

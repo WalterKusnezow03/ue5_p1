@@ -3768,18 +3768,26 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/NodeBase.generated.h \
   Runtime/../../Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/foliage/WKLeafShader.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/foliage/WKLeafShader.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKPixelShaderBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/PixelShaderBase/WKPixelShaderBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKPixelShaderBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKRadialPixelShader.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/PixelShaders/WKRadialPixelShader.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKRadialPixelShader.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/water/WKWaterShader.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/water/WKWaterShader.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/foliage/WKLeafShader.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/NodeBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/water/WKWaterShader.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/PixelShaders/WKRadialPixelShader.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/PixelShaderBase/WKPixelShaderBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/foliage/WKLeafShader.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/water/WKWaterShader.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Private/CustomMaterialPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Public/CustomMaterialPlugin.h \
   Runtime/Core/Public/Modules/ModuleManager.h

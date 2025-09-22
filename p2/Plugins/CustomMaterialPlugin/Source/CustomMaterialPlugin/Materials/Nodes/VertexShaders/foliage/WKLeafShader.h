@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CustomMaterialPlugin/Materials/Nodes/vertexShaderBase/WKVertexShaderBase.h"
+#include "CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h"
 #include "WKLeafShader.generated.h"
 
 
@@ -24,17 +24,14 @@ public:
     UPROPERTY(EditAnywhere, Category=UWKWaterShader)
     float DistanceBetweenWaves = 300.0f; //max distortion
 
-    UPROPERTY()
-    FExpressionInput lowZInput;
-
-    UPROPERTY()
-    FExpressionInput highZInput;
 
 #if WITH_EDITOR
 
     virtual FString NodeName() const override;
 
     int32 vertexOutputLayer = 0;
+    int32 inputLowLayer = 0;
+    int32 inputHighZLayer = 1;
 
     virtual int32 Compile(FMaterialCompiler *Compiler, int32 OutputIndex) override;
     int32 CompileVertexShader(FMaterialCompiler *Compiler);
