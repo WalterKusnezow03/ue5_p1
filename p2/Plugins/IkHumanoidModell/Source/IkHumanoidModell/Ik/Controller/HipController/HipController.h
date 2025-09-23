@@ -15,7 +15,7 @@
 /// ---> this is the base class and will have static slip force handling
 /// (More stable than integral precalculation)
 class IKHUMANOIDMODELL_API HipController {
-private:
+protected:
     bool bExtendedDebugLog = false;
     bool bDebugBlockLocomotion = false;
     bool bDebugBlockTick = false;
@@ -24,7 +24,7 @@ private:
     void ResetAllLocomotionFlags();
     bool HipAtGroundLevel();
 
-    bool backwardsKinematicAllowed();
+    virtual bool backwardsKinematicAllowed();
 
    
 
@@ -106,7 +106,7 @@ protected:
     void TickLocomotion(float deltatime);
     void TickFalling(float deltatime);
     void applyLocomotion(float deltatime);
-    void updateInterpolatorLocomotion(float deltatime);
+    virtual void updateInterpolatorLocomotion(float deltatime);
 
     bool forwardMotion = true;
     bool legLeftPlaying = true;

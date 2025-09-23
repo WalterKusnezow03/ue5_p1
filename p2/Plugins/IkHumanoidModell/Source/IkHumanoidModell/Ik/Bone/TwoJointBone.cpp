@@ -548,3 +548,11 @@ void TwoJointBone::getActors(TArray<AActor *> &outArray){
         outArray.Add(bottomActor);
     }
 }
+
+
+
+//new override function
+
+void TwoJointBone::OverrideEndEffectorWorldLocation(FVector &location){
+    endEffectorWorld.setTranslation(location);
+}

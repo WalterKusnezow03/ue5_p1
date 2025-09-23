@@ -126,7 +126,7 @@ private:
 
     SlipContainer container;
 
-    bool LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal);
+    bool LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal, FVector &moveDir);
 
 public:
     /// @brief pre calculates thee slip scalar D for slip force, based on the 
@@ -169,4 +169,15 @@ public:
 
 private:
     FVector worldGroundTruth;
+
+
+
+    //apply gravity to end effector trajectory n backwards kinematic because it might be above ground before backward
+    //interpolation
+    FVector velocityEndEffectorOnBackwardsKinematic;
+    void ApplyGravityToEndEffectorIfNotGrounded(float deltatime);
+
+
+
+
 };

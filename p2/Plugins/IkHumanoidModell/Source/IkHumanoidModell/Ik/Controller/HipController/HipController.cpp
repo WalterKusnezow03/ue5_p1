@@ -364,12 +364,8 @@ void HipController::setupBackwardInterpolation(){
 //base method
 void HipController::setupBackwardInterpolation(float dynamicMotionTime){
     //keep empty. not needed here.
+    DebugHelper::logMessage("HipController Base setupBackwardInterpolation");
 }
-
-
-
-
-
 
 void HipController::setupForwardInterpolation(){
     BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
@@ -617,7 +613,8 @@ void HipController::applySlipForceStatic(float deltatime){
         div = 2.0f;
     }
 
-    velocity += (v1 + v2) / div;
+    FVector vSum = v1 + v2;
+    velocity += vSum / div;
 }
 
 /// @brief returns if left leg is in stance phase

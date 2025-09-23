@@ -87,6 +87,8 @@ public:
 
     void getActors(TArray<AActor *> &outArray);
 
+    void OverrideEndEffectorWorldLocation(FVector &location);
+
 private:
     bool bLogEnabled = false;
     bool bDrawBackwardReach = false;

@@ -75,6 +75,7 @@ protected:
     //legs, locomotion
     HipController hipController;
 
+
     //arms and torso
     TorsoController torsoController;
 

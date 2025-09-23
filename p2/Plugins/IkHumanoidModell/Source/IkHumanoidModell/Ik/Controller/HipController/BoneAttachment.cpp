@@ -190,6 +190,9 @@ void BoneAttachment::TickBackwardKinematic(
     float deltatime
 ){ 
 
+    //new here:
+    ApplyGravityToEndEffectorIfNotGrounded(deltatime);
+
     //target scheint bei 180 gespiegelt zu sein
     //was dafür spricht das es manuell gedreht werden muss:
     FVector targetcopy = orientationRoot * backwardTarget;
@@ -212,6 +215,25 @@ void BoneAttachment::TickBackwardKinematic(
      * (orientationRoot * innerOffset)^-1 * asVector
      * innerOffset^-1 * orientationRoot^-1 * asVector
      */
+}
+
+//fixes a lot of problems, move end effector to ground when backwards kinematic is applied.
+void BoneAttachment::ApplyGravityToEndEffectorIfNotGrounded(float deltatime){
+
+    FVector worldEndEffector = bone.EndEffectorLocation();
+    if(worldEndEffector.Z > forwardTargetWorld.Z){
+        //v(t) = v0 + at
+        velocityEndEffectorOnBackwardsKinematic.Z += -981.0f * deltatime;
+
+        //override
+        //x(t) = x0 + v0t + 0.5at^2
+        worldEndEffector += velocityEndEffectorOnBackwardsKinematic * deltatime;
+        bone.OverrideEndEffectorWorldLocation(worldEndEffector);
+    }
+    else
+    {
+        velocityEndEffectorOnBackwardsKinematic = FVector(0, 0, 0);
+    }
 }
 
 void BoneAttachment::TickKeepEndInWorldPlace(
@@ -307,7 +329,7 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
 /**
  * slip force
  */
-/// ----- dynamic slipforce -------
+/// ----- new dynamic slipforce -------
 FVector BoneAttachment::StaticSlipVelocity(
     FVector &lookDir,
     float velocityDown, 
@@ -335,7 +357,7 @@ FVector BoneAttachment::StaticSlipVelocity(
     DebugHelper::showScreenMessage(FString::Printf(TEXT("Velocity Weighted %.2f"), weight), FColor::Red);
     return velocity;
 }
-/// ----- dynamic slipforce end -------
+/// ----- new dynamic slipforce end -------
 
 
  // ------ DEPRECATED precalculated slip force: deprecated --------
@@ -452,16 +474,29 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     );
 
 
+    //must be given by bone controller.
+    FVector moveDir(1, 0, 0);
+    moveDir = orientation * moveDir;
 
+    //debug
+    if(!LiftOffTrajectoryIsValid(liftOffFrame, moveDir)){
+        DebugHelper::logMessage("LiftOffTrajectory not valid");
+        /*setupSlipDataOnStanceBegin(
+            orientation,
+            defaultForwardFrameFallback,
+            time,
+            velocityDown,
+            mass
+        );*/
+        return;
+    }
 
     //move both trajectories to world rotation space and setup slip data
     FVector startLocalWorldRotationSpace = currentReached; //is already in world Rotation.
     FVector liftoffLocalWorldRotationSpace = liftOffFrame;
 
 
-    //must be given by bone controller.
-    FVector moveDir(1, 0, 0);
-    moveDir = orientation * moveDir;
+    
 
     //setup
     /*
@@ -489,7 +524,10 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
 
 
 
-bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
+bool BoneAttachment::LiftOffTrajectoryIsValid(
+    FVector &liftOffFrameLocal,
+    FVector &moveDir
+){
     FVector down(0.0f, 0.0f, -1.0f);
     FVector directionOfLiftOff = liftOffFrameLocal.GetSafeNormal();
     float minDot = 0.95f;
@@ -507,6 +545,12 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(FVector &liftOffFrameLocal){
     if(FVector::DotProduct(directionOfLiftOff, up) > 0.0f){
         return false;
     }
+    if(FVector::DotProduct(directionOfLiftOff, moveDir) >= 0.0f){
+        return false;
+    }
+    
+
+
 
     FString message = FString::Printf(
         TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), 
@@ -581,8 +625,15 @@ float BoneAttachment::VerticalDistanceFromTrajectoryAsScalar(float maxDistance){
     if(heightDistance > 0.0f){
         float scalar = heightDistance / maxDistance;
 
+
+        //---- TESTING NEEDED ----
+        //one over x hier einbauen --> zu stark
+        //scalar = FMath::Clamp(scalar, 0.000000001f, 1.0f);
+        //scalar = 1.0f / scalar;
+
         //FMath::Clamp(Value, MinValue, MaxValue);
         scalar = 1.0f - FMath::Clamp(scalar, 0.0f, 1.0f);
+
         return scalar;
     }
     return 1.0f;
