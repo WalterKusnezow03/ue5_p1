@@ -275,6 +275,7 @@ void AssetLoader::loadMaterials(){
     assetNames[materialEnum::wingMaterial] = "wingMaterial";
     assetNames[materialEnum::treeMaterial] = "treeMaterial";
     assetNames[materialEnum::palmLeafMaterial] = "palmLeafMaterial";
+    assetNames[materialEnum::CactusMaterial] = "CactusMaterial";
     assetNames[materialEnum::sandMaterial] = "sandMaterial";
     assetNames[materialEnum::redsandMaterial] = "redsandMaterial";
     assetNames[materialEnum::waterMaterial] = "waterMaterial";

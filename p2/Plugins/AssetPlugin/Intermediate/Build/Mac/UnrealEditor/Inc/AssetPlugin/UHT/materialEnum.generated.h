@@ -28,6 +28,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	op(materialEnum::redsandMaterial) \
 	op(materialEnum::treeMaterial) \
 	op(materialEnum::palmLeafMaterial) \
+	op(materialEnum::CactusMaterial) \
 	op(materialEnum::waterMaterial) \
 	op(materialEnum::snowMaterial) \
 	op(materialEnum::prop_alarmBoxMaterial) \

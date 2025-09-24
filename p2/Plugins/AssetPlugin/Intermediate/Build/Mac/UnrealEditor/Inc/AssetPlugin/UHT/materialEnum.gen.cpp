@@ -43,6 +43,7 @@ void EmptyLinkFunctionForGeneratedCodematerialEnum() {}
 		{ "materialEnum::redsandMaterial", (int64)materialEnum::redsandMaterial },
 		{ "materialEnum::treeMaterial", (int64)materialEnum::treeMaterial },
 		{ "materialEnum::palmLeafMaterial", (int64)materialEnum::palmLeafMaterial },
+		{ "materialEnum::CactusMaterial", (int64)materialEnum::CactusMaterial },
 		{ "materialEnum::waterMaterial", (int64)materialEnum::waterMaterial },
 		{ "materialEnum::snowMaterial", (int64)materialEnum::snowMaterial },
 		{ "materialEnum::prop_alarmBoxMaterial", (int64)materialEnum::prop_alarmBoxMaterial },
@@ -53,6 +54,7 @@ void EmptyLinkFunctionForGeneratedCodematerialEnum() {}
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_AssetPlugin_materialEnum_Statics::Enum_MetaDataParams[] = {
 		{ "_texturedMaterial.Name", "materialEnum::_texturedMaterial" },
 		{ "beigeStoneMaterial.Name", "materialEnum::beigeStoneMaterial" },
+		{ "CactusMaterial.Name", "materialEnum::CactusMaterial" },
 		{ "glassMaterial.Name", "materialEnum::glassMaterial" },
 		{ "grassMaterial.Name", "materialEnum::grassMaterial" },
 		{ "ModuleRelativePath", "gamestart/assetEnums/materialEnum.h" },
@@ -93,9 +95,9 @@ void EmptyLinkFunctionForGeneratedCodematerialEnum() {}
 		static const FEnumRegisterCompiledInInfo EnumInfo[];
 	};
 	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_materialEnum_h_Statics::EnumInfo[] = {
-		{ materialEnum_StaticEnum, TEXT("materialEnum"), &Z_Registration_Info_UEnum_materialEnum, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 890177524U) },
+		{ materialEnum_StaticEnum, TEXT("materialEnum"), &Z_Registration_Info_UEnum_materialEnum, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 214036799U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_materialEnum_h_3701099565(TEXT("/Script/AssetPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_materialEnum_h_1275108907(TEXT("/Script/AssetPlugin"),
 		nullptr, 0,
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_materialEnum_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_materialEnum_h_Statics::EnumInfo));

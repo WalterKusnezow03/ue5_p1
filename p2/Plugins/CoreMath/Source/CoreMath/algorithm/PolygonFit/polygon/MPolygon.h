@@ -32,7 +32,15 @@ public:
     bool DoesIntersectIncludingBoundsCheck(const MPolygon &shapeIn);
     virtual bool DoesIntersect(const MPolygon &shapeIn);
     bool DoesIntersectClockwiseShape(const TArray<FVector2D> &shapeIn);
+
+    //checks hittest alogn "transformed" shape
     bool DoesIntersect(const FVector2D &aWorld, const FVector2D &bWorld);
+
+    bool DoesIntersect(
+        const FVector2D &aWorld, 
+        const FVector2D &bWorld,
+        TArray<FVector2D> &intersectionsOut //is Cleared
+    );
 
 
     /// modify transform immidiate to check for hit
@@ -71,7 +79,7 @@ public:
     }
 
     ///@brief returns bounding box of transformed vertecies
-    const FBoundingBox2D &boundingBox();
+    const FBoundingBox2D &boundingBox() const;
 
     ///@brief returns local bounds transformed, logicl of tl, br kept.
     FBoundingBox2D localBoundsTransformed();
@@ -99,6 +107,14 @@ protected:
         const FVector2D &bWorld,
         const FVector2D &e1, // edge 2
         const FVector2D &e2
+    );
+
+    bool DoesIntersect(
+        const FVector2D &aWorld, // edge 1
+        const FVector2D &bWorld,
+        const FVector2D &e1, // edge 2
+        const FVector2D &e2,
+        FVector2D &outIntersect
     );
 
     FVector2D EdgeNormal(const FVector2D &connect);

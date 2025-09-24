@@ -3834,6 +3834,12 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/InverseHull/InnerHullFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFit/polygon/MPolygon.cpp \
   Runtime/Core/Public/Math/UnrealMathUtility.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/FitCache/MPolygonRasterFitCache.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/FitCache/MPolygonRasterFitCache.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/MPolygonRaster.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/MPolygonRaster.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/MPolygonRasterizer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/PolygonFitRasterized/MPolygonRasterizer.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/algorithm/_Test/TestAlgorithm.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/FLinearColorInterpolator.cpp \

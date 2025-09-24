@@ -174,32 +174,32 @@ void UGameLaunchScreen::AddDebugElements(){
         return;
     }
 
-    return;
-
-    menuVbox->CreateSpacer(200);
+    //return;
+    //menuVbox->CreateSpacer(200);
     
 
     //debug custom slate widgets
-    if(true){
+    if(false){
         UWidgetSlateWrapperBase *widget = NewObject<UWidgetSlateWrapperBase>(this);
         menuVbox->AddChild((IBaseUiInterface*) widget);
     }
-    if(true){
+    if(false){
         UWidgetProgressBarBase *p = NewObject<UWidgetProgressBarBase>(this);
         menuVbox->AddChild((IBaseUiInterface*) p);
     }
-    if(false){
+    if(true){
         UGreedyFitWidget *widget = NewObject<UGreedyFitWidget>(this);
-        menuVbox->AddChild((IBaseUiInterface*) widget);
+        DebugHelper::logMessage("created greedy fit widget");
+        menuVbox->AddChild((IBaseUiInterface *)widget);
     }
 
-    if(true){
+    if(false){
         UVerticalDropDownBase *dropDownDebug = NewWidgetInitialized<UVerticalDropDownBase>(this);
         menuVbox->AddChild(dropDownDebug);
         dropDownDebug->Debug();
     }
 
-    if(true){
+    if(false){
         UWidgetSlateEditableText *editable = NewObject<UWidgetSlateEditableText>(this);
         menuVbox->AddChild((IBaseUiInterface*) editable);
     }

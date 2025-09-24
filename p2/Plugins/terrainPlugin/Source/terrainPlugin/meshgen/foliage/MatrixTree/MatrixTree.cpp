@@ -61,7 +61,7 @@ void MatrixTree::loadProperties(){
     addPropertyToMap(palmBush);
 
     TreeProperties cactus(100, ETreeType::ECactus, ETerrainType::EDesert, 0, 3, 3);
-    cactus.setTargetedMaterials(materialEnum::palmLeafMaterial, materialEnum::palmLeafMaterial);
+    cactus.setTargetedMaterials(materialEnum::CactusMaterial, materialEnum::CactusMaterial);
     cactus.addTerrainType(ETerrainType::EDesertForest);
     addPropertyToMap(cactus);
 }

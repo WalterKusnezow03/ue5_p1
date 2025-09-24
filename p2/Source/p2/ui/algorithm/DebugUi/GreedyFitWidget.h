@@ -17,5 +17,13 @@ public:
 
 private:
     void AppendIntoLayer(MPolygon &polygon, int layer);
-    void TestPolygonFit(TArray<MPolygon> &outPolygons);
+    void TestPolygonFitGreedy(TArray<MPolygon> &outPolygons);
+
+    void TestPolygonFitRasterized();
+    void AppendIntoLayer(TArray<FVector2D> &currentQuadShapedBuffer, int layer);
+    void AppendIntoLayer(
+        TArray<FVector2D> &currentQuadShapedBuffer,
+        int layer,
+        FColor color
+    );
 };

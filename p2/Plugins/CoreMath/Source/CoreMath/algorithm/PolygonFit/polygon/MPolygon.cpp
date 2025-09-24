@@ -177,6 +177,36 @@ bool MPolygon::DoesIntersect(
     return false;
 }
 
+bool MPolygon::DoesIntersect(
+    const FVector2D &aWorld, 
+    const FVector2D &bWorld,
+    TArray<FVector2D> &intersectionsOut
+){
+    if (shapeTransformed.Num() <= 0)
+    {
+        return false;
+    }
+
+    intersectionsOut.Empty();
+    for (int i = 0; i < shapeTransformed.Num(); i++){
+        int j = (i + 1) % shapeTransformed.Num();
+        FVector2D hit;
+        if(DoesIntersect(
+            aWorld, bWorld,
+            shapeTransformed[i], shapeTransformed[j],
+            hit
+        )){
+            if(!intersectionsOut.Contains(hit)){
+                intersectionsOut.Add(hit);
+            }
+            
+        }
+    }
+    return intersectionsOut.Num() > 0;
+}
+
+
+
 FVector2D MPolygon::EdgeNormal(const FVector2D &v0, const FVector2D &v1){
     //is a clock wise rotation, (from left to right)
     //means the point with dot product < 0, is outside the polygon if shape is clock wise sorted
@@ -199,6 +229,24 @@ bool MPolygon::DoesIntersect(
     const FVector2D &e2
 ){
 
+    FVector2D ignored;
+    return DoesIntersect(
+        aWorld,
+        bWorld,
+        e1,
+        e2,
+        ignored
+    );
+}
+
+bool MPolygon::DoesIntersect(
+    const FVector2D &aWorld, //edge 1
+    const FVector2D &bWorld,
+    const FVector2D &e1,     //edge 2
+    const FVector2D &e2,
+    FVector2D &outIntersect
+){
+
     FVector2D edgeNormal = EdgeNormal(aWorld, bWorld); 
 
     FVector2D e1Local = e1 - aWorld; //kante ins relative system bringen.
@@ -212,6 +260,8 @@ bool MPolygon::DoesIntersect(
         bool e1Outside = FVector2D::DotProduct(edgeNormal, e1Local) < 0.0; //assuming e1 is outside of clockwise ordered shape
         const FVector2D &outsidePoint = e1Outside ? e1 : e2;
 
+        outIntersect = IntersectionPoint;
+
         // AB = B - A, transform needed inwards to not intersect
         //(might not be needed for the algorythm)
         moveAwayFromIntersection = IntersectionPoint - outsidePoint;
@@ -221,6 +271,8 @@ bool MPolygon::DoesIntersect(
 
     return false;
 }
+
+
 
 
 
@@ -241,12 +293,6 @@ bool MPolygon::SegmentIntersection2D(
         outIntersection_2D = b1_2D;
         return true;
     }
-
-
-
-
-
-
 
     FVector a0(a0_2D.X, a0_2D.Y, 0.0);
     FVector a1(a1_2D.X, a1_2D.Y, 0.0);
@@ -456,7 +502,7 @@ void MPolygon::AppendRightSideBounds(TArray<FVector2D> &appendTo){
     appendTo.Add(bound[3]);
 }
 
-const FBoundingBox2D &MPolygon::boundingBox(){
+const FBoundingBox2D &MPolygon::boundingBox() const {
     return myBounds;
 }
 

@@ -14,6 +14,9 @@ private:
 
     static void TestPolygonFit();
 
+    static void TestRasterizer();
+    static void TestRasterizerFitting();
+
 
     template <typename T>
     static FString makeString(TArray<T> &array){

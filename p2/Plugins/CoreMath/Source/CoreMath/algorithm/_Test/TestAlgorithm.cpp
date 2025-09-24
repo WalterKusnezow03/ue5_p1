@@ -42,7 +42,8 @@ void TestAlgorithm::Test(){
     //TestInnerHullFinder();
     //TestPolygonHit();
     //TestPolygonFit();
-    // CoreMathDebugHelper
+    //TestRasterizer();
+    //TestRasterizerFitting();
 }
 
 void TestAlgorithm::TestInnerHullFinder(){
@@ -216,4 +217,85 @@ void TestAlgorithm::TestPolygonFit(){
     LogMessage(
         FString::Printf(TEXT("GreedyFilledPolygon Added(%d)"), filled.PolygonCount())
     );
+}
+
+
+
+#include "CoreMath/algorithm/PolygonFitRasterized/MPolygonRasterizer.h"
+void TestAlgorithm::TestRasterizer(){
+    MPolygonRasterizer rasterizer;
+
+    MPolygon _polygon;
+    TArray<FVector2D> shape{
+        FVector2D(0, 0),
+        FVector2D(0, 200),
+        FVector2D(100, 200),
+        FVector2D(200, 0)
+    };
+    _polygon.SetShape(shape);
+
+    TArray<TArray<FVector2D>> output;
+    rasterizer.Rasterize(_polygon, output);
+}
+
+
+void TestAlgorithm::TestRasterizerFitting(){
+    //bool MPolygonRaster::Fit(MPolygon &polygon)
+    TArray<MPolygon> polygons;
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(20, 50),
+            FVector2D(10, 50),
+            FVector2D(50, 10)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(0, 10),
+            FVector2D(30, 40),
+            FVector2D(40, 10),
+            FVector2D(30, 0)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+    {
+        MPolygon _polygon;
+        TArray<FVector2D> shape{
+            FVector2D(0, 0),
+            FVector2D(12, 40),
+            FVector2D(10, 50),
+            FVector2D(10, 0)
+        };
+        _polygon.SetShape(shape);
+        polygons.Add(_polygon);
+    }
+
+
+
+
+
+    MPolygon outer;
+    TArray<FVector2D> shape{
+        FVector2D(0, 0),
+        FVector2D(0, 100),
+        FVector2D(100, 100),
+        FVector2D(100, 0)
+    };
+    outer.SetShape(shape);
+    MPolygonRasterizer maker;
+    MPolygonRaster rasterizedOuter = maker.MakeRasterized(outer);
+
+    int loops = 20;
+    for (int i = 0; i < loops; i++){
+        rasterizedOuter.TryFitAll(polygons);
+    }
+
+    rasterizedOuter.Log();
 }
