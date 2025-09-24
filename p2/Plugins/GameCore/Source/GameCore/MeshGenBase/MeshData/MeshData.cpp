@@ -1823,4 +1823,12 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
 
 
 
+void MeshData::VerticalRangeOfBounds(float &a, float &b){
 
+
+    FVector bl = bounds.bottomLeftNearVertex();
+    FVector tr = bounds.topRightLeftVertex();
+
+    a = std::min(bl.Z, tr.Z);
+    b = std::max(bl.Z, tr.Z);
+}

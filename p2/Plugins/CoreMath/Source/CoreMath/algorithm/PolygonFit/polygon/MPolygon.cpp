@@ -34,16 +34,16 @@ MPolygon &MPolygon::operator=(const MPolygon &other){
 void MPolygon::SetShape(const TArray<FVector2D> &shapeIn){
     shapeOriginal = shapeIn;
     UpdateTransformedShape();
-    CalculateArea();
     UpdateBounds();
+    CalculateArea();
 }
 
 void MPolygon::SetShape(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints){
     shapeOriginal = IncreaseDetail(shapeIn, minDistanceBetweenPoints);
 
     UpdateTransformedShape();
-    CalculateArea();
     UpdateBounds();
+    CalculateArea();
 }
 
 void MPolygon::SetShapeTransformed(
@@ -51,8 +51,8 @@ void MPolygon::SetShapeTransformed(
     int minDistanceBetweenPoints
 ){
     shapeTransformed = IncreaseDetail(shapeIn, minDistanceBetweenPoints);
-    CalculateArea();
     UpdateBounds();
+    CalculateArea();
 }
 
 TArray<FVector2D> MPolygon::IncreaseDetail(const TArray<FVector2D> &shapeIn, int minDistanceBetweenPoints){
@@ -104,6 +104,12 @@ void MPolygon::UpdateTransformedShape(){
 }
 
 void MPolygon::CalculateArea(){
+
+    areaFound = localBounds.sizeX() * localBounds.sizeY();
+    return;
+
+    /*
+    // deprecated, can be found from bounds
     if(shapeOriginal.Num() <= 1){
         areaFound = 0.0f;
         return;
@@ -121,7 +127,7 @@ void MPolygon::CalculateArea(){
         }
 
         areaFound = (max.X - min.X) * (max.Y - min.Y);
-    }
+    }*/
 }
 
 

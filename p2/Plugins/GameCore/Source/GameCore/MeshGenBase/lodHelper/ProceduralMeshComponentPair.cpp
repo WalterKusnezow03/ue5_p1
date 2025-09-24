@@ -349,6 +349,29 @@ void ProceduralMeshComponentPair::ApplyMaterial(
     int layer = layerByMaterialEnum(type);
     if (assetManager *e = assetManager::instance())
     {
+        /*
+        UMaterial *materialFound = e->Find<materialEnum, UMaterial>(type);
+        if(materialFound){
+            if(UMaterialInstance *dynamic = ApplyExpressionData(materialFound)){
+                //apply dynamic
+                ApplyMaterial(
+                    ProceduralMeshComponent, 
+                    dynamic,
+                    layer
+                );
+            }else{
+                ApplyMaterial(
+                    ProceduralMeshComponent, 
+                    materialFound,
+                    layer
+                );
+            }
+        }*/
+
+
+
+
+        //old default Apply
         ApplyMaterial(
             ProceduralMeshComponent, 
             e->Find<materialEnum, UMaterial>(type),
@@ -356,6 +379,48 @@ void ProceduralMeshComponentPair::ApplyMaterial(
             layer
         );
     }
+}
+
+
+
+
+UMaterialInstanceDynamic* ProceduralMeshComponentPair::ApplyExpressionData(UMaterial *material){
+    UObject *parent = raycastMesh; //outer object for instance dynamic needed.
+    if(!parent){
+        parent = noraycastMesh;
+    }
+    if (parent && material)
+    {
+        if(raycastMeshData.find(materialEnum::palmLeafMaterial) != raycastMeshData.end()){
+            MeshData &data = raycastMeshData[materialEnum::palmLeafMaterial];
+
+            //check if params exsist.
+            //LowerZValueBounds_float
+            //HigherZValueBounds_float
+            float zLower = 0.0f;
+            float zHigher = 300.0f;
+            if (
+                material->GetScalarParameterValue(FMaterialParameterInfo("LowerZValueBounds_float"), zLower) &&
+                material->GetScalarParameterValue(FMaterialParameterInfo("HigherZValueBounds_float"), zHigher)
+            )
+            {
+                data.VerticalRangeOfBounds(zLower, zHigher); //&float, &float out
+                //Existiert, also jetzt ein MID erzeugen
+                UMaterialInstanceDynamic* created = UMaterialInstanceDynamic::Create(material, parent);
+                created->SetScalarParameterValue("LowerZValueBounds_float", zLower);
+                created->SetScalarParameterValue("HigherZValueBounds_float", zHigher);
+                DebugHelper::logMessage(
+                    FString::Printf(
+                        TEXT("ProceduralMeshComponentPair palm leaf mat setup: %.2f %.2f"),
+                        zLower,
+                        zHigher
+                    )
+                );
+                return created;
+            }
+        }
+    }
+    return nullptr;
 }
 
 /// @brief returns the layer by material enum type

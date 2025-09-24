@@ -12,6 +12,15 @@ public:
     virtual void SetupInputsOnConstruct() override;
     virtual void SetupOutputsOnConstruct() override;
 
+    /*
+    inputs: 
+    LowerZValueBounds_float
+    HigherZValueBounds_float
+    
+    
+    */
+
+
 
     /// ---- Changable attributes of the water ----
  

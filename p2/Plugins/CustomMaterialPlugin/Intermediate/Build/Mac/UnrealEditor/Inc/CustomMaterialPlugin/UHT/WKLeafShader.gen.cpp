@@ -58,9 +58,9 @@ void EmptyLinkFunctionForGeneratedCodeWKLeafShader() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWKLeafShader_Statics::NewProp_Amplitude_MetaData[] = {
 		{ "Category", "UWKWaterShader" },
-		{ "Comment", "/// ---- Changable attributes of the water ----\n" },
+		{ "Comment", "/*\n    inputs: \n    LowerZValueBounds_float\n    HigherZValueBounds_float\n    \n    \n    *//// ---- Changable attributes of the water ----\n" },
 		{ "ModuleRelativePath", "Materials/Nodes/VertexShaders/foliage/WKLeafShader.h" },
-		{ "ToolTip", "---- Changable attributes of the water ----" },
+		{ "ToolTip", "inputs:\nLowerZValueBounds_float\nHigherZValueBounds_float\n\n\n/// ---- Changable attributes of the water ----" },
 	};
 #endif
 	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_UWKLeafShader_Statics::NewProp_Amplitude = { "Amplitude", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(UWKLeafShader, Amplitude), METADATA_PARAMS(Z_Construct_UClass_UWKLeafShader_Statics::NewProp_Amplitude_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_UWKLeafShader_Statics::NewProp_Amplitude_MetaData)) };
@@ -121,9 +121,9 @@ void EmptyLinkFunctionForGeneratedCodeWKLeafShader() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_foliage_WKLeafShader_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWKLeafShader, UWKLeafShader::StaticClass, TEXT("UWKLeafShader"), &Z_Registration_Info_UClass_UWKLeafShader, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKLeafShader), 476748357U) },
+		{ Z_Construct_UClass_UWKLeafShader, UWKLeafShader::StaticClass, TEXT("UWKLeafShader"), &Z_Registration_Info_UClass_UWKLeafShader, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWKLeafShader), 3484140511U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_foliage_WKLeafShader_h_2452914621(TEXT("/Script/CustomMaterialPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_foliage_WKLeafShader_h_4210478622(TEXT("/Script/CustomMaterialPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_foliage_WKLeafShader_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_CustomMaterialPlugin_Source_CustomMaterialPlugin_Materials_Nodes_VertexShaders_foliage_WKLeafShader_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

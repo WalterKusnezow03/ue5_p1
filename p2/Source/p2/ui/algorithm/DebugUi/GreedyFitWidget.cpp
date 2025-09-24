@@ -161,6 +161,9 @@ void UGreedyFitWidget::TestPolygonFitRasterized(){
         };
         _polygon.SetShape(shape);
         polygons.Add(_polygon);
+        polygons.Add(_polygon);
+        polygons.Add(_polygon);
+        
     }
     /*
     {
@@ -183,7 +186,7 @@ void UGreedyFitWidget::TestPolygonFitRasterized(){
     MPolygon outer;
     TArray<FVector2D> shape{
         FVector2D(0, 0),
-        FVector2D(0, 100),
+        FVector2D(0, 50),
         FVector2D(100, 100),
         FVector2D(100, 0)
     };
