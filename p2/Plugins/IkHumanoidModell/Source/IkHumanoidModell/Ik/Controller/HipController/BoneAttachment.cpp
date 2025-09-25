@@ -354,7 +354,7 @@ FVector BoneAttachment::StaticSlipVelocity(
     float maxDistanceFromTrajectory = 30.0f;
     float weight = VerticalDistanceFromTrajectoryAsScalar(maxDistanceFromTrajectory);
     velocity *= weight;
-    DebugHelper::showScreenMessage(FString::Printf(TEXT("Velocity Weighted %.2f"), weight), FColor::Red);
+    //DebugHelper::showScreenMessage(FString::Printf(TEXT("Velocity Weighted %.2f"), weight), FColor::Red);
     return velocity;
 }
 /// ----- new dynamic slipforce end -------

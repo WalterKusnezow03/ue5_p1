@@ -129,6 +129,7 @@ protected:
 	void CreateFoliageInstanceComponent();
 	void UpdateFoliageInstanceComponent();
 	UStaticMesh *StaticMeshForInstancer();
+	
 	UPROPERTY()
 	UMovingFoliageInstancerComponent *grassInstancer = nullptr;
 

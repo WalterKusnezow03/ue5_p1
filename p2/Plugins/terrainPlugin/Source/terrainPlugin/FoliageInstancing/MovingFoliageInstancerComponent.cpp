@@ -1,5 +1,5 @@
 #include "MovingFoliageInstancerComponent.h"
-
+#include "GameCore/DebugHelper.h"
 
 void UMovingFoliageInstancerComponent::Init(int countChilds, UStaticMesh *someMesh, AActor *parent){
 
@@ -14,8 +14,10 @@ void UMovingFoliageInstancerComponent::Init(int countChilds, UStaticMesh *someMe
         //this->AttachToComponent(parent->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
         
         //instancer = NewObject<UInstancedStaticMeshComponent>(parent);
+        
+        instancer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         instancer->AttachToComponent(parent->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-
+        SetHiddenInGame(false);
 
         FTransform empty;
         for (int i = 0; i < countChilds; i++)
@@ -28,16 +30,26 @@ void UMovingFoliageInstancerComponent::Init(int countChilds, UStaticMesh *someMe
             //AddedChilds.Add(newChild);
             transformChilds.Add(empty);
         }
+
+        parentPtr = parent;
     }
 }
 
-void UMovingFoliageInstancerComponent::Update(const TArray<FVector> &positions){
+void UMovingFoliageInstancerComponent::Update(
+    const TArray<FVector> &positions,
+    ELod lodLevelcurrent
+){
     if(instancer){
+        if(lodLevelcurrent != ELod::lodNear){
+            SetHiddenInGame(true);
+            return;
+        }
         if(positions.Num() <= 0){
             SetHiddenInGame(true);
             return;
         }
 
+        SetHiddenInGame(false);
         UpdateTransformArray(positions);
         int32 StartInstanceIndex = 0;
         bool bMarkRenderStateDirty = true;
@@ -49,7 +61,7 @@ void UMovingFoliageInstancerComponent::Update(const TArray<FVector> &positions){
             bMarkRenderStateDirty,
             bTeleport
         );
-        SetHiddenInGame(false);
+        
     }
     
     
@@ -81,6 +93,21 @@ void UMovingFoliageInstancerComponent::UpdateTransformArray(
     {
         FTransform &current = transformChilds[i];
         current.SetTranslation(positions[i]);
+        /*DebugHelper::logMessage(
+            FString::Printf(TEXT("UMovingFoliageInstancerComponent update transform %s"), *positions[i].ToString())
+        );
+
+        if(parentPtr){
+            DebugHelper::showLineBetween(
+                parentPtr->GetWorld(),
+                parentPtr->GetActorLocation() + positions[i],
+                parentPtr->GetActorLocation() + positions[i] + FVector(0,0,50000),
+                FColor::Red,
+                1000.0f
+            );
+        }*/
+
+
     }
 
     //make others dissappear
@@ -103,6 +130,7 @@ void UMovingFoliageInstancerComponent::HideAll(){
 
 void UMovingFoliageInstancerComponent::SetHiddenInGame(bool flag){
     if(instancer){
-        instancer->SetVisibility(flag, true); // Hide in game (and also affect children)
+        instancer->SetVisibility(!flag, true); // Hide in game (and also affect children)
+        
     }
 }

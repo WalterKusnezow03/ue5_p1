@@ -55,6 +55,7 @@ void AcustomMeshActor::BeginPlay()
 	Super::BeginPlay();
     setTeam(teamEnum::neutralTeam); //nesecarry for being shot of everyone
     CreateFoliageInstanceComponent();
+    UpdateFoliageInstanceComponent();
 }
 
 // Called every frame
@@ -521,7 +522,7 @@ void AcustomMeshActor::CreateFoliageInstanceComponent(){
         if(UStaticMesh *mesh = StaticMeshForInstancer()){
 
             grassInstancer = NewObject<UMovingFoliageInstancerComponent>(this);
-            int childsMax = 40;
+            int childsMax = 20 * 20;
             grassInstancer->Init(childsMax, mesh, this);
             UpdateFoliageInstanceComponent();
         }else{
@@ -539,13 +540,7 @@ UStaticMesh *AcustomMeshActor::StaticMeshForInstancer(){
 }
 
 void AcustomMeshActor::OnLodSwitch(){
-    if(currentLodLevel == ELod::lodNear){
-        UpdateFoliageInstanceComponent();
-    }else{
-        if(grassInstancer){
-            grassInstancer->HideAll();
-        }
-    }
+    UpdateFoliageInstanceComponent();
 }
 
 void AcustomMeshActor::UpdateFoliageInstanceComponent(){
@@ -554,19 +549,24 @@ void AcustomMeshActor::UpdateFoliageInstanceComponent(){
         bool raycastOnLayer = true;
         MeshData &data = findMeshDataReference(
             materialEnum::grassMaterial,
-            ELod::lodNear,
+            currentLodLevel, //ELod::lodNear, //kleiner test :-)
             raycastOnLayer
         );
         const TArray<FVector> &positions = data.getVerteciesRef();
-        grassInstancer->Update(positions);
+        grassInstancer->Update(positions, currentLodLevel);
 
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("AcustomMeshActor::UpdateFoliageInstanceComponent count %d"),
-                positions.Num()
-            )
+        FString message = FString::Printf(
+            TEXT("AcustomMeshActor::UpdateFoliageInstanceComponent count %d"),
+            positions.Num()
+        );
+        DebugHelper::logMessage(message);
+        DebugHelper::showScreenMessage(message);
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            GetActorLocation(),
+            GetActorLocation() + FVector(0, 0, 800),
+            FColor::Black,
+            10.0f
         );
     }
-    
-
 }
