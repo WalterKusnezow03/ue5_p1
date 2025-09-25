@@ -120,6 +120,10 @@ FString AssetPathMaker::ToString(EAssetType type){
     if(type == EAssetType::EUTexture2D){
         return TEXT("Texture2D");
     }
+    if(type == EAssetType::EUStaticMesh){
+        return TEXT("StaticMesh");
+    }
+
     return TEXT("none");
 }
 

@@ -21,7 +21,8 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #define FOREACH_ENUM_EASSETTYPE(op) \
 	op(EAssetType::EUTexture2D) \
 	op(EAssetType::EUClassBlueprint) \
-	op(EAssetType::EUMaterial) 
+	op(EAssetType::EUMaterial) \
+	op(EAssetType::EUStaticMesh) 
 
 enum class EAssetType;
 template<> struct TIsUEnumClass<EAssetType> { enum { Value = true }; };

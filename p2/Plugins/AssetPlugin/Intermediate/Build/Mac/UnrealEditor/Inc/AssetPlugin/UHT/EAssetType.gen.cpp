@@ -37,11 +37,13 @@ void EmptyLinkFunctionForGeneratedCodeEAssetType() {}
 		{ "EAssetType::EUTexture2D", (int64)EAssetType::EUTexture2D },
 		{ "EAssetType::EUClassBlueprint", (int64)EAssetType::EUClassBlueprint },
 		{ "EAssetType::EUMaterial", (int64)EAssetType::EUMaterial },
+		{ "EAssetType::EUStaticMesh", (int64)EAssetType::EUStaticMesh },
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_AssetPlugin_EAssetType_Statics::Enum_MetaDataParams[] = {
 		{ "EUClassBlueprint.Name", "EAssetType::EUClassBlueprint" },
 		{ "EUMaterial.Name", "EAssetType::EUMaterial" },
+		{ "EUStaticMesh.Name", "EAssetType::EUStaticMesh" },
 		{ "EUTexture2D.Name", "EAssetType::EUTexture2D" },
 		{ "ModuleRelativePath", "gamestart/PathMaker/enum/EAssetType.h" },
 	};
@@ -71,9 +73,9 @@ void EmptyLinkFunctionForGeneratedCodeEAssetType() {}
 		static const FEnumRegisterCompiledInInfo EnumInfo[];
 	};
 	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_PathMaker_enum_EAssetType_h_Statics::EnumInfo[] = {
-		{ EAssetType_StaticEnum, TEXT("EAssetType"), &Z_Registration_Info_UEnum_EAssetType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1981823828U) },
+		{ EAssetType_StaticEnum, TEXT("EAssetType"), &Z_Registration_Info_UEnum_EAssetType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4178765334U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_PathMaker_enum_EAssetType_h_1673260503(TEXT("/Script/AssetPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_PathMaker_enum_EAssetType_h_4104537250(TEXT("/Script/AssetPlugin"),
 		nullptr, 0,
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_PathMaker_enum_EAssetType_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_PathMaker_enum_EAssetType_h_Statics::EnumInfo));

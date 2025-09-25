@@ -45,14 +45,14 @@ void MPolygonRaster::SetupAsChild(TArray<std::pair<int, int>> &positions, std::p
     std::pair<int, int> maxPosFound = MaxPos(positions);
     offset = offsetIn;
 
-    CoreMathDebugHelper::logMessage(
+    /*CoreMathDebugHelper::logMessage(
         FString::Printf(TEXT("Child Max Bound %d %d"), maxPosFound.first, maxPosFound.second)
-    );
+    );*/
     FillShapeFromEmptySetupMarkLocked(maxPosFound.first, maxPosFound.second);
     
     markFree(positions);
     UpdateFreePositions();
-    Log("MPolygonRaster Setup As Child");
+    //Log("MPolygonRaster Setup As Child");
 }
 
 void MPolygonRaster::FillShapeFromEmptySetupMarkLocked(int i, int j){
@@ -546,7 +546,7 @@ MPolygonRaster MPolygonRaster::Rotate(int degree) const {
     MPolygonRaster rasterRotated;
     rasterRotated.SetupAsChild(positions, pivotNone);
 
-    rasterRotated.Log("MPolygonRaster Rotated Polygon:");
+    //rasterRotated.Log("MPolygonRaster Rotated Polygon:");
 
     return rasterRotated;
 }

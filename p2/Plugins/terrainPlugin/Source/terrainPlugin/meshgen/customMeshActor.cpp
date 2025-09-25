@@ -531,7 +531,24 @@ void AcustomMeshActor::CreateFoliageInstanceComponent(){
     }
 }
 
+
+
+#include "AssetPlugin/gamestart/assetManager.h"
+#include "AssetPlugin/gamestart/AssetLoader.h"
+#include "terrainPlugin/AssetEnums/EFoliageGrass.h"
+
 UStaticMesh *AcustomMeshActor::StaticMeshForInstancer(){
+    
+    if(assetManager *instance = assetManager::instance()){
+        UStaticMesh *asset = instance->Find<EFoliageGrass, UStaticMesh>(EFoliageGrass::grassAssetDefault);
+        if(asset){
+            return asset;
+        }else{
+            DebugHelper::logMessage("AcustomMeshActor asset not found");
+        }
+    }    
+    
+    
     UStaticMesh* DefaultCube = LoadObject<UStaticMesh>(
         nullptr,
         TEXT("/Engine/BasicShapes/Cube.Cube")

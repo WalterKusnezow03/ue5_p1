@@ -18,10 +18,32 @@ void TerrainPluginAssetLoader::InitOnLaunchModule(){
     InitGrassAssets();
 }
 
+void TerrainPluginAssetLoader::LoadGrassAssetOnBeginPlay(){
+    bool found = false;
+    if (assetManager *instance = assetManager::instance())
+    {
+        UStaticMesh *asset = instance->Find<EFoliageGrass, UStaticMesh>(EFoliageGrass::grassAssetDefault);
+        if(asset){
+            found = true;
+        }
+    }
+    if(!found){
+        AssetLoader::LoadAndSaveAssetToManager<EFoliageGrass, UStaticMesh>(
+            EFoliageGrass::grassAssetDefault, // track in asset manager
+            "terrainPlugin",                  // like "Game" for game or any other plugin name
+            "Prefabs/foliage",                // like: "Prefabs/Weapons/attachments", no trailing slash
+            "grassAssetDefault"               // Just the file name as displayed
+        );
+    }
+}
+
+
+
 void TerrainPluginAssetLoader::InitGrassAssets(){
     //if grass asset does not exist: create
+    LoadGrassAssetOnBeginPlay();
 
-	//load asset here (external)
+    //load asset here (external)
 	AssetLoader::LoadAndSaveAssetToManager<EFoliageGrass, UStaticMesh>(
 		EFoliageGrass::grassAssetDefault, // track in asset manager
 		"terrainPlugin",                  // like "Game" for game or any other plugin name

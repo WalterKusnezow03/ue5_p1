@@ -186,6 +186,10 @@ private:
 			outType = EAssetType::EUTexture2D;
 			found = true;
 		}
+		else if constexpr (std::is_base_of<UStaticMesh, T>::value){
+			outType = EAssetType::EUStaticMesh;
+			found = true;
+		}
 		else {
 			found = false;
 		}
