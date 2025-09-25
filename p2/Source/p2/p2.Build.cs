@@ -24,7 +24,8 @@ public class p2 : ModuleRules
 			"customUiPlugin",
 			"StoragePlugin",
 			"GcGameCore",
-			"CustomMaterialPlugin"
+			"CustomMaterialPlugin",
+			"AssetMakerEditorPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

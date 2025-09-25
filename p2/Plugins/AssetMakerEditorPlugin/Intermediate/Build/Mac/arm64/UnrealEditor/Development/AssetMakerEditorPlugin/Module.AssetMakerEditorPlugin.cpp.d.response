@@ -1,7 +1,7 @@
 -c
 -pipe
 -I"."
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Private"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/Private"
 -I"../Intermediate/Build/Mac/UnrealEditor/Inc/CoreUObject/UHT"
 -I"Runtime/CoreUObject/Public"
 -I"Runtime"
@@ -272,24 +272,14 @@
 -I"Runtime/MovieSceneCapture/Public"
 -I"../Intermediate/Build/Mac/UnrealEditor/Inc/AnimationDataController/UHT"
 -I"Developer/AnimationDataController/Public"
--I"../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT"
--I"../Plugins/Runtime/ProceduralMeshComponent/Source/ProceduralMeshComponent/Public"
--I"../Plugins/Runtime/ProceduralMeshComponent/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Public"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Public"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetPlugin/UHT"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/Public"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Public"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/Public"
 -isystem"ThirdParty/mimalloc/include"
 -isystem"ThirdParty/LibTiff/Source/Mac"
 -isystem"ThirdParty/LibTiff/Source"
--include-pch "/Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/Engine/SharedPCH.Engine.ShadowErrors.InclOrderUnreal5_1.h.gch"
--include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/terrainPlugin/Definitions.terrainPlugin.h"
+-include-pch "/Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/UnrealEd/SharedPCH.UnrealEd.ShadowErrors.InclOrderUnreal5_1.h.gch"
+-include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Definitions.AssetMakerEditorPlugin.h"
 -Wall
 -Werror
 -Wdelete-non-virtual-dtor
@@ -344,6 +334,6 @@
 -std=c++17
 -fpch-validate-input-files-content
 -stdlib=libc++
-"/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Private/terrainPlugin.cpp"
--MD -MF"/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/terrainPlugin/terrainPlugin.cpp.d"
--o "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/terrainPlugin/terrainPlugin.cpp.o"
+"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Module.AssetMakerEditorPlugin.cpp"
+-MD -MF"/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Module.AssetMakerEditorPlugin.cpp.d"
+-o "/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Module.AssetMakerEditorPlugin.cpp.o"

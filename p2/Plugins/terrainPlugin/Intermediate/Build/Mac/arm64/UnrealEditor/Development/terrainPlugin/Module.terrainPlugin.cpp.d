@@ -3900,6 +3900,8 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Interactinterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Interactinterface.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/DoorBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/EFoliageGrass.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/AssetEnums/EFoliageGrass.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/ETreeType.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/MovingFoliageInstancerComponent.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/roomProcedural.gen.cpp \
@@ -3928,8 +3930,29 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/BaseInterface/StorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/TerrainLauncher.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/terrainPlugin/UHT/terrainPlugin.init.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/FoliageInstancing/MovingFoliageInstancerComponent.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/AssetEditorCreation/TerrainPluginAssetLoader.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/AssetEditorCreation/TerrainPluginAssetLoader.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetManager.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/AssetManagerTwoGeneric.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/typeindex \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/entityEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/particleEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/throwableEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/textureEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/ExternalEnumTracking/NamedEnumBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/ExternalEnumTracking/NamedEnum.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/enum/EAssetType.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/AssetLoader.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/AssetPathMaker.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/MeshDataToStaticMesh/EditorMeshDataToStaticMeshTool.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT/EditorMeshDataToStaticMeshTool.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/grass/MatrixGrass.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/FoliageInstancing/MovingFoliageInstancerComponent.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/management/ActorManager.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerBase.h \
@@ -3946,6 +3969,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/PathFinder/Intermediate/Build/Mac/UnrealEditor/Inc/PathFinder/UHT/PathFinder.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/grass/MatrixGrass.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/FVectorShape.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/helper/GrahamScan.cpp \
@@ -3972,19 +3996,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/roomActor/helper/staircaseBoundData.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/roomActor/roomBoundData.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/rooms/roomActor/roomProcedural.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetManager.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/assetManagerGeneric.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/TAssetManager/AssetManagerTwoGeneric.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/typeindex \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/entityEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/weaponEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/particleEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/throwableEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/assetEnums/textureEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/ExternalEnumTracking/NamedEnumBase.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/ExternalEnumTracking/NamedEnum.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetPlugin/Source/AssetPlugin/gamestart/PathMaker/enum/EAssetType.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/water/customWaterActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/water/ripple.cpp \

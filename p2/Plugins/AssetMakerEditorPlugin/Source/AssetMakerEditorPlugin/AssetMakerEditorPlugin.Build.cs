@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class terrainPlugin : ModuleRules
+public class AssetMakerEditorPlugin : ModuleRules
 {
-	public terrainPlugin(ReadOnlyTargetRules Target) : base(Target)
+	public AssetMakerEditorPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -26,10 +26,6 @@ public class terrainPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
-				"GameCore",
-				"CoreMath",
-				"AssetPlugin",
-				"PathFinder"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,12 +38,17 @@ public class terrainPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"ProceduralMeshComponent",
-				"StoragePlugin",
-				"AssetMakerEditorPlugin",
 				// ... add private dependencies that you statically link with here ...	
+				"RenderCore",         // für Build/Renderdaten
+				"RHI",                // falls du direkt VertexBuffer o.ä. anfassen willst
+				"MeshDescription",    // für FMeshDescription, FMeshDescriptionBuilder
+				"StaticMeshDescription", // für FStaticMeshAttributes
+				"AssetRegistry",      // für AssetRegistryModule::AssetCreated
+				"UnrealEd",           // nötig im Editor-Modul für Asset-Erstellung
+				"EditorSubsystem",    // wenn du AssetEditorSubsystem benutzt
 			}
-			);
+		);
+		
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

@@ -1,7 +1,7 @@
-/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/terrainPlugin/terrainPlugin.cpp.o: \
-  /Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/Engine/SharedPCH.Engine.ShadowErrors.InclOrderUnreal5_1.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineSharedPCH.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/ContainersFwd.h \
+/Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Module.AssetMakerEditorPlugin.cpp.o: \
+  /Users/walterk/Documents/UnrealProjects/p2/Intermediate/Build/Mac/arm64/p2Editor/Development/UnrealEd/SharedPCH.UnrealEd.ShadowErrors.InclOrderUnreal5_1.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/UnrealEdSharedPCH.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/CoreTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/Platform.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Build.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/LargeWorldCoordinates.h \
@@ -15,17 +15,17 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatform.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Clang/ClangPlatform.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatformCompilerSetup.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/CoreTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/UMemoryDefines.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreMiscDefines.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Traits/IsContiguousContainer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Exec.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AssertionMacros.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformMisc.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/GenericPlatform/GenericPlatformMisc.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/StringFwd.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Traits/IsContiguousContainer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/CoreFwd.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/ContainersFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/MathFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/UObjectHierarchyFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformCrt.h \
@@ -228,10 +228,9 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Delegates/DelegateSignatureImpl.inl \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/ScriptDelegates.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Delegates/DelegateCombinations.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Parse.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/DateTime.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/CoreMinimal.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameNumber.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Parse.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/Color.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/ColorList.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/IntVector.h \
@@ -277,6 +276,7 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/TransformVectorized.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/UnrealMathSSE.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/CapsuleShape.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/DateTime.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/RangeBound.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AutomationEvent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/Range.h \
@@ -334,27 +334,27 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/PimplPtr.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/ResourceSize.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/RandomStream.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreMisc.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/List.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Modules/ModuleInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Attribute.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/TVariant.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/TVariantMeta.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreMisc.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericWindow.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericApplication.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericApplicationMessageHandler.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericPlatformInputDeviceMapper.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericWindowDefinition.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/Accessibility/GenericAccessibleInterfaces.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/TaskGraphInterfaces.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/IConsoleManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AccessDetection.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Features/IModularFeature.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitReader.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitArchive.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/NetworkGuid.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitWriter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/LockFreeFixedSizeAllocator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/MemStack.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/Event.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/RefCounting.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/TaskGraphInterfaces.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/LockFreeFixedSizeAllocator.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Experimental/ConcurrentLinearAllocator.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/MallocAnsi.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/MemoryTrace.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/MemStack.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/MetadataTrace.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/StringsTrace.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TraceLog/Public/Trace/Trace.inl \
@@ -390,112 +390,91 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Experimental/Containers/HazardPointer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Timeout.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/InheritedContext.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/ICursor.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericApplicationMessageHandler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericPlatformInputDeviceMapper.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericApplication.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericWindow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/GenericWindowDefinition.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/Accessibility/GenericAccessibleInterfaces.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Variant.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/NetworkGuid.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/MemoryWriter.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/MemoryArchive.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/MemoryReader.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Memory/MemoryView.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Memory/MemoryFwd.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/ICursor.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/TransformCalculus.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/TransformCalculus2D.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/List.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Modules/ModuleInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitReader.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitArchive.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BitWriter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Paths.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/CustomVersion.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/OutputDeviceError.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ObjectThumbnail.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/StaticArray.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/ScopedCallback.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreStats.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/EngineVersion.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/GatherableTextData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/InternationalizationMetadata.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/IQueuedWork.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BufferReader.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/QueuedThreadPool.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/AsyncWork.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/BufferReader.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/StaticArray.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/SecureHash.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/String/BytesToHex.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/String/HexToBytes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Paths.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Modules/ModuleManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Modules/Boilerplate/ModuleBoilerplate.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/Future.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/SHMath.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ScopedEvent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/DebugSerializationFlags.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/BufferedOutputDevice.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/ResourceArray.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/DynamicRHIResourceArray.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/MemoryImage.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/HashTable.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/CustomVersion.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CommandLine.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/OutputDeviceError.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ObjectThumbnail.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/App.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameRate.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ExpressionParserTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/ValueOrError.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ExpressionParserTypes.inl \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameTime.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/QualifiedFrameTime.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Timecode.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/Future.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/BufferedOutputDevice.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/SHMath.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ScopedEvent.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/Ticker.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/MpscQueue.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/PropertyPortFlags.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ConfigCacheIni.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/TextLocalizationResource.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ConfigTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/EngineVersion.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/GatherableTextData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/InternationalizationMetadata.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/Queue.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/ThreadSafeBool.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Features/IModularFeatures.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Logging/TokenizedMessage.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ApplicationCore/Public/GenericPlatform/IInputInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/ValueOrError.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ExpressionParserTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ExpressionParserTypes.inl \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/GenericPlatform/GenericPlatformFile.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CompilationResult.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/FileManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/Histogram.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FeedbackContext.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/BasicMathExpressionEvaluator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/FastDecimalFormat.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/IFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FilterCollection.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CommandLine.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Features/IModularFeatures.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/ThreadSafeBool.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreDelegates.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformFile.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatformFile.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Apple/ApplePlatformFile.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AES.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/App.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameRate.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameTime.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/QualifiedFrameTime.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Timecode.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/MessageDialog.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/SlowTask.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/SlowTaskStack.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/Runnable.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/Ticker.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/MpscQueue.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AutomationTest.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/Async.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/RunnableThread.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Fork.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/GenericPlatform/GenericPlatformStackWalk.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformStackWalk.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatformStackWalk.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Apple/ApplePlatformStackWalk.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Internationalization/Regex.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/PropertyPortFlags.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Stats/StatsMisc.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FileHelper.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/ParallelFor.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/SingleThreadRunnable.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/ProfilingHelpers.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Serialization/JsonTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Policies/PrettyJsonPrintPolicy.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/FileManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Policies/JsonPrintPolicy.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Serialization/JsonWriter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Dom/JsonObject.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Dom/JsonValue.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/JsonGlobals.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Serialization/JsonReader.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Serialization/JsonSerializer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Serialization/JsonSerializerMacros.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Policies/CondensedJsonPrintPolicy.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Json/Public/Policies/PrettyJsonPrintPolicy.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Script.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Memory/VirtualStackAllocator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectGlobals.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/VersePathFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Misc/PackagePath.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/ArchiveUObject.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/PrimaryAssetId.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/TopLevelAssetPath.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectArray.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBaseUtility.h \
@@ -542,83 +521,77 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/EnumProperty.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/TextProperty.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/FieldPathProperty.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/CoreNet.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Stack.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Interface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/GCObject.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/BulkData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/AsyncFileHandle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/BulkDataBuffer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoChunkId.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoDispatcherPriority.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Misc/PackageSegment.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/FileRegions.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/PixelFormat.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoDispatcher.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformFile.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatformFile.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Apple/ApplePlatformFile.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoContainerId.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoHash.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Hash/Blake3.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/AES.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/IEngineCrypto.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Tasks/Task.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnline.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnlineFwd.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnlinePackage.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/CoreOnline/UHT/CoreOnline.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/CoreNet.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Stack.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/LinkerLoad.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/Linker.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/LinkerInstancingContext.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectResource.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/PackageFileSummary.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/PackageResourceManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Misc/PackageSegment.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectRedirector.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectIterator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/BulkData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/AsyncFileHandle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/BulkDataBuffer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoChunkId.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoDispatcherPriority.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Serialization/FileRegions.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/PixelFormat.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoDispatcher.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoContainerId.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/IO/IoHash.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Hash/Blake3.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/IEngineCrypto.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Tasks/Task.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectAnnotation.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectThreadContext.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/StructOnScope.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Misc/NotifyHook.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectIterator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectKey.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/InputCore/Classes/InputCoreTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/InputCore/UHT/InputCoreTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateColor.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/WidgetStyle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateColor.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateEnums.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/EnumRange.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateEnums.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateColor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/WidgetStyle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateColor.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/Visibility.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/SlateRenderTransform.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateVector2.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateVector2.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/SlateRect.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/Margin.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateVector2.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateVector2.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/Margin.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/SlateLayoutTransform.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/Geometry.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/PaintGeometry.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/SlateRenderTransform.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/SlateRotatedRect.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/Geometry.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/Events.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/Events.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/ReplyBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/CursorReply.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/Reply.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/DragAndDrop.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/DragAndDrop.inl \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/PopupMethodReply.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/NavigationReply.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/NavigationReply.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/ReplyBase.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SWidget.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/FrameValue.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/Clipping.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/RenderingCommon.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/CursorReply.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/Reply.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/DragAndDrop.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/DragAndDrop.inl \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Input/NavigationReply.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/NavigationReply.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/SlateGlobals.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Debugging/SlateDebugging.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/FastUpdate/WidgetUpdateFlags.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/CsvProfiler.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/Queue.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/CsvProfilerConfig.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/CsvProfilerTrace.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateAttribute.h \
@@ -680,51 +653,56 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/BasicLayoutWidgetSlot.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/WidgetSlotWithAttributeSupport.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SPanel.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SOverlay.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateStructs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Sound/SlateSound.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateSound.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Brushes/SlateNoResource.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/ISlateStyle.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/StyleDefaults.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/CoreStyle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/AppStyle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SOverlay.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SCompoundWidget.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateWidgetStyle.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateWidgetStyle.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SCompoundWidget.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/CoreStyle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/AppStyle.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateWidgetStyleAsset.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateWidgetStyleContainerBase.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Styling/SlateWidgetStyleContainerInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateWidgetStyleContainerInterface.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateWidgetStyleContainerBase.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/SlateCore/UHT/SlateWidgetStyleAsset.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateStructs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SBoxPanel.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/ArrangedChildren.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Textures/SlateIcon.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Animation/CurveSequence.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Animation/CurveHandle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Textures/SlateIcon.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SWindow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CoreDelegates.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/FastUpdate/SlateInvalidationRoot.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/SLeafWidget.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Brushes/SlateDynamicImageBrush.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/SlateRenderer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/IToolTip.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Brushes/SlateDynamicImageBrush.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Application/SlateWindowHelper.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Application/SlateApplicationBase.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Application/ThrottleManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Rendering/SlateRenderer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Application/SlateApplicationBase.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/WidgetPath.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/WidgetPath.inl \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Types/SlateConstants.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Layout/LayoutUtils.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/SlateFwd.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/SlateDelegates.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/InputChord.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/InputChord.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/SlateDelegates.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/IVirtualKeyboardEntry.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/IVirtualKeyboardEntry.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UIAction.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UICommandInfo.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/UICommandInfo.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Docking/TabManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Docking/WorkspaceItem.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SBorder.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UICommandList.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBoxExtender.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Text/TextLayout.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Text/TextRunRenderer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Text/TextLineHighlight.h \
@@ -733,49 +711,59 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/TextLayout.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Text/STextBlock.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Application/IMenu.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UIAction.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UICommandInfo.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/UICommandInfo.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBoxExtender.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/UICommandList.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SBox.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Views/ITypedTableView.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ITypedTableView.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Docking/LayoutService.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Application/SlateApplication.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Application/MenuStack.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Application/GestureDetector.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SBox.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SScrollBar.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/SHeaderRow.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SSplitter.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Layout/InertialScrollManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SScrollBar.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/SExpanderArrow.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/STableRow.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/ITableRow.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Views/TableViewTypeTraits.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/STableViewBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Layout/IScrollableWidget.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Layout/Overscroll.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBoxBuilder.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/STableViewBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateCoreAccessibleWidgets.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateAccessibleWidgetCache.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateAccessibleMessageHandler.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/InputBindingManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/Commands.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBoxDefs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/MultiBoxDefs.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBoxBuilder.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/MultiBox.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SLinkedBox.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SMenuOwner.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SMenuAnchor.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SUniformWrapPanel.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Docking/TabManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Docking/WorkspaceItem.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/STableViewBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Layout/IScrollableWidget.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Views/ITypedTableView.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ITypedTableView.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/STableViewBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/STableRow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/ITableRow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Views/TableViewTypeTraits.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/SExpanderArrow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/SHeaderRow.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SSplitter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateCoreAccessibleWidgets.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateAccessibleWidgetCache.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Accessibility/SlateAccessibleMessageHandler.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/SListView.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Views/TableViewMetadata.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SlateCore/Public/Widgets/Images/SImage.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/Commands.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Commands/InputBindingManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SButton.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/IVirtualKeyboardEntry.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/IVirtualKeyboardEntry.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Layout/SSpacer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SComboButton.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Text/ISlateEditableTextWidget.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ISlateEditableTextWidget.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SEditableText.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SCheckBox.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/SToolTip.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/NumericTypeInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Find.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Impl/RangePointerType.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Views/STreeView.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SEditableTextBox.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Notifications/SErrorText.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MarqueeRect.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Docking/SDockTab.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RHI/Public/RHIDefinitions.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RHI/Public/GpuProfilerTrace.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RHI/Public/DataDrivenShaderPlatformInfo.h \
@@ -824,45 +812,39 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphAllocator.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/IsArrayOrRefOfType.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderCore.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/Shader.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderCore.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderPermutation.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/RenderingObjectVersion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/VertexFactory.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/VertexStreamComponent.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderParameterUtils.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Messaging/Public/IMessageContext.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/AssetData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/AssetBundleData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/AssetDataTagMap.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/AssetIdentifier.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PacketHandlers/PacketHandler/Public/PacketHandler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Sockets/Public/IPAddress.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Sockets/Public/SocketTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Packets/PacketView.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Sockets/SocketErrors.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Packets/PacketTraits.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/ARFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineLogs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/EngineTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TimerHandle.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TimerHandle.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EngineTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/NetSerialization.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineLogs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Serialization/QuantizedVectorSerialization.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Classes/Net/Serialization/FastArraySerializer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Misc/GuidReferences.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/PushModel/PushModel.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/PushModel/PushModelMacros.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectKey.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/FastArraySerializer.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NetSerialization.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphNode.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphNode.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphPin.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphPin.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/EngineBaseTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/NetEnums.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/NetEnums.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EngineBaseTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphNode.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphNode.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphPin.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphPin.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_AssetUserData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_AssetUserData.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/ActorComponent.h \
@@ -877,12 +859,9 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ActorInstanceHandle.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/HitResult.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/ChildActorComponent.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ChildActorComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Level.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/MaterialMerging.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialMerging.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Level.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TextureStreamingTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveDirtyState.h \
@@ -890,6 +869,9 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TextureStreamingTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Level.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/ChildActorComponent.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ChildActorComponent.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/DataLayer/ActorDataLayer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/DataLayer/DataLayerInstance.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/DataLayer/DataLayerType.h \
@@ -902,6 +884,21 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Folder.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/WorldPartitionActorDescType.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Actor.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineDefines.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/NavigationSystem/Public/NavFilters/NavigationQueryFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/NavigationSystem/Public/NavAreas/NavArea.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavAreaBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavAgentSelector.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavAgentSelector.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationBounds.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavigationTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavAreaBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NavigationSystem/UHT/NavArea.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AI/Navigation/NavQueryFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NavigationSystem/UHT/NavigationQueryFilter.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/LatentActionManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LatentActionManager.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Blueprint.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/BlueprintCore.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlueprintCore.generated.h \
@@ -911,14 +908,9 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Blueprint/BlueprintSupport.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Kismet2/CompilerResultsLog.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/EdGraphToken.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Logging/TokenizedMessage.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/CompilationResult.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Blueprint.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EngineDefines.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavAgentSelector.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavAgentSelector.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationBounds.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavigationTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AI/Navigation/NavQueryFilter.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/CollisionQueryParams.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/Chaos/ChaosEngineInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/Chaos/Declares.h \
@@ -929,6 +921,8 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/PhysicsCoreTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Chaos/UHT/PhysicsCoreTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/ChaosLog.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/ParallelFor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Fork.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/Chaos/PBDRigidsEvolutionFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/Chaos/PhysicsObject.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/PhysicsInterfaceDeclaresCore.h \
@@ -942,23 +936,22 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/DestructionObjectVersion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/ExternalPhysicsCustomObjectVersion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/PhysicsCore/UHT/ChaosEngineInterface.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/LatentActionManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LatentActionManager.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavAgentInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NavAgentInterface.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Pawn.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Pawn.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/PendingNetGame.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/NetworkDelegates.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PendingNetGame.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldCollision.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/CollisionShape.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/OverlapResult.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/OverlapResult.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/World.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnlineFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/GameTime.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/UpdateLevelVisibilityLevelInfo.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/UpdateLevelVisibilityLevelInfo.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/PendingNetGame.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/NetworkDelegates.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PendingNetGame.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Physics/PhysicsInterfaceDeclares.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Particles/WorldPSCPool.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/WorldPSCPool.generated.h \
@@ -974,11 +967,19 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/GameInstanceSubsystem.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Subsystems/SubsystemCollection.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/OnlineReplStructs.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnline.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreOnline/Public/Online/CoreOnlinePackage.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/CoreOnline/UHT/CoreOnline.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/OnlineReplStructs.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ReplayTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Packets/PacketTraits.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/ReplayResult.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/NetResult.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ReplayResult.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Sockets/Public/IPAddress.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Sockets/Public/SocketTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Packets/PacketView.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Common/Public/Net/Common/Sockets/SocketErrors.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ReplayTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Settings/LevelEditorPlaySettings.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Settings/LevelEditorPlayNetworkEmulationSettings.h \
@@ -991,7 +992,6 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SComboBox.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/Application/SlateUser.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/SlateScope.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Widgets/Input/SComboButton.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/LevelEditorPlayNetworkEmulationSettings.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuContext.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuContext.generated.h \
@@ -1005,28 +1005,32 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/DeveloperSettings/UHT/DeveloperSettings.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CollisionProfile.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/World.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/BlendableInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlendableInterface.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/HitProxies.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TypedElementFramework/Public/Elements/Framework/TypedElementHandle.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TypedElementFramework/Public/Elements/Framework/TypedElementData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformStackWalk.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Mac/MacPlatformStackWalk.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Apple/ApplePlatformStackWalk.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/GenericPlatform/GenericPlatformStackWalk.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TypedElementFramework/Public/Elements/Framework/TypedElementId.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TypedElementFramework/Public/Elements/Framework/TypedElementLimits.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/TypedElementFramework/UHT/TypedElementHandle.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/HitProxies.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Scene.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneUtils.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ProfilingDebugging/RealtimeGPUProfiler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneUtils.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Scene.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/BlendableInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlendableInterface.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Components.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MeshUVChannelInfo.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MeshUVChannelInfo.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/UnrealClient.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/InputKeyEventArgs.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphDefinitions.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ProfilingDebugging/RealtimeGPUProfiler.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/TypedElementFramework/Public/Elements/Framework/TypedElementListFwd.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/DynamicRenderScaling.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/KeyHandle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/KeyHandle.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_CollisionDataProvider.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/Interface_CollisionDataProviderCore.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_CollisionDataProvider.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ShowFlags.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ShowFlagsValues.inl \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/GameViewportClient.h \
@@ -1041,25 +1045,14 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/DebugDisplayProperty.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/StereoRendering.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/GameViewportClient.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Scene.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneUtils.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneUtils.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Scene.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/KeyHandle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/KeyHandle.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/IndexedCurve.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IndexedCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ConvexVolume.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneView.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DebugViewModeHelpers.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/FinalPostProcessSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BlendableManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Renderer/Public/GlobalDistanceFieldConstants.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_PostProcessVolume.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_PostProcessVolume.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RendererInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/VirtualTexturing.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Renderer/Public/GlobalDistanceFieldParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphResources.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RHI/Public/RHITransientResourceAllocator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphTextureSubresource.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphResources.inl \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/RichCurve.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/RealCurve.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/RealCurve.generated.h \
@@ -1068,18 +1061,6 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Subsystems/EngineSubsystem.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EngineSubsystem.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Engine.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveUniformShaderParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/LargeWorldRenderPosition.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/InstanceUniformShaderParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderTransform.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LightmapUniformShaderParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/UnifiedBuffer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Shaders/Shared/NaniteDefinitions.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/UnrealEngine.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveViewRelevance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialRelevance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveSceneProxy.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DrawDebugHelpers.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Shader/ShaderTypes.h \
@@ -1088,6 +1069,7 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialLayersFunctions.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialSceneTextureId.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialSceneTextureId.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialRelevance.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialRecursionGuard.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialShaderPrecompileMode.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PSOPrecache.h \
@@ -1175,6 +1157,7 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Experimental/Chaos/Public/Chaos/ContactModification.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialShared.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialValueType.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/VirtualTexturing.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/ShaderCompilerCore.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialDomain.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialDomain.generated.h \
@@ -1183,13 +1166,53 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Shader/Preshader.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Shader/PreshaderTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialInterface.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Components.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MeshUVChannelInfo.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MeshUVChannelInfo.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneView.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ConvexVolume.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DebugViewModeHelpers.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/FinalPostProcessSettings.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BlendableManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Renderer/Public/GlobalDistanceFieldConstants.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_PostProcessVolume.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_PostProcessVolume.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RendererInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Renderer/Public/GlobalDistanceFieldParameters.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphResources.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RHI/Public/RHITransientResourceAllocator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphParameter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphTextureSubresource.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderGraphResources.inl \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LocalVertexFactory.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/RawIndexBuffer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveUniformShaderParameters.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/LargeWorldRenderPosition.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/InstanceUniformShaderParameters.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/RenderTransform.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LightmapUniformShaderParameters.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/UnifiedBuffer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Shaders/Shared/NaniteDefinitions.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/UnrealEngine.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Brush.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Brush.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/TimerManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/MeshMerging.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MeshMerging.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TextureDefines.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TextureDefines.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Model.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/StaticMeshResources.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveViewRelevance.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PrimitiveSceneProxy.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DrawDebugHelpers.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MeshBatch.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/GPUSceneWriter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/VT/RuntimeVirtualTextureEnum.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/RuntimeVirtualTextureEnum.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneManagement.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BatchedElements.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/StaticBoundShaderState.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/DynamicBufferAllocator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Rendering/SkyAtmosphereCommonData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TextureLightProfile.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Texture2D.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Texture.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_AsyncCompilation.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_AsyncCompilation.generated.h \
@@ -1197,14 +1220,14 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Compression/CompressedBuffer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Memory/CompositeBuffer.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Memory/SharedBuffer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TextureDefines.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TextureDefines.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/TextureResource.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/Serialization/DerivedData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/StreamableRenderAsset.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/RenderAssetUpdate.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Streaming/StreamableRenderResourceState.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PerQualityLevelProperties.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Find.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Impl/RangePointerType.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Scalability.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/ConsoleManager.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PerQualityLevelProperties.generated.h \
@@ -1217,36 +1240,11 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DerivedDataCacheKeyProxy.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Templates/DontCopy.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Texture.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_CollisionDataProvider.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/Interface_CollisionDataProviderCore.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_CollisionDataProvider.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Texture2D.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Texture2D.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Brush.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Brush.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/StaticBoundShaderState.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveFloat.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveOwnerInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/PackageReload.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveFloat.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MeshBatch.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/GPUSceneWriter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/VT/RuntimeVirtualTextureEnum.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/RuntimeVirtualTextureEnum.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BatchedElements.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/SceneManagement.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/DynamicBufferAllocator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Rendering/SkyAtmosphereCommonData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/TextureLightProfile.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TextureLightProfile.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LightSceneProxy.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PhysxUserData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/BodyInstanceCore.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/PhysicsCore/UHT/BodyInstanceCore.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BodyInstance.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/StaticMeshComponent.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/PrimitiveComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Copy.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Algo/Common.h \
@@ -1255,6 +1253,11 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IPhysicsComponent.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Engine/ScopedMovementUpdate.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Engine/OverlapInfo.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PhysxUserData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/BodyInstanceCore.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/PhysicsCore/UHT/BodyInstanceCore.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BodyInstance.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavRelevantInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AI/NavigationModifier.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavLinkDefinition.h \
@@ -1267,19 +1270,6 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/HLOD/HLODLevelExclusion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/HLODLevelExclusion.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PrimitiveComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/RawIndexBuffer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LocalVertexFactory.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/StaticMesh.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/StrongObjectPtr.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/StaticMeshSourceData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/MeshDescription/Public/MeshDescriptionBaseBulkData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshDescriptionBaseBulkData.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StaticMeshSourceData.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/MeshDescription/Public/MeshTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/StaticMeshResources.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/StaticMeshComponent.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MeshComponent.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Launch/Resources/Version.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StaticMeshComponent.generated.h \
@@ -1293,10 +1283,32 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/MemoryReadStream.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WeightedRandomSampler.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Renderer/Public/RayTracingInstance.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/StaticMesh.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/StrongObjectPtr.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/StaticMeshSourceData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/MeshDescription/Public/MeshDescriptionBaseBulkData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshDescriptionBaseBulkData.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StaticMeshSourceData.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/MeshDescription/Public/MeshTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshTypes.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StaticMesh.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BlueprintUtilities.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphSchema.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Kismet2/Kismet2NameValidators.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphSchema.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ReferenceSkeleton.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AnimationCore/Public/BoneIndices.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Camera/CameraTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CameraTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LatentActions.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/LevelStreaming.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/ProfilingDebugging/ProfilingHelpers.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LevelStreaming.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/GPUSkinPublicDefs.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveOwnerInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/PackageReload.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveBase.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimLinkableElement.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimLinkableElement.generated.h \
@@ -1305,10 +1317,10 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlueprintFunctionLibrary.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BoneContainer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BoneContainer.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/PreviewAssetAttachComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PreviewAssetAttachComponent.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BoneContainer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BoneContainer.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/SkeletalMesh.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/SkeletalMeshSampling.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SkeletalMeshSampling.generated.h \
@@ -1349,165 +1361,32 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/DataAsset.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SkeletalMeshLODSettings.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SkeletalMesh.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimationAsset.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AnimInterpFilter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_PreviewMeshProvider.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_PreviewMeshProvider.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimationAsset.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraphSchema.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Kismet2/Kismet2NameValidators.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraphSchema.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/Skeleton.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/SmartName.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/UObject/AnimPhysObjectVersion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SmartName.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/Skeleton.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/AssetUserData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AssetUserData.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Interfaces/Interface_PreviewMeshProvider.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Interface_PreviewMeshProvider.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Skeleton.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimCurveTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimCurveTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimSequenceBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimNotifyQueue.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimNodeMessages.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNotifyQueue.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AnimDataModelNotifyCollector.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AnimDataNotifications.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/CurveIdentifier.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveIdentifier.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AttributeIdentifier.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AttributeIdentifier.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimDataNotifications.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/IAnimationDataController.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/IAnimationDataModel.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimationPoseData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AttributeCurve.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/WrappedAttribute.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/IAttributeBlendOperator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AttributeCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IAnimationDataModel.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/ChangeTransactor.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Change.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ITransaction.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IAnimationDataController.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSequenceBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimSequence.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimCompressionTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BonePose.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/CustomBoneIndexArray.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimStats.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimMTStats.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Base64.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/MappedFileHandle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformFileManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimationDecompression.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimCompressionTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/CustomAttributes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/StringCurve.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StringCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/IntegralCurve.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IntegralCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/SimpleCurve.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SimpleCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CustomAttributes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSequence.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/GenericOctreePublic.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Audio.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/AudioOutputTarget.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AudioOutputTarget.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/QuartzQuantizationUtilities.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/QuartzQuantizationUtilities.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundAttenuation.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Attenuation.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Attenuation.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioExtensionPlugin.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/ISoundfieldFormat.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerLog.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerNullDevice.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/BufferVectorOperations.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/AlignedBuffer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/Dsp.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/SignalProcessingModule.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/ParamInterpolator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/ISoundfieldFormat.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioProxyInitializer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/IAudioExtensionPlugin.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioParameterInterfaceRegistry.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/AudioParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/AudioParameter.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/AudioParameterControllerInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/AudioParameterControllerInterface.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioLink/AudioLinkCore/Public/AudioLinkSettingsAbstract.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioLinkCore/UHT/AudioLinkSettingsAbstract.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundAttenuation.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectSource.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioModulation.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/IAudioModulation.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectPreset.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioPlatformConfiguration/Public/AudioResampler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundEffectPreset.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundEffectSource.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundSubmixSend.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundSubmixSend.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundSourceBusSend.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundSourceBusSend.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/TimerManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialExpressionIO.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpression.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AlphaBlend.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AlphaBlend.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BlueprintUtilities.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/EdGraph/EdGraph.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/EdGraph.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionMaterialFunctionCall.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionMaterialFunctionCall.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/Material.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionMaterialAttributeLayers.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionMaterialAttributeLayers.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialFunction.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialFunctionInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionFontSampleParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionFontSample.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionFontSample.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionFontSampleParameter.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionParameter.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureSampleParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureSample.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureSample.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureSampleParameter.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialFunctionInterface.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialFunction.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialOverrideNanite.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialOverrideNanite.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Material.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimBlueprint.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimBlueprint.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimBlueprintGeneratedClass.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimStateMachineTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/BlendProfile.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AnimationRuntime.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimationAsset.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AnimInterpFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimationAsset.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimCurveTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimCurveTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/CurveFloat.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveFloat.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/PreviewScene.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/SkinnedMeshComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/LODSyncInterface.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LODSyncInterface.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ClothingSystemRuntimeInterface/Public/ClothingSystemRuntimeTypes.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SkinnedMeshComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlendProfile.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimStateMachineTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimClassInterface.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimSubsystem.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSubsystem.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimClassInterface.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimNodeBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Stats/StatsHierarchical.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimTrace.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ObjectTrace.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/TraceFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/VisualLogger/VisualLoggerTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/VisualLogger/VisualLoggerCustomVersion.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/SkeletalMeshComponent.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ClothingSystemRuntimeInterface/Public/ClothCollisionPrim.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ClothSysRuntimeIntrfc/UHT/ClothCollisionPrim.generated.h \
@@ -1550,172 +1429,219 @@
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/ClothingSystemRuntimeInterface/Public/ClothingSimulationFactory.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ClothSysRuntimeIntrfc/UHT/ClothingSimulationFactory.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AttributesRuntime.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/IAttributeBlendOperator.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AttributesContainer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/WrappedAttribute.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/PoseWatchRenderData.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SkeletalMeshComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimInstance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimMontage.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimCompositeBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimCompositeBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/TimeStretchCurve.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TimeStretchCurve.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimMontage.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimSubsystemInstance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSubsystemInstance.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimSync.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimNotifies/AnimNotify.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNotify.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimInstance.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ObjectTrace.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimAttributes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimNodeData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNodeData.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/ExposedValueHandler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ExposedValueHandler.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimNodeFunctionRef.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNodeFunctionRef.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNodeBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/BlendSpace.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/BoneSocketReference.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BoneSocketReference.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BlendSpace.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimBlueprintGeneratedClass.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/PoseWatch.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PoseWatch.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Model.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/RenderCore/Public/GlobalShader.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Camera/CameraTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CameraTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/MemberReference.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MemberReference.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Volume.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Volume.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Info.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Info.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/AudioVolume.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/ReverbSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ReverbSettings.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AudioVolume.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialInstance.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialInstanceBasePropertyOverrides.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialInstanceBasePropertyOverrides.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialInstance.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/EdGraph/EdGraphNodeUtils.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/VisualLogger/VisualLogger.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/DataTableUtils.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/DataTable.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/Controller.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Controller.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Camera/CameraShakeBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CameraShakeBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/WorldSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/DamageType.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/DamageType.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/WorldPartitionEditorPerProjectUserSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/WorldPartitionEditorPerProjectUserSettings.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/WorldSettings.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Components/InputComponent.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/InputComponent.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerMuteList.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PlayerMuteList.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Camera/PlayerCameraManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PlayerCameraManager.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/ForceFeedbackParameters.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ForceFeedbackParameters.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Physics/AsyncPhysicsData.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AsyncPhysicsData.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/WorldPartition/WorldPartitionStreamingSource.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/WorldPartitionStreamingSource.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerInput.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/GestureRecognizer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/KeyState.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PlayerInput.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/PlayerController.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/ForceFeedbackEffect.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/GameFramework/InputDevicePropertyHandle.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/InputDevicePropertyHandle.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ForceFeedbackEffect.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialInstanceDynamic.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Player.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Player.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/GenericOctree.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Math/GenericOctree.inl \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Channel.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Channel.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Misc/DDoSDetection.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/NetAnalyticsTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/NetConnectionIdHandler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NetDriver.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/NetConnection.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/RPCDoSDetection.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Analytics/RPCDoSDetectionAnalytics.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Analytics/NetAnalytics.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Analytics/Analytics/Public/AnalyticsEventAttribute.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Analytics/Analytics/Public/AnalyticsConversion.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/RPCDoSDetection.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/NetConnectionFaultRecovery.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/NetConnectionFaultRecoveryBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/EscalationStates.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/StateStruct.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/StateStruct.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/EscalationStates.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/NetCloseResult.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/NetCloseResult.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Connection/NetResultManager.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/NetCore/UHT/NetConnectionFaultRecoveryBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/DefaultFaultHandler.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NetConnectionFaultRecovery.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/DataBunch.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Trace/NetTraceConfig.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/NetPacketNotify.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Net/Core/Public/Net/Core/Misc/ResizableCircularQueue.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/net/Util/SequenceNumber.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/net/Util/SequenceHistory.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Containers/CircularBuffer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/ReplicationDriver.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ReplicationDriver.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Analytics/EngineNetAnalytics.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/TrafficControl.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Net/NetDormantHolder.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/NetConnection.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialShaderType.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MeshMaterialShaderType.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Subsystems/LocalPlayerSubsystem.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LocalPlayerSubsystem.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LocalPlayer.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/ChildConnection.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/ChildConnection.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundBase.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundTimecodeOffset.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundTimecodeOffset.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundConcurrency.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundConcurrency.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/AudioSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AudioSettings.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundClass.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/AudioDynamicParameter.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundModulationDestination.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundModulationDestination.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundWaveLoadingBehavior.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundWaveLoadingBehavior.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundClass.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundGenerator.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundBase.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundWave.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundWaveTimecodeInfo.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundWaveTimecodeInfo.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundGroups.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundGroups.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioPlatformConfiguration/Public/AudioCompressionSettings.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioPlatformConfiguration/UHT/AudioCompressionSettings.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/ContentStreaming.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/RenderedTextureStats.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/CanvasTypes.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CanvasTypes.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IWaveformTransformation.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/IWaveformTransformation.generated.h \
-  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundWave.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimSequenceBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimNotifyQueue.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimNodeMessages.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimNotifyQueue.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AnimDataModelNotifyCollector.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AnimDataNotifications.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/CurveIdentifier.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveIdentifier.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/AttributeIdentifier.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AttributeIdentifier.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimDataNotifications.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/IAnimationDataController.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimData/IAnimationDataModel.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimationPoseData.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AttributeCurve.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AttributeCurve.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IAnimationDataModel.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/ChangeTransactor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Change.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/ITransaction.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IAnimationDataController.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSequenceBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/MaterialExpressionIO.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpression.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/Material.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionMaterialFunctionCall.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionMaterialFunctionCall.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionMaterialAttributeLayers.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionMaterialAttributeLayers.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialFunction.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialFunctionInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionFontSampleParameter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionFontSample.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionFontSample.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionFontSampleParameter.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionParameter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionParameter.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureSampleParameter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureSample.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialExpressionTextureBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureSample.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionTextureSampleParameter.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialFunctionInterface.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialFunction.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Materials/MaterialOverrideNanite.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialOverrideNanite.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Material.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/PhysicsSettingsEnums.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/PhysicsCore/UHT/PhysicsSettingsEnums.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundAttenuation.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/Attenuation.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/Attenuation.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioExtensionPlugin.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/ISoundfieldFormat.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerLog.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerNullDevice.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/Runnable.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/RunnableThread.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioMixerCore/Public/AudioMixerTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/BufferVectorOperations.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/AlignedBuffer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/Dsp.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/SignalProcessingModule.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/SignalProcessing/Public/DSP/ParamInterpolator.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/SingleThreadRunnable.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/ISoundfieldFormat.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioProxyInitializer.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/IAudioExtensionPlugin.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioParameterInterfaceRegistry.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/AudioParameter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/AudioParameter.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/AudioParameterControllerInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/AudioParameterControllerInterface.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioLink/AudioLinkCore/Public/AudioLinkSettingsAbstract.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioLinkCore/UHT/AudioLinkSettingsAbstract.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundAttenuation.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/SimpleCurve.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SimpleCurve.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CurveTable.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Audio.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/AudioOutputTarget.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AudioOutputTarget.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/QuartzQuantizationUtilities.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/QuartzQuantizationUtilities.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectSource.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioExtensions/Public/IAudioModulation.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/AudioExtensions/UHT/IAudioModulation.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectPreset.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundEffectBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/AudioPlatformConfiguration/Public/AudioResampler.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundEffectPreset.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundEffectSource.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundSubmixSend.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundSubmixSend.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Sound/SoundSourceBusSend.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SoundSourceBusSend.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/PhysicsCore/Public/PhysicalMaterials/PhysicalMaterial.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/PhysicsCore/UHT/PhysicalMaterial.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Vehicles/TireType.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/TireType.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/AnimSequence.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimCompressionTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/BonePose.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/CustomBoneIndexArray.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimStats.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimMTStats.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/Base64.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Async/MappedFileHandle.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/HAL/PlatformFileManager.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Public/Animation/AnimationDecompression.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimCompressionTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Animation/CustomAttributes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/StringCurve.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/StringCurve.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Curves/IntegralCurve.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/IntegralCurve.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CustomAttributes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/AnimSequence.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Public/BlueprintNodeSignature.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Classes/K2Node.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Public/BlueprintActionFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Public/BlueprintGraphModule.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Classes/BlueprintNodeBinder.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/WeakFieldPtr.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/BlueprintGraph/UHT/K2Node.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Classes/EdGraphSchema_K2.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/BlueprintGraph/UHT/EdGraphSchema_K2.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/BlueprintGraph/Classes/K2Node_EditablePinBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/BlueprintGraph/UHT/K2Node_EditablePinBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/GameplayTasks/Classes/GameplayTaskOwnerInterface.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/GameplayTasks/Public/GameplayTaskTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/GameplayTasks/UHT/GameplayTaskOwnerInterface.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/GameplayTasks/Classes/GameplayTask.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/WeakInterfacePtr.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/GameplayTasks/UHT/GameplayTask.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/EditorFramework/Public/Toolkits/IToolkit.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/EditorFramework/Public/Toolkits/IToolkitHost.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/TickableEditorObject.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Editor/UnrealEdTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/UnrealEdTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Viewports.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Settings/LevelEditorViewportSettings.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/LevelEditorViewportSettings.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Editor/EditorEngine.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/TargetPlatform/Public/Interfaces/ITargetPlatform.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/TargetPlatform/Public/Interfaces/ITargetDevice.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/TargetPlatform/Public/Interfaces/TargetDeviceId.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/TargetPlatform/Public/Interfaces/ITargetDeviceSocket.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/TargetPlatform/Public/Interfaces/ITargetPlatformManagerModule.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/PlayInEditorDataTypes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/PlayInEditorDataTypes.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/EditorSubsystem/Public/EditorSubsystem.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/EditorSubsystem/UHT/EditorSubsystem.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Editor/AssetReferenceFilter.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/EditorEngine.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/AssetThumbnail.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Toolkits/BaseToolkit.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/EditorFramework/Public/Tools/Modes.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Toolkits/AssetEditorToolkit.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/UnrealEdMisc.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Editor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Subsystems/ImportSubsystem.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/ImportSubsystem.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/Subsystems/AssetEditorSubsystem.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Core/Public/Misc/NamePermissionList.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/AssetTools/Public/AssetTypeActivationOpenedMethod.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/AssetEditorSubsystem.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/EditorUndoClient.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/EditorFramework/Public/UnrealWidgetFwd.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/ScopedTransaction.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/GraphEditor.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/EditorComponents.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Public/EditorViewportClient.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Factories/Factory.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/Factory.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Editor/UnrealEd/Classes/Settings/EditorLoadingSavingSettings.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/UnrealEd/UHT/EditorLoadingSavingSettings.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenus.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/IToolMenusModule.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenu.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuOwner.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuOwner.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuDelegates.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuMisc.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuMisc.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuDelegates.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuSection.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuEntry.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuEntry.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuSection.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Slate/Public/Framework/MultiBox/ToolMenuBase.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/Slate/UHT/ToolMenuBase.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenu.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Developer/ToolMenus/Public/ToolMenuEntryScript.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectThreadContext.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenuEntryScript.generated.h \
+  /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/../Intermediate/Build/Mac/UnrealEditor/Inc/ToolMenus/UHT/ToolMenus.generated.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/stddef.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -3817,8 +3743,118 @@
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Private/terrainPlugin.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/terrainPlugin/Definitions.terrainPlugin.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Public/terrainPlugin.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Module.AssetMakerEditorPlugin.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/AssetMakerEditorPlugin/Definitions.AssetMakerEditorPlugin.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT/AssetMakerEditorPlugin.init.gen.cpp \
+  Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT/EditorMeshDataToStaticMeshTool.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/MeshDataToStaticMesh/EditorMeshDataToStaticMeshTool.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.h \
   Runtime/Core/Public/CoreMinimal.h \
-  Runtime/Core/Public/Modules/ModuleManager.h
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT/EditorMeshDataToStaticMeshTool.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/MeshDataToStaticMesh/EditorMeshDataToStaticMeshTool.cpp \
+  Runtime/Engine/Classes/Engine/StaticMesh.h \
+  Editor/UnrealEd/Classes/Factories/Factory.h \
+  Runtime/StaticMeshDescription/Public/StaticMeshAttributes.h \
+  Runtime/Core/Public/Math/UnrealMathSSE.h \
+  Runtime/Core/Public/Math/Vector2D.h Runtime/Core/Public/Math/Vector4.h \
+  Runtime/MeshDescription/Public/MeshAttributeArray.h \
+  Runtime/MeshDescription/Public/AttributeArrayContainer.h \
+  Runtime/Core/Public/Containers/StaticArray.h \
+  Runtime/Core/Public/Algo/Rotate.h \
+  Runtime/Core/Public/Templates/UnrealTemplate.h \
+  Runtime/Core/Public/Containers/Array.h \
+  Runtime/Core/Public/Containers/ArrayView.h \
+  Runtime/Core/Public/Containers/ContainerAllocationPolicies.h \
+  Runtime/Core/Public/Containers/Map.h \
+  Runtime/Core/Public/Containers/SparseArray.h \
+  Runtime/Core/Public/Delegates/IntegerSequence.h \
+  Runtime/Core/Public/HAL/PlatformCrt.h \
+  Runtime/Core/Public/Math/Vector.h \
+  Runtime/MeshDescription/Public/MeshElementRemappings.h \
+  Runtime/MeshDescription/Public/MeshTypes.h \
+  Runtime/Core/Public/Misc/AssertionMacros.h \
+  Runtime/Core/Public/Misc/Crc.h \
+  Runtime/Core/Public/Misc/EnumClassFlags.h \
+  Runtime/Core/Public/Misc/TVariant.h \
+  Runtime/Core/Public/Serialization/Archive.h \
+  Runtime/Core/Public/Serialization/StructuredArchiveAdapters.h \
+  Runtime/Core/Public/Templates/ChooseClass.h \
+  Runtime/Core/Public/Templates/CopyQualifiersFromTo.h \
+  Runtime/Core/Public/Templates/EnableIf.h \
+  Runtime/Core/Public/Templates/IsArray.h \
+  Runtime/Core/Public/Templates/RemoveCV.h \
+  Runtime/Core/Public/Templates/Tuple.h \
+  Runtime/Core/Public/Templates/UniquePtr.h \
+  Runtime/Core/Public/Templates/UnrealTypeTraits.h \
+  Runtime/Core/Public/UObject/EditorObjectVersion.h \
+  Runtime/Core/Public/UObject/NameTypes.h \
+  Runtime/Core/Public/UObject/ReleaseObjectVersion.h \
+  Runtime/Core/Public/UObject/UE5MainStreamObjectVersion.h \
+  Runtime/MeshDescription/Public/MeshAttributes.h \
+  Runtime/MeshDescription/Public/MeshDescription.h \
+  Runtime/Core/Public/Algo/Accumulate.h Runtime/Core/Public/CoreTypes.h \
+  Runtime/Core/Public/Templates/Invoke.h Runtime/Core/Public/Algo/Copy.h \
+  Runtime/Core/Public/Algo/Find.h \
+  Runtime/Core/Public/Containers/BitArray.h \
+  Runtime/Core/Public/Containers/ContainersFwd.h \
+  Runtime/Core/Public/Containers/Set.h \
+  Runtime/Core/Public/Containers/UnrealString.h \
+  Runtime/Core/Public/CoreFwd.h \
+  Runtime/Core/Public/HAL/CriticalSection.h \
+  Runtime/Core/Public/Math/Box.h Runtime/Core/Public/Math/MathFwd.h \
+  Runtime/Core/Public/Math/Plane.h \
+  Runtime/MeshDescription/Public/MeshElementArray.h \
+  Runtime/MeshDescription/Public/MeshElementContainer.h \
+  Runtime/MeshDescription/Public/MeshElementIndexer.h \
+  Runtime/Core/Public/HAL/UnrealMemory.h Runtime/Core/Public/Misc/Guid.h \
+  Runtime/Core/Public/Serialization/CustomVersion.h \
+  Runtime/CoreUObject/Public/Serialization/EditorBulkData.h \
+  Runtime/CoreUObject/Public/UObject/Object.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshDescription.generated.h \
+  Runtime/AssetRegistry/Public/AssetRegistry/AssetRegistryModule.h \
+  Runtime/AssetRegistry/Public/AssetRegistry/IAssetRegistry.h \
+  Runtime/CoreUObject/Public/AssetRegistry/ARFilter.h \
+  Runtime/CoreUObject/Public/AssetRegistry/AssetIdentifier.h \
+  Runtime/Core/Public/Containers/StringFwd.h \
+  Runtime/CoreUObject/Public/Misc/AssetRegistryInterface.h \
+  Runtime/Core/Public/Modules/ModuleInterface.h \
+  Runtime/Core/Public/Modules/ModuleManager.h \
+  Runtime/CoreUObject/Public/UObject/TopLevelAssetPath.h \
+  Runtime/Core/Public/Misc/Optional.h \
+  Runtime/CoreUObject/Public/UObject/Interface.h \
+  Runtime/CoreUObject/Public/AssetRegistry/AssetData.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/AssetRegistry/UHT/IAssetRegistry.generated.h \
+  Editor/UnrealEd/Public/Subsystems/AssetEditorSubsystem.h \
+  Runtime/CoreUObject/Public/Misc/PackageName.h \
+  Runtime/CoreUObject/Public/UObject/Package.h \
+  Runtime/CoreUObject/Public/UObject/SavePackage.h \
+  Runtime/Core/Public/CoreGlobals.h \
+  Runtime/Core/Public/Delegates/Delegate.h \
+  Runtime/Core/Public/Logging/LogMacros.h \
+  Runtime/Core/Public/Misc/DateTime.h \
+  Runtime/Core/Public/Misc/OutputDeviceError.h \
+  Runtime/Core/Public/Serialization/ArchiveCookData.h \
+  Runtime/Core/Public/Serialization/FileRegions.h \
+  Runtime/Core/Public/Serialization/PackageWriter.h \
+  Runtime/Core/Public/Async/Future.h \
+  Runtime/Core/Public/Containers/StringView.h \
+  Runtime/Core/Public/IO/IoDispatcher.h \
+  Runtime/Core/Public/Misc/SecureHash.h \
+  Runtime/Core/Public/Serialization/CompactBinary.h \
+  Runtime/Core/Public/IO/IoHash.h \
+  Runtime/Core/Public/Memory/CompositeBuffer.h \
+  Runtime/Core/Public/Memory/MemoryFwd.h \
+  Runtime/Core/Public/Memory/MemoryView.h \
+  Runtime/Core/Public/Memory/SharedBuffer.h \
+  Runtime/Core/Public/String/BytesToHex.h \
+  Runtime/Core/Public/Templates/Function.h \
+  Runtime/Core/Public/Templates/IsTriviallyDestructible.h \
+  Runtime/Core/Public/Templates/RemoveReference.h \
+  Runtime/Interchange/Core/Public/PackageUtils/PackageUtils.h \
+  Runtime/Core/Public/Misc/Paths.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/Private/AssetMakerEditorPlugin.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/Public/AssetMakerEditorPlugin.h
