@@ -44,22 +44,9 @@ void UEditorMeshDataToStaticMeshTool::Launch(){
         for (int i = 0; i < tasks.Num(); i++)
         {
             MeshDataAssetTask &current = tasks[i];
-            if(current.IsValidTask()){
-                if(AssetAlreadyExists(current.path(), current.name())){
-                    Log(FString::Printf(TEXT("Task Skipped, already created %s"), *current.pathComplete()));
-                }else{
-                    Log(FString::Printf(TEXT("Task executing %s"), *current.pathComplete()));
-                    UStaticMesh *ptr = tool->CreateStaticMeshAsset(
-                        current.pathComplete(),
-                        current.GetVertexBuffer(),
-                        current.GetTriangleBuffer(),
-                        current.GetUV0()
-                    );
-                    if(!ptr){
-                        unfinished.Add(current);
-                    }
-                
-                }
+            UStaticMesh *ptr = tool->CreateStaticMeshAsset(current);
+            if(!ptr){
+                unfinished.Add(current);
             }
         }
 
@@ -72,15 +59,31 @@ void UEditorMeshDataToStaticMeshTool::Launch(){
     }
 }
 
-UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
-    const FString& AssetPath, 
-    const TArray<FVector>& vertices, 
-    const TArray<int32>& triangles,
-    const TArray<FVector2D> &uvBuffer
-){
+bool UEditorMeshDataToStaticMeshTool::TaskCanBeExecuted(MeshDataAssetTask &task){
+    if(task.IsValidTask()){
+        if(AssetAlreadyExists(task.path(), task.name())){
+            Log(FString::Printf(TEXT("Task Skipped, already created %s"), *task.pathComplete()));
+            return false;
+        }
+    }else{
+        Log("CreateStaticMeshAsset:: Task Invalid!");
+        return false;
+    }
+    //never happens.
+    return true;
+}
+
+UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(MeshDataAssetTask &task){
     Log("CreateStaticMeshAsset:: Launch Creation");
+
+
+    //check if task ok
+    if(!TaskCanBeExecuted(task)){
+        return nullptr;
+    }
+
     // Create a package for the asset
-    UPackage* Package = CreatePackage(*AssetPath);
+    UPackage* Package = CreatePackage(*task.pathComplete());
     if(!Package){
         Log("CreateStaticMeshAsset:: failed to load pacakge");
     }
@@ -90,7 +93,7 @@ UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
     // Create StaticMesh object
     UStaticMesh* StaticMesh = NewObject<UStaticMesh>(
         Package, 
-        *FPaths::GetBaseFilename(AssetPath), 
+        *FPaths::GetBaseFilename(*task.pathComplete()), 
         RF_Public | RF_Standalone
     );
     if(!Package){
@@ -109,7 +112,7 @@ UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
     }
 
     Log("CreateStaticMeshAsset:: Mesh description valid!");
-    Append(description, vertices, triangles, uvBuffer);
+    Append(description, task);
 
 
 
@@ -153,27 +156,27 @@ bool UEditorMeshDataToStaticMeshTool::Build(TArray<const FMeshDescription*> lods
 
 void UEditorMeshDataToStaticMeshTool::Append(
     FMeshDescription *mesh,
-    const TArray<FVector>& vertices, 
-    const TArray<int32>& triangles,
-    const TArray<FVector2D> &uvBuffer
+    MeshDataAssetTask &task
 ){
     if(mesh){
         TArray<FVertexInstanceID> vertexBufferAsIdBuffer;
-        AppendAllVertecies(*mesh, vertices, vertexBufferAsIdBuffer);
+        AppendAllVertecies(*mesh, task.GetVertexBuffer(), vertexBufferAsIdBuffer);
 
         //return; //debug
         FPolygonGroupID materialId = MakeMaterialLayer(*mesh);
         AppendAllTriangles(
             *mesh,
             vertexBufferAsIdBuffer,
-            triangles,
+            task.GetTriangleBuffer(),
             materialId
         );
+
 
         int32 uvChannel = 0;
         AppendUVBuffer(
             *mesh,
-            uvBuffer,
+            task,
+            vertexBufferAsIdBuffer,
             uvChannel 
         );
     }
@@ -270,44 +273,31 @@ bool UEditorMeshDataToStaticMeshTool::TriangleIsValid(
 
 void UEditorMeshDataToStaticMeshTool::AppendUVBuffer(
     FMeshDescription &mesh,
-    const TArray<FVector2D> &uvBuffer,
+    MeshDataAssetTask &task,
+    TArray<FVertexInstanceID> &vertexIdBuffer,
     int32 uvChannel 
 ){
-    if(uvBuffer.Num() <= 0){
+
+    TArray<FVector2D> &uvBuffer = task.GetUV0();
+    if (uvBuffer.Num() <= 0)
+    {
         return;
     }
 
     mesh.CreateUV(uvChannel);
 
-    TArray<FUVID> createdUvsById;
-    createdUvsById.SetNum(uvBuffer.Num());
-    for (int i = 0; i < uvBuffer.Num(); i++){
-        createdUvsById[i] = mesh.CreateUV(uvChannel);
-    }
-
     FStaticMeshAttributes Attributes(mesh); // can be created as often as you want, just a funny helper for the same FMeshDescription.
     Attributes.Register();
-    TVertexInstanceAttributesRef<FVector2f> instanceUvBuffer = Attributes.GetVertexInstanceUVs();
-    for (int i = 0; i < createdUvsById.Num(); i++){
-        //createdUvs[i] = mesh.CreateUV(uvChannel);
-        instanceUvBuffer[createdUvsById[i]] = FVector2f(
-            float(uvBuffer[i].X),
-            float(uvBuffer[i].Y)
-        );
+    TVertexInstanceAttributesRef<FVector2f> InstanceUVs = Attributes.GetVertexInstanceUVs();
+    for (int i = 0; i < vertexIdBuffer.Num(); i++)
+    {
+        if (i < uvBuffer.Num())
+        {
+            FVector2D uvCurrent = uvBuffer[i];
+            task.ModifyUvBasedOnFlags(uvCurrent);
+
+            InstanceUVs.Set(vertexIdBuffer[i], uvChannel, FVector2f(uvCurrent.X, uvCurrent.Y));
+        }
     }
-    
-    
-    
-    /*
-    FUVID	
-    CreateUV ( const int32 UVChannel
-    )
-    
-    Adds a new UV to the mesh and returns its ID
-    Public function	void	
-    CreateUVWithID ( const FUVID UVID,
-    const int32 UVChannel
-    )
-    
-    Adds a new UV to the mesh with the given ID*/
+
 }
