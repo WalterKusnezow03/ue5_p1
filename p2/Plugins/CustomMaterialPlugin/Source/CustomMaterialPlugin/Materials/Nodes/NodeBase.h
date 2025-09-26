@@ -10,6 +10,7 @@
 /// @brief deriving from material expression node for materials.
 UCLASS(collapsecategories, hidecategories=Object)
 class CUSTOMMATERIALPLUGIN_API UNodeBase : public UMaterialExpression
+//UMaterialExpression
 {
     GENERATED_BODY()
 
@@ -27,6 +28,10 @@ protected:
 
     virtual void SetupOutputsOnConstruct(){
         //empty for derivation override
+    }
+
+    virtual void SetupInternalExpressionsOnConstruct(){
+        //empty for derivation override (using internal expressions of unreal to hide inside)
     }
 
 
@@ -48,6 +53,11 @@ public:
 
 
 #if WITH_EDITOR
+
+    // --- override this function to compile your expression ---
+    //virtual int32 Compile(FMaterialCompiler *Compiler, int32 OutputIndex) override;
+
+
     virtual FString NodeName() const;
 
     virtual void GetCaption(TArray<FString> &OutCaptions) const override;

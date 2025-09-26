@@ -14,5 +14,7 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	void InitAssetMeshes();
+	//editor macro not needed here - just in asset maker plugin if building ustatic mesh
+	static void InitAssetMeshes();
+
 };

@@ -6,8 +6,8 @@ void UNodeBase::PostInitProperties()
     Super::PostInitProperties();
     SetupInputsOnConstruct();
     SetupOutputsOnConstruct();
+    SetupInternalExpressionsOnConstruct();
 }
-
 
 FString UNodeBase::NodeName() const {
     return TEXT("UNodeBase");

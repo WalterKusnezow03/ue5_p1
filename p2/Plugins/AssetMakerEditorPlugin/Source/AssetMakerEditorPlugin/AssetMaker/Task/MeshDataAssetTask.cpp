@@ -17,7 +17,7 @@ MeshDataAssetTask::MeshDataAssetTask(const MeshDataAssetTask &other){
 
 MeshDataAssetTask &MeshDataAssetTask::operator=(const MeshDataAssetTask &other){
     if(this != &other){
-        Update(other.vertexBufferSaved, other.triangleBufferSaved);
+        Update(other.vertexBufferSaved, other.triangleBufferSaved, other.uvBufferSaved);
         UpdatePathAndName(other.filePath, other.fileName);
     }
     return *this;
@@ -42,6 +42,17 @@ bool MeshDataAssetTask::IsValidTask(){
 void MeshDataAssetTask::Update(const TArray<FVector> &vertexBuffer, const TArray<int32> &triangleBuffer){
     vertexBufferSaved = vertexBuffer;
     triangleBufferSaved = triangleBuffer;
+    uvBufferSaved.Empty();
+}
+
+void MeshDataAssetTask::Update(
+    const TArray<FVector> &vertexBuffer, 
+    const TArray<int32> &triangleBuffer,
+    const TArray<FVector2D> &uvBufferIn 
+){
+    vertexBufferSaved = vertexBuffer;
+    triangleBufferSaved = triangleBuffer;
+    uvBufferSaved = uvBufferIn;
 }
 
 void MeshDataAssetTask::UpdatePathAndName(const FString path, const FString name){
@@ -64,4 +75,8 @@ TArray<FVector> &MeshDataAssetTask::GetVertexBuffer(){
 
 TArray<int32> &MeshDataAssetTask::GetTriangleBuffer(){
     return triangleBufferSaved;
+}
+
+TArray<FVector2D> &MeshDataAssetTask::GetUV0(){
+    return uvBufferSaved;
 }

@@ -52,7 +52,8 @@ void UEditorMeshDataToStaticMeshTool::Launch(){
                     UStaticMesh *ptr = tool->CreateStaticMeshAsset(
                         current.pathComplete(),
                         current.GetVertexBuffer(),
-                        current.GetTriangleBuffer()
+                        current.GetTriangleBuffer(),
+                        current.GetUV0()
                     );
                     if(!ptr){
                         unfinished.Add(current);
@@ -74,7 +75,8 @@ void UEditorMeshDataToStaticMeshTool::Launch(){
 UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
     const FString& AssetPath, 
     const TArray<FVector>& vertices, 
-    const TArray<int32>& triangles
+    const TArray<int32>& triangles,
+    const TArray<FVector2D> &uvBuffer
 ){
     Log("CreateStaticMeshAsset:: Launch Creation");
     // Create a package for the asset
@@ -107,7 +109,7 @@ UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
     }
 
     Log("CreateStaticMeshAsset:: Mesh description valid!");
-    Append(description, vertices, triangles);
+    Append(description, vertices, triangles, uvBuffer);
 
 
 
@@ -115,8 +117,7 @@ UStaticMesh* UEditorMeshDataToStaticMeshTool::CreateStaticMeshAsset(
     TArray<const FMeshDescription *> lods = {description};
     if(Build(lods, StaticMesh)){
         //save in engine yourself.
-
-        //debug dont return anything
+        //debug dont return anything (allows recreation, task not cleared)
     }
 
     return nullptr;
@@ -153,7 +154,8 @@ bool UEditorMeshDataToStaticMeshTool::Build(TArray<const FMeshDescription*> lods
 void UEditorMeshDataToStaticMeshTool::Append(
     FMeshDescription *mesh,
     const TArray<FVector>& vertices, 
-    const TArray<int32>& triangles
+    const TArray<int32>& triangles,
+    const TArray<FVector2D> &uvBuffer
 ){
     if(mesh){
         TArray<FVertexInstanceID> vertexBufferAsIdBuffer;
@@ -166,6 +168,13 @@ void UEditorMeshDataToStaticMeshTool::Append(
             vertexBufferAsIdBuffer,
             triangles,
             materialId
+        );
+
+        int32 uvChannel = 0;
+        AppendUVBuffer(
+            *mesh,
+            uvBuffer,
+            uvChannel 
         );
     }
 }
@@ -254,4 +263,51 @@ bool UEditorMeshDataToStaticMeshTool::TriangleIsValid(
     t0 >= 0 && t0 < vertexIdBuffer.Num() && 
     t1 >= 0 && t1 < vertexIdBuffer.Num() &&
     t2 >= 0 && t2 < vertexIdBuffer.Num();
+}
+
+
+
+
+void UEditorMeshDataToStaticMeshTool::AppendUVBuffer(
+    FMeshDescription &mesh,
+    const TArray<FVector2D> &uvBuffer,
+    int32 uvChannel 
+){
+    if(uvBuffer.Num() <= 0){
+        return;
+    }
+
+    mesh.CreateUV(uvChannel);
+
+    TArray<FUVID> createdUvsById;
+    createdUvsById.SetNum(uvBuffer.Num());
+    for (int i = 0; i < uvBuffer.Num(); i++){
+        createdUvsById[i] = mesh.CreateUV(uvChannel);
+    }
+
+    FStaticMeshAttributes Attributes(mesh); // can be created as often as you want, just a funny helper for the same FMeshDescription.
+    Attributes.Register();
+    TVertexInstanceAttributesRef<FVector2f> instanceUvBuffer = Attributes.GetVertexInstanceUVs();
+    for (int i = 0; i < createdUvsById.Num(); i++){
+        //createdUvs[i] = mesh.CreateUV(uvChannel);
+        instanceUvBuffer[createdUvsById[i]] = FVector2f(
+            float(uvBuffer[i].X),
+            float(uvBuffer[i].Y)
+        );
+    }
+    
+    
+    
+    /*
+    FUVID	
+    CreateUV ( const int32 UVChannel
+    )
+    
+    Adds a new UV to the mesh and returns its ID
+    Public function	void	
+    CreateUVWithID ( const FUVID UVID,
+    const int32 UVChannel
+    )
+    
+    Adds a new UV to the mesh with the given ID*/
 }

@@ -26,6 +26,7 @@ public class CustomMaterialPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Engine"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -41,7 +42,9 @@ public class CustomMaterialPlugin : ModuleRules
 				// ... add private dependencies that you statically link with here ...	
 
 				//using editor for materials:
-				"UnrealEd" 
+				"UnrealEd",
+				"MaterialEditor",
+            	"MaterialUtilities"
 			}
 		);
 		

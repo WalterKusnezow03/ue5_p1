@@ -385,6 +385,9 @@ void ProceduralMeshComponentPair::ApplyMaterial(
 
 
 UMaterialInstanceDynamic* ProceduralMeshComponentPair::ApplyExpressionData(UMaterial *material){
+    //debug
+    return nullptr;
+
     UObject *parent = raycastMesh; //outer object for instance dynamic needed.
     if(!parent){
         parent = noraycastMesh;

@@ -3767,10 +3767,18 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionViewProperty.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/NodeBase.generated.h \
   Runtime/../../Source/Runtime/Engine/Classes/Materials/MaterialExpression.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKColorKeyRemover.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/HLSLNodes/ColorRelated/ColorKey/WKColorKeyRemover.h \
+  Runtime/Engine/Classes/Materials/MaterialExpressionCustom.h \
+  Runtime/Engine/Public/MaterialValueType.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionCustom.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h \
+  Runtime/Engine/Classes/Materials/MaterialExpressionCeil.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/MaterialExpressionCeil.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKColorKeyRemover.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/foliage/WKLeafShader.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/vertexShaderBase/WKVertexShaderBase.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKVertexShaderBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKLeafShader.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKPixelShaderBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/PixelShaderBase/WKPixelShaderBase.h \
@@ -3782,6 +3790,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/VertexShaders/water/WKWaterShader.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/CustomMaterialPlugin/UHT/WKWaterShader.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/HLSLNodes/ColorRelated/ColorKey/WKColorKeyRemover.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/NodeBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/PixelShaders/WKRadialPixelShader.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CustomMaterialPlugin/Source/CustomMaterialPlugin/Materials/Nodes/ShaderBase/PixelShaderBase/WKPixelShaderBase.cpp \

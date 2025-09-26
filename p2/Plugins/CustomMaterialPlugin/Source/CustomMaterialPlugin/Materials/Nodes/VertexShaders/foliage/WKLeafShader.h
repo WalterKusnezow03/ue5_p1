@@ -30,9 +30,6 @@ public:
     UPROPERTY(EditAnywhere, Category=UWKWaterShader)
     float IntervallSlowDown = 1.0f; 
 
-    UPROPERTY(EditAnywhere, Category=UWKWaterShader)
-    float DistanceBetweenWaves = 300.0f; //max distortion
-
 
 #if WITH_EDITOR
 

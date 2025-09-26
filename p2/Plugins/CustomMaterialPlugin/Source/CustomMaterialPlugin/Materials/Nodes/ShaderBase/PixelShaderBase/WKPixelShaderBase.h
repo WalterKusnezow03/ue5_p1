@@ -28,6 +28,9 @@ public:
 
     int32 RadialScalarFromScreenCoordinateRelativeToCenter(FMaterialCompiler *Compiler);
 
+    TArray<int32> SplitRGBA(FMaterialCompiler *Compiler, int32 someColor);
+    int32 MakeRGBA(FMaterialCompiler *Compiler, TArray<int32> &array);
+
     virtual int32 Compile(FMaterialCompiler *Compiler, int32 OutputIndex) override;
 
     //called by compile

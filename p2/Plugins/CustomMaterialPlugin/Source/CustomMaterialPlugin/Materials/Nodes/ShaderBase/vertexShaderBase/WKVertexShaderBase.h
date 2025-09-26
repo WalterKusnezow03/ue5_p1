@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Materials/MaterialExpression.h"
+
+#include "Materials/MaterialExpressionCeil.h"
+
 #include "MaterialCompiler.h"
 #include "CustomMaterialPlugin/Materials/Nodes/NodeBase.h"
 
@@ -9,7 +12,7 @@
 
 #include "WKVertexShaderBase.generated.h"
 
-
+/// @brief base class for any expression, has a lot of helper functions
 UCLASS(collapsecategories, hidecategories=Object)
 class CUSTOMMATERIALPLUGIN_API UWKVertexShaderBase : public UNodeBase
 {
@@ -18,6 +21,8 @@ class CUSTOMMATERIALPLUGIN_API UWKVertexShaderBase : public UNodeBase
 public:
 
 #if WITH_EDITOR
+
+    virtual void SetupInternalExpressionsOnConstruct() override;
 
     virtual FString NodeName() const override {
         return TEXT("WKVertexShaderBase");
@@ -50,7 +55,7 @@ public:
     //make const vector
     int32 MakeConstant2D(FMaterialCompiler *Compiler, float x, float y);
     int32 MakeConstant3D(FMaterialCompiler *Compiler, float x, float y, float z);
-
+    int32 MakeConstant4D(FMaterialCompiler *Compiler, float x, float y, float z, float h);
 
     int32 WorldPosX(FMaterialCompiler *Compiler);
     int32 WorldPosY(FMaterialCompiler *Compiler);
@@ -79,6 +84,22 @@ public:
 
     // Kamerarichtung
     int32 GetCameraVector(FMaterialCompiler *Compiler);
-    
+
+
+
+
+    //operators
+    int32 Less(FMaterialCompiler *Compiler, int32 A, int32 B);
+
+
+    //ceil shortcut
+    int32 Ceil(FMaterialCompiler *Compiler, FExpressionInput *input);
+
 #endif
+
+private:
+    //internal Expression Abusing
+    UPROPERTY()
+    UMaterialExpressionCeil *ceilExpression = nullptr;
+
 };

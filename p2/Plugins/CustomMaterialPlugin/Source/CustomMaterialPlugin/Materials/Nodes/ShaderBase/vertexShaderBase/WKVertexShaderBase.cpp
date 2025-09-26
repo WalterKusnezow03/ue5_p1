@@ -1,5 +1,12 @@
 #include "WKVertexShaderBase.h"
 
+void UWKVertexShaderBase::SetupInternalExpressionsOnConstruct(){
+    Super::SetupInternalExpressionsOnConstruct();
+    ceilExpression = NewObject<UMaterialExpressionCeil>(this);
+
+    
+}
+
 int32 UWKVertexShaderBase::MakeConstant(FMaterialCompiler *compiler, float num){
     return compiler->Constant(num);
 }
@@ -10,6 +17,10 @@ int32 UWKVertexShaderBase::MakeConstant2D(FMaterialCompiler *Compiler, float x, 
 
 int32 UWKVertexShaderBase::MakeConstant3D(FMaterialCompiler *Compiler, float x, float y, float z){
     return Compiler->Constant3(x,y,z);
+}
+
+int32 UWKVertexShaderBase::MakeConstant4D(FMaterialCompiler *Compiler, float x, float y, float z, float h){
+    return Compiler->Constant4(x,y,z,h);
 }
 
 
@@ -52,6 +63,9 @@ int32 UWKVertexShaderBase::MakeVector3D(FMaterialCompiler *Compiler, int32 X, in
     int32 XYZ = Compiler->AppendVector(XY,Z); // 3D Vector: (x, y, z)
     return XYZ;
 }
+
+
+
 
 
 int32 UWKVertexShaderBase::WorldPosX(FMaterialCompiler *Compiler){
@@ -140,4 +154,59 @@ int32 UWKVertexShaderBase::ScaledTime(FMaterialCompiler *Compiler, float scalar)
 int32 UWKVertexShaderBase::GetCameraVector(FMaterialCompiler* Compiler)
 {
     return Compiler->CameraVector();
+}
+
+
+
+
+//operators
+int32 UWKVertexShaderBase::Less(FMaterialCompiler *Compiler, int32 A, int32 B){
+    int32 r = Compiler->Max(A, B);
+    UE_LOG(LogTemp, Warning, TEXT("UWKVertexShaderBase::Less A=%d, B=%d R=%d"), A, B, r);
+    return r == A ? MakeConstant(Compiler, 0.0f) : MakeConstant(Compiler, 1.0f);
+
+    /*
+    FMaterialCompiler::    
+    If ( 
+    int32 A,
+    int32 B,
+    int32 AGreaterThanB,
+    int32 AEqualsB,
+    int32 ALessThanB,
+    int32 Threshold
+    )
+    
+    return Compiler->If(
+        A, 
+        B, 
+        MakeConstant(Compiler, 0.0f), 
+        MakeConstant(Compiler, 0.0f),
+        MakeConstant(Compiler, 1.0f),//int32 ALessThanB
+        MakeConstant(Compiler, 0.0f)
+    );*/
+}
+
+
+
+int32 UWKVertexShaderBase::Ceil(FMaterialCompiler *Compiler, FExpressionInput *inputOverride){
+    if(ceilExpression && inputOverride){
+
+        //UMaterialExpression *	Expression	
+        //Material expression that this input is connected to, or NULL if not connected.
+
+        //tmp swap out parent which should not exsist anyway.
+        UMaterialExpression *ExpressionParentPrev = ceilExpression->Input.Expression;
+        UMaterialExpression *tmpOverride = inputOverride->Expression;
+        if(tmpOverride){
+            ceilExpression->Input.Expression = tmpOverride;
+            int32 result = ceilExpression->Compile(Compiler, 0);
+            ceilExpression->Input.Expression = ExpressionParentPrev;
+            return result;
+        }
+
+
+        
+    }
+
+    return INDEX_NONE;
 }

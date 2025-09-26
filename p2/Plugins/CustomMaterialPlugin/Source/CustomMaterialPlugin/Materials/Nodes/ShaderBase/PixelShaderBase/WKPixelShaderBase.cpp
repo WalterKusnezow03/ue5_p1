@@ -42,6 +42,30 @@ int32 UWKPixelShaderBase::RadialScalarFromScreenCoordinateRelativeToCenter(FMate
 }
 
 
+// -- color extract --
+TArray<int32> UWKPixelShaderBase::SplitRGBA(FMaterialCompiler *Compiler, int32 someColor){
+    TArray<int32> outComponents;
+    outComponents.SetNum(4);
+
+    outComponents[0] = Compiler->ComponentMask(someColor, true, false, false, false);
+    outComponents[1] = Compiler->ComponentMask(someColor, false, true, false, false);
+    outComponents[2] = Compiler->ComponentMask(someColor, false, false, true, false);
+    outComponents[3] = Compiler->ComponentMask(someColor, false, false, false, true);
+    return outComponents;
+}
+
+int32 UWKPixelShaderBase::MakeRGBA(FMaterialCompiler *Compiler, TArray<int32> &array){
+    if(array.Num() == 4){
+        MakeConstant4D(
+            Compiler, 
+            array[0],
+            array[1],
+            array[2],
+            array[3]
+        );
+    }
+    return MakeConstant4D(Compiler, 0.0f, 0.0f, 0.0f, 0.0f);
+}
 
 // --- compile ---
 int32 UWKPixelShaderBase::Compile(FMaterialCompiler *Compiler, int32 OutputIndex){

@@ -57,7 +57,7 @@ int32 UWKLeafShader::HigherZ(FMaterialCompiler *Compiler){
     if(ok){
         return result;
     }
-    return MakeConstant(Compiler, 300.0f); //3m als max wert (?)
+    return MakeConstant(Compiler, 1000.0f); //10m als max wert (?)
 }
 
 int32 UWKLeafShader::RangeZ(FMaterialCompiler *Compiler){
@@ -79,11 +79,21 @@ int32 UWKLeafShader::LocalInRangeAsScalar(FMaterialCompiler *Compiler, int32 zLo
         MakeConstant(Compiler, 1.0f)
     );
 
+    /*
     //as 1 over X
     int32 inverse = Compiler->Sub(MakeConstant(Compiler, 1.0f), scalarClamp);
     int32 oneOverX = Compiler->Div(MakeConstant(Compiler, 1.0f), inverse);
 
-    return oneOverX;
+    int32 oneOverXCapped = Compiler->Clamp(
+        scalar,
+        MakeConstant(Compiler, 0.00001f),
+        MakeConstant(Compiler, 1.0f)
+    );*/
+
+    // optional: exponentiell stärker oben, aber nie unendlich
+    int32 shapedScalar = Compiler->Mul(scalarClamp, scalarClamp);
+
+    return shapedScalar;
 }
 
 /// --- compile ---

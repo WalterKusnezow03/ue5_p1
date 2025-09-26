@@ -24,7 +24,8 @@ public:
     UStaticMesh *CreateStaticMeshAsset(
         const FString &AssetPath,
         const TArray<FVector> &Vertices,
-        const TArray<int32> &Indices
+        const TArray<int32> &Indices,
+        const TArray<FVector2D> &uvBuffer
     );
 
     static bool AssetAlreadyExists(FString path, FString nameAsset);
@@ -39,7 +40,8 @@ private:
     void Append(
         FMeshDescription *mesh,
         const TArray<FVector>& vertices, 
-        const TArray<int32>& triangles
+        const TArray<int32>& triangles,
+        const TArray<FVector2D> &uvBuffer
     );
 
     void AppendAllVertecies(
@@ -60,6 +62,12 @@ private:
         TArray<FVertexInstanceID> &vertexIdBuffer,
         const TArray<int32> &triangles,
         FPolygonGroupID &materialId
+    );
+
+    void AppendUVBuffer(
+        FMeshDescription &mesh,
+        const TArray<FVector2D> &uvBuffer,
+        int32 uvChannel
     );
 
     static TArray<MeshDataAssetTask> tasks;
