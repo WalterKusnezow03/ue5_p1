@@ -40,34 +40,42 @@ void AIkDebugActor::BeginPlay(){
 }
 
 void AIkDebugActor::BeginPlaySingleArm(){
-    bone.setup(50, 50, GetWorld());
+    if(debugPart == EDebugPart::EDebugArm){
+        bone.setup(50, 50, GetWorld());
 
 
-    //depracated debug tools
-    // x is forward
-    start = FVector(-30, 40, -50);
-    end = FVector(30, -20, -50);
-    start1 = FVector(-30, 0, 50);
-    end1 = FVector(0, 0, 50);
+        //depracated debug tools
+        // x is forward
+        start = FVector(-30, 40, -50);
+        end = FVector(30, -20, -50);
+        start1 = FVector(-30, 0, 50);
+        end1 = FVector(0, 0, 50);
 
+    }
+    
     
     resetInterpolators();
 }
 
 void AIkDebugActor::BeginPlayHipController(){
-    FVector startWorld(400, -400, 210);
-    hipController.SetLocation(startWorld);
+    if(debugPart == EDebugPart::EDebugHipController){
+        FVector startWorld(400, -400, 210);
+        hipController.SetLocation(startWorld);
 
-    float initRotation = -90; //180 //10
-    hipController.forceYawAdd(initRotation);
-    hipController.setup(GetWorld());
-    hipController.setStateWalking();
+        float initRotation = -90; //180 //10
+        hipController.forceYawAdd(initRotation);
+        hipController.setup(GetWorld());
+        hipController.setStateWalking();
+    }
 }
 
 void AIkDebugActor::BeginPlayHumanoidController(){
-    humanController.defaultSetup(GetWorld());
-    FVector startWorld(400, -400, 210);
-    humanController.SetLocation(startWorld);
+    if(debugPart == EDebugPart::EDebugHumanoidController){
+        humanController.defaultSetup(GetWorld());
+        FVector startWorld(400, -400, 210);
+        humanController.SetLocation(startWorld);
+        humanController.setStateWalking();
+    }
 }
 
 void AIkDebugActor::resetInterpolators(){
@@ -108,17 +116,14 @@ void AIkDebugActor::TickPlayHipController(float deltatime){
 }
 
 void AIkDebugActor::TickPlayHumanoidController(float deltatime){
-    float slow = 1.0f; //0.1
-    deltatime *= slow;
     humanController.Tick(deltatime);
 
-    /*
     //debug rotation
     time += deltatime;
     if(time > 5.0f && true){
         time = 0.0f;
         humanController.setupRotationForNextStep(MMatrix::degToRadian(30.0f));
-    }*/
+    }
 }
 
 

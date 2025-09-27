@@ -62,6 +62,11 @@ public:
 		FVector &d
 	);
 
+	///@brief tells if the triangle has 0 area and creates broken collision || 
+	///useless drawcall overhead
+	bool IsDegenerateTriangle(int a, int b, int c);
+
+	//appendEfficentMehods will not handle uvs
 	void appendEfficent(
 		FVector &a,
 		FVector &b,
@@ -73,7 +78,7 @@ public:
 		FVector &c,
 		FVector &d
 	);
-	void appendEfficent(MeshData &other);
+	void appendEfficent(MeshData &other); //no uvs!
 
 
 	void appendDoublesided(

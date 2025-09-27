@@ -1,5 +1,6 @@
 #include "ProceduralMeshComponentPair.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
+#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/ProceduralMeshComponentCustom.h"
 
 
 ProceduralMeshComponentPair::ProceduralMeshComponentPair(){
@@ -15,11 +16,13 @@ void ProceduralMeshComponentPair::init(
     AActor *actorOwner,
     USceneComponent *RootComponent
 ){
+    //old:UProceduralMeshComponent
+    //new: UProceduralMeshComponentCustom
     if(RootComponent && actorOwner){
         FString nameMesh = name + FString::Printf(TEXT("raycastMesh_%d"), index);
         raycastMesh = NewObject<UProceduralMeshComponent>(actorOwner, *nameMesh);
         if(raycastMesh){
-            raycastMesh->SetupAttachment(RootComponent);
+            raycastMesh->SetupAttachment(RootComponent); 
             raycastMesh->RegisterComponent(); //it is not visible otherwise
         }
         
@@ -164,6 +167,7 @@ void ProceduralMeshComponentPair::updateMeshNoRaycast(materialEnum type){
 
 
 
+
 /// @brief replaces the mesh layer for an mesh component
 /// caution: mesh section is recreated because modifying the triangle buffer is not allowed
 /// when will to update an mesh!
@@ -177,6 +181,14 @@ void ProceduralMeshComponentPair::updateMesh(
     int layer
 ){
     if(otherMesh.getVerteciesRef().Num() == 0){
+        return;
+    }
+
+    //try cast ---> EXPERIMENTAL
+    UProceduralMeshComponentCustom *casted = Cast<UProceduralMeshComponentCustom>(&meshcomponent);
+    if (casted)
+    {
+        casted->UpdateMesh(layer, otherMesh, true);
         return;
     }
 
@@ -257,6 +269,15 @@ void ProceduralMeshComponentPair::refreshMesh(
     if(other.verteciesNum() <= 0){
         return;
     }
+
+    //new.
+    UProceduralMeshComponentCustom *casted = Cast<UProceduralMeshComponentCustom>(&meshComponent);
+    if (casted)
+    {
+        casted->UpdateMesh(layer, other, true);
+        return;
+    }
+
 
     meshComponent.UpdateMeshSection(
         layer, 

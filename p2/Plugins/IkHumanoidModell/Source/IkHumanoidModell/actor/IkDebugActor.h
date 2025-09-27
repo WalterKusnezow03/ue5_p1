@@ -30,7 +30,8 @@ private:
     void TickPlayHipController(float deltatime);
     void TickPlayHumanoidController(float deltatime);
 
-    EDebugPart debugPart = EDebugPart::EDebugHipController; // EDebugHumanoidController;
+    //EDebugPart debugPart = EDebugPart::EDebugHipController; 
+    EDebugPart debugPart = EDebugPart::EDebugHumanoidController;
 
     HipController hipController;
 

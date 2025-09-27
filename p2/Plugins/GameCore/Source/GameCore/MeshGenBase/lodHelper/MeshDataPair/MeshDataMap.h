@@ -5,7 +5,7 @@
 
 class ProceduralMeshComponentPair; // forward declaration
 
-
+/// @brief base class to store meshdata for raycast enabled and non enabled layers
 class GAMECORE_API MeshDataMap {
     //Allow ProceduralMeshComponentPair derived from this, using the protected members of another object.
     friend class ProceduralMeshComponentPair;

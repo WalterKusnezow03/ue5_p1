@@ -4,7 +4,7 @@
 
 /// @brief override this method to add more inputs.
 void UWKColorKeyRemover::SetupInputsOnConstruct(){
-    UMaterial* OuterMaterial = GetTypedOuter<UMaterial>();
+    UMaterial* OuterMaterial = GetTypedOuter<UMaterial>(); //expression must be owned by material itself.
     if(OuterMaterial && !customExpression)
     {
         customExpression = NewObject<UMaterialExpressionCustom>(

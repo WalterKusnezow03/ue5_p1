@@ -699,6 +699,9 @@ std::vector<FVector> MeshData::create2DQuadVertecies(int xMax, int yMax){
  * is tested!
  * 
  */
+bool MeshData::IsDegenerateTriangle(int a, int b, int c){
+    return a == b || b == c || c == a;
+}
 
 void MeshData::appendEfficent(
     FVector &a, 
@@ -708,6 +711,11 @@ void MeshData::appendEfficent(
     int indexA = findClosestIndexTo(a);
     int indexB = findClosestIndexTo(b);
     int indexC = findClosestIndexTo(c);
+
+    if(IsDegenerateTriangle(indexA, indexB, indexC)){
+        DebugHelper::logMessage("Detected Degenerate Triangle! ");
+        // return;
+    }
 
     int debugEfficentAdded = 3;
 
