@@ -1921,3 +1921,59 @@ void MeshData::VerticalRangeOfBounds(float &a, float &b){
     a = std::min(bl.Z, tr.Z);
     b = std::max(bl.Z, tr.Z);
 }
+
+
+
+
+
+/*
+void MeshData::RayIntersectBounds(FVector &localA, FVector &localB){
+    //check bound
+
+    //check all triangle intersect frames
+}*/
+
+
+/*
+///ray intersect tests
+void MeshData::RayIntersect(FVector &localA, FVector &localB){
+    //check bound
+
+    //check all triangle intersect frames
+}
+
+
+void MeshData::TriangleIntersect(
+    const FVector &v0, 
+    const FVector &v1,
+    const FVector &v2,
+    int32 v0Index,
+    FVector &origin,
+    FVector &direction
+){
+    FVector normal;
+    if (isValidNormalIndex(v0Index))
+    {
+        normal = normals[v0Index];
+    }
+    else
+    {
+        normal = FVector::CrossProduct((v1 - v0), (v2 - v0));
+    }
+
+    
+    FPlane Plane(SomePointOnPlane, PlaneNormal);
+    FVector Intersection = FMath::RayPlaneIntersection(origin, direction, Plane);
+
+    MMatrix rot;
+    rot.setRotation(normal);
+    rot.pitchRadAdd(MMatrix::degToRadian(90)); //pitch up look up
+    rot.transposeRotation(); //R^T = R^-1
+
+    //2D plane intersect test
+
+
+    //3x right off test
+
+
+}*/

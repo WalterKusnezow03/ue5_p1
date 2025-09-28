@@ -154,7 +154,7 @@ MMatrix MMatrix::operator*(MMatrix &other){
 /// @brief multiply with a vector 
 /// @param other 
 /// @return 
-FVector MMatrix::operator*(FVector &other){
+FVector MMatrix::operator*(const FVector &other){
     FVector resultVec;
 
     float row[] = {other.X, other.Y, other.Z, 1.0f};

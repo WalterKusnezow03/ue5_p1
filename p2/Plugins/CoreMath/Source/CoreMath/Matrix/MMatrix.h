@@ -29,7 +29,7 @@ public:
 	void operator+=(MMatrix &other);
 	void operator*=(MMatrix & other);
 
-	FVector operator*(FVector &other);
+	FVector operator*(const FVector &other);
 	MMatrix operator*(MMatrix &other);
 
 	FVector2D operator*(FVector2D &other);
