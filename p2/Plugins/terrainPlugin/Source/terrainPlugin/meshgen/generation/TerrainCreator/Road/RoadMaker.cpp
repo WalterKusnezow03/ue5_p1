@@ -1,6 +1,7 @@
 #include "RoadMaker.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
+#include "CoreMath/algorithm/GrahamScan/GrahamScan2D.h"
 
 
 RoadMaker::RoadMaker(){
@@ -71,13 +72,16 @@ void RoadMaker::createRoad(
 
     if(true){
         /*
-        FVector2D &startingPoint,
-        TVector<FVector2D> &output,
-        float _einheitsValue,
-        float distanceBetweenAnchorsOnXAxisMin,
-        float distanceBetweenAnchorsOnXAxisMax,
-        float distanceBetweenAnchorsYRange,
-        float max_xy_coordinate
+        bezierCurve::
+        createNewRandomCurve(
+            FVector2D &startingPoint,
+            TVector<FVector2D> &output,
+            float _einheitsValue,
+            float distanceBetweenAnchorsOnXAxisMin,
+            float distanceBetweenAnchorsOnXAxisMax,
+            float distanceBetweenAnchorsYRange,
+            float max_xy_coordinate
+        )
         */
 
         FVector2D startingPoint;
@@ -95,6 +99,10 @@ void RoadMaker::createRoad(
             distanceBetweenAnchorsYRange,
             max_xy_coordinate
         );
+
+
+        //add to cache
+        AddCurveToCache(output);
     }
 
     float roadWidth = terrainConstants::ONEMETER * 5.0f;
@@ -109,6 +117,60 @@ void RoadMaker::createRoad(
     //assign data to mesh actor when done.
 
 }
+
+void RoadMaker::AddCurveToCache(TVector<FVector2D> &curve){
+    int id = 0;
+    if(createdRoadsCache.Num() > 0){
+        id = createdRoadsCache.Last().Id() + 1;
+    }
+    createdRoadsCache.SetNumUninitialized(createdRoadsCache.Num() + 1);
+    createdRoadsCache[createdRoadsCache.Num() - 1] = RoadData(id, curve);
+}
+
+
+void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
+
+    ///could be a giant rasterized polygon which
+    ///locks all roads with -1,
+    ///or makes in from polygon data / intersections
+    FindAllTwoRoadIntersections();
+
+    /*
+    GrahamScan2D scan2D;
+
+    void GrahamScan2D::ComputeConvexHull(
+        const TArray<FVector2D> &points,
+        TArray<int> &outIndices
+    )*/
+}
+
+
+void RoadMaker::FindAllTwoRoadIntersections(){
+    //something like < O(n^2)
+    for (int i = 0; i < createdRoadsCache.Num(); i++){
+        for (int j = i + 1; j < createdRoadsCache.Num(); j++){
+            RoadData &roadA = createdRoadsCache[i];
+            RoadData &roadB = createdRoadsCache[j];
+
+            ////add to map instead immidiatly!
+            roadA.FindIntersections(roadB, roadIntersections);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void RoadMaker::processRoad(
     TVector<FVector2D> &curve,
@@ -226,7 +288,7 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
 
         if(true){
             /**
-             * CAUTION: is still. Bugged.
+             * CAUTION: foliage block is still partially. Bugged.
              */
 
             FVector &v1 = line1[i-1];

@@ -22,8 +22,10 @@ void ChunkParserStorageInterface::Save(
 
     //append mesh data
     TArray<MeshData *> meshDataArray = MeshDataOrderedForSavingAndLoading(chunkData);
-    //append actor data
-    WriteChunkInfoData(Bytes, chunkData, meshDataArray.Num());
+    
+    //num layers of all (lods x raycast / no raycast x materials)
+    int32 numLayersAllLodAndRaycastNoRaycast = meshDataArray.Num();
+    WriteChunkInfoData(Bytes, chunkData, numLayersAllLodAndRaycastNoRaycast);
 
    
     for (int i = 0; i < meshDataArray.Num(); i++){

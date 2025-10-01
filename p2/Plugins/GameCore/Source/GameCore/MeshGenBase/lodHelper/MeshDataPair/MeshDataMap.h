@@ -27,8 +27,31 @@ public:
         materialEnum type
     );
 
-    
-    
+    ///@brief will check the whole meshdata map for intersection
+    /// (use this from uproeceduralmeshcomponentpair - acustommeshactor)
+    /// for raycast alternative
+    /// ONLY CHECKS raycastMeshData MAP, Not no raycast!
+    /// returns hitpoint with first intersected layer!
+    bool RayIntersectFirstHit(
+        const FVector &origin,
+        const FVector &direction,
+        FVector &outIntersectionPoint
+    );
+    bool RayIntersectClosestHit(
+        const FVector &origin,
+        const FVector &direction,
+        FVector &outIntersectionPoint
+    );
+
+    ///checks if any intersection happened.
+    bool RayIntersect(
+        const FVector &origin,
+        const FVector &direction
+    );
+
+    ///----> could return all or closest hitpoint too!
+
+
 
 protected: 
 

@@ -13,9 +13,13 @@
 
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
+
+#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
+
 #include <map>
 
 class ChunkParserStorageInterface;
+class AcustomMeshActor;
 
 /// CONTAINER FOR MESH DATA LATER USED BY ACUSTOMMESHACTOR -
 /// IS WRITABLE TO STORAGE
@@ -134,4 +138,16 @@ private:
     void addRandomNodesToNavmesh(TArray<FVectorTouple> &touples);
 
     void createBuildingIfNeeded(TerrainChunkSetup &package);
+
+
+
+    //// ---- COOKED COLLISION CACHE ----
+public:
+    FProcMeshCollisionStorageInterface &GetCookedCollisionDataCache(ELod lod);
+    void SaveCollisionDataFrom(AcustomMeshActor *actor);
+    void SetupFromCollisionCache(AcustomMeshActor *actor);
+
+private:
+    std::map<ELod, FProcMeshCollisionStorageInterface> collsionDataCacheMap;
+
 };

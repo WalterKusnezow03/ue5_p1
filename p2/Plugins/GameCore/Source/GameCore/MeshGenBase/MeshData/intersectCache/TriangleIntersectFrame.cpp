@@ -31,6 +31,10 @@ FTriangleIntersectFrame &FTriangleIntersectFrame::operator=(
         v0Normal = frame.v0Normal;
         v1Normal = frame.v1Normal;
         v2Normal = frame.v2Normal;
+
+        v0Index = frame.v0Index;
+        v1Index = frame.v1Index;
+        v2Index = frame.v2Index;
     }
     return *this;
 }
@@ -163,4 +167,34 @@ bool FTriangleIntersectFrame::DoesIntersect(
     }
 
     return result;
+}
+
+
+
+
+
+/// identity check
+void FTriangleIntersectFrame::SetIdentifier(int32 v0, int32 v1, int32 v2){
+    v0Index = v0;
+    v1Index = v1;
+    v2Index = v2;
+}
+bool FTriangleIntersectFrame::IsSameIdentifier(int32 v0, int32 v1, int32 v2){
+    return v0 == v0Index && v1 == v1Index && v2 == v2Index;
+}
+
+bool FTriangleIntersectFrame::HasIdentifier(int32 v0){
+    return v0 == v0Index || v0 == v1Index || v0 == v2Index;
+}
+
+void FTriangleIntersectFrame::CopyIdentifier(int32 &v0, int32 &v1, int32 &v2){
+    v0 = v0Index;
+    v1 = v1Index;
+    v2 = v2Index;
+}
+
+void FTriangleIntersectFrame::IncreaseIdentifierBy(int32 offset){
+    v0Index += offset;
+    v1Index += offset;
+    v2Index += offset;
 }

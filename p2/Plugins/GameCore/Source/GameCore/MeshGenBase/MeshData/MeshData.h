@@ -9,6 +9,8 @@
 #include "AssetPlugin/gameStart/assetEnums/materialEnum.h"
 #include "CoreMath/Matrix/MMatrix.h"
 
+#include "GameCore/MeshGenBase/MeshData/intersectCache/TriangleIntersectFrame.h"
+
 
 /**
  * The data must be saved here to organize mesh actor layers for different materials 
@@ -236,7 +238,8 @@ protected:
 		TArray<FVector> &vertecies, 
 		TArray<int32> &triangles, 
 		TArray<FVector> &normalsin, 
-		TArray<FVector2D> &uvrefin
+		TArray<FVector2D> &uvrefin,
+		TArray<FTriangleIntersectFrame> &framesOther
 	);
 
 	bool isValidVertexIndex(int i);
@@ -337,4 +340,28 @@ public:
 
 
 
+/**
+ * Intersection tests
+ */
+public:
+	bool RayIntersect(
+		const FVector &origin,
+		const FVector &direction,
+		FVector &outIntersectionPoint
+	);
+
+protected:
+	bool RayIntersectBounds(const FVector &origin, const FVector &direction);
+	void AppendIntersectionFrame(int32 v0Index, int32 v1Index, int32 v2Index);
+
+	void RebuildAllIntersectFrames();
+	void RefreshAllTriangleFramesWith(int32 index);
+	void RefreshTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
+
+	void RemoveAllTriangleFramesWithIndex(int32 vIndex);
+	void RemoveTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
+	bool AlreadyHasTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
+
+private:
+	TArray<FTriangleIntersectFrame> intersectFrames;
 };

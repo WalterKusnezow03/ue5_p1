@@ -17,7 +17,6 @@ public:
 
 private:
     void AppendIntoLayer(MPolygon &polygon, int layer);
-    void TestPolygonFitGreedy(TArray<MPolygon> &outPolygons);
 
     void TestPolygonFitRasterized();
     void AppendIntoLayer(TArray<FVector2D> &currentQuadShapedBuffer, int layer);

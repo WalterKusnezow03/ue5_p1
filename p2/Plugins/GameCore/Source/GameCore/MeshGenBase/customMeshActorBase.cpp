@@ -888,3 +888,36 @@ void AcustomMeshActorBase::createTwoSidedQuad(
     replaceMeshData(meshData, material);
     ReloadMeshAndApplyAllMaterials();
 }
+
+
+
+
+
+
+
+
+// collsion cache
+
+//load data
+bool AcustomMeshActorBase::SetupFromCollisionCache(
+    ELod lod, 
+    FProcMeshCollisionStorageInterface &cache
+){
+    if(meshLodContainers.find(lod) != meshLodContainers.end()){
+        ProceduralMeshComponentPair &pair = meshLodContainers[lod];
+        return pair.SetupFromCollisionCache(cache);
+    }
+    return false;
+}
+
+//save data 
+bool AcustomMeshActorBase::CopyCollisionCache(
+    ELod lod, 
+    FProcMeshCollisionStorageInterface &cache
+){
+    if(meshLodContainers.find(lod) != meshLodContainers.end()){
+        ProceduralMeshComponentPair &pair = meshLodContainers[lod];
+        return pair.CopyCollisionCache(cache);
+    }
+    return false;
+}

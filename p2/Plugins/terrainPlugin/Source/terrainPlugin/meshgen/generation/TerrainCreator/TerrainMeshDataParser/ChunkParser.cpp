@@ -2,6 +2,7 @@
 #include "ChunkParser.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 #include "PathFinder/pathFinding/PathFinder.h"
+#include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 ChunkParser::ChunkParser(){
@@ -444,3 +445,45 @@ void ChunkParser::SetWaterActorNeededFlag(bool flag, FVector &location){
 void ChunkParser::SetOutpostFlagNeeded(bool flag){
     flagOutpostNeeded = flag;
 }
+
+
+
+
+
+
+
+/// ----- COLLSION COOKING SAVE / LOAD ------
+
+void ChunkParser::SaveCollisionDataFrom(AcustomMeshActor *actor){
+    if(actor){
+        std::vector<ELod> lods = LodConstants::lodVector();
+        for (int i = 0; i < lods.size(); i++){
+            ELod currentLod = lods[i];
+            FProcMeshCollisionStorageInterface &cache = GetCookedCollisionDataCache(currentLod);
+            actor->CopyCollisionCache(currentLod, cache);
+        }
+    }
+}
+
+void ChunkParser::SetupFromCollisionCache(AcustomMeshActor *actor){
+    if(actor){
+        std::vector<ELod> lods = LodConstants::lodVector();
+        for (int i = 0; i < lods.size(); i++){
+            ELod currentLod = lods[i];
+            FProcMeshCollisionStorageInterface &cache = GetCookedCollisionDataCache(currentLod);
+            actor->SetupFromCollisionCache(currentLod, cache);
+        }
+    }
+}
+
+
+
+
+FProcMeshCollisionStorageInterface &ChunkParser::GetCookedCollisionDataCache(ELod lod){
+    if(collsionDataCacheMap.find(lod) == collsionDataCacheMap.end()){
+        collsionDataCacheMap[lod] = FProcMeshCollisionStorageInterface();
+    }
+
+    return collsionDataCacheMap[lod];
+}
+

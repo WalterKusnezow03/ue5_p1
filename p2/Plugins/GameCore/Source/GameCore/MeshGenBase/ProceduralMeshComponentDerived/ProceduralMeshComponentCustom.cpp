@@ -3,212 +3,23 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+/// ---- deprecated not nesecarraly needed ----
+
 void UProceduralMeshComponentCustom::UpdateMesh(int32 SectionIndex, MeshData &dataIn, bool bCreateCollision){
     
-    //complete fresh override.
-    FProcMeshSection NewSection;
-    FProcMeshSection *ptr = GetProcMeshSection(SectionIndex);
-    bool bFound = true;
-    if (!ptr)
-    {
-        bFound = false;
-        ptr = &NewSection;
-    }
-
-    int n = dataIn.getVerteciesRef().Num();
-    if (n > MaxSizeVertexBuffer)
-    {
-        DebugHelper::logMessage(
-            FString::Printf(TEXT(
-                "UProceduralMeshComponentCustom::n %d > max %d"
-            ),
-            n, MaxSizeVertexBuffer
-            )
-        );
-    }
-
-    UpdateBuffer(
-        NewSection,
-        dataIn.getVerteciesRef(),
-        dataIn.getNormalsRef(),
-        dataIn.getUV0Ref(),
-        dataIn.getVertexColorsRef(),
-        dataIn.getTangentsRef()
-    );
-
-    //NewSection.ProcIndexBuffer = dataIn.getTrianglesRef();
-    const TArray<int32> triangleBuffer = dataIn.getTrianglesRef();
-    int32 trianglesNum = triangleBuffer.Num();
-    TArray<uint32> &uintBuffer = NewSection.ProcIndexBuffer;
-    uintBuffer.SetNumUninitialized(trianglesNum);
-    for (int32 i = 2; i < trianglesNum; i += 3)
-    {
-        if(ValidTriangle(
-            triangleBuffer[i-2], 
-            triangleBuffer[i-1], 
-            triangleBuffer[i], 
-            dataIn.getVerteciesRef().Num()
-            //MaxSizeVertexBuffer
-        )){
-            uintBuffer[i-2] = triangleBuffer[i-2];
-            uintBuffer[i-1] = triangleBuffer[i-1];
-            uintBuffer[i] = triangleBuffer[i];
-        }else{
-            //make a fallback vertex?
-            uintBuffer[i-2] = 0;
-            uintBuffer[i-1] = 0;
-            uintBuffer[i] = 0;
-        }
-        
-    }
-
-    NewSection.bEnableCollision = bCreateCollision;
-    /*
-    //from src code:
-    void UProceduralMeshComponent::SetProcMeshSection(int32 SectionIndex, const FProcMeshSection& Section)
-    {
-        // Ensure sections array is long enough
-        if (SectionIndex >= ProcMeshSections.Num())
-        {
-            ProcMeshSections.SetNum(SectionIndex + 1, false);
-        }
-
-        ProcMeshSections[SectionIndex] = Section;
-
-        UpdateLocalBounds(); // Update overall bounds
-        UpdateCollision(); // Mark collision as dirty
-        MarkRenderStateDirty(); // New section requires recreating scene proxy
-    }
-    */
-    //active override needed
-    if(!bFound){
-        SetProcMeshSection(SectionIndex, NewSection);
-    }
-   
+    
 }
-
-bool UProceduralMeshComponentCustom::ValidTriangle(
-    int32 v0, int32 v1, int32 v2, int32 sizeBuffer
-){
-    return 
-    v0 >= 0 && v1 >= 0 && v2 >= 0 &&
-    v0 < sizeBuffer && v1 < sizeBuffer && v2 < sizeBuffer ;
-}
-
-
-
-
-void UProceduralMeshComponentCustom::UpdateBuffer(
-    FProcMeshSection& section,
-    const TArray<FVector>& Vertices,
-    const TArray<FVector>& Normals,
-    const TArray<FVector2D>& UV0,
-    const TArray<FColor>& VertexColors, 
-    const TArray<FProcMeshTangent>& Tangents
-){
-    int32 numVertecies = Vertices.Num();
-    TArray<FProcMeshVertex> &internalBuffer = section.ProcVertexBuffer;
-    internalBuffer.SetNum(numVertecies); //set num before hand to allow paralell work.
-
-    //set fixed size buffer
-    //internalBuffer.SetNum(MaxSizeVertexBuffer); //set num before hand to allow paralell work.
-
-
-
-    TArray<TFuture<void>> Futures;
-    int32 verteciesPerJob = 1000;
-    int32 jobs = (numVertecies + verteciesPerJob - 1) / verteciesPerJob;
-    for(int32 i = 0; i < jobs; i++){
-        int32 current = i * verteciesPerJob;
-        int32 next = (i + 1) * verteciesPerJob;
-        UpdateBuffer(
-            internalBuffer,
-            Vertices,
-            Normals,
-            UV0,
-            VertexColors,
-            Tangents,
-            current,
-            next,
-            Futures
-        );
-    }
-
-    // Warten, bis alle Jobs fertig sind
-    for (auto& Future : Futures)
-    {
-        Future.Wait(); // Blockiert, bis jeweiliger Thread fertig ist
-    }
-
-    UpdateBoundsForSection(
-        section,
-        Vertices
-    );
-}
-
-void UProceduralMeshComponentCustom::UpdateBoundsForSection(
-    FProcMeshSection& section,
-    const TArray<FVector>& Vertices
-){
-    section.SectionLocalBox.Init();
-    for (int i = 0; i < Vertices.Num(); i++){
-        // Update bounding box (moved here.)
-        section.SectionLocalBox += Vertices[i];
-    }
-}
-
-
-
-
-
-
-void UProceduralMeshComponentCustom::UpdateBuffer(
-    TArray<FProcMeshVertex> &internalBuffer,
-    const TArray<FVector>& Vertices,
-    const TArray<FVector>& Normals,
-    const TArray<FVector2D>& UV0,
-    const TArray<FColor>& VertexColors, 
-    const TArray<FProcMeshTangent>& Tangents,
-    int32 fromIndex,
-    int32 toIndex,
-    TArray<TFuture<void>> &Futures
-){
-    int32 NumVerts = Vertices.Num();
-    fromIndex = FMath::Max(fromIndex, 0);
-    toIndex = FMath::Min(toIndex, NumVerts);
-    Futures.Add(
-        Async(EAsyncExecution::Thread, 
-            [&internalBuffer, &NumVerts, &Vertices, &Normals, &UV0, &VertexColors, &Tangents, fromIndex, toIndex]
-            ()
-        {
-            //write data
-            for (int32 i = fromIndex; i < toIndex; i++){
-                if(i < internalBuffer.Num() && i < Vertices.Num()){
-                    FProcMeshVertex& Vertex = internalBuffer[i];
-
-                    Vertex.Position = Vertices[i];
-                    Vertex.Normal = (Normals.Num() == NumVerts) ? Normals[i] : FVector(0.f, 0.f, 1.f);
-                    Vertex.UV0 = (UV0.Num() == NumVerts) ? UV0[i] : FVector2D(0.f, 0.f);
-                    Vertex.UV1 = FVector2D(0.f, 0.f);
-                    Vertex.UV2 = FVector2D(0.f, 0.f);
-                    Vertex.UV3 = FVector2D(0.f, 0.f);
-                    Vertex.Color = (VertexColors.Num() == NumVerts) ? VertexColors[i] : FColor(255, 255, 255);
-                    Vertex.Tangent = (Tangents.Num() == NumVerts) ? Tangents[i] : FProcMeshTangent();
-                }else{
-                    if(i < internalBuffer.Num()){
-                        FProcMeshVertex& Vertex = internalBuffer[i];
-                        Vertex.Position = FVector(0,0,0);
-                    }
-                }
-                
-            }
-            // Kein return nötig, Lambda ist void
-        })
-    );
-}
-
-
-
 
 /*
 

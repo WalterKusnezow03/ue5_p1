@@ -131,7 +131,8 @@ void ProceduralMeshComponentPair::updateMeshRaycast(materialEnum type){
         updateMesh(
             *raycastMesh,
             meshDataReferenceRaycast(type),
-            layer
+            layer,
+            true
         );
 
         if(bLogMessage){
@@ -151,7 +152,8 @@ void ProceduralMeshComponentPair::updateMeshNoRaycast(materialEnum type){
         updateMesh(
             *noraycastMesh,
             meshDataReferenceNoRaycast(type),
-            layer
+            layer,
+            false
         );
 
         if(bLogMessage){
@@ -178,7 +180,8 @@ void ProceduralMeshComponentPair::updateMeshNoRaycast(materialEnum type){
 void ProceduralMeshComponentPair::updateMesh(
     UProceduralMeshComponent &meshcomponent,
     MeshData &otherMesh, //MUST BE SAVED IN A VALUE CLASS SCOPE SOMEWHERE!
-    int layer
+    int layer,
+    bool bIsRaycastMesh
 ){
     if(otherMesh.getVerteciesRef().Num() == 0){
         return;
@@ -205,6 +208,14 @@ void ProceduralMeshComponentPair::updateMesh(
         Tangents, 
         true
     );*/
+
+    
+    bool bCreateCollision = false;
+    if (bIsRaycastMesh)
+    {
+        bCreateCollision = !WasSetupFromCache; //only setup collsion if not created already from cache
+    }
+
     //meshcomponent.ClearMeshSection(layer);
     meshcomponent.CreateMeshSection(
         layer, 
@@ -214,7 +225,7 @@ void ProceduralMeshComponentPair::updateMesh(
         otherMesh.getUV0Ref(),//UV0, 
         otherMesh.getVertexColorsRef(),//VertexColors, 
         otherMesh.getTangentsRef(),//Tangents, 
-        true
+        bCreateCollision //true
     );
 
 }
@@ -503,3 +514,29 @@ void ProceduralMeshComponentPair::overrideMeshDataFromBaseAndUpdateMesh(
     }
 }
 
+
+
+
+
+
+
+
+//collision cache
+bool ProceduralMeshComponentPair::CopyCollisionCache(FProcMeshCollisionStorageInterface &cache){
+    if(raycastMesh){
+        if(cache.SerializeCollision(raycastMesh)){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ProceduralMeshComponentPair::SetupFromCollisionCache(FProcMeshCollisionStorageInterface &cache){
+    if(raycastMesh){
+        if(cache.ApplyData(raycastMesh)){
+            WasSetupFromCache = true;
+            return true;
+        }
+    }
+    return false;
+}

@@ -16,6 +16,8 @@
 #include "GameCore/interfaces/Damageinterface.h"
 #include "GameCore/team/teamEnum.h"
 
+#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
+
 #include "customMeshActorBase.generated.h"
 
 UCLASS()
@@ -249,4 +251,8 @@ public:
 
 
 
+
+	//// ----- COLLISION COOKING CACHE ------
+	bool SetupFromCollisionCache(ELod lod, FProcMeshCollisionStorageInterface &cache);
+	bool CopyCollisionCache(ELod lod, FProcMeshCollisionStorageInterface &cache);
 };

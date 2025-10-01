@@ -168,11 +168,13 @@ void MeshData::setTriangles(TArray<int32> &&trianglesIn){
 /// @param other 
 void MeshData::append(MeshData &other)
 {
-    TArray<FVector> &verteciesRef = other.getVerteciesRef();
-    TArray<int32> &trianglesRef = other.getTrianglesRef();
-    TArray<FVector> &normalsRef = other.getNormalsRef();
-    TArray<FVector2D> &uvref = other.getUV0Ref();
-    join(verteciesRef, trianglesRef, normalsRef, uvref);
+    join(
+        other.getVerteciesRef(),
+        other.getTrianglesRef(), 
+        other.getNormalsRef(), 
+        other.getUV0Ref(),
+        other.intersectFrames
+    );
 
     updateBoundsIfNeeded();
 }
@@ -181,7 +183,8 @@ void MeshData::join(
     TArray<FVector> &verteciesRef, 
     TArray<int32> &trianglesRef, 
     TArray<FVector> &normalsin,
-    TArray<FVector2D> &uvrefin
+    TArray<FVector2D> &uvrefin,
+    TArray<FTriangleIntersectFrame> &framesOther
 ){
     int triangleOffset = vertecies.Num(); //beim vertex count offset starten!
 
@@ -243,7 +246,15 @@ void MeshData::join(
             UV0[sizebuffer + i] = ref;
         }
     }
-    
+
+    //merge triangle intersect frames
+    int numPrev = intersectFrames.Num();
+    intersectFrames.Append(framesOther);
+    for (int i = numPrev; i < intersectFrames.Num(); i++)
+    {
+        FTriangleIntersectFrame &current = intersectFrames[i];
+        current.IncreaseIdentifierBy(triangleOffset);
+    }
 
     updateBoundsIfNeeded();
 }
@@ -1393,6 +1404,7 @@ void MeshData::removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &co
         bool v2ok = (v2 != vertexIndex);
 
         if(v0ok && v1ok && v2ok){
+            //dont share edges with the vertexIndex seached
             triangleBufferCopy.Add(v0);
             triangleBufferCopy.Add(v1);
             triangleBufferCopy.Add(v2);
@@ -1409,6 +1421,9 @@ void MeshData::removeTrianglesInvolvedWith(int vertexIndex, std::vector<int> &co
                 connectedvertecies.push_back(v2);
             }
             
+
+            //remove triangle if marked for removal
+            RemoveTriangleFrame(v0, v1, v2); //remove triangle frame from intersection tests
         }
     }
     triangles = triangleBufferCopy;
@@ -1521,6 +1536,10 @@ void MeshData::pushInwards(FVector &location, int radius, FVector scaleddirectio
                 DebugHelper::logMessage("MeshData Vertex Push in Index", currentIndex);
                 DebugHelper::logMessage("MeshData Vertex Push in", vertex);
             }
+
+
+            //refresh triangle frames!
+            RefreshAllTriangleFramesWith(currentIndex);
         }
     }
 
@@ -1926,54 +1945,149 @@ void MeshData::VerticalRangeOfBounds(float &a, float &b){
 
 
 
-/*
-void MeshData::RayIntersectBounds(FVector &localA, FVector &localB){
+/// ------ intersect test section ------
+
+bool MeshData::RayIntersect(
+    const FVector &origin, 
+    const FVector &direction, 
+    FVector &outIntersectionPoint
+){
+    if(RayIntersectBounds(origin, direction)){
+        
+        ///// ---- TODO: PARALLEL THREADS HERE -----
+        
+        //go through all intersect triangle frames, if flagged ok, return true
+        for (int i = 0; i < intersectFrames.Num(); i++){
+            FTriangleIntersectFrame &current = intersectFrames[i];
+            if(current.DoesIntersect(origin, direction, outIntersectionPoint)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool MeshData::RayIntersectBounds(const FVector &origin, const FVector &direction){
     //check bound
-
-    //check all triangle intersect frames
-}*/
-
-
-/*
-///ray intersect tests
-void MeshData::RayIntersect(FVector &localA, FVector &localB){
-    //check bound
-
-    //check all triangle intersect frames
+    return bounds.DoesIntersect(origin, direction);
 }
 
 
-void MeshData::TriangleIntersect(
-    const FVector &v0, 
-    const FVector &v1,
-    const FVector &v2,
-    int32 v0Index,
-    FVector &origin,
-    FVector &direction
-){
-    FVector normal;
-    if (isValidNormalIndex(v0Index))
-    {
-        normal = normals[v0Index];
+void MeshData::RebuildAllIntersectFrames(){
+    intersectFrames.Empty();
+    for (int i = 2; i < triangles.Num(); i += 3){
+        AppendIntersectionFrame(
+            triangles[i - 2], // t0
+            triangles[i - 1], // t1
+            triangles[i]      // t2
+        );
     }
-    else
-    {
-        normal = FVector::CrossProduct((v1 - v0), (v2 - v0));
+}
+
+void MeshData::AppendIntersectionFrame(int32 v0Index, int32 v1Index, int32 v2Index){
+
+    //changed:
+    //will not check if frame already added! - but could by saving index
+    //CAUTION: if triangles are removed, old frames must be removed again, and ids modified!
+
+    //dont add if already added this triangle.
+    if(AlreadyHasTriangleFrame(v0Index, v1Index, v2Index)){
+        return;
     }
 
-    
-    FPlane Plane(SomePointOnPlane, PlaneNormal);
-    FVector Intersection = FMath::RayPlaneIntersection(origin, direction, Plane);
+    if(isValidVertexIndex(v0Index, v1Index, v2Index)){
+        FVector &v0 = vertecies[v0Index];
+        FVector &v1 = vertecies[v1Index];
+        FVector &v2 = vertecies[v2Index];
+        intersectFrames.SetNum(intersectFrames.Num() + 1);
+        FTriangleIntersectFrame &end = intersectFrames.Last();
+        end.Setup(v0, v1, v2);
+        end.SetIdentifier(v0Index, v1Index, v2Index);
+    }
+}
 
-    MMatrix rot;
-    rot.setRotation(normal);
-    rot.pitchRadAdd(MMatrix::degToRadian(90)); //pitch up look up
-    rot.transposeRotation(); //R^T = R^-1
+void MeshData::RefreshTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index){
+    if(isValidVertexIndex(v0Index, v1Index, v2Index)){
+        for (int i = 0; i < intersectFrames.Num(); i++){
+            FTriangleIntersectFrame &current = intersectFrames[i];
+            if(current.IsSameIdentifier(v0Index, v1Index, v2Index)){
+                //setup again
+                current.Setup(
+                    vertecies[v0Index],
+                    vertecies[v1Index],
+                    vertecies[v2Index]
+                );
+                return;
+            }
+        }
+    }
+}
 
-    //2D plane intersect test
 
 
-    //3x right off test
+
+void MeshData::RefreshAllTriangleFramesWith(int32 index){
+    //check identifier and refresh.
+    for (int i = 0; i < intersectFrames.Num(); i++){
+        if(i >= 0 && i < intersectFrames.Num()){
+            FTriangleIntersectFrame &current = intersectFrames[i];
+            if(current.HasIdentifier(index)){
+                int32 v0Index = 0;
+                int32 v1Index = 0;
+                int32 v2Index = 0;
+                current.CopyIdentifier(v0Index, v1Index, v2Index);
+                if(isValidVertexIndex(v0Index, v1Index, v2Index)){
+                    current.Setup(
+                        vertecies[v0Index],
+                        vertecies[v1Index],
+                        vertecies[v2Index]
+                    );
+                }
+            }
+        }
+    }
+}
 
 
-}*/
+void MeshData::RemoveAllTriangleFramesWithIndex(int32 vIndex){
+
+    /// CAUTION
+    //unklar ob das so sicher ist
+    for (int i = 0; i < intersectFrames.Num(); i++){
+        if(i >= 0 && i < intersectFrames.Num()){
+            FTriangleIntersectFrame &current = intersectFrames[i];
+            if(current.HasIdentifier(vIndex)){
+                //swap popback
+                FTriangleIntersectFrame &last = intersectFrames.Last();
+                current = last;
+                intersectFrames.Pop();
+                i--; //go 1 step back
+            }
+        }
+    }
+}
+
+
+
+void MeshData::RemoveTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index){
+    for (int i = 0; i < intersectFrames.Num(); i++){
+        FTriangleIntersectFrame &current = intersectFrames[i];
+        if(current.IsSameIdentifier(v0Index, v1Index, v2Index)){
+            //swap popback
+            FTriangleIntersectFrame &last = intersectFrames.Last();
+            current = last;
+            intersectFrames.Pop();
+            return;
+        }
+    }
+}
+
+bool MeshData::AlreadyHasTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index){
+    for (int i = 0; i < intersectFrames.Num(); i++){
+        FTriangleIntersectFrame &current = intersectFrames[i];
+        if(current.IsSameIdentifier(v0Index, v1Index, v2Index)){
+            return true;
+        }
+    }
+    return false;
+}

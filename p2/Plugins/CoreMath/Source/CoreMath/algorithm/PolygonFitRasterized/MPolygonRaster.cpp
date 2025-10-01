@@ -33,6 +33,8 @@ void MPolygonRaster::Setup(TArray<TArray<int>> &quads){
     UpdateFreePositions();
 }
 
+
+
 void MPolygonRaster::SetupAsChild(TArray<std::pair<int, int>> &positions, std::pair<int, int> &offsetIn){
     
     //min pos needed here: transform polygon data to origin!
@@ -97,6 +99,8 @@ std::pair<int, int> MPolygonRaster::MinPos(TArray<std::pair<int, int>> &position
     }
     return minPos;
 }
+
+
 
 
 
