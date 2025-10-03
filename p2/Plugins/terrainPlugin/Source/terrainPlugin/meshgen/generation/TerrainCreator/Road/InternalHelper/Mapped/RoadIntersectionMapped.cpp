@@ -1,12 +1,30 @@
 #include "RoadIntersectionMapped.h"
+#include "GameCore/DebugHelper.h"
 
 
 RoadIntersectionMapped::RoadIntersectionMapped(){
-    //bGraphLockedState = false;
+    bGraphLockedState = false;
 }
 RoadIntersectionMapped::~RoadIntersectionMapped(){
 
 }
+
+void RoadIntersectionMapped::PrintGraphInfo(){
+    FString prefix = TEXT("RoadIntersectionMapped::");
+    for (auto &pair : intersectionsMapped)
+    {
+        int roadId = pair.first;
+        int linearNeighbors = pair.second.Num();
+        DebugHelper::logMessage(
+            FString::Printf(TEXT("%s Road id(%d) intersections(%d)"), *prefix, roadId, linearNeighbors)
+        );
+    }
+}
+
+
+
+
+
 
 bool RoadIntersectionMapped::GraphIsLocked(){
     return bGraphLockedState;
@@ -16,7 +34,8 @@ void RoadIntersectionMapped::LockGraph(){
 }
 
 void RoadIntersectionMapped::Add(RoadIntersection &intersection){
-    AddAsA(intersection);
+    //add per road id
+    AddAsA(intersection); 
     AddAsB(intersection);
 }
 
@@ -30,6 +49,7 @@ void RoadIntersectionMapped::AddAsB(RoadIntersection &intersection){
 
 void RoadIntersectionMapped::Add(bool isA, RoadIntersection &intersection){
     if(GraphIsLocked()){
+        DebugHelper::logMessage("RoadIntersectionMapped::Intersction cant be added: graph locked!");
         return;
     }
 
@@ -46,15 +66,24 @@ void RoadIntersectionMapped::Add(bool isA, RoadIntersection &intersection){
     for (int i = 0; i < intersectionsTracked.Num(); i++){
         int next = i + 1; 
         if(next < intersectionsTracked.Num()){
-            RoadIntersection &intersectionNext = intersectionsTracked[i];
+            RoadIntersection &intersectionNext = intersectionsTracked[next];
             int index = intersectionNext.IndexForRoadId(id);
             if(index != -1){
                 if(indexOfIntersection <= index){
-                    intersectionsTracked.Insert(intersection, index); //right infront added, at the index as expected
+                    //insertAt(i, before next)
+                    intersectionsTracked.Insert(intersection, i); //right infront added, at the index as expected 
+                    DebugHelper::logMessage("RoadIntersectionMapped::Intersction inserted!");
+                    return;
                 }
             }
         }
     }
+    
+    //fall through array because empty or very highest index: Add
+    intersectionsTracked.Add(intersection);
+    DebugHelper::logMessage("RoadIntersectionMapped::Intersction Appended!");
+
+
 }
 
 
@@ -62,12 +91,13 @@ void RoadIntersectionMapped::BuildGraph(){
     LockGraph(); //doesnt allow adding new nodes: Array might resize, all ptrs 
     //stores as adjacent neighbors will be invalid.
 
+    //O(n^4)
     BuildAdjacencyPerRoad(); //ordered linerally added one by one linked list like
     BuildAdjacencyCrossed(); //cross all roads which each other
 }
 
 void RoadIntersectionMapped::BuildAdjacencyPerRoad(){
-    //build Adjacency relaations O(n^2)
+    //build linear Adjacency relaations O(n) per chain
     for(auto &pair : intersectionsMapped){
         TArray<RoadIntersection> &intersections = pair.second;
         //add liniearly from prev to this, ++, linked chain
@@ -80,10 +110,60 @@ void RoadIntersectionMapped::BuildAdjacencyPerRoad(){
 }
 
 void RoadIntersectionMapped::BuildAdjacencyCrossed(){
-    //build Adjacency relations O(n^2)
-    for(auto &pair_i : intersectionsMapped){
-        for(auto &pair_j : intersectionsMapped){
-            
+    //build Adjacency relations O(n^2) per list, O(n^4) for all roads with redundancy
+
+    int i = 0;
+    for (auto it_i = iteratorAt(0); it_i != intersectionsMapped.end(); ++it_i, i++)
+    {
+        auto &pair_i = *it_i;
+        TArray<RoadIntersection> &intersections_i = pair_i.second;
+
+        for (auto it_j = iteratorAt(i); it_j != intersectionsMapped.end(); ++it_j){
+            auto &pair_j = *it_j;
+            TArray<RoadIntersection> &intersections_j = pair_j.second;
+            BuildAdjacencyCrossed(intersections_i, intersections_j);
         }
     }
+}
+
+void RoadIntersectionMapped::BuildAdjacencyCrossed(
+    TArray<RoadIntersection> &intersections_i,
+    TArray<RoadIntersection> &intersections_j
+){
+    //O(n^2)
+    for (int i = 0; i < intersections_i.Num(); i++){
+        RoadIntersection &intersectionCurrent_i = intersections_i[i];
+        for (int j = i; j < intersections_j.Num(); j++)
+        {
+            RoadIntersection &intersectionCurrent_j = intersections_j[j];
+
+            //relink connections which are deprecated if adjacent along a road.
+            intersectionCurrent_i.ConnectBiDirectionalIfIsAdjacentAndRelinkNodes(intersectionCurrent_j);
+        }
+    }
+}
+
+/// @brief not sure if this okay. The map is not unordered, some sort of tree inside.
+std::map<int, TArray<RoadIntersection>>::iterator RoadIntersectionMapped::iteratorAt(int index){
+    if(index >= 0 && index < intersectionsMapped.size()){
+        return std::next(intersectionsMapped.begin(), index);
+    }
+    return intersectionsMapped.begin();
+}
+
+
+
+
+TArray<std::pair<FVector2D, FVector2D>> RoadIntersectionMapped::GetEdges(){
+    TArray<std::pair<FVector2D, FVector2D>> outEdges;
+
+    //nodes / intersections will be marked as traversed, call on every node.
+    for(auto &pair : intersectionsMapped){
+        TArray<RoadIntersection> &array = pair.second;
+        for (int i = 0; i < array.Num(); i++){
+            RoadIntersection &intersectionCurrent = array[i];
+            intersectionCurrent.AppendEdges(outEdges);
+        }
+    }
+    return outEdges;
 }

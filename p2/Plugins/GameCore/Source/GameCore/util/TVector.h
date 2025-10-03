@@ -29,16 +29,10 @@ public:
     }
 
     TVector<T> &operator=(const TVector<T> &other){
-        //dont do self assigment
-        if(this == &other){ //compare both ADRESSES
-            return *this;
-        }
-    
         this->sizeIndex = other.sizeIndex;
-        this->vec.reserve(sizeIndex);
-    
+
         //only copy to the wanted index
-        for (int i = 0; i < other.size(); i++){
+        for (int i = 0; i < sizeIndex; i++){
             this->vec.push_back(other.vec[i]); //manuell jedes element kopieren, aber nur bis zur fake grösse
         }
     

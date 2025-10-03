@@ -59,7 +59,7 @@ public:
 
 
 	//create actors
-	AcustomMeshActor *getNewMeshActor();
+	AcustomMeshActor *getNewMeshActor(UWorld *world);
 
 
 
@@ -111,6 +111,11 @@ public:
 		TArray<FVector> &positionsWorld
 	);
 
+
+	void createRoadMeshActor(UWorld *world);
+
+	
+
 private:
 	std::vector<ETerrainType> createRandomTerrainTypes(int count);
 	ETerrainType selectTerrainTypeExcluding(ETerrainType typeToExclude);
@@ -118,9 +123,9 @@ private:
 	void applySpecialTerrainTypesByHeight();
 
 
-	void createRoads(UWorld* world);
+	
 	RoadMaker roadmaker;
-
+	void createRoads();
 
 
 

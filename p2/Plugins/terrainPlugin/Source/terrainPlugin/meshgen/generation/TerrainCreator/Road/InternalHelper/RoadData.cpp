@@ -16,18 +16,10 @@ RoadData::RoadData(int id, const TVector<FVector2D> &curveIn){
     curve = curveIn;
 }
 
-RoadData& RoadData::operator=(RoadData&& other) noexcept {
-    if (this != &other) {
-        roadId = std::move(other.roadId);
-        curve  = std::move(other.curve);
-        other.roadId = 0;
-    }
-    return *this;
-}
-
 RoadData &RoadData::operator=(const RoadData &other){
     if(this != &other){
-
+        roadId = other.roadId;
+        curve = other.curve;
     }
     return *this;
 }
@@ -85,6 +77,10 @@ void RoadData::FindIntersections(
                 );
                 outIntersections.Add(intersection);
 
+                //prints ok
+                DebugHelper::logMessage(
+                    FString::Printf(TEXT("RoadData::foundIntersection %s"), *intersection.ToString())
+                );
             }
         }
     }
@@ -106,4 +102,12 @@ bool RoadData::DoesIntersect(
         FVector(d1,0.0),
         IntersectionPoint
     );
+}
+
+
+
+
+//debug
+std::vector<FVector2D> RoadData::getCurve(){
+    return curve.copy();
 }

@@ -11,13 +11,14 @@ public:
     RoadData();
     RoadData(int id, const TVector<FVector2D> &curveIn);
     RoadData(const RoadData &other);
-    RoadData &operator=(RoadData &&other) noexcept;
     RoadData &operator=(const RoadData &other);
     ~RoadData();
 
     int Id();
 
     void FindIntersections(RoadData &other, RoadIntersectionMapped &outIntersections);
+
+    std::vector<FVector2D> getCurve();
 
 private:
     int roadId;

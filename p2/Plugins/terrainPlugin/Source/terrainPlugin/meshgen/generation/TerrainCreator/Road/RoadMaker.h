@@ -11,14 +11,28 @@ class terrainCreator;
 class TERRAINPLUGIN_API RoadMaker
 {
 
+private:
+    MeshData meshdataSurface;
+    MeshData meshdataSides;
+
 public:
     RoadMaker();
 
     //--road--
-	void createRoads(terrainCreator *ptr, UWorld *world, int chunks);
-	
+	void createRoads(terrainCreator *ptr, int chunks); //for terrain
+    void createRoads(int chunks); //for widget
+
+
+    void MakeMeshActorFromRoadData(UWorld *world);
+
+
+    //--debug widget draw--
+    TArray<std::pair<FVector2D, FVector2D>> GetEdges();
+    TArray<std::vector<FVector2D>> GetRoads();
 
 private:
+    
+
     float getHeightFor(FVector2D &pos);
 
     void createRoads(

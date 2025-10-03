@@ -475,8 +475,12 @@ void terrainCreator::createTerrainAndSetupChunkParserMap(
 
     //manual flat areas are missing here. - must be added in terrain chunk map
 
+    //road creation
+    createRoads();
+
     //fill
     applyTerrainDataIntoChunkParserMapCache(mapToFillDataTo);
+
 }
 
 void terrainCreator::applyTerrainDataIntoChunkParserMapCache(
@@ -714,9 +718,16 @@ void terrainCreator::applySpecialTerrainTypesByHeight(){
     }
 }
 
-void terrainCreator::createRoads(UWorld* world){
-    //roadmaker.createRoads(this, world, map.size());
+void terrainCreator::createRoads(){
+    roadmaker.createRoads(this, map.size());
 }
+
+void terrainCreator::createRoadMeshActor(UWorld *world){
+    roadmaker.MakeMeshActorFromRoadData(world);
+}
+
+
+
 
 
 float terrainCreator::getHeightFor(FVector2D &pos){
@@ -725,20 +736,17 @@ float terrainCreator::getHeightFor(FVector2D &pos){
     
 }
 
-AcustomMeshActor *terrainCreator::getNewMeshActor(){
-    AcustomMeshActor *meshActor = nullptr;
-    EntityManagerBase *entityManagerPointer = EntityManagerBase::instanceBase();
-    if(entityManagerPointer){
-        meshActor = entityManagerPointer->requestByEnum<AcustomMeshActor>(
-            ETrackedActors::EMeshActor,
-            worldPointer
-        );
+AcustomMeshActor *terrainCreator::getNewMeshActor(UWorld *world){
+    if(world){
+        AcustomMeshActor *meshActor = nullptr;
+        EntityManagerBase *entityManagerPointer = EntityManagerBase::instanceBase();
+        if(entityManagerPointer){
+            meshActor = entityManagerPointer->requestByEnum<AcustomMeshActor>(
+                ETrackedActors::EMeshActor,
+                world
+            );
+        }
+        return meshActor;
     }
-    return meshActor;
+    return nullptr;
 }
-
-
-
-
-
-

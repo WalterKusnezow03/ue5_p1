@@ -15,31 +15,42 @@ float RoadMaker::getHeightFor(FVector2D &pos){
     return 0.0f;
 }
 
-
-void RoadMaker::createRoads(terrainCreator *ptr, UWorld *world, int chunks){
-
-    terrainCreatorPtr = ptr;
-    if (world && terrainCreatorPtr)
-    {
-        AcustomMeshActor *currentActor = terrainCreatorPtr->getNewMeshActor();
+void RoadMaker::MakeMeshActorFromRoadData(UWorld *world){
+    if(world){
+        AcustomMeshActor *currentActor = terrainCreatorPtr->getNewMeshActor(world);
         if (currentActor == nullptr)
         {
             return;
         }
-        currentActor->disableDistanceListening();
-        MeshData &meshdataSurface = currentActor->findMeshDataReference(
-            materialEnum::stoneMaterial,
-            true //has raycast
-        );
-        MeshData &meshdataSides = currentActor->findMeshDataReference(
-            materialEnum::beigeStoneMaterial,
-            true //has raycast
-        );
-        createRoads(meshdataSurface, meshdataSides, 2, chunks);
-        meshdataSurface.calculateNormals();
-        meshdataSides.calculateNormals();
+        currentActor->disableDistanceListening(); //no lod change
+
+        //MeshData meshdataSurface;
+        //MeshData meshdataSides;
+
+        //raycast on automatic in this method
+        currentActor->replaceMeshData(meshdataSurface, materialEnum::stoneMaterial, ELod::lodNear);
+        currentActor->replaceMeshData(meshdataSides, materialEnum::beigeStoneMaterial, ELod::lodNear);
+
         currentActor->ReloadMeshAndApplyAllMaterials();
     }
+}
+
+
+
+
+
+
+void RoadMaker::createRoads(terrainCreator *ptr, int chunks){
+
+    terrainCreatorPtr = ptr;
+    createRoads(chunks);
+}
+
+void RoadMaker::createRoads(int chunks){
+    int count = 4;
+    createRoads(meshdataSurface, meshdataSides, count, chunks);
+    meshdataSurface.calculateNormals();
+    meshdataSides.calculateNormals();
 }
 
 void RoadMaker::createRoads(
@@ -51,8 +62,8 @@ void RoadMaker::createRoads(
     for(int i = 0; i < count; i++){
         createRoad(outmeshDataSurface, outmeshDataSides, chunks);
     }
+    CreatePolygonShapesForBuildingFittingBetweenRoadIntersections();
 }
-
 
 void RoadMaker::createRoad(
     MeshData &outmeshDataSurface,
@@ -123,17 +134,26 @@ void RoadMaker::AddCurveToCache(TVector<FVector2D> &curve){
     if(createdRoadsCache.Num() > 0){
         id = createdRoadsCache.Last().Id() + 1;
     }
-    createdRoadsCache.SetNumUninitialized(createdRoadsCache.Num() + 1);
-    createdRoadsCache[createdRoadsCache.Num() - 1] = RoadData(id, curve);
+    RoadData r(id, curve);
+    createdRoadsCache.Add(r);
 }
-
 
 void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
 
     ///could be a giant rasterized polygon which
     ///locks all roads with -1,
     ///or makes in from polygon data / intersections
+
+    //graph creation
     FindAllTwoRoadIntersections();
+    roadIntersections.BuildGraph(); //adding nodes locked now
+
+    //Debug
+    roadIntersections.PrintGraphInfo();
+
+    //graph traversal, build polygons
+
+
 
     /*
     GrahamScan2D scan2D;
@@ -234,6 +254,8 @@ void RoadMaker::processRoad(
     |  |
     0<-3
     */
+
+    //road surface
     outmeshDataSurface.appendParalellLinesClosedAsQuads(line1, line2);
 
     //TESTING NEEDED
@@ -248,6 +270,8 @@ void RoadMaker::processRoad(
         FVector &current = line2Bottom[i];
         current += FVector(0, 0, -200);
     }
+
+    //side of surface
     outmeshDataSides.appendParalellLinesClosedAsQuads(line1Bottom, line1);
     outmeshDataSides.appendParalellLinesClosedAsQuads(line2, line2Bottom);
 
@@ -272,6 +296,11 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
     TArray<FVector> &line0,
     TArray<FVector> &line1
 ){
+    //if not initialized with terrain ptr, skipped.
+    if(!terrainCreatorPtr){
+        return;
+    }
+
     /*
     array aufbau
     
@@ -332,3 +361,23 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
 }
 
 
+
+
+
+
+//// debug 
+TArray<std::pair<FVector2D, FVector2D>> RoadMaker::GetEdges(){
+    return roadIntersections.GetEdges();
+}
+
+
+
+
+TArray<std::vector<FVector2D>> RoadMaker::GetRoads(){
+    TArray<std::vector<FVector2D>> outArray;
+    for (int i = 0; i < createdRoadsCache.Num(); i++){
+        RoadData &current = createdRoadsCache[i];
+        outArray.Add(current.getCurve());
+    }
+    return outArray;
+}
