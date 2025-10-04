@@ -263,3 +263,90 @@ void RoadIntersection::AppendEdges(TArray<std::pair<FVector2D, FVector2D>> &edge
 bool RoadIntersection::IsTraversed(){
     return bTraversed;
 }
+
+
+
+
+
+
+////// ---- TRAVERSAL DISSASSEMBLY SECTION ----
+
+
+bool RoadIntersection::HasNeighbors(){
+    return adjacentNeighbors.Num() > 0;
+}
+
+//// -- edge traverse: dissambly of connection one sided, right off CLW traversal by best chance--
+RoadIntersection* RoadIntersection::TraverseRightAndDisassembleEdge(
+    RoadIntersection *prev,
+    TArray<RoadIntersection *> &traversed
+){
+    if(prev != nullptr){
+        FVector2D dir = (location - prev->location).GetSafeNormal(); // AB = B - A
+        //rigth off test (-pi/2 rot to right normal)
+        FVector2D normal(dir.Y, -dir.X); //does need to be normalized to find most right neighbor by angle
+
+        prev->RemoveNeighbor(*this);
+        if(adjacentNeighbors.Num() == 0){
+            return nullptr;
+        }
+        if(adjacentNeighbors.Num() == 1){
+            return adjacentNeighbors[0];
+        }
+
+        //RoadIntersection*
+        float minDot = 1000.0f; //1.0would be fine to save here.
+        float rightOffDot = -1000.0f; //1.0would be fine to save here.
+        RoadIntersection *minNext = nullptr;
+
+        for (int i = 0; i < adjacentNeighbors.Num(); i++){
+            RoadIntersection *nextPotential = adjacentNeighbors[i];
+            if(
+                ValidForTraversal(prev, traversed, nextPotential)
+                //nextPotential != nullptr && 
+                //nextPotential != prev
+            ){
+                
+                //favoured by minimal dot to forward, and rigth off.
+                FVector2D dirNext = (nextPotential->location - location).GetSafeNormal(); // AB = B - A
+
+                float rightOffDotCurrent = dir.X * dirNext.X + dir.Y + dirNext.Y; //right off prev dir normal
+                float directionNextDot = dir.X * dirNext.X + dir.Y + dirNext.Y;
+
+                if(rightOffDotCurrent >= rightOffDot){
+                    if(directionNextDot <= minDot){
+                        minDot = directionNextDot;
+                        rightOffDot = rightOffDotCurrent;
+                        minNext = nextPotential;
+                    }
+                }
+            }
+        }
+        //most right next node.
+        return minNext;
+    }
+    if(adjacentNeighbors.Num() > 0){
+        return adjacentNeighbors[0];
+    }
+
+    return nullptr;
+}
+
+
+bool RoadIntersection::ValidForTraversal(
+    RoadIntersection *prev,
+    TArray<RoadIntersection *> &traversed,
+    RoadIntersection *compare
+){
+    if(prev){
+        if(prev == compare){
+            return false;
+        }
+    }
+    if(compare){
+        if(!traversed.Contains(compare)){
+            return true;
+        }
+    }
+    return false;
+}

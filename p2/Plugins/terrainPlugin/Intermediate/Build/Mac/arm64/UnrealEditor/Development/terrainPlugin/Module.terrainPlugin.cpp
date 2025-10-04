@@ -28,6 +28,7 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/chunk.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/Mapped/RoadIntersectionMapped.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/PolygonConstruction/RoadSection.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadData.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadIntersection.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadMaker.cpp"

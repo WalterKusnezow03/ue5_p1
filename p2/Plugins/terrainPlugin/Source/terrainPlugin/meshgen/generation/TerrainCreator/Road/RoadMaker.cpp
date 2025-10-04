@@ -152,8 +152,14 @@ void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
     roadIntersections.PrintGraphInfo();
 
     //graph traversal, build polygons
+    TArray<FRoadSectionList> &sectionsBuilded = roadIntersections.DisassembleTraverseGraph();
 
-
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("RoadMaker::finished, sections(%d)"), //zu viele.
+            sectionsBuilded.Num()
+        )
+    );
 
     /*
     GrahamScan2D scan2D;

@@ -52,6 +52,18 @@ public:
     ///@brief tries to remove a neighbor, if not found nothing happens
     void RemoveNeighbor(RoadIntersection &other);
 
+
+
+    //traversal and dissamble
+    RoadIntersection* TraverseRightAndDisassembleEdge(
+        RoadIntersection *prev,
+        TArray<RoadIntersection *> &traversed
+    );
+
+    bool HasNeighbors();
+
+    bool IsAdjacentSharedRoad(RoadIntersection &other, int &outid);
+
 private:
     int roadIdA;
     int roadIdB;
@@ -68,7 +80,7 @@ private:
 
 
     bool IsAdjacent(RoadIntersection &other);
-    bool IsAdjacentSharedRoad(RoadIntersection &other, int &outid);
+    
     bool IsAdjacent(
         RoadIntersection &other,
         int &indexToRelink
@@ -94,6 +106,10 @@ private:
     bool bTraversed = false;
 
 
-
-
+//traversal disassembly
+    bool ValidForTraversal(
+        RoadIntersection *prev,
+        TArray<RoadIntersection *> &traversed,
+        RoadIntersection *compare
+    );
 };

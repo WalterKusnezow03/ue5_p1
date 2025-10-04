@@ -94,6 +94,7 @@ void RoadIntersectionMapped::BuildGraph(){
     //O(n^4)
     BuildAdjacencyPerRoad(); //ordered linerally added one by one linked list like
     BuildAdjacencyCrossed(); //cross all roads which each other
+    AddAllNodesToLinearListAfterBuild();
 }
 
 void RoadIntersectionMapped::BuildAdjacencyPerRoad(){
@@ -151,6 +152,20 @@ std::map<int, TArray<RoadIntersection>>::iterator RoadIntersectionMapped::iterat
     return intersectionsMapped.begin();
 }
 
+void RoadIntersectionMapped::AddAllNodesToLinearListAfterBuild(){
+    for(auto &pair : intersectionsMapped){
+        TArray<RoadIntersection> &array = pair.second;
+        for (int i = 0; i < array.Num(); i++){
+            RoadIntersection &current = array[i];
+            if(!AllIntersections.Contains(&current)){
+                AllIntersections.Add(&current);
+            }
+        }
+    }
+}
+
+
+
 
 
 
@@ -166,4 +181,80 @@ TArray<std::pair<FVector2D, FVector2D>> RoadIntersectionMapped::GetEdges(){
         }
     }
     return outEdges;
+}
+
+
+
+
+
+
+//traversal build polygons
+TArray<FRoadSectionList> &RoadIntersectionMapped::DisassembleTraverseGraph(){
+
+    
+    for (int i = 0; i < AllIntersections.Num(); i++)
+    {
+        RoadIntersection *current = AllIntersections[i];
+        if(current && current->HasNeighbors()){
+            DisassembleTraverseGraphFrom(current);
+        }
+    }
+    return dissassembledSections;
+}
+
+void RoadIntersectionMapped::DisassembleTraverseGraphFrom(RoadIntersection *start){
+    int maxIterations = AllIntersections.Num();
+    int i = 0;
+
+    TArray<RoadIntersection *> circle = {start};
+
+    RoadIntersection *prev = nullptr;
+    RoadIntersection *current = start;
+    while(true){
+        if(current == nullptr){
+            return;
+        }
+        RoadIntersection *next = current->TraverseRightAndDisassembleEdge(prev, circle);
+        if(next){
+            circle.Add(next);
+            current = next;
+            if(next == start){
+                //return
+                FRoadSectionList builded = BuildCirlce(circle);
+                dissassembledSections.Add(builded);
+                return;
+            }
+        }else{
+            FRoadSectionList builded = BuildCirlce(circle);
+            dissassembledSections.Add(builded);
+            return;
+        }
+
+        if(i >= maxIterations){
+            return;
+        }
+
+        i++;
+    }
+}
+
+
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/PolygonConstruction/RoadSection.h"
+FRoadSectionList RoadIntersectionMapped::BuildCirlce(TArray<RoadIntersection *> &intersections){
+    FRoadSectionList roadSections;
+    for (int i = 1; i < intersections.Num(); i++)
+    {
+        RoadIntersection *prev = intersections[i-1];
+        RoadIntersection *current = intersections[i];
+        if(prev && current){
+            int sharedId = -1;
+            if(prev->IsAdjacentSharedRoad(*current, sharedId)){
+                int indexA = prev->IndexForRoadId(sharedId);
+                int indexB = current->IndexForRoadId(sharedId);
+                FRoadSection section(sharedId, indexA, indexB);
+                roadSections.Add(section);
+            }
+        }
+    }
+    return roadSections;
 }
