@@ -216,6 +216,7 @@ void RoadIntersectionMapped::DisassembleTraverseGraphFrom(RoadIntersection *star
         }
         RoadIntersection *next = current->TraverseRightAndDisassembleEdge(prev, circle);
         if(next){
+            prev = current;
             circle.Add(next);
             current = next;
             if(next == start){
@@ -225,6 +226,14 @@ void RoadIntersectionMapped::DisassembleTraverseGraphFrom(RoadIntersection *star
                 return;
             }
         }else{
+
+            // --- TODO ---
+            //has no neighbors: go left from starting node until no neighbor reached?
+            //or find next no neighbor / single neighbor node to close virual circle?
+
+
+
+
             FRoadSectionList builded = BuildCirlce(circle);
             dissassembledSections.Add(builded);
             return;
@@ -249,8 +258,10 @@ FRoadSectionList RoadIntersectionMapped::BuildCirlce(TArray<RoadIntersection *> 
         if(prev && current){
             int sharedId = -1;
             if(prev->IsAdjacentSharedRoad(*current, sharedId)){
+                //connected index goes first, whether larger or smaller
                 int indexA = prev->IndexForRoadId(sharedId);
                 int indexB = current->IndexForRoadId(sharedId);
+                
                 FRoadSection section(sharedId, indexA, indexB);
                 roadSections.Add(section);
             }

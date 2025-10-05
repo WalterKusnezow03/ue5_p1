@@ -4,7 +4,7 @@
 #include "terrainPlugin/meshgen/generation/bezierCurve.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/chunk.h"
 #include "CoreMath/algorithm/PolygonFit/polygon/MPolygon.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadData.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadDatabase/RoadData.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/Mapped/RoadIntersectionMapped.h"
 
 class terrainCreator;
@@ -15,8 +15,14 @@ private:
     MeshData meshdataSurface;
     MeshData meshdataSides;
 
+
+    //builded polygons for road intersections
+    TArray<TArray<FVector2D>> buildedSections;
+
 public:
     RoadMaker();
+
+    TArray<TArray<FVector2D>> &BuildedSectionsRef();
 
     //--road--
 	void createRoads(terrainCreator *ptr, int chunks); //for terrain

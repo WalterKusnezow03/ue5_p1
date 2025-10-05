@@ -111,3 +111,7 @@ bool RoadData::DoesIntersect(
 std::vector<FVector2D> RoadData::getCurve(){
     return curve.copy();
 }
+
+TArray<FVector2D> RoadData::getCurveAsTArray(){
+    return curve.copyAsTArray();
+}

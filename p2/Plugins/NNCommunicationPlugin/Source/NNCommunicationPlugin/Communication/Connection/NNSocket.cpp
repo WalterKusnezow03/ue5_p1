@@ -8,6 +8,9 @@ ANNSocket::ANNSocket() : Super(){
 
 void ANNSocket::MakeInstance(UWorld* World)
 {
+    if(bDEBUGBLOCK_LAUNCH){
+        return;
+    }
     if(instancePtr){
         return;
     }
@@ -138,6 +141,15 @@ void ANNSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
     instancePtr = nullptr;
     SendShutdown();
     CloseSocketOnEndPlay();
+
+    //close python process
+    if (ProcHandle.IsValid())
+    {
+        FPlatformProcess::TerminateProc(ProcHandle, true); // true = force kill
+        FPlatformProcess::CloseProc(ProcHandle);           // Handle freigeben
+    }
+
+
     Super::EndPlay(EndPlayReason);
 }
 

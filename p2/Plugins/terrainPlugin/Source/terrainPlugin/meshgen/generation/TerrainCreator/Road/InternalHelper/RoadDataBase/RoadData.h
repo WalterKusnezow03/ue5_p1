@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadIntersection.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadDatabase/RoadIntersection.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/Mapped/RoadIntersectionMapped.h"
 
 
@@ -19,6 +19,7 @@ public:
     void FindIntersections(RoadData &other, RoadIntersectionMapped &outIntersections);
 
     std::vector<FVector2D> getCurve();
+    TArray<FVector2D> getCurveAsTArray();
 
 private:
     int roadId;

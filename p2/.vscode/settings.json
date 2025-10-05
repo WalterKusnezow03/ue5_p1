@@ -55,6 +55,15 @@
         "type_traits": "cpp",
         "typeindex": "cpp",
         "__memory": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "deque": "cpp",
+        "unordered_set": "cpp",
+        "charconv": "cpp",
+        "cinttypes": "cpp",
+        "condition_variable": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "iostream": "cpp",
+        "stack": "cpp"
     }
 }

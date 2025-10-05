@@ -13,16 +13,17 @@ void URoadIntersectWidget::ConstructWidget(){
     if(polygonMap.IsValid()){
 
         RoadMaker roadmaker;
-        roadmaker.createRoads(10);
+        roadmaker.createRoads(10); //chunks 10
 
         //temporary reference, use one at a time!
-        SlateMeshDataPolygon &slateMeshPolygon = FindFromMap(0);
+        SlateMeshDataPolygon &slateMeshPolygon = FindFromMap(1);
         slateMeshPolygon.SetFullColor(FColor::Red);
         //slateMeshPolygon.DrawOutLineOnly(); //not needed.
 
         TArray<std::pair<FVector2D, FVector2D>> edges = roadmaker.GetEdges();
+        TArray<std::vector<FVector2D>> roadSplines = roadmaker.GetRoads();
         FVector2D scaleDesired(300, 300);
-        MMatrix2D M = MoveAndScaleToPivot0(edges, scaleDesired);
+        MMatrix2D M = MoveAndScaleToPivot0(edges, roadSplines, scaleDesired);
 
         //apply M and add to meshdata
         SlateMeshData &meshData = slateMeshPolygon.MeshDataRef();
@@ -36,10 +37,10 @@ void URoadIntersectWidget::ConstructWidget(){
 
 
         //create roads for draw
-        SlateMeshDataPolygon &layer1 = FindFromMap(1);
+        SlateMeshDataPolygon &layer1 = FindFromMap(0);
         layer1.SetFullColor(FColor::Cyan);
         SlateMeshData &meshData1 = layer1.MeshDataRef();
-        TArray<std::vector<FVector2D>> roadSplines = roadmaker.GetRoads();
+        
         for (int i = 0; i < roadSplines.Num(); i++){
             std::vector<FVector2D> &vec = roadSplines[i];
             
@@ -55,6 +56,48 @@ void URoadIntersectWidget::ConstructWidget(){
                 AppendQuadFromEdge(a, b, meshData1);
             }
         }
+
+
+        //create closed roads from traversed Polygons
+        TArray<FColor> colors = {
+            FColor::Green, 
+            FColor::Cyan, 
+            FColor::Yellow, 
+            FColor::Black,
+            FColor::Red,
+            FColor::Blue,
+            FColor::Magenta
+        };
+
+        
+        FVector2D drawOffset(350, 0);
+        TArray<TArray<FVector2D>> &polygons = roadmaker.BuildedSectionsRef();
+        for (int i = 0; i < polygons.Num(); i++){
+            TArray<FVector2D> &polygon = polygons[i];
+
+            //make polygon per layer
+            SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);
+            layer_current.SetFullColor(colors[i % colors.Num()]);
+            SlateMeshData &meshDataCurrent = layer_current.MeshDataRef();
+
+            for (int j = 1; j < polygon.Num(); j++){
+                FVector2D v0 = M * polygon[j - 1];
+                FVector2D v1 = M * polygon[j];
+
+                v0 += drawOffset;
+                v1 += drawOffset;
+
+                AppendQuadFromEdge(
+                    v0,
+                    v1,
+                    meshDataCurrent
+                );
+            }
+
+            FBoundingBox2D box;
+            box.Update(polygon);
+            //drawOffset += FVector2D(0.0f, box.size().Y);
+        }
     }
 }
 
@@ -64,7 +107,7 @@ void URoadIntersectWidget::AppendQuadFromEdge(FVector2D &a, FVector2D &b, SlateM
     FVector2D dir = (v1 - v0).GetSafeNormal();
 
     FVector2D normal(dir.Y, -dir.X);
-    int width = 5;
+    int width = 2;
     FVector2D v2 = v1 + normal * width;
     FVector2D v3 = v0 + normal * width;
 
@@ -78,6 +121,7 @@ void URoadIntersectWidget::AppendQuadFromEdge(FVector2D &a, FVector2D &b, SlateM
 
 MMatrix2D URoadIntersectWidget::MoveAndScaleToPivot0(
     TArray<std::pair<FVector2D, FVector2D>> &edges,
+    TArray<std::vector<FVector2D>> &splines,
     FVector2D &scaleDesired
 ){
     FBoundingBox2D box;
@@ -85,6 +129,10 @@ MMatrix2D URoadIntersectWidget::MoveAndScaleToPivot0(
         std::pair<FVector2D, FVector2D> &current = edges[i];
         box.Update(current.first);
         box.Update(current.second);
+    }
+    for (int i = 0; i < splines.Num(); i++){
+        std::vector<FVector2D> &current = splines[i];
+        box.Update(current);
     }
 
     FVector2D translation = box.min() * -1.0f;

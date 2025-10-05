@@ -17,6 +17,7 @@ public:
 private:
     MMatrix2D MoveAndScaleToPivot0(
         TArray<std::pair<FVector2D, FVector2D>> &edges,
+        TArray<std::vector<FVector2D>> &splines,
         FVector2D &scaleDesired
     );
 

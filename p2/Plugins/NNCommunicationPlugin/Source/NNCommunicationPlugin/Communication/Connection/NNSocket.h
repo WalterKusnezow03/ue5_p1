@@ -13,6 +13,10 @@ UCLASS()
 class NNCOMMUNICATIONPLUGIN_API ANNSocket : public AActor{
     GENERATED_BODY()
 
+
+private:
+    static constexpr bool bDEBUGBLOCK_LAUNCH = true;
+
 public:
     static void MakeInstance(UWorld *world);
 

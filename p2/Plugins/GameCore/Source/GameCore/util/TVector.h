@@ -219,6 +219,18 @@ public:
         return output;
     }
 
+    TArray<T> copyAsTArray(){
+        TArray<T> output;
+        output.SetNumUninitialized(size());
+        for (int i = 0; i < size(); i++)
+        {
+            output[i] = vec[i];
+        }
+        return output;
+    }
+
+
+
 private:
     std::vector<T> vec;
 

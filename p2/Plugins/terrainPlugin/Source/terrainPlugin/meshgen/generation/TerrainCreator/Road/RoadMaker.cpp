@@ -37,8 +37,9 @@ void RoadMaker::MakeMeshActorFromRoadData(UWorld *world){
 
 
 
-
-
+TArray<TArray<FVector2D>> &RoadMaker::BuildedSectionsRef(){
+    return buildedSections;
+}
 
 void RoadMaker::createRoads(terrainCreator *ptr, int chunks){
 
@@ -154,14 +155,27 @@ void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
     //graph traversal, build polygons
     TArray<FRoadSectionList> &sectionsBuilded = roadIntersections.DisassembleTraverseGraph();
 
+    
+
+    //build polygons
+    buildedSections.Empty();
+    for (int i = 0; i < sectionsBuilded.Num(); i++)
+    {
+        FRoadSectionList &sectionList = sectionsBuilded[i];
+        sectionList.BuildPolygonAutoExtract(createdRoadsCache);
+        TArray<FVector2D> &builded = sectionList.BuildedFromSections();
+        buildedSections.Add(builded);
+    }
+
     DebugHelper::logMessage(
         FString::Printf(
-            TEXT("RoadMaker::finished, sections(%d)"), //zu viele.
-            sectionsBuilded.Num()
+            TEXT("RoadMaker::finished, sections builded(%d)"), //zu viele.
+            buildedSections.Num()
         )
     );
 
     /*
+    //will not be needed.
     GrahamScan2D scan2D;
 
     void GrahamScan2D::ComputeConvexHull(
