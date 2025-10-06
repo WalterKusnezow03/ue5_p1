@@ -22,7 +22,7 @@ void URoadIntersectWidget::ConstructWidget(){
 
         TArray<std::pair<FVector2D, FVector2D>> edges = roadmaker.GetEdges();
         TArray<std::vector<FVector2D>> roadSplines = roadmaker.GetRoads();
-        FVector2D scaleDesired(300, 300);
+        FVector2D scaleDesired(500, 500);
         MMatrix2D M = MoveAndScaleToPivot0(edges, roadSplines, scaleDesired);
 
         //apply M and add to meshdata
@@ -70,10 +70,15 @@ void URoadIntersectWidget::ConstructWidget(){
         };
 
         
-        FVector2D drawOffset(350, 0);
+        FVector2D drawOffset(520, 0);
         TArray<TArray<FVector2D>> &polygons = roadmaker.BuildedSectionsRef();
         for (int i = 0; i < polygons.Num(); i++){
             TArray<FVector2D> &polygon = polygons[i];
+            
+            //DEBUG
+            if(i >= 1){
+                //return;
+            }
 
             //make polygon per layer
             SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);

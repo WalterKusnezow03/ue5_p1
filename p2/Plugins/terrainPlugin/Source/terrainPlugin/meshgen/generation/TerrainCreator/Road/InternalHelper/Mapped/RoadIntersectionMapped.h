@@ -12,6 +12,8 @@ public:
     RoadIntersectionMapped();
     ~RoadIntersectionMapped();
 
+    
+
     ///@brief add intersection to graph
     void Add(RoadIntersection &intersection);
 
@@ -48,12 +50,13 @@ private:
     std::map<int, TArray<RoadIntersection>> intersectionsMapped;
     TArray<RoadIntersection *> AllIntersections;
 
+
     void AddAsA(RoadIntersection &intersection);
     void AddAsB(RoadIntersection &intersection);
     void Add(bool isA, RoadIntersection &intersection);
 
-
-
+    bool HasIntersection(RoadIntersection &intersection);
+    bool HasIntersection(bool isA, RoadIntersection &intersection);
 
     std::map<int, TArray<RoadIntersection>>::iterator iteratorAt(int index);
 };

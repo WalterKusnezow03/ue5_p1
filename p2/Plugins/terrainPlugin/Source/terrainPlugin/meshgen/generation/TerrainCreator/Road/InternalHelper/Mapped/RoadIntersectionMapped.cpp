@@ -9,6 +9,7 @@ RoadIntersectionMapped::~RoadIntersectionMapped(){
 
 }
 
+
 void RoadIntersectionMapped::PrintGraphInfo(){
     FString prefix = TEXT("RoadIntersectionMapped::");
     for (auto &pair : intersectionsMapped)
@@ -34,6 +35,11 @@ void RoadIntersectionMapped::LockGraph(){
 }
 
 void RoadIntersectionMapped::Add(RoadIntersection &intersection){
+    if(HasIntersection(intersection)){
+        DebugHelper::logMessage("RoadIntersectionMapped::Add Already Has Similar Intersection!");
+        return;
+    }
+
     //add per road id
     AddAsA(intersection); 
     AddAsB(intersection);
@@ -45,6 +51,29 @@ void RoadIntersectionMapped::AddAsA(RoadIntersection &intersection){
 
 void RoadIntersectionMapped::AddAsB(RoadIntersection &intersection){
     Add(false, intersection);
+}
+
+bool RoadIntersectionMapped::HasIntersection(RoadIntersection &intersection){
+    return 
+    HasIntersection(true, intersection) ||
+    HasIntersection(false, intersection);
+}
+
+bool RoadIntersectionMapped::HasIntersection(bool isA, RoadIntersection &intersection){
+    int id = isA ? intersection.RoadIdA() : intersection.RoadIdB();
+    if(intersectionsMapped.find(id) != intersectionsMapped.end()){
+        TArray<RoadIntersection> &intersectionsTracked = intersectionsMapped[id];
+        for (int i = 0; i < intersectionsTracked.Num(); i++){
+            RoadIntersection &current = intersectionsTracked[i];
+            //bool RoadIntersection::IsSameByDistance(RoadIntersection &other, int maxDistance)
+
+            int maxDist = terrainConstants::ONEMETER * 3;
+            if (current.IsSameByDistance(intersection, maxDist)){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void RoadIntersectionMapped::Add(bool isA, RoadIntersection &intersection){
@@ -214,17 +243,21 @@ void RoadIntersectionMapped::DisassembleTraverseGraphFrom(RoadIntersection *star
         if(current == nullptr){
             return;
         }
+    
         RoadIntersection *next = current->TraverseRightAndDisassembleEdge(prev, circle);
         if(next){
-            prev = current;
+            /*prev = current;
             circle.Add(next);
-            current = next;
-            if(next == start){
+            current = next;*/
+            if(next == start){ //loop reached
                 //return
                 FRoadSectionList builded = BuildCirlce(circle);
                 dissassembledSections.Add(builded);
                 return;
             }
+            prev = current;
+            circle.Add(next);
+            current = next;
         }else{
 
             // --- TODO ---

@@ -47,6 +47,16 @@ void RoadIntersection::Setup(
     location = locationIn;
 }
 
+bool RoadIntersection::IsSameByDistance(RoadIntersection &other, int maxDistance){
+    if(IsAdjacent(other)){
+        int maxDistSquared = maxDistance * maxDistance;
+
+        //dist squared
+        FVector2D connect = other.location - location; //AB = B - A
+        return connect.X * connect.X + connect.Y * connect.Y <= maxDistSquared;
+    }
+    return false;
+}
 
 int RoadIntersection::RoadIdA(){
     return roadIdA;
@@ -109,6 +119,11 @@ bool RoadIntersection::HasLaterNode(
     int sharedRoadId = -1;
     if(IsAdjacentSharedRoad(other, sharedRoadId)){
         int splineIndex = other.IndexForRoadId(sharedRoadId);
+        
+        //new
+        int ownIndex = IndexForRoadId(sharedRoadId);
+
+
 
         TArray<std::pair<RoadIntersection *, int>> intersections = SortNeighborsByIndexSharedThisRoad(
             other
@@ -119,15 +134,33 @@ bool RoadIntersection::HasLaterNode(
             std::pair<RoadIntersection *, int> &current = intersections[i];
             int index = current.second;
             
-            if(splineIndex <= index){
+            /*if(splineIndex <= index){
                 outLaterNode = current.first;
                 return true;
+            }*/
+
+            //is Correct:
+            //found in negative direction
+            if(splineIndex <= ownIndex){
+                if(splineIndex > index){
+                    outLaterNode = current.first;
+                    return true;
+                }
+            }else{
+                //splineIndex > ownIndex
+                if(splineIndex < index){
+                    outLaterNode = current.first;
+                    return true;
+                }
             }
+
+
         }
     }
 
     return false;
 }
+
 
 
 
@@ -295,8 +328,8 @@ RoadIntersection* RoadIntersection::TraverseRightAndDisassembleEdge(
         }
 
         //RoadIntersection*
-        float minDot = 1000.0f; //1.0would be fine to save here.
-        float rightOffDot = -1000.0f; //1.0would be fine to save here.
+        float minDot = 1.1f; //1.0would be fine to save here.
+        float rightOffDot = -1.1f; //1.0would be fine to save here.
         RoadIntersection *minNext = nullptr;
 
         for (int i = 0; i < adjacentNeighbors.Num(); i++){
@@ -310,11 +343,11 @@ RoadIntersection* RoadIntersection::TraverseRightAndDisassembleEdge(
                 //favoured by minimal dot to forward, and rigth off.
                 FVector2D dirNext = (nextPotential->location - location).GetSafeNormal(); // AB = B - A
 
-                float rightOffDotCurrent = dir.X * dirNext.X + dir.Y + dirNext.Y; //right off prev dir normal
+                float rightOffDotCurrent = dir.X * normal.X + dir.Y + normal.Y; //right off prev dir normal
                 float directionNextDot = dir.X * dirNext.X + dir.Y + dirNext.Y;
 
                 if(rightOffDotCurrent >= rightOffDot){
-                    if(directionNextDot <= minDot){
+                    if(directionNextDot <= minDot){ //to back preferred
                         minDot = directionNextDot;
                         rightOffDot = rightOffDotCurrent;
                         minNext = nextPotential;
@@ -340,7 +373,8 @@ bool RoadIntersection::ValidForTraversal(
 ){
     if(prev){
         if(prev == compare){
-            return false;
+            //return false; //instant return
+            return traversed.Num() > 1; //at least 1 without prev added ?
         }
     }
     if(compare){

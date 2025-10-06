@@ -33,7 +33,7 @@ public:
 
 
     //--debug widget draw--
-    TArray<std::pair<FVector2D, FVector2D>> GetEdges();
+    TArray<std::pair<FVector2D, FVector2D>> &GetEdges();
     TArray<std::vector<FVector2D>> GetRoads();
 
 private:
@@ -95,6 +95,7 @@ private:
     /// segments
     TArray<RoadData> createdRoadsCache;
     RoadIntersectionMapped roadIntersections;
+    TArray<std::pair<FVector2D, FVector2D>> edgeCache;
 
     void CreatePolygonShapesForBuildingFittingBetweenRoadIntersections();
     void FindAllTwoRoadIntersections();

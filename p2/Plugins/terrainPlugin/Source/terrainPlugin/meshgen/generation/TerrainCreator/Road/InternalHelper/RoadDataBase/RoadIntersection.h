@@ -64,6 +64,9 @@ public:
 
     bool IsAdjacentSharedRoad(RoadIntersection &other, int &outid);
 
+    ///@brief checks for same road ids and distance
+    bool IsSameByDistance(RoadIntersection &other, int maxDistance);
+
 private:
     int roadIdA;
     int roadIdB;
@@ -77,7 +80,7 @@ private:
     bool HasNeighbor(RoadIntersection &other);
     TArray<RoadIntersection *> adjacentNeighbors;
 
-
+   
 
     bool IsAdjacent(RoadIntersection &other);
     
