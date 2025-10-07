@@ -75,11 +75,7 @@ void URoadIntersectWidget::ConstructWidget(){
         for (int i = 0; i < polygons.Num(); i++){
             TArray<FVector2D> &polygon = polygons[i];
             
-            //DEBUG
-            if(i >= 1){
-                //return;
-            }
-
+        
             //make polygon per layer
             SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);
             layer_current.SetFullColor(colors[i % colors.Num()]);
@@ -99,9 +95,6 @@ void URoadIntersectWidget::ConstructWidget(){
                 );
             }
 
-            FBoundingBox2D box;
-            box.Update(polygon);
-            //drawOffset += FVector2D(0.0f, box.size().Y);
         }
     }
 }

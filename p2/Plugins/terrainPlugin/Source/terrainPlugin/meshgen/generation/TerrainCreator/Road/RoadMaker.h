@@ -5,7 +5,8 @@
 #include "terrainPlugin/meshgen/generation/TerrainCreator/chunk.h"
 #include "CoreMath/algorithm/PolygonFit/polygon/MPolygon.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadDatabase/RoadData.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/Mapped/RoadIntersectionMapped.h"
+
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/Graph/IntersectionGraph.h"
 
 class terrainCreator;
 class TERRAINPLUGIN_API RoadMaker
@@ -94,7 +95,7 @@ private:
     /// @brief cache to save all created curves, to find all intersection points between
     /// segments
     TArray<RoadData> createdRoadsCache;
-    RoadIntersectionMapped roadIntersections;
+    IntersectionGraph roadIntersections;
     TArray<std::pair<FVector2D, FVector2D>> edgeCache;
 
     void CreatePolygonShapesForBuildingFittingBetweenRoadIntersections();

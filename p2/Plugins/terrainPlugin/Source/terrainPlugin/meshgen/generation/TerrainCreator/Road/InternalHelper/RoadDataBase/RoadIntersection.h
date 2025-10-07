@@ -63,6 +63,7 @@ public:
     bool HasNeighbors();
 
     bool IsAdjacentSharedRoad(RoadIntersection &other, int &outid);
+    bool IsAdjacentBothSharedRoad(RoadIntersection &other);
 
     ///@brief checks for same road ids and distance
     bool IsSameByDistance(RoadIntersection &other, int maxDistance);
@@ -94,9 +95,14 @@ private:
         RoadIntersection *&outPairBetween
     );
 
-    ///@brief finds all shared neighbors with the shared road and sorts them by spline index
-    TArray<std::pair<RoadIntersection *, int>> SortNeighborsByIndexSharedThisRoad(
-        RoadIntersection &other
+
+
+
+
+    bool ACloserThanB(
+        int target,
+        int A,
+        int B
     );
 
 
@@ -115,4 +121,6 @@ private:
         TArray<RoadIntersection *> &traversed,
         RoadIntersection *compare
     );
+
+    
 };

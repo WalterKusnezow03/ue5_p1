@@ -1,4 +1,5 @@
 #include "RoadIntersection.h"
+#include "GameCore/DebugHelper.h"
 
 RoadIntersection::RoadIntersection(){
 
@@ -89,8 +90,10 @@ int RoadIntersection::IndexForRoadId(int someRoadId){
 
 /// --- experimental push in before a node and re-adjust link---
 void RoadIntersection::ConnectBiDirectionalIfIsAdjacentAndRelinkNodes(RoadIntersection &other){
-    int indexToRelinkPrev = -1;
-    int indexToRelinkNext = -1;
+    if(HasNeighbor(other)){
+        return;
+    }
+
     if(IsAdjacent(other)){
         RoadIntersection *laterNode = nullptr;
         if (HasLaterNode(other, laterNode))
@@ -117,89 +120,58 @@ bool RoadIntersection::HasLaterNode(
     RoadIntersection *&outLaterNode
 ){
     int sharedRoadId = -1;
-    if(IsAdjacentSharedRoad(other, sharedRoadId)){
+    bool resultFound = false;
+    if (IsAdjacentSharedRoad(other, sharedRoadId))
+    {
         int splineIndex = other.IndexForRoadId(sharedRoadId);
         
         //new
         int ownIndex = IndexForRoadId(sharedRoadId);
+        int closestIndex = splineIndex;
+        
+        //forAll Neighbors
+            //if shared road
+                //if index closer: relink
 
+        for(int i = 0; i < adjacentNeighbors.Num(); i++){
+            RoadIntersection *currentNeighbor = adjacentNeighbors[i];
+            int sharedRoadCurrent = -1;
+            if(currentNeighbor->IsAdjacentSharedRoad(other, sharedRoadCurrent)){
+                if(sharedRoadCurrent == sharedRoadId){
+                    int currentSplineIndex = currentNeighbor->IndexForRoadId(sharedRoadCurrent);
+                    if(ACloserThanB(ownIndex, splineIndex, currentSplineIndex)){
+                        outLaterNode = currentNeighbor;
 
-
-        TArray<std::pair<RoadIntersection *, int>> intersections = SortNeighborsByIndexSharedThisRoad(
-            other
-        );
-
-        //find pair between, relink
-        for (int i = 0; i < intersections.Num(); i++){
-            std::pair<RoadIntersection *, int> &current = intersections[i];
-            int index = current.second;
-            
-            /*if(splineIndex <= index){
-                outLaterNode = current.first;
-                return true;
-            }*/
-
-            //is Correct:
-            //found in negative direction
-            if(splineIndex <= ownIndex){
-                if(splineIndex > index){
-                    outLaterNode = current.first;
-                    return true;
-                }
-            }else{
-                //splineIndex > ownIndex
-                if(splineIndex < index){
-                    outLaterNode = current.first;
-                    return true;
+                        DebugHelper::logMessage(
+                            FString::Printf(
+                                TEXT("RoadIntersection::Found Farer Node own(%d) spline(%d) kicked(%d)"),
+                                ownIndex,
+                                splineIndex,
+                                currentSplineIndex
+                            )
+                        );
+                        return true;
+                    }
                 }
             }
-
-
         }
+
     }
 
-    return false;
+    return resultFound;
+    // outLaterNode != nullptr;
+    //  return false;
 }
 
-
-
-
-
-
-
-
-TArray<std::pair<RoadIntersection*, int>> RoadIntersection::SortNeighborsByIndexSharedThisRoad(
-    RoadIntersection &other
+bool RoadIntersection::ACloserThanB(
+    int target,
+    int A,
+    int B
 ){
-    int sharedRoadId = -1;
-    TArray<std::pair<RoadIntersection*, int>> outArray;
-    if (IsAdjacentSharedRoad(other, sharedRoadId))
-    {
-        for (int i = 0; i < adjacentNeighbors.Num(); i++){
-            if(RoadIntersection *current = adjacentNeighbors[i]){
-
-                //copy in index of intersection
-                int indexIntersectionInRoad = current->IndexForRoadId(sharedRoadId);
-                std::pair<RoadIntersection *, int> newPair(current, indexIntersectionInRoad);
-                outArray.Add(newPair);
-            }
-        }
-    }
-
-    outArray.Sort([](
-        const std::pair<RoadIntersection*, int> &A, 
-        const std::pair<RoadIntersection*, int> &B
-    ) {
-        return A.second < B.second; // aufsteigend
-    });
-
-    return outArray;
+    int deltaA = A - target; // AB = B - A
+    int deltaB = B - target;
+    return std::abs(deltaA) <= std::abs(deltaB);
 }
-
-
-
-
-
 
 
 
@@ -241,6 +213,13 @@ bool RoadIntersection::IsAdjacentSharedRoad(RoadIntersection &other, int &outId)
         }
     }
     return false;
+}
+
+
+bool RoadIntersection::IsAdjacentBothSharedRoad(RoadIntersection &other){
+    return 
+    (RoadIdA() == other.RoadIdA() && RoadIdB() == other.RoadIdB()) ||
+    (RoadIdA() == other.RoadIdB() && RoadIdB() == other.RoadIdA());
 }
 
 
@@ -319,7 +298,7 @@ RoadIntersection* RoadIntersection::TraverseRightAndDisassembleEdge(
         //rigth off test (-pi/2 rot to right normal)
         FVector2D normal(dir.Y, -dir.X); //does need to be normalized to find most right neighbor by angle
 
-        prev->RemoveNeighbor(*this);
+        prev->RemoveNeighbor(*this); //forward remove only
         if(adjacentNeighbors.Num() == 0){
             return nullptr;
         }

@@ -2,8 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadDatabase/RoadIntersection.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/Mapped/RoadIntersectionMapped.h"
-
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/Graph/IntersectionGraph.h"
 
 class TERRAINPLUGIN_API RoadData {
 
@@ -16,7 +15,12 @@ public:
 
     int Id();
 
-    void FindIntersections(RoadData &other, RoadIntersectionMapped &outIntersections);
+    //new
+    void FindIntersections(RoadData &other, IntersectionGraph &outIntersections);
+
+    
+
+
 
     std::vector<FVector2D> getCurve();
     TArray<FVector2D> getCurveAsTArray();
@@ -29,7 +33,7 @@ private:
         TVector<FVector2D> &curveA,
         TVector<FVector2D> &curveB,
         int idOther,
-        RoadIntersectionMapped &outIntersections
+        IntersectionGraph &outIntersections
     );
 
     bool DoesIntersect(

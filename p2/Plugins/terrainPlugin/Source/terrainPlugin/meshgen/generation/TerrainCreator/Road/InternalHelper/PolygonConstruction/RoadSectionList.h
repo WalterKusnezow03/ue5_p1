@@ -18,7 +18,8 @@ public:
     /// @param other
     void Add(FRoadSection &other);
 
-
+    //ordered in realtion to previous section
+    void AddOrdered(FRoadSection &other);
 
     //add get all ids here Tarray(ids)
 

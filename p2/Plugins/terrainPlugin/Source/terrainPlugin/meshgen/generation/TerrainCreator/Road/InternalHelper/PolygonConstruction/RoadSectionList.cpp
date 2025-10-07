@@ -29,6 +29,34 @@ void FRoadSectionList::Add(FRoadSection &other){
     sections.Add(other);
 }
 
+///ordered in relation to previous section
+void FRoadSectionList::AddOrdered(FRoadSection &other){
+    if(sections.Num() <= 0){
+        Add(other);
+        return;
+    }
+
+    FRoadSection &last = sections.Last();
+    if(last.RoadId() == other.RoadId()){
+        int end = last.getEndIndex();
+        int deltaStart = other.getStartIndex() - end; // AB = B - A
+        int deltaEnd = other.getEndIndex() - end;
+
+        //re order if needed
+        if(deltaEnd < deltaStart){
+            FRoadSection reOrdered;
+            reOrdered.Setup(other.RoadId(), other.getEndIndex(), other.getStartIndex());
+            Add(reOrdered);
+            return;
+        }
+    }
+    Add(other); //Default add since ordered properly / not concatenated
+}
+
+
+
+
+
 /// @brief 
 //void Sort();
 

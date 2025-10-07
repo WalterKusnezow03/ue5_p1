@@ -48,7 +48,7 @@ void RoadMaker::createRoads(terrainCreator *ptr, int chunks){
 }
 
 void RoadMaker::createRoads(int chunks){
-    int count = 4;
+    int count = 3;
     createRoads(meshdataSurface, meshdataSides, count, chunks);
     meshdataSurface.calculateNormals();
     meshdataSides.calculateNormals();
@@ -151,7 +151,7 @@ void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
     edgeCache = roadIntersections.GetEdges();
 
     //Debug
-    roadIntersections.PrintGraphInfo();
+    //roadIntersections.PrintGraphInfo();
 
     //graph traversal, build polygons
     TArray<FRoadSectionList> &sectionsBuilded = roadIntersections.DisassembleTraverseGraph();

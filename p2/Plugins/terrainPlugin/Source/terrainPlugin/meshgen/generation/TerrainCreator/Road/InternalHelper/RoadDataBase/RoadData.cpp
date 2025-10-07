@@ -1,5 +1,6 @@
 #include "RoadData.h"
 
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/Graph/Nodes/TwoRoadIntersection.h"
 
 RoadData::RoadData(){
 
@@ -33,7 +34,7 @@ int RoadData::Id(){
 }
 
 
-void RoadData::FindIntersections(RoadData &other, RoadIntersectionMapped &outIntersections){
+void RoadData::FindIntersections(RoadData &other, IntersectionGraph &outIntersections){
     FindIntersections(
         curve,
         other.curve,
@@ -47,7 +48,7 @@ void RoadData::FindIntersections(
     TVector<FVector2D>& curveA, 
     TVector<FVector2D>& curveB,
     int idOther,
-    RoadIntersectionMapped &outIntersections
+    IntersectionGraph &outIntersections
 ){
     //will have a runtime of O(n^2)
     for (int i = 1; i < curveA.size(); i++){
@@ -68,7 +69,7 @@ void RoadData::FindIntersections(
                 intersectionIndexPair.second = j - 1;
 
 
-                RoadIntersection intersection;
+                TwoRoadIntersection intersection;
                 intersection.Setup(
                     Id(),
                     idOther,
@@ -77,10 +78,12 @@ void RoadData::FindIntersections(
                 );
                 outIntersections.Add(intersection);
 
+                /*
                 //prints ok
                 DebugHelper::logMessage(
                     FString::Printf(TEXT("RoadData::foundIntersection %s"), *intersection.ToString())
                 );
+                */
             }
         }
     }
