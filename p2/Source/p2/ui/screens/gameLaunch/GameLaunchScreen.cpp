@@ -193,7 +193,7 @@ void UGameLaunchScreen::AddDebugElements(){
         DebugHelper::logMessage("created greedy fit widget");
         menuVbox->AddChild((IBaseUiInterface *)widget);
     }
-    if(true){
+    if(false){
         URoadIntersectWidget *widget = NewObject<URoadIntersectWidget>(this);
         menuVbox->AddChild((IBaseUiInterface *)widget);
     }

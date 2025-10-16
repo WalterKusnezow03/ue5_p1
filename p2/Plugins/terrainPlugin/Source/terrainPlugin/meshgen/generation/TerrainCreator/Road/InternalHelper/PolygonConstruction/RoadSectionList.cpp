@@ -39,8 +39,22 @@ void FRoadSectionList::AddOrdered(FRoadSection &other){
     FRoadSection &last = sections.Last();
     if(last.RoadId() == other.RoadId()){
         int end = last.getEndIndex();
+
+        //11 - 10 = 1 //dS
+        //11 - 20 = -9 //dE 1 > -9 ok, keep
+
+        //20 - 10 = 10 //dS
+        //20 - 1 = 19  //dE //dE < dS re order
+
+
+
+        //should be ok
         int deltaStart = other.getStartIndex() - end; // AB = B - A
         int deltaEnd = other.getEndIndex() - end;
+
+        //try abs
+        deltaStart = std::abs(deltaStart);
+        deltaEnd = std::abs(deltaEnd);
 
         //re order if needed
         if(deltaEnd < deltaStart){

@@ -16,7 +16,7 @@ UCLASS()
 class CUSTOMUIPLUGIN_API UWorldMarkerCanvas : public UCanvasScreen{
     GENERATED_BODY()
 private:
-    bool blogMessage = false;
+    bool blogMessage = true;
 
 protected:
     virtual void PostInitProperties() override;
@@ -66,6 +66,7 @@ private:
         FVector2D &result
     );
 
+    
 
     // -- tick --
     void Update(UWorldMarker *marker);

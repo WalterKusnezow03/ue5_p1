@@ -64,9 +64,11 @@ void UCanvasScreen::AddChild(IBaseUiInterface *item, FVector2D ScreenPosition){
 
 
 void UCanvasScreen::AddChild(UWidget *widget){
-    if(widget && baseCanvas){
+    /*if(widget && baseCanvas){
         baseCanvas->AddChild(widget); //Add BEFORE SLOT* request!
-    }
+    }*/
+    FVector2D defaultPivot(0, 0);
+    AddChildWithPivot(widget, defaultPivot);
 }
 
 
@@ -100,6 +102,15 @@ void UCanvasScreen::AddChild(
     }
 }
 
+
+void UCanvasScreen::AddChildWithPivot(UWidget *widget, FVector2D &alignment){
+    if(widget && baseCanvas){
+        UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(widget));
+        if(CanvasSlot != nullptr){
+            CanvasSlot->SetAlignment(alignment);
+        }
+    }
+}
 
 void UCanvasScreen::RemoveChild(IBaseUiInterface *item){
     if(item){

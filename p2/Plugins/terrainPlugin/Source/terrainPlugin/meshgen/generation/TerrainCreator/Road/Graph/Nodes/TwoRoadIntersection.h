@@ -5,7 +5,7 @@
 class TERRAINPLUGIN_API TwoRoadIntersection {
 
 public:
-
+    bool operator==(const TwoRoadIntersection &other);
 
     void Setup(
         int roadIdAIn, 

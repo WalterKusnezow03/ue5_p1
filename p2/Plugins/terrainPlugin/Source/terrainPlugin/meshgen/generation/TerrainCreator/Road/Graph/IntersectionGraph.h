@@ -28,13 +28,14 @@ public:
 
 
     //debug
-    TArray<std::pair<FVector2D, FVector2D>> GetEdges();
+    TArray<TArray<std::pair<FVector2D, FVector2D>>> GetEdges();
 
     TArray<FRoadSectionList>& DisassembleTraverseGraph();
 
 private:
     void DisassembleTraverseGraphFrom(Intersection *start);
-    
+    void PostCleanUpAdjacency();
+
     TArray<FRoadSectionList> dissassembledSections;
 
 private:

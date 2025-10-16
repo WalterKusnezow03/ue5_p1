@@ -45,15 +45,15 @@ void IntersectionGraph::BuildGraph(){
     LockGraph(); //doesnt allow adding new nodes: Array might resize, all ptrs 
     //stores as adjacent neighbors will be invalid.
     BuildAdjacencyCrossed(); //cross all roads which each other
+    PostCleanUpAdjacency();
 }
-
 
 void IntersectionGraph::BuildAdjacencyCrossed(){
    
     //O(n^2)
     for (int i = 0; i < nodes.Num(); i++){
         Intersection &intersectionCurrent_i = nodes[i];
-        for (int j = i; j < nodes.Num(); j++)
+        for (int j = 0; j < nodes.Num(); j++) //could be i + 1
         {
             Intersection &intersectionCurrent_j = nodes[j];
             intersectionCurrent_i.AddAsNeighborIfAdjacent(&intersectionCurrent_j);
@@ -61,14 +61,25 @@ void IntersectionGraph::BuildAdjacencyCrossed(){
     }
 }
 
-
-
-TArray<std::pair<FVector2D, FVector2D>> IntersectionGraph::GetEdges(){
-    TArray<std::pair<FVector2D, FVector2D>> outEdges;
-
+void IntersectionGraph::PostCleanUpAdjacency(){
     for (int i = 0; i < nodes.Num(); i++){
         Intersection &current = nodes[i];
-        current.AppendEdges(outEdges);
+        current.PostCleanUpAdjacency();
+    }
+}
+
+
+
+TArray<TArray<std::pair<FVector2D, FVector2D>>> IntersectionGraph::GetEdges(){
+    TArray<TArray<std::pair<FVector2D, FVector2D>>> outEdges;
+
+    
+
+    for (int i = 0; i < nodes.Num(); i++){
+        TArray<std::pair<FVector2D, FVector2D>> currentEdges;
+        Intersection &current = nodes[i];
+        current.AppendEdges(currentEdges);
+        outEdges.Add(currentEdges);
     }
     return outEdges;
 }
@@ -102,20 +113,21 @@ void IntersectionGraph::DisassembleTraverseGraphFrom(Intersection *start){
     Intersection *prev = nullptr;
     Intersection *current = start;
 
-    TArray<Intersection *> circle = {current};
-    while(true){
+    int counted = 0;
+    while (true)
+    {
         if(current == nullptr){
             return;
         }
     
-        Intersection *next = current->TraverseRightAndDisassembleEdge(prev, circle, result);
-        if(next){
+        Intersection *next = current->TraverseRightAndDisassembleEdge(prev, start, result);
+        if(next != nullptr){
+            counted++;
             prev = current;
-            circle.Add(next);
             current = next;
-            if(next == start){ //loop reached
-                //return
+            if(next == start){ //loop reached, add builded section, current to next is internally appended.
                 dissassembledSections.Add(result);
+                DebugHelper::logMessage("IntersectionGraph::DisassembleTraverseGraphFrom circle made: ", counted);
                 return;
             }
             
@@ -125,8 +137,7 @@ void IntersectionGraph::DisassembleTraverseGraphFrom(Intersection *start){
             //has no neighbors: go left from starting node until no neighbor reached?
             //or find next no neighbor / single neighbor node to close virual circle?
 
-
-
+            DebugHelper::logMessage("IntersectionGraph::DisassembleTraverseGraphFrom early quit no next");
 
             dissassembledSections.Add(result);
             return;

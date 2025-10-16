@@ -74,6 +74,9 @@ public:
     //raw adding.
     void AddChild(UWidget *widget);
 
+    //pivot from 0,1 on x and y
+    void AddChildWithPivot(UWidget *widget, FVector2D &alignment);
+
 
 protected:
     void SetScreenPosition(UWidget *widget, FVector2D &screenPosition);

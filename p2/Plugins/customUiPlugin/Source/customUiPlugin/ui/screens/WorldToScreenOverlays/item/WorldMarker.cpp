@@ -14,7 +14,7 @@ void UWorldMarker::Tick(float deltatime){
 
 void UWorldMarker::PostInitProperties(){
     Super::PostInitProperties();
-    SetMaxDistance(100);
+    SetMaxDistance(2000.0f); //100cm
 }
 
 void UWorldMarker::BeginDestroy(){
@@ -77,9 +77,12 @@ bool UWorldMarker::IsSetEnabled(){
 
 void UWorldMarker::UpdateWorldPosition(FVector &worldPosIn){
     worldPosition = worldPosIn;
+
+    DebugHelper::showScreenMessage("World Position of Marker ", worldPosition);
 }
 
 const FVector &UWorldMarker::worldPositionRef(){
+
     return worldPosition;
 }
 

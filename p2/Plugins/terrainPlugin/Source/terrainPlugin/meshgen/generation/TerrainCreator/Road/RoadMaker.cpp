@@ -148,10 +148,7 @@ void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
     //graph creation
     FindAllTwoRoadIntersections();
     roadIntersections.BuildGraph(); //adding nodes locked now
-    edgeCache = roadIntersections.GetEdges();
-
-    //Debug
-    //roadIntersections.PrintGraphInfo();
+    edgeCache = roadIntersections.GetEdges(); //copy edges for draw
 
     //graph traversal, build polygons
     TArray<FRoadSectionList> &sectionsBuilded = roadIntersections.DisassembleTraverseGraph();
@@ -387,7 +384,7 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
 
 
 //// debug 
-TArray<std::pair<FVector2D, FVector2D>> &RoadMaker::GetEdges(){
+TArray<TArray<std::pair<FVector2D, FVector2D>>> &RoadMaker::GetEdges(){
     return edgeCache;
 }
 

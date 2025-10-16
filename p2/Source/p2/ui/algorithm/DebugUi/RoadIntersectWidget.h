@@ -16,10 +16,31 @@ public:
 
 private:
     MMatrix2D MoveAndScaleToPivot0(
-        TArray<std::pair<FVector2D, FVector2D>> &edges,
+        TArray<TArray<std::pair<FVector2D, FVector2D>>> &edges,
         TArray<std::vector<FVector2D>> &splines,
         FVector2D &scaleDesired
     );
 
     void AppendQuadFromEdge(FVector2D &a, FVector2D &b, SlateMeshData &data);
+
+    void AppendToPolygonAtLayer(
+        TArray<std::pair<FVector2D, FVector2D>> &edges,
+        int index,
+        MMatrix2D &M
+    );
+
+    FColor ColorByIndex(int index);
+
+    void UpdateFromBatch(
+        FBoundingBox2D &box,
+        TArray<TArray<std::pair<FVector2D, FVector2D>>> &array
+    );
+    void UpdateFromBatch(
+        FBoundingBox2D &box,
+        TArray<std::pair<FVector2D, FVector2D>> &array
+    );
+    void UpdateFromBatch(
+        FBoundingBox2D &box,
+        TArray<std::vector<FVector2D>> &splines
+    );
 };

@@ -25,6 +25,17 @@ class P2_API AEntityScript : public AActor, public IDamageinterface
 	GENERATED_BODY()
 	
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Flags")
+	bool enableMarker = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Flags")
+	bool debugStaticEntity = false;
+
+
+
+
+
 	const bool DRAW_PATH = true;
 
 	// Sets default values for this actor's properties

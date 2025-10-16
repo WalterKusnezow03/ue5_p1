@@ -54,6 +54,7 @@ void UWorldMarkerComponent::CreateWidgetForUWorldMarker(){
         UTextBlock *someTextfallback = NewObject<UTextBlock>(this);
         MyMarker->SetWidget(someTextfallback);
         someTextfallback->SetText(FText::FromString("FallbackTextBaseCreateWidget"));
+        DebugHelper::logMessage("UWorldMarker created text");
     }
 }
 

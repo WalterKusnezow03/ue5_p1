@@ -15,26 +15,20 @@ void URoadIntersectWidget::ConstructWidget(){
         RoadMaker roadmaker;
         roadmaker.createRoads(10); //chunks 10
 
-        //temporary reference, use one at a time!
-        SlateMeshDataPolygon &slateMeshPolygon = FindFromMap(1);
-        slateMeshPolygon.SetFullColor(FColor::Red);
-        //slateMeshPolygon.DrawOutLineOnly(); //not needed.
 
-        TArray<std::pair<FVector2D, FVector2D>> edges = roadmaker.GetEdges();
+        TArray<TArray<std::pair<FVector2D, FVector2D>>> edges = roadmaker.GetEdges(); //edges per intersection
         TArray<std::vector<FVector2D>> roadSplines = roadmaker.GetRoads();
         FVector2D scaleDesired(500, 500);
         MMatrix2D M = MoveAndScaleToPivot0(edges, roadSplines, scaleDesired);
 
         //apply M and add to meshdata
-        SlateMeshData &meshData = slateMeshPolygon.MeshDataRef();
         for (int i = 0; i < edges.Num(); i++){
-            std::pair<FVector2D, FVector2D> &current = edges[i];
-            current.first = M * current.first;
-            current.second = M * current.second;
-            AppendQuadFromEdge(current.first, current.second, meshData);
+            AppendToPolygonAtLayer(
+                edges[i],
+                i + 1, // next layer after road cyan, layer 0
+                M
+            );
         }
-
-
 
         //create roads for draw
         SlateMeshDataPolygon &layer1 = FindFromMap(0);
@@ -58,16 +52,7 @@ void URoadIntersectWidget::ConstructWidget(){
         }
 
 
-        //create closed roads from traversed Polygons
-        TArray<FColor> colors = {
-            FColor::Green, 
-            FColor::Cyan, 
-            FColor::Yellow, 
-            FColor::Black,
-            FColor::Red,
-            FColor::Blue,
-            FColor::Magenta
-        };
+        
 
         
         FVector2D drawOffset(520, 0);
@@ -78,7 +63,8 @@ void URoadIntersectWidget::ConstructWidget(){
         
             //make polygon per layer
             SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);
-            layer_current.SetFullColor(colors[i % colors.Num()]);
+
+            FColor color = ColorByIndex(i);
             SlateMeshData &meshDataCurrent = layer_current.MeshDataRef();
 
             for (int j = 1; j < polygon.Num(); j++){
@@ -112,26 +98,57 @@ void URoadIntersectWidget::AppendQuadFromEdge(FVector2D &a, FVector2D &b, SlateM
     meshData.Append(v0, v1, v2, v3);
 }
 
+FColor URoadIntersectWidget::ColorByIndex(int index){
+    //create closed roads from traversed Polygons
+    TArray<FColor> colors = {
+        FColor::Green, 
+        FColor::Cyan, 
+        FColor::Yellow, 
+        FColor::Black,
+        FColor::Red,
+        FColor::Blue,
+        FColor::Magenta
+    };
+    int iMod = index % colors.Num();
+    return colors[iMod];
+}
+
+void URoadIntersectWidget::AppendToPolygonAtLayer(
+    TArray<std::pair<FVector2D, FVector2D>> &edges,
+    int index,
+    MMatrix2D &M //offset / scaling matrix
+){
+    SlateMeshDataPolygon &slateMeshPolygon = FindFromMap(index); //new layer for intersections plot
+    SlateMeshData &meshData = slateMeshPolygon.MeshDataRef();
+
+    //slateMeshPolygon.SetFullColor(FColor::Red);
+    slateMeshPolygon.SetFullColor(ColorByIndex(index));
+
+    for (int i = 0; i < edges.Num(); i++){
+
+        std::pair<FVector2D, FVector2D> &current = edges[i];
+        current.first = M * current.first;
+        current.second = M * current.second;
+        AppendQuadFromEdge(current.first, current.second, meshData);
+    }
+}
+
+
+
 
 
 
 
 
 MMatrix2D URoadIntersectWidget::MoveAndScaleToPivot0(
-    TArray<std::pair<FVector2D, FVector2D>> &edges,
+    TArray<TArray<std::pair<FVector2D, FVector2D>>> &edges,
     TArray<std::vector<FVector2D>> &splines,
     FVector2D &scaleDesired
 ){
     FBoundingBox2D box;
-    for (int i = 0; i < edges.Num(); i++){
-        std::pair<FVector2D, FVector2D> &current = edges[i];
-        box.Update(current.first);
-        box.Update(current.second);
-    }
-    for (int i = 0; i < splines.Num(); i++){
-        std::vector<FVector2D> &current = splines[i];
-        box.Update(current);
-    }
+    UpdateFromBatch(box, edges);
+    UpdateFromBatch(box, splines);
+
 
     FVector2D translation = box.min() * -1.0f;
     FVector2D scaleCurrent = box.size();
@@ -154,4 +171,36 @@ MMatrix2D URoadIntersectWidget::MoveAndScaleToPivot0(
     //M = s * t <-- lese richtung --
     MMatrix2D M = s * t;
     return M;
+}
+
+
+
+void URoadIntersectWidget::UpdateFromBatch(
+    FBoundingBox2D &box, 
+    TArray<TArray<std::pair<FVector2D, FVector2D>>> &array
+){
+    for (int i = 0; i < array.Num(); i++){
+        UpdateFromBatch(box, array[i]);
+    }
+}
+
+void URoadIntersectWidget::UpdateFromBatch(
+    FBoundingBox2D &box, 
+    TArray<std::pair<FVector2D, FVector2D>> &array
+){
+    for (int i = 0; i < array.Num(); i++){
+        std::pair<FVector2D, FVector2D> &current = array[i];
+        box.Update(current.first);
+        box.Update(current.second);
+    }
+}
+
+void URoadIntersectWidget::UpdateFromBatch(
+    FBoundingBox2D &box, 
+    TArray<std::vector<FVector2D>> &splines
+){
+    for (int i = 0; i < splines.Num(); i++){
+        const std::vector<FVector2D> &buffer = splines[i];
+        box.Update(buffer);
+    }
 }

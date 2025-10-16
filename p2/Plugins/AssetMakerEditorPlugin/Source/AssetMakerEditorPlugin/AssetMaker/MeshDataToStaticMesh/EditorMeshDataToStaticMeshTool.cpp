@@ -1,7 +1,7 @@
 #include "EditorMeshDataToStaticMeshTool.h"
 
 #include "Engine/StaticMesh.h"
-#include "Factories/Factory.h"
+
 #include "StaticMeshAttributes.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Subsystems/AssetEditorSubsystem.h"

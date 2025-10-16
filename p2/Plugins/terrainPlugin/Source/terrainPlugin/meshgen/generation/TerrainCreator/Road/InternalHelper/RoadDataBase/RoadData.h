@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/InternalHelper/RoadDatabase/RoadIntersection.h"
+
 #include "terrainPlugin/meshgen/generation/TerrainCreator/Road/Graph/IntersectionGraph.h"
 
 class TERRAINPLUGIN_API RoadData {

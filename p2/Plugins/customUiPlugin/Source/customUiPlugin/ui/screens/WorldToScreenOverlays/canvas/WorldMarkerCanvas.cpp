@@ -1,5 +1,6 @@
 #include "WorldMarkerCanvas.h"
 #include "customUiPlugin/ui/TickUpdate/UiActor.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "customUiPlugin/ui/screens/WorldToScreenOverlays/actorComponent/WorldMarkerComponent.h"
 
 void UWorldMarkerCanvas::PostInitProperties(){
@@ -29,8 +30,7 @@ bool UWorldMarkerCanvas::dispatchClick(){
 // --- tick and update ---
 
 void UWorldMarkerCanvas::Tick(float deltatime){
-    if(blogMessage)
-        UiDebugHelper::showScreenMessage("UWorldMarkerCanvas Tick", FColor::Cyan); //never called.
+    
     Super::Tick(deltatime);
     FindPlayerControllerAndWorld();
     if(PlayerControllerValid()){
@@ -41,6 +41,9 @@ void UWorldMarkerCanvas::Tick(float deltatime){
                 Update(current); //update screen pos.
             }
         }
+
+        if(blogMessage)
+            UiDebugHelper::showScreenMessage("UWorldMarkerCanvas Tick", FColor::Cyan); //never called.
     }
 }
 
@@ -50,6 +53,7 @@ void UWorldMarkerCanvas::Update(UWorldMarker *marker){
     if(marker){
         //if forced to be invisible, do not update
         if(!marker->IsSetEnabled()){
+            DebugHelper::showScreenMessage("Marker Not Enabled!", FColor::Red);
             return;
         }
 
@@ -72,6 +76,8 @@ void UWorldMarkerCanvas::Update(UWorldMarker *marker){
                     SetScreenPosition(widget, screenPosition);
                 }
             }
+        }else{
+            DebugHelper::showScreenMessage("Marker Not In Look Dir!!", FColor::Red);
         }
     }
 }
@@ -80,20 +86,67 @@ bool UWorldMarkerCanvas::inScreenSpace(
     const FVector &WorldLocation,
     FVector2D &ScreenPosition
 ){
+
     if(Playercontroller){
+
+        DebugHelper::showLineBetween(
+            Playercontroller->GetWorld(),
+            WorldLocation,
+            WorldLocation + FVector(0,0,1000),
+            FColor::Yellow,
+            0.1f
+        );
+
+
+
+
+        //debug
+        FVector CamLoc;
+        FRotator CamRot;
+        Playercontroller->GetPlayerViewPoint(CamLoc, CamRot);
+        UE_LOG(LogTemp, Warning, TEXT("WorldMarkerCanvas Camera Loc: %s %s"), 
+            *CamLoc.ToString(), 
+            *Playercontroller->GetName()
+        );
+        FVector copyWorld = WorldLocation;
+        copyWorld -= CamLoc;
+
+
+        /*
+        //PlayerController->ProjectWorldLocationToScreen(WorldLocation, ScreenPos, bPlayerViewportRelative);
+        bool bProjected = Playercontroller->ProjectWorldLocationToScreen(
+            copyWorld,
+            //WorldLocation,
+            ScreenPosition,
+            true // true = berücksichtigt DPI-Scaling
+        );*/
+
+        FVector2D WidgetPosition;
+        bool bProjected = UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
+            Playercontroller,
+            WorldLocation,
+            WidgetPosition,
+            true // PlayerViewportRelative
+        );
+        ScreenPosition = WidgetPosition;
 
         //all at 0,0,0 unknwon why.
         if(blogMessage){
             FString coordinate = TEXT("UWorldMarkerCanvas WorldPos: ") + WorldLocation.ToString();
             UiDebugHelper::logMessage(coordinate);
-        }
-        
 
-        bool bProjected = Playercontroller->ProjectWorldLocationToScreen(
-            WorldLocation,
-            ScreenPosition,
-            true // true = berücksichtigt DPI-Scaling
-        );
+            coordinate = TEXT("UWorldMarkerCanvas ScreenPos: ") + ScreenPosition.ToString();
+            UiDebugHelper::logMessage(coordinate);
+        }
+
+
+
+
+
+
+
+
+
 
         /*
         if (bProjected){
@@ -105,6 +158,7 @@ bool UWorldMarkerCanvas::inScreenSpace(
     }
     return false;
 }
+
 
 
 
@@ -120,11 +174,15 @@ void UWorldMarkerCanvas::AddMarker(UWorldMarker *marker){
         //check and add widget / base ui interface
         if(IBaseUiInterface *interfaceIsPreferred = marker->interfacePointer()){
             AddChild(interfaceIsPreferred);
-            //UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as interface");
+            UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as interface");
         }else{
             if(UWidget *innerWidget = marker->widgetPointer()){
-                AddChild(innerWidget);
-                //UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as uwidget");
+                //AddChild(innerWidget);
+
+                FVector2D pivot(0.5f, 0.5f);
+                AddChildWithPivot(innerWidget, pivot);
+
+                UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as uwidget"); //prints
             }
         }
     }

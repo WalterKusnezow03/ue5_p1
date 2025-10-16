@@ -217,7 +217,7 @@ void MPolygonRaster::TryFitAll(TArray<MPolygon> &polygons){
             const FBoundingBox2D &boundA = A.boundingBox();
             const FBoundingBox2D &boundB = B.boundingBox();
 
-            return boundA.size() < boundB.size();
+            return boundA.size().Size() < boundB.size().Size();
 
             //return A > B; // true = A kommt vor B
         });

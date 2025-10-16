@@ -327,7 +327,7 @@
 -fasm-blocks
 -ffp-contract=off
 -arch arm64
--isysroot "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+-isysroot "/Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
 -mmacosx-version-min=10.15
 -x objective-c++
 -std=c++17

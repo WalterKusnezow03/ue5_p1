@@ -100,6 +100,10 @@ void AEntityScript::Tick(float DeltaTime)
 		return;
 	}
 	
+	if(debugStaticEntity){
+		return;
+	}
+
 	//tick bone controller
 	humanoidPluginController.Tick(DeltaTime);
 	SetActorLocation(humanoidPluginController.GetLocation()); //override location for markers and pathfinding, all.
