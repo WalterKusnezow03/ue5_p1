@@ -1,6 +1,6 @@
 #include "UiActor.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "customUiPlugin/ui/PlayerUiBase.h"
 
 AUiActor *AUiActor::currentInstance = nullptr;

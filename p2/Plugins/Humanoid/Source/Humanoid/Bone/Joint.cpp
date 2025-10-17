@@ -1,5 +1,5 @@
 #include "Joint.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 int Joint::id = 0;
 

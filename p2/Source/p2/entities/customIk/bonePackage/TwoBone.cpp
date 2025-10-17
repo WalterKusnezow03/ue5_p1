@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include "p2/entities/customIk/bonePackage/TwoBone.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "CoreMath/Matrix/MMatrix.h"
 
 TwoBone::TwoBone()

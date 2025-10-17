@@ -17,7 +17,7 @@
 #include "terrainPlugin/meshgen/foliage/rocks/RockCreator.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
 #include "terrainPlugin/meshgen/rooms/roomActor/roomProcedural.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"

@@ -7,7 +7,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "p2/entityManager/AlertManager.h"
 #include "GameCore/team/teamEnum.h"

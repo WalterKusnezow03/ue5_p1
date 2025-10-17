@@ -159,7 +159,7 @@ bool BoundingBoxSimple::InRange(float t, float lower, float higher){
 
 
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 void BoundingBoxSimple::Test(){
     TArray<FVector> vertecies = {
         FVector(0, 0, 0),

@@ -1,6 +1,6 @@
 #include "SlipForceCache.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 int SlipForceCache::idGlobal = 0;
 

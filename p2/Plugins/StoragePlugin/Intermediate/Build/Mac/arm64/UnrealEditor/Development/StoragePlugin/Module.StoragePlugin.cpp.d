@@ -3831,8 +3831,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainNormal.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainUv.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/TerrainVertexIndex.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/StringData/StorageInterfaceStringArray.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/StringData/StorageInterfaceStringArray.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/StoragePlugin/Source/StoragePlugin/Storage/VertexData/StorageInterface/StorageInterfaceMeshData.cpp \

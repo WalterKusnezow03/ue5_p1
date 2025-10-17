@@ -2,7 +2,7 @@
 
 
 #include "AssetPlugin/gamestart/AssetLoader.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 
 #include "TextAndImage.h"

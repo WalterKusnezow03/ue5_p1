@@ -12,7 +12,7 @@
 #include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
 
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "p2/ui/screens/loadoutNew/SetupScreen/WeaponSetupHelperPayload.h"
 
 #include "LoadoutScreen.h"

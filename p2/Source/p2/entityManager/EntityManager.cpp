@@ -15,7 +15,7 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "GameCore/util/FVectorUtil.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/weapon/throwerWeapon.h"
 

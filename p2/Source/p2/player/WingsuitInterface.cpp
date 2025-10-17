@@ -3,7 +3,7 @@
 
 #include "WingsuitInterface.h"
 #include <cmath>
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 WingsuitInterface::WingsuitInterface()

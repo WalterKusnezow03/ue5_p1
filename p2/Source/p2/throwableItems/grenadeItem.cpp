@@ -6,7 +6,7 @@
 #include "p2/entityManager/AlertManager.h"
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/util/timer.h"
 
 AgrenadeItem::AgrenadeItem(){

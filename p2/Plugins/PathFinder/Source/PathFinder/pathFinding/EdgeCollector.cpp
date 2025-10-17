@@ -10,7 +10,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "MeshDescription.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "PathFinder.h"
 #include "Kismet/GameplayStatics.h"
 

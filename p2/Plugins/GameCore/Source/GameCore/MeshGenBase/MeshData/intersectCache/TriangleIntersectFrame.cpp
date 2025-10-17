@@ -1,5 +1,5 @@
 #include "TriangleIntersectFrame.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 FTriangleIntersectFrame::FTriangleIntersectFrame(){
 

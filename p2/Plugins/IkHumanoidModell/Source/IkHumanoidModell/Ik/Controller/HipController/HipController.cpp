@@ -1,5 +1,5 @@
 #include "HipController.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h"
 

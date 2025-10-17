@@ -9,7 +9,7 @@
 #include "p2/_world/worldLevel.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "OutpostAlarmPole.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include <cstdlib>
 
 

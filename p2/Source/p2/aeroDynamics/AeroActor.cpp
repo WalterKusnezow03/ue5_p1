@@ -4,7 +4,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include <algorithm>
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h"
 #include "p2/entityManager/referenceManager.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"

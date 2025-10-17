@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include <cmath>
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "Math/Rotator.h"
 
 

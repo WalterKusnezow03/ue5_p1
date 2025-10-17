@@ -27,7 +27,8 @@ public class IkHumanoidModell : ModuleRules
 			{
 				"Core",
 				"CoreMath",
-				"GameCore"
+				"GameCore",
+				"DebugPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

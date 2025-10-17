@@ -3968,7 +3968,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Source/AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/AssetMakerEditorPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/AssetMakerEditorPlugin/UHT/EditorMeshDataToStaticMeshTool.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/meshgen/foliage/grass/MatrixGrass.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/FoliageInstancing/MovingFoliageInstancerComponent.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/main/management/ActorManager.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/terrainPlugin/Source/terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h \

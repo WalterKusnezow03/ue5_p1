@@ -1,5 +1,5 @@
 #include "TextBoxBase.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 #include "customUiPlugin/ui/Widgets/Text/UiTextStyle.h"
 

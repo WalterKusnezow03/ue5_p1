@@ -4,7 +4,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/Spacer.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 #include <map>
 

@@ -14,7 +14,7 @@
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
 #include <set>
 #include "GameCore/EntityGC/trackedActors.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"

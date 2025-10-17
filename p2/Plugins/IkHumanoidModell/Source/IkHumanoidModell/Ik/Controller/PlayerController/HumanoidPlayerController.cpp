@@ -1,6 +1,6 @@
 #include "HumanoidPlayerController.h"
 #include "Camera/CameraComponent.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 HumanoidPlayerController::HumanoidPlayerController(){
     weaponAimDownSight(false);

@@ -1,6 +1,6 @@
 #include "DebugJointsActor.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "Humanoid/IkSolver/NewtonSolve.h"
 
 void ADebugJointsActor::CreateInstance(UWorld *world){

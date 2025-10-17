@@ -5,7 +5,7 @@
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 

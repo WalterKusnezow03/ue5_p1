@@ -29,7 +29,8 @@ public class terrainPlugin : ModuleRules
 				"GameCore",
 				"CoreMath",
 				"AssetPlugin",
-				"PathFinder"
+				"PathFinder",
+				"DebugPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -274,6 +274,8 @@
 -I"Developer/AnimationDataController/Public"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Public"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/Public"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/Public"

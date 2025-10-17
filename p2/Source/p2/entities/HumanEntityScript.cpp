@@ -16,7 +16,7 @@
 #include "p2/entityManager/AlertManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "p2/entities/botActionHelper/EAttackType.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"

@@ -275,6 +275,8 @@
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/NNCommunicationPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/NNCommunicationPlugin/UHT"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/NNCommunicationPlugin/Source"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/NNCommunicationPlugin/Source/NNCommunicationPlugin/Public"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/Public"
 -isystem"ThirdParty/mimalloc/include"
 -isystem"ThirdParty/LibTiff/Source/Mac"
 -isystem"ThirdParty/LibTiff/Source"

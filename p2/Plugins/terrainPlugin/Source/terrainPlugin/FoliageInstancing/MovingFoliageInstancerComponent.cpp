@@ -1,5 +1,5 @@
 #include "MovingFoliageInstancerComponent.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 void UMovingFoliageInstancerComponent::Init(int countChilds, UStaticMesh *someMesh, AActor *parent){
     if(bIsdisbaled){

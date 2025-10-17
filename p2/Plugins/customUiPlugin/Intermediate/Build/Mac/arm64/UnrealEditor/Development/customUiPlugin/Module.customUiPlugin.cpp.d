@@ -3926,8 +3926,7 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/ContentWidget.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/Button.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/callback/callback.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/callback.generated.h \
   Runtime/UMG/Public/Components/SizeBox.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/SizeBox.generated.h \

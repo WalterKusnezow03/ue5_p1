@@ -2,7 +2,7 @@
 #include "terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 #include "GameCore/world/worldLevelBase.h"
 

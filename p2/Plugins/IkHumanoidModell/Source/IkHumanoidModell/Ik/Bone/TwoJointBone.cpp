@@ -1,6 +1,6 @@
 #include "TwoJointBone.h"
 #include "IkHumanoidModell/Ik/solver/TwoBoneGeometricSolve.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 #include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
 

@@ -4,7 +4,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/ScaleBox.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
 #include "TextButton.h"
 

@@ -97,30 +97,6 @@ bool UWorldMarkerCanvas::inScreenSpace(
             0.1f
         );
 
-
-
-
-        //debug
-        FVector CamLoc;
-        FRotator CamRot;
-        Playercontroller->GetPlayerViewPoint(CamLoc, CamRot);
-        UE_LOG(LogTemp, Warning, TEXT("WorldMarkerCanvas Camera Loc: %s %s"), 
-            *CamLoc.ToString(), 
-            *Playercontroller->GetName()
-        );
-        FVector copyWorld = WorldLocation;
-        copyWorld -= CamLoc;
-
-
-        /*
-        //PlayerController->ProjectWorldLocationToScreen(WorldLocation, ScreenPos, bPlayerViewportRelative);
-        bool bProjected = Playercontroller->ProjectWorldLocationToScreen(
-            copyWorld,
-            //WorldLocation,
-            ScreenPosition,
-            true // true = berücksichtigt DPI-Scaling
-        );*/
-
         FVector2D WidgetPosition;
         bool bProjected = UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
             Playercontroller,
@@ -130,30 +106,6 @@ bool UWorldMarkerCanvas::inScreenSpace(
         );
         ScreenPosition = WidgetPosition;
 
-        //all at 0,0,0 unknwon why.
-        if(blogMessage){
-            FString coordinate = TEXT("UWorldMarkerCanvas WorldPos: ") + WorldLocation.ToString();
-            UiDebugHelper::logMessage(coordinate);
-
-            coordinate = TEXT("UWorldMarkerCanvas ScreenPos: ") + ScreenPosition.ToString();
-            UiDebugHelper::logMessage(coordinate);
-        }
-
-
-
-
-
-
-
-
-
-
-        /*
-        if (bProjected){
-            UE_LOG(LogTemp, Log, TEXT("Screen Position: X=%f, Y=%f"), ScreenPosition.X, ScreenPosition.Y);
-        }else{
-            UE_LOG(LogTemp, Warning, TEXT("World location could not be projected to screen!"));
-        }*/
         return bProjected;
     }
     return false;

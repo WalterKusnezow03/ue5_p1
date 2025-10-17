@@ -1,5 +1,5 @@
 #include "AnimationTime.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 float AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
     const FVector &localStart,

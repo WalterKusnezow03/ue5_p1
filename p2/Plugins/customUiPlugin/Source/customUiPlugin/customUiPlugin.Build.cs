@@ -41,7 +41,8 @@ public class customUiPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"CoreMath"
+				"CoreMath",
+				"DebugPlugin"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "CoreMinimal.h"
 #include <limits>
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "priorityList.h"
 #include "PathFinder/pathFinding/priorityQueue.h"
 #include "PathFinder/pathFinding/raycastTasks/raycastTask.h"

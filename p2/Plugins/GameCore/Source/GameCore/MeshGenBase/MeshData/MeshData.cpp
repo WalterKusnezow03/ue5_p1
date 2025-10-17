@@ -3,7 +3,7 @@
 
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "AssetPlugin/gameStart/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.h"

@@ -1,5 +1,5 @@
 #include "ProceduralMeshComponentCustom.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 

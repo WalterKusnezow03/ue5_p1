@@ -11,7 +11,7 @@
 #include "AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.h"
 #include "terrainPlugin/meshgen/foliage/grass/MatrixGrass.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 #if WITH_EDITOR
 void TerrainPluginAssetLoader::InitOnLaunchModule(){

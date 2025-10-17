@@ -4,7 +4,7 @@
 #include "AssetPlugin/gamestart/assetEnums/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/entityManager/EntityManager.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/weapon/throwerWeapon.h"
 

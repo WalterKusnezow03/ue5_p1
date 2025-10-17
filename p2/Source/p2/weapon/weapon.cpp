@@ -14,7 +14,7 @@
 #include "GameCore/team/teamEnum.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "GameCore/util/AActorUtil.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"

@@ -7,7 +7,7 @@
 #include "p2/entityManager/EntityManager.h"
 
 #include "p2/entityManager/referenceManager.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "GameCore/team/teamEnum.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"

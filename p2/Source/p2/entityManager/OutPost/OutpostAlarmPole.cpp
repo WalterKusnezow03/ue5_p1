@@ -3,7 +3,7 @@
 #include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/ELod.h"
 #include "OutpostAlarmPole.h"
 

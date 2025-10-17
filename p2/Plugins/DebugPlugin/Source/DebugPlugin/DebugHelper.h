@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/util/TVector.h"
 
 /**
  * 
  */
-class GAMECORE_API DebugHelper
+class DEBUGPLUGIN_API DebugHelper
 {
 public:
 	DebugHelper();

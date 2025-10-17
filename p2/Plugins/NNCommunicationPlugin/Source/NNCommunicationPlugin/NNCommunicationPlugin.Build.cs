@@ -26,6 +26,7 @@ public class NNCommunicationPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
+				"DebugPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

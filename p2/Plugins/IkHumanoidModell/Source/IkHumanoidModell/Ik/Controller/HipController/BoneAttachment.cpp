@@ -1,6 +1,6 @@
 #include "BoneAttachment.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "IkHumanoidModell/Ik/Controller/SLIP/liftOffFrame/SlipLiftOffFrameFinder.h"
 #include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h"

@@ -1,7 +1,7 @@
 #include "ProceduralMeshComponentPair.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 #include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/ProceduralMeshComponentCustom.h"
-
+#include "DebugPlugin/DebugHelper.h"
 
 ProceduralMeshComponentPair::ProceduralMeshComponentPair(){
 

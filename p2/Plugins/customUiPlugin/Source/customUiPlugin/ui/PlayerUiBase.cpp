@@ -5,7 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Blueprint/WidgetTree.h"
 #include "customUiPlugin/ui/TickUpdate/UiActor.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 ///@brief do not delete, only for ui components!

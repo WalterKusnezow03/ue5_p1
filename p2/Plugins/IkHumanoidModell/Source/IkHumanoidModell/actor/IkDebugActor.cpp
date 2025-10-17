@@ -1,7 +1,7 @@
 #include "IkDebugActor.h"
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 void AIkDebugActor::CreateInstance(UWorld *world){

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameCore/util/TVector.h"
 #include "DebugHelper.h"
 
 DebugHelper::DebugHelper()

@@ -3,7 +3,7 @@
 
 #include "PathFinder/pathFinding/PathFinder.h"
 #include <map>
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "priorityQueue.h"
 
 priorityQueue::priorityQueue()

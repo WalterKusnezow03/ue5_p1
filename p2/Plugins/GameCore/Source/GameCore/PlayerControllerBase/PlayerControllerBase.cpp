@@ -3,7 +3,7 @@
 
 #include "PlayerControllerBase.h"
 
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "GameCore/team/teamEnum.h"
 

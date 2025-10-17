@@ -3899,8 +3899,7 @@
   Runtime/CoreUObject/Public/Serialization/EditorBulkData.h \
   Runtime/CoreUObject/Public/UObject/Object.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/MeshDescription/UHT/MeshDescription.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   Runtime/Engine/Classes/Kismet/GameplayStatics.h \
   Runtime/CoreUObject/Public/UObject/Interface.h \
   Runtime/Engine/Public/CollisionQueryParams.h \

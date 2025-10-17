@@ -28,7 +28,8 @@ public class GameCore : ModuleRules
 				"Core",
 				"AssetPlugin",
 				"CoreMath",
-				"ProceduralMeshComponent"
+				"ProceduralMeshComponent",
+				"DebugPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

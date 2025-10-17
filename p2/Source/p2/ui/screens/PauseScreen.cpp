@@ -4,7 +4,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
-#include "GameCore/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
 #include "PauseScreen.h"
 

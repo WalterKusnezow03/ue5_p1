@@ -3833,8 +3833,7 @@
   Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Intermediate/Build/Mac/UnrealEditor/Inc/Humanoid/UHT/Humanoid.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Bone/Joint.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/DebugHelper.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/TVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/Debug/DebugJointsActor.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/IkSolver/NewtonSolve.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/Humanoid/Source/Humanoid/IkSolver/NewtonSolve.cpp \
