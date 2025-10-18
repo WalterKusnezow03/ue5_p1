@@ -111,7 +111,7 @@ FVector SlipContainer::forceUnscaled(
     //hack positive force only on z
     //forceRaw.Z = std::abs(forceRaw.Z);
 
-    if(true || bLogEnabled){
+    if(false && bLogEnabled){
         FString message = FString::Printf(
             TEXT("--- slip force result: (%.2f %.2f %.2f), trajectory (%.2f, %.2f, %.2f) move(%.2f %.2f)"),
             forceRaw.X,
@@ -301,15 +301,17 @@ void SlipContainer::deRotateDirectionsForSlipSine(
     legDir.Y = 0.0f;
 
     //works as expected
+    if(bLogEnabled){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip: Projected legOld(%.2f %.2f %.2f) leg project x(%.2f %.2f %.2f) and forward(%.2f, %.2f)"),
+                legCopy.X, legCopy.Y, legCopy.Z,
+                legDir.X, legDir.Y, legDir.Z,
+                forward.X, forward.Y
+            )
+        );
+    }
     
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("Slip: Projected legOld(%.2f %.2f %.2f) leg project x(%.2f %.2f %.2f) and forward(%.2f, %.2f)"),
-            legCopy.X, legCopy.Y, legCopy.Z,
-            legDir.X, legDir.Y, legDir.Z,
-            forward.X, forward.Y
-        )
-    );
 }
 
 /// @brief inetgrates the force from end effektor location a to b
@@ -343,29 +345,33 @@ FVector SlipContainer::forceIntegrated(
         forceCache.AddFrame(foundForce);
         outforce += foundForce;
 
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("slip integral interpolated trajectory: (%s) a(%s) b(%s) scalar(%.2f) time(%.2f) (%.2f feather)"),
-                *boneCurrentEnd.ToString(),
-                *a.ToString(),
-                *b.ToString(),
-                scalar,
-                time,
-                featherComplete
-            )
-        );
+        if(bLogEnabled){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("slip integral interpolated trajectory: (%s) a(%s) b(%s) scalar(%.2f) time(%.2f) (%.2f feather)"),
+                    *boneCurrentEnd.ToString(),
+                    *a.ToString(),
+                    *b.ToString(),
+                    scalar,
+                    time,
+                    featherComplete
+                )
+            );
+        }
+        
     }
 
 
-
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
-            *outforce.ToString(),
-            *a.ToString(),
-            *b.ToString()
-        )
-    );
+    if(bLogEnabled){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
+                *outforce.ToString(),
+                *a.ToString(),
+                *b.ToString()
+            )
+        );
+    } 
     
     return outforce;
 }
@@ -402,12 +408,15 @@ FVector SlipContainer::forceIntegrated(
         outforce += foundForce;
 
         //only Z, as expected
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("Slip B1 force (%s)"),
-                *foundForce.ToString()
-            )
-        );
+        if(bLogEnabled){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("Slip B1 force (%s)"),
+                    *foundForce.ToString()
+                )
+            );
+        }
+        
     }
 
 
@@ -422,12 +431,15 @@ FVector SlipContainer::forceIntegrated(
         outforce += foundForce;
 
         //only Z, as expected
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("Slip F1 static force (%s)"),
-                *foundForce.ToString()
-            )
-        );
+        if(bLogEnabled){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("Slip F1 static force (%s)"),
+                    *foundForce.ToString()
+                )
+            );
+        }
+        
     }
 
 
@@ -441,23 +453,27 @@ FVector SlipContainer::forceIntegrated(
         outforce += foundForce;
 
         //NOT only Z, as expected ??
+        if(bLogEnabled){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("Slip B2 force (%s)"),
+                    *foundForce.ToString()
+                )
+            );
+        }
+        
+    }
+
+    if(bLogEnabled){
         DebugHelper::logMessage(
             FString::Printf(
-                TEXT("Slip B2 force (%s)"),
-                *foundForce.ToString()
+                TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
+                *outforce.ToString(),
+                *a.ToString(),
+                *b.ToString()
             )
         );
     }
-
-
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("Slip Force Integrated: F(%s) A(%s) B(%s)"),
-            *outforce.ToString(),
-            *a.ToString(),
-            *b.ToString()
-        )
-    );
     
     return outforce;
 }
@@ -497,7 +513,8 @@ void SlipContainer::setupInterpolatedD(
         return;
     }
 
-    DebugHelper::logMessage("Slip overcome: ----- log start ----");
+    if(bLogEnabled)
+        DebugHelper::logMessage("Slip overcome: ----- log start ----");
 
     timeForInterpolation = std::abs(time);
 
@@ -545,22 +562,25 @@ void SlipContainer::setupInterpolatedD(
     forceCache.SetScalarDAndConvertBufferToVelocity(Dcurrent, mass);
 
     /// ---- LOG -----
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("Slip overcome: movedir: %s"),
-            *movedir.ToString()
-        )
-    );
-    DebugHelper::logMessage("Slip overcome: v gravity at t0: ", velocityDown);
+    if(bLogEnabled){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Slip overcome: movedir: %s"),
+                *movedir.ToString()
+            )
+        );
+        DebugHelper::logMessage("Slip overcome: v gravity at t0: ", velocityDown);
 
-    float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
-    DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
-    DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
-    DebugHelper::logMessage("Slip overcome: upper: ", upperFrac);
-    DebugHelper::logMessage("Slip overcome: lower ForceIntegral(z): ", lowerFracIntegralZ);
-    DebugHelper::logMessage(FString::Printf(TEXT("Slip overcome: time: %.2f "), time));
-    FString msg = FString::Printf(TEXT("Slip overcome: D: %.4f"), minD);
-    DebugHelper::logMessage(msg);
+        float velocityWithGravityIntegrated = velocityDown + gravityIntegrated;
+        DebugHelper::logMessage("Slip overcome: v gravity for timeslot (t0->t1): ", velocityWithGravityIntegrated);
+        DebugHelper::logMessage("Slip overcome: v min reach (t1->t2): ", vMinOptional);
+        DebugHelper::logMessage("Slip overcome: upper: ", upperFrac);
+        DebugHelper::logMessage("Slip overcome: lower ForceIntegral(z): ", lowerFracIntegralZ);
+        DebugHelper::logMessage(FString::Printf(TEXT("Slip overcome: time: %.2f "), time));
+        FString msg = FString::Printf(TEXT("Slip overcome: D: %.4f"), minD);
+        DebugHelper::logMessage(msg);
+    }
+    
 
 
     //check equation
@@ -573,9 +593,10 @@ void SlipContainer::setupInterpolatedD(
     FVector resultVelocity = a * time;
 
     //100% correct. (?)
-    DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin: ", resultVelocity);
-    DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin in m/s: ", resultVelocity / time);
-
+    if(bLogEnabled){
+        DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin: ", resultVelocity);
+        DebugHelper::logMessage("Slip cache result: Check Equation Result Velocity to remove gravity + vmin in m/s: ", resultVelocity / time);
+    }
     
 
     //looks very correct

@@ -48,10 +48,10 @@ void EmptyLinkFunctionForGeneratedCodeWorldMarker() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_UWorldMarker_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "/// @brief Will hold any UWidget or UcustomUiComponentBase inside this world marker,\n/// with a position, max distance from player, used by the WorldMarkerCanvas class\n/// can be constructed outside the ui and added later to have dynamic markers (for example, following aactor!)\n" },
+		{ "Comment", "/// @brief Will hold any UWidget or UcustomUiComponentBase inside this world marker,\n/// IS A NORMAL 2D WIDGET MANUALLY PROJECTED!\n/// with a position, max distance from player, used by the WorldMarkerCanvas class\n/// can be constructed outside the ui and added later to have dynamic markers (for example, following aactor!)\n" },
 		{ "IncludePath", "ui/screens/WorldToScreenOverlays/item/WorldMarker.h" },
 		{ "ModuleRelativePath", "ui/screens/WorldToScreenOverlays/item/WorldMarker.h" },
-		{ "ToolTip", "@brief Will hold any UWidget or UcustomUiComponentBase inside this world marker,\nwith a position, max distance from player, used by the WorldMarkerCanvas class\ncan be constructed outside the ui and added later to have dynamic markers (for example, following aactor!)" },
+		{ "ToolTip", "@brief Will hold any UWidget or UcustomUiComponentBase inside this world marker,\nIS A NORMAL 2D WIDGET MANUALLY PROJECTED!\nwith a position, max distance from player, used by the WorldMarkerCanvas class\ncan be constructed outside the ui and added later to have dynamic markers (for example, following aactor!)" },
 	};
 #endif
 #if WITH_METADATA
@@ -113,9 +113,9 @@ void EmptyLinkFunctionForGeneratedCodeWorldMarker() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_item_WorldMarker_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_UWorldMarker, UWorldMarker::StaticClass, TEXT("UWorldMarker"), &Z_Registration_Info_UClass_UWorldMarker, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWorldMarker), 3899738140U) },
+		{ Z_Construct_UClass_UWorldMarker, UWorldMarker::StaticClass, TEXT("UWorldMarker"), &Z_Registration_Info_UClass_UWorldMarker, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UWorldMarker), 1451481056U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_item_WorldMarker_h_2943214701(TEXT("/Script/customUiPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_item_WorldMarker_h_1010342968(TEXT("/Script/customUiPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_item_WorldMarker_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_customUiPlugin_Source_customUiPlugin_ui_screens_WorldToScreenOverlays_item_WorldMarker_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

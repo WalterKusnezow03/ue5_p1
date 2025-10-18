@@ -78,7 +78,7 @@ bool UWorldMarker::IsSetEnabled(){
 void UWorldMarker::UpdateWorldPosition(FVector &worldPosIn){
     worldPosition = worldPosIn;
 
-    DebugHelper::showScreenMessage("World Position of Marker ", worldPosition);
+    //DebugHelper::showScreenMessage("World Position of Marker ", worldPosition);
 }
 
 const FVector &UWorldMarker::worldPositionRef(){
@@ -118,6 +118,48 @@ IBaseUiInterface *UWorldMarker::interfacePointer(){
     return owningInterface;
 }
 
+
+
+float UWorldMarker::DistanceFromPlayer(){
+    FVector playerLocation = PlayerInfo::playerLocation();
+    return FVector::Dist(GetWorldPosition(), playerLocation);
+}
+
+
+
+// ---- TODO CALL ON WORLD MARKER CANVAS UPDATE TICK! ---
+float UWorldMarker::ScaleForWidgetMaxRange(float scaleIn){
+    return ScaleForWidgetMaxRangeSquared(scaleIn, maxDistanceSquared);
+}
+
+float UWorldMarker::ScaleForWidgetMaxRangeSquared(float scaleIn, float maxDistSquaredIn){
+
+    float skalarInverted = ScalarForWidgetBasedOnPlayerDistance();
+    float scaleUpdated = scaleIn * skalarInverted;
+    return scaleUpdated;
+}
+
+
+float UWorldMarker::ScalarForWidgetBasedOnPlayerDistance(){
+    return ScalarForWidgetBasedOnPlayerDistance(maxDistanceSquared);
+}
+
+float UWorldMarker::ScalarForWidgetBasedOnPlayerDistance(float maxDistSquaredIn){
+    FVector playerLocation = PlayerInfo::playerLocation();
+    float distSquared = FVector::DistSquared(GetWorldPosition(), playerLocation);
+
+
+    //skalar = dtsiTarget / distAll
+    //flip: 1.0f - skalar 
+    float skalar = distSquared / maxDistSquaredIn;
+    float skalarInverted = 1.0f - skalar;
+    return skalarInverted;
+}
+
+FVector UWorldMarker::GetWorldPosition(){
+    return worldPosition;
+}
+
 bool UWorldMarker::IsInLookDirAndRangeOfPlayerInfo(){
     FVector location = PlayerInfo::playerLocation();
 	FVector look = PlayerInfo::playerLookDir();
@@ -125,7 +167,7 @@ bool UWorldMarker::IsInLookDirAndRangeOfPlayerInfo(){
 }
 
 bool UWorldMarker::IsInLookDirAndRange(FVector &playerLocation, FVector &look){
-    return IsInLookDir(playerLocation, look) && IsInRange(look); //quits at first statement if false.
+    return IsInLookDir(playerLocation, look) && IsInRange(playerLocation); //quits at first statement if false.
 }
 
 bool UWorldMarker::IsInLookDir(FVector &playerLocation, FVector &look){

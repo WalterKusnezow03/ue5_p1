@@ -4059,6 +4059,9 @@
   Runtime/Engine/Classes/GameFramework/Actor.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UiComponentParent.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UserWidgetBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/WorldWidgets/UUserWidgetBase/UserWidgetBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/UserWidgetBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/Vbox.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/VerticalDropDownBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h \
@@ -4067,6 +4070,14 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/animation/InterpolatorBase/TInterpolator.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetArrowBase.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/VerticalDropDownBase.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetActor.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/WorldWidgets/Actor/WidgetActor.h \
+  Runtime/UMG/Public/Components/WidgetComponent.h \
+  Runtime/SlateCore/Public/Layout/ArrangedWidget.h \
+  Runtime/Engine/Public/WorldCollision.h \
+  Runtime/Engine/Classes/Components/MeshComponent.h \
+  ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetComponent.generated.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetArrowBase.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetImage.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/customUiPlugin/UHT/WidgetProgressBarBase.gen.cpp \
@@ -4536,7 +4547,6 @@
   Runtime/Engine/Public/ShowFlags.h Runtime/Engine/Public/HitProxies.h \
   Runtime/Engine/Public/UnrealClient.h \
   Runtime/Engine/Public/CollisionQueryParams.h \
-  Runtime/Engine/Public/WorldCollision.h \
   Runtime/Engine/Public/ConvexVolume.h \
   Runtime/Engine/Public/BlendableManager.h \
   Runtime/Engine/Public/FinalPostProcessSettings.h \
@@ -4623,7 +4633,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/GameModeBase.generated.h \
   Runtime/Engine/Classes/Components/SceneComponent.h \
   Runtime/Engine/Classes/Components/PrimitiveComponent.h \
-  Runtime/Engine/Classes/Components/MeshComponent.h \
   Runtime/Engine/Classes/Components/StaticMeshComponent.h \
   Runtime/Engine/Classes/Components/SkeletalMeshComponent.h \
   Runtime/Engine/Classes/Components/CapsuleComponent.h \
@@ -5204,7 +5213,6 @@
   Runtime/SlateCore/Public/Layout/SlateRect.h \
   Runtime/SlateCore/Public/Rendering/SlateLayoutTransform.h \
   Runtime/SlateCore/Public/Layout/PaintGeometry.h \
-  Runtime/SlateCore/Public/Layout/ArrangedWidget.h \
   Runtime/SlateCore/Public/Layout/ArrangedChildren.h \
   Runtime/SlateCore/Public/Widgets/SNullWidget.h \
   Runtime/SlateCore/Public/Layout/LayoutUtils.h \
@@ -5649,4 +5657,6 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/UMG/UHT/WidgetAnimation.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/Widgets/textBox/TextBoxBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/ui/_baseClass/baseParent/UiComponentParent.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/UserInputTracking/UserInput.cpp
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/UserInputTracking/UserInput.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/WorldWidgets/Actor/WidgetActor.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/customUiPlugin/Source/customUiPlugin/WorldWidgets/UUserWidgetBase/UserWidgetBase.cpp

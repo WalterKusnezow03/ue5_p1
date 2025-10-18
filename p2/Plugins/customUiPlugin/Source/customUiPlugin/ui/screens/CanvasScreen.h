@@ -78,6 +78,16 @@ public:
     void AddChildWithPivot(UWidget *widget, FVector2D &alignment);
 
 
+
+    //resize widgets
+    void ResizeWidget(UWidget *widget, FVector2D &scale);
+    void ResizeWidgetMaxWidth(UWidget *widget, float maxAxis);
+    void ResizeWidgetMaxHeight(UWidget *widget, float maxAxis);
+
+    void ResizeWidgetFromScalar(UWidget *widget, float scalar);
+
+    void SetAlignment(UWidget *widget, FVector2D &weight);
+
 protected:
     void SetScreenPosition(UWidget *widget, FVector2D &screenPosition);
    

@@ -106,9 +106,11 @@ void UCanvasScreen::AddChild(
 void UCanvasScreen::AddChildWithPivot(UWidget *widget, FVector2D &alignment){
     if(widget && baseCanvas){
         UCanvasPanelSlot *CanvasSlot = Cast<UCanvasPanelSlot>(baseCanvas->AddChild(widget));
-        if(CanvasSlot != nullptr){
+        SetAlignment(widget, alignment);
+
+        /*if(CanvasSlot != nullptr){
             CanvasSlot->SetAlignment(alignment);
-        }
+        }*/
     }
 }
 
@@ -285,3 +287,85 @@ void UCanvasScreen::createBackgroundBlurAndDefaultColor(){
     createBackgroundBlur();
     setDefaultBackgroundColor();
 }
+
+
+
+void UCanvasScreen::ResizeWidget(UWidget *widget, FVector2D &scale){
+    if(widget){
+        if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(widget->Slot)){
+            CanvasSlot->SetSize(scale);
+        }
+    }
+}
+
+void UCanvasScreen::ResizeWidgetFromScalar(UWidget *widget, float scalar){
+    if(widget){
+        FVector2D widgetSize = widget->GetDesiredSize();
+        widgetSize *= scalar;
+        ResizeWidget(widget, widgetSize);
+    }
+}
+
+
+
+
+
+
+void UCanvasScreen::ResizeWidgetMaxWidth(UWidget *widget, float maxAxis){
+    if(widget){
+        if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(widget->Slot)){
+            FVector2D widgetSize = widget->GetDesiredSize();
+            float side = widgetSize.X;
+
+            if(side > maxAxis){
+                //scale down: scalar = distTarget / distAll
+                float scalar = side / maxAxis;
+                widgetSize *= scalar;
+                ResizeWidget(widget, widgetSize);
+            }
+
+        }
+    }
+}
+
+
+
+
+void UCanvasScreen::ResizeWidgetMaxHeight(UWidget *widget, float maxAxis){
+    if(widget){
+        FVector2D widgetSize = widget->GetDesiredSize();
+        float side = widgetSize.Y;
+
+        if(side > maxAxis){
+            //scale down: scalar = distTarget / distAll
+            float scalar = side / maxAxis;
+            widgetSize *= scalar;
+            ResizeWidget(widget, widgetSize);
+        }
+    }
+}
+
+
+
+
+
+///helper for changing slots 
+
+
+void UCanvasScreen::SetAlignment(UWidget *widget, FVector2D &weight){
+    //weight from 0 to 1 pivot
+    if(widget){
+        widget->SetRenderTransformPivot(weight);
+
+
+        /*if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(widget->Slot)){
+
+            //where is the difference from set alignment and set position
+            CanvasSlot->SetAlignment(weight);
+        }*/
+    }
+}
+
+
+
+

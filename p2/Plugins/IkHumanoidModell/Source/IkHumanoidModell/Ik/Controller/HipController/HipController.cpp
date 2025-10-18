@@ -182,13 +182,14 @@ void HipController::Tick(float deltatime){
 
     //DebugHelper::showScreenMessage(message);
 
+    /*
     DebugHelper::showScreenMessage(
         FString::Printf(
             TEXT("z height %.2f, v_z %.2f"), 
             GetLocation().Z, 
             velocity.Z
         )
-    );
+    );*/
 }
 
 void HipController::ResetAllLocomotionFlags(){

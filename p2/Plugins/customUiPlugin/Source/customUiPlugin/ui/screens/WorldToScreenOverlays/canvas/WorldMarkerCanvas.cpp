@@ -53,7 +53,7 @@ void UWorldMarkerCanvas::Update(UWorldMarker *marker){
     if(marker){
         //if forced to be invisible, do not update
         if(!marker->IsSetEnabled()){
-            DebugHelper::showScreenMessage("Marker Not Enabled!", FColor::Red);
+            //DebugHelper::showScreenMessage("Marker Not Enabled!", FColor::Red);
             return;
         }
 
@@ -74,10 +74,20 @@ void UWorldMarkerCanvas::Update(UWorldMarker *marker){
                 //todo here: if not projected, set invisible! / otherwise visible, also based on range to player!
                 if(bWasProjected){
                     SetScreenPosition(widget, screenPosition);
+
+                    //update scale of widget based on distance from player
+                    float widgetScaleScalar = marker->ScalarForWidgetBasedOnPlayerDistance();
+                    ResizeWidgetFromScalar(widget, widgetScaleScalar);
+
+                    DebugHelper::showScreenMessage("Widget scalar:", widgetScaleScalar);
+
+                    /*float scaledWidth = marker->ScaleForWidgetMaxRange(MaxWidgetWidth());
+                    DebugHelper::showScreenMessage("Widget scale:", scaledWidth);
+                    ResizeWidgetMaxWidth(widget, scaledWidth);*/
                 }
             }
         }else{
-            DebugHelper::showScreenMessage("Marker Not In Look Dir!!", FColor::Red);
+            //DebugHelper::showScreenMessage("Marker Not In Look Dir!!", FColor::Red);
         }
     }
 }
@@ -89,13 +99,14 @@ bool UWorldMarkerCanvas::inScreenSpace(
 
     if(Playercontroller){
 
+        /*
         DebugHelper::showLineBetween(
             Playercontroller->GetWorld(),
             WorldLocation,
             WorldLocation + FVector(0,0,1000),
             FColor::Yellow,
             0.1f
-        );
+        );*/
 
         FVector2D WidgetPosition;
         bool bProjected = UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
@@ -126,6 +137,10 @@ void UWorldMarkerCanvas::AddMarker(UWorldMarker *marker){
         //check and add widget / base ui interface
         if(IBaseUiInterface *interfaceIsPreferred = marker->interfacePointer()){
             AddChild(interfaceIsPreferred);
+
+            
+
+
             UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as interface");
         }else{
             if(UWidget *innerWidget = marker->widgetPointer()){
@@ -134,10 +149,21 @@ void UWorldMarkerCanvas::AddMarker(UWorldMarker *marker){
                 FVector2D pivot(0.5f, 0.5f);
                 AddChildWithPivot(innerWidget, pivot);
 
+                //set resoltuion to be capped
+                ResizeWidgetMaxWidth(innerWidget, MaxWidgetWidth());
+
                 UiDebugHelper::logMessage("UWorldMarkerCanvas added UWorldMarker as uwidget"); //prints
             }
         }
     }
+}
+
+float UWorldMarkerCanvas::MaxWidgetWidth(){
+    return maxWidgetWidth;
+}
+
+float UWorldMarkerCanvas::MaxWidgetHeight(){
+    return maxWidgetHeight;
 }
 
 void UWorldMarkerCanvas::AddMarker(UWorldMarkerComponent *actorComponent){

@@ -16,14 +16,17 @@ UCLASS()
 class CUSTOMUIPLUGIN_API UWorldMarkerCanvas : public UCanvasScreen{
     GENERATED_BODY()
 private:
-    bool blogMessage = true;
+    bool blogMessage = false;
+    float maxWidgetWidth = 200.0f;
+    float maxWidgetHeight = 50.0f;
 
 protected:
     virtual void PostInitProperties() override;
     void FindPlayerControllerAndWorld();
     bool PlayerControllerValid();
 
-
+    float MaxWidgetWidth();
+    float MaxWidgetHeight();
 
 public:
     ///@brief tick to update the items based on player transform

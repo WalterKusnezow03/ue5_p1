@@ -107,7 +107,7 @@ void UPlayerHud::updateTopWarningElementTimed(FString message, float timetolive)
 void UPlayerHud::Tick(float deltatime){
     Super::Tick(deltatime);
 
-    DebugHelper::showScreenMessage("PlayerHud Tick");
+    //DebugHelper::showScreenMessage("PlayerHud Tick");
 
     if(topWarningTime > 0.0f){
         topWarningTime -= deltatime;

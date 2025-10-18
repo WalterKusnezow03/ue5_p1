@@ -9,6 +9,7 @@
 class UWorldMarkerCanvas;
 
 /// @brief Will hold any UWidget or UcustomUiComponentBase inside this world marker,
+/// IS A NORMAL 2D WIDGET MANUALLY PROJECTED!
 /// with a position, max distance from player, used by the WorldMarkerCanvas class
 /// can be constructed outside the ui and added later to have dynamic markers (for example, following aactor!)
 UCLASS()
@@ -88,11 +89,26 @@ public:
     ///@brief will return if in range AND SET VISIBILTY ACCORDINGLY
     bool IsInRange(FVector &pos);
 
+
+
+
+    float DistanceFromPlayer();
+
+    float ScaleForWidgetMaxRange(float scaleIn);
+    float ScaleForWidgetMaxRangeSquared(float scaleIn, float maxDistSquaredIn);
+
+
+
+
+    float ScalarForWidgetBasedOnPlayerDistance();
+    float ScalarForWidgetBasedOnPlayerDistance(float maxDistSquaredIn);
+
 protected:
+    FVector GetWorldPosition();
 
     void SetVisible(bool flag);
 
-    int maxDistanceSquared = 100 * 100;
+    int maxDistanceSquared = 100 * 100; //eigentlich 100meter
     bool isEnabled = true;
 
 
