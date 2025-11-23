@@ -96,7 +96,8 @@ void RoadMaker::createRoad(
         )
         */
 
-        FVector2D startingPoint;
+        FVector2D startingPoint = FVectorUtil::randomOffset2D(limitall * 0.1f);
+
         float distanceBetweenAnchorsOnXAxisMin = scalePerChunk * 1.0f;
         float distanceBetweenAnchorsOnXAxisMax = scalePerChunk * 4.0f;
         float distanceBetweenAnchorsYRange = scalePerChunk * 2.0f;
@@ -131,71 +132,28 @@ void RoadMaker::createRoad(
 }
 
 void RoadMaker::AddCurveToCache(TVector<FVector2D> &curve){
-    int id = 0;
-    if(createdRoadsCache.Num() > 0){
-        id = createdRoadsCache.Last().Id() + 1;
+    TArray<FVector2D> temp;
+    temp.SetNumUninitialized(curve.size());
+    for (int i = 0; i < curve.size(); i++){
+        temp[i] = curve[i];
     }
-    RoadData r(id, curve);
-    createdRoadsCache.Add(r);
+
+    //for polygon building
+    roadIntersections.AddEdgesFromConnectedArray(temp);
+
+    //for widget draw
+    std::vector<FVector2D> copied = curve.copy();
+    rawRoads.Add(copied);
 }
 
 void RoadMaker::CreatePolygonShapesForBuildingFittingBetweenRoadIntersections(){
 
-    ///could be a giant rasterized polygon which
-    ///locks all roads with -1,
-    ///or makes in from polygon data / intersections
+    //new
+    roadIntersections.CreatePolygons(buildedSections);
 
-    //graph creation
-    FindAllTwoRoadIntersections();
-    roadIntersections.BuildGraph(); //adding nodes locked now
-    edgeCache = roadIntersections.GetEdges(); //copy edges for draw
 
-    //graph traversal, build polygons
-    TArray<FRoadSectionList> &sectionsBuilded = roadIntersections.DisassembleTraverseGraph();
 
-    
-
-    //build polygons
-    buildedSections.Empty();
-    for (int i = 0; i < sectionsBuilded.Num(); i++)
-    {
-        FRoadSectionList &sectionList = sectionsBuilded[i];
-        sectionList.BuildPolygonAutoExtract(createdRoadsCache);
-        TArray<FVector2D> &builded = sectionList.BuildedFromSections();
-        buildedSections.Add(builded);
-    }
-
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("RoadMaker::finished, sections builded(%d)"), //zu viele.
-            buildedSections.Num()
-        )
-    );
-
-    /*
-    //will not be needed.
-    GrahamScan2D scan2D;
-
-    void GrahamScan2D::ComputeConvexHull(
-        const TArray<FVector2D> &points,
-        TArray<int> &outIndices
-    )*/
 }
-
-
-void RoadMaker::FindAllTwoRoadIntersections(){
-    //something like < O(n^2)
-    for (int i = 0; i < createdRoadsCache.Num(); i++){
-        for (int j = i + 1; j < createdRoadsCache.Num(); j++){
-            RoadData &roadA = createdRoadsCache[i];
-            RoadData &roadB = createdRoadsCache[j];
-
-            ////add to map instead immidiatly!
-            roadA.FindIntersections(roadB, roadIntersections);
-        }
-    }
-}
-
 
 
 
@@ -383,19 +341,8 @@ void RoadMaker::lockQuadsFromParalellArrayLines(
 
 
 
-//// debug 
-TArray<TArray<std::pair<FVector2D, FVector2D>>> &RoadMaker::GetEdges(){
-    return edgeCache;
-}
-
-
 
 
 TArray<std::vector<FVector2D>> RoadMaker::GetRoads(){
-    TArray<std::vector<FVector2D>> outArray;
-    for (int i = 0; i < createdRoadsCache.Num(); i++){
-        RoadData &current = createdRoadsCache[i];
-        outArray.Add(current.getCurve());
-    }
-    return outArray;
+    return rawRoads;
 }

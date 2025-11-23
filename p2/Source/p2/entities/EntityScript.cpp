@@ -40,6 +40,8 @@ void AEntityScript::BeginPlay()
 }
 
 void AEntityScript::CreateMarkerOnBeginPlay(){
+	return; //debug
+
 	if(!markerComponent){
 		FVector offset(0, 0, 100);
 		markerComponent = UWorldMarkerComponent::Make(this, offset);

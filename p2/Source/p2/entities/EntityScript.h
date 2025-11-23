@@ -10,7 +10,6 @@
 #include "GameCore/util/timer.h"
 
 #include "ActionManager.h"
-#include "p2/entities/customIk/bonePackage/BoneController.h"
 
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
 

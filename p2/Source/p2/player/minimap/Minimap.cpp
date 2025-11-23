@@ -187,7 +187,7 @@ void AMinimap::initialRotation(){
 
 void AMinimap::initTexture(){
     if(texture == nullptr){
-        texture = UCustomRenderedTexture::Construct(this);
+        texture = UMinimapRenderedTexture::ConstructMinimapTexture(this);
         if(texture != nullptr){
             UMaterialInterface *material = texture->getMaterial();
             if(material){

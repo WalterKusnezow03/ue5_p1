@@ -27,7 +27,8 @@ public class p2 : ModuleRules
 			"CustomMaterialPlugin",
 			"AssetMakerEditorPlugin",
 			"NNCommunicationPlugin",
-			"DebugPlugin"
+			"DebugPlugin",
+			"ComputerVisionPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

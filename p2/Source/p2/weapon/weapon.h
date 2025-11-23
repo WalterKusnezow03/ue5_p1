@@ -10,12 +10,10 @@
 #include "carriedItem.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "ammunitionEnum.h"
-#include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
-#include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
 #include "GameCore/team/teamEnum.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "p2/entities/customIk/animation/KeyFrameAnimation.h"
+#include "CoreMath/animation/KeyFrames/KeyFrameAnimation.h"
 #include "GameCore/util/timer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 
@@ -95,6 +93,7 @@ public:
 	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type) override;
 
 	virtual void loadFingerTargets(HandTargetContainer &container) override;
+
 
 private:
 	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> left_fingerTargetsMap;

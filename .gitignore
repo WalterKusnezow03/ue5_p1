@@ -132,3 +132,10 @@ p2/Build/*/**
 
 # Built data for maps
 *_BuiltData.uasset
+
+
+
+
+
+# tensorflow and any third party
+p2/Plugins/ComputerVisionPlugin/ThirdParty/

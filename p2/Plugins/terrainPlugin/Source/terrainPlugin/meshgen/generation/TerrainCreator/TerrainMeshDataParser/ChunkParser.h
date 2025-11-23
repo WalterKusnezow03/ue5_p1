@@ -141,7 +141,7 @@ private:
 
 
 
-    //// ---- COOKED COLLISION CACHE ----
+    //// ---- COOKED COLLISION CACHE: too slow. ----
 public:
     FProcMeshCollisionStorageInterface &GetCookedCollisionDataCache(ELod lod);
     void SaveCollisionDataFrom(AcustomMeshActor *actor);

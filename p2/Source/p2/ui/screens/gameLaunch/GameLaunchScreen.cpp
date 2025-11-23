@@ -188,7 +188,7 @@ void UGameLaunchScreen::AddDebugElements(){
         UWidgetProgressBarBase *p = NewObject<UWidgetProgressBarBase>(this);
         menuVbox->AddChild((IBaseUiInterface*) p);
     }
-    if(true){
+    if(false){
         UGreedyFitWidget *widget = NewObject<UGreedyFitWidget>(this);
         DebugHelper::logMessage("created greedy fit widget");
         menuVbox->AddChild((IBaseUiInterface *)widget);

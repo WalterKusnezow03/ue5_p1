@@ -141,7 +141,7 @@ void AworldLevel::initWorld(FString WorldName){
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
     InstanceWorldLevel->humanBotsOnStart(1);
         
-    InstanceWorldLevel->createGroundPane();
+    //InstanceWorldLevel->createGroundPane();
 
     //testing
     DebugHelper::Debugtest(InstanceWorldLevel->GetWorld());

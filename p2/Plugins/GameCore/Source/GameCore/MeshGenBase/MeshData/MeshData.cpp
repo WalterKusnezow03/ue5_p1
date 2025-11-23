@@ -724,8 +724,8 @@ void MeshData::appendEfficent(
     int indexC = findClosestIndexTo(c);
 
     if(IsDegenerateTriangle(indexA, indexB, indexC)){
-        DebugHelper::logMessage("Detected Degenerate Triangle! ");
-        // return;
+        //DebugHelper::logMessage("Detected Degenerate Triangle! ");
+        //return;
     }
 
     int debugEfficentAdded = 3;

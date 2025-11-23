@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "p2/renderTargets/customRenderTarget/CustomRenderedTexture.h"
+#include "p2/renderTargets/customRenderTarget/MinimapRenderedTexture.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "Camera/CameraComponent.h"
 
@@ -43,7 +43,7 @@ private:
 
 
     UStaticMeshComponent *Mesh = nullptr;
-    UCustomRenderedTexture *texture = nullptr;
+    UMinimapRenderedTexture *texture = nullptr;
 
     void initialRotation();
     void initTexture();

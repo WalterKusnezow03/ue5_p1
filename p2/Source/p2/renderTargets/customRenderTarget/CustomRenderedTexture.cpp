@@ -8,31 +8,54 @@
 UCustomRenderedTexture* UCustomRenderedTexture::Construct(AActor *owner){
     if(owner != nullptr){
         UCustomRenderedTexture *ptr = NewObject<UCustomRenderedTexture>(owner);
-
         if(ptr){
-            ptr->setupRenderTarget();
-            ptr->setupMaterial();
+            ptr->Init();
             return ptr;
         }
-        
     }
     return nullptr;
 }
 
 
-void UCustomRenderedTexture::setupRenderTarget(){
+UCustomRenderedTexture* UCustomRenderedTexture::Construct(AActor *owner, int resX, int resY){
+    if(owner != nullptr){
+        UCustomRenderedTexture *ptr = NewObject<UCustomRenderedTexture>(owner);
+        if(ptr){
+            ptr->Init(resX, resY);
+            return ptr;
+        }
+    }
+    return nullptr;
+}
+
+
+void UCustomRenderedTexture::Init(){
+    Init(resX, resY);
+}
+
+void UCustomRenderedTexture::Init(int resXIn, int resYIn){
+    setupRenderTarget(resX, resY);
+    setupMaterial();
+}
+
+
+void UCustomRenderedTexture::setupRenderTarget(int resXIn, int resYIn){
     renderTarget = NewObject<UCanvasRenderTarget2D>(this);
 
 
-    renderTarget->InitCustomFormat(resX, resY, PF_FloatRGBA, false);
+    renderTarget->InitCustomFormat(resXIn, resYIn, PF_FloatRGBA, false);
             
     //Dynamische Methode binden
     renderTarget->OnCanvasRenderTargetUpdate.AddDynamic(
-        this, &UCustomRenderedTexture::CanvasUpdate
+        this, &UCustomRenderedTexture::UCanvasUpdate
     );
 
     // Erstes Update anstoßen
     renderTarget->UpdateResource();
+
+    //copy
+    resX = resXIn;
+    resY = resYIn;
 }
 
 void UCustomRenderedTexture::setupMaterial(){
@@ -71,27 +94,6 @@ FVector2D UCustomRenderedTexture::scalePercent(float percent){
 }
 
 
-void UCustomRenderedTexture::enableBackground(bool flag){
-    drawbackgroundFlag = flag;
-}
-
-
-
-void UCustomRenderedTexture::replaceMarkers(
-    TArray<FVector> &positions, 
-    textureEnum etexture
-){
-    markerMap[etexture] = positions;
-}
-
-void UCustomRenderedTexture::replaceMarkers(
-    TArray<MMatrix> &positions, 
-    textureEnum etexture
-){
-    markerMapMatrix[etexture] = positions;
-}
-
-
 
 
 /// @brief canvas to draw from player / ui component (for example minimap actor)
@@ -106,102 +108,19 @@ void UCustomRenderedTexture::Tick(float deltatime){
 /// @param Canvas 
 /// @param Width 
 /// @param Height 
+void UCustomRenderedTexture::UCanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height)
+{
+    CanvasUpdate(Canvas, Width, Height);
+}
+
 void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 Height)
 {
     if(Canvas == nullptr){
         return;
     }
 
-    float lineThickness = Width / 10.0f;
-
-    bool debugDrawMapBound = false;
-    if(debugDrawMapBound){
-        FLinearColor BackgroundColor = FLinearColor(1.0f,0.0f,0.0f,1.0f);
-        Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(Width, Height), lineThickness, BackgroundColor);
-
-        //debug corner
-        BackgroundColor = FLinearColor(1.0f,1.0f,0.0f,1.0f);
-        Canvas->K2_DrawBox(FVector2D(0, 0), FVector2D(100, 100), lineThickness, BackgroundColor);
-
-        //draw center
-        FVector2D center(Width / 2.0f, Height / 2.0f);
-        FVector2D dir(50,50);
-        Canvas->K2_DrawBox(center, dir, lineThickness / 4.0f, FLinearColor(1.0f,1.0f,1.0f,1.0f));
-    }
-
-
-    if(drawbackgroundFlag){
-        FVector2D pos(0,0);
-        FVector2D size(Width, Height);
-        float thickness = Width;
-        FLinearColor color(1.0f,1.0f,1.0f, 0.5f);
-        Canvas->K2_DrawBox(pos, size, thickness, color); //is opaque, not transculent (issue!)
-    }
-    
-   
-
-    //draw markers
-    drawMarkers(Canvas);
-
-
-    
+    //override this function.
 }
-
-/// @brief draws all markers on this canvas
-/// @param canvas 
-void UCustomRenderedTexture::drawMarkers(
-    UCanvas *canvas
-){
-    if(!canvas){
-        return;
-    }
-
-    if(assetManager *manager = assetManager::instance()){
-        FVector2D scaleForMarker = scalePercent(5.0f);
-        
-        bool centerPivot = true;
-
-        //vector only based drawing
-        for(auto &pair : markerMap){
-            textureEnum type = pair.first;
-            UTexture2D *texture = manager->Find<textureEnum, UTexture2D>(type);
-            
-            if(texture){
-                TArray<FVector> &positions = pair.second;
-                for(int i = 0; i < positions.Num(); i++){
-                    drawImage(
-                        canvas, 
-                        texture,
-                        positions[i],
-                        scaleForMarker,
-                        centerPivot
-                    );
-                }
-            }
-        }  
-
-        
-        //matrix based daring (with rotation)
-        for(auto &pair : markerMapMatrix){
-            textureEnum type = pair.first;
-            UTexture2D *texture = manager->Find<textureEnum, UTexture2D>(type);
-            if(texture){
-                TArray<MMatrix> &positions = pair.second;
-                for(int i = 0; i < positions.Num(); i++){
-                    drawImage(
-                        canvas, 
-                        texture,
-                        positions[i],
-                        scaleForMarker,
-                        centerPivot
-                    );
-                }
-            }
-        }   
-    }
-
-}
-
 
 
 void UCustomRenderedTexture::drawImage(
@@ -337,4 +256,9 @@ FVector2D UCustomRenderedTexture::centerPositionPivot(
     FVector2D outpos = pos;
     outpos -= scale / 2.0f;
     return outpos;
+}
+
+
+UCanvasRenderTarget2D *UCustomRenderedTexture::GetRenderTarget(){
+    return renderTarget;
 }

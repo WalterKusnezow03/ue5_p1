@@ -41,7 +41,7 @@ void AWidgetActor::Init(){
 
 
     // WidgetComponent Einstellungen
-    WidgetComponent->SetDrawSize(FVector2D(500.f, 500.f));
+    //WidgetComponent->SetDrawSize(FVector2D(500.f, 500.f)); //needed or auto size?
     WidgetComponent->SetWidgetSpace(EWidgetSpace::World);
     WidgetComponent->SetPivot(FVector2D(0.5f, 0.5f));
     WidgetComponent->SetTwoSided(true);
@@ -53,7 +53,7 @@ void AWidgetActor::Init(){
 
 
 
-    //start?
+    //start? needed?
     WidgetComponent->UpdateWidget();
 }
 

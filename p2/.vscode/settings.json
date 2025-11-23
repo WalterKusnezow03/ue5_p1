@@ -64,6 +64,16 @@
         "fstream": "cpp",
         "iomanip": "cpp",
         "iostream": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "regex": "cpp",
+        "forward_list": "cpp",
+        "queue": "cpp",
+        "span": "cpp",
+        "valarray": "cpp",
+        "source_location": "cpp",
+        "csignal": "cpp",
+        "future": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp"
     }
 }

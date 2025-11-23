@@ -15,10 +15,9 @@ void URoadIntersectWidget::ConstructWidget(){
         RoadMaker roadmaker;
         roadmaker.createRoads(10); //chunks 10
 
-
-        TArray<TArray<std::pair<FVector2D, FVector2D>>> edges = roadmaker.GetEdges(); //edges per intersection
+        TArray<TArray<std::pair<FVector2D, FVector2D>>> edges; //= roadmaker.GetEdges(); //edges per intersection
         TArray<std::vector<FVector2D>> roadSplines = roadmaker.GetRoads();
-        FVector2D scaleDesired(500, 500);
+        FVector2D scaleDesired(400, 400);
         MMatrix2D M = MoveAndScaleToPivot0(edges, roadSplines, scaleDesired);
 
         //apply M and add to meshdata
@@ -32,7 +31,7 @@ void URoadIntersectWidget::ConstructWidget(){
 
         //create roads for draw
         SlateMeshDataPolygon &layer1 = FindFromMap(0);
-        layer1.SetFullColor(FColor::Cyan);
+        layer1.SetFullColor(FColor::Black);
         SlateMeshData &meshData1 = layer1.MeshDataRef();
         
         for (int i = 0; i < roadSplines.Num(); i++){
@@ -54,17 +53,22 @@ void URoadIntersectWidget::ConstructWidget(){
 
         
 
-        
-        FVector2D drawOffset(520, 0);
+        //create polygons
+        //return;
+
+        FVector2D drawOffset(20, 0);
         TArray<TArray<FVector2D>> &polygons = roadmaker.BuildedSectionsRef();
         for (int i = 0; i < polygons.Num(); i++){
             TArray<FVector2D> &polygon = polygons[i];
             
-        
-            //make polygon per layer
-            SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);
 
             FColor color = ColorByIndex(i);
+
+            //make polygon per layer
+            SlateMeshDataPolygon &layer_current = FindFromMap(2 + i);
+            layer_current.SetFullColor(color);
+
+            
             SlateMeshData &meshDataCurrent = layer_current.MeshDataRef();
 
             for (int j = 1; j < polygon.Num(); j++){
@@ -101,13 +105,10 @@ void URoadIntersectWidget::AppendQuadFromEdge(FVector2D &a, FVector2D &b, SlateM
 FColor URoadIntersectWidget::ColorByIndex(int index){
     //create closed roads from traversed Polygons
     TArray<FColor> colors = {
-        FColor::Green, 
-        FColor::Cyan, 
-        FColor::Yellow, 
-        FColor::Black,
+        FColor::Green,
         FColor::Red,
         FColor::Blue,
-        FColor::Magenta
+        FColor::Yellow
     };
     int iMod = index % colors.Num();
     return colors[iMod];
