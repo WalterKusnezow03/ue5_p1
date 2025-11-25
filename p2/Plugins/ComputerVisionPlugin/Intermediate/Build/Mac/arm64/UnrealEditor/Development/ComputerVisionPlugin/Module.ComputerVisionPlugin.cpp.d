@@ -3864,7 +3864,9 @@
   Runtime/Engine/Public/LegacyScreenPercentageDriver.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LegacyScreenPercentageDriver.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/TensorBridge/TensorTextureBridge.h \
@@ -3892,4 +3894,6 @@
   Runtime/ImageWrapper/Public/IImageWrapperModule.h \
   Runtime/Core/Public/Modules/ModuleInterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.cpp
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.cpp

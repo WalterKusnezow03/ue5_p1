@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "CoreMinimal.h"
-
+#include "KeyPoint.h"
 
 class COMPUTERVISIONPLUGIN_API BlurredImage {
 
@@ -16,6 +16,13 @@ public:
     void ComputeDifferenceOverride(const BlurredImage &other);
     void ComputeDifference(const BlurredImage &other, TArray<float> &outArray);
 
+    void RemoveContrastFromDifference(float threshold);
+
+    void PasteImageGrayScale(
+        const TArray<FColor> &colorIn,
+        int sizeX,
+        int sizeY
+    );
 
     void BlurImage(
         const TArray<FColor> &colorIn,
@@ -46,6 +53,9 @@ public:
     FColor &GetPixel(int x, int y);
 
     //requires all buffer sizes to be the same.
+    bool IsValidKeypoint(int x, int y, BlurredImage &prev, BlurredImage &next, float threshold);
+
+    //requires all buffer sizes to be the same.
     bool IsExtremumPixel(
         int x, 
         int y, 
@@ -53,11 +63,24 @@ public:
         BlurredImage &next
     );
 
+    KeyPoint MakeKeyPoint(int x, int y);
+
     int SizeBuffer() const;
 
     int ToIndexClamped(int x, int y);
+    static int ToIndexClamped(int x, int y, int sizeX, int sizeBuffer);
+
+
+    //auch für die skalen invarianz (?)
+    float DifferenceOfGaussiansSaved(int x, int y);
+
+
+
+
 
 private:
+    float sigmaSaved = 1.0f;
+
     TArray<FColor> blurredBuffer;
     TArray<float> luminanceDifferenceOfGaussians; // convert all to linear color????
 
@@ -78,7 +101,7 @@ private:
     float GaussianScalar(int x, int y, float sigma);
 
     
-    int ToIndexClamped(int x, int y, int sizeX, int sizeBuffer);
+    
 
     void IndexTo2D(
         int index, 
@@ -94,9 +117,8 @@ private:
 
     float luminance(int x, int y);
     float luminance(const FColor &color);
-    float DifferenceOfGaussiansSaved(int x, int y);
+   
 
-    int ExtremaCheckValue(FColor &color);
-    bool MoreExtremeMin(int oldExtrema, FColor &check);
-    bool MoreExtremeMax(int oldExtrema, FColor &check);
+    
+    
 };

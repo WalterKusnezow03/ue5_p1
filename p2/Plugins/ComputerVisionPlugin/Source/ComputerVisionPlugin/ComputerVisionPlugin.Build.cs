@@ -46,7 +46,10 @@ public class ComputerVisionPlugin : ModuleRules
 				"Renderer",
 				"DebugPlugin",
 				"MetalRHI",
-				"ImageWrapper"
+				"ImageWrapper",
+
+				//new
+				//"ComputeShaderPlugin"
 			}
 			);
 

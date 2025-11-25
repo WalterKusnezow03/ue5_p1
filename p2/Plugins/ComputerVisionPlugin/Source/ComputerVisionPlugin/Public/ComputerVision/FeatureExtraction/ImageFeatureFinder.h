@@ -1,6 +1,7 @@
 #pragma once 
 #include "CoreMinimal.h"
-
+#include "KeyPoint.h"
+#include "ImagePatch.h"
 
 class COMPUTERVISIONPLUGIN_API ImageFeatureFinder {
 
@@ -19,6 +20,8 @@ public:
     TArray<FColor> extremaAsColorBuffer();
 
 private:
+    BlurredImage imageRawGray;
+    TArray<KeyPoint> keypointsMade;
 
     void ExtractFeatures(
         TArray<BlurredImage> &imageStack,
@@ -26,6 +29,9 @@ private:
         int sizeY
     );
 
+    float TimeStart;
+    void StartTime();
+    void EndTime(FString prefix);
 
     void ComputeDifferenceOfGaussians(
         TArray<BlurredImage> &imageStack
@@ -47,4 +53,39 @@ private:
 
 
     TArray<bool> extremaFlags;
+
+    void MakePatches(
+        TArray<FColor> &colorBuffer,
+        int sizeX,
+        int sizeY
+    );
+
+    bool CopyPatch(
+        int sizeX,
+        int sizeY,
+        int patchSize,
+        int startX,
+        int startY,
+        TArray<FColor> &colorBuffer,
+        TArray<FColor> &outColor
+    );
+
+    bool HasFeature(
+        int patchSize,
+        int startX,
+        int startY,
+        int sizeXOriginalBuffer
+    );
+
+
+    //new
+    TArray<ImagePatch> createdDesicriptorPatches;
+    void CreateDescriptorsFromKeyPoints(
+        TArray<FColor> &colorBuffer,
+        int sizeX);
+    ImagePatch CopyPatchFromKeyPoint(
+        KeyPoint &keypoint,
+        TArray<FColor> &colorBuffer,
+        int sizeX // of original image
+    );
 };

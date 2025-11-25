@@ -7,3 +7,5 @@
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.cpp"
 #include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.cpp"
+#include "/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.cpp"

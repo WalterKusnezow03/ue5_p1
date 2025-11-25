@@ -11,14 +11,28 @@
 #include "Misc/FileHelper.h"
 
 
+
+void ImageWriter::SaveColorBufferAsPngFromName(
+    uint8 *ColorData, 
+    int32 Width, 
+    int32 Height, 
+    FString imageNameIn
+){
+    FString path = FPaths::ProjectSavedDir() // has "/" at end
+                   + TEXT("ComputerVisionPlugin/") + imageNameIn;
+    SaveColorBufferAsPng(ColorData, Width, Height, path);
+}
+
 void ImageWriter::SaveColorBufferAsPng(uint8* ColorData, int32 Width, int32 Height, int32 id){
     if(id > MaxImages()){
         return;
     }
-
-    FString path = FPaths::ProjectSavedDir() // has "/" at end
-                   + TEXT("ComputerVisionPlugin/") + imageName(id);
-    SaveColorBufferAsPng(ColorData, Width, Height, path);
+    SaveColorBufferAsPngFromName(
+        ColorData,
+        Width,
+        Height,
+        imageName(id)
+    );
 }
 
 FString ImageWriter::imageName(int32 id){
@@ -38,6 +52,7 @@ void ImageWriter::SaveColorBufferAsPng(uint8* ColorData, int32 Width, int32 Heig
 
     FFileHelper::SaveArrayToFile(PngData, *FilePath);*/
 
+    DebugHelper::logMessage(FString::Printf(TEXT("ImageWriter::SaveImageAs %s"), *FilePath));
 
     IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
     TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);

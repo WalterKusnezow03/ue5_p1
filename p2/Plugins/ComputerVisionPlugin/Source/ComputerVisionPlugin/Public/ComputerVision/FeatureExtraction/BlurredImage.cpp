@@ -18,6 +18,10 @@ BlurredImage::BlurredImage(const BlurredImage &other){
 BlurredImage &BlurredImage::operator=(const BlurredImage &other){
     if(this != &other){
         blurredBuffer = other.blurredBuffer;
+        sigmaSaved = other.sigmaSaved;
+        luminanceDifferenceOfGaussians = other.luminanceDifferenceOfGaussians;
+        sizeXSaved = other.sizeXSaved;
+        sizeYSaved = other.sizeYSaved;
     }
     return *this;
 }
@@ -35,6 +39,21 @@ uint8 *BlurredImage::RawColorArrayPtr(){
     return ptr;
 }
 
+
+void BlurredImage::PasteImageGrayScale(
+    const TArray<FColor> &colorIn,
+    int sizeX,
+    int sizeY
+){
+    if(colorIn.Num() <= 0){
+        return;
+    }
+    blurredBuffer = colorIn;
+    sizeXSaved = sizeX;
+    sizeYSaved = sizeY;
+    ApplyGrayScale();
+}
+
 void BlurredImage::BlurImage(
     const TArray<FColor> &colorIn, 
     int sizeX, 
@@ -45,6 +64,7 @@ void BlurredImage::BlurImage(
     if(colorIn.Num() <= 0){
         return;
     }
+    sigmaSaved = sigma;
     blurredBuffer.SetNumUninitialized(colorIn.Num());
     sizeXSaved = sizeX;
     sizeYSaved = sizeY;
@@ -198,6 +218,16 @@ void BlurredImage::ComputeDifferenceOverride(const BlurredImage &other){
     ComputeDifference(other, luminanceDifferenceOfGaussians);
 }
 
+void BlurredImage::RemoveContrastFromDifference(float threshold){
+    for (int i = 0; i < luminanceDifferenceOfGaussians.Num(); i++){
+        if(std::abs(luminanceDifferenceOfGaussians[i]) < threshold){
+            luminanceDifferenceOfGaussians[i] = 0.0f;
+        }
+    }
+}
+
+
+
 FColor &BlurredImage::GetPixel(int x, int y){
     int asIndex = ToIndexClamped(x, y);
     if(asIndex >= 0 && asIndex < blurredBuffer.Num()){
@@ -211,10 +241,6 @@ int BlurredImage::SizeBuffer() const {
     return blurredBuffer.Num();
 }
 
-//erstmal so, sollte helligkeit sein?
-int BlurredImage::ExtremaCheckValue(FColor &color){
-    return luminance(color);
-}
 
 float BlurredImage::luminance(int x, int y){
     return luminance(GetPixel(x, y));
@@ -233,21 +259,6 @@ float BlurredImage::DifferenceOfGaussiansSaved(int x, int y){
     return 0.0f;
 }
 
-bool BlurredImage::MoreExtremeMin(int oldExtrema, FColor &check){
-    int compare = ExtremaCheckValue(check);
-    if (compare < oldExtrema){
-        return true;
-    }
-    return false;
-}
-
-bool BlurredImage::MoreExtremeMax(int oldExtrema, FColor &check){
-    int compare = ExtremaCheckValue(check);
-    if (compare > oldExtrema){
-        return true;
-    }
-    return false;
-}
 
 bool BlurredImage::IsExtremumPixel(
     int x, 
@@ -306,39 +317,78 @@ bool BlurredImage::IsExtremumPixel(
                     isExtremaMax = false;
                 }
 
-                /*
-                //mit darüber und darunter üben prüfen ob max, und seiten, 
-                //3x3x3 block checkup
-                FColor &prevPixel = prev.GetPixel(i, j);
-                FColor &nextPixel = next.GetPixel(i, j);
-                FColor &currentNeighbor = GetPixel(i, j);
-
-                if(
-                    MoreExtremeMin(extrema, prevPixel) ||
-                    MoreExtremeMin(extrema, nextPixel)
-                ){
-                    if(x != i && y != i){
-
-                        if(MoreExtremeMin(extrema, currentNeighbor)){
-                            isExtremaMin = false;
-                        }
-                    }
-                }
-                if(
-                    MoreExtremeMax(extrema, prevPixel) ||
-                    MoreExtremeMax(extrema, nextPixel)
-                ){
-                    if(x != i && y != i){
-
-                        if(MoreExtremeMax(extrema, currentNeighbor)){
-                            isExtremaMax = false;
-                        }
-                    }
-                }*/
                 
             }
         }
         return isExtremaMin || isExtremaMax;
     }
     return false;
+}
+
+
+//not tested.
+bool BlurredImage::IsValidKeypoint(
+    int x, 
+    int y, 
+    BlurredImage &prev, 
+    BlurredImage &next, 
+    float thresHold
+)
+{
+    if(IsExtremumPixel(x, y, prev, next)){
+        
+        // --- Kantenfilter ---
+
+        //hessian: Die ableitung ist ide steigung der funktion
+        //die steigung der steigung ist die beschleunigung
+        //wenn die beschleunigung sehr hoch ist, ist es eine harte kante.
+
+
+        //taylor = sum_i ((f'^i (x) / i!) * (x-p)^i
+        //aus taylor beidseitig: f’’(x) =ca= f(x+1) − 2f(x) + f(x−1)
+        /*
+        Taylor rechts:
+        t(x+1) = f(x) + f’(x) + 1/2 f’’(x)(x+1)^2
+        Taylor links:
+        t(x−1) = f(x) − f’(x) + 1/2 f’’(x)(x-1)^2
+
+
+        x^2 + 2x + 1 + x^2 - 2x + 1 = 2x^2 + 2
+
+        TAll = f(x) + f’(x) + 1/2 f’’(x) + f(x) − f’(x) + 1/2 f’’(x)
+        TAll = 1/2 f’’(x) + 1/2 f’’(x) + f(x) + f’(x) + f(x) − f’(x)
+        TAll = f’’(x) + 2f(x)
+        f’’(x) = fx - 2fx 
+        f’’(x) = (fx - 2fx)
+        */
+        
+        float Dxx = DifferenceOfGaussiansSaved(x+1,y) + DifferenceOfGaussiansSaved(x-1,y) - 2*DifferenceOfGaussiansSaved(x,y);
+        
+        float Dyy = DifferenceOfGaussiansSaved(x,y+1) + DifferenceOfGaussiansSaved(x,y-1) - 2*DifferenceOfGaussiansSaved(x,y);
+        float Dxy = (
+            DifferenceOfGaussiansSaved(x+1,y+1) - 
+            DifferenceOfGaussiansSaved(x+1,y-1) - 
+            DifferenceOfGaussiansSaved(x-1,y+1) + 
+            DifferenceOfGaussiansSaved(x-1,y-1)
+        ) / 4.0f;
+
+        float Trace = Dxx + Dyy;
+        float Trace2 = Trace * Trace;
+        float Det = Dxx * Dyy - Dxy * Dxy; //ad - bc
+
+        if(Det <= 0.0f || (Trace2 / Det) > thresHold){
+            return false; // Pixel verwerfen, da instabil
+        }
+        return true;
+    }
+
+    return false;
+}
+
+
+
+KeyPoint BlurredImage::MakeKeyPoint(int x, int y){
+    float angle = 0.0f;
+    KeyPoint point(x, y, sigmaSaved, angle);
+    return point;
 }

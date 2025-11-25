@@ -97,40 +97,56 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
     if(bufferPackage.ProcessHasFinished()){
         DebugHelper::logMessage("AComputerVisionActor::GpuCopy finished");
         LogGpuCopyTime();
-        TArray<FColor> color;
+
+        TArray<FColor> colorBuffer;
         ToColorBuffer(
-            bufferPackage.refDataPtr(), 
+            bufferPackage.refDataPtr(),
             ResolutionX,
             ResolutionY,
-            color
+            colorBuffer
         );
+        if (colorBuffer.Num() > 0){
+            // compare buffer
+            if (colorBuffer == LastCapturedPixels)
+            {
+                DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has NOT Changed");
+                return true;
+            }
+        }
+        LastCapturedPixels = colorBuffer;
 
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("AComputerVisionActor::GpuCopy Color buffer size: (%d)"), color.Num()
-            )
-        );
+        Async(EAsyncExecution::ThreadPool, [this, color = colorBuffer]() mutable
+        {
+            
+            
+            
 
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("AComputerVisionActor::GpuCopy Color buffer size: (%d)"), color.Num()
+                )
+            );
 
-        //debug use unreal own method
-        //color = ReadPixels(); ---> bricked!
-        
-        
-        if(color.Num() > 0){
-            //compare buffer
-            if(color != LastCapturedPixels){
-                //DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has Changed");
-                //PrintBuffer(color);
+            // debug use unreal own method
+            // color = ReadPixels(); ---> bricked!
 
-                uint8 *ptr = (uint8*) color.GetData(); // bufferPackage.DataPtrAsUint8()
+            // DEBUG
+            bool saveImages = true;
+
+            if (color.Num() > 0)
+            {
+                
+                // DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has Changed");
+                // PrintBuffer(color);
+
+                uint8 *ptr = (uint8 *)color.GetData(); // bufferPackage.DataPtrAsUint8()
                 imageId++;
+                DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageRaw");
                 ImageWriter::SaveColorBufferAsPng(ptr, ResolutionX, ResolutionY, imageId);
 
-
-
-
-                //debug blur all
-                if(true){
+                // debug blur all
+                if (true)
+                {
                     BlurredImage image;
                     image.BlurImage(
                         color,
@@ -141,42 +157,43 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                     );
                     image.ApplyGrayScale();
 
-                    if(image.IsValid(ResolutionX, ResolutionY)){
+                    if (image.IsValid(ResolutionX, ResolutionY))
+                    {
                         uint8 *ptrB = image.RawColorArrayPtr();
                         imageId++;
-                        ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                        if (saveImages)
+                        {
+                            DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageBlurred");
+                            ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                        }
                     }
-                    
                 }
 
-                //extrema detection
-                if(true){
+                // extrema detection
+                if (true)
+                {
                     ImageFeatureFinder finder;
                     finder.ExtractFeatures(
                         color,
-                        ResolutionX, 
+                        ResolutionX,
                         ResolutionY
                     );
                     TArray<FColor> coloredEdges = finder.extremaAsColorBuffer();
-                    uint8 *ptrB = (uint8*) coloredEdges.GetData();
+                    uint8 *ptrB = (uint8 *)coloredEdges.GetData();
                     imageId++;
-                    ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                    if (saveImages)
+                    {
+                        ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                        DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");
+                    }
                 }
-
-
-
-
             }
-            else
-            {
-                DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has NOT Changed");
-            }
+            
 
-            LastCapturedPixels = color;
-        }        
+                
+            
+        });
         return true;
-    }else{
-        //DebugHelper::showScreenMessage("AComputerVisionActor::GpuCopyRunning!", FColor::Cyan);
     }
 
     DebugHelper::showScreenMessage(
