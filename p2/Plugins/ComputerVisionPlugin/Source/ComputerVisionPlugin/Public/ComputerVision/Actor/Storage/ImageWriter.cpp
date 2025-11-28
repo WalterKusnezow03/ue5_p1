@@ -41,6 +41,10 @@ FString ImageWriter::imageName(int32 id){
 
 void ImageWriter::SaveColorBufferAsPng(uint8* ColorData, int32 Width, int32 Height, const FString& FilePath)
 {
+
+    //DEBUG
+    return;
+
     /*TArray<FColor> ColorArray;
     ColorArray.SetNumUninitialized(Width * Height);
 

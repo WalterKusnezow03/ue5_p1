@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 
+
+
 class COMPUTERVISIONPLUGIN_API KeyPoint
 {
 public:
@@ -16,9 +18,13 @@ public:
 
     void Dimensions(int windowSize, int &outX, int &outY, int &outEndX, int &outEndY);
 
+   
+
 private:
     int x;
     int y;
     float sigma;   // scale
     float angle;   // orientation (next step)
+
+    
 };

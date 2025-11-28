@@ -21,7 +21,7 @@ public:
 
 private:
     BlurredImage imageRawGray;
-    TArray<KeyPoint> keypointsMade;
+    //TArray<KeyPoint> keypointsMade;
 
     void ExtractFeatures(
         TArray<BlurredImage> &imageStack,

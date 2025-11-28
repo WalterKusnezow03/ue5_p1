@@ -3841,6 +3841,316 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Package/BufferPackage.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/ComputerVisionActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/ComputerVisionPlugin.init.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/PythonSocket.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Private/../../../Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h \
+  Runtime/Sockets/Public/Sockets.h \
+  Runtime/Core/Public/Containers/UnrealString.h \
+  Runtime/Core/Public/CoreTypes.h Runtime/Core/Public/Misc/Timespan.h \
+  Runtime/Sockets/Public/SocketTypes.h \
+  Runtime/Core/Public/UObject/NameTypes.h \
+  Runtime/Core/Public/UObject/UnrealNames.h \
+  Runtime/Sockets/Public/SocketSubsystem.h \
+  Runtime/Sockets/Public/AddressInfoTypes.h \
+  Runtime/Sockets/Public/IPAddress.h \
+  Runtime/Core/Public/Containers/Array.h \
+  Runtime/Core/Public/Containers/Map.h \
+  Runtime/Core/Public/Containers/StringConv.h \
+  Runtime/Core/Public/HAL/CriticalSection.h \
+  Runtime/Core/Public/Logging/LogMacros.h \
+  Runtime/Net/Common/Public/Net/Common/Sockets/SocketErrors.h \
+  Runtime/Core/Public/Templates/SharedPointer.h \
+  Runtime/Core/Public/Templates/UniquePtr.h \
+  Runtime/Networking/Public/Networking.h \
+  Runtime/Core/Public/Misc/MonolithicHeaderBoilerplate.h \
+  Runtime/Core/Public/Core.h \
+  Runtime/Core/Public/Containers/ContainersFwd.h \
+  Runtime/Core/Public/Misc/DateTime.h \
+  Runtime/Core/Public/HAL/PlatformCrt.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformMemory.h \
+  Runtime/Core/Public/HAL/PlatformMemory.h \
+  Runtime/Core/Public/Misc/Char.h \
+  Runtime/Core/Public/Templates/EnableIf.h \
+  Runtime/Core/Public/Templates/AndOrNot.h \
+  Runtime/Core/Public/Templates/RemoveCV.h \
+  Runtime/Core/Public/Templates/IsArithmetic.h \
+  Runtime/Core/Public/Templates/IsFloatingPoint.h \
+  Runtime/Core/Public/Templates/IsIntegral.h \
+  Runtime/Core/Public/Templates/IsPointer.h \
+  Runtime/Core/Public/Templates/IsPODType.h \
+  Runtime/Core/Public/Templates/IsUECoreType.h \
+  Runtime/Core/Public/Templates/IsSigned.h \
+  Runtime/Core/Public/Templates/IsTriviallyCopyAssignable.h \
+  Runtime/Core/Public/Templates/IsTriviallyCopyConstructible.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformMisc.h \
+  Runtime/Core/Public/HAL/PlatformMisc.h \
+  Runtime/Core/Public/Logging/LogVerbosity.h \
+  Runtime/Core/Public/Misc/VarArgs.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformStricmp.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformString.h \
+  Runtime/Core/Public/HAL/PlatformString.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformStackWalk.h \
+  Runtime/Core/Public/HAL/PlatformStackWalk.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h \
+  Runtime/Core/Public/HAL/PlatformMath.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformNamedPipe.h \
+  Runtime/Core/Public/HAL/PlatformNamedPipe.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformTime.h \
+  Runtime/Core/Public/HAL/PlatformTime.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformProcess.h \
+  Runtime/Core/Public/HAL/PlatformProcess.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformCriticalSection.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformAtomics.h \
+  Runtime/Core/Public/HAL/PlatformAtomics.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformTLS.h \
+  Runtime/Core/Public/HAL/PlatformTLS.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformFile.h \
+  Runtime/Core/Public/HAL/PlatformFile.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformAffinity.h \
+  Runtime/Core/Public/HAL/PlatformAffinity.h \
+  Runtime/Core/Public/HAL/PlatformIncludes.h \
+  Runtime/Core/Public/HAL/PlatformFileManager.h \
+  Runtime/Core/Public/Misc/AssertionMacros.h \
+  Runtime/Core/Public/HAL/UnrealMemory.h \
+  Runtime/Core/Public/Templates/PointerIsConvertibleFromTo.h \
+  Runtime/Core/Public/Templates/AlignmentTemplates.h \
+  Runtime/Core/Public/Templates/RemoveReference.h \
+  Runtime/Core/Public/Templates/ChooseClass.h \
+  Runtime/Core/Public/Templates/IntegralConstant.h \
+  Runtime/Core/Public/Templates/IsClass.h \
+  Runtime/Core/Public/Templates/TypeCompatibleBytes.h \
+  Runtime/Core/Public/Traits/IsContiguousContainer.h \
+  Runtime/Core/Public/Templates/IsTriviallyDestructible.h \
+  Runtime/Core/Public/Misc/CString.h \
+  Runtime/Core/Public/Templates/IsEnumClass.h \
+  Runtime/Core/Public/GenericPlatform/GenericPlatformProperties.h \
+  Runtime/Core/Public/HAL/PlatformProperties.h \
+  Runtime/Core/Public/Misc/EngineVersionBase.h \
+  Runtime/Core/Public/Internationalization/TextNamespaceFwd.h \
+  Runtime/Core/Public/Templates/Less.h \
+  Runtime/Core/Public/Templates/Greater.h \
+  Runtime/Core/Public/Logging/LogCategory.h \
+  Runtime/Core/Public/Misc/OutputDevice.h \
+  Runtime/Core/Public/Misc/MessageDialog.h \
+  Runtime/Core/Public/Misc/Exec.h \
+  Runtime/Core/Public/Math/NumericLimits.h \
+  Runtime/Core/Public/Math/UnrealMathUtility.h \
+  Runtime/Core/Public/Templates/UnrealTypeTraits.h \
+  Runtime/Core/Public/Templates/UnrealTemplate.h \
+  Runtime/Core/Public/Templates/Decay.h \
+  Runtime/Core/Public/Templates/Invoke.h \
+  Runtime/Core/Public/Templates/Function.h \
+  Runtime/Core/Public/Templates/MemoryOps.h \
+  Runtime/Core/Public/Misc/CoreDefines.h \
+  Runtime/Core/Public/Containers/ContainerAllocationPolicies.h \
+  Runtime/Core/Public/UObject/UObjectHierarchyFwd.h \
+  Runtime/Core/Public/CoreGlobals.h \
+  Runtime/Core/Public/HAL/FileManager.h \
+  Runtime/Core/Public/ProfilingDebugging/ScopedDebugInfo.h \
+  Runtime/Core/Public/Features/IModularFeature.h \
+  Runtime/Core/Public/ProfilingDebugging/ExternalProfiler.h \
+  Runtime/Core/Public/Misc/Build.h Runtime/Core/Public/HAL/MemoryBase.h \
+  Runtime/Core/Public/Misc/ByteSwap.h \
+  Runtime/Core/Public/Misc/Compression.h \
+  Runtime/Core/Public/Misc/StringUtility.h \
+  Runtime/Core/Public/Misc/Parse.h Runtime/Core/Public/Misc/Crc.h \
+  Runtime/Core/Public/UObject/ObjectVersion.h \
+  Runtime/Core/Public/Templates/TypeHash.h \
+  Runtime/Core/Public/Containers/EnumAsByte.h \
+  Runtime/Core/Public/Serialization/Archive.h \
+  Runtime/Core/Public/Serialization/ArchiveProxy.h \
+  Runtime/Core/Public/Serialization/NameAsStringProxyArchive.h \
+  Runtime/Core/Public/Templates/Sorting.h \
+  Runtime/Core/Public/Containers/ScriptArray.h \
+  Runtime/Core/Public/Containers/MRUArray.h \
+  Runtime/Core/Public/Containers/IndirectArray.h \
+  Runtime/Core/Public/Misc/ITransaction.h \
+  Runtime/Core/Public/Containers/ArrayBuilder.h \
+  Runtime/Core/Public/Containers/BitArray.h \
+  Runtime/Core/Public/Serialization/BitReader.h \
+  Runtime/Core/Public/Serialization/BitWriter.h \
+  Runtime/Core/Public/Containers/SparseArray.h \
+  Runtime/Core/Public/Math/IntPoint.h \
+  Runtime/Core/Public/Misc/StructBuilder.h \
+  Runtime/Core/Public/Algo/Reverse.h Runtime/Core/Public/HAL/Event.h \
+  Runtime/Core/Public/Misc/ScopedEvent.h \
+  Runtime/Core/Public/HAL/Runnable.h \
+  Runtime/Core/Public/HAL/RunnableThread.h \
+  Runtime/Core/Public/Misc/SingleThreadEvent.h \
+  Runtime/Core/Public/Misc/SingleThreadRunnable.h \
+  Runtime/Core/Public/HAL/ThreadManager.h \
+  Runtime/Core/Public/Misc/IQueuedWork.h \
+  Runtime/Core/Public/Misc/QueuedThreadPool.h \
+  Runtime/Core/Public/HAL/ThreadSafeCounter.h \
+  Runtime/Core/Public/HAL/ThreadSafeCounter64.h \
+  Runtime/Core/Public/HAL/ThreadSafeBool.h \
+  Runtime/Core/Public/Misc/NoopCounter.h \
+  Runtime/Core/Public/Misc/ScopeLock.h \
+  Runtime/Core/Public/HAL/TlsAutoCleanup.h \
+  Runtime/Core/Public/HAL/ThreadSingleton.h \
+  Runtime/Core/Public/Containers/ArrayView.h \
+  Runtime/Core/Public/Misc/CoreMisc.h \
+  Runtime/Core/Public/Misc/CommandLine.h \
+  Runtime/Core/Public/Misc/FileHelper.h Runtime/Core/Public/Misc/Paths.h \
+  Runtime/Core/Public/Containers/StaticArray.h \
+  Runtime/Core/Public/Containers/StaticBitArray.h \
+  Runtime/Core/Public/Containers/Set.h \
+  Runtime/Core/Public/Containers/MapBuilder.h \
+  Runtime/Core/Public/Containers/List.h \
+  Runtime/Core/Public/Containers/ResourceArray.h \
+  Runtime/Core/Public/Containers/DynamicRHIResourceArray.h \
+  Runtime/Core/Public/Templates/RefCounting.h \
+  Runtime/Core/Public/UObject/WeakObjectPtrTemplates.h \
+  Runtime/Core/Public/UObject/ScriptDelegates.h \
+  Runtime/Core/Public/Delegates/DelegateSettings.h \
+  Runtime/Core/Public/Delegates/IDelegateInstance.h \
+  Runtime/Core/Public/Delegates/DelegateBase.h \
+  Runtime/Core/Public/Delegates/MulticastDelegateBase.h \
+  Runtime/Core/Public/Delegates/IntegerSequence.h \
+  Runtime/Core/Public/Templates/Tuple.h \
+  Runtime/Core/Public/Delegates/Delegate.h \
+  Runtime/Core/Public/HAL/ThreadingBase.h \
+  Runtime/Core/Public/Internationalization/CulturePointer.h \
+  Runtime/Core/Public/Internationalization/TextLocalizationManager.h \
+  Runtime/Core/Public/Internationalization/ITextData.h \
+  Runtime/Core/Public/Templates/IsArray.h \
+  Runtime/Core/Public/Templates/RemoveExtent.h \
+  Runtime/Core/Public/Internationalization/Text.h \
+  Runtime/Core/Public/Internationalization/TextLocalizationManagerGlobals.h \
+  Runtime/Core/Public/Templates/UniqueObj.h \
+  Runtime/Core/Public/Internationalization/Internationalization.h \
+  Runtime/Core/Public/Internationalization/Culture.h \
+  Runtime/Core/Public/Misc/Guid.h Runtime/Core/Public/Misc/NetworkGuid.h \
+  Runtime/Core/Public/Math/Color.h Runtime/Core/Public/Math/ColorList.h \
+  Runtime/Core/Public/Math/IntVector.h \
+  Runtime/Core/Public/Math/Vector2D.h Runtime/Core/Public/Math/IntRect.h \
+  Runtime/Core/Public/Math/Vector.h Runtime/Core/Public/Math/Vector4.h \
+  Runtime/Core/Public/Math/VectorRegister.h \
+  Runtime/Core/Public/Math/TwoVectors.h Runtime/Core/Public/Math/Edge.h \
+  Runtime/Core/Public/Math/Plane.h Runtime/Core/Public/Math/Sphere.h \
+  Runtime/Core/Public/Math/CapsuleShape.h \
+  Runtime/Core/Public/Math/Rotator.h \
+  Runtime/Core/Public/Math/RangeBound.h Runtime/Core/Public/Math/Range.h \
+  Runtime/Core/Public/Math/RangeSet.h \
+  Runtime/Core/Public/Math/Interval.h Runtime/Core/Public/Math/Box.h \
+  Runtime/Core/Public/Math/Box2D.h \
+  Runtime/Core/Public/Math/BoxSphereBounds.h \
+  Runtime/Core/Public/Math/OrientedBox.h Runtime/Core/Public/Math/Axis.h \
+  Runtime/Core/Public/Math/Matrix.h \
+  Runtime/Core/Public/Math/RotationTranslationMatrix.h \
+  Runtime/Core/Public/Math/RotationAboutPointMatrix.h \
+  Runtime/Core/Public/Math/ScaleRotationTranslationMatrix.h \
+  Runtime/Core/Public/Math/RotationMatrix.h \
+  Runtime/Core/Public/Math/Quat.h \
+  Runtime/Core/Public/Math/PerspectiveMatrix.h \
+  Runtime/Core/Public/Math/OrthoMatrix.h \
+  Runtime/Core/Public/Math/TranslationMatrix.h \
+  Runtime/Core/Public/Math/QuatRotationTranslationMatrix.h \
+  Runtime/Core/Public/Math/InverseRotationMatrix.h \
+  Runtime/Core/Public/Math/ScaleMatrix.h \
+  Runtime/Core/Public/Math/MirrorMatrix.h \
+  Runtime/Core/Public/Math/ClipProjectionMatrix.h \
+  Runtime/Core/Public/Math/InterpCurvePoint.h \
+  Runtime/Core/Public/Math/InterpCurve.h \
+  Runtime/Core/Public/Math/CurveEdInterface.h \
+  Runtime/Core/Public/Math/Float32.h Runtime/Core/Public/Math/Float16.h \
+  Runtime/Core/Public/Math/Float16Color.h \
+  Runtime/Core/Public/Math/Vector2DHalf.h \
+  Runtime/Core/Public/Math/Transform.h \
+  Runtime/Core/Public/Math/ConvexHull2d.h \
+  Runtime/Core/Public/Math/UnrealMath.h \
+  Runtime/Core/Public/Math/SHMath.h \
+  Runtime/Core/Public/Math/RandomStream.h \
+  Runtime/Core/Public/Logging/LogSuppressionInterface.h \
+  Runtime/Core/Public/Logging/LogScopedCategoryAndVerbosityOverride.h \
+  Runtime/Core/Public/HAL/OutputDevices.h \
+  Runtime/Core/Public/Logging/LogScopedVerbosityOverride.h \
+  Runtime/Core/Public/Misc/OutputDeviceRedirector.h \
+  Runtime/Core/Public/Misc/OutputDeviceNull.h \
+  Runtime/Core/Public/Misc/OutputDeviceMemory.h \
+  Runtime/Core/Public/Misc/OutputDeviceFile.h \
+  Runtime/Core/Public/Templates/Atomic.h \
+  Runtime/Core/Public/Misc/OutputDeviceDebug.h \
+  Runtime/Core/Public/Misc/OutputDeviceArchiveWrapper.h \
+  Runtime/Core/Public/Misc/OutputDeviceError.h \
+  Runtime/Core/Public/Misc/OutputDeviceAnsiError.h \
+  Runtime/Core/Public/Misc/BufferedOutputDevice.h \
+  Runtime/Core/Public/Stats/StatsMisc.h \
+  Runtime/Core/Public/Containers/LockFreeList.h \
+  Runtime/Core/Public/Containers/LockFreeFixedSizeAllocator.h \
+  Runtime/Core/Public/Containers/ChunkedArray.h \
+  Runtime/Core/Public/Stats/Stats.h Runtime/Core/Public/Misc/CoreStats.h \
+  Runtime/Core/Public/Misc/TimeGuard.h \
+  Runtime/Core/Public/Misc/MemStack.h \
+  Runtime/Core/Public/Async/AsyncWork.h \
+  Runtime/Core/Public/Serialization/MemoryArchive.h \
+  Runtime/Core/Public/Serialization/MemoryWriter.h \
+  Runtime/Core/Public/Serialization/LargeMemoryWriter.h \
+  Runtime/Core/Public/Memory/MemoryFwd.h \
+  Runtime/Core/Public/Memory/MemoryView.h \
+  Runtime/Core/Public/Serialization/LargeMemoryData.h \
+  Runtime/Core/Public/Serialization/LargeMemoryReader.h \
+  Runtime/Core/Public/Misc/EnumClassFlags.h \
+  Runtime/Core/Public/Serialization/BufferArchive.h \
+  Runtime/Core/Public/Serialization/MemoryReader.h \
+  Runtime/Core/Public/Serialization/ArrayReader.h \
+  Runtime/Core/Public/Serialization/ArrayWriter.h \
+  Runtime/Core/Public/Serialization/BufferReader.h \
+  Runtime/Core/Public/Serialization/BufferWriter.h \
+  Runtime/Core/Public/Misc/Variant.h \
+  Runtime/Core/Public/Misc/WildcardString.h \
+  Runtime/Core/Public/Containers/CircularBuffer.h \
+  Runtime/Core/Public/Containers/CircularQueue.h \
+  Runtime/Core/Public/Containers/Queue.h \
+  Runtime/Core/Public/Containers/Ticker.h \
+  Runtime/Core/Public/ProfilingDebugging/ProfilingHelpers.h \
+  Runtime/Core/Public/Misc/ConfigCacheIni.h \
+  Runtime/Core/Public/HAL/IConsoleManager.h \
+  Runtime/Core/Public/Misc/OutputDeviceHelper.h \
+  Runtime/Core/Public/Containers/StringFwd.h \
+  Runtime/Core/Public/Misc/SlowTaskStack.h \
+  Runtime/Core/Public/Misc/FeedbackContext.h \
+  Runtime/Core/Public/Misc/SlowTask.h \
+  Runtime/Core/Public/Misc/ScopedSlowTask.h \
+  Runtime/Core/Public/Misc/AutomationTest.h \
+  Runtime/Core/Public/Templates/ScopedCallback.h \
+  Runtime/Core/Public/Misc/CoreDelegates.h \
+  Runtime/Core/Public/Misc/CallbackDevice.h \
+  Runtime/Core/Public/Misc/ObjectThumbnail.h \
+  Runtime/Core/Public/Misc/LocalTimestampDirectoryVisitor.h \
+  Runtime/Core/Public/Serialization/CustomVersion.h \
+  Runtime/Core/Public/UObject/BlueprintsObjectVersion.h \
+  Runtime/Core/Public/UObject/BuildObjectVersion.h \
+  Runtime/Core/Public/UObject/CoreObjectVersion.h \
+  Runtime/Core/Public/UObject/EditorObjectVersion.h \
+  Runtime/Core/Public/UObject/FrameworkObjectVersion.h \
+  Runtime/Core/Public/UObject/MobileObjectVersion.h \
+  Runtime/Core/Public/UObject/NetworkingObjectVersion.h \
+  Runtime/Core/Public/UObject/OnlineObjectVersion.h \
+  Runtime/Core/Public/UObject/PhysicsObjectVersion.h \
+  Runtime/Core/Public/UObject/PlatformObjectVersion.h \
+  Runtime/Core/Public/UObject/RenderingObjectVersion.h \
+  Runtime/Core/Public/UObject/SequencerObjectVersion.h \
+  Runtime/Core/Public/UObject/VRObjectVersion.h \
+  Runtime/Core/Public/Misc/App.h \
+  Runtime/Core/Public/Misc/OutputDeviceConsole.h \
+  Runtime/Core/Public/Misc/MonitoredProcess.h \
+  Runtime/Core/Public/Misc/Attribute.h \
+  Runtime/Core/Public/Misc/Optional.h \
+  Runtime/Core/Public/Misc/EnumRange.h \
+  Runtime/Networking/Public/Interfaces/IPv4/IPv4SubnetMask.h \
+  Runtime/Core/Public/HAL/Platform.h \
+  Runtime/Networking/Public/Interfaces/IPv4/IPv4Address.h \
+  Runtime/Networking/Public/Interfaces/IPv4/IPv4Endpoint.h \
+  Runtime/Networking/Public/Interfaces/IPv4/IPv4Subnet.h \
+  Runtime/Networking/Public/Interfaces/Steam/SteamEndpoint.h \
+  Runtime/Networking/Public/Interfaces/INetworkingModule.h \
+  Runtime/Core/Public/Modules/ModuleInterface.h \
+  Runtime/Networking/Public/Common/TcpSocketBuilder.h \
+  Runtime/Networking/Public/Common/TcpListener.h \
+  Runtime/Networking/Public/Common/UdpSocketReceiver.h \
+  Runtime/Networking/Public/Common/UdpSocketSender.h \
+  Runtime/Networking/Public/Common/UdpSocketBuilder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/PythonSocket.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Private/ComputerVisionPlugin.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVisionPlugin.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/ComputerVisionActor.cpp \
@@ -3856,17 +4166,17 @@
   Runtime/RenderCore/Public/RenderGraphDefinitions.h \
   Runtime/RenderCore/Public/ShaderParameterMacros.h \
   Runtime/RenderCore/Public/GBufferInfo.h \
-  Runtime/Core/Public/Containers/UnrealString.h \
-  Runtime/Core/Public/HAL/Platform.h Runtime/Core/Public/PixelFormat.h \
-  Runtime/RHI/Public/RHIDefinitions.h \
+  Runtime/Core/Public/PixelFormat.h Runtime/RHI/Public/RHIDefinitions.h \
   Runtime/RHI/Public/RHIShaderPlatform.h \
   Runtime/Engine/Public/SceneUtils.h \
   Runtime/Engine/Public/LegacyScreenPercentageDriver.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LegacyScreenPercentageDriver.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/TensorBridge/TensorTextureBridge.h \
@@ -3881,19 +4191,34 @@
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneCaptureComponent.generated.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/SceneCaptureComponent2D.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Package/BufferPackage.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/SharedMemory/SharedMemory.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/SharedMemory/SharedMemory.h \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ostream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/bitset \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.cpp \
-  Runtime/Engine/Public/ImageUtils.h Runtime/Core/Public/Misc/Guid.h \
+  Runtime/Engine/Public/ImageUtils.h \
   Runtime/ImageCore/Public/ImageCore.h \
-  Runtime/Core/Public/Misc/FileHelper.h \
   Runtime/Core/Public/HAL/PlatformFilemanager.h \
   Runtime/ImageWrapper/Public/IImageWrapper.h \
-  Runtime/Core/Public/Containers/Array.h \
-  Runtime/Core/Public/Containers/ArrayView.h \
-  Runtime/Core/Public/CoreTypes.h \
-  Runtime/Core/Public/Templates/SharedPointer.h \
   Runtime/ImageWrapper/Public/IImageWrapperModule.h \
-  Runtime/Core/Public/Modules/ModuleInterface.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.cpp
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/VLAD/GlobalFeatureVector.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/VLAD/GlobalFeatureVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_tensor.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/c_api_macros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_datatype.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_status.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/xla/tsl/c/tsl_status.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/c_api.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_attrtype.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_buffer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_tstring.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/core/platform/ctstring.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tsl/platform/ctstring.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tsl/platform/ctstring_internal.h

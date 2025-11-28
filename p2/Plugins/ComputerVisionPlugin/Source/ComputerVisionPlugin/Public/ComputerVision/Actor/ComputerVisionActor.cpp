@@ -8,6 +8,7 @@
 #include "ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.h"
 #include "ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h"
 
+#include "ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h"
 #include "DebugPlugin/DebugHelper.h"
 
 AComputerVisionActor::AComputerVisionActor()
@@ -20,6 +21,7 @@ AComputerVisionActor::AComputerVisionActor()
 void AComputerVisionActor::BeginPlay()
 {
     Super::BeginPlay();
+    APythonSocket::MakeInstance(GetWorld());
 
     // Erstelle ein RenderTarget für das Bot-Bild
     RenderTarget = NewObject<UTextureRenderTarget2D>(this);
@@ -90,12 +92,12 @@ FRHITexture2D *AComputerVisionActor::GpuRhiTexture(){
 bool AComputerVisionActor::TickCheckBufferCompleted(){
     //debug
     if(bufferPackage.refFlagCompleted()){
-        DebugHelper::logMessage("AComputerVisionActor::GpuCopy asyncMarkedCompleted");
+        //DebugHelper::logMessage("AComputerVisionActor::GpuCopy asyncMarkedCompleted");
     }
 
 
     if(bufferPackage.ProcessHasFinished()){
-        DebugHelper::logMessage("AComputerVisionActor::GpuCopy finished");
+        //DebugHelper::logMessage("AComputerVisionActor::GpuCopy finished");
         LogGpuCopyTime();
 
         TArray<FColor> colorBuffer;
@@ -118,14 +120,14 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
         Async(EAsyncExecution::ThreadPool, [this, color = colorBuffer]() mutable
         {
             
-            
+            //!ACHTUNG! speichern erzeugt hier manchmal unsafe thread state. Achtung.
             
 
-            DebugHelper::logMessage(
+            /*DebugHelper::logMessage(
                 FString::Printf(
                     TEXT("AComputerVisionActor::GpuCopy Color buffer size: (%d)"), color.Num()
                 )
-            );
+            );*/
 
             // debug use unreal own method
             // color = ReadPixels(); ---> bricked!
@@ -141,7 +143,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
 
                 uint8 *ptr = (uint8 *)color.GetData(); // bufferPackage.DataPtrAsUint8()
                 imageId++;
-                DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageRaw");
+                //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageRaw");
                 ImageWriter::SaveColorBufferAsPng(ptr, ResolutionX, ResolutionY, imageId);
 
                 // debug blur all
@@ -163,7 +165,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                         imageId++;
                         if (saveImages)
                         {
-                            DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageBlurred");
+                            //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageBlurred");
                             ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
                         }
                     }
@@ -184,7 +186,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                     if (saveImages)
                     {
                         ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
-                        DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");
+                        //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");
                     }
                 }
             }
@@ -196,10 +198,10 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
         return true;
     }
 
-    DebugHelper::showScreenMessage(
+    /*DebugHelper::showScreenMessage(
         FString::Printf(TEXT("AComputerVisionActor::%s"), *bufferPackage.flags()),
         FColor::Cyan
-    );
+    );*/
     
 
     return false;
@@ -211,12 +213,12 @@ void AComputerVisionActor::PrintBuffer(TArray<FColor> &colors){
     for (int i = 0; i < log; i++)
     {
         FColor &colorA = colors[i];
-        DebugHelper::logMessage(
+        /*DebugHelper::logMessage(
             FString::Printf(
                 TEXT("AComputerVisionActor::GpuCopy::Color compare extracted %s"),
                 *colorA.ToString()
             )
-        );
+        );*/
     }
 }
 

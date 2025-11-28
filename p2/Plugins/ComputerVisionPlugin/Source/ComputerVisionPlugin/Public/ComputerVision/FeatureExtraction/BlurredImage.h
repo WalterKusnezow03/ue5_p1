@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "KeyPoint.h"
+#include "ImagePatch.h"
 
 class COMPUTERVISIONPLUGIN_API BlurredImage {
 
@@ -76,12 +77,17 @@ public:
 
 
 
+    //per gaussian layer created.
+    ImagePatch GeneratePatch(int x, int y, int windowSize);
 
+    TArray<FColor> CopyPatch(int xStart, int yStart, int xEnd, int yEnd);
 
 private:
     float sigmaSaved = 1.0f;
 
     TArray<FColor> blurredBuffer;
+
+   
     TArray<float> luminanceDifferenceOfGaussians; // convert all to linear color????
 
     int sizeXSaved = 1;

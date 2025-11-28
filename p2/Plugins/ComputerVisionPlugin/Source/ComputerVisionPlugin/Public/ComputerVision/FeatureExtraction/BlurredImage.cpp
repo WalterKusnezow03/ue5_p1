@@ -78,8 +78,9 @@ void BlurredImage::BlurImage(
             sigma
         );
     }
-}
 
+
+}
 
 void BlurredImage::BlurImageAndApplyGrayScale(
     const TArray<FColor> &colorIn,
@@ -386,6 +387,54 @@ bool BlurredImage::IsValidKeypoint(
 }
 
 
+
+//patch PER GAUSSIAN BLURRED IMAGE
+ImagePatch BlurredImage::GeneratePatch(int x, int y, int windowSize){
+    KeyPoint keypoint = MakeKeyPoint(x, y);
+
+    int xStart = 0;
+    int yStart = 0;
+    int xEnd = 0;
+    int yEnd = 0;
+    keypoint.Dimensions(
+        windowSize,
+        xStart, //all by ref.
+        yStart,
+        xEnd,
+        yEnd
+    );
+    TArray<FColor> color = CopyPatch(xStart, yStart, xEnd, yEnd);
+
+    ImagePatch patch;
+    int sizeX = xEnd - xStart;
+    int sizeY = yEnd - yStart;
+    int32 idNone = 0;
+    patch.SavePatch(color, sizeX, sizeY, idNone);
+    patch.ScaleDown(windowSize); //erst scalen invarianz, dann rotation
+    patch.ComputeLuminance();
+    patch.ComputeGradients();// Magnitude + Orientation pro Pixel
+
+    //TODO HIER: GRADIENT NOCH! (NACH SCALE DOWN)
+    //patch.ComputeGradients();      // Magnitude + Orientation pro Pixel
+
+
+    return patch;
+}
+
+TArray<FColor> BlurredImage::CopyPatch(int xStart, int yStart, int xEnd, int yEnd){
+    TArray<FColor> outColor;
+    for (int i = xStart; i < xEnd; i++)
+    {
+        for (int j = yStart; j < yEnd; j++){
+            int asIndex = BlurredImage::ToIndexClamped(i,j, sizeXSaved, blurredBuffer.Num());
+            if(asIndex >= 0 && asIndex < blurredBuffer.Num()){
+                FColor &colorAt = blurredBuffer[asIndex];
+                outColor.Add(colorAt);
+            }
+        }
+    }
+    return outColor;
+}
 
 KeyPoint BlurredImage::MakeKeyPoint(int x, int y){
     float angle = 0.0f;

@@ -47,7 +47,8 @@ public class ComputerVisionPlugin : ModuleRules
 				"DebugPlugin",
 				"MetalRHI",
 				"ImageWrapper",
-
+				"Sockets",
+    			"Networking"
 				//new
 				//"ComputeShaderPlugin"
 			}
@@ -66,6 +67,9 @@ public class ComputerVisionPlugin : ModuleRules
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/include"));
 
 		PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/lib/libtensorflow.dylib"));
+		
+		
+		
 		//PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/lib/libtensorflow_framework.dylib"));
 
 		//RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/lib/libtensorflow.dylib"));

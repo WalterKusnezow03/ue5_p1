@@ -60,7 +60,7 @@ void ImageFeatureFinder::ExtractFeatures(
     StartTime();
     ExtractFeatures(blurred, sizeX, sizeY);
     //MakePatches(colors, sizeX, sizeY);
-    CreateDescriptorsFromKeyPoints(colors, sizeX);
+    //CreateDescriptorsFromKeyPoints(colors, sizeX);
 
     EndTime("ImageFeatureFinder::extractFeatures");
 }
@@ -148,8 +148,11 @@ void ImageFeatureFinder::CheckAndMarkExtrema(
                 )
                 {
                     extremaFlags[index] = true;
-                    KeyPoint keypoint = current.MakeKeyPoint(i, j);
-                    keypointsMade.Add(keypoint);
+
+
+                    int windowSize = 16;
+                    ImagePatch made = current.GeneratePatch(i, j, windowSize);
+                    createdDesicriptorPatches.Add(made);
                 }
                 else
                 {
@@ -260,61 +263,3 @@ bool ImageFeatureFinder::HasFeature(
 
 
 
-
-//// ----- new ------
-void ImageFeatureFinder::CreateDescriptorsFromKeyPoints(
-    TArray<FColor> &colorBuffer, 
-    int sizeX
-){
-    for (int i = 0; i < keypointsMade.Num(); i++){
-        KeyPoint &current = keypointsMade[i];
-        ImagePatch copiedPatch = CopyPatchFromKeyPoint(current, colorBuffer, sizeX);
-
-        int scalePixel = 16;
-        copiedPatch.ScaleDown(scalePixel);
-        copiedPatch.OverrideId(i); //to differentiate when saved.
-        createdDesicriptorPatches.Add(copiedPatch);
-        copiedPatch.SaveToStorage();
-    }
-}
-
-ImagePatch ImageFeatureFinder::CopyPatchFromKeyPoint(
-    KeyPoint &keypoint, 
-    TArray<FColor> &colorBuffer,
-    int sizeX //of original image
-){
-    TArray<FColor> outColor;
-    int windowSize = 3;
-    int xStart = 0;
-    int yStart = 0;
-    int xEnd = 0;
-    int yEnd = 0;
-    
-
-    keypoint.Dimensions(
-        windowSize,
-        xStart, //all by ref.
-        yStart,
-        xEnd,
-        yEnd
-    );
-
-    for (int i = xStart; i < xEnd; i++){
-        for (int j = yStart; j < yEnd; j++){
-            int asIndex = BlurredImage::ToIndexClamped(i,j, sizeX, colorBuffer.Num());
-            if(asIndex >= 0 && asIndex < colorBuffer.Num()){
-                FColor &colorAt = colorBuffer[asIndex];
-                outColor.Add(colorAt);
-            }
-        }
-    }
-
-    //setup patch
-    int scaleX = xEnd - xStart;
-    int scaleY = yEnd - yStart;
-    int32 idNone = 0;
-    ImagePatch patch;
-    patch.SavePatch(outColor, scaleX, scaleY, idNone);
-
-    return patch;
-}
