@@ -5,7 +5,6 @@
 #include "GameCore/interfaces/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
-#include "carriedItem.h"
 #include "p2/player/playerScript.h"
 #include "sightScript.h"
 #include "ammunitionEnum.h"
@@ -19,7 +18,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "carriedItem.h"
+
 
 #include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 #include "p2/weapon/weaponProperties/WeaponPropertiesMap.h"
@@ -249,7 +248,7 @@ void Aweapon::shootBot(FVector target){
 /// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
 /// @param Start pos
 /// @param End pos target
-void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
+bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
@@ -273,15 +272,13 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
 
 
-		// If the raycast hit something, log the hit actor's name
+		// If the raycast hit something, save hitresult and return positive
 		if (bHit)
 		{
-			AActor* actor = HitResult.GetActor();
-			if(actor != nullptr){
-				
-				IDamageinterface* entity = Cast<IDamageinterface>(actor);
-				damageIfPossible(ownTeam, entity, HitResult, Start, End);
-			}
+			latestHit = HitResult;
+			AActor *actor = HitResult.GetActor();
+			damageIfPossible(ownTeam, actor, HitResult, Start, End);
+			
 		}
 
 
@@ -292,11 +289,25 @@ void Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 			float distance = 50000; //50 * 100cm = 50m
 			AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
 		}
-		
+
+		return bHit;
 	}
+	return false;
 }
 
 
+void Aweapon::damageIfPossible(
+	teamEnum ownTeam,
+	AActor *actor,
+	FHitResult &hitresult,
+	FVector &start,
+	FVector &end
+){
+	if(actor != nullptr){
+		IDamageinterface* entity = Cast<IDamageinterface>(actor);
+		damageIfPossible(ownTeam, entity, hitresult, start, end);
+	}
+}
 
 void Aweapon::damageIfPossible(
 	teamEnum ownTeam,
@@ -336,6 +347,14 @@ void Aweapon::damageIfPossible(
 	}
 }
 
+
+
+FVector Aweapon::LatestHitLocation(){
+	return latestHit.Location;
+}
+FVector Aweapon::LatestHitNormal(){
+	return latestHit.Normal;
+}
 
 
 
@@ -541,7 +560,7 @@ void Aweapon::setMagAnimPath(FString path){
 /// @brief setups all components for the animations
 void Aweapon::setupAnimations()
 {
-	animationPathSet();
+	animationPathSet(); //used for skeletal animations!
 
 	FString s;
 	// Find all components of type USkeletalMeshComponent attached to this actor

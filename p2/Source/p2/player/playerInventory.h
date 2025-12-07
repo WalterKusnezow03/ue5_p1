@@ -8,7 +8,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * must be refactured to carried item!
  */
 class P2_API playerInventory
 {

@@ -21,6 +21,8 @@ ImagePatch &ImagePatch::operator=(const ImagePatch &other){
         sizeXSaved = other.sizeXSaved;
         sizeYSaved = other.sizeYSaved;
         id = other.id;
+        screenPosition = other.screenPosition;
+        FeatureVector = other.FeatureVector;
     }
     return *this;
 }
@@ -34,6 +36,21 @@ void ImagePatch::SavePatch(TArray<FColor> &colorIn, int sizePatchX, int sizePatc
 
     //for debugging --> looks ok.
     //SaveToStorage();
+}
+
+void ImagePatch::SavePatch(
+    TArray<FColor> &colorIn, 
+    int sizePatchX, 
+    int sizePatchY, 
+    int32 idIn,
+    FVector2D &screenPositonIn
+){
+    SavePatch(colorIn, sizePatchX, sizePatchY, idIn);
+    screenPosition = screenPositonIn;
+}
+
+FVector2D &ImagePatch::GetOriginalImagePosition(){
+    return screenPosition;
 }
 
 void ImagePatch::SaveToStorage(){
@@ -462,7 +479,7 @@ FVector2D ImagePatch::ComputeGradient(int x, int y){
     FVector2D outGradient;
 
     //m(x,y) = sqrt(gx^2 + gy^2)
-    //m(x,y) = sqrt((L(x + 1,y)− L(x − 1,y))2 + (L(x,y + 1)− L(x,y− 1))2)
+    //m(x,y) = sqrt((L(x + 1,y)− L(x − 1,y))2 + (L(x,y + 1)− L(x,y− 1))2) 
     float gx = luminance(x + 1, y) - luminance(x - 1, y);
     float gy = luminance(x, y + 1) - luminance(x, y - 1);
     outGradient.X = gx;
@@ -498,4 +515,32 @@ FColor &ImagePatch::GetPixel(int x, int y){
         return colorSaved[index];
     }
     return fallback;
+}
+
+
+
+
+
+//distance euklid
+float ImagePatch::Distance(ImagePatch &other){
+    float a = DistanceSquared(other);
+    if(a >= 0.0f){
+        return std::sqrt(a);
+    }
+    return -1;//issue
+}
+
+float ImagePatch::DistanceSquared(ImagePatch &other){
+    float sum = 0.0f;
+    TArray<float> &featureVec1 = FeatureVectorRef();
+    TArray<float> &featureVec2 = other.FeatureVectorRef();
+    if(featureVec1.Num() != featureVec2.Num()){
+        return -1; //issue
+    }
+    for (int i = 0; i < featureVec1.Num(); i++){
+        //(a_i - b_i)^2 as sum, sqrt
+        float dist = featureVec1[i] - featureVec2[i];
+        sum += dist * dist;
+    }
+    return sum;
 }

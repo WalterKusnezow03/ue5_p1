@@ -5,7 +5,7 @@
 ===========================================================================*/
 
 #include "UObject/GeneratedCppIncludes.h"
-#include "../../../Source/ComputerVisionPlugin/Public/ComputerVision/Actor/ComputerVisionActor.h"
+#include "../../Source/ComputerVisionPlugin/Public/ComputerVision/Actor/ComputerVisionActor.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeComputerVisionActor() {}
 // Cross Module References
@@ -38,10 +38,6 @@ void EmptyLinkFunctionForGeneratedCodeComputerVisionActor() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_ResolutionY_MetaData[];
 #endif
 		static const UECodeGen_Private::FIntPropertyParams NewProp_ResolutionY;
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_FOV_MetaData[];
-#endif
-		static const UECodeGen_Private::FFloatPropertyParams NewProp_FOV;
 #if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_SceneCapture_MetaData[];
 #endif
@@ -81,13 +77,6 @@ void EmptyLinkFunctionForGeneratedCodeComputerVisionActor() {}
 #endif
 	const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_ResolutionY = { "ResolutionY", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(AComputerVisionActor, ResolutionY), METADATA_PARAMS(Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_ResolutionY_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_ResolutionY_MetaData)) };
 #if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_FOV_MetaData[] = {
-		{ "Category", "Bot Vision" },
-		{ "ModuleRelativePath", "Public/ComputerVision/Actor/ComputerVisionActor.h" },
-	};
-#endif
-	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_FOV = { "FOV", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, nullptr, nullptr, STRUCT_OFFSET(AComputerVisionActor, FOV), METADATA_PARAMS(Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_FOV_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_FOV_MetaData)) };
-#if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_SceneCapture_MetaData[] = {
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/ComputerVision/Actor/ComputerVisionActor.h" },
@@ -103,7 +92,6 @@ void EmptyLinkFunctionForGeneratedCodeComputerVisionActor() {}
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_AComputerVisionActor_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_ResolutionX,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_ResolutionY,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_FOV,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_SceneCapture,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AComputerVisionActor_Statics::NewProp_RenderTarget,
 	};
@@ -144,9 +132,9 @@ void EmptyLinkFunctionForGeneratedCodeComputerVisionActor() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_ComputerVisionPlugin_Source_ComputerVisionPlugin_Public_ComputerVision_Actor_ComputerVisionActor_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AComputerVisionActor, AComputerVisionActor::StaticClass, TEXT("AComputerVisionActor"), &Z_Registration_Info_UClass_AComputerVisionActor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AComputerVisionActor), 973311914U) },
+		{ Z_Construct_UClass_AComputerVisionActor, AComputerVisionActor::StaticClass, TEXT("AComputerVisionActor"), &Z_Registration_Info_UClass_AComputerVisionActor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AComputerVisionActor), 1966434612U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_ComputerVisionPlugin_Source_ComputerVisionPlugin_Public_ComputerVision_Actor_ComputerVisionActor_h_2075379541(TEXT("/Script/ComputerVisionPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_ComputerVisionPlugin_Source_ComputerVisionPlugin_Public_ComputerVision_Actor_ComputerVisionActor_h_2957302210(TEXT("/Script/ComputerVisionPlugin"),
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_ComputerVisionPlugin_Source_ComputerVisionPlugin_Public_ComputerVision_Actor_ComputerVisionActor_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_ComputerVisionPlugin_Source_ComputerVisionPlugin_Public_ComputerVision_Actor_ComputerVisionActor_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

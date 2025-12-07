@@ -9,6 +9,9 @@ public:
     ImageFeatureFinder();
     ~ImageFeatureFinder();
 
+    ImageFeatureFinder(const ImageFeatureFinder &other);
+    ImageFeatureFinder &operator=(const ImageFeatureFinder &other);
+
     void ExtractFeatures(
         TArray<FColor> &colors,
         int sizeX, 
@@ -18,6 +21,8 @@ public:
     
 
     TArray<FColor> extremaAsColorBuffer();
+
+    TArray<ImagePatch> &ExtractedFeaturePatches();
 
 private:
     BlurredImage imageRawGray;

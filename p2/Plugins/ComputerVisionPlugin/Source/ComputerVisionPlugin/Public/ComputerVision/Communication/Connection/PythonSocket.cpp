@@ -1,4 +1,5 @@
 #include "PythonSocket.h"
+#include "ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImagePatch.h"
 
 APythonSocket *APythonSocket::instancePtr = nullptr;
 
@@ -352,5 +353,30 @@ void APythonSocket::Receive(TArray<uint8> &data, int32 numBytes, int32 &bytesrea
         UE_LOG(LogTemp, Log, 
             TEXT("APythonSocket::Receive %d bytes"), bytesread
         );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+void APythonSocket::ExposeSiftToPython(TArray<ImagePatch> &images){
+    
+    int N = images.Num(); // Anzahl Deskriptoren
+    int d = 128;   // Dimension pro Deskriptor
+    std::vector<float> data;
+    data.reserve(N * d);
+
+    // Alle Patch-Features in data kopieren
+    for (int i = 0; i < images.Num(); i++) {
+        ImagePatch &patch = images[i];
+        TArray<float> &features = patch.FeatureVectorRef();
+        data.insert(data.end(), features.GetData(), features.GetData() + features.Num());
     }
 }

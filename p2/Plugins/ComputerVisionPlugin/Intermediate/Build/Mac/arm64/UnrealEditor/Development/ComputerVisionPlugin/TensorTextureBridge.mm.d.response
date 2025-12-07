@@ -279,7 +279,7 @@
 -I"Runtime/Apple/MetalRHI/Public"
 -I"Runtime/Apple"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT"
--I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include"
+-I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source"
 -I"/Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public"
 -isystem"ThirdParty/mimalloc/include"

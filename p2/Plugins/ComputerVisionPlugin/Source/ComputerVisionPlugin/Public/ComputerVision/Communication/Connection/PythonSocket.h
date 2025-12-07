@@ -8,6 +8,7 @@
 
 #include "PythonSocket.generated.h"
 
+class ImagePatch;
 
 UCLASS()
 class COMPUTERVISIONPLUGIN_API APythonSocket : public AActor{
@@ -23,6 +24,8 @@ public:
     static APythonSocket *instance(){
         return instancePtr;
     }
+
+    void ExposeSiftToPython(TArray<ImagePatch> &images);
 
 private:
     void OpenSocket(float deltatime);

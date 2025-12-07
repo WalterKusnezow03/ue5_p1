@@ -5,7 +5,7 @@
 ===========================================================================*/
 
 #include "UObject/GeneratedCppIncludes.h"
-#include "../../../Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h"
+#include "../../Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h"
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodePythonSocket() {}
 // Cross Module References

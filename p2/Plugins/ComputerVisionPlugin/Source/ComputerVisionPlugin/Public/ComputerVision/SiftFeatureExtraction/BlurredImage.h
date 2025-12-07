@@ -6,6 +6,9 @@
 
 class COMPUTERVISIONPLUGIN_API BlurredImage {
 
+private:
+    bool bUseEdgeDetection = true; //TESTING
+
 public:
     BlurredImage();
     ~BlurredImage();

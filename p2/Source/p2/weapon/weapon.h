@@ -7,7 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "sightScript.h"
-#include "carriedItem.h"
+#include "p2/weapon/CarriedItemBase/carriedItem.h"
 #include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
 #include "ammunitionEnum.h"
 #include "GameCore/team/teamEnum.h"
@@ -118,7 +118,26 @@ protected:
 	//bool isVisible;
 
 	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
-	virtual void shootProtected(FVector from, FVector to, teamEnum ownTeam);
+	//is marked as bool to flag if a new hitresult was made.
+	//returns true if any actor was hit. HitResult is updated!
+	virtual bool shootProtected(FVector from, FVector to, teamEnum ownTeam);
+	
+	
+	//-- latest raycast hit tracking -- 
+	FHitResult latestHit;
+	FVector LatestHitLocation();
+	FVector LatestHitNormal();
+
+	// -- damaga propagation on hit --
+
+	void damageIfPossible(
+		teamEnum ownTeam,
+		AActor *entity,
+		FHitResult &hitresult,
+		FVector &start,
+		FVector &end
+	);
+
 	void damageIfPossible(
 		teamEnum ownTeam,
 		IDamageinterface *entity,
@@ -242,9 +261,6 @@ private:
 	void hideAllAttachments();
 	void hideAllAttachments(std::map<weaponAttachmentEnum, AActor *> &map);
 
-	//api bone controller
-public:
-	//FVector sightOffsetNoRotation();
 
 
 private:

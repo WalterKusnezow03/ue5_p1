@@ -3821,7 +3821,7 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/arm64/UnrealEditor/Development/ComputerVisionPlugin/Definitions.ComputerVisionPlugin.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/ComputerVisionActor.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Private/../../../Source/ComputerVisionPlugin/Public/ComputerVision/Actor/ComputerVisionActor.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/../../Source/ComputerVisionPlugin/Public/ComputerVision/Actor/ComputerVisionActor.h \
   Runtime/Core/Public/CoreMinimal.h \
   Runtime/Engine/Classes/GameFramework/Actor.h \
   Runtime/Engine/Classes/Engine/TextureRenderTarget2D.h \
@@ -3839,10 +3839,237 @@
   Runtime/RHI/Public/RHICommandList.h \
   Runtime/Engine/Classes/Engine/Engine.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Package/BufferPackage.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ransac/RansacMatcher.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ransac/PotentialMatch.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImagePatch.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Dense \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Core \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Version \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Macros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/ConfigureVectorization.h \
+  /Applications/Xcode_15.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/arm_fp16.h \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/complex \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ostream \
+  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/bitset \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/MKL_support.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Constants.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Meta.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Assert.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/StaticAssert.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/XprHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Memory.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/IntegralConstant.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/Serializer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/SymbolicIndex.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/EmulateArray.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/MoreMeta.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/NumTraits.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/.././InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/MathFunctions.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/RandomImpl.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/GenericPacketMath.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/ConjHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/../../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/Half.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/BFloat16.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/../../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/TypeCasting.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/Settings.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/StlFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/UnaryFunctors.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/IndexedViewHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/ReshapedHelper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ArithmeticSequence.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/IO.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DenseBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/CommonCwiseUnaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/BlockMethods.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/IndexedViewMethods.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/ReshapedMethods.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/MatrixBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/CommonCwiseBinaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/MatrixCwiseUnaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/MatrixCwiseBinaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/EigenBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Product.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CoreEvaluators.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/AssignEvaluator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/RealView.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Assign.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ArrayBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/ArrayCwiseUnaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/../../plugins/ArrayCwiseBinaryOps.inc \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/BlasUtil.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DenseStorage.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/NestByValue.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ReturnByValue.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/NoAlias.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/PlainObjectBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Matrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Array.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Fill.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CwiseUnaryView.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/InnerProduct.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Dot.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/StableNorm.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Stride.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/MapBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Map.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Ref.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Block.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/VectorBlock.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/IndexedView.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Reshaped.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Transpose.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DiagonalMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Diagonal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DiagonalProduct.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/SkewSymmetricMatrix3.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Redux.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Visitor.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/FindCoeff.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Fuzzy.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Swap.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CommaInitializer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/GeneralProduct.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Solve.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Inverse.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/SolverBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/PermutationMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Transpositions.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/TriangularMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/SelfAdjointView.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/DeviceWrapper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/Parallelizer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ProductEvaluators.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/SolveTriangular.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/BandMatrix.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/CoreIterators.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ConditionEstimator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/arch/NEON/GeneralBlockPanelKernel.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Select.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/VectorwiseOp.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/PartialReduxEvaluator.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Random.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Replicate.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/Reverse.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/ArrayWrapper.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/StlIterators.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/GlobalFunctions.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/LU \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/misc/Kernel.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/misc/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/misc/Image.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/FullPivLU.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/PartialPivLU.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/Determinant.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/InverseImpl.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/arch/InverseSize4.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/LU/arch/../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Cholesky \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Jacobi \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Jacobi/Jacobi.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Jacobi/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Cholesky/LLT.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Cholesky/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Cholesky/LDLT.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/QR \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Householder \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Householder/Householder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Householder/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Householder/HouseholderSequence.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Householder/BlockHouseholder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/QR/HouseholderQR.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/QR/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/SVD \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/misc/RealSvd2x2.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/SVD/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/SVD/SVDBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/SVD/JacobiSVD.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/SVD/BDCSVD.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Geometry \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/OrthoMethods.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/EulerAngles.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Homogeneous.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/RotationBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Rotation2D.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Quaternion.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/AngleAxis.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Transform.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Translation.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Scaling.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Hyperplane.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/AlignedBox.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/Umeyama.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/arch/Geometry_SIMD.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Geometry/arch/../InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/Eigenvalues \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./InternalHeaderCheck.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./HessenbergDecomposition.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./RealSchur.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./Tridiagonalization.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./ComplexSchur.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/./RealQZ.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/ComputerVisionActor.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/ComputerVisionPlugin.init.gen.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Intermediate/Build/Mac/UnrealEditor/Inc/ComputerVisionPlugin/UHT/PythonSocket.gen.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Private/../../../Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/eigen/../../Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h \
   Runtime/Sockets/Public/Sockets.h \
   Runtime/Core/Public/Containers/UnrealString.h \
   Runtime/Core/Public/CoreTypes.h Runtime/Core/Public/Misc/Timespan.h \
@@ -4171,11 +4398,9 @@
   Runtime/Engine/Public/SceneUtils.h \
   Runtime/Engine/Public/LegacyScreenPercentageDriver.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/LegacyScreenPercentageDriver.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/CoreMath/Source/CoreMath/Matrix/2D/MMatrix2D.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/BlurredImage.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/KeyPoint.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImageFeatureFinder.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.h \
@@ -4194,9 +4419,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/SharedMemory/SharedMemory.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/SharedMemory/SharedMemory.h \
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
-  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
-  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ostream \
-  /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/bitset \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.cpp \
   Runtime/Engine/Public/ImageUtils.h \
   Runtime/ImageCore/Public/ImageCore.h \
@@ -4204,21 +4426,12 @@
   Runtime/ImageWrapper/Public/IImageWrapper.h \
   Runtime/ImageWrapper/Public/IImageWrapperModule.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImagePatch.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/KeyPoint.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/VLAD/GlobalFeatureVector.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/VLAD/GlobalFeatureVector.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_tensor.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/c_api_macros.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_datatype.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_status.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/xla/tsl/c/tsl_status.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/c_api.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_attrtype.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_buffer.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_tstring.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/core/platform/ctstring.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tsl/platform/ctstring.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tsl/platform/ctstring_internal.h
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Image/ImageBase.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/Image/ImageBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/BlurredImage.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImageFeatureFinder.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImagePreProcessProperties.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImagePatch.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/KeyPoint.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ransac/PotentialMatch.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ransac/RansacMatcher.cpp

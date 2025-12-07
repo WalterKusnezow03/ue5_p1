@@ -377,7 +377,21 @@ bool BlurredImage::IsValidKeypoint(
         float Trace2 = Trace * Trace;
         float Det = Dxx * Dyy - Dxy * Dxy; //ad - bc
 
-        if(Det <= 0.0f || (Trace2 / Det) > thresHold){
+        //erzeugt das kanten?
+        /*if (bUseEdgeDetection){
+            thresHold /= 100.0f;
+            // 2.0f; //testing.
+        }*/
+
+        //stable
+        bool stable = Det <= 0.0f || (Trace2 / Det) > thresHold;
+        
+        //erzeugt das kanten?
+        if (bUseEdgeDetection){
+            stable = !stable;
+        }
+
+        if(stable){
             return false; // Pixel verwerfen, da instabil
         }
         return true;
@@ -390,6 +404,7 @@ bool BlurredImage::IsValidKeypoint(
 
 //patch PER GAUSSIAN BLURRED IMAGE
 ImagePatch BlurredImage::GeneratePatch(int x, int y, int windowSize){
+    FVector2D position(x, y); //position of patch for later RANSAC use.
     KeyPoint keypoint = MakeKeyPoint(x, y);
 
     int xStart = 0;
@@ -409,7 +424,7 @@ ImagePatch BlurredImage::GeneratePatch(int x, int y, int windowSize){
     int sizeX = xEnd - xStart;
     int sizeY = yEnd - yStart;
     int32 idNone = 0;
-    patch.SavePatch(color, sizeX, sizeY, idNone);
+    patch.SavePatch(color, sizeX, sizeY, idNone, position);
     patch.ScaleDown(windowSize); //erst scalen invarianz, dann rotation
     patch.ComputeLuminance();
     patch.ComputeGradients();// Magnitude + Orientation pro Pixel

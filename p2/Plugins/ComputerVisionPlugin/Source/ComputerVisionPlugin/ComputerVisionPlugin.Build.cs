@@ -60,13 +60,11 @@ public class ComputerVisionPlugin : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
 
 
 
-		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/include"));
-
-		PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../../ThirdParty/TensorFlow/lib/libtensorflow.dylib"));
+		PublicIncludePaths.Add(Path.Combine(PluginDirectory, "ThirdParty/eigen"));
 		
 		
 		

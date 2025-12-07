@@ -2,7 +2,6 @@
 
 #import <Metal/Metal.h>
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include "tensorflow/c/tf_tensor.h"
 
 #include "TensorTextureBridge.h"
 

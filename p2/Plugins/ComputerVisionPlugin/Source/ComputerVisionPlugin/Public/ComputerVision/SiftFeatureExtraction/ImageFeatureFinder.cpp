@@ -1,5 +1,6 @@
 #include "ImageFeatureFinder.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "ImagePreProcessProperties.h"
 #include "ImagePatch.h"
 
 
@@ -9,6 +10,20 @@ ImageFeatureFinder::ImageFeatureFinder(){
 
 ImageFeatureFinder::~ImageFeatureFinder(){
 
+}
+
+ImageFeatureFinder::ImageFeatureFinder(const ImageFeatureFinder &other){
+    if(this != &other){
+        *this = other;
+    }
+}
+
+ImageFeatureFinder &ImageFeatureFinder::operator=(const ImageFeatureFinder &other){
+    if(this != &other){
+        createdDesicriptorPatches = other.createdDesicriptorPatches;
+    }
+    
+    return *this;
 }
 
 
@@ -23,9 +38,9 @@ void ImageFeatureFinder::EndTime(FString prefix){
     float deltatime = FPlatformTime::Seconds() - TimeStart; // AB = B - A
     deltatime = std::max(0.0f, deltatime);
 
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(TEXT("%s %.2f"), *prefix, deltatime)
-    );
+    );*/
 }
 
 
@@ -34,6 +49,14 @@ void ImageFeatureFinder::ExtractFeatures(
     int sizeX, 
     int sizeY
 ){
+    //new
+    if(ImagePreProcessProperties::reduceColor){
+        ImagePreProcessProperties::ClampColorTo(colors, 64);
+        //256 / 16 = 16 bit color.
+        //256 / 32 = 8 bit color.
+        //256 / 64 = 4 bit color.
+    }
+
     //return;
     imageRawGray.PasteImageGrayScale(colors, sizeX, sizeY); // raw image as gray scale
 
@@ -99,7 +122,8 @@ void ImageFeatureFinder::FindExtremumsInDifferenceOfGaussians(
 ){
     if(imageStack.Num() > 0){
         BlurredImage &first = imageStack[0];
-        extremaFlags.SetNum(first.SizeBuffer()); //init some size on flag buffer.
+        //extremaFlags.SetNum(first.SizeBuffer()); //init some size on flag buffer.
+        extremaFlags.Init(false, first.SizeBuffer());
     }
 
     for (int i = 2; i < imageStack.Num(); i++){
@@ -164,6 +188,9 @@ void ImageFeatureFinder::CheckAndMarkExtrema(
 }
 
 
+TArray<ImagePatch> &ImageFeatureFinder::ExtractedFeaturePatches(){
+    return createdDesicriptorPatches;
+}
 
 //as colorized buffer
 TArray<FColor> ImageFeatureFinder::extremaAsColorBuffer(){
@@ -172,14 +199,22 @@ TArray<FColor> ImageFeatureFinder::extremaAsColorBuffer(){
     int features = 0;
     for (int i = 0; i < extremaFlags.Num(); i++)
     {
-        int colorI = extremaFlags[i] ? 255 : 0;
+        bool flag = extremaFlags[i];
+
+        //invertieren der logik weil es teilweise einfach falsch ist.
+        bool invert = true;
+        if(invert){
+            flag = !flag;
+        }
+
+        int colorI = flag ? 255 : 0;
         outBuffer[i] = FColor(colorI, colorI, colorI, 255);
 
-        if(extremaFlags[i]){
+        if(flag){
             features++;
         }
     }
-    DebugHelper::logMessage("ImageFeatureFinder::FoundFeatures ", features); //around 2000, 3percent of image
+    //DebugHelper::logMessage("ImageFeatureFinder::FoundFeatures ", features); //around 2000, 3percent of image
 
     return outBuffer;
 }
@@ -257,6 +292,10 @@ bool ImageFeatureFinder::HasFeature(
     }
     return false;
 }
+
+
+
+
 
 
 

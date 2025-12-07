@@ -5,8 +5,8 @@
 
 #include "SceneViewExtension.h"
 #include "LegacyScreenPercentageDriver.h"
-#include "ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/BlurredImage.h"
-#include "ComputerVisionPlugin/Public/ComputerVision/FeatureExtraction/ImageFeatureFinder.h"
+#include "ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/BlurredImage.h"
+#include "ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImageFeatureFinder.h"
 
 #include "ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h"
 #include "DebugPlugin/DebugHelper.h"
@@ -36,6 +36,7 @@ void AComputerVisionActor::BeginPlay()
     RenderTarget->UpdateResourceImmediate(true);
 
     CreateCaptureComponent();
+    BuildProjectionMatrix();
 }
 
 void AComputerVisionActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
@@ -57,7 +58,7 @@ void AComputerVisionActor::Tick(float DeltaTime)
     }
 
     FRotator r = GetActorRotation();
-    r.Yaw += DeltaTime * 10.0f;
+    r.Yaw += DeltaTime * 3.0f;
     //r.Pitch += DeltaTime * 10.0f;
     SetActorRotation(r);
 
@@ -65,6 +66,42 @@ void AComputerVisionActor::Tick(float DeltaTime)
     SetActorLocation(move);
 
     //ReadPixels();
+
+
+
+
+    //VERY SLOW.
+    /*
+    //match debug wise in tick.
+    FScopeLock lock(&Mutex);
+    if (features.Num() >= 2)
+    {
+
+        int prev = features.Num() - 2;
+        int last = features.Num() - 1;
+        Async(EAsyncExecution::ThreadPool, [
+            this, 
+            p1 = prev, 
+            p2 = last, 
+            f1 = features[prev],
+            f2 = features[last]
+        ]() mutable {
+            RansacMatcher matcher;
+            float lossmax = 100.0f; //10 pixels
+            bool result = matcher.Match(features[p1], features[p2], lossmax);
+            FString m = result ? TEXT("YES") : TEXT("NO");
+            FString message = FString::Printf(TEXT("AComputerVisionActor::Matched %s"), *m);
+            DebugHelper::logMessage(message);
+        });
+
+        
+
+
+        
+
+        //empty after
+        //features.Empty();
+    }*/
 }
 
 
@@ -111,7 +148,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
             // compare buffer
             if (colorBuffer == LastCapturedPixels)
             {
-                DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has NOT Changed");
+                //DebugHelper::logMessage("AComputerVisionActor::GpuCopy Image has NOT Changed");
                 return true;
             }
         }
@@ -147,7 +184,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                 ImageWriter::SaveColorBufferAsPng(ptr, ResolutionX, ResolutionY, imageId);
 
                 // debug blur all
-                if (true)
+                if (false)
                 {
                     BlurredImage image;
                     image.BlurImage(
@@ -163,7 +200,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                     {
                         uint8 *ptrB = image.RawColorArrayPtr();
                         imageId++;
-                        if (saveImages)
+                        if (saveImages && false)
                         {
                             //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageBlurred");
                             ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
@@ -171,7 +208,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                     }
                 }
 
-                // extrema detection
+                // extrema detection output
                 if (true)
                 {
                     ImageFeatureFinder finder;
@@ -180,19 +217,28 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                         ResolutionX,
                         ResolutionY
                     );
+                    //TryMatchFeatures(finder);
                     TArray<FColor> coloredEdges = finder.extremaAsColorBuffer();
                     uint8 *ptrB = (uint8 *)coloredEdges.GetData();
                     imageId++;
                     if (saveImages)
                     {
-                        ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
-                        //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");
+                        //ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                        
+                        //single image overriden
+                        ImageWriter::SaveColorBufferAsPngFromName(
+                            ptrB,
+                            256,
+                            256,
+                            FString::Printf(TEXT("DOGImage")) //single image only.
+                        );
+                        DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");
                     }
                 }
             }
             
 
-                
+            
             
         });
         return true;
@@ -205,6 +251,14 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
     
 
     return false;
+}
+
+
+
+void AComputerVisionActor::TryMatchFeatures(ImageFeatureFinder &found){
+    //MUTEX HERE
+    FScopeLock Lock(&Mutex);
+    features.Add(found);
 }
 
 void AComputerVisionActor::PrintBuffer(TArray<FColor> &colors){
@@ -251,7 +305,7 @@ void AComputerVisionActor::ConvertRenderTargetToTensor()
 
     //copy data from gpu
     StartGpuCopyTime();
-    DebugHelper::logMessage("AComputerVisionActor::ConvertRenderTargetToTensor::GpuCopy Launched");
+    //DebugHelper::logMessage("AComputerVisionActor::ConvertRenderTargetToTensor::GpuCopy Launched");
 
     bufferPackage.MarkLaunchCopy();
     bool &refFlag = bufferPackage.refFlagCompleted();
@@ -289,7 +343,7 @@ void AComputerVisionActor::ToColorBuffer(
     TArray<FColor> &outColorBuffer
 ){
     if(!voidGputexturePointer){
-        DebugHelper::logMessage("AComputerVisionActor::TexturePtr is null!");
+        //DebugHelper::logMessage("AComputerVisionActor::TexturePtr is null!");
         return;
     }
 
@@ -358,9 +412,9 @@ void AComputerVisionActor::LogGpuCopyTime(){
     float deltatime = FPlatformTime::Seconds() - gpuCopyTimeStart; // AB = B - A
     deltatime = std::max(0.0f, deltatime);
 
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(TEXT("AComputerVisionActor::LogGpuCopyTime %.2f"), deltatime)
-    );
+    );*/
 }
 
 
@@ -405,5 +459,110 @@ void AComputerVisionActor::CaptureWithCaptureComponent(){
     }
 }
 
+
+
+
+
+
+
+
+bool AComputerVisionActor::ProjectedBounds(AActor *actor, TArray<FVector2D> &pixelPositions){
+    TArray<FVector2D> result;
+    if(actor){
+        FBox Box = actor->GetComponentsBoundingBox();
+        FVector Center = Box.GetCenter(); //already in world space?
+        FVector Extents = Box.GetExtent();
+
+        //gehe von world space aus.
+        //erstmal so lassen mit extends, könnte komische ergebnisse erzeugen.
+        TArray<FVector> worldPositions;
+        worldPositions.Add(Center - Extents);
+        worldPositions.Add(Center + Extents);
+
+        
+        if(ProjectWorldPositionToRenderTarget(
+            worldPositions,
+            pixelPositions
+        )){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool AComputerVisionActor::ProjectWorldPositionToRenderTarget(
+    TArray<FVector> &worldPositions,
+    TArray<FVector2D>& OutPixels
+){
+    OutPixels.SetNum(worldPositions.Num());
+    for (int i = 0; i < worldPositions.Num(); i++){
+        if(!ProjectWorldPositionToRenderTarget(
+            worldPositions[i],
+            OutPixels[i] //so per ref trotzdem ok
+        )){
+            return false;
+        }
+    }
+    return true;
+}
+
+//manual projection of camera coordinates
+bool AComputerVisionActor::ProjectWorldPositionToRenderTarget(
+    const FVector& WorldPosition,
+    FVector2D& OutPixel
+){
+    if (!SceneCapture || !RenderTarget)
+        return false;
+
+    FMatrix View = SceneCapture->GetComponentTransform().ToInverseMatrixWithScale();
+    FVector4 Clip = projectionMatrix.TransformFVector4(
+        View.TransformFVector4(FVector4(WorldPosition, 1.0f))
+    );
+
+    if(Clip.W == 0.0f){
+        return false;
+    }
+    //Check if point is behind the camera
+    if(Clip.Z < 0.0f){
+        return false;
+    }
+
+    OutPixel = ConvertNDCtoPixel(Clip);
+    return true;
+}
+
+FVector2D AComputerVisionActor::ConvertNDCtoPixel(FVector4 &Clip){
+    if(RenderTarget){
+        //Perspective divide
+        Clip.X /= Clip.W;
+        Clip.Y /= Clip.W;
+        //to screen
+        float u = (Clip.X * 0.5f + 0.5f) * RenderTarget->SizeX;
+        float v = (1.0f - (Clip.Y * 0.5f + 0.5f)) * RenderTarget->SizeY;
+    }
+    return FVector2D(0.0f, 0.0f);
+}
+
+void AComputerVisionActor::BuildProjectionMatrix(){
+    const float FOV = FMath::DegreesToRadians(SceneCapture->FOVAngle);
+    const float Near = 10.0f;  // Unreal-Default für SceneCapture
+    const float Far  = 100000.0f; // Oder dein Capture->MaxViewDistanceOverride
+
+    const float W = 1.0f / FMath::Tan(FOV * 0.5f);
+
+    float Aspect = 1.0f;
+    if (SceneCapture->TextureTarget)
+    {
+        Aspect = (float)SceneCapture->TextureTarget->SizeX / (float)SceneCapture->TextureTarget->SizeY;
+    }
+
+    projectionMatrix = FReversedZPerspectiveMatrix(
+        W, 
+        W * Aspect,
+        Near,
+        Far
+    );
+}
 
 

@@ -3981,11 +3981,6 @@
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/MetalPerformanceShaders.framework/Frameworks/MPSRayIntersector.framework/Headers/MPSInstanceAccelerationStructure.h \
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/MetalPerformanceShaders.framework/Frameworks/MPSRayIntersector.framework/Headers/MPSSVGF.h \
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/MetalPerformanceShaders.framework/Frameworks/MPSRayIntersector.framework/Headers/MPSTemporalAA.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_tensor.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/c_api_macros.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_datatype.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/tensorflow/c/tf_status.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/ThirdParty/TensorFlow/include/xla/tsl/c/tsl_status.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/ComputerVisionPlugin/Source/ComputerVisionPlugin/Public/ComputerVision/TensorBridge/TensorTextureBridge.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/DebugPlugin/Source/DebugPlugin/DebugHelper.h \
   Runtime/Core/Public/CoreMinimal.h

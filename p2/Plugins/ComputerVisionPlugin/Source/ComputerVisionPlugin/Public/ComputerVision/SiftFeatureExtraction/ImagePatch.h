@@ -13,7 +13,20 @@ public:
     ImagePatch(const ImagePatch &other);
     ImagePatch &operator=(const ImagePatch &other);
 
-    void SavePatch(TArray<FColor> &colorIn, int sizePatchX, int sizePatchY, int32 idIn);
+    void SavePatch(
+        TArray<FColor> &colorIn, 
+        int sizePatchX, 
+        int sizePatchY, 
+        int32 idIn
+    );
+
+    void SavePatch(
+        TArray<FColor> &colorIn, 
+        int sizePatchX, 
+        int sizePatchY, 
+        int32 idIn,
+        FVector2D &screenPositonIn //screen position of original patch on screen.
+    );
 
 
 
@@ -41,6 +54,13 @@ public:
     TArray<float> &FeatureVectorRef(){
         return FeatureVector;
     }
+
+    /// @brief position of patch from extracted image
+    /// @return 
+    FVector2D &GetOriginalImagePosition();
+
+    float Distance(ImagePatch &other);
+    float DistanceSquared(ImagePatch &other);
 
 private:
     int ToIndex(int i, int j);
@@ -80,6 +100,8 @@ private:
         TArray<float> &theta,
         int numBins
     );
+
+    FVector2D screenPosition;
 
     TArray<float> luminanceBuffer;
     TArray<FColor> colorSaved;

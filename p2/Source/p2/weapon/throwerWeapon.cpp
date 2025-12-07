@@ -40,7 +40,7 @@ void AthrowerWeapon::Tick(float deltaTime){
     }
 }
 
-void AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){ //team enum is ignored here
+bool AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){ //team enum is ignored here
     //throw an item here instead
 
     DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected try!");
@@ -74,10 +74,10 @@ void AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){
         
         //if enough bullets in mag, reload from entity manager
         requestNewThrowable();
+        return true; //very random. Doesnt have a logic here.
     }
-
+    return false;
 }
-
 
 /// @brief requests a new throwable of the own type of thrower weapon
 void AthrowerWeapon::requestNewThrowable(){
