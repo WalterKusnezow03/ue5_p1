@@ -12,16 +12,20 @@ class GAMECORE_API timer
 public:
 	timer();
 	timer(float time, bool resetsItselfIn);
-	~timer();
+	virtual ~timer();
 
 	void Begin(float time);
 	void Begin(float time, bool resetsItselfIn);
 	void Tick(float deltaTime);
-	bool timesUp();
+	
+	virtual bool timesUp();
+	virtual void TickWithTimesUpReset(float deltatime);
 
 	float currentTimeLeft(){
 		return timeLeft;
 	}
+
+	virtual float scalar();
 
 private:
 	float initialTime;

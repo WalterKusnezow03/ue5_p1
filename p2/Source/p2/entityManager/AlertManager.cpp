@@ -134,7 +134,7 @@ void AlertManager::damageAndAlertInArea(
 }
 
 
-///@brief gets all aactors in a given area
+///@brief gets all entity aactors in a given area
 ///@param world world to get fromworld)
 
 ///@param location center of radius
@@ -259,6 +259,23 @@ void AlertManager::EntitiesInRadius(
     }
 }
 
+bool AlertManager::AnyEntitesInRadius(
+    FVector &pos,
+    float radius
+){
+    float distSquared = radius * radius;
+    for(int i = 0; i < subscribedToAlert.size(); i++){
+        AEntityScript *ptr = subscribedToAlert[i];
+        if(ptr != nullptr){
+            FVector comparePos = ptr->GetActorLocation();
+            float distance = FVector::DistSquared(comparePos, pos);
+            if(distance < distSquared){
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 void AlertManager::EntitiesInRadiusAsTransform(
     FVector &pos,

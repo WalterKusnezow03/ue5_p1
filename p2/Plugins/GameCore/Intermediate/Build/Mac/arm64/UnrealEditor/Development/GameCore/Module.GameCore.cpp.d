@@ -3819,17 +3819,21 @@
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GameCore/Module.GameCore.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/arm64/UnrealEditor/Development/GameCore/Definitions.GameCore.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/ActorBase.gen.cpp \
   Runtime/CoreUObject/Public/UObject/GeneratedCppIncludes.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/ActorBase/ActorBase.h \
   Runtime/Core/Public/CoreMinimal.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/ActorBase.generated.h \
+  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
+  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/customMeshActorBase.gen.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.h \
   Runtime/Engine/Classes/GameFramework/Actor.h \
   ../Plugins/Runtime/ProceduralMeshComponent/Source/ProceduralMeshComponent/Public/ProceduralMeshComponent.h \
   Runtime/Engine/Classes/Interfaces/Interface_CollisionDataProvider.h \
   Runtime/Engine/Classes/Components/MeshComponent.h \
   ../Plugins/Runtime/ProceduralMeshComponent/Intermediate/Build/Mac/UnrealEditor/Inc/ProceduralMeshComponent/UHT/ProceduralMeshComponent.generated.h \
-  Runtime/CoreUObject/Public/UObject/ObjectMacros.h \
-  Runtime/CoreUObject/Public/UObject/ScriptMacros.h \
   Runtime/Engine/Classes/PhysicsEngine/ConvexElem.h \
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Applications/Xcode_15.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__tree \
@@ -3902,7 +3906,7 @@
   Runtime/Engine/Classes/Engine/Scene.h \
   Runtime/Engine/Classes/Camera/CameraTypes.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/CameraComponent.generated.h \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer/timer.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Input/InputContainer.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/interfaces/Steeringinterface.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Intermediate/Build/Mac/UnrealEditor/Inc/GameCore/UHT/Steeringinterface.generated.h \
@@ -3920,7 +3924,6 @@
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/EntityGC/EntityManagerGeneric.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/Input/InputContainer.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/customMeshActorBase.cpp \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/AActorUtil.h \
   Runtime/Engine/Classes/Components/BoxComponent.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/BoxComponent.generated.h \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/MeshGenBase/lodHelper/LodCheckContainer.h \
@@ -4011,6 +4014,7 @@
   Runtime/RenderCore/Public/RendererInterface.h \
   Runtime/Engine/Classes/Engine/StaticMesh.h \
   Runtime/Engine/Public/StaticMeshResources.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/ActorBase/ActorBase.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/debugEntity.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorTouple.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/FVectorUtil.cpp \
@@ -4021,5 +4025,7 @@
   Runtime/Core/Public/Misc/QualifiedFrameTime.h \
   ../Intermediate/Build/Mac/UnrealEditor/Inc/Engine/UHT/KismetMathLibrary.generated.h \
   /Users/walterk/Documents/UnrealEngine/UE5_2/UE_5.2/UE_5.2/Engine/Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.inl \
-  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer/FlipTimer.cpp \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer/FlipTimer.h \
+  /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/util/timer/timer.cpp \
   /Users/walterk/Documents/UnrealProjects/p2/Plugins/GameCore/Source/GameCore/world/worldLevelBase.cpp

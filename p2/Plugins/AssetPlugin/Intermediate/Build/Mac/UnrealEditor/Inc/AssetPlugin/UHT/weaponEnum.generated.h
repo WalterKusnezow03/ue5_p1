@@ -21,7 +21,8 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #define FOREACH_ENUM_WEAPONENUM(op) \
 	op(weaponEnum::assaultRifle) \
 	op(weaponEnum::pistol) \
-	op(weaponEnum::thrower) 
+	op(weaponEnum::thrower) \
+	op(weaponEnum::C4) 
 
 enum class weaponEnum;
 template<> struct TIsUEnumClass<weaponEnum> { enum { Value = true }; };

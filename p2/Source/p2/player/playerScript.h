@@ -11,7 +11,7 @@
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "GameCore/team/teamEnum.h"
 #include "GameCore/interfaces/Damageinterface.h"
-#include "GameCore/util/timer.h"
+#include "GameCore/util/timer/timer.h"
 #include "WingsuitInterface.h"
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"

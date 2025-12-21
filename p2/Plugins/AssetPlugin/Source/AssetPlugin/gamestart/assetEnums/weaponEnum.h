@@ -12,5 +12,6 @@ enum class weaponEnum
 {
 	assaultRifle,
 	pistol,
-	thrower
+	thrower,
+	C4
 };

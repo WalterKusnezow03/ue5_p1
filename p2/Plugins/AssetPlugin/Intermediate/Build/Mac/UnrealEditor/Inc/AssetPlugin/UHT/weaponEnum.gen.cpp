@@ -37,11 +37,14 @@ void EmptyLinkFunctionForGeneratedCodeweaponEnum() {}
 		{ "weaponEnum::assaultRifle", (int64)weaponEnum::assaultRifle },
 		{ "weaponEnum::pistol", (int64)weaponEnum::pistol },
 		{ "weaponEnum::thrower", (int64)weaponEnum::thrower },
+		{ "weaponEnum::C4", (int64)weaponEnum::C4 },
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_AssetPlugin_weaponEnum_Statics::Enum_MetaDataParams[] = {
 		{ "assaultRifle.Comment", "/**\n * \n */" },
 		{ "assaultRifle.Name", "weaponEnum::assaultRifle" },
+		{ "C4.Comment", "/**\n * \n */" },
+		{ "C4.Name", "weaponEnum::C4" },
 		{ "Comment", "/**\n * \n */" },
 		{ "ModuleRelativePath", "gamestart/assetEnums/weaponEnum.h" },
 		{ "pistol.Comment", "/**\n * \n */" },
@@ -75,9 +78,9 @@ void EmptyLinkFunctionForGeneratedCodeweaponEnum() {}
 		static const FEnumRegisterCompiledInInfo EnumInfo[];
 	};
 	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_weaponEnum_h_Statics::EnumInfo[] = {
-		{ weaponEnum_StaticEnum, TEXT("weaponEnum"), &Z_Registration_Info_UEnum_weaponEnum, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1150766490U) },
+		{ weaponEnum_StaticEnum, TEXT("weaponEnum"), &Z_Registration_Info_UEnum_weaponEnum, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 986214902U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_weaponEnum_h_323673573(TEXT("/Script/AssetPlugin"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_weaponEnum_h_80947921(TEXT("/Script/AssetPlugin"),
 		nullptr, 0,
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_weaponEnum_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_UnrealProjects_p2_Plugins_AssetPlugin_Source_AssetPlugin_gamestart_assetEnums_weaponEnum_h_Statics::EnumInfo));

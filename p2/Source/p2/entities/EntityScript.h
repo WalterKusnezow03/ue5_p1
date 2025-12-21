@@ -7,7 +7,7 @@
 #include "GameCore/interfaces/Damageinterface.h"
 #include "p2/player/playerScript.h"
 #include "GameCore/team/teamEnum.h"
-#include "GameCore/util/timer.h"
+#include "GameCore/util/timer/timer.h"
 
 #include "ActionManager.h"
 

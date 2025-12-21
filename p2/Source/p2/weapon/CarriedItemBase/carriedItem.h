@@ -13,10 +13,15 @@
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
 
+//new
+#include "GameCore/util/ActorBase/ActorBase.h"
+
 #include "carriedItem.generated.h"
 
 UCLASS()
-class P2_API AcarriedItem : public AActor, public IIkCarryInterface
+class P2_API AcarriedItem : 
+public AActorBase, //AActor,  //to change to AActorBase
+public IIkCarryInterface
 {
 	GENERATED_BODY()
 	
@@ -43,6 +48,8 @@ public:
 
 	virtual void drop();
 	bool isPickedupByPlayer();
+	bool isPickedUp();
+
 	void showItem(bool show);
 
 	virtual void leftMouseDown();
@@ -61,6 +68,9 @@ public:
 	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type);
 
 	virtual void loadFingerTargets(HandTargetContainer &container);
+
+	//doent have to be called:
+	virtual void ResetFlagsAndProperties() {};
 
 protected:
 	CarriedItemPositionData internalCarriedItemPositionContainer;

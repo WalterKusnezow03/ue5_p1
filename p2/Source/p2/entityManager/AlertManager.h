@@ -27,22 +27,34 @@ public:
 	static void subscribeToAlert(AEntityScript *pointer);
 	static void unSubscribeFromAlert(AEntityScript *pointer);
 
+
 	static void EntitiesInRadius(
 		FVector &pos,
 		float radius,
 		TArray<FVector> &outputPositions
 	);
 
-	
+	static bool AnyEntitesInRadius(
+		FVector &pos,
+		float radius
+	);
+
 	static void EntitiesInRadiusAsTransform(
 		FVector &pos,
 		float radius,
 		TArray<MMatrix> &outputMatrices
 	);
 
+
 private:
 	static float deltaTime(UWorld *world);
 
+	
+	/// @brief gets all entities in area, subscribed to alert manager
+	/// @param world 
+	/// @param location 
+	/// @param radius 
+	/// @return 
 	static TArray<AActor *> getAActorsInArea(UWorld *world, FVector location, float radius);
 
 

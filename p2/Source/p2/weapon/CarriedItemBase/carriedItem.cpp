@@ -110,7 +110,9 @@ bool AcarriedItem::isPickedupByPlayer(){
 	// return cameraPointer != nullptr;
 }
 
-
+bool AcarriedItem::isPickedUp(){
+	return isPickedupByPlayer() || botPointer != nullptr;
+}
 
 /// @brief shows or hides the item
 /// @param show 

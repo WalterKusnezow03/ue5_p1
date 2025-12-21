@@ -25,6 +25,8 @@ bool APlacableItemBase::shootProtected(FVector Start, FVector End, teamEnum ownT
         FVector location = LatestHitLocation();
 	    FVector normal = LatestHitNormal();
 
+        DebugHelper::showLineBetween(GetWorld(), location, GetActorLocation(), FColor::Red);
+
         if(IsInPlaceRadius(location)){
             SpawnItemAtLocation(location, normal);
             return true;
@@ -42,10 +44,10 @@ bool APlacableItemBase::IsInPlaceRadius(FVector &location){
 }
 
 float APlacableItemBase::PlaceRadius(){
-    return 200.0f;
+    return 300.0f;
 }
 
-
+//pure virtual like.
 void APlacableItemBase::SpawnItemAtLocation(FVector &location, FVector &normal){
     //pure virtual for now.
 }

@@ -479,6 +479,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
                 //testing as default sight
                 weapon->applySight(weaponAttachmentEnum::iron_sight);
 
+                weapon->ResetFlagsAndProperties();
 
                 return weapon;
             }

@@ -14,7 +14,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "CoreMath/animation/KeyFrames/KeyFrameAnimation.h"
-#include "GameCore/util/timer.h"
+#include "GameCore/util/timer/timer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 
 #include "weapon.generated.h"
@@ -52,7 +52,6 @@ public:
 
 
 
-
 	virtual void showWeapon(bool show);
 	/*
 	void pickup(UCameraComponent &cameraRefIn);
@@ -73,7 +72,7 @@ public:
 	virtual void shootBot(FVector target); //BOT SHOOT METHOD --> can be overriden for subclasses
 
 	void releaseShoot();
-	void aim(bool aimstatus);
+	virtual void aim(bool aimstatus);
 
 	bool isCooling();
 	bool enoughBulletsInMag();

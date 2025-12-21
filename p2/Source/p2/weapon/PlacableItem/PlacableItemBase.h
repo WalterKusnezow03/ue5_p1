@@ -18,14 +18,13 @@ public:
 	APlacableItemBase();
 
 
-
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
     virtual bool shootProtected(FVector Start, FVector End, teamEnum ownTeam) override;
     
-    //surpressed by default
+    //surpressed by default on place
     virtual bool isSoundSurpressed() override {
         return true;
     }
@@ -35,5 +34,9 @@ protected:
     virtual float PlaceRadius();
     bool IsInPlaceRadius(FVector &location);
 
+
+    /// @brief MUST BE OVERRIDEN!
+    /// @param location 
+    /// @param normal 
     virtual void SpawnItemAtLocation(FVector &location, FVector &normal);
 };

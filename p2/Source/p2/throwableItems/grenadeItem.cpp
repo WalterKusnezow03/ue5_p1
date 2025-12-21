@@ -7,7 +7,7 @@
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "GameCore/util/timer.h"
+#include "GameCore/util/timer/timer.h"
 
 AgrenadeItem::AgrenadeItem(){
     throwableType = throwableEnum::greneade_enum;
@@ -16,6 +16,7 @@ AgrenadeItem::AgrenadeItem(){
 
 void AgrenadeItem::BeginPlay(){
     Super::BeginPlay();
+    explosiveHelper.Setup(EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
 }
 
 void AgrenadeItem::Tick(float deltaTime){
@@ -49,19 +50,9 @@ void AgrenadeItem::throwIntoDirection(FVector start, FVector direction){
 void AgrenadeItem::detonate(){
 
     FVector location = GetActorLocation();
-
-    AlertManager::damageAndAlertInArea(GetWorld(), GetActorLocation(), EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
+    explosiveHelper.detonate(location, GetWorld());
     isDetonated = true;
-    DebugHelper::showScreenMessage("grenade detonate"); //works as expected
-
-    //visual explosion
-    float radius = 1000.0f; // 5 * 100 = 5m
-    if(EntityManager *e = AworldLevel::entityManager()){
-        e->createExplosion(GetWorld(), location);
-    }
-
     //hide after detonate
     show(false);
-
     Super::release(); //release to entity manager
 }

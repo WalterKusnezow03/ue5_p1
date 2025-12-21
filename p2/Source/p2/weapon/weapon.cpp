@@ -350,7 +350,7 @@ void Aweapon::damageIfPossible(
 
 
 FVector Aweapon::LatestHitLocation(){
-	return latestHit.Location;
+	return latestHit.ImpactPoint;
 }
 FVector Aweapon::LatestHitNormal(){
 	return latestHit.Normal;

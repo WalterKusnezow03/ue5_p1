@@ -42,6 +42,11 @@ void timer::Tick(float deltaTime){
     timeLeft -= deltaTime;
 }
 
+void timer::TickWithTimesUpReset(float deltatime){
+    Tick(deltatime);
+    timesUp();
+}
+
 bool timer::timesUp()
 {
     bool timeIsUp = timeLeft < 0.05f;
@@ -49,4 +54,10 @@ bool timer::timesUp()
         timeLeft = initialTime;
     }
     return timeIsUp;
+}
+
+float timer::scalar(){
+    float reached = initialTime - timeLeft;
+    float denominator = std::max(initialTime, 0.1f);
+    return reached / denominator;
 }

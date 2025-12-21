@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "GameCore/util/timer.h"
+#include "GameCore/util/timer/timer.h"
+#include "p2/weapon/ExplosiveHelper/ExplosiveHelper.h"
 #include "grenadeItem.generated.h"
 
 /**
@@ -29,9 +30,10 @@ protected:
 
 	class timer timer;
 
-	static const int EXPLOSION_RADIUS = 10000; //20 000 --> (20 * 100 = 20m)
-	static const int DAMAGE = 40;
-	static const int DAMAGE_RADIUS = 5000;
+	ExplosiveHelper explosiveHelper;
+	int EXPLOSION_RADIUS = 10000; // 20 000 --> (20 * 100 = 20m)
+	int DAMAGE = 40;
+	int DAMAGE_RADIUS = 5000;
 
 	bool isDetonated;
 };

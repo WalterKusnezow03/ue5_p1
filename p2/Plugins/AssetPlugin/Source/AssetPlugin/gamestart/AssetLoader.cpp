@@ -198,9 +198,15 @@ void AssetLoader::loadWeapons(){
         "Prefabs/Throwables",           // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "defaultthrower"                // Just the file name as displayed
     );
-    
 
-
+    //
+    //Users/walterk/Documents/UnrealProjects/p2/Content/Prefabs/Weapons/c4/c4BP.uasset
+    LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::C4,       // track in asset manager
+        "Game",               // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/c4", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "c4BP"                // Just the file name as displayed
+    );
 }
 
 

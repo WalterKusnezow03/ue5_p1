@@ -41,6 +41,7 @@ public:
     void updateMeshAllAndApplyMaterial(materialEnum type);
 
     //All update mesh methods will call CREATE MESH SECTION INTERNALLY - NEW INDEX BUFFER TO GPU
+    //call if you manually editet meshdata by reference
     void updateMeshAll();
     void updateMeshAll(materialEnum type);
     void updateMeshRaycast(materialEnum type);
