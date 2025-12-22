@@ -16,10 +16,10 @@ public:
 
 	void Begin(float time);
 	void Begin(float time, bool resetsItselfIn);
-	void Tick(float deltaTime);
+	virtual void Tick(float deltaTime);
 	
 	virtual bool timesUp();
-	virtual void TickWithTimesUpReset(float deltatime);
+	virtual bool TickWithTimesUpReset(float deltatime);
 
 	float currentTimeLeft(){
 		return timeLeft;

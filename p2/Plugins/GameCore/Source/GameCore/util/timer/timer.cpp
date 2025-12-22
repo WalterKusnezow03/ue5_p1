@@ -42,9 +42,9 @@ void timer::Tick(float deltaTime){
     timeLeft -= deltaTime;
 }
 
-void timer::TickWithTimesUpReset(float deltatime){
+bool timer::TickWithTimesUpReset(float deltatime){
     Tick(deltatime);
-    timesUp();
+    return timesUp();
 }
 
 bool timer::timesUp()

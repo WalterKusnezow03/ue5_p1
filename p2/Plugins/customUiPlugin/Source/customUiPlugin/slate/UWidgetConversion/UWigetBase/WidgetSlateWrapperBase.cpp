@@ -173,7 +173,9 @@ void UWidgetSlateWrapperBase::UpdateSizeBoxBoundsIfMeshDataMarkedDirty(){
         //is tested.
         if (polygonMap->BoundsUpdated())
         {
-            SetWidthAndHeightSizeBox(polygonMap->Bounds());
+            FVector2D bound = polygonMap->Bounds();
+            bound += FVector2D(margin);
+            SetWidthAndHeightSizeBox(bound);
         }
     }
     
@@ -285,8 +287,9 @@ void UWidgetSlateWrapperBase::SetResolutionXUniform(int scale){
             SetResolution(bounds);
             return;
         }
+
     }
-    //taskRawX.Update(FVector2D(scale,0));
+    
 }
 
 void UWidgetSlateWrapperBase::SetResolutionYUniform(int scale){

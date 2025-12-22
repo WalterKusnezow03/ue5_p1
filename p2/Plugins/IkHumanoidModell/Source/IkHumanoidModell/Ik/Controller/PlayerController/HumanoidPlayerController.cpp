@@ -12,6 +12,7 @@ HumanoidPlayerController::~HumanoidPlayerController(){
 
 void HumanoidPlayerController::defaultSetup(UWorld *world){
     HumanoidController::defaultSetup(world);
+    defaultSetupHands(world); //player only for now
     DebugDisableCollisionOnLimbs();
 }
 

@@ -69,7 +69,12 @@ void UVbox::ReplaceChild(int i, IBaseUiInterface *newInterface){
             if (Index != INDEX_NONE)
             {
                 baseVBox->RemoveChildAt(Index);
+                
+                //does not package
                 baseVBox->InsertChildAt(Index, newChild);
+                
+                
+                
 
                 //remove from dispatch and add
                 Super::RemoveChild(oldInterface);

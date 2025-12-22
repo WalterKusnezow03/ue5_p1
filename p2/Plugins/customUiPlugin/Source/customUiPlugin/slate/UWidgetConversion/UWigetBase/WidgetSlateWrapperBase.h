@@ -25,6 +25,8 @@ protected:
     int id = 0;
     static int idGlobal;
 
+    float margin = 5.0f;
+
 public:
     virtual void enableTicklog() override {
         bDebugTickLog = true;

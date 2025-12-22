@@ -226,3 +226,9 @@ TArray<AActor *> HumanoidController::actorInChildrenArray(){
 void HumanoidController::changeCarriedItemSocket(ECarriedItemPosition type){
     //Todo: Add Carried item socket interpolator / map
 }
+
+
+
+void HumanoidController::defaultSetupHands(UWorld *worldIn){
+    torsoController.defaultSetupHands(worldIn);
+}

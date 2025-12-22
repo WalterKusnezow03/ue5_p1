@@ -4,6 +4,7 @@
 
 LayeredTwoJointBone::LayeredTwoJointBone(){
     world = nullptr;
+    handIsSetup = false;
 }
 LayeredTwoJointBone::~LayeredTwoJointBone(){
     world = nullptr;
@@ -53,6 +54,17 @@ void LayeredTwoJointBone::findDefaultLocalTorsoTarget(
     localTorsoEndEffectorTarget = up + side;
 }
 
+void LayeredTwoJointBone::defaultSetupHand(UWorld *worldIn){
+    if(worldIn){
+        handIsSetup = true;
+        hand.setup(worldIn, armTypeSaved);
+    }
+}
+
+
+
+
+
 // ---- TICK SECTION ----
 
 // abstract tick will find whether to follow a target or not
@@ -83,6 +95,7 @@ void LayeredTwoJointBone::Tick(
             actorRotation,
             deltatime
         );
+        TickHandController(actorRotation, deltatime);
         return;
     }
 
@@ -92,6 +105,7 @@ void LayeredTwoJointBone::Tick(
         actorRotation,
         deltatime
     );
+    TickHandController(actorRotation, deltatime);
 }
 
 /// @brief special tick for the world target reach
@@ -398,4 +412,21 @@ FVector LayeredTwoJointBone::HandTargetWorldBasedOnAttachedItem(){
 void LayeredTwoJointBone::getActors(TArray<AActor *> &outArray){
     torsoBone.getActors(outArray);
     armBone.getActors(outArray);
+
+    //add hand here!
+    //if(handIsSetup){}
+    hand.getActors(outArray);
+}
+
+
+
+
+void LayeredTwoJointBone::TickHandController(MMatrix &playerOrientation, float deltatime){
+    if(handIsSetup){
+        MMatrix T = armBone.EndEffectorTranslation(); //world.
+        //M = T * R <--lese richtung --
+        MMatrix M = T * playerOrientation;
+        hand.Tick(M, deltatime);
+    }
+    
 }

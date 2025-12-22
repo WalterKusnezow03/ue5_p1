@@ -115,6 +115,11 @@ FVector2D SlatePolygonMap::Bounds(){
     return boundsCache.Size();
 }
 
+FVector2D SlatePolygonMap::BoundsConst() const{
+    return boundsCache.Size();
+}
+
+
 
 void SlatePolygonMap::ForceUpdateBoundsForSizeCalculation(){
     TArray<SlateMeshDataPolygon *> polygons = allPolygonsSorted();

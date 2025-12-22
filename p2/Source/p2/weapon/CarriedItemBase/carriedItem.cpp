@@ -30,6 +30,7 @@ void AcarriedItem::BeginPlay()
 	Super::BeginPlay();
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
+	FindFingerComponentsOnBeginPlay();
 }
 
 // Called every frame
@@ -220,15 +221,22 @@ void AcarriedItem::leftMouseUp(){
 
 
 // ---- IK INTERFACE API ----
-// NEW IK HUMANOID ITEM POSITION DATA
+// NEW IK HUMANOID ITEM POSITION DATA, data held by carried item
 CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
-	//update container
-	internalCarriedItemPositionContainer.updateHandTargets(
-		rightHandLocation(),
-		leftHandLocation()
+	//update containe, all scenes (hand and fingers are tracked inside!)
+	fingerPositionManager.UpdateContainer(
+		internalCarriedItemPositionContainer,
+		this
 	);
 	return internalCarriedItemPositionContainer;
 }
+
+void AcarriedItem::FindFingerComponentsOnBeginPlay(){
+	fingerPositionManager.UpdateFrom(this);
+}
+
+
+
 
 void AcarriedItem::UpdateActorTransform(
 	FVector &location, 
@@ -247,47 +255,6 @@ FVector AcarriedItem::LocalAnimationOffset(){
 // ---- IK INTERFACE API END ----
 
 
-// sort of deprecated bone controller interface in p2 architecture
-
-FVector AcarriedItem::leftHandLocation(){
-	return GetActorLocation();
-}
-
-FVector AcarriedItem::rightHandLocation(){
-	return GetActorLocation();
-}
-
-FVector AcarriedItem::leftHandFingerLocation(HandBoneIndexEnum type){
-	return GetActorLocation();
-}
-
-FVector AcarriedItem::rightHandFingerLocation(HandBoneIndexEnum type){
-	return GetActorLocation();
-}
-
-void AcarriedItem::loadFingerTargets(HandTargetContainer &container){
-	
-	HandBoneIndexEnum handtype = container.readHandtype();
-	if(handtype == HandBoneIndexEnum::leftHand){
-		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::thumb), HandBoneIndexEnum::thumb);
-		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger1), HandBoneIndexEnum::finger1);
-		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger2), HandBoneIndexEnum::finger2);
-		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger3), HandBoneIndexEnum::finger3);
-		container.updateTargetWorld(leftHandFingerLocation(HandBoneIndexEnum::finger4), HandBoneIndexEnum::finger4);
-
-		//update rotation here too...
-	}
-	if(handtype == HandBoneIndexEnum::rightHand){
-		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::thumb), HandBoneIndexEnum::thumb);
-		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger1), HandBoneIndexEnum::finger1);
-		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger2), HandBoneIndexEnum::finger2);
-		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger3), HandBoneIndexEnum::finger3);
-		container.updateTargetWorld(rightHandFingerLocation(HandBoneIndexEnum::finger4), HandBoneIndexEnum::finger4);
-
-		//update rotation here too...
-	}
-
-}
 
 
 

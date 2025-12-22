@@ -3,6 +3,7 @@
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
 #include "EArmType.h"
+#include "IkHumanoidModell/Ik/Controller/HandController/HandController.h"
 
 /// @brief will just abstract a part of the torso and follow targets,
 /// maybe applies IK to lift the skelleton up. Unclear.
@@ -21,6 +22,8 @@ public:
         float lowerArm,
         UWorld *worldIn
     );
+
+    void defaultSetupHand(UWorld *worldIn);
 
     // ---- TICK SECTION ----
     
@@ -148,4 +151,10 @@ private:
     bool itemIsAttached();
     FVector HandTargetWorldBasedOnAttachedItem();
 
+
+
+    //hand controller
+    bool handIsSetup = false;
+    HandController hand;
+    void TickHandController(MMatrix &playerOrientation, float deltatime);
 };

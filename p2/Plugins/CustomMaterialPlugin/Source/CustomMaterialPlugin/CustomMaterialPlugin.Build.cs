@@ -59,14 +59,26 @@ public class CustomMaterialPlugin : ModuleRules
 
 
 		// Editor-only modules
-        if (Target.bBuildEditor)
-        {
-            PrivateDependencyModuleNames.AddRange(new string[]
-            {
-                "UnrealEd",
-                "MaterialEditor",
-                "MaterialUtilities"
-            });
-        }
+		if (Target.bBuildEditor)
+		{
+
+			PrivateDependencyModuleNames.AddRange(new string[]
+			{
+				"UnrealEd",
+				"MaterialEditor",
+				"MaterialUtilities"
+			});
+		}
+
+		//vertsteht ich nicht, für cook, package die abfrage
+		if (Target.Type == TargetType.Editor)
+		{
+			PrivateDependencyModuleNames.AddRange(new string[]
+			{
+				"UnrealEd",
+				"MaterialEditor",
+				"MaterialUtilities"
+			});
+		}
 	}
 }

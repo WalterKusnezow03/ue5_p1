@@ -32,6 +32,8 @@ public:
 
     bool BoundsUpdated();
     FVector2D Bounds();
+    FVector2D BoundsConst() const;
+    
 
     //allows you to modify the internal mesh data drawn.
     //marks bounds dirty, use Bounds() method to get new bounds

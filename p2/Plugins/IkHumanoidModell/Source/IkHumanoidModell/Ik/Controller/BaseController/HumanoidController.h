@@ -21,6 +21,7 @@ public:
     void EnableDebugLogExtended();
 
     virtual void defaultSetup(UWorld *world);
+    void defaultSetupHands(UWorld *world);
 
     void ResetAndRebuild();
 

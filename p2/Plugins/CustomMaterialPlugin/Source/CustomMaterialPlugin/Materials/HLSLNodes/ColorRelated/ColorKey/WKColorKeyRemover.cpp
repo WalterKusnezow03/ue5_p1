@@ -1,6 +1,7 @@
 #include "WKColorKeyRemover.h"
 
 
+#if WITH_EDITOR
 
 /// @brief override this method to add more inputs.
 void UWKColorKeyRemover::SetupInputsOnConstruct(){
@@ -59,3 +60,5 @@ int32 UWKColorKeyRemover::Compile(FMaterialCompiler *Compiler, int32 outputIndex
     }
     return INDEX_NONE;
 }
+
+#endif

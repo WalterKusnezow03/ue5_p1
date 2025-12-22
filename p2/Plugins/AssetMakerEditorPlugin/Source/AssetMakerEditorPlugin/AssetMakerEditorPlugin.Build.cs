@@ -63,5 +63,12 @@ public class AssetMakerEditorPlugin : ModuleRules
 			PrivateDependencyModuleNames.Add("UnrealEd");
 			PrivateDependencyModuleNames.Add("EditorSubsystem");
 		}
+
+		//vertsteht ich nicht, für cook, package die abfrage
+		if (Target.Type == TargetType.Editor)
+        {
+            PrivateDependencyModuleNames.Add("UnrealEd");
+			PrivateDependencyModuleNames.Add("EditorSubsystem");
+        }
 	}
 }

@@ -189,7 +189,7 @@ void AC4Item::Detonate(){
     }
 
     //isDetonated FLAGGED IN SUPER!
-    Super::Detonate(); 
+    Super::Detonate();
 
     //exploded by damage, cant be exploded again.
     if(!markedDetonateByParent){

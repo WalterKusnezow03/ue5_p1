@@ -29,6 +29,20 @@ void TwoJointBone::markTriangleFlipAsWantedForLegs(){
 
 
 void TwoJointBone::setup(float a, float b, UWorld *world){
+    setupMatrices(a, b, world);
+
+    //create debug limbs (cubes)
+    createLimbsIfNeeded(world, a, b);
+}
+
+//hand api
+void TwoJointBone::setup(float a, float b, UWorld *world, float widthBone){
+    setupMatrices(a, b, world);
+    createLimbsIfNeeded(world, a, b, widthBone);
+}
+
+
+void TwoJointBone::setupMatrices(float a, float b, UWorld *world){
     worldPtr = world;
 
     a = std::abs(a);
@@ -53,11 +67,9 @@ void TwoJointBone::setup(float a, float b, UWorld *world){
     t3.setTranslation(foot);
     foot *= -1.0f;
     t3Inv.setTranslation(foot);
-
-
-    //create debug limbs (cubes)
-    createLimbsIfNeeded(world, a, b);
 }
+
+
 
 void TwoJointBone::ResetAndRebuild(MMatrix &worldMatrix){
     resetRotations();
@@ -504,13 +516,18 @@ void TwoJointBone::useOtherColorType(){
 
 // --- api for actor attachment ---
 void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeight){
+    int width = 10;
+    createLimbsIfNeeded(world, aHeight, bHeight, width);
+}
+
+void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeight, float widthBone){
     if(world && autoCreateLimbs){
-        int width = 10;
-        AActor *top = CubeLimbMaker::createLimbPivotAtTop(width, width, aHeight, world);
-        AActor *bottom = CubeLimbMaker::createLimbPivotAtTop(width, width, bHeight, world);
+        AActor *top = CubeLimbMaker::createLimbPivotAtTop(widthBone, widthBone, aHeight, world);
+        AActor *bottom = CubeLimbMaker::createLimbPivotAtTop(widthBone, widthBone, bHeight, world);
         attachLimbs(top, bottom);
     }
 }
+
 
 
 void TwoJointBone::attachLimbs(AActor *top, AActor *bottom){

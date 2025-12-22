@@ -29,6 +29,8 @@ public:
         UWorld *world
     );
 
+    void defaultSetupHands(UWorld *worldIn);
+
     void ResetAndRebuild(
         MMatrix &actorTranslation,
         MMatrix &actorRotation

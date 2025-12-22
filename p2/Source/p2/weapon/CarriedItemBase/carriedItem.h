@@ -7,11 +7,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include <list>
-#include "p2/entities/customIk/bonePackage/handPackage/HandTargetContainer.h"
 #include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
 
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
+#include "p2/weapon/CarriedItemBase/FingerPositions/carriedItemFingerPositionManager.h"
 
 //new
 #include "GameCore/util/ActorBase/ActorBase.h"
@@ -58,21 +58,15 @@ public:
 	bool isActive();
 
 
-	/// @brief must be overriden for carried weapon, used also by new ik humanoid!
-	virtual FVector leftHandLocation();
-
-	/// @brief must be overriden for carried weapon, used also by new ik humanoid!
-	virtual FVector rightHandLocation();
-
-	virtual FVector leftHandFingerLocation(HandBoneIndexEnum type);
-	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type);
-
-	virtual void loadFingerTargets(HandTargetContainer &container);
 
 	//doent have to be called:
 	virtual void ResetFlagsAndProperties() {};
 
 protected:
+	
+	void FindFingerComponentsOnBeginPlay();
+
+	CarriedItemFingerPositionManager fingerPositionManager;
 	CarriedItemPositionData internalCarriedItemPositionContainer;
 
 	// Called when the game starts or when spawned

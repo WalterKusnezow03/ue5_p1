@@ -34,6 +34,9 @@ public:
         float defaultMotionTime
     );
 
+    //hand controller api set width
+    void setupBone(float a, float b, UWorld *world, FVector offset, float widthBone);
+
     ///sets the local (forward kinematic, end effector) target by transforming into local space
     void setForwardTargetWorld(
         FVector &targetWorld,

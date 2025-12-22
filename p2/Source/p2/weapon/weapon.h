@@ -15,6 +15,7 @@
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "CoreMath/animation/KeyFrames/KeyFrameAnimation.h"
 #include "GameCore/util/timer/timer.h"
+#include "GameCore/util/timer/PayloadTimer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 
 #include "weapon.generated.h"
@@ -85,28 +86,11 @@ public:
 	//returns if the weapon is active or not
 	//bool isActive();
 
-	virtual FVector leftHandLocation() override;
-	virtual FVector rightHandLocation() override;
-
-	virtual FVector leftHandFingerLocation(HandBoneIndexEnum type) override;
-	virtual FVector rightHandFingerLocation(HandBoneIndexEnum type) override;
-
-	virtual void loadFingerTargets(HandTargetContainer &container) override;
 
 
 private:
-	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> left_fingerTargetsMap;
-	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> right_fingerTargetsMap;
+	
 
-	HandBoneIndexEnum socketNameToEnum(FString &name);
-
-	void addIfIsAHandTarget(USkeletalMeshComponent *pointer);
-
-	void addToFingerTargetMap(
-		std::map<HandBoneIndexEnum, USkeletalMeshComponent *> &map,
-		HandBoneIndexEnum finger,
-		USkeletalMeshComponent *component
-	);
 
 public:	
 	// Called every frame
@@ -160,7 +144,7 @@ protected:
 	float cooldownTime();
 	float reloadTime();
 
-	class timer timer;
+	class PayloadTimer timer;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -12,6 +12,12 @@ public:
     void ResetAndRebuild(MMatrix &worldMatrix);
 
     void setup(float a, float b, UWorld *world);
+    void setup(float a, float b, UWorld *world, float widthBone); //hand controller api
+
+protected:
+    void setupMatrices(float a, float b, UWorld *world);
+
+public:
     void markTriangleFlipAsWantedForArms();
     void markTriangleFlipAsWantedForLegs();
 
@@ -40,7 +46,7 @@ public:
     /// @return 
     MMatrix StartEffector();
 
-    /// @brief endeffector WORKD MATRIX
+    /// @brief endeffector WORLD MATRIX
     /// @return 
     MMatrix EndEffector();
 
@@ -156,6 +162,7 @@ public:
 private:
     bool autoCreateLimbs = true;
     void createLimbsIfNeeded(UWorld *world, float a, float b);
+    void createLimbsIfNeeded(UWorld *world, float a, float b, float widthBone);
 
     AActor *topActor = nullptr;
     AActor *bottomActor = nullptr;

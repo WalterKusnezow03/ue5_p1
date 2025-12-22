@@ -212,7 +212,9 @@ void UVerticalDropDownBase::RescaleAsTopItem(IBaseUiInterface *item){
     RescaleIfPossible(item, FVector2D(topSelectedResX, topResY));
 }
 void UVerticalDropDownBase::RescaleAsListItem(IBaseUiInterface *item){
-    RescaleXIfPossible(item, topSelectedResX + topResY); //arrow button is squared anyway
+    //RescaleXIfPossible(item, topSelectedResX + topResY); //arrow button is squared anyway
+    RescaleIfPossible(item, FVector2D(topSelectedResX + topResY, topResY)); //arrow button is squared anyway
+    //is more stable
 }
    
 

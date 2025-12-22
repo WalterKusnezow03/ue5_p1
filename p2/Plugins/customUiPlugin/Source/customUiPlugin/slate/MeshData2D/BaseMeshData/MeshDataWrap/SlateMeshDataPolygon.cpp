@@ -124,6 +124,10 @@ FVector2D SlateMeshDataPolygon::SlateTextPivot() const {
     FVector2D textBounds = internalText.Bounds();
     FVector2D center = meshData.CenterOfMesh();
     pivot = center - textBounds * 0.5f;
+
+    pivot.X = std::floor(pivot.X);
+    pivot.Y = std::floor(pivot.Y);
+
     if(internalText.bShouldCenteredInWidget()){
         return pivot;
     }

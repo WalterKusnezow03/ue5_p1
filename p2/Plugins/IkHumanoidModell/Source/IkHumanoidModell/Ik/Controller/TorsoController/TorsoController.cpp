@@ -38,6 +38,11 @@ void TorsoController::setup(
     
 }
 
+void TorsoController::defaultSetupHands(UWorld *worldIn){
+    partLeft.defaultSetupHand(worldIn);
+    partRight.defaultSetupHand(worldIn);
+}
+
 void TorsoController::ResetAndRebuild(
     MMatrix &actorTranslation,
     MMatrix &actorRotation

@@ -165,7 +165,15 @@ FVector Aweapon::getOffsetVector(){
  * will update the cooldown time / decrease it
  */
 void Aweapon::updateCooltime(float time){
-	//new
+	//new, on finish:
+	if(timer.TickWithTimesUpReset(time)){
+		if(!singleFireMode()){
+			abzugHinten = false; 
+		}
+		isReloading = false;
+	}
+
+	/*
 	if(!timer.timesUp()){
 		timer.Tick(time);
 	}else{
@@ -173,7 +181,7 @@ void Aweapon::updateCooltime(float time){
 			abzugHinten = false; 
 		}
 		isReloading = false;
-	}
+	}*/
 
 }
 
@@ -429,6 +437,16 @@ void Aweapon::reload(int amount){
 		reloadAnimation();
 
 		isReloading = true;
+
+		//add payload to timer: reset hand targets
+
+		Payload generated = fingerPositionManager.UpdateTemporaryTargetWithPaylaod(
+			EArmType::ELeft, 
+			magSkeletonPointer,
+			"mag" //bone name
+		);
+		timer.AddPayload(generated);
+
 	}
 }
 
@@ -586,8 +604,6 @@ void Aweapon::setupAnimations()
 			}else if(name.Contains("grip")){
 				gripAttachmentSkelletonPointer = Component;
 			}
-
-			addIfIsAHandTarget(Component);
 		}
 	}
     
@@ -620,6 +636,8 @@ void Aweapon::reloadAnimation(){
 	if(magSkeletonPointer != nullptr){
 		//playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
 		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime());
+
+		
 	}
 }
 
@@ -913,183 +931,6 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
 }
 
 // ---- attach to actor sockets end ----
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * Bone controller attachment / socket locations!
- * 
- */
-
-
-/// @brief right hand may be named "righthand"
-/// 	   right hand subparts may be named "righthand_thumb"!! MUST FOLLOW THIS NAMING!
-/// @param Component 
-void Aweapon::addIfIsAHandTarget(USkeletalMeshComponent *Component){
-	if(Component){
-		FString name = Component->GetName();
-		if(name.Contains("righthand")){
-			HandBoneIndexEnum enumCheckup = socketNameToEnum(name);
-			if(enumCheckup == HandBoneIndexEnum::none){ //
-				rightHandTargetSkelletonPointer = Component;
-			}else{
-				addToFingerTargetMap(
-					right_fingerTargetsMap,
-					enumCheckup,
-					Component
-				);
-			}
-		}
-		else if(name.Contains("lefthand")){
-			HandBoneIndexEnum enumCheckup = socketNameToEnum(name);
-			if(enumCheckup == HandBoneIndexEnum::none){ //
-				leftHandTargetSkelletonPointer = Component;
-			}else{
-				addToFingerTargetMap(
-					left_fingerTargetsMap,
-					enumCheckup,
-					Component
-				);
-			}
-		}
-	}
-}
-
-/// @brief will try to find the finger name from the string, returns "none" if no matches
-/// @param name name to check
-/// @return none if none found
-HandBoneIndexEnum Aweapon::socketNameToEnum(FString &name){
-	if(name.Contains("thumb"))
-		return HandBoneIndexEnum::thumb;
-	if(name.Contains("finger1"))
-		return HandBoneIndexEnum::finger1;
-	if(name.Contains("finger2"))
-		return HandBoneIndexEnum::finger2;
-	if(name.Contains("finger3"))
-		return HandBoneIndexEnum::finger3;
-	if(name.Contains("finger4"))
-		return HandBoneIndexEnum::finger4;
-
-	return HandBoneIndexEnum::none;
-}
-
-void Aweapon::addToFingerTargetMap(
-	std::map<HandBoneIndexEnum, USkeletalMeshComponent *> &map,
-	HandBoneIndexEnum fingerIndex,
-	USkeletalMeshComponent *component
-){
-	if(component != nullptr){
-		map[fingerIndex] = component;
-	}
-}
-
-
-
-
-
-
-
-FVector Aweapon::leftHandLocation(){
-
-	if(isReloading){
-		if (magSkeletonPointer != nullptr)
-		{
-			//DebugHelper::showScreenMessage("reload location", FColor::Purple);
-			FVector componentWorldLocation = magSkeletonPointer->GetComponentLocation();
-
-
-			/**
-			 * get the bon location of "Mag" inside the skelletal component
-			 * pointer to get the real world location of this "bone"
-			 * and not the component itself
-			 */
-			FVector BoneLocation = magSkeletonPointer->GetBoneLocation(TEXT("Mag"));
-			return BoneLocation;
-			//return componentWorldLocation;
-		}
-	}
-	
-	
-	if(leftHandTargetSkelletonPointer != nullptr){
-		// Get the world location of the Skeletal Mesh Component
-    	FVector componentWorldLocation = leftHandTargetSkelletonPointer->GetComponentLocation();
-		return componentWorldLocation;
-	}
-
-	return GetActorLocation();
-}
-
-FVector Aweapon::rightHandLocation(){
-	if(rightHandTargetSkelletonPointer != nullptr){
-		// Get the world location of the Skeletal Mesh Component
-    	FVector componentWorldLocation = rightHandTargetSkelletonPointer->GetComponentLocation();
-		return componentWorldLocation;
-	}
-
-	return GetActorLocation();
-}
-
-
-void Aweapon::loadFingerTargets(HandTargetContainer &container){
-	Super::loadFingerTargets(container);
-
-	
-	MMatrix handRotator;
-	HandBoneIndexEnum handType = container.readHandtype();
-	if(handType == HandBoneIndexEnum::leftHand){
-		handRotator.rollRadAdd(MMatrix::degToRadian(90.0f));
-	}
-	if(handType == HandBoneIndexEnum::rightHand){
-		handRotator.rollRadAdd(MMatrix::degToRadian(-90.0f));
-	}
-	container.setOrientation(handRotator);
-
-}
-
-FVector Aweapon::leftHandFingerLocation(HandBoneIndexEnum type){
-	//DebugHelper::showScreenMessage("load fingers left", FColor::Red);
-	/**
-	 *  achtung: es braucht einen seperaten container der speichert wo die finger positionen sind
-		bzw weitere skelletal mesh components
-		weil finger auch an mehreren stellen anbringbar sind
-
-		es braucht sowas wie ein „objekt finger position pair"!
-	 * 
-	 */
-	if (left_fingerTargetsMap.find(type) != left_fingerTargetsMap.end()) {
-		// Key exists
-	}
-	return leftHandLocation();
-}
-
-FVector Aweapon::rightHandFingerLocation(HandBoneIndexEnum type){
-	//DebugHelper::showScreenMessage("load fingers right", FColor::Purple);
-	if (right_fingerTargetsMap.find(type) != right_fingerTargetsMap.end()) {
-		// Key exists
-		USkeletalMeshComponent *comp = right_fingerTargetsMap[type];
-		if(comp != nullptr){
-			//DebugHelper::showScreenMessage("load fingers right", FColor::Purple);
-			FVector pos = comp->GetComponentLocation();
-			//DebugHelper::showScreenMessage(pos);
-			return pos;
-		}
-	}
-	return rightHandLocation();
-}
-
-
-
-
 
 
 

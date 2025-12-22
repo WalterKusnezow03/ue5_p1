@@ -218,8 +218,18 @@ void SSlateWidgetBase::DrawText(
         FColor color = text.Color();
         FString stringToDisplay = text.GetText();
 
-
         FVector2f LocalSize = FVector2f(AllottedGeometry.GetLocalSize());
+        
+        //doesnt help against text bug
+        if(PolygonMapExternal.IsValid()){
+            LocalSize = FVector2f(PolygonMapExternal->BoundsConst());
+        }
+
+        
+        
+
+        //old
+        //FVector2f(AllottedGeometry.GetLocalSize());
         FSlateLayoutTransform LayoutTransform(pivot); // pivot ist FVector2f
 
         FSlateDrawElement::MakeText(

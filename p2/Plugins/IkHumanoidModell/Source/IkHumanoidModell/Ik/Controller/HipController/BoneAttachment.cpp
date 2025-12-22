@@ -82,6 +82,22 @@ void BoneAttachment::setupBone(
 
 }
 
+//player controller api width bone hand controller
+void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset, float widthBone){
+    bone.setup(a, b, worldIn, widthBone);
+    setWorld(worldIn);
+
+    innerOffset.setTranslation(offset);
+
+    offset *= -1.0f;
+    innerOffsetInverse.setTranslation(offset);
+
+    defaultExtendedTranslationBottomToUp = FVector(
+        0,
+        0,
+        (std::abs(a) + std::abs(b))
+    );
+}
 
 
 /// @brief transforms the root, adds inner offset to matrix
