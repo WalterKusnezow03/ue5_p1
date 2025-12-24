@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 
-class GAMECORE_API IPayloadInterface {
+class COREMATH_API IPayloadInterface {
 
 public:
     IPayloadInterface(){}

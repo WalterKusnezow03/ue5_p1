@@ -51,3 +51,26 @@ float APlacableItemBase::PlaceRadius(){
 void APlacableItemBase::SpawnItemAtLocation(FVector &location, FVector &normal){
     //pure virtual for now.
 }
+
+
+
+void APlacableItemBase::setupKickBackAnimation(){
+    ClearKickbackAnimation();
+    
+	int kickFrontDistance = 10; // 3cm
+	actorKickBackAnim.addFrame(
+		FVector(0, 0, 0),
+		0.0f, // time to prev frame
+		false);
+	actorKickBackAnim.addFrame(
+		FVector(kickFrontDistance, 0, 0), //x forward
+		cooldownTime() * 0.1f, //time to prev frame
+		false
+	);
+	actorKickBackAnim.addFrame(
+		FVector(0, 0, 0),
+		cooldownTime() * 0.9f, //time to prev frame
+		false
+	);
+
+}

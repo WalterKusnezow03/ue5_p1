@@ -7,7 +7,7 @@
 /**
  * 
  */
-class GAMECORE_API timer
+class COREMATH_API timer
 {
 public:
 	timer();

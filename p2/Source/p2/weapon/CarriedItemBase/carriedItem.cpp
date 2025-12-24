@@ -224,7 +224,7 @@ void AcarriedItem::leftMouseUp(){
 // NEW IK HUMANOID ITEM POSITION DATA, data held by carried item
 CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 	//update containe, all scenes (hand and fingers are tracked inside!)
-	fingerPositionManager.UpdateContainer(
+	handAndFingerPositionManager.UpdateContainer(
 		internalCarriedItemPositionContainer,
 		this
 	);
@@ -232,7 +232,7 @@ CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 }
 
 void AcarriedItem::FindFingerComponentsOnBeginPlay(){
-	fingerPositionManager.UpdateFrom(this);
+	handAndFingerPositionManager.UpdateFrom(this);
 }
 
 

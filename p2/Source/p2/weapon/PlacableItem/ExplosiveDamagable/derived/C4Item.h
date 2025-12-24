@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "p2/weapon/PlacableItem/ExplosiveDamagable/ExplosiveDamagableBase.h"
 #include "Components/PointLightComponent.h"
-#include "GameCore/util/timer/FlipTimer.h"
+#include "CoreMath/animation/timer/FlipTimer.h"
 
 
 #include "C4Item.generated.h"
@@ -32,6 +32,9 @@ public:
     void SetLocationAndLookDir(FVector &location, FVector &normal);
 
     virtual void ResetFlagsAndProperties() override;
+
+    
+
 
 protected:
     UPROPERTY()
@@ -69,6 +72,7 @@ protected:
 
     void FindComponentsOnBeginPlay();
     void CreateMaterialOnBeginPlay();
+    void OverrideTargetsForHands();
 
     void ShowPressAnimation();
 
@@ -100,7 +104,9 @@ private:
 
 
     bool markedDetonateByParent = true;
-    
 
-
+    bool markedButtonPress = false;
+    KeyFrameAnimation buttonPressAnimation;
+    void SetupButtonAnimationOnBeginPlay();
+    void TickButtonAnimation(float deltatime);
 };

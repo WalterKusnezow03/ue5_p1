@@ -39,7 +39,7 @@ bool HandBoneTargetPair::isEnabled(){
 
 FVector HandBoneTargetPair::boneLocation(){
     if(comp){
-        DebugHelper::logMessage("HandBoneTargetPair::NAME: ", boneName);
+        //DebugHelper::logMessage("HandBoneTargetPair::NAME: ", boneName);
         return comp->GetBoneLocation(FName(*boneName));
     }
     FVector none(0, 0, 0);

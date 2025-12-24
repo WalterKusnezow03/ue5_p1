@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/util/timer/PayloadInterface/IPayloadInterface.h"
+#include "CoreMath/animation/timer/PayloadInterface/IPayloadInterface.h"
 
-#include "GameCore/util/timer/PayloadInterface/Payload.h"
+#include "CoreMath/animation/timer/PayloadInterface/Payload.h"
 
 /**
  * 
  */
-class GAMECORE_API PayloadTimer : public timer
+class COREMATH_API PayloadTimer : public timer
 {
 public:
 	PayloadTimer();

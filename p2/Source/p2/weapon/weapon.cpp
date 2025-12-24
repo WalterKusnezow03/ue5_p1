@@ -85,7 +85,7 @@ void Aweapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	setupAnimations(); //sets up the animations
+	setupAnimations(); //sets up the animations from bp and finds all skeletal components
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
 
@@ -440,7 +440,7 @@ void Aweapon::reload(int amount){
 
 		//add payload to timer: reset hand targets
 
-		Payload generated = fingerPositionManager.UpdateTemporaryTargetWithPaylaod(
+		Payload generated = handAndFingerPositionManager.UpdateTemporaryTargetWithPaylaod(
 			EArmType::ELeft, 
 			magSkeletonPointer,
 			"mag" //bone name
@@ -955,11 +955,8 @@ void Aweapon::flagKickbackStart(){
 
 
 void Aweapon::setupKickBackAnimation(){
-	int kickBackDistance = 10; //3cm
-
-	actorKickBackAnim = KeyFrameAnimation(false); // instant flip animation, dont loop at end to start
-	actorKickBackAnim.useHermiteSplineInterpolation(false); //linear default
-
+	ClearKickbackAnimation();
+	int kickBackDistance = 10; // 3cm
 	actorKickBackAnim.addFrame(
 		FVector(0, 0, 0),
 		0.0f, // time to prev frame
@@ -975,6 +972,15 @@ void Aweapon::setupKickBackAnimation(){
 		false
 	);
 }
+
+void Aweapon::ClearKickbackAnimation(){
+
+	actorKickBackAnim = KeyFrameAnimation(false); // instant flip animation, dont loop at end to start
+	actorKickBackAnim.useHermiteSplineInterpolation(false); //linear default
+}
+
+
+
 
 bool Aweapon::kickbackIsRunning(){
 	return kickbackStarted;

@@ -30,7 +30,7 @@ public:
         }
     }
 
-    //is not tested
+    //is tested
     template <typename T>
     void TTryAssignByName(FString name, T *&ptrToAssign){
         TArray<T *> array;
@@ -47,8 +47,35 @@ public:
         }
     }
 
+
+    //find all by type
+    template <typename T>
+    void TFindAllChildsByType(
+        TArray<T *> &container
+    ){
+        TArray<USceneComponent *> raw;
+        FindAllChilds(raw);
+
+        TArray<T *> casted;
+        for (int i = 0; i < raw.Num(); i++){
+            if(USceneComponent *current = raw[i]){
+                if(T *currentCasted = Cast<T>(current)){
+                    casted.Add(currentCasted);
+                }
+            }
+        }
+    }
+
+
+    void FindAllChilds(TArray<USceneComponent *> &container);
+    void FindAllChilds(
+        USceneComponent *comp,
+        TArray<USceneComponent *> &container
+    );
+
 private:
 
+    
 
 
 };

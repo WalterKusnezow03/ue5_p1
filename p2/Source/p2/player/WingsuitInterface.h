@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/util/timer/timer.h"
+#include "CoreMath/animation/timer/timer.h"
 
 /**
  * 

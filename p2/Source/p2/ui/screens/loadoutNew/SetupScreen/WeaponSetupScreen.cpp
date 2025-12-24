@@ -267,7 +267,7 @@ void UWeaponSetupScreen::SetupMuzzlePicker(){
         for (int i = 0; i < types.size(); i++){
             weaponAttachmentEnum typeMuzzle = types[i];
             UTextButton *button = MakeWeaponAttachMentButton(typeMuzzle);
-            attachmentGripPicker->AddChild(button); //added to picker list.
+            attachmentMuzzlePicker->AddChild(button); //added to picker list.
         }
     }
 

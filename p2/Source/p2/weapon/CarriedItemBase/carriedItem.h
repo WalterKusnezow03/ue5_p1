@@ -65,8 +65,9 @@ public:
 protected:
 	
 	void FindFingerComponentsOnBeginPlay();
+	
 
-	CarriedItemFingerPositionManager fingerPositionManager;
+	CarriedItemFingerPositionManager handAndFingerPositionManager;
 	CarriedItemPositionData internalCarriedItemPositionContainer;
 
 	// Called when the game starts or when spawned

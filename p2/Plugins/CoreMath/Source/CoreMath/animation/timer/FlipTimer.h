@@ -5,7 +5,7 @@
 #include "timer.h"
 
 
-class GAMECORE_API FlipTimer : public timer{
+class COREMATH_API FlipTimer : public timer{
 
 public:
     FlipTimer();

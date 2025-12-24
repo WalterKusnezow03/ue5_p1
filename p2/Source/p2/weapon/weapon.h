@@ -14,8 +14,8 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
 #include "CoreMath/animation/KeyFrames/KeyFrameAnimation.h"
-#include "GameCore/util/timer/timer.h"
-#include "GameCore/util/timer/PayloadTimer.h"
+#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/PayloadTimer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 
 #include "weapon.generated.h"
@@ -246,7 +246,7 @@ private:
 
 
 
-private:
+protected:
 	bool actorAlreadyAttached(AActor *actorpointer);
 	std::vector<AActor *> attachedActors;
 
@@ -262,8 +262,10 @@ private:
 	bool verschlussKickBackStarted = false;
 	bool recoilCopied = false;
 
+	//on shoot (will be replaced by placing animation in placable item)
+	virtual void setupKickBackAnimation();
+	void ClearKickbackAnimation();
 
-	void setupKickBackAnimation();
 	bool kickbackIsRunning();
 	void TickKickback(float DeltaTime);
 

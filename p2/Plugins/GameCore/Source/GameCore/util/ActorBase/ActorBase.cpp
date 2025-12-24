@@ -34,3 +34,35 @@ void AActorBase::FindAllChildsByName(
     }
     
 }
+
+
+
+void AActorBase::FindAllChilds(TArray<USceneComponent *> &components){
+    TArray<USceneComponent *> raw;
+    GetComponents<USceneComponent>(raw);
+    for (int i = 0; i < raw.Num(); i++){
+        if(USceneComponent *current = raw[i]){
+            FindAllChilds(current, components);
+        }
+    }
+}
+
+
+
+void AActorBase::FindAllChilds(
+    USceneComponent *comp, 
+    TArray<USceneComponent*> &container
+){
+    if(comp){
+        TArray<USceneComponent *> childs = comp->GetAttachChildren();
+        for (int i = 0; i < childs.Num(); i++)
+        {
+            if(USceneComponent *current = childs[i]){
+                container.Add(current);
+                
+                FindAllChilds(current, container);
+            }
+        }
+    }
+        
+}

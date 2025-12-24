@@ -4,7 +4,7 @@
 
 #include "IPayLoadInterface.h"
 
-class GAMECORE_API Payload {
+class COREMATH_API Payload {
 
 public:
     Payload();

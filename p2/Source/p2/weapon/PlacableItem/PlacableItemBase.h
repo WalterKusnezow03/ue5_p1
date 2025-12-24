@@ -39,4 +39,8 @@ protected:
     /// @param location 
     /// @param normal 
     virtual void SpawnItemAtLocation(FVector &location, FVector &normal);
+
+
+    //other animation for placing item
+    virtual void setupKickBackAnimation();
 };

@@ -12,13 +12,15 @@ void AC4Item::BeginPlay(){
     Type = weaponEnum::C4;
     explosiveHelper.Setup(EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
     FindComponentsOnBeginPlay();
+    OverrideTargetsForHands();
     CreateMaterialOnBeginPlay();
     SetupTimer();
+    SetupButtonAnimationOnBeginPlay();
 }
 void AC4Item::Tick(float deltatime){
     Super::Tick(deltatime);
     TickLightStatus(deltatime);
-
+    TickButtonAnimation(deltatime);
 
     //todo hier: 
     //überlegen wie der zünder seine animation macht!
@@ -65,14 +67,14 @@ void AC4Item::SetLocationAndLookDir(FVector &location, FVector &normal){
 
 void AC4Item::showWeapon(bool show){
     //Debug
-    ShowComponent(c4SceneComponent, show);
-    return;
+    //ShowComponent(c4SceneComponent, show);
+    //return;
 
     //default behaiviour
     if(isPickedUp()){
         //show c4 detonator
         //hide c4 block
-        ShowComponent(c4SceneComponent, false);
+        ShowComponent(c4SceneComponent, true);
         ShowComponent(detonatorSceneComponent, true);
     }else{
         //hide show c4 only
@@ -94,7 +96,7 @@ void AC4Item::aim(bool aimstatus){
     Super::aim(aimstatus);
 
     //show press anim
-    if(aimstatus){
+    if(aimstatus && !markedButtonPress){
         ShowPressAnimation();
         DetonateChildren();
     }
@@ -102,7 +104,7 @@ void AC4Item::aim(bool aimstatus){
 
 void AC4Item::FindComponentsOnBeginPlay(){
     TTryAssignByName<USceneComponent>("trigger", triggerSceneComponent); //from detonator
-    TTryAssignByName<USceneComponent>("detonator", detonatorSceneComponent);
+    TTryAssignByName<USceneComponent>("detonatorScene", detonatorSceneComponent);
 
     TTryAssignByName<USceneComponent>("c4scene", c4SceneComponent);
     TTryAssignByName<USceneComponent>("c4LightComponent", c4light);
@@ -116,6 +118,25 @@ void AC4Item::FindComponentsOnBeginPlay(){
     found = c4SceneComponent ? TEXT("AC4Item::c4scene Found!") : TEXT("AC4Item::c4scene NOT FOUND");
     DebugHelper::logMessage(found);
 }
+
+void AC4Item::OverrideTargetsForHands(){
+    if(c4SceneComponent){
+        handAndFingerPositionManager.OverrideComponent(
+            EArmType::ERight,
+            c4SceneComponent
+        );
+    }
+
+    if(detonatorSceneComponent){
+        handAndFingerPositionManager.OverrideComponent(
+            EArmType::ELeft,
+            detonatorSceneComponent
+        );
+    }
+
+}
+	 
+
 
 void AC4Item::CreateMaterialOnBeginPlay(){
     if(materialLightPrefab){
@@ -151,11 +172,8 @@ void AC4Item::UpdatePointLightEmmision(float scalar){
 
 
 void AC4Item::ShowPressAnimation(){
-
+    markedButtonPress = true;
 }
-
-
-
 
 void AC4Item::DetonateChildren(){
     DebugHelper::logMessage("AC4Item::DetonateChildren: ", childs.Num());
@@ -245,3 +263,34 @@ void AC4Item::SetParent(AC4Item *parentPtr){
     parent = parentPtr;
 }
 
+
+
+
+
+//button press animation
+void AC4Item::SetupButtonAnimationOnBeginPlay(){
+    buttonPressAnimation = KeyFrameAnimation(false); //no loop
+
+    //addFrame(FVector::pos, float::timeFromLastFrame)
+    buttonPressAnimation.addFrame(FVector(0, 0, 0), 0.0f);
+    buttonPressAnimation.addFrame(FVector(0, 0, -0.5f), 0.2f);
+    buttonPressAnimation.addFrame(FVector(0, 0, 0), 0.2f);
+    markedButtonPress = false;
+}
+
+void AC4Item::TickButtonAnimation(float DeltaTime){
+    if(markedButtonPress){
+
+        //animate z only.
+		FVector newOffset = buttonPressAnimation.interpolate(DeltaTime);
+        if(triggerSceneComponent){
+            FVector current = triggerSceneComponent->GetRelativeLocation();
+            current.Z = newOffset.Z;
+            triggerSceneComponent->SetRelativeLocation(current);
+        }
+
+        if(buttonPressAnimation.reachedLastFrameOfAnimation()){
+			markedButtonPress = false;
+		}
+	}
+}

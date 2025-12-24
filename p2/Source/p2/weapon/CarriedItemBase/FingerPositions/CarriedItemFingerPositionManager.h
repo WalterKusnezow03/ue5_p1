@@ -9,8 +9,8 @@
 #include "IkHumanoidModell/Ik/Controller/TorsoController/EArmType.h"
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 
-#include "GameCore/util/timer/PayloadInterface/IPayloadInterface.h"
-#include "GameCore/util/timer/PayloadInterface/Payload.h"
+#include "CoreMath/animation/timer/PayloadInterface/IPayloadInterface.h"
+#include "CoreMath/animation/timer/PayloadInterface/Payload.h"
 
 #include "p2/weapon/CarriedItemBase/FingerPositions/boneTargetPair/HandBoneTargetPair.h"
 
@@ -51,6 +51,14 @@ public:
 
     virtual void Notify(FString message) override;
 
+
+    //used for components which have different names than expected in this class
+    void OverrideComponent(
+        EArmType typeArm,
+        USceneComponent *scene
+    );
+
+
 private:
     
 
@@ -81,10 +89,7 @@ private:
         EArmType typeArm,
         AActorBase *baseActor
     );
-    void OverrideComponent(
-        EArmType typeArm,
-        USceneComponent *scene
-    );
+    
 
     std::map<EArmType, std::map<HandBoneIndexEnum, USceneComponent *>> fingerMap;
     std::map<EArmType, USceneComponent *> handMap;
