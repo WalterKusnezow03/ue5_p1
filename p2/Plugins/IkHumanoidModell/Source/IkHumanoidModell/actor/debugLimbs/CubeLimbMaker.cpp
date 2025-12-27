@@ -21,6 +21,9 @@ AActor *CubeLimbMaker::createLimbPivotAtTop(
             bool haveRaycast = true;// with raycast, is ignored by humanoid controller manually
             MeshData &ref = oberschenkel->findMeshDataReference(materialEnum::wallMaterial, haveRaycast); 
 
+            //smaller distances allowed:
+            ref.MofidyEpsilon(0.1f); //smaller distances allowed, prevents removing triangles
+
             float xHalf = x / 2.0f;
 			float yHalf = y / 2.0f;
 
@@ -37,7 +40,11 @@ AActor *CubeLimbMaker::createLimbPivotAtTop(
 	return nullptr;
 }
 
-
+float CubeLimbMaker::min(float a, float b, float c){
+    float ab = std::min(a, b);
+    float abc = std::min(ab, c);
+    return abc;
+}
 
 AcustomMeshActorBase *CubeLimbMaker::spawnAcustomMeshActor(UWorld *world){
     if(world != nullptr){

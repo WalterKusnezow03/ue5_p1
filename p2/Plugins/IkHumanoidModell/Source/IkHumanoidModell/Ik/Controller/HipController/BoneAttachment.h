@@ -9,7 +9,7 @@ class IKHUMANOIDMODELL_API BoneAttachment {
 
 public:
     BoneAttachment();
-    ~BoneAttachment();
+    virtual ~BoneAttachment();
 
 
     /// @brief will reset the bone matrices and rebuild it

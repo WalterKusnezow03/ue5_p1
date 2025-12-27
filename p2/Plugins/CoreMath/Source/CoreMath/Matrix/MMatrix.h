@@ -99,6 +99,8 @@ public:
 	void setRotation(MMatrix &other);
 	void setRotation(FVector &other);
 
+	void setRotation(const FQuat &quat);
+
 	void setRotation(std::vector<float> &values);
 
 	MMatrix createInverse();

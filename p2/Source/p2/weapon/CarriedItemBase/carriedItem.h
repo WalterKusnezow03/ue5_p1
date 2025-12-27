@@ -7,7 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include <list>
-#include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
+#include "IkHumanoidModell/carryItems/Interface/ComponentTracking/HandBoneIndexEnum.h"
 
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"

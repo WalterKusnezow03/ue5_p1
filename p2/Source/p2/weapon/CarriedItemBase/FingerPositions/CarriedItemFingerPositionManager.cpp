@@ -96,15 +96,20 @@ void CarriedItemFingerPositionManager::UpdateContainer(
     GetComponents(typeArm, components);
     data.UpdateHandAndFingersWorld(
         typeArm,
-        actor,
         FindLocation(typeArm),
-        components
+        components,
+        GetComponentStatic(typeArm)
     );
 }
 
-
-
-
+USceneComponent *CarriedItemFingerPositionManager::GetComponentStatic(
+    EArmType typeArm
+){
+    if(handMap.find(typeArm) != handMap.end()){
+        return handMap[typeArm];
+    }
+    return nullptr;
+}
 
 FVector CarriedItemFingerPositionManager::FindLocation(EArmType type){
     if(HasTemporaryTarget(type)){

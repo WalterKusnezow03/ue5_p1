@@ -1,5 +1,7 @@
 #include "CarriedItemPositionData.h"
 
+#include "DebugPlugin/DebugHelper.h"
+
 CarriedItemPositionData::CarriedItemPositionData(){
 
 }
@@ -12,10 +14,9 @@ void CarriedItemPositionData::updateHandTargets(
     FVector rightHand,
     FVector leftHand
 ){
-    rightHandWorldSaved = rightHand;
-    leftHandWorldSaved = leftHand;
+    updateHandTarget(rightHand, EArmType::ERight);
+    updateHandTarget(leftHand, EArmType::ELeft);
 }
-
 
 void CarriedItemPositionData::updateHandTarget(
     USceneComponent *hand,
@@ -28,83 +29,101 @@ void CarriedItemPositionData::updateHandTarget(
 
 
 void CarriedItemPositionData::updateHandTarget(
-    FVector hand,
+    FVector handLocation,
     EArmType type
 ){
-    if(type == EArmType::ERight){
-        rightHandWorldSaved = hand;
-    }
-    if(type == EArmType::ELeft){
-        leftHandWorldSaved = hand;
-    }
+    HandTarget &target = GetHandTargetInfo(type);
+    target.UpdateHand(handLocation);
 }
 
-
-
 FVector CarriedItemPositionData::rightHandWorld(){
-    return rightHandWorldSaved;
+    HandTarget &target = GetHandTargetInfo(EArmType::ERight);
+    return target.GetHandTargetLocation();
 }
 
 FVector CarriedItemPositionData::leftHandWorld(){
-    return leftHandWorldSaved;
+    HandTarget &target = GetHandTargetInfo(EArmType::ELeft);
+    return target.GetHandTargetLocation();
 }
 
 
 
 
-void CarriedItemPositionData::UpdateFingersLocal(EArmType type, TArray<FVector> &array){
-    TArray<FVector> &ref = GetFingerTargetsLocal(type);
-    ref = array; //calls copy constructor.
-}
 
-TArray<FVector> &CarriedItemPositionData::GetFingerTargetsLocal(EArmType type){
-    if(fingerPositions.find(type) == fingerPositions.end()){
-        fingerPositions[type] = TArray<FVector>();
+//debug method to debug hand rotation.
+void CarriedItemPositionData::DrawAxis(USceneComponent *comp){
+    if(comp){
+        DrawAxis(comp->GetComponentRotation(), comp->GetComponentLocation(), comp->GetWorld());
     }
-    return fingerPositions[type];
+}
+
+void CarriedItemPositionData::DrawAxis(FRotator r, FVector pos, UWorld *worldPointer){
+    if(worldPointer){
+        MMatrix orientation;
+        orientation.setRotation(r);
+
+        FVector x(5, 0, 0);
+        FVector y(0, 5, 0);
+        FVector z(0, 0, 5);
+
+        x = orientation * x;
+        y = orientation * y;
+        z = orientation * z;
+
+        DebugHelper::showLineBetween(worldPointer, pos, pos + x, FColor::Red, 0.3f);
+        DebugHelper::showLineBetween(worldPointer, pos, pos + y, FColor::Green, 0.3f);
+        DebugHelper::showLineBetween(worldPointer, pos, pos + z, FColor::Blue, 0.3f);
+    }
+}
+
+
+
+
+
+
+/// ---------------- REFACTURE  ----------------
+
+HandTarget &CarriedItemPositionData::GetHandTargetInfo(EArmType typearm){
+    if(hands.find(typearm) == hands.end()){
+        hands[typearm] = HandTarget();
+    }
+    return hands[typearm];
 }
 
 
 void CarriedItemPositionData::UpdateHandAndFingersWorld(
     EArmType type, 
-    FRotator &actorRotation,
-    FVector &handWorld, 
-    TArray<FVector> &array
-){
-    updateHandTarget(handWorld, type);
-
-    //M = T * R
-    //M^-1 = R^-1 * T ^-1
-    FVector v1 = handWorld * -1.0f;
-    MMatrix t1(v1);
-
-    MMatrix r(actorRotation);
-    MMatrix r1 = r.transposedRotation();
-    MMatrix m1 = r1 * t1;
-
-    //testing needed!!
-    for(FVector &current : array){
-        current = m1 * current;
-    }
-    UpdateFingersLocal(type, array);
-}
-
-void CarriedItemPositionData::UpdateHandAndFingersWorld(
-    EArmType type, 
-    AActor *owningActor,
     FVector handWorld, 
-    TArray<USceneComponent*> &components
+    TArray<USceneComponent*> &components,
+    USceneComponent *relativeHandomponent //relartive rotation for hand.
 ){
-    
-    if(owningActor){
-        FRotator r = owningActor->GetActorRotation();
-        TArray<FVector> fingerLocations;
-        fingerLocations.SetNum(components.Num());
-        for (int i = 0; i < fingerLocations.Num(); i++){
-            if(USceneComponent *current = components[i]){
-                fingerLocations[i] = current->GetComponentLocation();
-            }
-        }
-        UpdateHandAndFingersWorld(type, r, handWorld, fingerLocations);
+    if(relativeHandomponent){
+        FQuat rotation = relativeHandomponent->GetComponentRotation().Quaternion();
+        HandTarget &hand = GetHandTargetInfo(type);
+        hand.UpdateHand(
+            components,
+            handWorld,
+            rotation
+        );
     }
+    
+}
+
+
+FQuat CarriedItemPositionData::quatRotation(EArmType type){
+    HandTarget &hand = GetHandTargetInfo(type);
+    return hand.GetHandTargetQuatRotation();
+}
+
+MMatrix CarriedItemPositionData::GetRotationMatrix(EArmType type){
+    HandTarget &hand = GetHandTargetInfo(type);
+    return hand.GetHandTargetRotation();
+}
+
+
+//MUST BE REFACTURED!
+
+TArray<FingerTargetPair*> CarriedItemPositionData::GetFingerTargets(EArmType type){
+    HandTarget &target = GetHandTargetInfo(type);
+    return target.GetFingerTargets();
 }

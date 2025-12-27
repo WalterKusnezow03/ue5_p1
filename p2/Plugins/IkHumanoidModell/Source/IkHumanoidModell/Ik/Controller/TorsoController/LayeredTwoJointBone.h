@@ -157,4 +157,5 @@ private:
     bool handIsSetup = false;
     HandController hand;
     void TickHandController(MMatrix &playerOrientation, float deltatime);
+    void UpdateHandOnCarriedItem();
 };

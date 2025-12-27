@@ -109,8 +109,7 @@ bool TwoJointBone::targetIsInMotionCircle(FVector &target){
 }
 
 void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
-    
-    //not tested new code!
+
     //legs, genau überlegt
     if(markedForTriangleflipLegs){
         //only pos on hip, neg knee (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
@@ -128,13 +127,55 @@ void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
         return;
     }
 
-
     //deprecated
     if(markedForTriangleFlip){
         pitch1 *= -1.0f;
         pitch2 *= -1.0f;
     }
 }
+
+void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, FVector target){
+    FVector rawXForward(1, 0, 0);
+    target.Z = 0.0f;
+    float angle = FVector::DotProduct(rawXForward, target.GetSafeNormal());
+    FlipTriangleBasedOnConstraint(pitch1, pitch2, angle);
+}
+
+void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, float angleToForwardLocal){
+    if(constraint == ETwoBoneConstraint::EFlipDown){
+        //pitch pos goes down
+        //pitch neg goes up
+        //wil be tested.
+        if(angleToForwardLocal >= 0.0f){
+            //nach unten drehen wenn vorwärts
+            bool flip = pitch1 < 0.0f;
+            if(flip){
+                pitch1 *= -1.0f;
+                //pitch1 += M_PI / 2;
+                pitch2 *= -1.0f;
+                //pitch2 += M_PI / 2;
+            }
+        }else{
+            return;
+            //---not tested---
+            // nach oben drehen wenn nach hinten
+            bool flip = pitch1 > 0.0f;
+            if(flip){
+                pitch1 *= -1.0f;
+                pitch2 *= -1.0f;
+            }
+        }
+    }
+}
+
+
+    
+
+
+
+
+
+
 
 void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime){
     MoveToTarget(target);
@@ -195,6 +236,8 @@ void TwoJointBone::MoveToTarget(FVector &target){
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
     flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
 
+    //testing needed
+    FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target); //TESTING NEEDED
 
     //erst anziehen
     r1.pitchRadAdd(pitchHip);
@@ -258,6 +301,7 @@ void TwoJointBone::MoveToTarget(FVector &target, FVector &localForward){
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
     flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
 
+    FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target); //TESTING NEEDED
 
     //erst anziehen
     r1.pitchRadAdd(pitchHip);
@@ -430,9 +474,12 @@ void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, floa
         DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
     }
     
-    DebugHelper::showLineBetween(worldPtr, aT, wT, red, dt);
-    DebugHelper::showLineBetween(worldPtr, aT, bT, blue, dt);
-    DebugHelper::showLineBetween(worldPtr, bT, cT, cyan, dt);
+    if(bDrawLines){
+        DebugHelper::showLineBetween(worldPtr, aT, wT, red, dt); //start segment
+        DebugHelper::showLineBetween(worldPtr, aT, bT, blue, dt); //second segment
+        //DebugHelper::showLineBetween(worldPtr, bT, cT, cyan, dt);
+    }
+    
 }
 
 

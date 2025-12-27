@@ -5,7 +5,7 @@
 #include "GameCore/util/ActorBase/ActorBase.h"
 #include <map>
 
-#include "p2/entities/customIk/bonePackage/handPackage/HandBoneIndexEnum.h"
+#include "IkHumanoidModell/carryItems/Interface/ComponentTracking/HandBoneIndexEnum.h"
 #include "IkHumanoidModell/Ik/Controller/TorsoController/EArmType.h"
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 
@@ -58,6 +58,11 @@ public:
         USceneComponent *scene
     );
 
+    void OverrideComponent(
+        EArmType typeArm,
+        HandBoneIndexEnum index,
+        USceneComponent *scene
+    );
 
 private:
     
@@ -79,11 +84,7 @@ private:
         HandBoneIndexEnum index,
         AActorBase *baseActor
     );
-    void OverrideComponent(
-        EArmType typeArm,
-        HandBoneIndexEnum index,
-        USceneComponent *scene
-    );
+    
 
     void OverrideComponent(
         EArmType typeArm,
@@ -105,6 +106,11 @@ private:
     USceneComponent *GetComponent(
         EArmType typeArm,
         HandBoneIndexEnum index
+    );
+
+    //not dynamic override
+    USceneComponent *GetComponentStatic(
+        EArmType typeArm
     );
 
 

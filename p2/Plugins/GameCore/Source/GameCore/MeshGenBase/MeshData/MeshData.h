@@ -82,6 +82,9 @@ public:
 	);
 	void appendEfficent(MeshData &other); //no uvs!
 
+	void MofidyEpsilon(float epsilon){
+		EPSILON = std::max(1.0f, std::abs(epsilon));
+	}
 
 	void appendDoublesided(
 		FVector &a,

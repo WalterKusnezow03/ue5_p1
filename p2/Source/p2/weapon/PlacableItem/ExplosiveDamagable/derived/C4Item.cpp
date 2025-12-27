@@ -120,7 +120,7 @@ void AC4Item::FindComponentsOnBeginPlay(){
 }
 
 void AC4Item::OverrideTargetsForHands(){
-    if(c4SceneComponent){
+    /*if(c4SceneComponent){
         handAndFingerPositionManager.OverrideComponent(
             EArmType::ERight,
             c4SceneComponent
@@ -131,6 +131,14 @@ void AC4Item::OverrideTargetsForHands(){
         handAndFingerPositionManager.OverrideComponent(
             EArmType::ELeft,
             detonatorSceneComponent
+        );
+    }*/
+
+    if(triggerSceneComponent){
+        handAndFingerPositionManager.OverrideComponent(
+            EArmType::ELeft,
+            HandBoneIndexEnum::thumb,
+            triggerSceneComponent
         );
     }
 

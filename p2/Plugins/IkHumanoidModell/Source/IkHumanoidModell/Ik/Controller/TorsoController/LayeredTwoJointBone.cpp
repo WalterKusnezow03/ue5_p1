@@ -25,6 +25,7 @@ void LayeredTwoJointBone::setup(
     torsoBone.setup(hipBreast, breastShoulder, world);
     torsoBone.useOtherColorType();
     armBone.setup(upperArm, lowerArm, world);
+    armBone.SetConstraint(ETwoBoneConstraint::EFlipDown);
     findDefaultLocalTorsoTarget(hipBreast, breastShoulder);
     findTotalMotionCircleSize(hipBreast, breastShoulder, upperArm, lowerArm);
 }
@@ -134,10 +135,8 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
     localTargetInArmSystem = actorRotation * localTargetInArmSystem;
 
 
-
-
-
-    if(localTargetInArmMotionCircle(localTargetInArmSystem)){
+    if (localTargetInArmMotionCircle(localTargetInArmSystem))
+    {
 
         MMatrix actorTransform = actorTranslation * actorRotation; // M = T * R <--lese richtung --
         buildTorsoBoneNone(actorTransform, deltatime);
@@ -145,7 +144,9 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         armBone.MoveToTarget(localTargetInArmSystem, shoulderStartM, deltatime);
 
         //DebugHelper::logMessage("In Local Space Arm! ");
-    }else{
+    }
+    else
+    {
         //target out of bone reach:
         //clamp target world to motion circle from actor
         //find closest point shoulder in full length,
@@ -419,14 +420,20 @@ void LayeredTwoJointBone::getActors(TArray<AActor *> &outArray){
 }
 
 
-
+void LayeredTwoJointBone::UpdateHandOnCarriedItem(){
+    if(attachedItemInterface){
+        hand.Update(attachedItemInterface);
+    }
+}
 
 void LayeredTwoJointBone::TickHandController(MMatrix &playerOrientation, float deltatime){
     if(handIsSetup){
+        //update finger targets
+        UpdateHandOnCarriedItem();
+
         MMatrix T = armBone.EndEffectorTranslation(); //world.
         //M = T * R <--lese richtung --
         MMatrix M = T * playerOrientation;
         hand.Tick(M, deltatime);
     }
-    
 }

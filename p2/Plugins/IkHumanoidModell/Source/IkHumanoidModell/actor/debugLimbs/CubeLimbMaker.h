@@ -16,6 +16,8 @@ public:
 private:
     static AcustomMeshActorBase *spawnAcustomMeshActor(UWorld *world);
 
+    static float min(float a, float b, float c);
+
     CubeLimbMaker();
     ~CubeLimbMaker();
 };

@@ -2,8 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "IkHumanoidModell/Ik/Bone/ETwoBoneConstraint.h"
 
 class IKHUMANOIDMODELL_API TwoJointBone {
+
+private:
+    bool bDrawLines = false;
 
 public:
     TwoJointBone();
@@ -113,6 +117,10 @@ private:
     bool markedForTriangleflipLegs = false;
     void flipTriangleIfMarkedWanted(float &pitch1, float &pitch2);
 
+    //new not tested
+    void FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, FVector targetLocal);
+    void FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, float angleToForwardLocal);
+
     //size
     float length = 0.0f;
 
@@ -159,6 +167,10 @@ private:
 public:
     void attachLimbs(AActor *top, AActor *bottom);
 
+    void SetConstraint(ETwoBoneConstraint constraintIn){
+        constraint = constraintIn;
+    }
+
 private:
     bool autoCreateLimbs = true;
     void createLimbsIfNeeded(UWorld *world, float a, float b);
@@ -168,4 +180,6 @@ private:
     AActor *bottomActor = nullptr;
     void applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom);
     void applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix);
+
+    ETwoBoneConstraint constraint = ETwoBoneConstraint::ENone;
 };
