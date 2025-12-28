@@ -350,7 +350,15 @@ void ChunkParser::addRandomNodesToNavmesh(TArray<FVectorTouple> &touples){
 
 
 
-
+MeshData &ChunkParser::findMeshDataReference(
+    FMeshDataIdentifier &identifier
+){
+    return findMeshDataReference(
+        identifier.type,
+        identifier.lodLevel,
+        identifier.raycastOnLayer
+    );
+}
 
 
 MeshData &ChunkParser::findMeshDataReference(

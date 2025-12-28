@@ -13,7 +13,7 @@
 
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
-
+#include "terrainPlugin/Storage/ChunkMeshDataLoading/MeshDataIdentifier.h"
 #include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
 
 #include <map>
@@ -87,6 +87,10 @@ private:
         materialEnum type,
         ELod lodLevel,
         bool raycastOnLayer
+    );
+
+    MeshData &findMeshDataReference(
+        FMeshDataIdentifier &identifier
     );
 
 

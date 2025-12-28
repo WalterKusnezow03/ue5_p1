@@ -158,4 +158,13 @@ protected:
 	void debugDrawMeshData(MeshData &meshdata);
 
 	bool hasGlassMesh();
+
+
+
+
+	// --- detail grass mesh layer ---
+
+	//created here, not in storage based mesh.
+	void CreateGrassMesh();
+	int grassrecursion = 4; //to low. Async needed!
 };

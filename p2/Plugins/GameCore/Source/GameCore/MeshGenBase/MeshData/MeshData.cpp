@@ -799,6 +799,16 @@ void MeshData::appendEfficent(MeshData &other){
     calculateNormals();
 }
 
+void MeshData::appendEfficentTriangleShapedBuffer(TArray<FVector> &verteciesIn){
+    for (int i = 2; i < verteciesIn.Num(); i+=3){
+        appendEfficent(
+            verteciesIn[i-2],
+            verteciesIn[i-1],
+            verteciesIn[i]
+        );
+    }
+}
+
 
 
 FVector MeshData::createNormal(int v0, int v1, int v2){
@@ -971,6 +981,122 @@ bool MeshData::canSplit(int v0, int v1, int v2, float mindistanceKept){
     return false;
 }
 
+
+
+FVector MeshData::splitEdge(FVector &v0, FVector &v1, FVector &v2, int egdeIndex){
+    egdeIndex = std::abs(egdeIndex) % 3; //safety
+    int endEdgeIndex = (egdeIndex + 1) % 3;
+    TArray<FVector> asArray = {v0, v1, v2};
+
+    FVector start = asArray[egdeIndex];
+    FVector dir = asArray[endEdgeIndex] - start; //AB = B - A
+
+    FVector newVertex = start + 0.5f * dir;
+    return newVertex;
+}
+
+void MeshData::Split(FVector &v0, FVector &v1, FVector &v2, TArray<FVector> &outBuffer){
+
+    int indexEdge = findLongestSideIndex(v0, v1, v2);//v0v1 v1v2 v2v0
+    FVector newVertex = splitEdge(v0, v1, v2, indexEdge);
+    if (indexEdge == 0)
+    {
+        /*
+         1-->2
+        x|  -
+         0-
+        */
+        //new triangles at 
+        //0,1,new
+        //new,1,2
+        outBuffer.Add(v0);
+        outBuffer.Add(newVertex);
+        outBuffer.Add(v2);
+
+        outBuffer.Add(newVertex);
+        outBuffer.Add(v1);
+        outBuffer.Add(v2);
+    }
+
+    if (indexEdge == 1)
+    {
+        /*
+        1-x->2
+        |  -
+        0-
+        */
+        //new triangles at 
+        //0,1,new
+        //0,new,2
+        outBuffer.Add(v0);
+        outBuffer.Add(v1);
+        outBuffer.Add(newVertex);
+
+        outBuffer.Add(v0);
+        outBuffer.Add(newVertex);
+        outBuffer.Add(v2);
+    }
+
+    if (indexEdge == 2)
+    {
+        /*
+        1-->2
+        |  -x
+        0-
+        */
+        //new triangles at 
+        //0,1,new
+        //new,1,2
+        outBuffer.Add(v0);
+        outBuffer.Add(v1);
+        outBuffer.Add(newVertex);
+
+        outBuffer.Add(v1);
+        outBuffer.Add(v2);
+        outBuffer.Add(newVertex);
+    }
+
+
+
+
+
+
+
+
+
+    /*FVector newVertex = start + 0.5f * dir;
+
+    FVector start;
+    FVector dir;
+    findLongestSide(v0, v1, v2, start, dir);
+    FVector newVertex = start + 0.5f * dir;
+    //FVector newVertex = v1 + 0.5f * (v2 - v1); // gx = A + r(B-A)*/
+    
+    
+}
+
+void MeshData::SplitTriangleShapedBufferOverride(
+    TArray<FVector> &inBuffer
+){
+    TArray<FVector> outBuffer;
+    SplitTriangleShapedBuffer(inBuffer, outBuffer);
+    inBuffer = outBuffer;
+}
+
+void MeshData::SplitTriangleShapedBuffer(
+    TArray<FVector> &inBuffer, //must be triangle shaped
+    TArray<FVector> &outBuffer
+){
+    for(int i = 2; i < inBuffer.Num(); i += 3){
+        Split(
+            inBuffer[i-2],
+            inBuffer[i-1],
+            inBuffer[i], 
+            outBuffer
+        );
+    }
+}
+
 void MeshData::addTriangle(int v0, int v1, int v2){
     if(isValidVertexIndex(v0,v1,v2)){
         triangles.Add(v0);
@@ -1036,6 +1162,35 @@ void MeshData::splitTriangleInHalf(int v0, int v1, int v2){
     }
 }
 
+int MeshData::findLongestSideIndex(
+    FVector &a, 
+    FVector &b, 
+    FVector &c
+){
+    FVector dirAB = b - a;
+    FVector dirBC = c - b;
+    FVector dirCA = a - c;
+
+    std::vector<FVector> sides = {
+        dirAB,
+        dirBC,
+        dirCA
+    };
+
+    int foundindex = 0;
+    float largestSide = -1.0f; // so the start is set anyway
+    for (int i = 0; i < sides.size(); i++){
+        FVector &current = sides[i];
+
+        float updateSize = current.Size();
+        if (updateSize > largestSide)
+        {
+            foundindex = i;
+            largestSide = updateSize;
+        }
+    }
+    return foundindex;
+}
 
 void MeshData::findLongestSide(
     FVector &a, 
@@ -1055,13 +1210,10 @@ void MeshData::findLongestSide(
     };
     std::vector<FVector> startPoints = {a, b, c};
 
-    float largestSide = -1.0f; //so the start is set anyway
-    for (int i = 0; i < sides.size(); i++){
-        FVector &current = sides[i];
-        if (current.Size() > largestSide){
-            startOut = startPoints[i];
-            dirOut = current;
-        }
+    int longestSideIndex = findLongestSideIndex(a, b, c);
+    if(longestSideIndex >= 0 && longestSideIndex < 3){
+        startOut = startPoints[longestSideIndex];
+        dirOut = sides[longestSideIndex];
     }
 }
 
@@ -2090,4 +2242,111 @@ bool MeshData::AlreadyHasTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Ind
         }
     }
     return false;
+}
+
+
+
+
+
+/** 
+
+--- Duplicate Mesh Recursive ---
+
+*/
+MeshData MeshData::CreateCopyRecuriveDetail(int recursion){
+    MeshData outData;
+    CreateCopyRecuriveDetailTo(outData, recursion);
+    return outData;
+}
+
+
+void MeshData::CreateCopyRecuriveDetailTo(MeshData &outData, int recursion){
+    recursion = std::abs(recursion);
+    if(recursion == 0){
+        return;
+    }
+
+    TArray<FVector> bufferMade;
+    for (int i = 2; i < triangles.Num(); i += 3){
+        int32 t0 = triangles[i - 2];
+        int32 t1 = triangles[i - 1];
+        int32 t2 = triangles[i];
+
+        FVector &v0 = vertecies[t0];
+        FVector &v1 = vertecies[t1];
+        FVector &v2 = vertecies[t2];
+
+        TArray<FVector> tempBuffer = {v0, v1, v2};
+        for(int j = 0; j < recursion; j++){
+            SplitTriangleShapedBufferOverride(tempBuffer);
+            if(j == recursion - 1){ //append to main buffer
+                outData.appendEfficentTriangleShapedBuffer(tempBuffer);
+            }
+        }
+    }
+    outData.calculateNormals();
+}
+
+
+void MeshData::CreateCopyRecuriveDetailToDistance(MeshData &outData, float distance){
+
+    distance = std::abs(distance);
+    if(distance <= 1.0f){
+        distance = 1.0f;
+    }
+    float dist2 = distance * distance;
+
+    TArray<FVector> bufferMade;
+    for (int i = 2; i < triangles.Num(); i += 3){
+        int32 t0 = triangles[i - 2];
+        int32 t1 = triangles[i - 1];
+        int32 t2 = triangles[i];
+
+        FVector &v0 = vertecies[t0];
+        FVector &v1 = vertecies[t1];
+        FVector &v2 = vertecies[t2];
+
+        TArray<FVector> tempBuffer = {v0, v1, v2};
+        bool finished = false;
+        int splitCountMax = 5; //10, 12, 40
+
+        //200 / 2^5
+
+        while (!finished)
+        {
+            SplitTriangleShapedBufferOverride(tempBuffer);
+            splitCountMax--;
+            if(splitCountMax <= 0){
+                finished = true;
+            }
+            if (tempBuffer.Num() > 2)
+            {
+
+                if(AverageDist2TriangleShapedBuffer(tempBuffer) <= dist2){
+                    outData.appendEfficentTriangleShapedBuffer(tempBuffer);
+                    finished = true;
+                }
+            }
+            else
+            {
+                finished = true;
+            }
+        }
+    }
+    outData.calculateNormals();
+}
+
+float MeshData::AverageDist2TriangleShapedBuffer(TArray<FVector> &buffer){
+    float distAccumulated = 0.0f;
+    for (int i = 2; i < buffer.Num(); i += 3){
+        FVector &v0 = buffer[i - 2];
+        FVector &v1 = buffer[i - 1];
+        FVector &v2 = buffer[i];
+        float tmpDist = FVector::DistSquared(v0, v1);
+        tmpDist += FVector::DistSquared(v1, v2);
+        tmpDist += FVector::DistSquared(v2, v0);
+        distAccumulated += (tmpDist / 3.0f);
+    }
+    float trianglCount = buffer.Num() / 3.0f;
+    return distAccumulated / trianglCount;
 }

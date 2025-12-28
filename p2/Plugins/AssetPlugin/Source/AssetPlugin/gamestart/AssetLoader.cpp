@@ -291,6 +291,8 @@ void AssetLoader::loadMaterials(){
     assetNames[materialEnum::prop_alarmBoxMaterial] = "prop_alarmBoxMaterial";
     assetNames[materialEnum::wallMaterial] = "wallMaterial";
     assetNames[materialEnum::glassMaterial] = "glassMaterial";
+    assetNames[materialEnum::grassMaterialWithShader] = "grassMaterialWithShader";
+    
 
     for(auto &pair : assetNames){
         materialEnum typeEnum = pair.first;

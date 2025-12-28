@@ -194,6 +194,11 @@ protected:
 	void switchToLod(ELod lod);
 	void initLodMeshesOnBeginPlay();
 	void ReloadMeshForMaterialByLod(ELod lod, materialEnum material);
+	void ReloadMeshForMaterialByLodAndRaycastFlag(
+		ELod lod,
+		materialEnum material,
+		bool raycastFlag
+	);
 
 	virtual void OnLodSwitch();
 

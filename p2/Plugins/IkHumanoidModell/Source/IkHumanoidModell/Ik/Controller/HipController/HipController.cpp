@@ -2,6 +2,7 @@
 #include "DebugPlugin/DebugHelper.h"
 #include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 #include "IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h"
+#include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
 
 HipController::HipController(){
     rotationSet = false;
@@ -61,6 +62,9 @@ void HipController::setup(UWorld *world){
 
     float lengthA = 50.0f;
     float lengthB = 50.0f;
+    LimbProperties::GetSizeLegs(lengthA, lengthB);
+
+    
     setupLegLength = lengthA + lengthB;
 
 

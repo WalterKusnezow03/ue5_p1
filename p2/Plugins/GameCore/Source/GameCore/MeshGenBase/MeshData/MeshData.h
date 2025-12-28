@@ -81,6 +81,7 @@ public:
 		FVector &d
 	);
 	void appendEfficent(MeshData &other); //no uvs!
+	void appendEfficentTriangleShapedBuffer(TArray<FVector> &verteciesIn);
 
 	void MofidyEpsilon(float epsilon){
 		EPSILON = std::max(1.0f, std::abs(epsilon));
@@ -170,7 +171,14 @@ public:
 		FVector &b,
 		FVector &c,
 		FVector &startOut,
-		FVector &dirOut);
+		FVector &dirOut
+	);
+	int findLongestSideIndex(
+		FVector &a, 
+		FVector &b, 
+		FVector &c
+	);
+	
 
 	void splitAndRemoveTrianglesAt(FVector &localHitPoint);
 	bool doesHit(FVector &localHitPoint);
@@ -206,6 +214,10 @@ public:
 
 	void VerticalRangeOfBounds(float &a, float &b);
 
+	void CreateCopyRecuriveDetailTo(MeshData &outData, int recursion);
+	void CreateCopyRecuriveDetailToDistance(MeshData &outData, float distance);
+	MeshData CreateCopyRecuriveDetail(int recursion);
+
 protected:
 	float MIN_SPLITDISTANCE = 50.0f;
 
@@ -213,6 +225,15 @@ protected:
 	bool canSplit(FVector &a, FVector &b, FVector &c);
 	bool canSplit(FVector &a, FVector &b, FVector &c, float mindistanceKept);
 	bool canSplit(int v0, int v1, int v2, float mindistanceKept);
+
+	//splits edge along the edge index, returns the middle position inbetween
+	FVector splitEdge(FVector &v0, FVector &v1, FVector &v2, int egdeIndex);
+	void Split(FVector &v0, FVector &v1, FVector &v2, TArray<FVector> &outBuffer);
+	void SplitTriangleShapedBuffer(
+		TArray<FVector> &inBuffer, // must be triangle shaped
+		TArray<FVector> &outBuffer
+	);
+	void SplitTriangleShapedBufferOverride(TArray<FVector> &buffer);
 
 	float EPSILON = 5.0f;
 	bool isCloseSame(FVector &a, FVector &b);
@@ -313,11 +334,11 @@ protected:
 
 	bool isInsideBoundingbox(FVector &other);
 
+	float AverageDist2TriangleShapedBuffer(TArray<FVector> &buffer);
 
-
-/**
- * 2D section
- */
+	/**
+	 * 2D section
+	 */
 public:
 	void generate(int sizeX, int sizeY, int distanceXY);
 

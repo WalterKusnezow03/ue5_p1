@@ -76,6 +76,7 @@ public:
     void SetResolutionYUniform(int scale);
 
     FVector2D GetResolution();
+    bool GetResolutionIsValid(FVector2D &outRes);
 
 private:
     /// @brief sets width and height of the sizebox, not the mesh data!

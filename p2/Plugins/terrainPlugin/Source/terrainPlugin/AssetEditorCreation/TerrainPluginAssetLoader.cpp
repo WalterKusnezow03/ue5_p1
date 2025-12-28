@@ -9,7 +9,7 @@
 
 #include "AssetMakerEditorPlugin/AssetMaker/MeshDataToStaticMesh/EditorMeshDataToStaticMeshTool.h"
 #include "AssetMakerEditorPlugin/AssetMaker/Task/MeshDataAssetTask.h"
-#include "terrainPlugin/meshgen/foliage/grass/MatrixGrass.h"
+#include "terrainPlugin/meshgen/foliage/grass/editorOnly/MatrixGrass.h"
 
 #include "DebugPlugin/DebugHelper.h"
 

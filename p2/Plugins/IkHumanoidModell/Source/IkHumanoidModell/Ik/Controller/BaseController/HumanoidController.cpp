@@ -1,6 +1,7 @@
 #include "HumanoidController.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
+#include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
 
 HumanoidController::HumanoidController(){
     FVector location(100, 0, 100);
@@ -48,10 +49,15 @@ void HumanoidController::ResetAndRebuild(){
 }
 
 void HumanoidController::defaultSetup(UWorld *world){
-    float legPartSizeEach = 50;
-    float armPartSizeEach = 40;
+    
+    
     float torsoHeight = 50;
     float torsoHalfWidth = 30;
+
+    LimbProperties::GetTorsoProperties(torsoHalfWidth, torsoHeight);
+
+    float armPartSizeEach = 40;
+    LimbProperties::GetSizeArmLimb(armPartSizeEach);
 
     hipController.setup(world);
     torsoController.setup(

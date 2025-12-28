@@ -4,6 +4,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 
+///EDITOR ONLY
 ///will generate grass mesh data for editor asset.
 class TERRAINPLUGIN_API MatrixGrass {
 

@@ -236,13 +236,26 @@ void UWidgetSlateWrapperBase::ConstructWidget(){
 }
 
 
+bool UWidgetSlateWrapperBase::GetResolutionIsValid(FVector2D &outRes){
+    if(polygonMap.IsValid()){
+        //get res
+        //outRes = polygonMap->Bounds();
+        //return true;
+    }
 
-
-FVector2D UWidgetSlateWrapperBase::GetResolution(){
     if(MySlateWidget.IsValid()){
         FGeometry Geometry = MySlateWidget->GetCachedGeometry();
         FVector2D LocalSize = Geometry.GetLocalSize();
-        return LocalSize;
+        outRes = LocalSize;
+        return true;
+    }
+    return false;
+}
+
+FVector2D UWidgetSlateWrapperBase::GetResolution(){
+    FVector2D outres;
+    if(GetResolutionIsValid(outres)){
+        return outres;
     }
     return FVector2D(-1, -1);
 }

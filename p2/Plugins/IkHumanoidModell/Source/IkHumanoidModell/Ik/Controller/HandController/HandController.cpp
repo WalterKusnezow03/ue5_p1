@@ -1,12 +1,13 @@
 #include "HandController.h"
 
 #include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
+#include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
 
 
 HandController::HandController(){
     bHasTargetSetup = false;
 
-    FVector offsetDebug(20, 0, 5);
+    FVector offsetDebug(5, 0, 5);
     debugOffset.setTranslation(offsetDebug);
 
     //orientation.pitchRadAdd(-90); //up
@@ -34,6 +35,10 @@ void HandController::setup(UWorld *world, EArmType type){
     float lengthA = 3.0f;
     float lengthB = 2.0f;
     float widthFinger = 1.0f;
+    LimbProperties::GetSizeFingers(lengthA, lengthB, widthFinger);
+
+    float forwardFingerOffset = 0.0f;
+    LimbProperties::GetFingerForwardOffset(forwardFingerOffset);
 
     bool bLeftHand = type == EArmType::ELeft;
 
@@ -41,11 +46,11 @@ void HandController::setup(UWorld *world, EArmType type){
 
     //x is forward, y right
     TArray<FVector> offsets = {
-        FVector(2.0f, -2.0f, 0.0f), //thumb
-        FVector(4.0f, -1.0f, 0.0f),
-        FVector(4.0f, 0.0f, 0.0f),
-        FVector(4.0f, 1.0f, 0.0f),
-        FVector(4.0f, 2.0f, 0.0f)
+        FVector(forwardFingerOffset, -2.0f, 0.0f), //thumb
+        FVector(forwardFingerOffset, -1.0f, 0.0f),
+        FVector(forwardFingerOffset, 0.0f, 0.0f),
+        FVector(forwardFingerOffset, 1.0f, 0.0f),
+        FVector(forwardFingerOffset, 2.0f, 0.0f)
     };
     for (int i = 0; i < fingers.Num(); i++){
         FingerBoneAttachment &current = fingers[i];
@@ -64,9 +69,10 @@ void HandController::setup(UWorld *world, EArmType type){
 
 void HandController::CreatePalm(UWorld *world){
     if(!palm){
-        int x = 6;
-        int y = 6;
-        int height = 2;
+        float x = 8;
+        float y = 8;
+        float height = 4;
+        LimbProperties::GetSizeHand(x, y, height);
         palm = CubeLimbMaker::createLimbPivotAtTop(x, y, height, world);
     }
     

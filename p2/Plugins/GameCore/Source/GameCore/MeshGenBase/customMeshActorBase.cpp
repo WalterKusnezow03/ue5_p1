@@ -514,6 +514,21 @@ void AcustomMeshActorBase::ReloadMeshForMaterialByLod(ELod lod, materialEnum mat
 
 }
 
+void AcustomMeshActorBase::ReloadMeshForMaterialByLodAndRaycastFlag(
+    ELod lod,
+    materialEnum material,
+    bool raycastFlag
+){
+    if(meshLodContainers.find(lod) == meshLodContainers.end()){
+        meshLodContainers[lod] = ProceduralMeshComponentPair();
+    }
+    if(raycastFlag){
+        meshLodContainers[lod].updateMeshRaycast(material);
+    }else{
+        meshLodContainers[lod].updateMeshNoRaycast(material);
+    }
+}
+
 /**
  * LOD REFACTURE END
  */

@@ -56,11 +56,13 @@ void UTextAndImageBase::Tick(float deltatime){
     if(TextBlock && Image){
         if(!uniformScalingSetup){
             //set image height same to text block
-            FVector2D resText = TextBlock->GetResolution();
-            if(resText.Y > 0.0f){
+            FVector2D resText;
+            if (TextBlock->GetResolutionIsValid(resText))
+            {
                 Image->SetResolutionYUniform(resText.Y);
                 uniformScalingSetup = true;
             }
+            
         }
     }
 

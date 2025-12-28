@@ -19,5 +19,6 @@ enum class materialEnum
     snowMaterial,
     prop_alarmBoxMaterial,
     _texturedMaterial,
-    wingMaterial
+    wingMaterial,
+    grassMaterialWithShader
 };
