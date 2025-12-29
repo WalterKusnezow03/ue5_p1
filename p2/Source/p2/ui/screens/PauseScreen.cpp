@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/BackgroundBlur.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "PauseScreen.h"
 
 

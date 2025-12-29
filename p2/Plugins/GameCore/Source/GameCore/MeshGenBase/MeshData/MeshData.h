@@ -6,7 +6,7 @@
 #include <set>
 #include "GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "KismetProceduralMeshLibrary.h"
-#include "AssetPlugin/gameStart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "CoreMath/Matrix/MMatrix.h"
 
 #include "GameCore/MeshGenBase/MeshData/intersectCache/TriangleIntersectFrame.h"

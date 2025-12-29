@@ -8,7 +8,7 @@
 #include "ProceduralMeshComponent.h"
 
 #include "Components/BoxComponent.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"

@@ -78,13 +78,13 @@ void ACustomMeshUIActor::Tick(float DeltaTime)
 void ACustomMeshUIActor::SetWidgetClass(TSubclassOf<UUserWidget> NewWidgetClass) 
 { 
     if (NewWidgetClass) 
-    { 
+    {
        CurrentWidgetClass = NewWidgetClass; 
-       Widget->SetWidgetClass(NewWidgetClass); 
+       Widget->SetWidgetClass(NewWidgetClass);
     } 
 } 
  
 TSubclassOf<UUserWidget> ACustomMeshUIActor::GetWidgetClass() const 
 { 
-    return CurrentWidgetClass; 
+    return CurrentWidgetClass;
 }

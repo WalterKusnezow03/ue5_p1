@@ -42,7 +42,8 @@ public class customUiPlugin : ModuleRules
 				"Slate",
 				"SlateCore",
 				"CoreMath",
-				"DebugPlugin"
+				"DebugPlugin",
+				"AssetEnumCollection",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

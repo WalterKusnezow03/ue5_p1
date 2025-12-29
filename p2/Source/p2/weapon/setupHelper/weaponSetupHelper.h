@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponEnum.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
 /**
  * This class will safe the type and the targeted attachments for a weapon

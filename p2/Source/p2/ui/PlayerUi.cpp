@@ -5,7 +5,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 

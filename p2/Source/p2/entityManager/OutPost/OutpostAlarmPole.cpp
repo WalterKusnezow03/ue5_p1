@@ -1,6 +1,6 @@
 #include "CoreMinimal.h"
 
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"

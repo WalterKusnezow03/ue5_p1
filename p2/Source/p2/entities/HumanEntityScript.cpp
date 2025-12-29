@@ -11,7 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "p2/entityManager/OutPost/OutpostManager.h"
 #include "p2/entityManager/OutPost/Outpost.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/AlertManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"

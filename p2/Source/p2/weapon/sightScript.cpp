@@ -2,7 +2,7 @@
 
 #include "sightScript.h"
 
-#include "AssetPlugin/gameStart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 

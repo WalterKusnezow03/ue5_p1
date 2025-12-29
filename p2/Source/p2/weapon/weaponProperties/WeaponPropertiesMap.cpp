@@ -1,8 +1,8 @@
 #include "WeaponPropertiesMap.h"
 #include "WeaponProperties.h"
 
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/weapon/ammunitionEnum.h"
 
 //static property

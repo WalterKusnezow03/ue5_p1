@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AssetPlugin/gamestart/assetEnums/throwableEnum.h"
+#include "AssetEnumCollection/assetEnums/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 #include "p2/entityManager/EntityManager.h"
 #include "DebugPlugin/DebugHelper.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
 #include "customUiPlugin/ui/Widgets/TextBased/TextAndImageBase.h"
 

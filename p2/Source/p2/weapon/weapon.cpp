@@ -4,7 +4,7 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "GameCore/interfaces/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/player/playerScript.h"
 #include "sightScript.h"
 #include "ammunitionEnum.h"
@@ -17,7 +17,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
 
 #include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"

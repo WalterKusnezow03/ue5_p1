@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 
 #include "GameCore/util/FVectorTouple.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/foliage/ETerrainType.h"
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"

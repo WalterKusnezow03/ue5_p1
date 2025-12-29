@@ -6,9 +6,9 @@
 #include "Components/TextBlock.h"
 
 #include "Components/CanvasPanelSlot.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/entityManager/referenceManager.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
 
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"

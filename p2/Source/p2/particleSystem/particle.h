@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CoreMath/animation/timer/timer.h"
-#include "AssetPlugin/gameStart/assetEnums/particleEnum.h"
+#include "AssetEnumCollection/assetEnums/particleEnum.h"
 #include "particle.generated.h"
 
 UCLASS()

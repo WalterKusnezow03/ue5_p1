@@ -7,20 +7,28 @@
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+
 #include "p2/weapon/throwerWeapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "AssetPlugin/gameStart/assetEnums/throwableEnum.h"
+#include "AssetEnumCollection/assetEnums/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "AssetPlugin/gameStart/assetEnums/particleEnum.h"
+
 #include "p2/particleSystem/particle.h"
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
 #include "GameCore/EntityGC/EntityManagerGenericMap.h"
 #include "GameCore/EntityGC/EntityManagerGeneric.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
+
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/throwableEnum.h"
+#include "AssetEnumCollection/assetEnums/particleEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/entityEnum.h"
+
+
+
 
 #include "GameCore/Raycast/query/mapTracker/TCollisionTracker.h"
 

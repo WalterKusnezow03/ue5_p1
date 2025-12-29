@@ -2,7 +2,7 @@
 #include "PlayerHud.h"
 #include "customUiPlugin/ui/PlayerUiBase.h"
 #include "Components/CanvasPanel.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "customUiPlugin/ui/screens/CanvasScreen.h"
 
 #include "DebugPlugin/DebugHelper.h"

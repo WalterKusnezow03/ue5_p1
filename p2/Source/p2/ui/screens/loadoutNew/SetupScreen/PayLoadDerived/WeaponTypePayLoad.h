@@ -1,7 +1,7 @@
 #pragma once
 
 #include "customUiPlugin/ui/_baseClass/payload/PayLoadBase.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "WeaponTypePayLoad.generated.h"
 
 /// @brief base class to attach payloads to any ucustomUiComponent

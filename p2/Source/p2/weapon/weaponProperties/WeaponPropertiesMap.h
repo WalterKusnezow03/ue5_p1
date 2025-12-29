@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 
 
 //forward declare for faster compile

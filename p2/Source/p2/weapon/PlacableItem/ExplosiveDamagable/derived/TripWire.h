@@ -4,7 +4,7 @@
 #include "p2/weapon/PlacableItem/ExplosiveDamagable/ExplosiveDamagableBase.h"
 #include "GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h"
 
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 
 #include "TripWire.generated.h"
 

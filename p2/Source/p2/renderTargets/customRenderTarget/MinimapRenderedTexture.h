@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/CanvasRenderTarget2D.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include <map>
 #include "CustomRenderedTexture.h"
 

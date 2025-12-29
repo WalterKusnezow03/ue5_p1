@@ -1,6 +1,6 @@
 #include "AeroActor.h"
 #include "GameCore/MeshGenBase/ELod.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include <algorithm>
 #include "CoreMath/Matrix/MMatrix.h"

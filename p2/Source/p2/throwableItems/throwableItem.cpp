@@ -2,7 +2,7 @@
 
 
 #include "p2/throwableItems/throwableItem.h"
-#include "AssetPlugin/gameStart/assetEnums/throwableEnum.h"
+#include "AssetEnumCollection/assetEnums/throwableEnum.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/entityManager/EntityManager.h"
 #include "GameCore/util/AActorUtil.h"

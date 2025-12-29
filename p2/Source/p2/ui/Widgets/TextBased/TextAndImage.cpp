@@ -3,7 +3,7 @@
 
 #include "AssetPlugin/gamestart/AssetLoader.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 
 #include "TextAndImage.h"
 

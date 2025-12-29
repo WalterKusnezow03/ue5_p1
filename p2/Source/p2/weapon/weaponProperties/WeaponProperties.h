@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/weapon/ammunitionEnum.h"
 
 /// @brief will manage damage, damage by distance and recoil for a weapon

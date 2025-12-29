@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/TerrainMeshDataParser/ChunkParser.h"
 #include "StoragePlugin/Storage/VertexData/StorageInterface/StorageInterfaceMeshData.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "terrainPlugin/Storage/ChunkMeshDataLoading/MeshDataIdentifier.h"
 
 

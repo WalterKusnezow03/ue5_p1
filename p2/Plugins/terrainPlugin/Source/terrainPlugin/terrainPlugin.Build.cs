@@ -30,7 +30,8 @@ public class terrainPlugin : ModuleRules
 				"CoreMath",
 				"AssetPlugin",
 				"PathFinder",
-				"DebugPlugin"
+				"DebugPlugin",
+				"AssetEnumCollection",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

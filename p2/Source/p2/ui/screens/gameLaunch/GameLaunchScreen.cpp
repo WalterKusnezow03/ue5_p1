@@ -1,6 +1,6 @@
 #include "GameLaunchScreen.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "AssetPlugin/gamestart/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
 
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/Hbox.h"

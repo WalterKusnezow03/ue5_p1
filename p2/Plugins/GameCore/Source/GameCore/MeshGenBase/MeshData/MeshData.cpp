@@ -5,7 +5,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "KismetProceduralMeshLibrary.h"
-#include "AssetPlugin/gameStart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MathHelp/baryCentricInterpolator.h"
 
 #include "GameCore/world/worldLevelBase.h"

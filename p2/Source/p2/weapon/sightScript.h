@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AssetPlugin/gameStart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "sightScript.generated.h"
 
 UCLASS()

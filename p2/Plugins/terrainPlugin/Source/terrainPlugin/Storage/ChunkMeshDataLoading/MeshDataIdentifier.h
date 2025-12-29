@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetPlugin/gamestart/assetEnums/materialEnum.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 

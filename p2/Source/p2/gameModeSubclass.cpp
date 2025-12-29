@@ -16,6 +16,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "AssetPlugin/gamestart/AssetLoader.h"
 
+#include "p2/_world/AdditionalAssetLoading/P2AssetLoader.h"
+
 //debug
 #include "AssetPlugin/gamestart/PathMaker/AssetPathMaker.h"
 
@@ -61,10 +63,11 @@ void AgameModeSubclass::BeginPlay()
     AGcLauncher::MakeInstance(GetWorld());
 
     //load all assets (saved to asset manager single ton)
-    AssetLoader a;
-    a.loadAssets();
+    //AssetLoader a;
+    //a.loadAssets();
 
-    
+    P2AssetLoader loader;
+    loader.LoadGameAssets();
 
     //launch ui from here, not from player
     UPlayerUi::createNewInstance(GetWorld());

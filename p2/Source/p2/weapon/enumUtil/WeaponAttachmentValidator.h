@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AssetPlugin/gamestart/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
 /// @brief seperate filter class which devides all attachments in logic
 class P2_API WeaponAttachmentValidator {
