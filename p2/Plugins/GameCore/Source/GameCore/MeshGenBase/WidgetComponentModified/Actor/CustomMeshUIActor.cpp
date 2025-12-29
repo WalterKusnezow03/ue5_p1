@@ -29,7 +29,7 @@ ACustomMeshUIActor::ACustomMeshUIActor()
     //EWidgetGeometryMode::Cylinder
     //Widget->SetCylinderArcAngle(30.0f);
 
-	bAlwaysFacePlayer = true;
+	
 } 
  
 // Called when the game starts or when spawned 
@@ -72,39 +72,7 @@ void ACustomMeshUIActor::CreateWidgetMeshData(){
 void ACustomMeshUIActor::Tick(float DeltaTime) 
 { 
     Super::Tick(DeltaTime); 
-    /*
-    APlayerControllerBase* PlayerPawn = APlayerControllerBase::GetInstanceBase(); 
-    if (!PlayerPawn) 
-    { 
-       return; 
-    } 
- 
-    UCameraComponent* Camera = PlayerPawn->CameraRef; 
-    if (!Camera) 
-    { 
-       return; 
-    } 
- 
-    FVector CameraLocation = Camera->GetComponentLocation();
-    FVector NewLocation = GetActorLocation();
     
-    // ---------------- POSITION ---------------- 
-    if (bFollowPlayer) 
-    { 
-        FVector CameraForward = Camera->GetForwardVector(); 
-        NewLocation = CameraLocation + CameraForward * FollowDistance; 
-        NewLocation.Z = CameraLocation.Z;
-        SetActorLocation(NewLocation);
-    	
-    } 
- 
-    // ---------------- ROTATION ---------------- 
-    if (bAlwaysFacePlayer) 
-    {
-        // Use FindLookAtRotation for safe calculation
-        FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(NewLocation, CameraLocation);
-        SetActorRotation(TargetRotation, ETeleportType::TeleportPhysics);
-    }*/
 } 
  
 void ACustomMeshUIActor::SetWidgetClass(TSubclassOf<UUserWidget> NewWidgetClass) 

@@ -58,18 +58,6 @@ public:
 		return nullptr;
 	}
 
-	// Whether this UI should always face the player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Tracking")
-	bool bAlwaysFacePlayer = true;
-
-	// Whether this UI should follow the player at a relative distance
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Tracking")
-	bool bFollowPlayer = false;
-
-	// Distance to maintain from the player when following (along forward vector)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Tracking")
-	float FollowDistance = 100.0f;
-
 protected:
 	// Current widget class reference - can be edited in the editor and will update the widget component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
