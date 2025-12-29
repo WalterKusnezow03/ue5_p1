@@ -11,6 +11,7 @@
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
+#include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
 
 
 /*
@@ -36,7 +37,7 @@ void P2AssetLoader::LoadGameAssets(){
     loadThrowables();
     loadParticles();
     loadTextures();
-    
+    load3DWidgets();
 }
 
 
@@ -300,10 +301,21 @@ void P2AssetLoader::loadTextures(){
         );
     }
     
+}
+
+
+
+
+
+void P2AssetLoader::load3DWidgets(){
     
-    
-    
-    
+    AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
+        Eui3DWidgetEnum::EPlayerHud, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/ui3D",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "hudUi3DBP"           // Just the file name as displayed
+    );
+
 }
 
 

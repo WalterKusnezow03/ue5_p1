@@ -4,11 +4,16 @@
 #include "GameCore/MeshGenBase/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
+#include "p2/ui/3Dui/Widget/HudUiWidget.h"
+
 #include "HudUiActor.generated.h"
 
 UCLASS()
 class P2_API AHudUiActor : public ACustomMeshUIActor {
     GENERATED_BODY()
+
+protected:
+    static AHudUiActor *instance;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blueprintpath")
@@ -21,22 +26,23 @@ public:
         FVector relativeLocation
     );
 
+    static AHudUiActor *GetInstance(){
+        return instance;
+    }
+
     void AttachToScene(USceneComponent *camera);
 
 
     // update
-
-    void updateAmmunitionText(FString message);
-    void updateHealthText(FString health);
-
-    void updateTopWaringElement(FString message);
-    void updateTopWarningElementTimed(FString message, float timetoLive);
-
     void Update(FPlayerStatus &playerStatusStruct);
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
+    virtual void CreateWidgetMeshData() override;
+
+    UHudUiWidget *GetHudWidget();
 
 private:
 

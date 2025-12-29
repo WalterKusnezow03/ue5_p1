@@ -141,6 +141,8 @@ public:
 	void setTriangles(TArray<int32> &&trianglesIn);
 
 	void calculateNormals();
+	void flipNormals();
+	void flipWindingOrder();
 
 	TArray<FVector> &getVerteciesRef();
 	TArray<int32> &getTrianglesRef();
@@ -153,6 +155,7 @@ public:
 	const TArray<int32> &getTrianglesRefConst() const;
 	const TArray<FVector> &getNormalsRefConst() const;
 	const TArray<FVector2D> &getUV0RefConst() const;
+	const TArray<FProcMeshTangent> &getTangentsRefConst() const;
 
 	void offsetAllvertecies(FVector &offset);
 	void transformAllVertecies(MMatrix &other);
@@ -189,6 +192,8 @@ public:
 	bool doesHit(FVector &localHitPoint);
 
 	FVector center();
+
+	//centers the mesh around com
 	void centerMesh();
 
 	void appendCube(

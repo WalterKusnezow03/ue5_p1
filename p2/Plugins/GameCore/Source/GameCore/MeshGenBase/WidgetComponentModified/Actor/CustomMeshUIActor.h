@@ -28,10 +28,15 @@ protected:
 	virtual void BeginPlay() override;
 	void SetWidgetClassOnBeginPlay();
 
+	//create your meshdata here, as expected default, no winding order flipping. 
+	//winding order will be flipped inside scene proxy, but is
+	//needed because widgets are otherwise black.
 	virtual void CreateWidgetMeshData();
 	bool bMeshDataCreated = false;
 
 public:
+	void SetDrawSize(FVector2D size);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	

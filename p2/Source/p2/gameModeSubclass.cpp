@@ -71,6 +71,7 @@ void AgameModeSubclass::BeginPlay()
 
     //launch ui from here, not from player
     UPlayerUi::createNewInstance(GetWorld());
+    
 
     //opens game launch screen
     AworldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);

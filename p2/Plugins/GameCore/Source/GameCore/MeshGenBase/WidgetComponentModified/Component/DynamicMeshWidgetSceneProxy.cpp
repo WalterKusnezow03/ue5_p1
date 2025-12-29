@@ -209,21 +209,11 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
 void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
     FDynamicMeshBuilder &MeshBuilder
 )const{
-    /*
-    float U = -RenderTarget->SizeX * Pivot.X;
-    float V = -RenderTarget->SizeY * Pivot.Y;
-    float UL = RenderTarget->SizeX * (1.0f - Pivot.X);
-    float VL = RenderTarget->SizeY * (1.0f - Pivot.Y);
 
-    int32 VertexIndices[4];
-    VertexIndices[0] = MeshBuilder.AddVertex(-FVector3f(0, U, V ),  FVector2f(0, 0), FVector3f(0, -1, 0), FVector3f(0, 0, -1), FVector3f(1, 0, 0), FColor::White);
-    VertexIndices[1] = MeshBuilder.AddVertex(-FVector3f(0, U, VL),  FVector2f(0, 1), FVector3f(0, -1, 0), FVector3f(0, 0, -1), FVector3f(1, 0, 0), FColor::White);
-    VertexIndices[2] = MeshBuilder.AddVertex(-FVector3f(0, UL, VL), FVector2f(1, 1), FVector3f(0, -1, 0), FVector3f(0, 0, -1), FVector3f(1, 0, 0), FColor::White);
-    VertexIndices[3] = MeshBuilder.AddVertex(-FVector3f(0, UL, V),  FVector2f(1, 0), FVector3f(0, -1, 0), FVector3f(0, 0, -1), FVector3f(1, 0, 0), FColor::White);
+    
 
-    MeshBuilder.AddTriangle(VertexIndices[0], VertexIndices[1], VertexIndices[2]);
-    MeshBuilder.AddTriangle(VertexIndices[0], VertexIndices[2], VertexIndices[3]);
-    */
+
+    
     const TArray<int32> &triangles = internalMeshData.getTrianglesRefConst();
     const TArray<FVector> &vertecies = internalMeshData.getVerteciesRefConst();
     const TArray<FVector2D> &uvs = internalMeshData.getUV0RefConst();
@@ -237,7 +227,7 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
         if(
             IndexInBound(vertecies, t0, t1, t2) &&
             IndexInBound(normals, t0, t1, t2) &&
-            IndexInBound(uvs, t0, t1, t2) 
+            IndexInBound(uvs, t0, t1, t2)
         ){
             const FVector &v0 = vertecies[t0];
             const FVector &v1 = vertecies[t1];
@@ -250,6 +240,7 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
             const FVector2D &uv0 = uvs[t0];
             const FVector2D &uv1 = uvs[t1];
             const FVector2D &uv2 = uvs[t2];
+            
 
             AddTriangle(
                 MeshBuilder,
@@ -284,30 +275,56 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
     const FVector2D uv1,
     const FVector2D uv2
 ) const {
+
+    FVector tangentX3D;
+    FVector tangentY3D;
+    FindTangents(v0, v1, v2, tangentX3D, tangentY3D);
+
+    FVector3f tangentX3f = As3f(tangentX3D);
+    FVector3f tangentY3f = As3f(tangentY3D);
+
+    
     int32 VertexIndices[3];
     VertexIndices[0] = MeshBuilder.AddVertex(
         As3f(v0), //vertex Pos
         As2f(uv0),  //UV
-        FVector3f(0, -1, 0), //tangetX
-        FVector3f(0, 0, -1), //tangetY
+        tangentX3f, //FVector3f(0, -1, 0), //tangetX
+        tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal0), //normal
         FColor::White
     );
     VertexIndices[1] = MeshBuilder.AddVertex(
         As3f(v1),
         As2f(uv1),  //UV
-        FVector3f(0, -1, 0), 
-        FVector3f(0, 0, -1), 
+        tangentX3f, //FVector3f(0, -1, 0), //tangetX
+        tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal1), 
         FColor::White
     );
     VertexIndices[2] = MeshBuilder.AddVertex(
         As3f(v2),
         As2f(uv2),  //UV
-        FVector3f(0, -1, 0), 
-        FVector3f(0, 0, -1), 
+        tangentX3f, //FVector3f(0, -1, 0), //tangetX
+        tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal2), 
         FColor::White
     );
     MeshBuilder.AddTriangle(VertexIndices[0], VertexIndices[1], VertexIndices[2]);
 }
+
+
+void FDynamicMeshWidgetSceneProxy::FindTangents(
+    const FVector &v0,
+    const FVector &v1,
+    const FVector &v2,
+    FVector &tangentX,
+    FVector &tangentY
+)const {
+    FVector Edge1 = v1 - v0;
+    FVector Edge2 = v2 - v0;
+
+    tangentX = Edge1.GetSafeNormal();
+    FVector Normal = FVector::CrossProduct(Edge1, Edge2).GetSafeNormal();
+    tangentY = FVector::CrossProduct(Normal, tangentX);
+}
+

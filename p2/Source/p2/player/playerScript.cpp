@@ -63,8 +63,13 @@ void AplayerScript::BeginPlay()
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
 
-    
+    CreateUiHudActorOnBeginPlay();
     createMiniMap();
+}
+
+void AplayerScript::CreateUiHudActorOnBeginPlay(){
+    FVector relativeLocation(50, 0, 0);
+    AHudUiActor::MakeInstance(GetWorld(), CameraComponent, relativeLocation);
 }
 
 // Called to bind functionality to input

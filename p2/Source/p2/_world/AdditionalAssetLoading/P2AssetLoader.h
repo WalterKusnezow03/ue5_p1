@@ -22,4 +22,5 @@ private:
     void loadThrowables();
     void loadParticles();
     void loadTextures();
+    void load3DWidgets();
 };

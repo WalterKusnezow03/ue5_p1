@@ -64,9 +64,16 @@ void ACustomMeshUIActor::CreateWidgetMeshData(){
     
 
         data.calculateNormals();
+        bMeshDataCreated = true;
     }
 }
 
+void ACustomMeshUIActor::SetDrawSize(FVector2D size){
+    if(Widget){
+        Widget->SetDrawSize(size);
+    }
+    
+}
 
 // Called every frame 
 void ACustomMeshUIActor::Tick(float DeltaTime) 

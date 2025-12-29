@@ -1,5 +1,6 @@
 #include "PlayerStatusManager.h"
 #include "p2/ui/PlayerUi.h"
+#include "p2/ui/3Dui/HudUiActor.h"
 
 PlayerStatusManager::PlayerStatusManager(){
 
@@ -23,6 +24,16 @@ void PlayerStatusManager::FlagModifiedTrue(){
 }
 
 void PlayerStatusManager::UpdatePlayerHud(){
+    
+    //new ui
+    if(AHudUiActor *actor = AHudUiActor::GetInstance()){
+        if(WasModified()){
+            actor->Update(GetFPlayerStatus());
+        }
+        return;
+    }
+
+    //deprecated!
     UPlayerUi *ui = UPlayerUi::currentInstance();
     if(ui){
         UPlayerHud *hud = ui->HudInstance();

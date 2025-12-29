@@ -148,6 +148,32 @@ void MeshData::calculateNormals(){
     
 }
 
+void MeshData::flipNormals(){
+    for (int32 i = 0; i < normals.Num(); i++){
+        normals[i] *= -1.0f;
+    }
+}
+
+void MeshData::flipWindingOrder(){
+    for (int32 t = 2; t < triangles.Num(); t += 3){
+        /*
+        1->2
+        |
+        0
+
+        to 
+        1<-2
+        |
+        0
+        */
+        int32 copy = triangles[t - 2];
+        triangles[t - 2] = triangles[t - 1];
+        triangles[t - 1] = copy;
+    }
+}
+
+
+
 /// @brief sets the data for all vertecies, pass by r value reference
 /// @param vertecies veretecies to set, be carefull with overriding
 void MeshData::setVertecies(TArray<FVector> &&verteciesIn){
@@ -889,6 +915,10 @@ const TArray<FVector> &MeshData::getNormalsRefConst() const{
 }
 const TArray<FVector2D> &MeshData::getUV0RefConst() const{
     return UV0;
+}
+
+const TArray<FProcMeshTangent> &MeshData::getTangentsRefConst() const {
+    return Tangents;
 }
 
 

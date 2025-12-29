@@ -104,6 +104,14 @@ public:
 	{
 		bWillEverBeLit = false;
 		internalMeshData = meshData;
+		
+		//DO NOT REMOVE
+		//Fix broken triangles,
+		//text is black if winding order is not reversed
+		//DO NOT REMOVE
+		internalMeshData.flipWindingOrder();
+		
+		
 		MaterialRelevance = MaterialInstance->GetRelevance_Concurrent(GetScene().GetFeatureLevel());
 	}
 
@@ -242,4 +250,12 @@ private:
 		IndexInBound(array, i1) &&
 		IndexInBound(array, i2);
 	}
+
+	void FindTangents(
+		const FVector &v0,
+		const FVector &v1,
+		const FVector &v2,
+		FVector &tangentX,
+		FVector &tangentY
+	) const;
 };
