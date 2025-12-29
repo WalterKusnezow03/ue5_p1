@@ -84,7 +84,7 @@ void AgameModeSubclass::BeginPlay()
         AworldLevel::initWorld(GetWorld());
     }
 
-    SlipLiftOffFrameFinder::Test();
+    //SlipLiftOffFrameFinder::Test();
 }
 
 void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
@@ -99,10 +99,8 @@ void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 #include "GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
 void AgameModeSubclass::RunTests(){
-    AssetPathMaker::Test();
-    TestAlgorithm::Test();
-
-    BoundingBoxSimple::Test();
-
-    ANNSocket::MakeInstance(GetWorld());
+    //AssetPathMaker::Test();
+    //TestAlgorithm::Test();
+    //BoundingBoxSimple::Test();
+    //ANNSocket::MakeInstance(GetWorld());
 }

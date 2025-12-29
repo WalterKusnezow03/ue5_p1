@@ -323,7 +323,14 @@ void AplayerScript::aim(){
     }
     
     playerInventory.aim(aiming);
-    boneController.weaponAimDownSight(aiming);
+
+    
+    if(playerInventory.CurrentWeaponHasAimDisplacement()){
+        boneController.weaponAimDownSight(aiming);
+    }
+
+
+    //boneController.weaponAimDownSight(aiming);
 }
 
 /**

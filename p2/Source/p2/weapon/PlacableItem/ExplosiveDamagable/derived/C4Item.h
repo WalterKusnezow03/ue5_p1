@@ -33,7 +33,9 @@ public:
 
     virtual void ResetFlagsAndProperties() override;
 
-    
+    virtual bool HasAimingDisplacement() override {
+		return false;
+	}
 
 
 protected:

@@ -62,6 +62,11 @@ public:
 	//doent have to be called:
 	virtual void ResetFlagsAndProperties() {};
 
+
+	virtual bool HasAimingDisplacement(){
+		return true;
+	}
+
 protected:
 	
 	void FindFingerComponentsOnBeginPlay();

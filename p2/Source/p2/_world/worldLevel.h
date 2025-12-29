@@ -101,8 +101,6 @@ private:
 
 	void DebugCreatedoor();
 
-	void debugAngleFinder();
-	std::vector<FVector2D> findAngles(float lengthAll, std::vector<float> &bones);
 
 	void createGroundPane();
 

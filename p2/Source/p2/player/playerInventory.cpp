@@ -372,6 +372,13 @@ int playerInventory::currentIndexNum(){
     return currentIndex;
 }
 
+bool playerInventory::CurrentWeaponHasAimDisplacement(){
+    Aweapon *item = getItemPointer();
+    if(item){
+        return item->HasAimingDisplacement();
+    }
+    return false;
+}
 
 
 // --- APi for ui changes ---
@@ -389,4 +396,7 @@ int playerInventory::currentLeftAmmnutionInMag(){
     }
     return 0;
 }
+
+
+
 

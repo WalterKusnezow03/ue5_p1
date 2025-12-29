@@ -878,7 +878,18 @@ TArray<FColor> &MeshData::getVertexColorsRef(){
     return VertexColors;
 }
 
-
+const TArray<FVector> &MeshData::getVerteciesRefConst() const {
+    return vertecies;
+}
+const TArray<int32> &MeshData::getTrianglesRefConst() const{
+    return triangles;
+}
+const TArray<FVector> &MeshData::getNormalsRefConst() const{
+    return normals;
+}
+const TArray<FVector2D> &MeshData::getUV0RefConst() const{
+    return UV0;
+}
 
 
 

@@ -21,6 +21,8 @@ public:
 	void releaseShoot();
 	void dropWeapon();
 
+	bool CurrentWeaponHasAimDisplacement();
+
 	/// @brief swicthes to an index, hides the current weapon
 	/// @param index 
 	void selectIndex(int index);
@@ -50,7 +52,7 @@ private:
 		public:
 			wslot(Aweapon *in);
 			~wslot();
-			Aweapon *weaponPointer;
+			Aweapon *weaponPointer = nullptr;
 			
 			void shoot();
 			void reload(int amount);

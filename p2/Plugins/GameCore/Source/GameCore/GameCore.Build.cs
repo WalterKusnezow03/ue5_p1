@@ -42,7 +42,8 @@ public class GameCore : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"ProceduralMeshComponent"
+				"ProceduralMeshComponent",
+				"UMG"
 			}
 		);
 				

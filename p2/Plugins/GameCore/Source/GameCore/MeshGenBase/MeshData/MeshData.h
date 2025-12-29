@@ -149,6 +149,11 @@ public:
 	TArray<FProcMeshTangent> &getTangentsRef();
 	TArray<FColor> &getVertexColorsRef();
 
+	const TArray<FVector> &getVerteciesRefConst() const;
+	const TArray<int32> &getTrianglesRefConst() const;
+	const TArray<FVector> &getNormalsRefConst() const;
+	const TArray<FVector2D> &getUV0RefConst() const;
+
 	void offsetAllvertecies(FVector &offset);
 	void transformAllVertecies(MMatrix &other);
 
