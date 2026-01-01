@@ -167,7 +167,6 @@ void UGameLaunchScreen::launchWorld(FString worldName){
 
 // ----- debug ------
 #include "p2/ui/algorithm/DebugUi/GreedyFitWidget.h"
-#include "p2/ui/algorithm/DebugUi/RoadIntersectWidget.h"
 #include "customUiPlugin/ui/Widgets/autoContainer/DropDownBase/VerticalDropDownBase.h"
 #include "customUiPlugin/slateDerived/TextBased/TextInputSupport/WidgetSlateEditableText.h"
 void UGameLaunchScreen::AddDebugElements(){
@@ -193,10 +192,7 @@ void UGameLaunchScreen::AddDebugElements(){
         DebugHelper::logMessage("created greedy fit widget");
         menuVbox->AddChild((IBaseUiInterface *)widget);
     }
-    if(false){
-        URoadIntersectWidget *widget = NewObject<URoadIntersectWidget>(this);
-        menuVbox->AddChild((IBaseUiInterface *)widget);
-    }
+    
 
     if(false){
         UVerticalDropDownBase *dropDownDebug = NewWidgetInitialized<UVerticalDropDownBase>(this);

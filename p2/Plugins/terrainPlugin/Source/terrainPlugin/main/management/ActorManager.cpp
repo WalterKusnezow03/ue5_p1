@@ -5,6 +5,8 @@
 #include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 #include "GameCore/world/worldLevelBase.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainConstants.h"
+
 
 ActorManager::ActorManager(){
     worldContext = nullptr;

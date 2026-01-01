@@ -80,14 +80,17 @@ public:
     void SetWaterActorNeededFlag(bool flag, FVector &location);
     void SetOutpostFlagNeeded(bool flag);
 
-private:
-
     //used by meshdata saving, dont use manually if not needed
+    //only public for RoadMakerFromGrid!
     MeshData &findMeshDataReference(
         materialEnum type,
         ELod lodLevel,
         bool raycastOnLayer
     );
+
+private:
+
+    
 
     MeshData &findMeshDataReference(
         FMeshDataIdentifier &identifier

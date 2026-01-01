@@ -7,6 +7,19 @@ UAnyMeshWidgetComponent::UAnyMeshWidgetComponent(const FObjectInitializer &Objec
 
       };*/
 
+void UAnyMeshWidgetComponent::BeginPlay(){
+	Super::BeginPlay();
+
+	DebugHelper::logMessage("UAnyMeshWidgetComponent::BeginPlay");
+	if(assetManager *a = assetManager::instance()){
+		DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial");
+		UMaterialInterface *BaseMat = a->Find<materialEnum, UMaterial>(materialEnum::widgetMaterial);
+		if (BaseMat){
+			DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial Success");
+			MaterialInstance = UMaterialInstanceDynamic::Create(BaseMat, this);
+		}
+	}
+}
 
 void UAnyMeshWidgetComponent::TickComponent(
 	float DeltaTime,
@@ -48,14 +61,15 @@ FPrimitiveSceneProxy* UAnyMeshWidgetComponent::CreateSceneProxy()
     //widget component
     //but we can say that only UUserWidgets are allowed
     //with:
-	DebugHelper::showScreenMessage("UAnyMeshWidgetComponent::CreateProxy Called");
+	//DebugHelper::showScreenMessage("UAnyMeshWidgetComponent::CreateProxy Called");
 
 	CreateMaterial();
 
 	//if (WidgetRenderer && CurrentSlateWidget.IsValid()) //private member var. 
     if(WidgetRenderer && GetWidget() && GetMaterialInstance())
 	{
-		DebugHelper::showScreenMessage("UAnyMeshWidgetComponent::CreateProxy Valid Called");
+		//is called every frame.
+		//DebugHelper::showScreenMessage("UAnyMeshWidgetComponent::CreateProxy Valid Called");
 
 		RequestRenderUpdate();
 		LastWidgetRenderTime = 0;
@@ -72,10 +86,15 @@ FPrimitiveSceneProxy* UAnyMeshWidgetComponent::CreateSceneProxy()
 void UAnyMeshWidgetComponent::CreateMaterial(){
 	if(!GetMaterialInstance()){
 
-		// Default Material nehmen
-		UMaterialInterface* BaseMat = UMaterial::GetDefaultMaterial(MD_Surface); // oder UMaterial::GetDefaultMaterial(MD_Surface)
-		if (BaseMat)
-		{
+		UMaterialInterface *BaseMat = nullptr;
+		if(assetManager *a = assetManager::instance()){
+			DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial");
+			BaseMat = a->Find<materialEnum, UMaterial>(materialEnum::widgetMaterial);
+		}
+		if(!BaseMat){
+			BaseMat = UMaterial::GetDefaultMaterial(MD_Surface);
+		}
+		if (BaseMat){
 			MaterialInstance = UMaterialInstanceDynamic::Create(BaseMat, this);
 		}
 	}

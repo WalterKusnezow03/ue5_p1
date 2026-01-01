@@ -57,11 +57,11 @@ public:
         SetGeometryMode(EWidgetGeometryMode::Plane); //to force custom meshdata
     }
 
+    virtual void BeginPlay() override;
     virtual void TickComponent(
         float DeltaTime,
         ELevelTick TickType,
-        FActorComponentTickFunction* ThisTickFunction
-    ) override;
+        FActorComponentTickFunction *ThisTickFunction) override;
 
     //wannnn wird das ausgerufen
     virtual FPrimitiveSceneProxy* CreateSceneProxy() override;

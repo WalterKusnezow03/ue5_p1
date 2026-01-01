@@ -308,6 +308,14 @@ void P2AssetLoader::loadTextures(){
 
 
 void P2AssetLoader::load3DWidgets(){
+
+    AssetLoader::LoadAndSaveAssetToManager<materialEnum, UMaterial>(
+        materialEnum::widgetMaterial, 
+        "Game", //plugin name or "Game" 
+        "Prefabs/ui3D", //inner path, not trailing slash
+        "widgetMaterial" //asset name just as displayed
+    );
+
     
     AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
         Eui3DWidgetEnum::EPlayerHud, // track in asset manager

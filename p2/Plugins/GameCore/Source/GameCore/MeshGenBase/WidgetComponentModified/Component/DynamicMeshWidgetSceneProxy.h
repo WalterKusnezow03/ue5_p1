@@ -111,8 +111,25 @@ public:
 		//DO NOT REMOVE
 		internalMeshData.flipWindingOrder();
 		
+		if(MaterialInstance){
+			if(false){
+				DebugHelper::logMessage(
+					FString::Printf(
+						TEXT("FDynamicMeshWidgetSceneProxy::MaterialInstanceName: %s"),
+						*MaterialInstance->GetPathName()
+					)
+				);
+			}
+			
+		}
+		if(MaterialInstance){
+			MaterialRelevance = MaterialInstance->GetRelevance_Concurrent(GetScene().GetFeatureLevel());
+
+			//remove depth? (doesnt help)
+			//MaterialRelevance.bDisableDepthTest = true;
+		}
 		
-		MaterialRelevance = MaterialInstance->GetRelevance_Concurrent(GetScene().GetFeatureLevel());
+		
 	}
 
 	

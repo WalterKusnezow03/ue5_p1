@@ -20,5 +20,6 @@ enum class materialEnum
     prop_alarmBoxMaterial,
     _texturedMaterial,
     wingMaterial,
-    grassMaterialWithShader
+    grassMaterialWithShader,
+    widgetMaterial
 };

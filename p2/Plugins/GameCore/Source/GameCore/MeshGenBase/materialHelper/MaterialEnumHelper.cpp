@@ -27,6 +27,9 @@ TArray<std::pair<materialEnum, FString>> MaterialEnumHelper::GetMaterialPairs(){
     map.Add(MakePair(materialEnum::wingMaterial, "wingMaterial"));
     map.Add(MakePair(materialEnum::CactusMaterial, "CactusMaterial"));
     map.Add(MakePair(materialEnum::grassMaterialWithShader, "grassMaterialWithShader"));
+
+    map.Add(MakePair(materialEnum::widgetMaterial, "widgetMaterial"));
+    
     return map;
 }
 
@@ -54,24 +57,6 @@ FString MaterialEnumHelper::toString(materialEnum typein){
 }
 
 std::vector<materialEnum> MaterialEnumHelper::materialVector(){
-    /*std::vector<materialEnum> types = {
-        materialEnum::grassMaterial,
-        materialEnum::wallMaterial,
-        materialEnum::glassMaterial,
-        materialEnum::stoneMaterial,
-        materialEnum::sandMaterial,
-        materialEnum::redsandMaterial,
-        materialEnum::treeMaterial,
-        materialEnum::palmLeafMaterial,
-        materialEnum::waterMaterial,
-        materialEnum::snowMaterial,
-        materialEnum::beigeStoneMaterial,
-        materialEnum::prop_alarmBoxMaterial,
-        materialEnum::_texturedMaterial,
-        materialEnum::wingMaterial,
-        materialEnum::CactusMaterial,
-        materialEnum::grassMaterialWithShader
-    };*/
     TArray<std::pair<materialEnum, FString>> pairs = GetMaterialPairs();
     std::vector<materialEnum> types;
     for (int i = 0; i < pairs.Num(); i++){

@@ -7,7 +7,7 @@
 #include "PathFinder/pathFinding/PathFinder.h"
 #include "Components/BoxComponent.h"
 #include "KismetProceduralMeshLibrary.h"
-#include "terrainPlugin/meshgen/generation/bezierCurve.h"
+#include "terrainPlugin/meshgen/generation/bezier/bezierCurve.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/ETreeType.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "CoreMath/Matrix/MMatrix.h"
