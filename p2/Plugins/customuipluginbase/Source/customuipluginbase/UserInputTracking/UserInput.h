@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-class CUSTOMUIPLUGIN_API UserInput{
+class CUSTOMUIPLUGINBASE_API UserInput{
 public:
     UserInput();
     ~UserInput();

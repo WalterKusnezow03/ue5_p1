@@ -63,11 +63,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
     class UCameraComponent* CameraComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	class UCameraComponent* CameraComponentSecondary;
+	//UPROPERTY(VisibleAnywhere)
+	//class UCameraComponent* CameraComponentSecondary;
 
+	/// --- camera helpers ---
 	FRotator cameraRotation();
 	FVector playerLookDir();
+	FVector CameraLocation();
 
 protected:
     //LATEST INTERACTED ACTOR POINTER
@@ -87,9 +89,9 @@ protected:
 
     AActor *performRaycast();
 
-    void TurnAtRate(float Rate);
-    void LookUpAtRate(float Rate);
-	
+    
+	// ---- KEYBOARD ----
+
 	virtual void MoveForward(float Value);
     virtual void MoveRight(float Value);
     
@@ -98,13 +100,19 @@ protected:
 	virtual void drop();
 	virtual void aim();
 
-	void setHolding(bool h);
+	
+	virtual void openPauseMenu();
     
 
-    void leftMouseUp();
-    void leftMouseDown();
+	// ---- MOUSE INTERACTION ----
+	void TurnAtRate(float Rate);
+    void LookUpAtRate(float Rate);
 
-    virtual void openPauseMenu();
+    virtual void leftMouseUp();
+    virtual void leftMouseDown();
+	void setHolding(bool h);
+
+	
 
     UPROPERTY(EditAnywhere)
     float TurnRateGamepad;

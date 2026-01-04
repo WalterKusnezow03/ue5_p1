@@ -312,7 +312,7 @@ TArray<UVerticalDropDownBase *> UWeaponSetupScreen::AttachmentLists(){
 
 
 //overriden from super - custom dispatch needed here for handling picker lists readable.
-bool UWeaponSetupScreen::dispatchClick(){
+bool UWeaponSetupScreen::dispatchClick(const FVector2D &pos){
 
     if(!markedVisible()){
         return false;
@@ -322,7 +322,7 @@ bool UWeaponSetupScreen::dispatchClick(){
     TArray<UVerticalDropDownBase *> pickers = AllLists();
     for (int i = 0; i < pickers.Num(); i++){
         if(UVerticalDropDownBase *current = pickers[i]){
-            if(current->dispatchClick()){ //may not hit a list item
+            if(current->dispatchClick(pos)){ //may not hit a list item
                 int indexHit = current->ListIndexHitFromClickDispatch(); //can be nullptr.
                 
                 //get interface from layout: handle click
@@ -338,7 +338,7 @@ bool UWeaponSetupScreen::dispatchClick(){
     }
 
     //check base items
-    return Super::dispatchClick();
+    return Super::dispatchClick(pos);
 }
 
 

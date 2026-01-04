@@ -187,7 +187,7 @@ bool FTriangleIntersectFrame::HasIdentifier(int32 v0){
     return v0 == v0Index || v0 == v1Index || v0 == v2Index;
 }
 
-void FTriangleIntersectFrame::CopyIdentifier(int32 &v0, int32 &v1, int32 &v2){
+void FTriangleIntersectFrame::CopyIdentifier(int32 &v0, int32 &v1, int32 &v2) const {
     v0 = v0Index;
     v1 = v1Index;
     v2 = v2Index;

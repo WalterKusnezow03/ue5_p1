@@ -28,7 +28,7 @@ public:
     /// @brief passed weapon setup helper will be hold by ptr and updated!
     void UpdateScreen(weaponSetupHelper &setup);
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     virtual void OnOpenScreen() override;
 

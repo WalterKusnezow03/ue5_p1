@@ -40,7 +40,7 @@ public:
     }
     
     // ---- CLICK DISPATCH AND VISIBILTY ----
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
     virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
 
@@ -57,7 +57,7 @@ public:
 
     
 
-    // bool dispatchClick() override; //MUST COME HERE
+    // bool dispatchClick(const FVector2D &pos) override; //MUST COME HERE
 
 private:
     USpacer *createMarginSpacer(int x, int y);

@@ -212,12 +212,12 @@ void UWidgetSlateWrapperBase::SetCursorColorEnabled(bool flag){
 
 
 
-bool UWidgetSlateWrapperBase::dispatchClick(){
+bool UWidgetSlateWrapperBase::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
     if(SSlateWidgetBase *ptr = MySlateWidget.Get()){
-        return ptr->dispatchClick();
+        return ptr->dispatchClick(pos);
     }
     return false;
 }

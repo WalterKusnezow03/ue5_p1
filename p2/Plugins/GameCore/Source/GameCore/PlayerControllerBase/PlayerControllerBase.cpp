@@ -352,16 +352,28 @@ teamEnum APlayerControllerBase::getTeam(){
 FRotator APlayerControllerBase::cameraRotation(){
     FRotator rotator;
     if(CameraComponent){
-        return CameraComponent->GetComponentRotation();
+        return CameraComponent->GetComponentRotation(); //world rotation
     }
     return rotator;
 }
 
 FVector APlayerControllerBase::playerLookDir(){
     if(CameraComponent){
-        return CameraComponent->GetForwardVector();
+        FVector forward(1, 0, 0);
+        FRotator r = cameraRotation();
+        forward = r.RotateVector(forward);
+        return forward;
+
+        //return CameraComponent->GetForwardVector();
     }
     return FVector(0, 0, 0);
+}
+
+FVector APlayerControllerBase::CameraLocation(){
+    if(CameraComponent){
+        return CameraComponent->GetComponentLocation(); //is World Location
+    }
+    return GetActorLocation(); //fallback
 }
 
 /**

@@ -16,7 +16,7 @@ class CUSTOMUIPLUGIN_API URemovableItem : public UcustomUiComponentBase {
 public:
     virtual void init() override;
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     /// @brief marks button as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too!

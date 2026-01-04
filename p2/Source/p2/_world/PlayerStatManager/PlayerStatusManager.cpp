@@ -25,21 +25,12 @@ void PlayerStatusManager::FlagModifiedTrue(){
 
 void PlayerStatusManager::UpdatePlayerHud(){
     
-    //new ui
+    //new 3D ui
     if(AHudUiActor *actor = AHudUiActor::GetInstance()){
         if(WasModified()){
             actor->Update(GetFPlayerStatus());
         }
         return;
-    }
-
-    //deprecated!
-    UPlayerUi *ui = UPlayerUi::currentInstance();
-    if(ui){
-        UPlayerHud *hud = ui->HudInstance();
-        if(hud != nullptr && WasModified()){
-            hud->Update(GetFPlayerStatus());
-        }
     }
 }
 

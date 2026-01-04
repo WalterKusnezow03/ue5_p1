@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/MeshGenBase/WidgetComponentModified/Actor/CustomMeshUIActor.h"
+#include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
 #include "p2/ui/3Dui/Widget/HudUiWidget.h"
@@ -35,6 +35,11 @@ public:
 
     // update
     void Update(FPlayerStatus &playerStatusStruct);
+
+    //doesnt allow 3D interaction.
+    virtual bool AllowRayIntersectInteraction() override{
+		return false;
+	}
 
 protected:
     virtual void BeginPlay() override;

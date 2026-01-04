@@ -31,7 +31,7 @@ public:
     void setImage(UTexture2D *loadedTexture);
     void setImage(UTexture2D *loadedTexture, FVector2D scale);
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
     virtual void Tick(float deltatime) override;
 
 protected:

@@ -24,16 +24,16 @@ void UUiComponentParent::Tick(float deltatime){
         }
     }
 }
-bool UUiComponentParent::dispatchClick(){
+bool UUiComponentParent::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
 
     int ignored = 0;
-    return dispatchClick(ignored);
+    return dispatchClick(ignored, pos);
 }
 
-bool UUiComponentParent::dispatchClick(int &outIndexFirst){
+bool UUiComponentParent::dispatchClick(int &outIndexFirst, const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
@@ -42,7 +42,7 @@ bool UUiComponentParent::dispatchClick(int &outIndexFirst){
     for (int i = 0; i < trackedChildsInterface.Num(); i++)
     {
         if(IBaseUiInterface *current = trackedChildsInterface[i]){
-            if(current->dispatchClick()){
+            if(current->dispatchClick(pos)){
                 if(!flag){
                     outIndexFirst = i;
                 }

@@ -25,6 +25,7 @@ public class customUiPlugin : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"customuipluginbase",
 				"Core",
 				"GameCore",
 				"UMG", //widgets

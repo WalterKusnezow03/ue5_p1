@@ -19,9 +19,9 @@ void UPresetHalfSplitLayout::init(){
 }
 
 /// CLICK DISPATCH AND VISIBLITY
-bool UPresetHalfSplitLayout::dispatchClick(){
+bool UPresetHalfSplitLayout::dispatchClick(const FVector2D &pos){
     if(baseVertical){
-        return baseVertical->dispatchClick(); //NOTIFY ALL CHILDREN IN BASE BASE 
+        return baseVertical->dispatchClick(pos); //NOTIFY ALL CHILDREN IN BASE BASE 
     }
     return false;
 }

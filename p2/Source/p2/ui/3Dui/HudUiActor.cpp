@@ -6,6 +6,13 @@
 
 AHudUiActor *AHudUiActor::instance = nullptr;
 
+
+void AHudUiActor::BeginPlay(){
+    Super::BeginPlay();
+    EnableCollision(false);
+    debugUiActorName = TEXT("AHudUiActor");
+}
+
 AHudUiActor *AHudUiActor::MakeInstance(
     UWorld *world, 
     USceneComponent *attachTo,
@@ -130,10 +137,6 @@ void AHudUiActor::Update(FPlayerStatus &playerStatus){
 }
 
 
-void AHudUiActor::BeginPlay(){
-    Super::BeginPlay();
-
-}
 
 void AHudUiActor::Tick(float deltatime){
     Super::Tick(deltatime);

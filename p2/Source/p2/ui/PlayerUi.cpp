@@ -54,8 +54,7 @@ void UPlayerUi::init(UWorld *world){
 
     //Must be called to be added to viewport!
     Super::init(world);
-
-    createBasePlayerHud();
+    
     createPauseScreen();
     createLoadoutScreen();
     createGameLaunchScreen();
@@ -92,23 +91,6 @@ void UPlayerUi::createGameLaunchScreen(){
     if(gameLaunchScreen){
         gameLaunchScreen->init(*this);
         gameLaunchScreen->SetVisible(false);
-    }
-}
-
-
-
-//public api ui update text
-
-void UPlayerUi::updateMissionText(FString message){
-    if(playerHud){
-        playerHud->updateTopWaringElement(message);
-    }
-}
-
-void UPlayerUi::updateMissionTextTimed(FString message){
-    if(playerHud){
-        float timetolive = 2.0f;
-        playerHud->updateTopWarningElementTimed(message, timetolive);
     }
 }
 
@@ -194,4 +176,16 @@ UPlayerHud *UPlayerUi::HudInstance(){
         return playerHud;
     }
     return nullptr;
+}
+
+
+
+
+bool UPlayerUi::OnCursorClick(){
+    if(!Super::OnCursorClick()){
+
+
+        return false;
+    }
+    return true;
 }

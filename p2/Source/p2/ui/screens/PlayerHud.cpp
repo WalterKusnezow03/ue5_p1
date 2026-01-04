@@ -13,8 +13,7 @@
 
 void UPlayerHud::CreateLayoutOnInit(){
     createBasePlayerHud();
-    createAmmunitionHudElement();
-    createHealthHudElement();
+    
     createTopWarningElement();
 }
 
@@ -29,34 +28,6 @@ void UPlayerHud::createBasePlayerHud(){
 }
 
 
-void UPlayerHud::createAmmunitionHudElement(){
-    if(playerHudCornerLayout){
-        ammunitionTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
-        if(ammunitionTextAndImage){
-            ammunitionTextAndImage->setImage(
-                textureEnum::patroneIcon
-            );
-
-            playerHudCornerLayout->addChildToBottomRight(ammunitionTextAndImage);
-        }
-    }
-    
-}
-
-void UPlayerHud::createHealthHudElement(){
-    if(playerHudCornerLayout){
-
-        healthTextAndImage = NewWidgetInitialized<UTextAndImage>(this);
-        if(healthTextAndImage){
-            healthTextAndImage->setImage(
-                textureEnum::healthIcon
-            );
-
-            playerHudCornerLayout->addChildToBottomLeft(healthTextAndImage);
-        }
-    }
-    
-}
 
 void UPlayerHud::createTopWarningElement(){
     if(playerHudCornerLayout){
@@ -71,23 +42,6 @@ void UPlayerHud::createTopWarningElement(){
 
 /// ----- PLAYER HUD INIT SECTION ----- END
 
-//PUBLIC API
-void UPlayerHud::Update(FPlayerStatus &playerStatusStruct){
-    updateAmmunitionText(playerStatusStruct.AmmunitionString());
-    updateHealthText(playerStatusStruct.HealthString());
-}
-
-void UPlayerHud::updateAmmunitionText(FString message){
-    if(ammunitionTextAndImage){
-        ammunitionTextAndImage->SetText(message);
-    }
-}
-
-void UPlayerHud::updateHealthText(FString message){
-    if(healthTextAndImage){
-        healthTextAndImage->SetText(message);
-    }
-}
 
 
 void UPlayerHud::updateTopWaringElement(FString message){
@@ -118,6 +72,6 @@ void UPlayerHud::Tick(float deltatime){
     }
 }
 
-bool UPlayerHud::dispatchClick(){
+bool UPlayerHud::dispatchClick(const FVector2D &pos){
     return false; //no click in hud.
 }

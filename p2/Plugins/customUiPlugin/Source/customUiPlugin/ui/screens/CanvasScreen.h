@@ -1,7 +1,7 @@
 #pragma once
 
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
-#include "customUiPlugin/baseInterface/BaseUiInterface.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
 #include "Components/CanvasPanel.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/VerticalBox.h"

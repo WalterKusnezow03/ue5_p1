@@ -66,8 +66,8 @@ void UWidgetSlateEditableText::SwitchTextToLayer(int layer){
 
 
 
-bool UWidgetSlateEditableText::dispatchClick(){
-    bool result = Super::dispatchClick();
+bool UWidgetSlateEditableText::dispatchClick(const FVector2D &pos){
+    bool result = Super::dispatchClick(pos);
     SetFocusKeyboard(result);
     UpdateTextCursorPosition();
     return result;

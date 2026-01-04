@@ -29,15 +29,12 @@ public:
     virtual void CreateLayoutOnInit() override;
 
     virtual void Tick(float deltatime) override;
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
-    void updateAmmunitionText(FString message);
-    void updateHealthText(FString health);
 
     void updateTopWaringElement(FString message);
     void updateTopWarningElementTimed(FString message, float timetoLive);
 
-    void Update(FPlayerStatus &playerStatusStruct);
 
 private:
 
@@ -45,11 +42,6 @@ private:
     UPROPERTY()
     UPresetCornersLayout *playerHudCornerLayout;
 
-    UPROPERTY()
-    UTextAndImage *ammunitionTextAndImage;
-
-    UPROPERTY()
-    UTextAndImage *healthTextAndImage;
 
     UPROPERTY()
     UTextButton *topWaringElement;
@@ -57,8 +49,6 @@ private:
     float topWarningTime = 0.0f;
 
     void createBasePlayerHud();
-    void createAmmunitionHudElement();
-    void createHealthHudElement();
-
     void createTopWarningElement();
+
 };

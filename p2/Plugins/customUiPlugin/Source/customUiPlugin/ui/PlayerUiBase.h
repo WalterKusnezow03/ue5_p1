@@ -7,7 +7,7 @@
 #include "Components/CanvasPanel.h"
 
 #include "customUiPlugin/ui/ScreenStack/ScreenOpenStack.h"
-#include "customUiPlugin/UserInputTracking/UserInput.h"
+#include "customuipluginbase/UserInputTracking/UserInput.h"
 
 #include "PlayerUiBase.generated.h"
 
@@ -84,7 +84,7 @@ public:
 
 protected:
 
-    virtual void OnCursorClick();
+    virtual bool OnCursorClick();
 
 	bool isInited = false;
 	UCanvasPanel *baseCanvas = nullptr;
@@ -94,8 +94,6 @@ protected:
 	ScreenOpenStack openedScreenStack;
 
     void createTickActor(UWorld *world);
-
-private:
 
 	UserInput userInput;
 

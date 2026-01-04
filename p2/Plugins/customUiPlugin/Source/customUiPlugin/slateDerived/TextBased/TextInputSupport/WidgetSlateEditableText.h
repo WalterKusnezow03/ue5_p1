@@ -7,8 +7,8 @@
 #include "Components/SizeBox.h"
 #include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
-#include "customUiPlugin/baseInterface/WidgetHelper.h"
-#include "customUiPlugin/UserInputTracking/UserInput.h"
+#include "customuipluginbase/baseInterface/WidgetHelper.h"
+#include "customuipluginbase/UserInputTracking/UserInput.h"
 
 #include "customUiPlugin/slateDerived/TextBased/Text/WidgetSlateText.h"
 #include "customUiPlugin/ui/Widgets/callback/callback.h"
@@ -24,7 +24,7 @@ class CUSTOMUIPLUGIN_API UWidgetSlateEditableText : public UWidgetSlateText{
 public:
     void SwitchTextToLayer(int layer);
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
     virtual void Tick(float deltatime) override;
 
     void SetHintText(FString text);

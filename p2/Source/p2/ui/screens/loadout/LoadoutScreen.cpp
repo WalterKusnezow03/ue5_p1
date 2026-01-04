@@ -129,11 +129,11 @@ void ULoadoutScreen::FillOrLoadLoadout(){
 
 
 
-bool ULoadoutScreen::dispatchClick(){
+bool ULoadoutScreen::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
-    bool flag = Super::dispatchClick();
+    bool flag = Super::dispatchClick(pos);
     bool here = false;
 
     //weapon buttons dont have a click delegate, instead hit test here
@@ -142,7 +142,7 @@ bool ULoadoutScreen::dispatchClick(){
         for (int i = 0; i < buttons.Num(); i++){
             IBaseUiInterface *current = buttons[i];
             if(current){
-                if(current->dispatchClick()){
+                if(current->dispatchClick(pos)){
                     here = true;
                     OpenWeaponSetupScreen(current);
                 }

@@ -23,7 +23,7 @@ bool UWorldMarkerCanvas::PlayerControllerValid(){
     return Playercontroller != nullptr;
 }
 
-bool UWorldMarkerCanvas::dispatchClick(){
+bool UWorldMarkerCanvas::dispatchClick(const FVector2D &pos){
     return false;
 }
 

@@ -32,7 +32,7 @@ public:
     ///@brief tick to update the items based on player transform
     virtual void Tick(float deltatime) override;
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
 
     // --- only use this interface to add new markers to the canvas ---

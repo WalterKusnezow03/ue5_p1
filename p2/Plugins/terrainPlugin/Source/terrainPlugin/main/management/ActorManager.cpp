@@ -81,10 +81,6 @@ void ActorManager::generateTerrain(){
     chunkMeshDataParserMap.createArray(chunksForGame);
     terraincreator.createTerrainAndSetupChunkParserMap(chunkHeaderMap, chunkMeshDataParserMap);
 
-    //simplified call here
-    //create roads here (simplified for now)
-    terraincreator.createRoadMeshActor(worldContext);
-
     //debug wise gen all at once
     //later with updates.
     if(instantTerrainActorApply){

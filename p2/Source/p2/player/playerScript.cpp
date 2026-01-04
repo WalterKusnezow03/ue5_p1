@@ -30,7 +30,7 @@
 
 
 // Sets default values
-AplayerScript::AplayerScript() : APlayerControllerBase()
+AplayerScript::AplayerScript() : Super()
 {
     aiming = false;
 }
@@ -568,16 +568,23 @@ void AplayerScript::updateHealthUi(){
     AworldLevel::playerStatusManager.updateHealth(health);
 }
 
+#include "p2/ui/_uiSimulation/UiSimulation.h"
+#include "p2/ui/_uiSimulation/EUiEvent.h"
 void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
-    if(UPlayerUi *uiInstance = UPlayerUi::currentInstance()){
-        FString message = entered ? "Outpost Area Entered" : "Outpost Area left";
+    
+    FString message = entered ? "Outpost Area Entered" : "Outpost Area left";
+    EUiEvent type = entered ? EUiEvent::HudTopText : EUiEvent::HudTopTextTimed;
+    AworldLevel::uiSimulation.Notify(type, message);
+
+    /*if (UPlayerUi *uiInstance = UPlayerUi::currentInstance())
+    {
 
         if(entered){
             uiInstance->updateMissionText(message);
         }else{
             uiInstance->updateMissionTextTimed(message);
         }
-    }
+    }*/
 }
 
 

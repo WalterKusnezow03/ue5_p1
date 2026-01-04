@@ -36,6 +36,7 @@ ACustomMeshUIActor::ACustomMeshUIActor()
 void ACustomMeshUIActor::BeginPlay() 
 { 
     Super::BeginPlay();
+    debugUiActorName = TEXT("ACustomMeshUIActorDefaultName");
     SetWidgetClassOnBeginPlay();
     CreateWidgetMeshData();
 }
@@ -94,4 +95,32 @@ void ACustomMeshUIActor::SetWidgetClass(TSubclassOf<UUserWidget> NewWidgetClass)
 TSubclassOf<UUserWidget> ACustomMeshUIActor::GetWidgetClass() const 
 { 
     return CurrentWidgetClass;
+}
+
+
+
+
+
+void ACustomMeshUIActor::RayIntersect(
+    const FVector &origin,
+    const FVector &direction
+){
+    if(Widget && AllowRayIntersectInteraction()){
+        Widget->RayIntersect(origin, direction);
+    }
+}
+
+void ACustomMeshUIActor::EnableCollision(bool flag){
+    if(Widget){
+        if(!flag){
+            Widget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        }else{
+            Widget->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); 
+            Widget->SetCollisionResponseToAllChannels(ECR_Ignore); 
+            Widget->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block); 
+            Widget->SetCollisionResponseToChannel(ECC_Camera, ECR_Block); 
+            Widget->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); 
+        }
+    }
+    
 }

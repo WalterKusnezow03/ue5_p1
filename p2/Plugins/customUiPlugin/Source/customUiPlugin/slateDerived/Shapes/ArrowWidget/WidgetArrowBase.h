@@ -25,7 +25,7 @@ public:
     //overriden but super call needed
     virtual void Tick(float deltatime) override;
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     void SwitchToNextRotation();
     void SwitchToNextRotation(float timeOfAnimation);

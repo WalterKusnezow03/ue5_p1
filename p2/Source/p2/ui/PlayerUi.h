@@ -90,9 +90,6 @@ public:
 	void openGameLaunchScreen();
 
 
-	void updateMissionText(FString messgae);
-	void updateMissionTextTimed(FString message);
-
 	///@brief current hud instance, do not delete
 	UPlayerHud *HudInstance();
 
@@ -108,11 +105,11 @@ protected:
 
 	//screens
 	bool pauseMenuOpened = false;
+
 	UPlayerHud *playerHud = nullptr;
 	UPauseScreen *pauseScreen = nullptr;
 	ULoadoutScreen *loadoutScreen = nullptr;
 	UGameLaunchScreen *gameLaunchScreen = nullptr;
 
-
-
+	virtual bool OnCursorClick() override;
 };

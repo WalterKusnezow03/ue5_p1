@@ -106,12 +106,12 @@ void UGameLaunchScreen::createWorldList(){
 
 
 
-bool UGameLaunchScreen::dispatchClick(){
-    bool result = Super::dispatchClick();
+bool UGameLaunchScreen::dispatchClick(const FVector2D &pos){
+    bool result = Super::dispatchClick(pos);
     bool resultB = false;
     if (typeFieldConfirmButton)
     {
-        if(typeFieldConfirmButton->dispatchClick()){
+        if(typeFieldConfirmButton->dispatchClick(pos)){
             createAndLaunchWorldFromTypeField();
             resultB = true;
         }

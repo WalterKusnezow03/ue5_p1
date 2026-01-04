@@ -58,7 +58,7 @@ void FDynamicMeshWidgetSceneProxy::GetDynamicMeshElements(
         {
             if (GeometryMode == EWidgetGeometryMode::Plane)
             {
-                DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::BuildMeshData");
+                //DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::BuildMeshData");
                 BuildCustomMeshData(
                     Views,
                     ViewportLocalToWorld,

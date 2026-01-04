@@ -140,7 +140,7 @@ void UCanvasScreen::RemoveChild(UWidget *widget){
 
 
 
-#include "customUiPlugin/baseInterface/WidgetHelper.h"
+#include "customuipluginbase/baseInterface/WidgetHelper.h"
 void UCanvasScreen::SetVisible(bool visible){
     Super::SetVisible(visible);
     if(baseCanvas){

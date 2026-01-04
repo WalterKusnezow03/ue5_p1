@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-#include "GameCore/MeshGenBase/WidgetComponentModified/Component/AnyMeshWidgetComponent.h"
+#include "GameCore/Ui3D/WidgetComponentModified/Component/AnyMeshWidgetComponent.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Components/SceneComponent.h"
@@ -14,7 +14,7 @@
  * UI Actor that contains a 3D Widget Component with dynamic class changing and generic getter
  */
 UCLASS()
-class GAMECORE_API ACustomMeshUIActor : public AActor
+class GAMECORE_API ACustomMeshUIActor : public AActor 
 {
 	GENERATED_BODY()
 
@@ -22,8 +22,29 @@ public:
 	// Sets default values for this actor's properties
 	ACustomMeshUIActor();
 
+	// --- Collision & Interaction ---
+
+	//will only execute if AllowRayIntersectInteraction() is true.
+	void RayIntersect(
+        const FVector &origin,
+        const FVector &direction
+    );
+	
+	virtual bool AllowRayIntersectInteraction(){
+		return true;
+	}
+
+	void EnableCollision(bool flag);
+
+	FString GetDebugName(){
+		return debugUiActorName;
+	}
 
 protected:
+	//property for debug
+	UPROPERTY(EditAnywhere, Category = "Debug");
+	FString debugUiActorName;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void SetWidgetClassOnBeginPlay();

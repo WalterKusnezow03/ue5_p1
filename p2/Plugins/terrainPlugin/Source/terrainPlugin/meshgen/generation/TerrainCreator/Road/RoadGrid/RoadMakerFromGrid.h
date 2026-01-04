@@ -29,17 +29,9 @@ public:
     ///of polygons
     void CreateGrid(FVector2D size, float StepSize);
 
-    void RandomizeGrid();
-
     // --- warp grid with different functions ---
     void WarpCirlceRandom();
-    void WarpCirlceByDistanceAroundCenter(
-        float maxDistance,
-        float angle);
-    void WarpCirlceByDistance(
-        FVector &center,
-        float maxDistance,
-        float angle);
+    
 
     // --- build --- (no warp allowed anymore)
     void Build(
@@ -56,6 +48,8 @@ public:
 
 
 protected:
+    // ----- Base Properties -----
+
     //raw mesh 
     TArray<TArray<FVector>> mesh;
     
@@ -74,14 +68,43 @@ protected:
     FVector &CenterOfMesh();
     void UpdateCenterOfMesh();
 
-    //private warp
+    // ----- private warp helpers -----
+    TArray<FVector> RandomPositions(
+        int maxCount, 
+        float distanceFromEdges
+    );
+    bool RandomPosition(
+        FVector2D &minPoisiton,
+        FVector2D &maxPosition,
+        FVector &outpos
+    );
+    bool RandomPosition(
+        int iLower,
+        int jLower,
+        int iHigher,
+        int jHigher,
+        FVector &outpos
+    );
+    
+
+    // ----- private warp -----
+    void WarpCirlceByDistanceAroundCenter(
+        float maxDistance,
+        float angle
+    );
+    void WarpCirlceByDistance(
+        FVector &center,
+        float maxDistance,
+        float angle
+    );
+
     void MakeRotationAroundPosition(
         FVector &position,
         float angle,
         MMatrix &outMatrix
     );
 
-    //builded mesh
+    // ----- builded mesh -----
     bool wasBuilded = false;
     TArray<TArray<RoadQuad>> buildedMeshQuads; //any shape, but originally the quads
     RoadQuad &GetQuadInBuildedMesh(std::pair<int, int> &posXY);

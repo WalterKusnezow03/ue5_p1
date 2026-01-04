@@ -21,6 +21,7 @@ public class p2 : ModuleRules
 			"PathFinder",
 			"AssetPlugin",
 			"IkHumanoidModell",
+			"customuipluginbase",
 			"customUiPlugin",
 			"StoragePlugin",
 			"GcGameCore",

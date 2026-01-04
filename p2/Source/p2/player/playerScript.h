@@ -21,14 +21,15 @@
 
 #include "p2/player/minimap/Minimap.h"
 
-#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
+//#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
+#include "GameCore/PlayerControllerBase/WidgetInteractionIncluded/PlayerControllerWidgetInteractiveBase.h"
 
 #include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
 
 #include "playerScript.generated.h"
 
 UCLASS()
-class P2_API AplayerScript : public APlayerControllerBase
+class P2_API AplayerScript : public APlayerControllerWidgetInteractiveBase
 {
 	GENERATED_BODY()
 

@@ -10,8 +10,8 @@ void URemovableItem::init(){
     createRemoveButton();
 }
 
-bool URemovableItem::dispatchClick(){
-    return baseHBox != nullptr && baseHBox->dispatchClick();
+bool URemovableItem::dispatchClick(const FVector2D &pos){
+    return baseHBox != nullptr && baseHBox->dispatchClick(pos);
 }
 
 

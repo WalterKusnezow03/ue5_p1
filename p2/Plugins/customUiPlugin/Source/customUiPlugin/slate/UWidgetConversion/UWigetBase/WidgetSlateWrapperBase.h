@@ -4,8 +4,9 @@
 #include "Components/SizeBox.h"
 #include "customUiPlugin/slate/MeshData2D/BaseMeshData/MeshDataWrap/SlateMeshDataPolygon.h"
 #include "customUiPlugin/slate/MeshData2D/sharedContainer/SlatePolygonMap.h"
-#include "customUiPlugin/baseInterface/BaseUiInterface.h"
-#include "customUiPlugin/baseInterface/WidgetHelper.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
+
+#include "customuipluginbase/baseInterface/WidgetHelper.h"
 #include "customUiPlugin/slate/UWidgetConversion/UWigetBase/task/ResolutionUpdateTask.h"
 
 #include "WidgetSlateWrapperBase.generated.h"
@@ -96,7 +97,7 @@ public:
 
     ///@brief will tell if the cursor is inside the geometry of this widget
     ///can be overriden, but super call needed!
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     virtual void SetVisible(bool flag) override{
         WidgetHelper::SetVisible(this, flag);

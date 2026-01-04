@@ -272,13 +272,24 @@ void SSlateWidgetBase::DrawText(
 
 
 // --- click dispatch ---
+bool SSlateWidgetBase::dispatchClick(const FVector2D &pos){
+    return IsHovered(pos);
+}
+
 bool SSlateWidgetBase::dispatchClick(){
-    return IsHovered();
+    FVector2D pos = CursorPositionScreenSpace();
+    return dispatchClick(pos);
 }
 
 bool SSlateWidgetBase::IsHovered(){
+    FVector2D pos = CursorPositionScreenSpace();
+    return IsHovered(pos); 
+}
+
+bool SSlateWidgetBase::IsHovered(const FVector2D &pos){
     FGeometry Geometry = GetCachedGeometry();
-    FVector2D cursorPos = CursorPositionScreenSpace();
+    FVector2D cursorPos = pos;
+    // CursorPositionScreenSpace();
 
     FVector2D topLeft = Geometry.LocalToAbsolute(FVector2D(0, 0));
     FVector2D bottomRight = Geometry.LocalToAbsolute(Geometry.GetLocalSize());

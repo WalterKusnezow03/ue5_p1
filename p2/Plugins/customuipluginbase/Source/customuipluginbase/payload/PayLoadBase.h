@@ -8,7 +8,7 @@
 /// derived from uobject for easier mem management.
 /// NEEDS A COPY MECHANISM!
 UCLASS()
-class CUSTOMUIPLUGIN_API UPayLoadBase : public UObject{
+class CUSTOMUIPLUGINBASE_API UPayLoadBase : public UObject{
 
     GENERATED_BODY()
 public:

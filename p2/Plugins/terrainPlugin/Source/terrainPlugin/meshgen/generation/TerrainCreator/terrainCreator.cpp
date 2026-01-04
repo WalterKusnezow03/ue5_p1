@@ -454,7 +454,10 @@ float terrainCreator::getHeightFor(FVector &position){
             return (minZ + maxZ) / 2.0f; //fallback.
         }
     }else{
-        DebugHelper::logMessage("terrainCreator::getHeight, not enough chunks found!", worldVertecies.Num());
+        DebugHelper::logMessage(
+            "terrainCreator::getHeight, not enough chunks found!", 
+            worldVertecies.Num()
+        );
     }
 
     DebugHelper::logMessage("terrainCreator::getHeightFor resultFailed ", position);
@@ -828,29 +831,15 @@ void terrainCreator::createRoads(ChunkParserMap &mapToFillDataTo){
     roadMaker.CreateGrid(size2D, stepBetweenIntersecionts);
     roadMaker.WarpCirlceRandom();
 
-    float roadWidth = 300.0f;
     roadMaker.Build(
         this, 
         terrainConstants::ONEMETER, //einheitsvalue bspline
-        roadWidth,
+        terrainConstants::HALFWITHROAD,
         mapToFillDataTo
     );
 
     //roadmaker.createRoads(this, map.size());
 }
-
-void terrainCreator::createRoadMeshActor(UWorld *world){
-    //roadmaker.MakeMeshActorFromRoadData(world);
-}
-
-
-/*
-void terrainCreator::AssignRoadMeshDataToChunk(
-    FVector &centerPositionRoadQuad,
-    
-){
-
-}*/
 
 
 

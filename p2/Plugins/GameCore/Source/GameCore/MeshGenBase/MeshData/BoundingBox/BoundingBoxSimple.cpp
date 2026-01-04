@@ -257,3 +257,53 @@ void BoundingBoxSimple::Test(){
     );
     DebugHelper::logMessage(message);
 }
+
+
+
+
+
+FVector BoundingBoxSimple::extent() const {
+    //AB = B - A
+    FVector result = topRightLeft - bottomLeftNear;
+    return result;
+}
+
+// IS TESTED ON UWIDGETCOMPONENT CUSTOM
+void BoundingBoxSimple::Update(FKBoxElem *BoxElem) const {
+    if(BoxElem){
+        //copied from UWidgetComponent source.
+        /*
+        const float Width = WidthY();
+        const float Height = HeightZ();
+        const FVector Origin = FVector(.5f,
+            -( Width * 0.5f ) + ( Width * Pivot.X ),
+            -( Height * 0.5f ) + ( Height * Pivot.Y ));
+        */
+            
+        BoxElem->X = DepthX();
+        BoxElem->Y = WidthY();
+        BoxElem->Z = HeightZ();
+
+        BoxElem->SetTransform(FTransform::Identity);
+        BoxElem->Center = center();
+    }
+
+
+    
+}
+
+float BoundingBoxSimple::WidthY() const {
+    return std::abs(topRightLeft.Y - bottomLeftNear.Y);
+}
+
+float BoundingBoxSimple::HeightZ() const {
+    return std::abs(topRightLeft.Z - bottomLeftNear.Z);
+}
+
+float BoundingBoxSimple::DepthX() const {
+    return std::abs(topRightLeft.X - bottomLeftNear.X);
+}
+
+FVector BoundingBoxSimple::center() const {
+    return (topRightLeft + bottomLeftNear) * 0.5f;
+}

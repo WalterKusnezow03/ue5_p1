@@ -88,20 +88,94 @@ void RoadMakerFromGrid::CreateGrid(FVector2D size, float StepSize){
     UpdateCenterOfMesh();
 }
 
-void RoadMakerFromGrid::RandomizeGrid(){
 
+// --- helper for warp ---
+TArray<FVector> RoadMakerFromGrid::RandomPositions(
+    int maxCount, 
+    float distanceFromEdges
+){
+    FVector2D maxPosition = sizeSaved - FVector2D(distanceFromEdges, distanceFromEdges);
+    FVector2D minPosition = FVector2D(distanceFromEdges, distanceFromEdges);
+    TArray<FVector> outArray;
+    while(maxCount > 0){
+        FVector created;
+        if(RandomPosition(minPosition, maxPosition, created)){
+            outArray.Add(created);
+        }
+        maxCount--;
+    }
+    return outArray;
 }
 
-// --- warp grid ---
+bool RoadMakerFromGrid::RandomPosition(
+    FVector2D &minPosition, 
+    FVector2D &maxPosition, 
+    FVector &outpos
+){
+    int minX = minPosition.X / stepSizeSavedBetweenMeshNodes;
+    int minY = minPosition.Y / stepSizeSavedBetweenMeshNodes;
+
+    int maxX = maxPosition.X / stepSizeSavedBetweenMeshNodes;
+    int maxY = maxPosition.Y / stepSizeSavedBetweenMeshNodes;
+    return RandomPosition(
+        minX, minY, maxX, maxY, outpos
+    );
+}
+
+bool RoadMakerFromGrid::RandomPosition(
+    int iLower, 
+    int jLower, 
+    int iHigher, 
+    int jHigher,
+    FVector &outpos
+){
+    iLower = std::max(0, iLower);
+    jLower = std::max(0, jLower);
+
+    if(mesh.Num() > 0){
+        iHigher = std::min(iHigher, mesh.Num() - 1);
+        jHigher = std::min(jHigher, mesh[0].Num() - 1);
+
+        int randomI = FVectorUtil::randomNumber(iLower, iHigher);
+        int randomJ = FVectorUtil::randomNumber(jLower, jHigher);
+        if(randomI >= 0 && randomI < mesh.Num()){
+            TArray<FVector> &array = mesh[randomI];
+            if (randomJ >= 0 && randomJ < array.Num())
+            {
+                outpos = array[randomJ];
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// --- warp and Randomize grid ---
+
+
+
 
 void RoadMakerFromGrid::WarpCirlceRandom(){
     int iterations = 2;
+    int warpCirclesPerIteration = 3;
     while(iterations > 0){
         float randomScalar = FVectorUtil::randomFloatNumber(0, 1);
         float maxDistance = sizeSaved.Size() * randomScalar;
         float angle = FVectorUtil::randomFloatNumber(-30, 30);
 
-        WarpCirlceByDistanceAroundCenter(maxDistance, angle);
+        TArray<FVector> randomPositions = RandomPositions(
+            warpCirclesPerIteration, 
+            maxDistance
+        );
+        for(int i = 0; i < randomPositions.Num(); i++){
+            WarpCirlceByDistance(
+                randomPositions[i],
+                maxDistance,
+                angle
+            );
+        }
+
+        //WarpCirlceByDistanceAroundCenter(maxDistance, angle);
         iterations--;
     }
 }

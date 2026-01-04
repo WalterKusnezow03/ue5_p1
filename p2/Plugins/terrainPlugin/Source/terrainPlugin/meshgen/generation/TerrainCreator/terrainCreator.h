@@ -124,7 +124,7 @@ public:
 		const FVector &worldPos
 	);
 
-	void createRoadMeshActor(UWorld *world);
+	
 
 	
 

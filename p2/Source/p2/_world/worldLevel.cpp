@@ -55,6 +55,7 @@ template class TVector<FVector2D>;
 //static vars init:
 GameStateManager AworldLevel::gameStateManager;
 PlayerStatusManager AworldLevel::playerStatusManager;
+UiSimulation AworldLevel::uiSimulation;
 AworldLevel *AworldLevel::InstanceWorldLevel = nullptr;
 
 AworldLevel::AworldLevel() : AworldLevelBase()

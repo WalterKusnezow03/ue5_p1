@@ -1,4 +1,5 @@
 #include "UserInput.h"
+#include "DebugPlugin/DebugHelper.h"
 
 UserInput::UserInput(){
 

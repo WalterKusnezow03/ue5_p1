@@ -874,6 +874,15 @@ bool MeshData::isValidNormalIndex(int i, int j, int k){
     return isValidNormalIndex(i) && isValidNormalIndex(j) && isValidNormalIndex(k);
 }
 
+
+bool MeshData::isValidUVIndex(int i){
+    return i >= 0 && i < UV0.Num();
+}
+bool MeshData::isValidUVIndex(int i, int j, int k){
+    return isValidUVIndex(i) && isValidUVIndex(j) && isValidUVIndex(k);
+}
+
+
 /**
  * --- Data references ---
  */
@@ -2145,6 +2154,15 @@ bool MeshData::RayIntersect(
     const FVector &direction, 
     FVector &outIntersectionPoint
 ){
+
+    FIntersectHitResult outIntersectHitResult;
+    bool result = RayIntersect(origin, direction, outIntersectHitResult);
+    if(result){
+        outIntersectionPoint = outIntersectHitResult.hitPoint;
+    }
+    return result;
+
+    /*
     if(RayIntersectBounds(origin, direction)){
         
         ///// ---- TODO: PARALLEL THREADS HERE -----
@@ -2157,7 +2175,60 @@ bool MeshData::RayIntersect(
             }
         }
     }
+    return false;*/
+}
+
+
+bool MeshData::RayIntersect(
+    const FVector &origin,
+    const FVector &direction,
+    FIntersectHitResult &outIntersectHitResult
+){
+    if(RayIntersectBounds(origin, direction)){
+        
+        ///// ---- TODO: PARALLEL THREADS HERE -----
+        
+        //go through all intersect triangle frames, if flagged ok, return true
+        for (int i = 0; i < intersectFrames.Num(); i++){
+            FTriangleIntersectFrame &current = intersectFrames[i];
+            FVector outIntersectionPoint;
+            if(current.DoesIntersect(origin, direction, outIntersectionPoint)){
+                FVector2D uv = FindAverageUVFrom(outIntersectionPoint, current);
+                outIntersectHitResult.hitPoint = outIntersectionPoint;
+                outIntersectHitResult.hitUV = uv;
+                return true;
+            }
+        }
+    }
     return false;
+}
+
+FVector2D MeshData::FindAverageUVFrom(
+    const FVector &intersectPoint,
+    const FTriangleIntersectFrame &frame
+){  
+    int32 v0 = -1;
+    int32 v1 = -1;
+    int32 v2 = -1;
+    frame.CopyIdentifier(v0,v1,v2);
+    if(isValidUVIndex(v0,v1,v2) && isValidVertexIndex(v0,v1,v2)){
+        float distA = FVector::DistSquared(intersectPoint, vertecies[v0]);
+        float distB = FVector::DistSquared(intersectPoint, vertecies[v1]);
+        float distC = FVector::DistSquared(intersectPoint, vertecies[v2]);
+        float sum = distA + distB + distC;
+        if(sum >= 0.0f){
+            distA = 1.0f - (distA / sum);
+            distB = 1.0f - (distB / sum);
+            distC = 1.0f - (distC / sum);
+
+            FVector2D result =
+                UV0[v0] * distA +
+                UV0[v1] * distB +
+                UV0[v2] * distC;
+            return result;
+        }
+    }
+    return FVector2D(0,0);
 }
 
 bool MeshData::RayIntersectBounds(const FVector &origin, const FVector &direction){

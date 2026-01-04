@@ -100,8 +100,8 @@ float UWidgetProgressBarBase::ClampProgress(float num){
 
 
 /// --- Click, Tick and Animation ---
-bool UWidgetProgressBarBase::dispatchClick(){
-    if(Super::dispatchClick()){
+bool UWidgetProgressBarBase::dispatchClick(const FVector2D &pos){
+    if(Super::dispatchClick(pos)){
         //start some animation for debugging
 
         return true;

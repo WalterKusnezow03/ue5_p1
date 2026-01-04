@@ -18,7 +18,7 @@ public:
     bool HasIdentifier(int32 v0);
     void IncreaseIdentifierBy(int32 offset);
 
-    void CopyIdentifier(int32 &v0, int32 &v1, int32 &v2);
+    void CopyIdentifier(int32 &v0, int32 &v1, int32 &v2) const;
 
     void Setup(
         const FVector &v0,

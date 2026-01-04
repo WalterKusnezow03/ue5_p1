@@ -25,7 +25,7 @@ public:
     
     virtual void init(UPlayerUiBase &ref);
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     /// @brief launch a world from UWorldList
     /// @param world 

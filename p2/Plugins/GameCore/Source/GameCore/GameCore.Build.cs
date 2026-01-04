@@ -27,6 +27,7 @@ public class GameCore : ModuleRules
 			{
 				"Core",
 				"AssetPlugin",
+				"customuipluginbase",
 				"CoreMath",
 				"ProceduralMeshComponent",
 				"DebugPlugin",

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
 
-class CUSTOMUIPLUGIN_API WidgetHelper {
+class CUSTOMUIPLUGINBASE_API WidgetHelper {
 
 public:
     

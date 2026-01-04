@@ -121,8 +121,8 @@ void UPlayerUiBase::updateClickDispatch(){
 }
 
 // new manual cursor dispatching clicks!
-void UPlayerUiBase::OnCursorClick(){
-    openedScreenStack.dispatchClick();
+bool UPlayerUiBase::OnCursorClick(){
+    return openedScreenStack.dispatchClick();
 }
 
 

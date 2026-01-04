@@ -19,7 +19,7 @@ public:
 
     bool isEmpty();
 
-    void dispatchClick();
+    bool dispatchClick();
     void dispatchUserInput(UserInput &input);
 
     void Tick(float deltatime);

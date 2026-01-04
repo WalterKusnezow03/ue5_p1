@@ -2,6 +2,8 @@
 
 
 #include "CoreMinimal.h"
+#include "PhysicsEngine/BoxElem.h"
+
 /**
  * Boudning box checker withoutout rotation, only min and max (x,y,z)
  */
@@ -31,9 +33,19 @@ public:
 
     static void Test();
 
+    // api for engine related collision creation
+    void Update(FKBoxElem *elem) const;
+    FVector extent() const;
+
 private:
     FVector bottomLeftNear;
     FVector topRightLeft;
+
+    //for FKBoxElem
+    float WidthY() const;
+    float HeightZ() const;
+    float DepthX() const;
+    FVector center() const;
 
     bool InRange(float t, float lower, float higher);
 };

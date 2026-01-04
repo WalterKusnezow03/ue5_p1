@@ -36,11 +36,11 @@ void UTextAndImageBase::init(){
     uniformScalingSetup = false;
 }
 
-bool UTextAndImageBase::dispatchClick(){
+bool UTextAndImageBase::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
-    return baseHorizontalBox != nullptr && baseHorizontalBox->dispatchClick();
+    return baseHorizontalBox != nullptr && baseHorizontalBox->dispatchClick(pos);
 }
 
 void UTextAndImageBase::Tick(float deltatime){

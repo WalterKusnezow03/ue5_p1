@@ -1,5 +1,6 @@
 #include "ScreenOpenStack.h"
-#include "customUiPlugin/UserInputTracking/UserInput.h"
+#include "customuipluginbase/UserInputTracking/UserInput.h"
+#include "customUiPlugin/ui/Dispatcher/ClickDispatcher.h"
 
 ScreenOpenStack::ScreenOpenStack(){
 
@@ -10,14 +11,21 @@ ScreenOpenStack::~ScreenOpenStack(){
 }
 
 
-void ScreenOpenStack::dispatchClick(){
+bool ScreenOpenStack::dispatchClick(){
     //DebugHelper::logMessage("CLICK WAS REGISTERED Screen Stack");
     //DebugHelper::showScreenMessage("CLICK WAS REGISTERED Screen Stack");
     if(UCanvasScreen *back = latestScreen()){
-        bool result = back->dispatchClick();
-    }
-}
+        
+        //new, testing needed (doesnt work on screens where the click is handeld automatically.)
+        //ClickDispatcher dispatcher;
+        //return dispatcher.Dispatch(back->baseLayoutPointer());
 
+        //used
+        FVector2D mousePos = FSlateApplication::Get().GetCursorPos();
+        return back->dispatchClick(mousePos);
+    }
+    return false;
+}
 
 bool ScreenOpenStack::ScreenIsOpenTop(UCanvasScreen *item){
     if(item != nullptr){

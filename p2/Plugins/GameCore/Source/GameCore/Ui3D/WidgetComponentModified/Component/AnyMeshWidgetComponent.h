@@ -63,8 +63,13 @@ public:
         ELevelTick TickType,
         FActorComponentTickFunction *ThisTickFunction) override;
 
-    //wannnn wird das ausgerufen
+    //jeden frame, RENDER DATA ONLY
     virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
+
+    //COLLISION DATA
+    virtual UBodySetup* GetBodySetup() override;
+    virtual FCollisionShape GetCollisionShape(float Inflation) const override;
+
 
     /** Ensures the 3d window is created its size and content. */
 	virtual void UpdateWidget() override {
@@ -75,6 +80,11 @@ public:
 
     MeshData &GetMeshDataRef();
 
+    bool RayIntersect(
+        const FVector &origin,
+        const FVector &direction
+    );
+
 protected:
     MeshData assignedMeshData;
     bool MeshDataWasModified = false;
@@ -82,4 +92,10 @@ protected:
     void FlagMeshDataDirty();
 
     void CreateMaterial();
+
+    FVector2D WidgetScreenPosition(
+        const FVector2D &uv
+    );
+
+    void UpdateBodySetupOverride(); //copied defintion from source
 };

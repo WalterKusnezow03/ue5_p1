@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Components/Widget.h"
-#include "customUiPlugin/baseInterface/WidgetHelper.h"
-#include "customUiPlugin/baseInterface/BaseUiInterface.h"
+#include "customuipluginbase/baseInterface/WidgetHelper.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
 
 
 #include "customUiComponentBase.generated.h"
@@ -69,7 +69,7 @@ public:
 
     // --- manual click dispatch, must be overriden if has childs!---
     //OVERRIDE THIS METHOD!
-    virtual bool dispatchClick() override {
+    virtual bool dispatchClick(const FVector2D &pos) override {
         return false;
     }
 

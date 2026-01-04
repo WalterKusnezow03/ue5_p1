@@ -10,6 +10,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 
 #include "GameCore/MeshGenBase/MeshData/intersectCache/TriangleIntersectFrame.h"
+#include "GameCore/MeshGenBase/MeshData/intersectCache/IntersectHitResult.h"
 
 
 /**
@@ -281,6 +282,8 @@ protected:
 	bool isValidTriangleIndex(int i);
 	bool isValidNormalIndex(int index);
 	bool isValidNormalIndex(int i, int j, int k);
+	bool isValidUVIndex(int i);
+	bool isValidUVIndex(int i, int j, int k);
 	FVector createNormal(int v0, int v1, int v2);
 
 	void findTrianglesInvolvedWith(int index, std::vector<int> &trianglesFound);
@@ -337,9 +340,17 @@ protected:
 	void findConnectedVerteciesTo(int index, std::vector<int> &output);
 
 
+public:
 
+	// -- pyhsics api --
+	void Update(struct FKBoxElem *elem) const {
+		bounds.Update(elem);
+	}
+	FVector extent() const {
+		return bounds.extent();
+	}
 
-	
+protected:	
 	void updateBoundsIfNeeded(FVector &other);
 
 	bool isInsideBoundingbox(FVector &other);
@@ -384,17 +395,30 @@ public:
 		FVector &outIntersectionPoint
 	);
 
+	bool RayIntersect(
+		const FVector &origin,
+		const FVector &direction,
+		FIntersectHitResult &outIntersectHitResult
+	);
+
+	void RebuildAllIntersectFrames();
+
 protected:
 	bool RayIntersectBounds(const FVector &origin, const FVector &direction);
 	void AppendIntersectionFrame(int32 v0Index, int32 v1Index, int32 v2Index);
 
-	void RebuildAllIntersectFrames();
+	
 	void RefreshAllTriangleFramesWith(int32 index);
 	void RefreshTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
 
 	void RemoveAllTriangleFramesWithIndex(int32 vIndex);
 	void RemoveTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
 	bool AlreadyHasTriangleFrame(int32 v0Index, int32 v1Index, int32 v2Index);
+
+	FVector2D FindAverageUVFrom(
+		const FVector &intersectPoint,
+		const FTriangleIntersectFrame &frame
+	);
 
 private:
 	TArray<FTriangleIntersectFrame> intersectFrames;

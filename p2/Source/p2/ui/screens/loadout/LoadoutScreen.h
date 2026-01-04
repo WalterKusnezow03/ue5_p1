@@ -41,7 +41,7 @@ public:
     /// @brief called when later screen is closed
     virtual void OnReOpenScreen() override; 
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     virtual void init(UPlayerUiBase &ref);
 

@@ -58,12 +58,12 @@ bool UTextButton::CompareText(FString textIn){
 /**
  * debug
  */
-bool UTextButton::dispatchClick(){
+bool UTextButton::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
     if(TextBlock){
-        if(TextBlock->dispatchClick()){
+        if(TextBlock->dispatchClick(pos)){
             UiDebugHelper::showScreenMessage("UTextButton Click", FColor::Green);
             TriggerCallback();
             return true;

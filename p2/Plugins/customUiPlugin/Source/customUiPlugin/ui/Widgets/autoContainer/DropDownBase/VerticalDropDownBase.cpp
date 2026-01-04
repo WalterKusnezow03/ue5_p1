@@ -28,7 +28,7 @@ void UVerticalDropDownBase::Debug(){
 
 ///@brief dispatches a click and returns the index of the pressed item inside the 
 ///picker list, if any hit!
-bool UVerticalDropDownBase::dispatchClick(){
+bool UVerticalDropDownBase::dispatchClick(const FVector2D &pos){
     if(!markedVisible()){
         return false;
     }
@@ -36,7 +36,7 @@ bool UVerticalDropDownBase::dispatchClick(){
     
     //handle menu show hide
     if(topSelection){
-        if(topSelection->dispatchClick()){
+        if(topSelection->dispatchClick(pos)){
             SwitchMenuVisibilty();
             return true;
         }        
@@ -53,7 +53,7 @@ bool UVerticalDropDownBase::dispatchClick(){
         }
 
         int indexHit = -1;
-        bool dispatched = selectableList->dispatchClick(indexHit);
+        bool dispatched = selectableList->dispatchClick(indexHit, pos);
         if(dispatched){
             SelectIndex(indexHit);
             indexHitFromClickDispatch = indexHit;

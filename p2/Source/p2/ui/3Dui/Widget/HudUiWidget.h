@@ -26,7 +26,7 @@ public:
     // update widget elements
     void UpdateWidget(FPlayerStatus &playerStatusStruct);
 
-
+    //void Tick(float deltatime);
 
 private:
     void UpdateHealthText(FString text);

@@ -25,7 +25,7 @@ public:
     void SetText(FString textIn);
     FString GetText();
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
 
     /// @brief slate widgets MUST be ticked if they are changed in scale to recognize the change.

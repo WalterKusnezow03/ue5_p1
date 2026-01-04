@@ -17,5 +17,7 @@ public:
 	static const int CHUNKSTOCREATEATONCE = 10;
 
 	static const int HEIGH_AVG_SNOWHILL_LOWERBOUND = 200000; //200 * 100cm
-	static const int HEIGHT_MAX_OCEAN = 200; 
+	static const int HEIGHT_MAX_OCEAN = 200;
+
+	static const int HALFWITHROAD = 400;
 };

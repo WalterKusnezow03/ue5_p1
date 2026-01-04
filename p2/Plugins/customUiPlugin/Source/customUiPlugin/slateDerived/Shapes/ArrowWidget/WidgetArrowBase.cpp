@@ -159,8 +159,8 @@ MMatrix2D UWidgetArrowBase::MakeRotationMatrixAroundCenter(
 }
 
 /// --- Click, Tick and Animation ---
-bool UWidgetArrowBase::dispatchClick(){
-    if(Super::dispatchClick()){
+bool UWidgetArrowBase::dispatchClick(const FVector2D &pos){
+    if(Super::dispatchClick(pos)){
         SwitchToNextRotation();
         return true;
     }

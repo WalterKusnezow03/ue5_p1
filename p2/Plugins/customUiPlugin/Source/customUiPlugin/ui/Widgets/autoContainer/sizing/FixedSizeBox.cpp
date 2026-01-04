@@ -46,8 +46,8 @@ int UFixedSizeBox::validatePixels(int num){
     return num;
 }
 
-bool UFixedSizeBox::dispatchClick(){
-    return child != nullptr && child->dispatchClick();
+bool UFixedSizeBox::dispatchClick(const FVector2D &pos){
+    return child != nullptr && child->dispatchClick(pos);
 }
 
 

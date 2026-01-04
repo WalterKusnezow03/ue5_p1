@@ -58,9 +58,11 @@ public:
     virtual void Tick(float deltatime);
 
     ///@brief tells if the cursor is inside this geometry
+    virtual bool dispatchClick(const FVector2D &pos);
     virtual bool dispatchClick();
 
     bool IsHovered();
+    bool IsHovered(const FVector2D &pos);
 
 protected:
 

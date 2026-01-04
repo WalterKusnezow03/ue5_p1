@@ -32,7 +32,7 @@ public:
     }
 
     ///dispatches a click to all children
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     ///@brief may be -1 if none hit in latest clikc dispatch - is resettet each click.
     int ListIndexHitFromClickDispatch();

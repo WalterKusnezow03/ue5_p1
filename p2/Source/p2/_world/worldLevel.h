@@ -10,6 +10,8 @@
 #include "p2/_world/PlayerStatManager/PlayerStatusManager.h"
 #include "GameCore/world/worldLevelBase.h"
 
+#include "p2/ui/_uiSimulation/UiSimulation.h"
+
 #include "worldLevel.generated.h"
 
 class ATerrainLauncher;
@@ -56,11 +58,7 @@ public:
 
 	/// for player hud changes
 	static PlayerStatusManager playerStatusManager;
-
-
-	
-
-	
+	static UiSimulation uiSimulation;
 
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();

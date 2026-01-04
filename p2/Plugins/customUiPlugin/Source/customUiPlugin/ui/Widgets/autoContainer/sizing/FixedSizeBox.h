@@ -30,7 +30,7 @@ public:
         }
     }
 
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
 
     /// @brief marks self as invisible: may be needed to not dispatch a click, base layout pointer is 
     /// invisible too! - OVERRIDE THIS METHOD!

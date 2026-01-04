@@ -1,6 +1,6 @@
 #pragma once
 
-#include "customUiPlugin/ui/_baseClass/payload/PayLoadBase.h"
+#include "customuipluginbase/payload/PayLoadBase.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "WeaponSetupHelperPayload.generated.h"
 

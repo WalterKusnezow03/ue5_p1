@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "customUiPlugin/ui/_baseClass/customUiComponentBase.h"
-#include "customUiPlugin/baseInterface/BaseUiInterface.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
 
 #include "UiComponentParent.generated.h"
 
@@ -14,13 +14,13 @@ class CUSTOMUIPLUGIN_API UUiComponentParent : public UcustomUiComponentBase{
 
 public:
     // --- CUSTOM DISPATCHER -> OVERRIDE ---
-    virtual bool dispatchClick() override;
+    virtual bool dispatchClick(const FVector2D &pos) override;
     virtual void SetVisible(bool visible) override;
     virtual void Tick(float deltatime) override;
     virtual void dispatchUserInput(UserInput &input) override;
 
     ///@brief dispatches a click and returns the index in IBaseUiInterface Array
-    virtual bool dispatchClick(int &outIndexFirst);
+    virtual bool dispatchClick(int &outIndexFirst, const FVector2D &pos);
 
     ///@brief item at index or nullptr if invalid
     IBaseUiInterface *BaseInterfaceAtIndex(int i);
