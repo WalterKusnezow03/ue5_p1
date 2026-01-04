@@ -25,7 +25,7 @@ public:
 	// --- Collision & Interaction ---
 
 	//will only execute if AllowRayIntersectInteraction() is true.
-	void RayIntersect(
+	bool RayIntersect(
         const FVector &origin,
         const FVector &direction
     );

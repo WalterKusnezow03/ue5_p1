@@ -2179,13 +2179,44 @@ bool MeshData::RayIntersect(
 }
 
 
+//debug rayintersect with draw
+bool MeshData::RayIntersectDraw(
+    const FVector &origin,
+    const FVector &direction,
+    FIntersectHitResult &outIntersectHitResult,
+    UWorld *world,
+    FMatrix transform
+){
+    if(RayIntersect(origin, direction, outIntersectHitResult)){
+        if(world){
+            FVector hit = outIntersectHitResult.hitPoint;
+            hit = transform.TransformPosition(hit);
+            DebugHelper::showLineBetween(
+                world,
+                hit,
+                hit + FVector(0, 0, 100),
+                FColor::Red
+            );
+        }
+        return true;
+    }
+    return false;
+}
+
+
+/// @brief IS TESTED
 bool MeshData::RayIntersect(
     const FVector &origin,
     const FVector &direction,
     FIntersectHitResult &outIntersectHitResult
 ){
     if(RayIntersectBounds(origin, direction)){
-        
+
+        if(intersectFrames.Num() <= 0){
+            //DebugHelper::logMessage("MeshData::RayIntersect Failed, no intersect frames");
+            RebuildAllIntersectFrames();
+        }
+
         ///// ---- TODO: PARALLEL THREADS HERE -----
         
         //go through all intersect triangle frames, if flagged ok, return true
@@ -2196,6 +2227,7 @@ bool MeshData::RayIntersect(
                 FVector2D uv = FindAverageUVFrom(outIntersectionPoint, current);
                 outIntersectHitResult.hitPoint = outIntersectionPoint;
                 outIntersectHitResult.hitUV = uv;
+                DebugHelper::logMessage("MeshData::RayIntersect Result found!");
                 return true;
             }
         }

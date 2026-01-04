@@ -101,13 +101,14 @@ TSubclassOf<UUserWidget> ACustomMeshUIActor::GetWidgetClass() const
 
 
 
-void ACustomMeshUIActor::RayIntersect(
+bool ACustomMeshUIActor::RayIntersect(
     const FVector &origin,
     const FVector &direction
 ){
     if(Widget && AllowRayIntersectInteraction()){
-        Widget->RayIntersect(origin, direction);
+        return Widget->RayIntersect(origin, direction);
     }
+    return false;
 }
 
 void ACustomMeshUIActor::EnableCollision(bool flag){

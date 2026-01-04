@@ -389,12 +389,16 @@ public:
  * Intersection tests
  */
 public:
+	/// @brief IS TESTED
+	//local
 	bool RayIntersect(
 		const FVector &origin,
 		const FVector &direction,
 		FVector &outIntersectionPoint
 	);
 
+	/// @brief IS TESTED
+	//local
 	bool RayIntersect(
 		const FVector &origin,
 		const FVector &direction,
@@ -402,6 +406,15 @@ public:
 	);
 
 	void RebuildAllIntersectFrames();
+
+	//local, world draw
+	bool RayIntersectDraw(
+		const FVector &origin,
+		const FVector &direction,
+		FIntersectHitResult &outIntersectHitResult,
+		UWorld *world,
+		FMatrix transform
+	);
 
 protected:
 	bool RayIntersectBounds(const FVector &origin, const FVector &direction);

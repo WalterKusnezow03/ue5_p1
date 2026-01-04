@@ -57,14 +57,26 @@ bool UAnyMeshWidgetComponent::RayIntersect(
     const FVector &direction
 ){
 	FVector localOrigin = GetComponentTransform().InverseTransformPosition(origin);
-	FVector localDirection = GetComponentTransform().InverseTransformPosition(direction);
+	FVector localDirection = GetComponentTransform().InverseTransformVector(direction);
+
+	DebugHelper::logMessage("UAnyMeshWidgetComponent::RayIntersect Triggered!");
 
 	FIntersectHitResult outIntersectHitResult;
-	if(assignedMeshData.RayIntersect(
+
+	if(assignedMeshData.RayIntersectDraw(
+		localOrigin,
+		localDirection,
+		outIntersectHitResult,
+		GetWorld(),
+		GetComponentTransform().ToMatrixWithScale()
+	)){
+	/*if(assignedMeshData.RayIntersect(
 		localOrigin,
 		localDirection,
 		outIntersectHitResult
-	)){
+	)){*/
+		DebugHelper::logMessage("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!");
+
 		//create screen coordinate from UV
 		FVector2D screen = WidgetScreenPosition(outIntersectHitResult.hitUV);
 		// dispatch click to widget
