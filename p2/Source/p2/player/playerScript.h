@@ -40,8 +40,6 @@ public:
 
 	void debugPathFinder();
 
-	
-
 	void reloadLoadout(LoadoutHelper &loadout);
 
 protected:

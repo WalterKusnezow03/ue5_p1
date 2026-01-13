@@ -4,7 +4,7 @@
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
-#include "p2/ui/3Dui/Widget/HudUiWidget.h"
+#include "p2/ui/3Dui/HUD/Widget/HudUiWidget.h"
 
 #include "HudUiActor.generated.h"
 

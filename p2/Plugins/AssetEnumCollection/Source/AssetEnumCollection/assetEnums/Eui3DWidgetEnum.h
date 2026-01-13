@@ -4,5 +4,6 @@
 UENUM()
 enum class Eui3DWidgetEnum
 {
-    EPlayerHud
+    EPlayerHud,
+    EWeaponTableWidget
 };

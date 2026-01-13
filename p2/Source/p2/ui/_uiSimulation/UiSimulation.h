@@ -12,11 +12,12 @@ public:
 
     void Notify(EUiEvent event, FString message);
 
-    void RayCast3DUi(
+    //deprecated, has 3D Widget iNtercation Component
+    /*void RayCast3DUi(
         UWorld *world, 
         const FVector &pos, 
         const FVector &dir
-    );
+    );*/
 
 private:
 

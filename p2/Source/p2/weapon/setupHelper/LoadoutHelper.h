@@ -27,6 +27,12 @@ public:
     ///spawned weapons
     std::vector<Aweapon *> spawnAllWeaponsAndApplyAttachments(UWorld *world);
 
+    //static method to spawn a single weapon from setup
+    static Aweapon *SpawnWeaponWithAttachments(
+        weaponSetupHelper *setup,
+        UWorld *world
+    );
+
     bool loadOutWasModified();
 
     void markModified(){

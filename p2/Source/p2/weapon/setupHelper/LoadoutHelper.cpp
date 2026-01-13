@@ -60,18 +60,30 @@ std::vector<Aweapon *> LoadoutHelper::spawnAllWeaponsAndApplyAttachments(UWorld 
     loadoutWasModifedFlag = false;
     std::vector<Aweapon *> outweapons;
     if(world){
-        EntityManager *entityManagerPointer = AworldLevel::entityManager();
-        if(entityManagerPointer != nullptr){
-            for (int i = 0; i < vec.size(); i++){
-                weaponSetupHelper &currentSetupHelper = vec[i];
-                Aweapon *weapon = entityManagerPointer->spawnAweapon(world, &currentSetupHelper);
-                if(weapon != nullptr){
-                    outweapons.push_back(weapon);
-                }
+        for (int i = 0; i < vec.size(); i++){
+            weaponSetupHelper &currentSetupHelper = vec[i];
+            if(Aweapon *weapon = SpawnWeaponWithAttachments(&currentSetupHelper, world)){
+                outweapons.push_back(weapon);
             }
         }
     }
     return outweapons;
+}
+
+Aweapon *LoadoutHelper::SpawnWeaponWithAttachments(
+    weaponSetupHelper *setup,
+    UWorld *world
+){
+    if(setup && world){
+        EntityManager *entityManagerPointer = AworldLevel::entityManager();
+        if(entityManagerPointer != nullptr){
+            Aweapon *weapon = entityManagerPointer->spawnAweapon(world, setup);
+            if(weapon != nullptr){
+                return weapon;
+            }
+        }
+    }
+    return nullptr;
 }
 
 /// @brief gets a weapon setup helper at some index (copy for ui init on start)

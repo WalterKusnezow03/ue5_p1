@@ -1,5 +1,5 @@
 #include "UiSimulation.h"
-#include "p2/ui/3Dui/HudUiActor.h"
+#include "p2/ui/3Dui/HUD/HudUiActor.h"
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 
 UiSimulation::UiSimulation(){
@@ -18,6 +18,8 @@ void UiSimulation::Notify(EUiEvent event, FString message){
     }
 }
 
+//deprecated, has 3D Widget iNtercation Component
+/*
 void UiSimulation::RayCast3DUi(
     UWorld *world, 
     const FVector &pos, 
@@ -49,6 +51,6 @@ void UiSimulation::RayCast3DUi(
             }
         }
     }
-}
+}*/
 
         
