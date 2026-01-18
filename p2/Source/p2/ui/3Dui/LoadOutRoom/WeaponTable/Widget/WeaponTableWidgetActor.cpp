@@ -144,7 +144,9 @@ void AWeaponTableWidgetActor::SetWeaponSetupHelperRefernce(weaponSetupHelper *se
 
 
 void AWeaponTableWidgetActor::NotifyWeaponSetupChange(){
-    if(parentActor){
+    DebugHelper::logMessage("AWeaponTableWidgetActor:: Notified change");
+    if (parentActor)
+    {
         parentActor->NotifyWeaponSetupChange();
     }
 }

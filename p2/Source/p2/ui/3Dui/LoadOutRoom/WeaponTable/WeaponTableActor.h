@@ -38,6 +38,11 @@ protected:
 
     AWeaponTableWidgetActor *tableWidgetActor = nullptr;
 
+    //socket
+    USceneComponent *socket = nullptr;
+    void FindSocketOnBeginPlay();
+    void ApplyWeaponLocation();
+
     //not known if has to be here 
     //Aweapon *attachedWeaponForPreview = nullptr;
 };

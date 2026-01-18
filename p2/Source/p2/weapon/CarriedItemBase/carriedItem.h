@@ -101,8 +101,8 @@ protected:
 	void showScreenMessage(FString s);
 
 	
-	template <typename T>
-	void findAllOfType(AActor &a, std::list<T *> &items);
+	//template <typename T>
+	//void findAllOfType(AActor &a, std::list<T *> &items);
 
 	MMatrix handAlignForwardRotationMatrix();
 

@@ -16,6 +16,8 @@ public:
         TArray<USceneComponent *> &container
     );
 
+    USceneComponent *FindExactChildByName(FString namepart); 
+
 
     template <typename T>
     void TFindAllChildsByName(FString name, TArray<T*> &outarray){

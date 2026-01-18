@@ -7,6 +7,7 @@ AWeaponTableActor::AWeaponTableActor() : Super() {
 
 void AWeaponTableActor::BeginPlay(){
     SpawnWidgetActorOnBeginPlay();
+    FindSocketOnBeginPlay();
 }
 
 void AWeaponTableActor::Tick(float deltatime){
@@ -15,16 +16,17 @@ void AWeaponTableActor::Tick(float deltatime){
 
 
 void AWeaponTableActor::NotifyWeaponSetupChange(){
+    DebugHelper::logMessage("AWeaponTableActor:: Notified change");
     
     //replace weapon
     if(weaponSpawned){
-        weaponSpawned->drop();
+        weaponSpawned->dropToObjectPool();
     }
     weaponSpawned = LoadoutHelper::SpawnWeaponWithAttachments(
         &setupHelper,
         GetWorld()
     );
-    
+    ApplyWeaponLocation();
 }
 
 void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index){
@@ -41,5 +43,18 @@ void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){
     if(tableWidgetActor){
         tableWidgetActor->SetParentActor(this);
         tableWidgetActor->SetWeaponSetupHelperRefernce(&setupHelper);
+    }
+}
+
+
+void AWeaponTableActor::FindSocketOnBeginPlay(){
+    if(!socket){
+        socket = FindExactChildByName("WeaponSocket");
+    }
+}
+
+void AWeaponTableActor::ApplyWeaponLocation(){
+    if(socket && weaponSpawned){
+        weaponSpawned->SetActorLocation(socket->GetComponentLocation()); //world
     }
 }

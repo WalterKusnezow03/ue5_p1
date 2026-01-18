@@ -164,49 +164,6 @@ void AcarriedItem::drop(){
 }
 
 
-template <typename T>
-void AcarriedItem::findAllOfType(AActor &a , std::list<T*> & items)
-{
-	//upper type bound must be set inside here if the class is not generic!
-	static_assert(std::is_base_of<UActorComponent, T>::value, "must be UActorComponent component");
-
-    //find other actors first and search inside
-    TArray<UChildActorComponent *> actors;
-    a.template GetComponents<UChildActorComponent>(actors);
-    if(actors.Num() > 0){
-        for (int i = 0; i < actors.Num(); i++){
-            AActor *a1 = actors[i]->GetChildActor();
-            if (a1)
-            {
-                findAllOfType<T>(*a1, items);
-            }
-        }
-    }
-
-    //then layer own
-	TArray<T *> array;
-	a.template GetComponents<T>(array); //only provided by aactor
-	if(array.Num() > 0){
-		for (int i = 0; i < array.Num(); i++){
-			items.push_back(array[i]);
-		}
-	}
-
-
-
-
-	/**
-	 * UObject
-		UActorComponent
-			USceneComponent
-				UPrimitiveComponent
-					UStaticMeshComponent
-					USkeletalMeshComponent
-	 */
-}
-
-
-
 
 
 

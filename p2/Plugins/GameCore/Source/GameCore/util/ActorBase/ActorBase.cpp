@@ -35,7 +35,21 @@ void AActorBase::FindAllChildsByName(
     
 }
 
-
+USceneComponent *AActorBase::FindExactChildByName(FString namepart){
+    TArray<USceneComponent *> components;
+    FindAllChilds(components);
+    for (int i = 0; i < components.Num(); i++)
+    {
+        if(components[i] != nullptr){
+            
+            FString currName = components[i]->GetName();
+            if(currName == namepart){
+                return components[i];
+            }
+        }
+    }
+    return nullptr;
+}
 
 void AActorBase::FindAllChilds(TArray<USceneComponent *> &components){
     TArray<USceneComponent *> raw;
@@ -59,7 +73,7 @@ void AActorBase::FindAllChilds(
         {
             if(USceneComponent *current = childs[i]){
                 container.Add(current);
-                
+                //recursive
                 FindAllChilds(current, container);
             }
         }
