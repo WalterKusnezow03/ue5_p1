@@ -79,10 +79,10 @@ public:
 
     void Tick(float deltatime);
 
-	
+protected:
 	
 
-protected:
+
 
     virtual bool OnCursorClick();
 

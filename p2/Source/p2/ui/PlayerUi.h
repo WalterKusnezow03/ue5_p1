@@ -111,5 +111,6 @@ protected:
 	ULoadoutScreen *loadoutScreen = nullptr;
 	UGameLaunchScreen *gameLaunchScreen = nullptr;
 
+	
 	virtual bool OnCursorClick() override;
 };

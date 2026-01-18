@@ -8,6 +8,10 @@ void AWeaponTableWidgetActor::BeginPlay(){
     Super::BeginPlay();
     EnableCollision(true);
     debugUiActorName = TEXT("AWeaponTableWidgetActor");
+
+    if(UWeaponTableWidget *inner = GetInnerWidget()){
+        inner->InitWidgets();
+    }
 }
 
 AWeaponTableWidgetActor *AWeaponTableWidgetActor::MakeInstance(
@@ -28,8 +32,10 @@ AWeaponTableWidgetActor *AWeaponTableWidgetActor::MakeInstance(
         SpawnClass = a->Find<Eui3DWidgetEnum, UClass>(Eui3DWidgetEnum::EWeaponTableWidget);
     }
     if(!SpawnClass){
+        DebugHelper::logMessage("AWeaponTableWidgetActor::BP NOT FOUND");
         return nullptr;
     }
+    DebugHelper::logMessage("AWeaponTableWidgetActor::BP FOUND");
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -43,7 +49,7 @@ AWeaponTableWidgetActor *AWeaponTableWidgetActor::MakeInstance(
 
     if (!spawned)
     {
-        DebugHelper::logMessage("AHudUiActor::MakeInstance - Spawn actor failed");
+        DebugHelper::logMessage("AWeaponTableWidgetActor::MakeInstance - Spawn actor failed");
         return nullptr;
     }
 
@@ -116,10 +122,14 @@ void AWeaponTableWidgetActor::CreateWidgetMeshData(){
         bMeshDataCreated = true;
 
         SetDrawSize(FVector2D(xMax, yMax));
+
+        ScaleMeshDataToDesiredScale();
     }
 }
 
-
+void AWeaponTableWidgetActor::ScaleMeshDataToDesiredScale(){
+    ScaleMeshDataToMaxCm(scaleCmMeshDataTargeted);
+}
 
 // --- main functions ---
 

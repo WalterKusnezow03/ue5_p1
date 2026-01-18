@@ -2,9 +2,29 @@
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "p2/player/playerScript.h"
 
+ALoadoutRoomActor *ALoadoutRoomActor::instance = nullptr;
+
+
+
+void ALoadoutRoomActor::CreateInstanceIfNeeded(AActor *actor){
+    if(actor){
+        CreateInstanceIfNeeded(actor->GetWorld());
+    }
+}
+
+void ALoadoutRoomActor::CreateInstanceIfNeeded(UWorld *world){
+    if(world && !instance){
+        //instance = MakeInstance(world); //not needed, is set in function
+        MakeInstance(world);
+    } 
+}
+
 
 ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
     
+    if(instance){
+        return instance;
+    }
 
     UClass *SpawnClass = nullptr;
     if(assetManager *a = assetManager::instance()){
@@ -16,7 +36,7 @@ ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector Location(0, 0, 0);
+    FVector Location(0, 0, -1000);
     ALoadoutRoomActor *spawned = world->SpawnActor<ALoadoutRoomActor>(
         SpawnClass,
         Location,
@@ -30,16 +50,22 @@ ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
         return nullptr;
     }
 
+    //save instance ptr, only one needed.
+    instance = spawned;
 
     return spawned;
 }
 
 
-
-
+void ALoadoutRoomActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    instance = nullptr;
+    Leave();
+    weaponTables.Empty();
+    Super::EndPlay(EndPlayReason);
+}
 
 ALoadoutRoomActor::ALoadoutRoomActor() : Super(){
-
+    //constructor
 }
 
 void ALoadoutRoomActor::BeginPlay(){
@@ -69,6 +95,22 @@ void ALoadoutRoomActor::FindActorsOnBeginPlay(){
 void ALoadoutRoomActor::Tick(float deltatime){
     Super::Tick(deltatime);
 }
+
+void ALoadoutRoomActor::StaticEnter(AActor *actor){
+    if(actor){
+        CreateInstanceIfNeeded(actor);
+        if(instance){
+            instance->Enter(actor);
+        }
+    }
+}
+
+void ALoadoutRoomActor::StaticLeave(){
+    if(instance){
+        instance->Leave();
+    }
+}
+
 
 void ALoadoutRoomActor::Enter(AActor *player){
     if(playerEntered){
@@ -103,19 +145,23 @@ void ALoadoutRoomActor::UpdatePlayerInventory(){
     */
    if(playerEntered && weaponTables.Num() > 0){
         if(AplayerScript *casted = Cast<AplayerScript>(playerEntered)){
-            
-            //update all loadout slots
-            for (int i = 0; i < weaponTables.Num(); i++){
-                if(AWeaponTableActor *current = weaponTables[i]){
-                    //get setup
-                    current->UpdateLoadoutWithInternalSetup(loadout, i);
-                }
-            }
-
+            UpdateLoadoutWithTableActors();
             casted->reloadLoadout(loadout);
         }
    }
 }
+
+void ALoadoutRoomActor::UpdateLoadoutWithTableActors(){
+    //update all loadout slots
+    for (int i = 0; i < weaponTables.Num(); i++){
+        if(AWeaponTableActor *current = weaponTables[i]){
+            //get setup
+            current->UpdateLoadoutWithInternalSetup(loadout, i);
+        }
+    }
+}
+
+
 
 void ALoadoutRoomActor::ResetPlayerLocation(){
     if(playerEntered){

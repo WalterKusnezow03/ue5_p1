@@ -1,6 +1,8 @@
 #include "CustomMeshUIActor.h" 
 
+#include "CoreMath/Matrix/MMatrix.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "DebugPlugin/DebugHelper.h"
  
 ACustomMeshUIActor::ACustomMeshUIActor() 
 { 
@@ -13,7 +15,7 @@ ACustomMeshUIActor::ACustomMeshUIActor()
     RootComponent = Widget;
     
     // Set scale to 0.5 on all axes 
-    Widget->SetWorldScale3D(FVector(0.5f, 0.5f, 0.5f)); 
+    //Widget->SetWorldScale3D(FVector(0.5f, 0.5f, 0.5f)); 
  
     Widget->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); 
     Widget->SetCollisionResponseToAllChannels(ECR_Ignore); 
@@ -44,6 +46,38 @@ void ACustomMeshUIActor::BeginPlay()
 void ACustomMeshUIActor::SetWidgetClassOnBeginPlay(){
     SetWidgetClass(CurrentWidgetClass);
 }
+
+void ACustomMeshUIActor::ScaleMeshDataToMaxCm(float scaleTargetIn){
+    if(Widget){
+        MeshData &data = Widget->GetMeshDataRef();
+        data.RebuildBounds();
+
+        float cmCurrent = data.extent().Size();
+        DebugHelper::logMessage("ACustomMeshUIActor::ScaleTo (cmCurrent: ", cmCurrent);
+        DebugHelper::logMessage("ACustomMeshUIActor::ScaleTo (target: ", scaleTargetIn);
+
+        if(cmCurrent < 0.1f){
+            cmCurrent = 1;
+        }
+
+        // scalar = distTarget / distAll
+        float scalar = scaleTargetIn / cmCurrent;
+
+        MMatrix scale;
+        scale.scaleUniform(scalar);
+        DebugHelper::logMessage(FString::Printf(TEXT("ACustomMeshUIActor::ScaleTo (scalar: %.2f"), scalar));
+
+        data.transformAllVertecies(scale);
+
+
+        //print after scale
+        data.RebuildBounds();
+        cmCurrent = data.extent().Size();
+        DebugHelper::logMessage("ACustomMeshUIActor::ScaleTo (cm after scale: ", cmCurrent);
+    }
+}
+
+
 
 void ACustomMeshUIActor::CreateWidgetMeshData(){
     if(!bMeshDataCreated && Widget){

@@ -45,7 +45,9 @@
 
 #include "AnyMeshWidgetComponent.generated.h"
 
-
+/// @brief Will allow to have ANY meshdata on the widget, still with proper hit
+/// and uv / screenpos hits, to dispatch to the widget.
+/// Allows any meshdata beyond default plane and cylinder !
 UCLASS(Blueprintable, ClassGroup="UserInterface", hidecategories=(Object,Activation,"Components|Activation",Sockets,Base,Lighting,LOD,Mesh), editinlinenew, meta=(BlueprintSpawnableComponent) )
 class GAMECORE_API UAnyMeshWidgetComponent : public UWidgetComponent
 //UWidgetComponentCustom
@@ -93,8 +95,9 @@ protected:
 
     void CreateMaterial();
 
+    FVector2D ToScreenUV(const FVector2D &other);
     FVector2D WidgetScreenPosition(
-        const FVector2D &uv
+        FVector2D uv
     );
 
     void UpdateBodySetupOverride(); //copied defintion from source

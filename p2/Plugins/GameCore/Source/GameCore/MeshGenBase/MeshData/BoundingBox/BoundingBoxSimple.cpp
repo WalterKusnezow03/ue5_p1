@@ -32,6 +32,12 @@ BoundingBoxSimple::~BoundingBoxSimple(){
 
 }
 
+void BoundingBoxSimple::RebuildBounds(TArray<FVector> &vertecies){
+    bottomLeftNear = FVector(0, 0, 0);
+    topRightLeft = FVector(0, 0, 0);
+    updateBoundsIfNeeded(vertecies);
+}
+
 void BoundingBoxSimple::updateBoundsIfNeeded(TArray<FVector> &vertecies){
     for (int i = 0; i < vertecies.Num(); i++){
         updateBoundsIfNeeded(vertecies[i]);

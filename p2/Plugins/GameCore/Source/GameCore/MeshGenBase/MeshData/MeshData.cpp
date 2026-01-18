@@ -449,7 +449,7 @@ void MeshData::transformAllVertecies(MMatrix &other){
         normals[i] = M_inverse * normals[i];
     }
 
-    updateBoundsIfNeeded();
+    RebuildBounds();
 }
 
 
@@ -1946,6 +1946,14 @@ void MeshData::updateBoundsIfNeeded(FVector &other){
     bounds.updateBoundsIfNeeded(other);
 }
 
+void MeshData::RebuildBounds(){
+    bounds.RebuildBounds(vertecies);
+}
+
+
+
+
+
 ///@brief checks if a vertex is inside the bounding box, NOT allowing edge cases!
 bool MeshData::isInsideBoundingbox(FVector &other){
     return bounds.isInsideBoundingbox(other);
@@ -2244,6 +2252,37 @@ FVector2D MeshData::FindAverageUVFrom(
     int32 v2 = -1;
     frame.CopyIdentifier(v0,v1,v2);
     if(isValidUVIndex(v0,v1,v2) && isValidVertexIndex(v0,v1,v2)){
+        
+        const FVector &A = vertecies[v0];
+        const FVector &B = vertecies[v1];
+        const FVector &C = vertecies[v2];
+
+        // Barycentrische Koordinaten berechnen
+        FVector vertex0 = B - A;
+        FVector vertex1 = C - A;
+        FVector vertex2 = intersectPoint - A;
+
+        float d00 = FVector::DotProduct(vertex0, vertex0);
+        float d01 = FVector::DotProduct(vertex0, vertex1);
+        float d11 = FVector::DotProduct(vertex1, vertex1);
+        float d20 = FVector::DotProduct(vertex2, vertex0);
+        float d21 = FVector::DotProduct(vertex2, vertex1);
+
+        float denom = d00 * d11 - d01 * d01;
+        if(denom == 0.0f)
+            return FVector2D(0,0);
+
+        float v = (d11 * d20 - d01 * d21) / denom;
+        float w = (d00 * d21 - d01 * d20) / denom;
+        float u = 1.0f - v - w;
+
+        // UV baryzentrisch interpolieren
+        return UV0[v0] * u + UV0[v1] * v + UV0[v2] * w;
+
+
+
+
+        /*
         float distA = FVector::DistSquared(intersectPoint, vertecies[v0]);
         float distB = FVector::DistSquared(intersectPoint, vertecies[v1]);
         float distC = FVector::DistSquared(intersectPoint, vertecies[v2]);
@@ -2253,12 +2292,16 @@ FVector2D MeshData::FindAverageUVFrom(
             distB = 1.0f - (distB / sum);
             distC = 1.0f - (distC / sum);
 
+            distA /= 3.0f;
+            distB /= 3.0f;
+            distC /= 3.0f;
+
             FVector2D result =
                 UV0[v0] * distA +
                 UV0[v1] * distB +
                 UV0[v2] * distC;
             return result;
-        }
+        }*/
     }
     return FVector2D(0,0);
 }

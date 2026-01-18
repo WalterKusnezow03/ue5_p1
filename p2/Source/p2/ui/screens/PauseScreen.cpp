@@ -16,7 +16,7 @@ void UPauseScreen::CreateLayoutOnInit(){
     createMenu();
     createButtons();
 
-    debug();
+    //debug();
     debugCreateGameLaunchButton();
 }
 

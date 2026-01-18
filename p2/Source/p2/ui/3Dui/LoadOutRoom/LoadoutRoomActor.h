@@ -11,23 +11,33 @@ UCLASS()
 class P2_API ALoadoutRoomActor : public AActorBase {
     GENERATED_BODY()
 
+protected:
+    static ALoadoutRoomActor *instance;
+
 public:
     static ALoadoutRoomActor *MakeInstance(UWorld *world);
 
     ALoadoutRoomActor();
 
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
 
     void Enter(AActor *actor);
     void Leave();
 
+    static void StaticEnter(AActor *actor);
+    static void StaticLeave();
 
     //methods for Widget Actor Tables to call
 
 
 protected:
+    static void CreateInstanceIfNeeded(AActor *actor);
+    static void CreateInstanceIfNeeded(UWorld *world);
+
     void FindActorsOnBeginPlay();
+    void UpdateLoadoutWithTableActors();
 
     void UpdatePlayerInventory();
     void ResetPlayerLocation();
@@ -35,10 +45,11 @@ protected:
     void TriggerEnteredAnimation();
     void TriggerLeaveAnimation();
     
-    
+
     FVector enteredLocation;
     AActor *playerEntered = nullptr;
 
     LoadoutHelper loadout;
+
     TArray<AWeaponTableActor *> weaponTables;
 };

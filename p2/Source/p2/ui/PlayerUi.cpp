@@ -9,6 +9,9 @@
 #include "p2/ui/screens/PlayerHud.h"
 #include "p2/ui/screens/loadout/LoadoutScreen.h"
 
+#include "p2/player/playerScript.h"
+#include "p2/ui/3Dui/LoadOutRoom/LoadoutRoomActor.h"
+
 #include "p2/entityManager/referenceManager.h"
 
 UPlayerUi *UPlayerUi::instancePtr = nullptr;
@@ -139,6 +142,19 @@ void UPlayerUi::openGameScreen(){
 }
 
 void UPlayerUi::openLoadoutScreen(){
+
+    
+
+    if(referenceManager* r = referenceManager::instance()){
+        AplayerScript *player = r->getPlayerPointer();
+        if(player){
+            ALoadoutRoomActor::StaticEnter(player);
+            openGameScreen(); //close ui
+        }
+        return;
+    }
+
+    //deprecated
     if(screenSwitchAllowed()){
         //if(playerHud){
         //    playerHud->SetVisible(false);

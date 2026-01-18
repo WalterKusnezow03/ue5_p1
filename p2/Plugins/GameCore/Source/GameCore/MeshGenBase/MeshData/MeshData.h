@@ -332,6 +332,8 @@ public:
 	/// @brief update the bounding box if vertex data was manipulated used externally
 	void updateBoundsIfNeeded();
 
+	void RebuildBounds();
+
 protected:
 	/// @brief finds all indices connected in the triangle buffer to this index and
 	/// pushed into the output vector

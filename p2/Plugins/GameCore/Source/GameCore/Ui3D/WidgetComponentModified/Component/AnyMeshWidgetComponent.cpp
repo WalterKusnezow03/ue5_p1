@@ -75,10 +75,17 @@ bool UAnyMeshWidgetComponent::RayIntersect(
 		localDirection,
 		outIntersectHitResult
 	)){*/
-		DebugHelper::logMessage("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!");
+		DebugHelper::logMessage(
+			FString::Printf(
+				TEXT("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!, %.2f %.2f"),
+				outIntersectHitResult.hitUV.X,
+				outIntersectHitResult.hitUV.Y
+			)
+		);
 
 		//create screen coordinate from UV
-		FVector2D screen = WidgetScreenPosition(outIntersectHitResult.hitUV);
+		FVector2D fixedUv = outIntersectHitResult.hitUV; //= ToScreenUV(outIntersectHitResult.hitUV);
+		FVector2D screen = WidgetScreenPosition(fixedUv);
 		// dispatch click to widget
 		if(UWidget *w = GetWidget()){
 			//cast or click dispatcher
@@ -91,9 +98,34 @@ bool UAnyMeshWidgetComponent::RayIntersect(
 	return false;
 }
 
+
+//if the triangle buffer is set up as 0,1,2 and the uvs with 0,0 at 0,
+//flip the uv to screen coordonate as followed:
+FVector2D UAnyMeshWidgetComponent::ToScreenUV(const FVector2D &other){
+	/*
+	//flip uv vertical axis
+		/ *
+		meshdata
+		1  2
+		0  3
+
+		screen uv
+		0  1
+		2  3
+		* /
+		uv.Y = 1.0 - uv.Y;
+
+	*/
+	FVector2D copy = other;
+	copy.Y = 1.0f - other.Y;
+	return copy;
+}
+
 FVector2D UAnyMeshWidgetComponent::WidgetScreenPosition(
-    const FVector2D &uv
+    FVector2D uv
 ){
+	
+	//calculate screen pos
 	FVector2D WidgetSize = GetDrawSize();
 	FVector2D Pivot = GetPivot();
 
@@ -101,10 +133,10 @@ FVector2D UAnyMeshWidgetComponent::WidgetScreenPosition(
 		uv.X * WidgetSize.X,
 		uv.Y * WidgetSize.Y
 	);
-	Pixel += Pivot;//in screen or uv space? Debug needed!
+	//Pixel += Pivot;//in screen or uv space? Debug needed!
 
-	Pixel.X = FMath::Clamp(Pixel.X, 0.f, WidgetSize.X);
-	Pixel.Y = FMath::Clamp(Pixel.Y, 0.f, WidgetSize.Y);
+	Pixel.X = FMath::Clamp(Pixel.X, 0.0f, WidgetSize.X);
+	Pixel.Y = FMath::Clamp(Pixel.Y, 0.0f, WidgetSize.Y);
 	return Pixel;
 }
 

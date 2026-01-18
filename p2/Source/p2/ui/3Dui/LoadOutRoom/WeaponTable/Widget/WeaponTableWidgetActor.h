@@ -35,7 +35,12 @@ public:
 
     void SetParentActor(AWeaponTableActor *parent);
 
+    UPROPERTY(EditAnywhere, Category = "WidgetScaleSetup")
+    float scaleCmMeshDataTargeted = 300.0f;
+
 protected:
+    void ScaleMeshDataToDesiredScale();
+
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
@@ -46,6 +51,7 @@ protected:
 
 
     AWeaponTableActor *parentActor = nullptr;
+
 
 private:
 

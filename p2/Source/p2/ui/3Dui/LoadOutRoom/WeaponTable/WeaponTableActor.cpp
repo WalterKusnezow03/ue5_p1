@@ -5,16 +5,8 @@ AWeaponTableActor::AWeaponTableActor() : Super() {
     
 }
 
-
-///// MAKE INSTANCE METHOD NEEDED
-
-
-
 void AWeaponTableActor::BeginPlay(){
-    SpawnWidgetOnBeginPlay();
-    if(tableWidgetActor){
-        tableWidgetActor->SetWeaponSetupHelperRefernce(&setupHelper);
-    }
+    SpawnWidgetActorOnBeginPlay();
 }
 
 void AWeaponTableActor::Tick(float deltatime){
@@ -40,7 +32,7 @@ void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int i
 }
 
 
-void AWeaponTableActor::SpawnWidgetOnBeginPlay(){
+void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){
     tableWidgetActor = AWeaponTableWidgetActor::MakeInstance(
         GetWorld(), 
         RootComponent, //must be replaced
@@ -48,5 +40,6 @@ void AWeaponTableActor::SpawnWidgetOnBeginPlay(){
     );
     if(tableWidgetActor){
         tableWidgetActor->SetParentActor(this);
+        tableWidgetActor->SetWeaponSetupHelperRefernce(&setupHelper);
     }
 }

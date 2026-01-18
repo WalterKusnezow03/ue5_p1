@@ -3,7 +3,10 @@
 
 
 
-UWidget* ClickDispatcher::DispatchWithResult(UWidget *widget, FVector2D &mousePos){
+
+
+// --- recursive ---
+UWidget* ClickDispatcher::DispatchWithResult(UWidget *widget, const FVector2D &mousePos){
     if(widget){
         if(widget){
             DebugHelper::logMessage("ClickDispatcher:: Try Dispatch B");
@@ -47,20 +50,12 @@ UWidget* ClickDispatcher::DispatchWithResult(UWidget *widget, FVector2D &mousePo
 
 
 
-
-
-
-
-
-
-
-
 bool ClickDispatcher::Dispatch(UWidget *widget){
     FVector2D mousePos = FSlateApplication::Get().GetCursorPos();
     return Dispatch(widget, mousePos);
 }
 
-bool ClickDispatcher::Dispatch(UWidget *widget, FVector2D &mousePos){
+bool ClickDispatcher::Dispatch(UWidget *widget, const FVector2D &mousePos){
     DebugHelper::logMessage("ClickDispatcher:: Try Dispatch A");
 
     return DispatchWithResult(widget, mousePos) != nullptr;
@@ -72,7 +67,7 @@ bool ClickDispatcher::IsVisible(UWidget *widget){
 
 
 
-UWidget* ClickDispatcher::DispatchWithResult(TArray<UWidget *> &widgets, FVector2D &mousePos){
+UWidget* ClickDispatcher::DispatchWithResult(TArray<UWidget *> &widgets, const FVector2D &mousePos){
     UWidget *result = nullptr;
     for (int i = 0; i < widgets.Num(); i++)
     {
@@ -84,24 +79,23 @@ UWidget* ClickDispatcher::DispatchWithResult(TArray<UWidget *> &widgets, FVector
     return result;
 }
 
-bool ClickDispatcher::Dispatch(TArray<UWidget*> &widgets, FVector2D &mousePos){
+bool ClickDispatcher::Dispatch(TArray<UWidget*> &widgets, const FVector2D &mousePos){
 
     return DispatchWithResult(widgets, mousePos) != nullptr;
 }
 
 
-bool ClickDispatcher::InBound(UWidget* widget, FVector2D &mousePos){
+bool ClickDispatcher::InBound(UWidget* widget, const FVector2D &mousePos){
     if(widget){
         const FGeometry& Geo = widget->GetCachedGeometry();
 
         FVector2D LocalPos = Geo.AbsoluteToLocal(mousePos);
 
-        if (LocalPos.X >= 0 && LocalPos.Y >= 0 &&
+        if (LocalPos.X >= 0.0f && LocalPos.Y >= 0.0f &&
             LocalPos.X <= Geo.GetLocalSize().X &&
             LocalPos.Y <= Geo.GetLocalSize().Y)
         {
             // Hit
-
             return true;
         }
     }

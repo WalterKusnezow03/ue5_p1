@@ -12,6 +12,7 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
 #include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
+#include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 
 
 /*
@@ -37,6 +38,7 @@ void P2AssetLoader::LoadGameAssets(){
     loadThrowables();
     loadParticles();
     loadTextures();
+    loadLoadoutRoomAssets();
     load3DWidgets();
 }
 
@@ -304,7 +306,14 @@ void P2AssetLoader::loadTextures(){
 }
 
 
-
+void P2AssetLoader::loadLoadoutRoomAssets(){
+    AssetLoader::LoadAndSaveAssetToManager<EGameActorEnum, UClass>(
+        EGameActorEnum::ELoadoutRoom, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/Loadout",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Loadoutroombp"                   // Just the file name as displayed
+    );
+}
 
 
 void P2AssetLoader::load3DWidgets(){
@@ -322,6 +331,15 @@ void P2AssetLoader::load3DWidgets(){
         "Game",                  // like "Game" for game or any other plugin name
         "Prefabs/ui3D",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "hudUi3DBP"           // Just the file name as displayed
+    );
+
+
+
+    AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
+        Eui3DWidgetEnum::EWeaponTableWidget, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/ui3D/weapon3Dui",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "WeaponTableUiActor"           // Just the file name as displayed
     );
 
 }

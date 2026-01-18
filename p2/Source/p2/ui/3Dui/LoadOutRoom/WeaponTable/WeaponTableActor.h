@@ -10,7 +10,7 @@
 
 //spawns widget on its own
 UCLASS()
-class P2_API AWeaponTableActor : public ACustomMeshUIActor {
+class P2_API AWeaponTableActor : public AActorBase {
     GENERATED_BODY()
 
 public:
@@ -27,8 +27,8 @@ public:
     void UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index);
 
 protected:
-    void SpawnWidgets();
-    void SpawnWidgetOnBeginPlay();
+    
+    void SpawnWidgetActorOnBeginPlay();
 
 
 

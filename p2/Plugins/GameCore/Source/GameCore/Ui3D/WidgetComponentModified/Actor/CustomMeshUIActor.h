@@ -11,7 +11,7 @@
 #include "CustomMeshUIActor.generated.h"
 
 /**
- * UI Actor that contains a 3D Widget Component with dynamic class changing and generic getter
+ * UI Actor that contains a Dynamic Mesh 3D Widget Component 
  */
 UCLASS()
 class GAMECORE_API ACustomMeshUIActor : public AActor 
@@ -39,6 +39,8 @@ public:
 	FString GetDebugName(){
 		return debugUiActorName;
 	}
+
+	void ScaleMeshDataToMaxCm(float num);
 
 protected:
 	//property for debug

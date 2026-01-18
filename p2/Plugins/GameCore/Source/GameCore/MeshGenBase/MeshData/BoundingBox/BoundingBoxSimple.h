@@ -25,6 +25,8 @@ public:
     void updateBoundsIfNeeded(TArray<FVector> &vertecies);
     void updateBoundsIfNeeded(FVector &other);
 
+    void RebuildBounds(TArray<FVector> &vertecies);
+
     bool isInsideBoundingbox(FVector &other);
 
     FString ToString();
