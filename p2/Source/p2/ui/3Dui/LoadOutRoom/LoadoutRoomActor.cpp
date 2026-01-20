@@ -1,19 +1,28 @@
 #include "LoadoutRoomActor.h"
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "p2/player/playerScript.h"
+#include "p2/ui/3Dui/LoadOutRoom/ExitActor/LoadoutRoomExitButtonActor.h"
 
 ALoadoutRoomActor *ALoadoutRoomActor::instance = nullptr;
 
 
 
 void ALoadoutRoomActor::CreateInstanceIfNeeded(AActor *actor){
+    if(instance){
+        DebugHelper::logMessage("ALoadoutRoomActor Already has instance");
+        return;
+    }
     if(actor){
         CreateInstanceIfNeeded(actor->GetWorld());
     }
 }
 
 void ALoadoutRoomActor::CreateInstanceIfNeeded(UWorld *world){
-    if(world && !instance){
+    if(instance){
+        return;
+    }
+
+    if(world){
         //instance = MakeInstance(world); //not needed, is set in function
         MakeInstance(world);
     } 
@@ -36,7 +45,7 @@ ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector Location(0, 0, -1000);
+    FVector Location(-10000, -10000, 0);
     ALoadoutRoomActor *spawned = world->SpawnActor<ALoadoutRoomActor>(
         SpawnClass,
         Location,
@@ -52,20 +61,34 @@ ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
 
     //save instance ptr, only one needed.
     instance = spawned;
-
+    DebugHelper::logMessage("ALoadoutRoomActor made instance");
     return spawned;
 }
 
 
 void ALoadoutRoomActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    instance = nullptr;
+    
     Leave();
-    weaponTables.Empty();
+    ClearReferences();
+    instance = nullptr;
     Super::EndPlay(EndPlayReason);
 }
 
+void ALoadoutRoomActor::ClearReferences(){
+    if(exitButton){
+        exitButton->ClearParentActor();
+    }
+    weaponTables.Empty();
+}
+
+
+
 ALoadoutRoomActor::ALoadoutRoomActor() : Super(){
     //constructor
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it. 
+    PrimaryActorTick.bCanEverTick = true; 
+    PrimaryActorTick.bTickEvenWhenPaused = true; 
+ 
 }
 
 void ALoadoutRoomActor::BeginPlay(){
@@ -77,23 +100,33 @@ void ALoadoutRoomActor::FindActorsOnBeginPlay(){
     weaponTables.Empty();
     TArray<UChildActorComponent *> Childs;
     TFindAllChildsByType<UChildActorComponent>(Childs);
-    for (int i = 0; i < Childs.Num(); i++){
-        if(UChildActorComponent *current = Childs[i]){
-            if(AActor *parent = current->GetChildActor()){
-                if(AWeaponTableActor *castedcurrent = Cast<AWeaponTableActor>(parent)){
+    TArray<AActor *> actors = ExtractActorsFromChildActorComponents(Childs);
+    ProcessFoundActors(actors);
+}
+
+void ALoadoutRoomActor::ProcessFoundActors(TArray<AActor*> &actors){
+    for (int i = 0; i < actors.Num(); i++){
+        if(AActor *current = actors[i]){
+            if(AWeaponTableActor *castedcurrent = Cast<AWeaponTableActor>(current)){
+                if(!weaponTables.Contains(castedcurrent)){
                     weaponTables.Add(castedcurrent);
+                }
+            }
+
+            //setup exit button, reference not needed
+            if(!exitButton){
+                if(ALoadoutRoomExitButtonActor *exitCasted = Cast<ALoadoutRoomExitButtonActor>(current)){
+                    exitCasted->SetParentActor(this);
+                    exitButton = exitCasted;
                 }
             }
         }
     }
 }
 
-
-
-
-
 void ALoadoutRoomActor::Tick(float deltatime){
     Super::Tick(deltatime);
+
 }
 
 void ALoadoutRoomActor::StaticEnter(AActor *actor){
@@ -121,6 +154,12 @@ void ALoadoutRoomActor::Enter(AActor *player){
         playerEntered = player;
         playerEntered->SetActorLocation(GetActorLocation());
         TriggerEnteredAnimation();
+
+
+        logMessage("ALoadoutRoomActor::Entered Locaiton", enteredLocation);
+
+        FVector debug = GetActorLocation();
+        logMessage("ALoadoutRoomActor::Room Locaiton", debug);
     }
 }
 
@@ -131,6 +170,30 @@ void ALoadoutRoomActor::Leave(){
         TriggerLeaveAnimation();
     }
 }
+
+void ALoadoutRoomActor::showScreenMessage(FString message, FColor color){
+    message += "-";
+    message += GetActorLabel();
+    DebugHelper::showScreenMessage(message, color);
+}
+
+void ALoadoutRoomActor::logMessage(FString message){
+    message += "-";
+    message += GetActorLabel();
+    DebugHelper::logMessage(message);
+}
+
+void ALoadoutRoomActor::logMessage(FString message, FVector pos){
+    message += FString::Printf(TEXT("(%.2f, %.2f, %.2f)"), pos.X, pos.Y, pos.Z);
+    message += "-";
+    message += GetActorLabel();
+    DebugHelper::logMessage(message);
+}
+
+
+
+
+
 
 void ALoadoutRoomActor::UpdatePlayerInventory(){
     /*
@@ -143,7 +206,7 @@ void ALoadoutRoomActor::UpdatePlayerInventory(){
         }
     }
     */
-   if(playerEntered && weaponTables.Num() > 0){
+   if(playerEntered){
         if(AplayerScript *casted = Cast<AplayerScript>(playerEntered)){
             UpdateLoadoutWithTableActors();
             casted->reloadLoadout(loadout);
@@ -163,19 +226,27 @@ void ALoadoutRoomActor::UpdateLoadoutWithTableActors(){
 
 
 
+
+
+
 void ALoadoutRoomActor::ResetPlayerLocation(){
     if(playerEntered){
-        playerEntered->SetActorLocation(enteredLocation);
+        enteredLocation += FVector(0, 0, 200);
+        //playerEntered->SetActorLocation(enteredLocation);
+        playerEntered->SetActorLocation(enteredLocation + FVector(0,0,20),
+                                false, 
+                                nullptr, 
+                                ETeleportType::TeleportPhysics);
         playerEntered = nullptr;
     }
 }
 
 
 
-
 void ALoadoutRoomActor::TriggerEnteredAnimation(){
 
 }
+
 void ALoadoutRoomActor::TriggerLeaveAnimation(){
 
 }

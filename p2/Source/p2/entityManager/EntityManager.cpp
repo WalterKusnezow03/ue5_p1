@@ -114,7 +114,7 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
 void EntityManager::add(Aweapon *weaponIn){
     
     if(weaponIn != nullptr){
-        FVector hiddenLocation = FVector(0, 0, -1000);
+        FVector hiddenLocation = FVector(0, 0, -10000);
         weaponIn->SetActorLocation(hiddenLocation);
 
 

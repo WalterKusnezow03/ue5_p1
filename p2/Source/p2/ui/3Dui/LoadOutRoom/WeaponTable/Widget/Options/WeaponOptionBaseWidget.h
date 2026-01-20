@@ -10,6 +10,9 @@
 
 #include "WeaponOptionBaseWidget.generated.h"
 
+
+class UBorder;
+
 /// @brief base widget for weapon attachment selection and weapon type
 UCLASS()
 class P2_API UWeaponOptionBaseWidget : public UUserWidget{

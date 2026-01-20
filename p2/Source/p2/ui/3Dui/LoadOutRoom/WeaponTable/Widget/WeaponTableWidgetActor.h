@@ -21,7 +21,7 @@ public:
         FVector relativeLocation
     );
 
-    void AttachToScene(USceneComponent *camera);
+    void AttachToScene(USceneComponent *scene);
 
     //does allow 3D interaction.
     virtual bool AllowRayIntersectInteraction() override{

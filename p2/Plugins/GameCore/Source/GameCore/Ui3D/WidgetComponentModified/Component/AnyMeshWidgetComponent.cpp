@@ -22,6 +22,9 @@ void UAnyMeshWidgetComponent::BeginPlay(){
 			MaterialInstance = UMaterialInstanceDynamic::Create(BaseMat, this);
 		}
 	}
+
+	//WidgetComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); // dein Channel
+	SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); // dein Channel
 }
 
 void UAnyMeshWidgetComponent::TickComponent(

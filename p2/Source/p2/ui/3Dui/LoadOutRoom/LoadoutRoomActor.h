@@ -4,6 +4,7 @@
 #include "GameCore/util/ActorBase/ActorBase.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/WeaponTableActor.h"
+#include "p2/ui/3Dui/LoadOutRoom/ExitActor/LoadoutRoomExitButtonActor.h"
 
 #include "LoadoutRoomActor.generated.h"
 
@@ -37,10 +38,12 @@ protected:
     static void CreateInstanceIfNeeded(UWorld *world);
 
     void FindActorsOnBeginPlay();
+    void ProcessFoundActors(TArray<AActor *> &actors);
     void UpdateLoadoutWithTableActors();
 
     void UpdatePlayerInventory();
     void ResetPlayerLocation();
+    
 
     void TriggerEnteredAnimation();
     void TriggerLeaveAnimation();
@@ -48,8 +51,19 @@ protected:
 
     FVector enteredLocation;
     AActor *playerEntered = nullptr;
-
+    
     LoadoutHelper loadout;
 
+    UPROPERTY()
     TArray<AWeaponTableActor *> weaponTables;
+
+    UPROPERTY()
+    ALoadoutRoomExitButtonActor *exitButton = nullptr;
+
+    void ClearReferences();
+
+    //debug
+    void logMessage(FString message);
+    void logMessage(FString message, FVector pos);
+    void showScreenMessage(FString message, FColor color);
 };

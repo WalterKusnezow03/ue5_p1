@@ -80,7 +80,7 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
     }
     if(UWorld *world = GetWorld()){
 
-        FVector start = origin + direction.GetSafeNormal() * 50.0f; //50cm
+        FVector start = origin + direction.GetSafeNormal() * 10.0f; //50cm
         FVector end = origin + direction.GetSafeNormal() * 5000.0f; //50 * 100 = 50m
 
         // Perform the raycast
@@ -91,7 +91,9 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
         }
         Params.bTraceComplex = false; //new lower complexity
 
-        bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility, Params);
+        //Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
+        
+        bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_GameTraceChannel1, Params);
 
         
 
@@ -114,7 +116,7 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
                     DebugHelper::showLineBetween(GetWorld(), start, end, FColor::Red);
                     return true;
                 }else{
-                    DebugHelper::showLineBetween(GetWorld(), start, end, FColor::Blue);
+                    DebugHelper::showLineBetween(GetWorld(), start, HitResult.ImpactPoint, FColor::Blue);
                 }
             }
         }

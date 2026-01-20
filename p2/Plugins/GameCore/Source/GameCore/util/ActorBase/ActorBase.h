@@ -1,6 +1,8 @@
 #pragma once  
 #include "CoreMinimal.h" 
 #include "GameCore/util/AActorUtil.h"
+#include "DebugPlugin/DebugHelper.h"
+
 #include "ActorBase.generated.h"  
 
 UCLASS() 
@@ -58,21 +60,24 @@ public:
         TArray<USceneComponent *> raw;
         FindAllChilds(raw);
 
-        TArray<T *> casted;
         for (int i = 0; i < raw.Num(); i++){
             if(USceneComponent *current = raw[i]){
                 if(T *currentCasted = Cast<T>(current)){
-                    casted.Add(currentCasted);
+                    container.Add(currentCasted);
                 }
             }
         }
     }
 
-
     void FindAllChilds(TArray<USceneComponent *> &container);
     void FindAllChilds(
         USceneComponent *comp,
         TArray<USceneComponent *> &container
+    );
+
+
+    TArray<AActor*> ExtractActorsFromChildActorComponents(
+        TArray<UChildActorComponent*> &array
     );
 
 private:

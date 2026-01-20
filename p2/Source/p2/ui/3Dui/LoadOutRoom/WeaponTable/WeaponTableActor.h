@@ -14,6 +14,9 @@ class P2_API AWeaponTableActor : public AActorBase {
     GENERATED_BODY()
 
 public:
+    UPROPERTY(EditAnywhere, Category="WidgetSetting")
+    FVector localLocationWidget = FVector(100, 0, 100);
+
     AWeaponTableActor();
     
 
@@ -38,10 +41,14 @@ protected:
 
     AWeaponTableWidgetActor *tableWidgetActor = nullptr;
 
-    //socket
-    USceneComponent *socket = nullptr;
+    //widget socket
+    USceneComponent *widgetSocket = nullptr;
+
+    //weapon socket
+    USceneComponent *weaponsocket = nullptr;
     void FindSocketOnBeginPlay();
     void ApplyWeaponLocation();
+    void DropAndRespawnWeapon();
 
     //not known if has to be here 
     //Aweapon *attachedWeaponForPreview = nullptr;

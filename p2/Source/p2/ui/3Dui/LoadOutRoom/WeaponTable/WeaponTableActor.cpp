@@ -6,8 +6,8 @@ AWeaponTableActor::AWeaponTableActor() : Super() {
 }
 
 void AWeaponTableActor::BeginPlay(){
-    SpawnWidgetActorOnBeginPlay();
     FindSocketOnBeginPlay();
+    SpawnWidgetActorOnBeginPlay();
 }
 
 void AWeaponTableActor::Tick(float deltatime){
@@ -17,17 +17,27 @@ void AWeaponTableActor::Tick(float deltatime){
 
 void AWeaponTableActor::NotifyWeaponSetupChange(){
     DebugHelper::logMessage("AWeaponTableActor:: Notified change");
-    
+
+    DropAndRespawnWeapon();
+    ApplyWeaponLocation();
+}
+
+void AWeaponTableActor::DropAndRespawnWeapon(){
     //replace weapon
     if(weaponSpawned){
+        weaponSpawned->SetActorEnableCollision(true);
         weaponSpawned->dropToObjectPool();
     }
     weaponSpawned = LoadoutHelper::SpawnWeaponWithAttachments(
         &setupHelper,
         GetWorld()
     );
-    ApplyWeaponLocation();
+    if(weaponSpawned){
+        weaponSpawned->SetActorEnableCollision(false);
+    }
 }
+
+
 
 void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index){
     ref.replace(index, setupHelper);
@@ -37,8 +47,8 @@ void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int i
 void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){
     tableWidgetActor = AWeaponTableWidgetActor::MakeInstance(
         GetWorld(), 
-        RootComponent, //must be replaced
-        FVector(-100, 0, 50)
+        widgetSocket, //must be replaced
+        localLocationWidget
     );
     if(tableWidgetActor){
         tableWidgetActor->SetParentActor(this);
@@ -48,13 +58,16 @@ void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){
 
 
 void AWeaponTableActor::FindSocketOnBeginPlay(){
-    if(!socket){
-        socket = FindExactChildByName("WeaponSocket");
+    if(!weaponsocket){
+        weaponsocket = FindExactChildByName("WeaponSocket");
+    }
+    if(!widgetSocket){
+        widgetSocket = FindExactChildByName("WidgetSocket");
     }
 }
 
 void AWeaponTableActor::ApplyWeaponLocation(){
-    if(socket && weaponSpawned){
-        weaponSpawned->SetActorLocation(socket->GetComponentLocation()); //world
+    if(weaponsocket && weaponSpawned){
+        weaponSpawned->SetActorLocation(weaponsocket->GetComponentLocation()); //world
     }
 }

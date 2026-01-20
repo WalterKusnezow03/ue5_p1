@@ -80,3 +80,21 @@ void AActorBase::FindAllChilds(
     }
         
 }
+
+
+
+TArray<AActor*> AActorBase::ExtractActorsFromChildActorComponents(
+    TArray<UChildActorComponent*> &Childs
+){
+    TArray<AActor *> outArray;
+    for (int i = 0; i < Childs.Num(); i++){
+        if(UChildActorComponent *current = Childs[i]){
+            if(AActor *parent = current->GetChildActor()){
+                outArray.Add(parent);
+            }
+        }
+    }
+    return outArray;
+}
+
+    
