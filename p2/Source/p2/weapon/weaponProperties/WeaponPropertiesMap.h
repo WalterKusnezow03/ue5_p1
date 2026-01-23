@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
-
+#include <map>
 
 //forward declare for faster compile
 class WeaponProperties;

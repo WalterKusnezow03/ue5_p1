@@ -58,7 +58,8 @@ MeshData &UAnyMeshWidgetComponent::GetMeshDataRef(){
 bool UAnyMeshWidgetComponent::RayIntersect(
     const FVector &origin,
     const FVector &direction
-){
+){	
+	/*
 	FVector localOrigin = GetComponentTransform().InverseTransformPosition(origin);
 	FVector localDirection = GetComponentTransform().InverseTransformVector(direction);
 
@@ -73,11 +74,6 @@ bool UAnyMeshWidgetComponent::RayIntersect(
 		GetWorld(),
 		GetComponentTransform().ToMatrixWithScale()
 	)){
-	/*if(assignedMeshData.RayIntersect(
-		localOrigin,
-		localDirection,
-		outIntersectHitResult
-	)){*/
 		DebugHelper::logMessage(
 			FString::Printf(
 				TEXT("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!, %.2f %.2f"),
@@ -98,9 +94,79 @@ bool UAnyMeshWidgetComponent::RayIntersect(
 		}
 		return true;
 	}
+	return false;*/
+
+	FAnyMeshWidgetRayIntersectResult result = RayIntersectResult(origin, direction);
+	if(result.IsResultValid()){
+		if(UWidget *w = GetWidget()){
+			//cast or click dispatcher
+			if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(w)){
+				casted->dispatchClick(result.constScreenPositionReference());
+			}
+		}
+		return true;
+	}
 	return false;
 }
 
+bool UAnyMeshWidgetComponent::RayIntersectHover(
+	const FVector &origin,
+	const FVector &direction
+){
+	FAnyMeshWidgetRayIntersectResult result = RayIntersectResult(origin, direction);
+	if(result.IsResultValid()){
+		if(UWidget *w = GetWidget()){
+			//cast or click dispatcher
+			if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(w)){
+				casted->dispatchHover(result.constScreenPositionReference());
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+// ---- shared mesh data hittest ----
+FAnyMeshWidgetRayIntersectResult UAnyMeshWidgetComponent::RayIntersectResult(
+	const FVector &origin, 
+	const FVector &direction
+){
+	//saves the result in shared struct
+	FAnyMeshWidgetRayIntersectResult widgetDispatchResult;
+
+	FVector localOrigin = GetComponentTransform().InverseTransformPosition(origin);
+	FVector localDirection = GetComponentTransform().InverseTransformVector(direction);
+
+	FIntersectHitResult meshDataOutIntersectHitResult;
+	if(assignedMeshData.RayIntersectDraw(
+		localOrigin,
+		localDirection,
+		meshDataOutIntersectHitResult,
+		GetWorld(),
+		GetComponentTransform().ToMatrixWithScale()
+	)){
+	/*if(assignedMeshData.RayIntersect(
+		localOrigin,
+		localDirection,
+		outIntersectHitResult
+	)){*/
+		DebugHelper::logMessage(
+			FString::Printf(
+				TEXT("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!, %.2f %.2f"),
+				meshDataOutIntersectHitResult.hitUV.X,
+				meshDataOutIntersectHitResult.hitUV.Y
+			)
+		);
+
+		//create screen coordinate from UV
+		FVector2D fixedUv = meshDataOutIntersectHitResult.hitUV; //= ToScreenUV(outIntersectHitResult.hitUV);
+		FVector2D screen = WidgetScreenPosition(fixedUv);
+
+		widgetDispatchResult.SetResult(screen);
+	}
+
+	return widgetDispatchResult;
+}
 
 //if the triangle buffer is set up as 0,1,2 and the uvs with 0,0 at 0,
 //flip the uv to screen coordonate as followed:

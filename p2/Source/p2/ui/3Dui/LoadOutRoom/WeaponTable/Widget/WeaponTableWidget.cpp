@@ -8,6 +8,10 @@
 
 
 
+bool UWeaponTableWidget::dispatchHover(const FVector2D &position){
+    return false;
+}
+
 bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos){
     LogScreenCoordinate(screenPos);
 

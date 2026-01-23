@@ -17,6 +17,7 @@
 
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
+#include "GameCore/world/worldLevelBase.h"
 
 
 // Sets default values
@@ -67,7 +68,7 @@ void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
     setTeam(teamEnum::playerTeam);
-
+    AworldLevelBase::SetPlayerReference(this);
 }
 
 // Called to bind functionality to input
@@ -149,6 +150,10 @@ void APlayerControllerBase::takedamage(int d, FVector &hitpoint, bool surpressed
  */
 void APlayerControllerBase::MoveForward(float Value)
 {
+    if(MovementMarkedLocked()){
+        return;
+    }
+
     playerInputContainer.setForwardAxis(Value);
 
     if ((Controller != nullptr) && (Value != 0.0f))
@@ -178,6 +183,10 @@ void APlayerControllerBase::MoveForward(float Value)
 
 void APlayerControllerBase::MoveRight(float Value)
 {
+    if(MovementMarkedLocked()){
+        return;
+    }
+
     playerInputContainer.setRightAxis(Value);
 
     if ( (Controller != nullptr) && (Value != 0.0f) )
@@ -200,6 +209,19 @@ void APlayerControllerBase::TurnAtRate(float Rate)
     AddControllerYawInput(yawRate);
     //AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
+
+APlayerController *APlayerControllerBase::GetPlayerController(){
+    if(APlayerController *ptr = Cast<APlayerController>(GetController())){
+        return ptr;
+    }
+    return nullptr;
+}
+void APlayerControllerBase::CollectUserInput(UserInput &input){
+    input.UpdateKeyBoardData(GetPlayerController());
+}
+
+
+
 
 void APlayerControllerBase::LookUpAtRate(float Rate)
 {
@@ -240,7 +262,7 @@ void APlayerControllerBase::processPendingRecoil(){
 }   
 
 void APlayerControllerBase::Jump(){
-    if(IsPaused()){
+    if(IsPaused() || MovementMarkedLocked()){
         return;
     }
 
@@ -250,6 +272,13 @@ void APlayerControllerBase::Jump(){
 }
 
 
+bool APlayerControllerBase::MovementMarkedLocked(){
+    return isMovementLocked;
+}
+
+void APlayerControllerBase::SetMovementLocked(bool flag){
+    isMovementLocked = flag;
+}
 
 void APlayerControllerBase::sprint(){
     sprinting = !sprinting;

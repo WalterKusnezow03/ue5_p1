@@ -4,6 +4,7 @@
 #include "p2/weapon/PlacableItem/PlacableItemBase.h"
 #include "p2/weapon/ExplosiveHelper/ExplosiveHelper.h"
 
+#include "GameCore/interfaces/Damageinterface.h"
 
 #include "ExplosiveDamagableBase.generated.h"
 

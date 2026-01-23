@@ -13,7 +13,7 @@ class GAMECORE_API AworldLevelBase : public AActor{
 
     GENERATED_BODY()
 
-private:
+protected:
     static AworldLevelBase *Instance;
 
 public:
@@ -27,9 +27,15 @@ public:
         return false;
     }
 
-
+    static void SetPlayerReference(AActor *player);
+    static AActor* GetPlayerReference();
 
 protected:
+    virtual void OnPlayerReferenceSet(); //enter some game mode for example
+
+
+    AActor *PlayerPointer = nullptr;
+
     TArray<FVector> outpostsToCreate;
 
 

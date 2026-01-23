@@ -1,4 +1,6 @@
 #include "ExplosiveDamagableBase.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 
 
 AExplosiveDamagableBase::AExplosiveDamagableBase() : Super() {

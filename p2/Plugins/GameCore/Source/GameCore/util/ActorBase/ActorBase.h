@@ -76,9 +76,23 @@ public:
     );
 
 
-    TArray<AActor*> ExtractActorsFromChildActorComponents(
-        TArray<UChildActorComponent*> &array
-    );
+    TArray<AActor*> ExtractActorsFromChildActorComponents(TArray<UChildActorComponent*> &array);
+
+    TArray<AActor *> FindAllChildActorsAsAActor();
+
+    //find child actor by name exact
+    AActor *FindChildActorByName(FString namePart);
+
+    template <typename T>
+    T *TFindChildActorByName(FString namePart){
+        AActor *raw = FindChildActorByName(namePart);
+        if(raw){
+            if(T *casted = Cast<T>(raw)){
+                return casted;
+            }
+        }
+        return nullptr;
+    }
 
 private:
 

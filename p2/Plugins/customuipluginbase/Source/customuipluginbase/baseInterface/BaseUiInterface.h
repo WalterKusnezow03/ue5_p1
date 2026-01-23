@@ -28,8 +28,9 @@ class CUSTOMUIPLUGINBASE_API IBaseUiInterface
 public:
 	virtual void Tick(float DeltaTime) = 0;
 	virtual bool dispatchClick(const FVector2D &position) = 0;
-	virtual void SetVisible(bool flag) = 0;
-	virtual bool markedVisible() = 0;
+	virtual bool dispatchHover(const FVector2D &position) { return false; };
+	virtual void SetVisible(bool flag) {};
+	virtual bool markedVisible() { return true; }
 
 	//does not have to be overriden.
 	virtual void dispatchUserInput(UserInput &input) {};

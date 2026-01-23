@@ -36,32 +36,9 @@ void AEntityScript::BeginPlay()
 	BeginPlayHumanoidController();
 
 	init();
-	CreateMarkerOnBeginPlay();
+	
 }
 
-void AEntityScript::CreateMarkerOnBeginPlay(){
-	return; //debug
-
-	if(!markerComponent){
-		FVector offset(0, 0, 100);
-		markerComponent = UWorldMarkerComponent::Make(this, offset);
-		if(markerComponent){
-			//add to player Canvas
-			if(UPlayerUi *ui = UPlayerUi::currentInstance()){ //instance will be created from game mode base.
-				UPlayerHud *playerHud = ui->HudInstance();//hud isA worldmarker canvas
-				if(playerHud){
-					playerHud->AddMarker(markerComponent);
-					markerComponent->SetEnabled(true); //not needed
-
-					DebugHelper::logMessage("AEntityScript created marker.");
-				}
-			}
-		}
-
-
-		
-	}
-}
 
 
 
@@ -641,12 +618,6 @@ void AEntityScript::enableActiveStatus(bool enable){
 	activated = enable;
 	enableCollider(enable);
 	SetActorHiddenInGame(!enable);
-
-
-	//show hide marker
-	if(markerComponent){
-		markerComponent->SetEnabled(enable);
-	}
 }
 
 /// @brief will return if entity is activated

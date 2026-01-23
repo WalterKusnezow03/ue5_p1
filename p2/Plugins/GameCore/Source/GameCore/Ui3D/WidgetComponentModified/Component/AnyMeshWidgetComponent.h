@@ -39,7 +39,7 @@
 
 //custom mesh data
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
-
+#include "GameCore/Ui3D/WidgetComponentModified/Component/FAnyMeshWidgetRayIntersectResult.h"
 
 //#include "GameCore/MeshGenBase/WidgetComponentModified/CopiedSource/WidgetComponentCustom.h"
 
@@ -86,6 +86,10 @@ public:
         const FVector &origin,
         const FVector &direction
     );
+    bool RayIntersectHover(
+        const FVector &origin,
+        const FVector &direction
+    );
 
 protected:
     MeshData assignedMeshData;
@@ -95,10 +99,21 @@ protected:
 
     void CreateMaterial();
 
+    //hit helpers
+    FAnyMeshWidgetRayIntersectResult RayIntersectResult(
+        const FVector &origin, 
+        const FVector &direction
+    );
     FVector2D ToScreenUV(const FVector2D &other);
     FVector2D WidgetScreenPosition(
         FVector2D uv
     );
 
+
+
     void UpdateBodySetupOverride(); //copied defintion from source
+
+
+
+
 };

@@ -45,7 +45,7 @@ ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector Location(-10000, -10000, 0);
+    FVector Location(-10000, -10000, -1000);
     ALoadoutRoomActor *spawned = world->SpawnActor<ALoadoutRoomActor>(
         SpawnClass,
         Location,
@@ -98,9 +98,7 @@ void ALoadoutRoomActor::BeginPlay(){
 
 void ALoadoutRoomActor::FindActorsOnBeginPlay(){
     weaponTables.Empty();
-    TArray<UChildActorComponent *> Childs;
-    TFindAllChildsByType<UChildActorComponent>(Childs);
-    TArray<AActor *> actors = ExtractActorsFromChildActorComponents(Childs);
+    TArray<AActor *> actors = FindAllChildActorsAsAActor();
     ProcessFoundActors(actors);
 }
 

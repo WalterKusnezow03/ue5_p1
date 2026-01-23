@@ -78,6 +78,20 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
     if(!isEnabled){
         return false;
     }
+    if(ACustomMeshUIActor *found = RayIntersectFound(origin, direction)){
+        found->RayIntersect(origin, direction);
+        return true;
+    }
+    
+    return false;
+}
+
+
+//private raycast
+ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
+    const FVector &origin,
+    const FVector &direction
+){
     if(UWorld *world = GetWorld()){
 
         FVector start = origin + direction.GetSafeNormal() * 10.0f; //50cm
@@ -98,33 +112,32 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
         
 
         // If the raycast hit something, save hitresult and return positive
-        if (bHit)
-        {
+        if (bHit){
             if(AActor *actor = HitResult.GetActor()){
-                
-
                 if(ACustomMeshUIActor *casted = Cast<ACustomMeshUIActor>(actor)){
-                    casted->RayIntersect(start, direction);
-                    #if WITH_EDITOR
+                    DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Red);
+                    
+                    /*#if WITH_EDITOR
                     DebugHelper::logMessage(
                         FString::Printf(
                             TEXT("UAnyMeshWidgetInteractionComponent::Hit3DUIWidget %s"),
-                            *casted->GetDebugName() //EDITOR ONLY
+                            *found->GetDebugName() //EDITOR ONLY
                         )
                     );
-                    #endif
-                    DebugHelper::showLineBetween(GetWorld(), start, end, FColor::Red);
-                    return true;
+                    #endif*/
+
+
+                    return casted;
                 }else{
-                    DebugHelper::showLineBetween(GetWorld(), start, HitResult.ImpactPoint, FColor::Blue);
+                    DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Blue);
                 }
             }
         }
     }
-    return false;
+    return nullptr;
 }
 
-
+// enable - disable section
 
 void UAnyMeshWidgetInteractionComponent::SetInteractionActive(bool enabled){
     isEnabled = enabled;
@@ -134,4 +147,23 @@ void UAnyMeshWidgetInteractionComponent::SetInteractionActive(bool enabled){
 
 bool UAnyMeshWidgetInteractionComponent::IsInteractionActive(){
     return isEnabled;
+}
+
+
+void UAnyMeshWidgetInteractionComponent::SetInteractionHoverActive(bool enabled){
+    isHoverEnabled = enabled;
+}
+
+
+
+// hover ticked
+void UAnyMeshWidgetInteractionComponent::TickHovered(
+    const FVector &origin,
+    const FVector &direction
+){
+    if(isHoverEnabled && isEnabled){
+        if(ACustomMeshUIActor *found = RayIntersectFound(origin, direction)){
+            found->RayIntersectHover(origin, direction);
+        }
+    }
 }

@@ -145,6 +145,19 @@ bool ACustomMeshUIActor::RayIntersect(
     return false;
 }
 
+
+bool ACustomMeshUIActor::RayIntersectHover(
+    const FVector &origin,
+    const FVector &direction
+){
+    if(Widget && AllowRayIntersectInteraction()){
+        return Widget->RayIntersectHover(origin, direction);
+    }
+    return false;
+}
+
+
+
 void ACustomMeshUIActor::EnableCollision(bool flag){
     if(Widget){
         if(!flag){

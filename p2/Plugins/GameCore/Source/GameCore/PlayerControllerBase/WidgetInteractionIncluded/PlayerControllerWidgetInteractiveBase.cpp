@@ -33,6 +33,13 @@ void APlayerControllerWidgetInteractiveBase::SetWidgetInteractionComponentActive
 }
 
 
+void APlayerControllerWidgetInteractiveBase::SetWidgetInteractionComponentHoverActive(bool flag){
+    if(interactionComponent){
+        interactionComponent->SetInteractionHoverActive(flag);
+    }
+}
+
+
 
 void APlayerControllerWidgetInteractiveBase::leftMouseUp(){
     Super::leftMouseUp();

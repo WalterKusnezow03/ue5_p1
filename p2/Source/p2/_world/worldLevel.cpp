@@ -56,7 +56,7 @@ template class TVector<FVector2D>;
 GameStateManager AworldLevel::gameStateManager;
 PlayerStatusManager AworldLevel::playerStatusManager;
 UiSimulation AworldLevel::uiSimulation;
-AworldLevel *AworldLevel::InstanceWorldLevel = nullptr;
+//AworldLevel *AworldLevel::InstanceWorldLevel = nullptr;
 
 AworldLevel::AworldLevel() : AworldLevelBase()
 {   
@@ -65,18 +65,27 @@ AworldLevel::AworldLevel() : AworldLevelBase()
 void AworldLevel::MakeInstance(UWorld *world){
     if(world){
         AworldLevel *created = Make<AworldLevel>(world);
+        Instance = created;
     }
 }
 
 
 void AworldLevel::BeginPlay(){
-    InstanceWorldLevel = this;
+    Instance = this;
 }
 
 void AworldLevel::Tick(float deltatime){
     Super::Tick(deltatime);
     //Nothing to tick here
     createOutpostsRequested(); //stored in super class
+}
+
+
+void AworldLevel::OnPlayerReferenceSet(){
+    Super::OnPlayerReferenceSet();
+    if(PlayerPointer){
+        AworldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
+    }   
 }
 
 
@@ -102,7 +111,7 @@ void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
     assetManager::EndGame(); //very important
     referenceManager::EndPlay();
 
-    InstanceWorldLevel = nullptr;
+    Instance = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -113,7 +122,7 @@ void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
 /// @brief will init the terrain, keep in mind that all assets must be loaded before!
 /// @param world 
 void AworldLevel::initWorld(UWorld *world){
-    if(!InstanceWorldLevel){
+    if(!Instance){
         MakeInstance(world);
     }
 
@@ -122,8 +131,10 @@ void AworldLevel::initWorld(UWorld *world){
 }
 
 void AworldLevel::initWorld(FString WorldName){
-    if(!InstanceWorldLevel){
-        return; 
+    AworldLevel *instancePtr = AworldLevel::GetInstance();
+    if (!instancePtr)
+    {
+        return;
     }
 
     gameStateManager.UpdateGameState(EGameState::EGamePlay);
@@ -131,24 +142,24 @@ void AworldLevel::initWorld(FString WorldName){
     EntityManager::BeginPlay(); //very important
 
 
-    InstanceWorldLevel->createTerrain(WorldName);
+    instancePtr->createTerrain(WorldName);
 
     //create rooms
-    InstanceWorldLevel->DebugCreateRooms();
+    instancePtr->DebugCreateRooms();
 
     //edge collector must be added here later
-    InstanceWorldLevel->createPathFinder(WorldName);
+    instancePtr->createPathFinder(WorldName);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    InstanceWorldLevel->humanBotsOnStart(1);
+    instancePtr->humanBotsOnStart(1);
         
     //InstanceWorldLevel->createGroundPane();
 
     //testing
-    DebugHelper::Debugtest(InstanceWorldLevel->GetWorld());
+    DebugHelper::Debugtest(instancePtr->GetWorld());
 
 
-    InstanceWorldLevel->createBoneActorDebug();
+    instancePtr->createBoneActorDebug();
     
 }
 
@@ -200,7 +211,7 @@ EntityManager *AworldLevel::entityManager(){
 /// @brief returns the outpost manager to ask for the nearest outpost
 /// @return will return the pointer
 OutpostManager * AworldLevel::outpostManager(){
-    if(InstanceWorldLevel){
+    if(AworldLevel *InstanceWorldLevel = GetInstance()){
         if(InstanceWorldLevel->outpostManagerPointer == nullptr){
             InstanceWorldLevel->outpostManagerPointer = new OutpostManager();
         }
@@ -226,14 +237,16 @@ void AworldLevel::createTerrain(FString worldName){
     if(isTerrainInited){
         return;
     }
-    UWorld *world = InstanceWorldLevel->GetWorld();
-    if(world != nullptr){
-        isTerrainInited = true;
-        if(terrainLauncher == nullptr){
-            terrainLauncher = ATerrainLauncher::makeInstance(world, worldName);
-        }else{
-            //if a world switch is wanted the terrain launcher is not killed
-            terrainLauncher->BeginAndLoad(worldName);
+    if(AworldLevel *InstanceWorldLevel = GetInstance()){
+        UWorld *world = InstanceWorldLevel->GetWorld();
+        if(world != nullptr){
+            isTerrainInited = true;
+            if(terrainLauncher == nullptr){
+                terrainLauncher = ATerrainLauncher::makeInstance(world, worldName);
+            }else{
+                //if a world switch is wanted the terrain launcher is not killed
+                terrainLauncher->BeginAndLoad(worldName);
+            }
         }
     }
 }

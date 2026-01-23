@@ -1,4 +1,5 @@
 #include "WeaponProperties.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 WeaponProperties::WeaponProperties(){

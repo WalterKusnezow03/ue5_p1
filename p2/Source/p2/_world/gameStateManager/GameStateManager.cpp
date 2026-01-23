@@ -1,6 +1,9 @@
 #include "GameStateManager.h"
 #include "p2/ui/PlayerUi.h"
 
+#include "p2/_world/worldLevel.h"
+#include "p2/ui/3Dui/GameStartRoom/GameStartRoom.h"
+
 GameStateManager::GameStateManager(){
 
 }
@@ -24,7 +27,20 @@ void GameStateManager::UpdateGameState(EGameState state){
     if(!CanSwitchStates(state)){
         return;
     }
+    
+
+    if(state == EGameState::EGameLaunchScreen){
+        
+        AGameStartRoom::StaticEnter(AworldLevel::GetPlayerReference());
+        OverrideGameState(state);
+        return;
+        
+    }
+
     OverrideGameState(state);
+
+
+
     UPlayerUi *instance = UPlayerUi::currentInstance();
     if(instance){
         if(state == EGameState::EGameLaunchScreen){    
@@ -62,7 +78,10 @@ bool GameStateManager::IsInState(EGameState stateIn){
 
 
 bool GameStateManager::GameStateIsPaused(){
-    return !IsInState(EGameState::EGamePlay);
+    return IsInState(EGameState::EPauseScreen);
+    
+    //return !IsInState(EGameState::EGamePlay);
+    
     // IsInState(EGameState::EPauseScreen) ||
     // IsInState(EGameState::EGameLaunchScreen);
 }

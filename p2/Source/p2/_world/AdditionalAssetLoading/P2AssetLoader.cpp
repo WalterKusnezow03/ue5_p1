@@ -13,6 +13,8 @@
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
 #include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
+#include <map>
 
 
 /*
@@ -39,6 +41,7 @@ void P2AssetLoader::LoadGameAssets(){
     loadParticles();
     loadTextures();
     loadLoadoutRoomAssets();
+    loadGameStartRoomAssets();
     load3DWidgets();
 }
 
@@ -314,6 +317,19 @@ void P2AssetLoader::loadLoadoutRoomAssets(){
         "Loadoutroombp"                   // Just the file name as displayed
     );
 }
+void P2AssetLoader::loadGameStartRoomAssets(){
+    
+    //p2/Content/Prefabs/Gamestart/Gamestartroombp.uasset
+    AssetLoader::LoadAndSaveAssetToManager<EGameActorEnum, UClass>(
+        EGameActorEnum::EGameStartRoom, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/Gamestart",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Gamestartroombp"                   // Just the file name as displayed
+    );
+}
+
+
+
 
 
 void P2AssetLoader::load3DWidgets(){

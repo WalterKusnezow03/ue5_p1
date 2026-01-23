@@ -58,6 +58,16 @@ const TArray<TCHAR> &UserInput::GetPressedKeys() const{
     return pressed;
 }
 
+FString UserInput::GetPressedKeysAsString() const {
+    FString outString = TEXT("");
+    for (int i = 0; i < pressed.Num(); i++){
+        outString += pressed[i];
+    }
+    return outString;
+}
+
+
+
 void UserInput::UpdateKeyBoardData(APlayerController *playerController)
 {
     Reset();

@@ -22,6 +22,8 @@ private:
     void loadThrowables();
     void loadParticles();
     void loadTextures();
+
+    void loadGameStartRoomAssets();
     void loadLoadoutRoomAssets();
     void load3DWidgets();
 };

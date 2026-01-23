@@ -97,4 +97,26 @@ TArray<AActor*> AActorBase::ExtractActorsFromChildActorComponents(
     return outArray;
 }
 
+TArray<AActor *> AActorBase::FindAllChildActorsAsAActor()
+{
+    TArray<UChildActorComponent *> Childs;
+    TFindAllChildsByType<UChildActorComponent>(Childs);
+    TArray<AActor *> actors = ExtractActorsFromChildActorComponents(Childs);
+    return actors;
+}
+
+AActor *AActorBase::FindChildActorByName(FString namePart){
+    TArray<UChildActorComponent *> Childs;
+    TFindAllChildsByType<UChildActorComponent>(Childs);
     
+    for (int i = 0; i < Childs.Num(); i++){
+        if(UChildActorComponent *current = Childs[i]){
+            if(AActor *parent = current->GetChildActor()){
+                if(current->GetName() == namePart){
+                    return parent;
+                }
+            }
+        }
+    }
+    return nullptr;
+}

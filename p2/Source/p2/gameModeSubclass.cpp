@@ -73,8 +73,8 @@ void AgameModeSubclass::BeginPlay()
     UPlayerUi::createNewInstance(GetWorld());
     
 
-    //opens game launch screen
-    AworldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
+    //opens game launch screen -> launched by world on player ref set
+    //AworldLevel::gameStateManager.UpdateGameState(EGameState::EGameLaunchScreen);
 
     /// ---- PLAYER LOADS / ENDS LEVEL WITH UI ! ----
     bool debugAllowWorldCreation = false;

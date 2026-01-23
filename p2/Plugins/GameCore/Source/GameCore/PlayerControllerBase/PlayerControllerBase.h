@@ -12,6 +12,8 @@
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"
 
+#include "customuipluginbase/UserInputTracking/UserInput.h"
+
 #include "PlayerControllerBase.generated.h"
 
 UCLASS()
@@ -32,10 +34,16 @@ public:
 	void showCursor(bool show);
 	void setPaused(bool in);
 
+	void SetMovementLocked(bool flag);
 
 	//steering
 	virtual InputContainer &input() override;
 	virtual void setDriverLocation(FVector &location) override;
+
+	//returns the player controller of this character
+	APlayerController *GetPlayerController();
+
+	void CollectUserInput(UserInput &input);
 
 protected:
 	// Called when the game starts or when spawned
@@ -49,6 +57,8 @@ protected:
 
 	/// @brief should be overriden!
 	virtual bool IsPaused();
+
+	bool MovementMarkedLocked();
 
 public:	
 	// Called every frame
@@ -134,6 +144,7 @@ private:
 	//fall back flag! 
 	bool isPausedFlag = false;
 
+	bool isMovementLocked = false;
 
 	void UpdateCursorVisibilityBasedOnPause();
 	bool cursorVisibleFlag = false;

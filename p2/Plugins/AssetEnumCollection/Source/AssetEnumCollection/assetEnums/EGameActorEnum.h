@@ -6,4 +6,5 @@ UENUM()
 enum class EGameActorEnum
 {
     ELoadoutRoom,
+    EGameStartRoom,
 };

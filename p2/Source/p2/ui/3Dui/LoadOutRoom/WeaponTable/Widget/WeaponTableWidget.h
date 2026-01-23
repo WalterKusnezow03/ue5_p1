@@ -50,6 +50,7 @@ public:
     void SetParentActor(AWeaponTableWidgetActor *parent);
 
     virtual bool dispatchClick(const FVector2D &pos) override;
+    virtual bool dispatchHover(const FVector2D &position) override;
     virtual void Tick(float DeltaTime) override {};
     virtual void SetVisible(bool flag) override {};
     virtual bool markedVisible() { return true; }

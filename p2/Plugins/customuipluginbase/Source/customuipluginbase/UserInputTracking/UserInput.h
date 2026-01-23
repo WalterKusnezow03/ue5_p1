@@ -16,6 +16,7 @@ public:
 
     ///invalid once UpdateKeyBoardData() is called.
     const TArray<TCHAR> &GetPressedKeys() const;
+    FString GetPressedKeysAsString() const;
 
     bool HasAnyKeyboardInput();
 

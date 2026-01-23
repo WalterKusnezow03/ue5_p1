@@ -29,6 +29,10 @@ public:
         const FVector &origin,
         const FVector &direction
     );
+	bool RayIntersectHover(
+		const FVector &origin,
+		const FVector &direction
+	);
 	
 	virtual bool AllowRayIntersectInteraction(){
 		return true;

@@ -13,8 +13,6 @@
 
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
 
-#include "customUiPlugin/ui/screens/WorldToScreenOverlays/actorComponent/WorldMarkerComponent.h"
-
 
 #include "EntityScript.generated.h"
 
@@ -170,8 +168,5 @@ protected:
 	void BeginPlayHumanoidController();
 	void TickHumanoidController(float deltatime);
 
-	//--marker--
-	UPROPERTY()
-	UWorldMarkerComponent *markerComponent = nullptr;
-	virtual void CreateMarkerOnBeginPlay();
+	
 };

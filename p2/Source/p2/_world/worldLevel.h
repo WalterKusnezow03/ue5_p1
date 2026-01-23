@@ -27,6 +27,10 @@ class P2_API AworldLevel : public AworldLevelBase
 {
 	GENERATED_BODY()
 
+
+protected:
+	virtual void OnPlayerReferenceSet() override;
+
 private:
 	
 
@@ -35,7 +39,7 @@ private:
 	bool bBlockEntities = false; //true (was false for debugging)
 	bool bBlockOutPostCreation = true;
 
-	static AworldLevel *InstanceWorldLevel;
+	//static AworldLevel *InstanceWorldLevel;
 
 public:
 	//call to init the world.
@@ -62,12 +66,15 @@ public:
 
 	static EntityManager *entityManager();
 	static OutpostManager *outpostManager();
-	
 
 	
 
-
-	
+	static AworldLevel *GetInstance(){
+		if(Instance){
+			return Cast<AworldLevel>(Instance);
+		}
+		return nullptr;
+	}
 
 private:
 	

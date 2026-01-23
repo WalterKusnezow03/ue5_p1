@@ -10,6 +10,7 @@
 #include "customUiPlugin/ui/Widgets/buttons/subtypes/TextButton.h"
 #include "customUiPlugin/ui/Widgets/textBox/TextBoxBase.h"
 #include "p2/ui/screens/gameLaunch/WorldList/rtti/WorldButtonPayload.h"
+#include "customUiPlugin/slateDerived/TextBased/TextInputSupport/WidgetSlateEditableText.h"
 
 #include "WorldList.generated.h"
 

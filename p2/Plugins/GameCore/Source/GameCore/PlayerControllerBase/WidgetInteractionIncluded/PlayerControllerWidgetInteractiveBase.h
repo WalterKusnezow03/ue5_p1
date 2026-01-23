@@ -30,4 +30,6 @@ protected:
     UAnyMeshWidgetInteractionComponent *interactionComponent = nullptr;
 
     void SetWidgetInteractionComponentActive(bool flag);
+
+    void SetWidgetInteractionComponentHoverActive(bool flag);
 };
