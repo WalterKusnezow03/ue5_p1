@@ -3,7 +3,7 @@
 #include "DynamicMeshWidgetSceneProxy.h"
 #include "GameCore/MeshGenBase/MeshData/intersectCache/IntersectHitResult.h"
 
-#include "customuipluginbase/baseInterface/BaseUiInterface.h"
+
 /*
 UAnyMeshWidgetComponent::UAnyMeshWidgetComponent(const FObjectInitializer &ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -36,6 +36,12 @@ void UAnyMeshWidgetComponent::TickComponent(
 	if(MeshDataWasModified){
 		MarkRenderStateDirty(); //CreateSceneProxy will be called again.
 	}
+
+
+	if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
+		casted->Tick(DeltaTime);
+	}
+
 }
 
 void UAnyMeshWidgetComponent::FlagMeshDataDirty(){
@@ -98,11 +104,8 @@ bool UAnyMeshWidgetComponent::RayIntersect(
 
 	FAnyMeshWidgetRayIntersectResult result = RayIntersectResult(origin, direction);
 	if(result.IsResultValid()){
-		if(UWidget *w = GetWidget()){
-			//cast or click dispatcher
-			if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(w)){
-				casted->dispatchClick(result.constScreenPositionReference());
-			}
+		if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
+			casted->dispatchClick(result.constScreenPositionReference());
 		}
 		return true;
 	}
@@ -115,15 +118,23 @@ bool UAnyMeshWidgetComponent::RayIntersectHover(
 ){
 	FAnyMeshWidgetRayIntersectResult result = RayIntersectResult(origin, direction);
 	if(result.IsResultValid()){
-		if(UWidget *w = GetWidget()){
-			//cast or click dispatcher
-			if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(w)){
-				casted->dispatchHover(result.constScreenPositionReference());
-			}
+		//cast or click dispatcher
+		if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
+			casted->dispatchHover(result.constScreenPositionReference());	
 		}
 		return true;
 	}
 	return false;
+}
+
+IBaseUiInterface* UAnyMeshWidgetComponent::GetWidgetAsIBaseUiInterface(){
+	if(UWidget *w = GetWidget()){
+		//cast or click dispatcher
+		if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(w)){
+			return casted;
+		}
+	}
+	return nullptr;
 }
 
 // ---- shared mesh data hittest ----

@@ -7,6 +7,7 @@
 
 void UWorldListWidget::SetParent(AGameStartRoom *parentIn){
     parent = parentIn;
+    
 }
 
 void UWorldListWidget::ResetParent(){
@@ -151,6 +152,8 @@ void UWorldListWidget::Tick(float DeltaTime){
 
 }
 
+/// --- Dispatch Click ---
+
 bool UWorldListWidget::dispatchClick(const FVector2D &position){
     bool resultA = dispatchClickTextbox(position);
     bool resultB = dispatchClickPanel(position);
@@ -172,7 +175,7 @@ bool UWorldListWidget::dispatchClickPanel(const FVector2D &position){
     if(UPanelWidget *panel = GetListAsPanel()){
         ClickDispatcher dispatcher;
         UWorldListItem *casted =
-            dispatcher.DispatchWithResultFromPanel<UWorldListItem>(panel, position);
+            dispatcher.FindResultFromPanel<UWorldListItem>(panel, position);
         if(casted){
             return casted->dispatchClick(position);
         }
@@ -180,11 +183,17 @@ bool UWorldListWidget::dispatchClickPanel(const FVector2D &position){
     return false;
 }
 
+
+/// --- Dispatch Hover ---
+
 bool UWorldListWidget::dispatchHover(const FVector2D &position){
+    DebugHelper::showScreenMessage("UWorldListWidget::Hover");
 
-
-    return false;
+    //todo here: dispatch to all items!
+    return DispatchHoverToAllItemsForDispatch(position);
 }
+
+/// --- Dispatch Keyboard ---
 
 void UWorldListWidget::dispatchUserInput(UserInput &input){
     if(TextBoxIsActive()){
@@ -286,6 +295,22 @@ TArray<UWorldListItem *> UWorldListWidget::GetAllItemsFiltered(){
 }
 
 
+TArray<IBaseUiInterface *> UWorldListWidget::GetAllItemsForDispatch(){
+    TArray<IBaseUiInterface *> outArray;
+    TArray<UWorldListItem *> allChilds = GetAllItemsFiltered();
+    for (int i = 0; i < allChilds.Num(); i++){
+        if(UWorldListItem *current = allChilds[i]){
+            outArray.Add(current);
+        }
+    }
+    if(UTextBoxWidget *widget = GetTextBoxSearch()){
+        outArray.Add(widget);
+    }
+
+    DebugHelper::showScreenMessage("UWorldListWidget::Hover Num Items", outArray.Num());
+
+    return outArray;
+}
 
 //all items which are not marked free
 TArray<UWorldListItem *> UWorldListWidget::GetAllItems(){

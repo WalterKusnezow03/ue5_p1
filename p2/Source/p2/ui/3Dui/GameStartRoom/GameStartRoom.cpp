@@ -19,69 +19,26 @@ void AGameStartRoom::CreateInstanceIfNeeded(AActor *actor){
         return;
     }
     if(actor){
-        CreateInstanceIfNeeded(actor->GetWorld());
+        if(!instance){
+            instance = TMakeInstance<AGameStartRoom>(
+                actor->GetWorld(),
+                EGameActorEnum::EGameStartRoom,
+                FVector(-10000, -10000, -3000)
+            );
+        }
     }
-}
-
-void AGameStartRoom::CreateInstanceIfNeeded(UWorld *world){
-    if(instance){
-        return;
-    }
-
-    if(world){
-        //instance = MakeInstance(world); //not needed, is set in function
-        MakeInstance(world);
-    } 
-}
-
-
-AGameStartRoom *AGameStartRoom::MakeInstance(UWorld *world){
-    
-    if(instance){
-        return instance;
-    }
-
-    UClass *SpawnClass = nullptr;
-    if(assetManager *a = assetManager::instance()){
-        SpawnClass = a->Find<EGameActorEnum, UClass>(EGameActorEnum::EGameStartRoom);
-    }
-    if(!SpawnClass){
-        DebugHelper::logMessage("AGameStartRoom::MakeInstance - Spawn class not found");
-        return nullptr;
-    }
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector Location(-10000, -10000, -3000);
-    AGameStartRoom *spawned = world->SpawnActor<AGameStartRoom>(
-        SpawnClass,
-        Location,
-        FRotator::ZeroRotator,
-        SpawnParams
-    );
-
-    if (!spawned)
-    {
-        DebugHelper::logMessage("AGameStartRoom::MakeInstance - Spawn actor failed");
-        return nullptr;
-    }
-
-    //save instance ptr, only one needed.
-    instance = spawned;
-    DebugHelper::logMessage("ALoadoutRoomActor made instance");
-    return spawned;
 }
 
 
 void AGameStartRoom::EndPlay(const EEndPlayReason::Type EndPlayReason){
     
-    Leave();
-    ClearReferences();
+    //Leave();
+    //ClearReferences();
     instance = nullptr;
     Super::EndPlay(EndPlayReason);
 }
 
-void AGameStartRoom::ClearReferences(){
+void AGameStartRoom::ClearReferencesOnEndPlay(){
     if(UWorldCreatorWidget *widget = GetWorldCreatorWidget()){
         widget->ResetParent();
     }
@@ -137,19 +94,19 @@ void AGameStartRoom::Tick(float deltatime){
 
 void AGameStartRoom::ListenForUserInput(){
     if(playerEntered){
-        DebugHelper::showScreenMessage("AGameStartRoom::Tick A");
+        //DebugHelper::showScreenMessage("AGameStartRoom::Tick A");
         
         
         //APlayerController *APlayerControllerBase::GetPlayerController()
         if(APlayerControllerBase *casted = Cast<APlayerControllerBase>(playerEntered)){
-            DebugHelper::showScreenMessage("AGameStartRoom::Tick B");
+            //DebugHelper::showScreenMessage("AGameStartRoom::Tick B");
             //keyboard dispatch
             casted->CollectUserInput(input);
 
             
-            DebugHelper::showScreenMessage("AGameStartRoom::Tick C");
+            //DebugHelper::showScreenMessage("AGameStartRoom::Tick C");
             if(input.HasAnyKeyboardInput()){
-                DebugHelper::showScreenMessage("AGameStartRoom::Tick D");
+                //DebugHelper::showScreenMessage("AGameStartRoom::Tick D");
                 // ---- DISPATCH to sub widgets ----
 
                 
@@ -180,10 +137,9 @@ void AGameStartRoom::StaticEnter(AActor *actor){
     if (actor)
     {
         DebugHelper::logMessage("AGameStartRoom::StaticEnter - B");
-        if(!instance){
-            instance = MakeInstance(actor->GetWorld());
-        }
-        if(instance){
+        CreateInstanceIfNeeded(actor);
+        if (instance)
+        {
             instance->Enter(actor);
             DebugHelper::logMessage("AGameStartRoom::StaticEnter - C");
         }
@@ -192,7 +148,15 @@ void AGameStartRoom::StaticEnter(AActor *actor){
 
 
 
-void AGameStartRoom::Enter(AActor *player){
+bool AGameStartRoom::Enter(AActor *player){
+    if(Super::Enter(player)){
+        if(playerEntered){
+            playerEntered->SetActorLocation(GetActorLocation());
+        }
+        return true;
+    }
+    return false;
+    /*
     if(playerEntered){
         return;
     }
@@ -200,7 +164,7 @@ void AGameStartRoom::Enter(AActor *player){
         enteredLocation = player->GetActorLocation();
         playerEntered = player;
         playerEntered->SetActorLocation(GetActorLocation());
-    }
+    }*/
 }
 
 void AGameStartRoom::Leave(){
@@ -208,10 +172,10 @@ void AGameStartRoom::Leave(){
         //save some pos from world on save!
         playerEntered->SetActorLocation(FVector(0, 0, 200)); 
         LockPlayerMovement(false);
-        playerEntered = nullptr;
+        //playerEntered = nullptr;
     }
+    Super::Leave();
 }
-
 
 void AGameStartRoom::TryCreateWorld(FString worldName){
     if(worldName.Len() > 0){
@@ -246,18 +210,6 @@ void AGameStartRoom::LaunchWorld(FString worldName){
 
 
 
-void AGameStartRoom::LockPlayerMovement(bool flag){
-    if(playerEntered){
-        if(APlayerControllerBase *casted = Cast<APlayerControllerBase>(playerEntered)){
-            casted->SetMovementLocked(flag);
-
-            
-            FString message = TEXT("AGameStartRoom::LockPlayerMovement ");
-            message += flag ? TEXT(" locked ") : TEXT(" unlocked ");
-            DebugHelper::logMessage(message);
-        }
-    }
-}
 
 void AGameStartRoom::ChangeLockPlayerMovementBasedOnSeletedTextField(){
     LockPlayerMovement(AnyTextFieldSelected());

@@ -4,17 +4,29 @@
 
 void UExitButtonWidget::SetParentActor(ALoadoutRoomExitButtonActor *parent){
     parentActorWidget = parent;
+    Init();
 }
 
 bool UExitButtonWidget::dispatchClick(const FVector2D &pos){
     DebugHelper::logMessage("UExitButtonWidget::DispatchClick");
 
-    ClickDispatcher dispatcher;
-    if(dispatcher.InBound(this, pos)){
+    if(borderInterface.dispatchClick(pos)){
         if(parentActorWidget){
             parentActorWidget->NotifyExit();
+            return true;
         }
-        return true;
     }
     return false;
+}
+
+bool UExitButtonWidget::dispatchHover(const FVector2D &pos){
+    return borderInterface.dispatchHover(pos);
+}
+
+void UExitButtonWidget::Init(){
+    SetupFromDefaultColors(borderInterface, GetBorderWidget());
+}
+
+void UExitButtonWidget::Tick(float deltatime){
+    borderInterface.Tick(deltatime);
 }

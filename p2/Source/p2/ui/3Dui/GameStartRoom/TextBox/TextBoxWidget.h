@@ -1,6 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
+
+#include "Components/TextBlock.h"
 
 #include "TextBoxWidget.generated.h"
 

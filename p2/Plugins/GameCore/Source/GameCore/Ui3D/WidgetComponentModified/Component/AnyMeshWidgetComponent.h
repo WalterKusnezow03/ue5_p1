@@ -40,6 +40,7 @@
 //custom mesh data
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/Ui3D/WidgetComponentModified/Component/FAnyMeshWidgetRayIntersectResult.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
 
 //#include "GameCore/MeshGenBase/WidgetComponentModified/CopiedSource/WidgetComponentCustom.h"
 
@@ -109,7 +110,7 @@ protected:
         FVector2D uv
     );
 
-
+    IBaseUiInterface *GetWidgetAsIBaseUiInterface();
 
     void UpdateBodySetupOverride(); //copied defintion from source
 

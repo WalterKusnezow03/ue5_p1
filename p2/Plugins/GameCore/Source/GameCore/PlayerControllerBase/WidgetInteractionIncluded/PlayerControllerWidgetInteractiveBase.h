@@ -32,4 +32,6 @@ protected:
     void SetWidgetInteractionComponentActive(bool flag);
 
     void SetWidgetInteractionComponentHoverActive(bool flag);
+
+    void TickInteractionComponent();
 };

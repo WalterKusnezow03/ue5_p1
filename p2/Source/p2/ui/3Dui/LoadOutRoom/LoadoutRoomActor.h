@@ -6,17 +6,19 @@
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/WeaponTableActor.h"
 #include "p2/ui/3Dui/LoadOutRoom/ExitActor/LoadoutRoomExitButtonActor.h"
 
+#include "p2/ui/3Dui/RoomBase/WidgetRoomActorBase.h"
+
 #include "LoadoutRoomActor.generated.h"
 
 UCLASS()
-class P2_API ALoadoutRoomActor : public AActorBase {
+class P2_API ALoadoutRoomActor : public AWidgetRoomActorBase {
     GENERATED_BODY()
 
 protected:
     static ALoadoutRoomActor *instance;
 
 public:
-    static ALoadoutRoomActor *MakeInstance(UWorld *world);
+    
 
     ALoadoutRoomActor();
 
@@ -24,8 +26,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
 
-    void Enter(AActor *actor);
-    void Leave();
+    virtual bool Enter(AActor *actor) override;
+    virtual void Leave() override;
 
     static void StaticEnter(AActor *actor);
     static void StaticLeave();
@@ -42,15 +44,13 @@ protected:
     void UpdateLoadoutWithTableActors();
 
     void UpdatePlayerInventory();
-    void ResetPlayerLocation();
+    
     
 
     void TriggerEnteredAnimation();
     void TriggerLeaveAnimation();
     
 
-    FVector enteredLocation;
-    AActor *playerEntered = nullptr;
     
     LoadoutHelper loadout;
 
@@ -60,7 +60,7 @@ protected:
     UPROPERTY()
     ALoadoutRoomExitButtonActor *exitButton = nullptr;
 
-    void ClearReferences();
+    virtual void ClearReferencesOnEndPlay() override;
 
     //debug
     void logMessage(FString message);

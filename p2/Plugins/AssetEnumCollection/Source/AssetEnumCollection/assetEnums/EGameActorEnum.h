@@ -7,4 +7,5 @@ enum class EGameActorEnum
 {
     ELoadoutRoom,
     EGameStartRoom,
+    EPauseRoom,
 };

@@ -114,7 +114,6 @@ void ACustomMeshUIActor::SetDrawSize(FVector2D size){
 void ACustomMeshUIActor::Tick(float DeltaTime) 
 { 
     Super::Tick(DeltaTime); 
-    
 } 
  
 void ACustomMeshUIActor::SetWidgetClass(TSubclassOf<UUserWidget> NewWidgetClass) 

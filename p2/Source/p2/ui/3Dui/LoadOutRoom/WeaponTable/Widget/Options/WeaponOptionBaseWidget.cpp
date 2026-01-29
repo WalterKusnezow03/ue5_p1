@@ -17,8 +17,7 @@ void UWeaponOptionBaseWidget::SetText(FString textIn){
 void UWeaponOptionBaseWidget::Init(){
     UpdateTextFromType();
     UpdatePadding();
-    SetVisible(true);
-    SetChecked(false);
+    InitBorderInterface();
 }
 
 void UWeaponOptionBaseWidget::UpdateTextFromType(){
@@ -36,8 +35,25 @@ void UWeaponOptionBaseWidget::UpdatePadding(){
     }
 }
 
+void UWeaponOptionBaseWidget::InitBorderInterface(){
+    SetupFromDefaultColors(
+        borderInterface,
+        GetBorderWidgetCasted()
+    );
+    /*
+    borderInterface.Init(
+        GetBorderWidgetCasted(), 
+        colorBase,
+        colorChecked,
+        colorHover
+    );*/
+}
+
+
+
 void UWeaponOptionBaseWidget::SetVisible(bool flag){
     WidgetHelper::SetVisible(this, flag);
+    bMarkedVisible = flag;
 }
 
 UBorder *UWeaponOptionBaseWidget::GetBorderWidgetCasted(){
@@ -50,12 +66,18 @@ UBorder *UWeaponOptionBaseWidget::GetBorderWidgetCasted(){
 }
 
 void UWeaponOptionBaseWidget::SetChecked(bool flag){
-    
-    if(UBorder *casted = GetBorderWidgetCasted()){
-        bIsChecked = flag;
-        FLinearColor color = bIsChecked ? colorChecked : colorBase;
-        casted->SetBrushColor(color);
-        DebugHelper::logMessage("UWeaponOptionBaseWidget Update Color");
-    }
-    
+    borderInterface.SetChecked(flag);
+}
+
+
+void UWeaponOptionBaseWidget::Tick(float DeltaTime){
+
+}
+
+bool UWeaponOptionBaseWidget::dispatchClick(const FVector2D &position){
+    return borderInterface.dispatchClick(position);
+}
+
+bool UWeaponOptionBaseWidget::dispatchHover(const FVector2D &position){
+    return borderInterface.dispatchHover(position);
 }

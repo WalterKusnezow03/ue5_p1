@@ -8,8 +8,21 @@
 
 
 
+TArray<IBaseUiInterface *> UWeaponTableWidget::GetAllItemsForDispatch(){
+    
+    TArray<IBaseUiInterface *> items;
+    WidgetFilter filter;
+    filter.AppendDirectChildrenFromPanel<IBaseUiInterface>(GetPanelWeaponSwitch(), items);
+    filter.AppendDirectChildrenFromPanel<IBaseUiInterface>(GetPanelSights(), items);
+    filter.AppendDirectChildrenFromPanel<IBaseUiInterface>(GetPanelMuzzleAttachments(), items);
+    filter.AppendDirectChildrenFromPanel<IBaseUiInterface>(GetPanelGripAttachments(), items);
+
+    return items;
+}
+
 bool UWeaponTableWidget::dispatchHover(const FVector2D &position){
-    return false;
+
+    return DispatchHoverToAllItemsForDispatch(position);
 }
 
 bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos){
@@ -68,7 +81,7 @@ bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos, UWidget *pane
 
     //check weapon switch
     UWeaponTypeWidget* found = 
-    dispatcher.DispatchWithResultFromPanel<UWeaponTypeWidget>(
+    dispatcher.FindResultFromPanel<UWeaponTypeWidget>(
         panel, 
         screenPos
     );
@@ -81,7 +94,7 @@ bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos, UWidget *pane
 
     //check weapon attachment change
     UWeaponAttachmentWidget* foundAttachment = 
-    dispatcher.DispatchWithResultFromPanel<UWeaponAttachmentWidget>(
+    dispatcher.FindResultFromPanel<UWeaponAttachmentWidget>(
         panel, 
         screenPos
     );

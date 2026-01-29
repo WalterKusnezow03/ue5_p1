@@ -1,13 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
+#include "customuipluginbase/baseInterface/InterfaceHelper/BorderInterfaceUtil.h"
+#include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 
 #include "WorldListItem.generated.h"
 
 class UWorldListWidget;
 
 UCLASS()
-class P2_API UWorldListItem : public UUserWidget, public IBaseUiInterface{
+class P2_API UWorldListItem : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -53,4 +56,10 @@ protected:
     bool markedVisibleBySearch = false;
 
     UTextBlock *TextBlock();
+
+    void Init();
+
+    //class needed for multi item widgets
+    BorderInterfaceUtil worldItem;
+    BorderInterfaceUtil deleteItem;
 };

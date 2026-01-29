@@ -16,6 +16,12 @@ public:
     template <typename T>
     TArray<T*> FindDirectChildrenFromPanel(UWidget *panelRaw){
         TArray<T *> castedArray;
+        AppendDirectChildrenFromPanel(panelRaw, castedArray);
+        return castedArray;
+    }
+
+    template <typename T>
+    void AppendDirectChildrenFromPanel(UWidget *panelRaw, TArray<T*> &outArray){
         if (panelRaw)
         {
             if(UPanelWidget *panel = Cast<UPanelWidget>(panelRaw)){
@@ -23,13 +29,12 @@ public:
                 for (int i = 0; i < widgets.Num(); i++){
                     if(UWidget *current = widgets[i]){
                         if(T *casted = Cast<T>(current)){
-                            castedArray.Add(casted);
+                            outArray.Add(casted);
                         }
                     }
                 }
             }                
         }
-        return castedArray;
     }
 
 };

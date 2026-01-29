@@ -33,6 +33,7 @@ public:
 
 	void showCursor(bool show);
 	void setPaused(bool in);
+	void EjectMouse();
 
 	void SetMovementLocked(bool flag);
 

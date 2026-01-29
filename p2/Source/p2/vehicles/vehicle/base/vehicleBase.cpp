@@ -1,4 +1,5 @@
 #include "vehicleBase.h"
+#include "DebugPlugin/DebugHelper.h"
 
 AvehicleBase::AvehicleBase(){
     driverInterface = nullptr;

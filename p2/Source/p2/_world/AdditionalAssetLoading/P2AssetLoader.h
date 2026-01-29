@@ -23,6 +23,10 @@ private:
     void loadParticles();
     void loadTextures();
 
+    void Load3DUiAssets();
+
+    void loadUiDataAssets();
+    void loadPauseRoomAssets();
     void loadGameStartRoomAssets();
     void loadLoadoutRoomAssets();
     void load3DWidgets();

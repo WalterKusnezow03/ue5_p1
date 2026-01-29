@@ -2,6 +2,7 @@
 #include "GameCore/Input/InputContainer.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include <algorithm>
+#include "DebugPlugin/DebugHelper.h"
 
 
 AvehicleCar *AvehicleCar::Construct(UWorld *world){

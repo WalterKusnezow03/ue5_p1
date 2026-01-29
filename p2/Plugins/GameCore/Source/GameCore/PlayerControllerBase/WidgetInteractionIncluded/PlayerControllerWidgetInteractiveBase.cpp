@@ -17,13 +17,13 @@ void APlayerControllerWidgetInteractiveBase::SetupWidgetInteractionComponentOnBe
             GetWorld(),
             this
         );
+        SetWidgetInteractionComponentHoverActive(true);
     }
 }
 
 void APlayerControllerWidgetInteractiveBase::Tick(float DeltaTime){
     Super::Tick(DeltaTime);
-
-
+    TickInteractionComponent();
 }
 
 void APlayerControllerWidgetInteractiveBase::SetWidgetInteractionComponentActive(bool flag){
@@ -61,4 +61,17 @@ void APlayerControllerWidgetInteractiveBase::WidgetInteractionOnLeftMouseUp(){
             }*/
         }
     }
+}
+
+void APlayerControllerWidgetInteractiveBase::TickInteractionComponent(){
+    if(interactionComponent){
+        if(interactionComponent->IsHoverActive()){
+            FVector origin = CameraLocation();
+            FVector direction = playerLookDir();
+            interactionComponent->TickHovered(
+                origin,
+                direction
+            );
+        }   
+    }   
 }

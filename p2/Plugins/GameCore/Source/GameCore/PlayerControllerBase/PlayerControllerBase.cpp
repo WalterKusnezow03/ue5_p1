@@ -118,7 +118,8 @@ void APlayerControllerBase::Tick(float DeltaTime)
         playerLookDir()
     );
 
-    UpdateCursorVisibilityBasedOnPause();
+    //deprecated
+    //UpdateCursorVisibilityBasedOnPause();
 }
 
 /**
@@ -419,6 +420,8 @@ void APlayerControllerBase::showCursor(bool show){
         //game only custom dispatch no ui - CUSTOM DIPATCH CLICKS
         FInputModeGameOnly InputMode;
         PlayerController->SetInputMode(InputMode);
+        
+        cursorVisibleFlag = show;
     }
 }
 
@@ -429,11 +432,13 @@ void APlayerControllerBase::UpdateCursorVisibilityBasedOnPause(){
 
     if(changed){
         showCursor(!cursorVisibleFlag);
-        cursorVisibleFlag = !cursorVisibleFlag;
+        //cursorVisibleFlag = !cursorVisibleFlag;
     }
 }
 
-
+void APlayerControllerBase::EjectMouse(){
+    showCursor(true);
+}
 
 void APlayerControllerBase::setPaused(bool in){
     isPausedFlag = in;

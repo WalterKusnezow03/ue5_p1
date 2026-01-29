@@ -3,6 +3,8 @@
 
 #include "AssetPlugin/gamestart/assetManager.h"
 
+#include "AssetEnumCollection/assetEnums/textureEnum.h"
+
 #include "WidgetImageExtended.generated.h"
 
 UCLASS()

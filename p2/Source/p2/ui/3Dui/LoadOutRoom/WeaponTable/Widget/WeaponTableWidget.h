@@ -13,19 +13,21 @@
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponTypeWidget.h"
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponAttachmentWidget.h"
 
+#include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
+
 
 #include "WeaponTableWidget.generated.h"
 
 class AWeaponTableWidgetActor;
 
 UCLASS()
-class P2_API UWeaponTableWidget : public UUserWidget, public IBaseUiInterface{
+class P2_API UWeaponTableWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
-    //needed ?
-    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
-    UWidget *GetWidget(weaponAttachmentEnum type);
+    //not needed ?
+    //UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    //UWidget *GetWidget(weaponAttachmentEnum type);
 
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
@@ -55,6 +57,9 @@ public:
     virtual void SetVisible(bool flag) override {};
     virtual bool markedVisible() { return true; }
     virtual UWidget *baseLayoutPointer() { return this; };
+
+protected:
+    virtual TArray<IBaseUiInterface *> GetAllItemsForDispatch() override;
 
 private:
     weaponSetupHelper *setupHelper = nullptr;

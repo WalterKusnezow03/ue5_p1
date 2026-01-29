@@ -8,5 +8,5 @@ enum class EAssetType
     EUTexture2D,
     EUClassBlueprint,
     EUMaterial,
-    EUStaticMesh
+    EUStaticMesh,
 };

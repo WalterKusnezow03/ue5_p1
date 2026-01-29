@@ -14,6 +14,7 @@
 #include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "AssetEnumCollection/assetEnums/textureEnum.h"
+#include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
 #include <map>
 
 
@@ -40,9 +41,8 @@ void P2AssetLoader::LoadGameAssets(){
     loadThrowables();
     loadParticles();
     loadTextures();
-    loadLoadoutRoomAssets();
-    loadGameStartRoomAssets();
-    load3DWidgets();
+
+    Load3DUiAssets();
 }
 
 
@@ -309,26 +309,59 @@ void P2AssetLoader::loadTextures(){
 }
 
 
+
+
+
+
+void P2AssetLoader::Load3DUiAssets(){
+    loadUiDataAssets();
+    loadLoadoutRoomAssets();
+    loadGameStartRoomAssets();
+    loadPauseRoomAssets();
+    load3DWidgets();
+}
+
+void P2AssetLoader::loadUiDataAssets(){
+    //EDataAssetEnum::EUiColorAsset
+
+    AssetLoader::LoadAndSavePrimaryDataAssetToAssetToManager<EDataAssetEnum, UPrimaryDataAsset>(
+        EDataAssetEnum::EUiColorAsset, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/ui3D/DataAsset/",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "ColorAssetBP"                   // Just the file name as displayed
+    );
+}
+    
+
+
+
 void P2AssetLoader::loadLoadoutRoomAssets(){
     AssetLoader::LoadAndSaveAssetToManager<EGameActorEnum, UClass>(
         EGameActorEnum::ELoadoutRoom, // track in asset manager
         "Game",                       // like "Game" for game or any other plugin name
-        "Prefabs/Loadout",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Prefabs/ui3D/RoomActors/Loadout",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "Loadoutroombp"                   // Just the file name as displayed
     );
 }
 void P2AssetLoader::loadGameStartRoomAssets(){
-    
-    //p2/Content/Prefabs/Gamestart/Gamestartroombp.uasset
     AssetLoader::LoadAndSaveAssetToManager<EGameActorEnum, UClass>(
         EGameActorEnum::EGameStartRoom, // track in asset manager
         "Game",                       // like "Game" for game or any other plugin name
-        "Prefabs/Gamestart",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Prefabs/ui3D/RoomActors/Gamestart",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "Gamestartroombp"                   // Just the file name as displayed
     );
 }
 
 
+
+void P2AssetLoader::loadPauseRoomAssets(){
+    AssetLoader::LoadAndSaveAssetToManager<EGameActorEnum, UClass>(
+        EGameActorEnum::EPauseRoom, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/ui3D/RoomActors/Pause",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Pauseroomactorbp"                   // Just the file name as displayed
+    );
+}
 
 
 

@@ -123,9 +123,13 @@ public:
 				if(loadedUClass){
 					loaded = Cast<T>(loadedUClass);
 				}
-			}else{
+			}
+			else{
 				//other asset loading (Any asset, but not for blueprint uclasses)
 				loaded = loadAsset<T>(path);
+
+
+
 			}
 
 			//save asset to asset manager once found
@@ -136,6 +140,67 @@ public:
 				}
 			}
 		}
+	}
+
+
+	//load and save as primary data asset
+
+	/*
+	//NOT TESTED
+				if(UClass *assetUClass = loadAsset<UClass>(path)){
+					if(UObject *uobject = Cast<UPrimaryDataAsset>(castedUclass->GetDefaultObject())){
+						T *casted = Cast<T>(uobject);
+						if(casted){
+							loaded = casted;
+						}
+					}
+				}
+	
+	*/
+
+	/// @brief saves an loaded asset with the given enum and key to the asset manager instance
+	/// @tparam E Enum to track in Asset Manager (Entity Enum , Weapon Enum, Texture Enum etc)
+	/// @tparam T Some Type T, UTexture2D, UClass, UMaterial
+	/// @param enumValue key for Enum to track with
+	/// @param pluginName 
+	/// @param innerPath 
+	/// @param assetName 
+	template <typename E, typename T>
+	static void LoadAndSavePrimaryDataAssetToAssetToManager(
+		E enumValue, //track in asset manager
+		FString pluginName, // like "Game" for game or any other plugin name
+		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+		FString assetName //Just the file name as displayed
+	){
+
+		// ------ NOT FUNCTIONAL !!!! ---------
+
+		EAssetType typeAsset = EAssetType::EUClassBlueprint;
+		
+
+		//make a path
+		AssetPathMaker pathMaker;
+		FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
+
+		T *loaded = nullptr;
+		if(UClass *classLoaded = loadUClassBluePrint(path)){
+			UE_LOG(LogTemp, Log, TEXT("AssetLoader: Loaded raw uclass %s"), *classLoaded->GetClass()->GetName());
+			if (T* Data = Cast<T>(classLoaded->GetDefaultObject()))
+			{
+				UE_LOG(LogTemp, Log, TEXT("AssetLoader: Blueprint DataAsset OK (NEW via CDO) = %s"), *Data->GetName());
+				//loaded = Data;
+				loaded = Data;
+			}
+		}
+		
+		//save asset to asset manager once found
+		if(loaded != nullptr){
+			assetManager *manager = assetManager::instance();
+			if(manager){
+				manager->Add<E, T>(enumValue, loaded);
+			}
+		}
+		
 	}
 
 

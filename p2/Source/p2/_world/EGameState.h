@@ -7,5 +7,6 @@ enum class EGameState
 {
     EGameLaunchScreen,
     EPauseScreen,
-    EGamePlay
+    EGamePlay,
+    ESetupRoom,
 };

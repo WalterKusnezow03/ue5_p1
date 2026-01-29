@@ -6,7 +6,8 @@
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
-
+#include "customuipluginbase/baseInterface/InterfaceHelper/BorderInterfaceUtil.h"
+#include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 
 #include "WeaponOptionBaseWidget.generated.h"
 
@@ -15,7 +16,7 @@ class UBorder;
 
 /// @brief base widget for weapon attachment selection and weapon type
 UCLASS()
-class P2_API UWeaponOptionBaseWidget : public UUserWidget{
+class P2_API UWeaponOptionBaseWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -33,6 +34,10 @@ public:
     FLinearColor colorChecked = FLinearColor::Red;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WidgetSetting")
+    FLinearColor colorHover = FLinearColor::Black;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WidgetSetting")
     float desiredPadding = 20.0f;
 
     //inits base properties (text from enum type, padding, visibility)
@@ -40,13 +45,31 @@ public:
 
     virtual void UpdateTextFromType();
     void SetText(FString textIn);
-    void SetVisible(bool flag);
+   
 
     void SetChecked(bool flag);
 
+
+    // --- override IBaseUiInterface ---
+    virtual void Tick(float DeltaTime) override;
+    virtual bool dispatchClick(const FVector2D &position) override;
+
+    virtual bool dispatchHover(const FVector2D &position) override;
+    virtual bool markedVisible() { return bMarkedVisible; }
+    virtual void SetVisible(bool flag) override;
+
+	virtual UWidget *baseLayoutPointer() override {
+        return this;
+    }
+
 protected:
     bool bIsChecked = false;
+    bool bMarkedVisible = true;
 
     UBorder *GetBorderWidgetCasted();
     void UpdatePadding();
+
+    void InitBorderInterface();
+
+    BorderInterfaceUtil borderInterface;
 };

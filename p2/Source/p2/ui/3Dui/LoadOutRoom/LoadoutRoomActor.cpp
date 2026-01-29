@@ -21,60 +21,28 @@ void ALoadoutRoomActor::CreateInstanceIfNeeded(UWorld *world){
     if(instance){
         return;
     }
-
-    if(world){
-        //instance = MakeInstance(world); //not needed, is set in function
-        MakeInstance(world);
-    } 
-}
-
-
-ALoadoutRoomActor *ALoadoutRoomActor::MakeInstance(UWorld *world){
     
-    if(instance){
-        return instance;
+    if(world){
+        if(!instance){
+            instance = TMakeInstance<ALoadoutRoomActor>(
+                world,
+                EGameActorEnum::ELoadoutRoom,
+                FVector(-10000, -10000, -1000)
+            );
+        }
     }
-
-    UClass *SpawnClass = nullptr;
-    if(assetManager *a = assetManager::instance()){
-        SpawnClass = a->Find<EGameActorEnum, UClass>(EGameActorEnum::ELoadoutRoom);
-    }
-    if(!SpawnClass){
-        return nullptr;
-    }
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector Location(-10000, -10000, -1000);
-    ALoadoutRoomActor *spawned = world->SpawnActor<ALoadoutRoomActor>(
-        SpawnClass,
-        Location,
-        FRotator::ZeroRotator,
-        SpawnParams
-    );
-
-    if (!spawned)
-    {
-        DebugHelper::logMessage("AHudUiActor::MakeInstance - Spawn actor failed");
-        return nullptr;
-    }
-
-    //save instance ptr, only one needed.
-    instance = spawned;
-    DebugHelper::logMessage("ALoadoutRoomActor made instance");
-    return spawned;
 }
 
 
 void ALoadoutRoomActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
     
-    Leave();
-    ClearReferences();
+    //Leave();
+    //ClearReferences();
     instance = nullptr;
     Super::EndPlay(EndPlayReason);
 }
 
-void ALoadoutRoomActor::ClearReferences(){
+void ALoadoutRoomActor::ClearReferencesOnEndPlay(){
     if(exitButton){
         exitButton->ClearParentActor();
     }
@@ -143,10 +111,20 @@ void ALoadoutRoomActor::StaticLeave(){
 }
 
 
-void ALoadoutRoomActor::Enter(AActor *player){
+bool ALoadoutRoomActor::Enter(AActor *player){
+
+
     if(playerEntered){
-        return;
+        return false;
     }
+    if(Super::Enter(player)){
+        playerEntered->SetActorLocation(GetActorLocation());
+        TriggerEnteredAnimation();
+        return true;
+    }
+    return false;
+
+    /*
     if(player){
         enteredLocation = player->GetActorLocation();
         playerEntered = player;
@@ -158,7 +136,7 @@ void ALoadoutRoomActor::Enter(AActor *player){
 
         FVector debug = GetActorLocation();
         logMessage("ALoadoutRoomActor::Room Locaiton", debug);
-    }
+    }*/
 }
 
 void ALoadoutRoomActor::Leave(){
@@ -167,6 +145,7 @@ void ALoadoutRoomActor::Leave(){
         ResetPlayerLocation();
         TriggerLeaveAnimation();
     }
+    Super::Leave();
 }
 
 void ALoadoutRoomActor::showScreenMessage(FString message, FColor color){
@@ -225,19 +204,6 @@ void ALoadoutRoomActor::UpdateLoadoutWithTableActors(){
 
 
 
-
-
-void ALoadoutRoomActor::ResetPlayerLocation(){
-    if(playerEntered){
-        enteredLocation += FVector(0, 0, 200);
-        //playerEntered->SetActorLocation(enteredLocation);
-        playerEntered->SetActorLocation(enteredLocation + FVector(0,0,20),
-                                false, 
-                                nullptr, 
-                                ETeleportType::TeleportPhysics);
-        playerEntered = nullptr;
-    }
-}
 
 
 

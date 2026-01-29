@@ -6,6 +6,7 @@
 #include "Components/PanelWidget.h"
 
 #include "p2/ui/3Dui/GameStartRoom/TextBox/TextBoxWidget.h"
+#include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 
 
 #include "WorldListWidget.generated.h"
@@ -13,7 +14,7 @@
 class AGameStartRoom;
 
 UCLASS()
-class P2_API UWorldListWidget : public UUserWidget, public IBaseUiInterface{
+class P2_API UWorldListWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -101,9 +102,8 @@ private:
     TArray<UWorldListItem *> GetAllItems();
     TArray<UWorldListItem *> GetAllItemsFiltered();
 
+    TArray<IBaseUiInterface *> GetAllItemsForDispatch();
 
-
-    
     TArray<FString> GetAllWorldNamesFromWidgets();
     void LoadWorldListFromStorage();
     void SaveWorldListToStorage();

@@ -31,6 +31,7 @@ public:
 private:
     bool CanSwitchStates(EGameState stateIn);
     bool IsInState(EGameState stateIn);
+    void TryQuitPause(EGameState state);
 
     EGameState currentGameState = EGameState::EGamePlay;
 };

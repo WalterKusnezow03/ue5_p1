@@ -18,6 +18,9 @@ AHudUiActor *AHudUiActor::MakeInstance(
     USceneComponent *attachTo,
     FVector relativeLocation
 ){
+    //---> bricked!
+
+
     if(!attachTo){
         return nullptr;
     }
@@ -35,6 +38,7 @@ AHudUiActor *AHudUiActor::MakeInstance(
         SpawnClass = a->Find<Eui3DWidgetEnum, UClass>(Eui3DWidgetEnum::EPlayerHud);
     }
     if(!SpawnClass){
+        DebugHelper::logMessage("AHudUiActor:: Hud BP not found");
         return nullptr;
     }
 
@@ -53,6 +57,7 @@ AHudUiActor *AHudUiActor::MakeInstance(
         DebugHelper::logMessage("AHudUiActor::MakeInstance - Spawn actor failed");
         return nullptr;
     }
+    DebugHelper::logMessage("AHudUiActor:: Hud Spawn Success");
 
     
 

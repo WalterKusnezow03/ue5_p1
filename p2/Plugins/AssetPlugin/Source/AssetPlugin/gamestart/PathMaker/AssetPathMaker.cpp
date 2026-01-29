@@ -79,6 +79,7 @@ FString AssetPathMaker::makeAssetPath(
 
     innerPath = cleanInnerPath(innerPath);
 
+    
     //Blueprint
     //TEXT("Blueprint'/Game/Prefabs/particle/particleNone.particleNone_C'"))
 
@@ -87,6 +88,8 @@ FString AssetPathMaker::makeAssetPath(
 
     //texture2D
     //TEXT("Texture2D'/Game/Prefabs/icons/healthIcon.healthIcon'")
+
+    ///Script/Engine.Blueprint'/Game/Prefabs/ui3D/DataAsset/ColorAssetBP.ColorAssetBP'
 
     FString assetTypePrefix = ToString(type);
     FString assetNamePostfix = AssetNamePostFix(type, assetName);
@@ -123,6 +126,11 @@ FString AssetPathMaker::ToString(EAssetType type){
     if(type == EAssetType::EUStaticMesh){
         return TEXT("StaticMesh");
     }
+
+    //not tested
+    /*if(type == EAssetType::EUPrimaryDataAsset){
+        return TEXT("BluePrint");
+    }*/
 
     return TEXT("none");
 }

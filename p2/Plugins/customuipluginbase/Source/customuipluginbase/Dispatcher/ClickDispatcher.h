@@ -20,7 +20,7 @@ public:
 
     //NOT Recursive
     template <typename T>
-    T* DispatchWithResultFromPanel(UWidget *panelRaw, const FVector2D &mousePos){
+    T* FindResultFromPanel(UWidget *panelRaw, const FVector2D &mousePos){
         if (panelRaw)
         {
             if(UPanelWidget *panel = Cast<UPanelWidget>(panelRaw)){

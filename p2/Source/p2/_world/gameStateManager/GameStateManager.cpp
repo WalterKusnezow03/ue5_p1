@@ -3,6 +3,7 @@
 
 #include "p2/_world/worldLevel.h"
 #include "p2/ui/3Dui/GameStartRoom/GameStartRoom.h"
+#include "p2/ui/3Dui/PauseActor/PauseRoomActor.h"
 
 GameStateManager::GameStateManager(){
 
@@ -27,20 +28,28 @@ void GameStateManager::UpdateGameState(EGameState state){
     if(!CanSwitchStates(state)){
         return;
     }
-    
+    //LeaveCurrentGameState();
+    TryQuitPause(state);
 
-    if(state == EGameState::EGameLaunchScreen){
-        
+    if (state == EGameState::EGameLaunchScreen){
+
         AGameStartRoom::StaticEnter(AworldLevel::GetPlayerReference());
         OverrideGameState(state);
         return;
-        
     }
+
+    if(state == EGameState::EPauseScreen){
+        APauseRoomActor::StaticEnter(AworldLevel::GetPlayerReference());
+        OverrideGameState(state);
+        return;
+    }
+
+
 
     OverrideGameState(state);
 
 
-
+    /*
     UPlayerUi *instance = UPlayerUi::currentInstance();
     if(instance){
         if(state == EGameState::EGameLaunchScreen){    
@@ -52,8 +61,28 @@ void GameStateManager::UpdateGameState(EGameState state){
         if(state == EGameState::EGamePlay){
             instance->openGameScreen();
         }
+    }*/
+}
+
+void GameStateManager::TryQuitPause(EGameState state){
+    if(
+        IsInState(EGameState::EPauseScreen) &&
+        state == EGameState::EGamePlay
+    ){
+        APauseRoomActor::StaticLeave();
+        OverrideGameState(state);
     }
 }
+
+
+
+/*
+void GameStateManager::LeaveCurrentGameState(){
+    if(currentGameState == EGameState::ESetupRoom){
+
+    }
+}
+*/
 
 void GameStateManager::SetGameStatePaused(){
     UpdateGameState(EGameState::EPauseScreen);

@@ -30,11 +30,6 @@ public:
 
 
     // -- Ray Setup and Trigger --
-    void UpdateRay(
-        const FVector &origin,
-        const FVector &direction
-    );
-    void TriggerRayIntersect();
     bool RayIntersect(
         const FVector &origin,
         const FVector &direction
@@ -49,6 +44,7 @@ public:
     bool IsInteractionActive();
 
     void SetInteractionHoverActive(bool enabled);
+    bool IsHoverActive();
 
 private:
     FVector dirSaved;
@@ -59,6 +55,8 @@ private:
 
     bool isEnabled = true;
     bool isHoverEnabled = false;
+
+    bool bDrawDebugLine = false;
 
     ACustomMeshUIActor *RayIntersectFound(
         const FVector &origin,

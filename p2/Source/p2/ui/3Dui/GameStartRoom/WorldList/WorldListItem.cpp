@@ -1,6 +1,11 @@
 #include "WorldListItem.h"
 
 #include "customuipluginbase/Dispatcher/ClickDispatcher.h"
+#include "customuipluginbase/baseInterface/InterfaceHelper/BorderInterfaceUtil.h"
+
+
+
+
 
 void UWorldListItem::SetText(FString stringin){
     isMarkedFree = false;
@@ -19,6 +24,10 @@ UTextBlock *UWorldListItem::TextBlock(){
 }
 
 bool UWorldListItem::ContainsText(FString text){
+    if(text.Len() <= 0){
+        return true;
+    }
+
     return GetText().Contains(text);
 }
 
@@ -35,6 +44,7 @@ void UWorldListItem::ClearParent(){
 
 void UWorldListItem::SetParent(UWorldListWidget *parentIn){
     parent = parentIn;
+    Init();
 }
 
 void UWorldListItem::NotifyDelete(){
@@ -61,8 +71,22 @@ void UWorldListItem::Tick(float DeltaTime){
 }
 
 bool UWorldListItem::dispatchClick(const FVector2D &position){
-    ClickDispatcher dispatcher;
+    
+    //to be refactured for border util!
+    
+    //ClickDispatcher dispatcher;
     if(markedVisible()){
+        if(worldItem.dispatchClick(position)){
+            NotifyLaunch();
+            return true;
+        }
+        if(deleteItem.dispatchClick(position)){
+            NotifyDelete();
+            return true;
+        }
+        
+        
+        /*
         if(dispatcher.InBound(GetTextBase(), position)){
             NotifyLaunch();
             return true;
@@ -70,13 +94,19 @@ bool UWorldListItem::dispatchClick(const FVector2D &position){
         if(dispatcher.InBound(GetDeleteButton(), position)){
             NotifyDelete();
             return true;
-        }
+        }*/
     }
     return false;
 }
 
 bool UWorldListItem::dispatchHover(const FVector2D &position){
-
+    DebugHelper::showScreenMessage("UWorldListItem::HOVER");
+    if (markedVisible())
+    {
+        bool resultA = worldItem.dispatchHover(position);
+        bool resultB = deleteItem.dispatchHover(position);
+        return resultA || resultB;
+    }
     return false;
 }
 
@@ -109,3 +139,19 @@ bool UWorldListItem::IsMarkedHiddenBySearch(){
     return !markedVisibleBySearch;
 }
 
+
+
+
+void UWorldListItem::Init(){
+    SetupFromDefaultColors(
+        worldItem,
+        GetTextBase()
+    );
+    SetupFromDefaultColors(
+        deleteItem,
+        GetDeleteButton()
+    );
+
+    //unclear.
+    MarkVisibleBySearch(TEXT(""));
+}

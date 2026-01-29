@@ -1,5 +1,6 @@
 #include "wheel.h"
 
+#include "DebugPlugin/DebugHelper.h"
 
 /// @brief creates an instance of an wheel
 /// @param world 

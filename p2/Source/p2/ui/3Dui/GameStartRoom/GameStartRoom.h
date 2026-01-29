@@ -7,13 +7,15 @@
 #include "p2/ui/3Dui/LoadOutRoom/ExitActor/LoadoutRoomExitButtonActor.h"
 #include "customuipluginbase/UserInputTracking/UserInput.h"
 
+#include "p2/ui/3Dui/RoomBase/WidgetRoomActorBase.h"
+
 #include "GameStartRoom.generated.h"
 
 class UWorldCreatorWidget;
 class UWorldListWidget;
 
 UCLASS()
-class P2_API AGameStartRoom : public AActorBase {
+class P2_API AGameStartRoom : public AWidgetRoomActorBase {
     GENERATED_BODY()
 
 protected:
@@ -22,16 +24,15 @@ protected:
     
 
 public:
-    static AGameStartRoom *MakeInstance(UWorld *world);
-
+    
     AGameStartRoom();
 
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float deltatime) override;
 
-    void Enter(AActor *actor);
-    void Leave();
+    virtual bool Enter(AActor *actor) override;
+    virtual void Leave() override;
 
     static void StaticEnter(AActor *actor);
     
@@ -52,11 +53,8 @@ protected:
 
     void ListenForUserInput();
 
-    FVector enteredLocation;
-    AActor *playerEntered = nullptr;
-
     void SetParentReferencesOnWidgets();
-    void ClearReferences();
+    virtual void ClearReferencesOnEndPlay() override;
 
     UserInput input;
 
@@ -69,7 +67,6 @@ protected:
     ACustomMeshUIActor *uiActorWorldCreator = nullptr;
     ACustomMeshUIActor *uiActorWorldList = nullptr;
 
-    void LockPlayerMovement(bool flag);
     bool AnyTextFieldSelected();
     void ChangeLockPlayerMovementBasedOnSeletedTextField();
 };

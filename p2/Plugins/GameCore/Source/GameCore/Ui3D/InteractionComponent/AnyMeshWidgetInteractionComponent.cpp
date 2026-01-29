@@ -58,18 +58,6 @@ void UAnyMeshWidgetInteractionComponent::TickComponent(
 
 
 
-void UAnyMeshWidgetInteractionComponent::UpdateRay(
-    const FVector &origin,
-    const FVector &direction
-){
-    originSaved = origin;
-    dirSaved = direction;
-}
-
-void UAnyMeshWidgetInteractionComponent::TriggerRayIntersect(){
-    RayIntersect(originSaved, dirSaved);
-}
-
 
 bool UAnyMeshWidgetInteractionComponent::RayIntersect(
     const FVector &origin,
@@ -78,12 +66,14 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
     if(!isEnabled){
         return false;
     }
+    bool result = false;
+    bDrawDebugLine = true; //draw on click
     if(ACustomMeshUIActor *found = RayIntersectFound(origin, direction)){
         found->RayIntersect(origin, direction);
-        return true;
+        result = true;
     }
-    
-    return false;
+    bDrawDebugLine = false; //reset draw on click
+    return result;
 }
 
 
@@ -106,7 +96,8 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
         Params.bTraceComplex = false; //new lower complexity
 
         //Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
-        
+
+        //ECC_GameTraceChannel1 widget Channel
         bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_GameTraceChannel1, Params);
 
         
@@ -115,8 +106,9 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
         if (bHit){
             if(AActor *actor = HitResult.GetActor()){
                 if(ACustomMeshUIActor *casted = Cast<ACustomMeshUIActor>(actor)){
-                    DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Red);
-                    
+                    if(bDrawDebugLine){
+                        DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Red);
+                    }
                     /*#if WITH_EDITOR
                     DebugHelper::logMessage(
                         FString::Printf(
@@ -129,7 +121,10 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
 
                     return casted;
                 }else{
-                    DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Blue);
+                    if(bDrawDebugLine){
+                        DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Blue);
+                    }
+                    
                 }
             }
         }
@@ -166,4 +161,8 @@ void UAnyMeshWidgetInteractionComponent::TickHovered(
             found->RayIntersectHover(origin, direction);
         }
     }
+}
+
+bool UAnyMeshWidgetInteractionComponent::IsHoverActive(){
+    return isHoverEnabled;
 }
