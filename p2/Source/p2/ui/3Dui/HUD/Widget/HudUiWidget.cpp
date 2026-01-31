@@ -1,5 +1,6 @@
 #include "HudUiWidget.h"
 #include "Components/TextBlock.h"
+#include "p2/ui/3Dui/HUD/Widget/MiniMapWidget/MiniMapWidget.h"
 
 
 void UHudUiWidget::UpdateWidget(FPlayerStatus &playerStatus){
@@ -34,3 +35,49 @@ void UHudUiWidget::UpdateAmmunitionText(FText text){
 }
 
 
+
+
+
+// ---- mini map dispatch ----
+
+bool UHudUiWidget::InitMiniMap(AActor *player){
+    if(UMiniMapWidget *miniMap = MiniMapCasted()){
+        miniMap->SetPlayerReference(player);
+        return true;
+    }
+    return false;
+}
+
+void UHudUiWidget::Tick(float DeltaTime){
+    if(UMiniMapWidget *miniMap = MiniMapCasted()){
+        miniMap->Tick(DeltaTime);
+    }
+}
+
+
+UMiniMapWidget *UHudUiWidget::MiniMapCasted(){
+    if(UWidget *raw = GetMiniMap()){
+        if(UMiniMapWidget *casted = Cast<UMiniMapWidget>(raw)){
+            return casted;
+        }
+    }
+    return nullptr;
+}
+
+
+// ---- mini map register actor ----
+void UHudUiWidget::RegisterActorToMiniMap(AActor *actor, EMarkerType type){
+    if(actor){
+        if(UMiniMapWidget *casted = MiniMapCasted()){
+            casted->AddMarker(type, actor);
+        }
+    }
+}
+
+void UHudUiWidget::UnRegisterActorFromMiniMap(AActor *actor){
+    if(actor){
+        if(UMiniMapWidget *casted = MiniMapCasted()){
+            casted->RemoveMarker(actor);
+        }
+    }
+}

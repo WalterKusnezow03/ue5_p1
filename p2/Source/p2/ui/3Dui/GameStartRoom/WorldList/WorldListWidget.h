@@ -7,6 +7,7 @@
 
 #include "p2/ui/3Dui/GameStartRoom/TextBox/TextBoxWidget.h"
 #include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
+#include "customuipluginbase/baseInterface/InterfaceHelper/derived/BorderInterfaceUtilButton.h"
 
 
 #include "WorldListWidget.generated.h"
@@ -36,7 +37,12 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetCardHandleLeft();
 
+protected:
+    BorderInterfaceUtilButton buttonLeft;
+    BorderInterfaceUtilButton buttonRight;
+    void InitButtons();
 
+public:
 
     //true if sucessfull and not present yet
     bool AddNewItem(FString text);

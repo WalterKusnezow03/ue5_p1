@@ -4,6 +4,7 @@
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
 #include "customuipluginbase/baseInterface/InterfaceHelper/BorderInterfaceUtil.h"
 #include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
+#include "Components/TextBlock.h"
 
 #include "WorldListItem.generated.h"
 

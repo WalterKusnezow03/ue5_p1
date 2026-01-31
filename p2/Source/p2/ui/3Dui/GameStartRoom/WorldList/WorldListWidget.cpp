@@ -149,7 +149,8 @@ UTextBoxWidget *UWorldListWidget::GetTextBoxSearch(){
 
 
 void UWorldListWidget::Tick(float DeltaTime){
-
+    buttonRight.Tick(DeltaTime);
+    buttonLeft.Tick(DeltaTime);
 }
 
 /// --- Dispatch Click ---
@@ -190,7 +191,10 @@ bool UWorldListWidget::dispatchHover(const FVector2D &position){
     DebugHelper::showScreenMessage("UWorldListWidget::Hover");
 
     //todo here: dispatch to all items!
-    return DispatchHoverToAllItemsForDispatch(position);
+    bool listResult = DispatchHoverToAllItemsForDispatch(position);
+    bool buttonLeftResult = buttonLeft.dispatchHover(position);
+    bool buttonRightResult = buttonRight.dispatchHover(position);
+    return listResult || buttonLeftResult || buttonRightResult;
 }
 
 /// --- Dispatch Keyboard ---
@@ -349,7 +353,15 @@ void UWorldListWidget::NotifyTextChanged(){
 void UWorldListWidget::OnBeginPlay(){
     LoadWorldListFromStorage();
     ShowCard(0);
+    InitButtons();
 }
+
+void UWorldListWidget::InitButtons(){
+    SetupFromDefaultColors(buttonRight, GetCardHandleRight());
+    SetupFromDefaultColors(buttonLeft, GetCardHandleLeft());
+}
+    
+
 
 void UWorldListWidget::OnEndPlay(){
     SaveWorldListToStorage();

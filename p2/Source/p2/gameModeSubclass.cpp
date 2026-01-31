@@ -70,7 +70,7 @@ void AgameModeSubclass::BeginPlay()
     loader.LoadGameAssets();
 
     //launch ui from here, not from player
-    UPlayerUi::createNewInstance(GetWorld());
+    //UPlayerUi::createNewInstance(GetWorld());
     
 
     //opens game launch screen -> launched by world on player ref set

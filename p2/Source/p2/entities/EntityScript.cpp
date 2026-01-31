@@ -15,7 +15,7 @@
 #include "GameCore/util/FVectorUtil.h"
 
 
-#include "p2/ui/PlayerUi.h"
+
 
 
 // Sets default values
@@ -65,11 +65,8 @@ void AEntityScript::init(){
 	setTeam(teamEnum::neutralTeam);
 
 	projectActorToGround();
+	RegisterToMiniMap();
 }
-
-
-
-
 
 // Called every frame
 void AEntityScript::Tick(float DeltaTime)
@@ -636,7 +633,7 @@ void AEntityScript::enableCollider(bool enable){
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
 
-	
+	UnRegisterFromMiniMap();
 	resetpath();
 	enableActiveStatus(false);
 	if (EntityManager *e = AworldLevel::entityManager())
@@ -704,12 +701,20 @@ void AEntityScript::alarm(){
 
 void AEntityScript::setTeam(teamEnum teamIn){
 	this->team = teamIn;
+	UpdateMiniMapRegistration();
 }
 
 teamEnum AEntityScript::getTeam(){
     return team;
 }
 
+EMarkerType AEntityScript::GetMarkerType(){
+	teamEnum type = getTeam();
+	if(type == teamEnum::neutralTeam){
+		return EMarkerType::ENeutralEntity;
+	}
+	return EMarkerType::EEnemy;
+}
 
 
 
@@ -745,6 +750,8 @@ void AEntityScript::drawPath(){
 
 
 
+
+
 // ------------ new skelleton section --------------
 void AEntityScript::BeginPlayHumanoidController(){
 	humanoidPluginController.raycastIgnoreOwner(this);
@@ -756,3 +763,6 @@ void AEntityScript::BeginPlayHumanoidController(){
 void AEntityScript::TickHumanoidController(float deltatime){
 	humanoidPluginController.Tick(deltatime);
 }
+
+
+

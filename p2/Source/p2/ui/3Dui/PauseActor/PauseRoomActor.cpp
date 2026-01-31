@@ -115,6 +115,7 @@ void APauseRoomActor::Leave(){
 void APauseRoomActor::SetToPlayerLocation(){
     if(APlayerControllerBase *base = GetPlayerEnteredControllerBase()){
         FVector look = base->playerLookDir();
+        look.Z = 0.0f;
         FRotator targetRotation = look.Rotation();
 
         FVector playerLocation = base->GetActorLocation();

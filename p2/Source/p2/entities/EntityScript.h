@@ -13,18 +13,16 @@
 
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
 
+#include "p2/entetiesBase/miniMapRegisteredActor/MiniMapRegisteredActor.h"
 
 #include "EntityScript.generated.h"
 
 UCLASS()
-class P2_API AEntityScript : public AActor, public IDamageinterface
+class P2_API AEntityScript : public AMiniMapRegisteredActor, public IDamageinterface
 {
 	GENERATED_BODY()
 	
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Flags")
-	bool enableMarker = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Flags")
 	bool debugStaticEntity = false;
@@ -55,6 +53,8 @@ public:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	//called on begin play and get from gc entity manager
 	virtual void init();
 
 	//virtual void setTeam(int teamIn) override;
@@ -62,6 +62,9 @@ public:
 	
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
+
+	// --- mini map marker type derived ----
+	EMarkerType GetMarkerType() override;
 
 	virtual bool isWithinMaxRange(FVector vec);
 	bool isWithinCloseRange(FVector &vec);

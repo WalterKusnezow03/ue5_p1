@@ -84,6 +84,7 @@ public:
 	void alertAll();
 	void alarmAll();
 
+	void UpdatePlayerEnteredUi();
 
 	//team leader section
 	void validatePlayerTargetMovingPosition(

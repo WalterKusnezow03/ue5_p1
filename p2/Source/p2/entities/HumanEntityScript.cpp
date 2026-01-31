@@ -209,8 +209,8 @@ void AHumanEntityScript::die(){
     Super::resetpath();
     AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
+    UnRegisterFromMiniMap();
 
-    
     humanoidPluginController.dropCarriedItem();
 
     //entity manager

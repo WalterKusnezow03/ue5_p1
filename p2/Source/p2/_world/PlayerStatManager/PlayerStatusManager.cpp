@@ -1,5 +1,4 @@
 #include "PlayerStatusManager.h"
-#include "p2/ui/PlayerUi.h"
 
 #include "p2/ui/3Dui/HUD/HudUiActor.h"
 

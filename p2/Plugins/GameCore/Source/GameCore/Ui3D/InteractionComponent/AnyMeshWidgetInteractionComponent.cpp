@@ -67,12 +67,12 @@ bool UAnyMeshWidgetInteractionComponent::RayIntersect(
         return false;
     }
     bool result = false;
-    bDrawDebugLine = true; //draw on click
+    //bDrawDebugLine = true; //draw on click
     if(ACustomMeshUIActor *found = RayIntersectFound(origin, direction)){
         found->RayIntersect(origin, direction);
         result = true;
     }
-    bDrawDebugLine = false; //reset draw on click
+    //bDrawDebugLine = false; //reset draw on click
     return result;
 }
 

@@ -3,11 +3,16 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
+#include "customuipluginbase/baseInterface/BaseUiInterface.h"
+#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
+
 
 #include "HudUiWidget.generated.h"
 
+class UMiniMapWidget;
+
 UCLASS()
-class P2_API UHudUiWidget : public UUserWidget {
+class P2_API UHudUiWidget : public UUserWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -23,12 +28,32 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetWidgetTopMessage();
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetMiniMap();
+
     // update widget elements
     void UpdateWidget(FPlayerStatus &playerStatusStruct);
 
     //void Tick(float deltatime);
 
-private:
+    // --- needed for minimap update ---
+    virtual void Tick(float DeltaTime) override;
+    virtual bool dispatchClick(const FVector2D &position) override {return false;}
+
+	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
+	virtual UWidget *baseLayoutPointer() override {
+        return this;
+    }
+
+    bool InitMiniMap(AActor *player);
+
+    void RegisterActorToMiniMap(AActor *actor, EMarkerType type);
+    void UnRegisterActorFromMiniMap(AActor *actor);
+
+protected:
+    UMiniMapWidget *MiniMapCasted();
+
+
     void UpdateHealthText(FString text);
     void UpdateHealthText(FText text);
 

@@ -10,15 +10,11 @@ public:
     UiSimulation();
     ~UiSimulation();
 
+
     void Notify(EUiEvent event, FString message);
-
-    //deprecated, has 3D Widget iNtercation Component
-    /*void RayCast3DUi(
-        UWorld *world, 
-        const FVector &pos, 
-        const FVector &dir
-    );*/
-
+    void Notify(EUiEvent event, AActor *actor);
+    void Notify(EUiEvent event, AActor *actor, EMarkerType type);
+    
 private:
 
 };

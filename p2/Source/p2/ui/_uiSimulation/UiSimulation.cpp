@@ -18,39 +18,28 @@ void UiSimulation::Notify(EUiEvent event, FString message){
     }
 }
 
-//deprecated, has 3D Widget iNtercation Component
-/*
-void UiSimulation::RayCast3DUi(
-    UWorld *world, 
-    const FVector &pos, 
-    const FVector &dir
-){
-    if(!world){
-        return;
-    }
-    FVector start = pos + dir.GetSafeNormal() * 50.0f; //50cm
-    FVector end = pos + dir.GetSafeNormal() * 5000.0f; //50 * 100 = 50m
-
-    // Perform the raycast
-    FHitResult HitResult;
-    FCollisionQueryParams Params;
-    //Params.AddIgnoredActor(this); // Ignore the character itself
-    Params.bTraceComplex = false; //new lower complexity
-
-    
-
-    bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility, Params);
 
 
-    // If the raycast hit something, save hitresult and return positive
-    if (bHit)
-    {
-        if(AActor *actor = HitResult.GetActor()){
-            if(ACustomMeshUIActor *casted = Cast<ACustomMeshUIActor>(actor)){
-                casted->RayIntersect(start, dir);
-            }
+
+// todo: aufräumen: explizite hud mini map events, function calls.
+void UiSimulation::Notify(EUiEvent event, AActor *actor){
+    if(event == EUiEvent::HudMiniMapUnRegisterActor){
+        if(AHudUiActor *hudUi = AHudUiActor::GetInstance()){
+            hudUi->UnRegisterActorFromMiniMap(actor);
         }
     }
-}*/
 
-        
+}
+
+void UiSimulation::Notify(EUiEvent event, AActor *actor, EMarkerType type){
+    if(actor){
+        if(event == EUiEvent::HudMiniMapRegisterActor){
+            if(AHudUiActor *hudUi = AHudUiActor::GetInstance()){
+                hudUi->RegisterActorToMiniMap(actor, type);
+            }
+        }
+        if(event == EUiEvent::HudMiniMapUnRegisterActor){
+            Notify(event, actor);
+        }
+    }
+}

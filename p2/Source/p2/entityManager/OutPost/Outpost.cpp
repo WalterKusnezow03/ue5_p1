@@ -11,6 +11,8 @@
 #include "OutpostAlarmPole.h"
 #include "DebugPlugin/DebugHelper.h"
 #include <cstdlib>
+#include "p2/ui/_uiSimulation/UiSimulation.h"
+#include "p2/ui/_uiSimulation/EUiEvent.h"
 
 
 
@@ -86,16 +88,9 @@ void AOutpost::switchPlayerEnteredStatus(bool status){
 			moveAllEntitiesToGroundOnPlayerEnterArea();
 		}
 
-		if(referenceManager *r = referenceManager::instance()){
-			AplayerScript *player = r->getPlayerPointer();
-			if(player != nullptr){
-				player->updatePlayerEnteredAreaUi(playerEntered);
-			}
-		}
+		UpdatePlayerEnteredUi();
 
-		
-
-		//Debug
+				//Debug
 		/*
 		if(playerEntered){
 			DebugHelper::showScreenMessage("player entered the area");
@@ -105,6 +100,14 @@ void AOutpost::switchPlayerEnteredStatus(bool status){
 	}
 
 }
+
+void AOutpost::UpdatePlayerEnteredUi(){
+    FString message = playerEntered ? "Outpost Area Entered" : "Outpost Area left";
+    EUiEvent type = playerEntered ? EUiEvent::HudTopText : EUiEvent::HudTopTextTimed;
+    AworldLevel::uiSimulation.Notify(type, message);
+}
+
+
 
 void AOutpost::moveAllEntitiesToGroundOnPlayerEnterArea(){
 	for(auto &pair : teamMap){

@@ -1,0 +1,12 @@
+#pragma once
+#include "CoreMinimal.h"
+
+//game actors which are not nesecarrily weapons or entities like bots
+UENUM()
+enum class EMarkerType
+{
+    ENeutralEntity,
+    EEnemy,
+    EPlayer,
+    EWeapon,
+};

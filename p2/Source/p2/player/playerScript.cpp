@@ -26,7 +26,7 @@
 
 #include "p2/_world/worldLevel.h"
 
-#include "p2/ui/PlayerUi.h"
+
 #include "p2/ui/3Dui/HUD/HudUiActor.h"
 
 
@@ -65,11 +65,11 @@ void AplayerScript::BeginPlay()
     }
 
     CreateUiHudActorOnBeginPlay();
-    createMiniMap();
+    //createMiniMap();
 }
 
 void AplayerScript::CreateUiHudActorOnBeginPlay(){
-    FVector relativeLocation(50, 0, 0);
+    FVector relativeLocation(100, 0, 0);
     AHudUiActor::MakeInstance(GetWorld(), CameraComponent, relativeLocation);
 }
 
@@ -163,7 +163,7 @@ void AplayerScript::Tick(float DeltaTime)
     TickUpdateWingsuit(DeltaTime);
 
     updateUi();
-    TickMiniMap();
+    //TickMiniMap();
 
 
 }
@@ -573,25 +573,6 @@ void AplayerScript::updateHealthUi(){
     AworldLevel::playerStatusManager.updateHealth(health);
 }
 
-#include "p2/ui/_uiSimulation/UiSimulation.h"
-#include "p2/ui/_uiSimulation/EUiEvent.h"
-void AplayerScript::updatePlayerEnteredAreaUi(bool entered){
-    
-    FString message = entered ? "Outpost Area Entered" : "Outpost Area left";
-    EUiEvent type = entered ? EUiEvent::HudTopText : EUiEvent::HudTopTextTimed;
-    AworldLevel::uiSimulation.Notify(type, message);
-
-    /*if (UPlayerUi *uiInstance = UPlayerUi::currentInstance())
-    {
-
-        if(entered){
-            uiInstance->updateMissionText(message);
-        }else{
-            uiInstance->updateMissionTextTimed(message);
-        }
-    }*/
-}
-
 
 
 
@@ -651,9 +632,12 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
     }
 }
 
+
+
+// --- deprecated! ---
 /**
  * player minimap
- */
+ 
 
 void AplayerScript::createMiniMap(){
     if(minimap == nullptr && CameraComponent != nullptr){
@@ -667,4 +651,4 @@ void AplayerScript::TickMiniMap(){
         FRotator rot = GetActorRotation();
         minimap->updatePlayerPositionAndRotation(pos, rot);
     }
-}
+}*/

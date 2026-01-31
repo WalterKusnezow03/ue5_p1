@@ -6,5 +6,7 @@ UENUM()
 enum class EUiEvent
 {
     HudTopText,
-    HudTopTextTimed
+    HudTopTextTimed,
+    HudMiniMapRegisterActor,
+    HudMiniMapUnRegisterActor,
 };

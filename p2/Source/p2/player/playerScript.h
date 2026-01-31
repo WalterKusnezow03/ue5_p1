@@ -64,7 +64,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void updatePlayerEnteredAreaUi(bool entered);
+	
 
 private:
 	bool isCamInPlayer = true;
@@ -139,7 +139,7 @@ private:
 
 
 	//Minimap
-	AMinimap *minimap = nullptr;
+	/*AMinimap *minimap = nullptr;
 	void createMiniMap();
-	void TickMiniMap();
+	void TickMiniMap();*/
 };

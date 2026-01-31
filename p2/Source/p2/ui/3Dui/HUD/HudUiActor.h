@@ -4,6 +4,7 @@
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
+#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
 #include "p2/ui/3Dui/HUD/Widget/HudUiWidget.h"
 
 #include "HudUiActor.generated.h"
@@ -41,6 +42,10 @@ public:
 		return false;
 	}
 
+    // --- entity register and unregister ---
+    void RegisterActorToMiniMap(AActor *actor, EMarkerType type);
+    void UnRegisterActorFromMiniMap(AActor *actor);
+
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -48,6 +53,14 @@ protected:
     virtual void CreateWidgetMeshData() override;
 
     UHudUiWidget *GetHudWidget();
+
+
+
+
+    bool bWasMiniMapInited = false;
+    AActor *player = nullptr;
+    void SetPlayerReference(AActor *actor);
+    void InitMiniMapIfNeeded();
 
 private:
 

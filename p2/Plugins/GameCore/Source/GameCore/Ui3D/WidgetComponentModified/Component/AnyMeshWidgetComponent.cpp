@@ -149,18 +149,14 @@ FAnyMeshWidgetRayIntersectResult UAnyMeshWidgetComponent::RayIntersectResult(
 	FVector localDirection = GetComponentTransform().InverseTransformVector(direction);
 
 	FIntersectHitResult meshDataOutIntersectHitResult;
-	if(assignedMeshData.RayIntersectDraw(
+	if(assignedMeshData.RayIntersect(//RayIntersectDraw(
 		localOrigin,
 		localDirection,
-		meshDataOutIntersectHitResult,
-		GetWorld(),
-		GetComponentTransform().ToMatrixWithScale()
+		meshDataOutIntersectHitResult
+		//,
+		//GetWorld(),
+		//GetComponentTransform().ToMatrixWithScale()
 	)){
-	/*if(assignedMeshData.RayIntersect(
-		localOrigin,
-		localDirection,
-		outIntersectHitResult
-	)){*/
 		DebugHelper::logMessage(
 			FString::Printf(
 				TEXT("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!, %.2f %.2f"),

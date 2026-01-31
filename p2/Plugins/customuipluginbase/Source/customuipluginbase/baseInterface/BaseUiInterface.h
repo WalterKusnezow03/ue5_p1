@@ -26,8 +26,17 @@ class CUSTOMUIPLUGINBASE_API IBaseUiInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
     // pure virtual functions () = 0 Only!
 public:
+
+	/// ---- PURE VIRTUAL ----
+
 	virtual void Tick(float DeltaTime) = 0;
 	virtual bool dispatchClick(const FVector2D &position) = 0;
+	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
+	virtual UWidget *baseLayoutPointer() = 0;
+
+
+	/// ---- OPTIONAL VIRTUAL ----
+
 	virtual bool dispatchHover(const FVector2D &position) { return false; };
 	virtual void SetVisible(bool flag) {};
 	virtual bool markedVisible() { return true; }
@@ -35,8 +44,7 @@ public:
 	//does not have to be overriden.
 	virtual void dispatchUserInput(UserInput &input) {};
 
-	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
-	virtual UWidget *baseLayoutPointer() = 0;
+	
 
 	///does not need to be implemented but can be.
 	virtual UPayLoadBase *GetPayLoad(){

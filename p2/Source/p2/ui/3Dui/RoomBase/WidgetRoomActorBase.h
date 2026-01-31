@@ -6,6 +6,7 @@
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 #include "p2/_world/EGameState.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 
 #include "WidgetRoomActorBase.generated.h"
 

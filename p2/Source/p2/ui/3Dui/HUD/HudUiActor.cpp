@@ -64,6 +64,7 @@ AHudUiActor *AHudUiActor::MakeInstance(
     //attach
     spawned->AttachToScene(attachTo);
     spawned->SetActorRelativeLocation(relativeLocation);
+    spawned->SetPlayerReference(attachTo->GetOwner());
     instance = spawned;
 
     return spawned;
@@ -81,6 +82,11 @@ void AHudUiActor::AttachToScene(USceneComponent *attachTo){
     }
 }
 
+void AHudUiActor::SetPlayerReference(AActor *actor){
+    if(actor){
+        player = actor;
+    }
+}
 
 UHudUiWidget *AHudUiActor::GetHudWidget(){
     return GetWidget<UHudUiWidget>();
@@ -132,9 +138,6 @@ void AHudUiActor::CreateWidgetMeshData(){
 
 
 
-// update
-
-
 void AHudUiActor::Update(FPlayerStatus &playerStatus){
     if(UHudUiWidget *found = GetHudWidget()){
         found->UpdateWidget(playerStatus);
@@ -146,4 +149,45 @@ void AHudUiActor::Update(FPlayerStatus &playerStatus){
 void AHudUiActor::Tick(float deltatime){
     Super::Tick(deltatime);
 
+    InitMiniMapIfNeeded();
+    if (UHudUiWidget *found = GetHudWidget()){
+        found->Tick(deltatime);
+    }
 }
+
+
+//// ------ Mini Map ------
+
+void AHudUiActor::InitMiniMapIfNeeded(){
+    if(!player){
+        return;
+    }
+
+    if(bWasMiniMapInited == false){
+        if (UHudUiWidget *found = GetHudWidget())
+        {
+            if(found->InitMiniMap(player)){
+                bWasMiniMapInited = true;
+            }
+            
+        }
+        
+    }
+}
+
+void AHudUiActor::RegisterActorToMiniMap(AActor *actor, EMarkerType type){
+    if(actor){
+        if (UHudUiWidget *found = GetHudWidget()){
+            found->RegisterActorToMiniMap(actor, type);
+        }
+    }
+}
+
+void AHudUiActor::UnRegisterActorFromMiniMap(AActor *actor){
+    if(actor){
+        if (UHudUiWidget *found = GetHudWidget()){
+            found->UnRegisterActorFromMiniMap(actor);
+        }
+    }
+}
+
