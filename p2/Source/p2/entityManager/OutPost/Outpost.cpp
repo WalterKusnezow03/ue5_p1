@@ -3,8 +3,7 @@
 
 
 #include "Outpost.h"
-#include "p2/entityManager/referenceManager.h"
-#include "GameCore/PlayerInfo/PlayerInfo.h"
+ #include "GameCore/PlayerInfo/PlayerInfo.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/_world/worldLevel.h"
 #include "GameCore/util/FVectorUtil.h"

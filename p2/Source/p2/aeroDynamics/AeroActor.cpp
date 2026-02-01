@@ -6,8 +6,9 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h"
-#include "p2/entityManager/referenceManager.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+ #include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "p2/_world/worldLevel.h"
+
 
 
 AAeroActor* AAeroActor::Construct(UWorld *world, FVector &location){
@@ -257,13 +258,11 @@ void AAeroActor::Tick(float DeltaTime){
     
     //debugplayer
     if(false){
-        if(referenceManager *r = referenceManager::instance()){
-            AplayerScript *player = r->getPlayerPointer();
-            if(player){
-                FVector offsetLocation = GetActorLocation() + FVector(0,0,100);
-                player->SetActorLocation(offsetLocation);
-            }
-        }
+        if(AplayerScript *casted = AworldLevel::TGetPlayerReference<AplayerScript>()){
+			FVector offsetLocation = GetActorLocation() + FVector(0,0,100);
+            casted->SetActorLocation(offsetLocation);
+		}
+        
     }else{
         DeltaTime *= 0.001f;
     }

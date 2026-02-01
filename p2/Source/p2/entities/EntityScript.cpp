@@ -3,8 +3,7 @@
 
 #include "p2/player/playerScript.h"
 #include "PathFinder/pathFinding/PathFinder.h"
-#include "p2/entityManager/referenceManager.h"
-#include "p2/entityManager/EntityManager.h"
+ #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DebugPlugin/DebugHelper.h"
@@ -13,6 +12,7 @@
 #include "GameCore/team/teamEnum.h"
 
 #include "GameCore/util/FVectorUtil.h"
+#include "p2/_world/worldLevel.h"
 
 
 
@@ -81,9 +81,13 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 
 	//tick bone controller
-	humanoidPluginController.Tick(DeltaTime);
-	SetActorLocation(humanoidPluginController.GetLocation()); //override location for markers and pathfinding, all.
+
+	// --- deprecated ---
+	//humanoidPluginController.Tick(DeltaTime);
+	//override location for markers and pathfinding, all.
+	//SetActorLocation(humanoidPluginController.GetLocation()); 
 	//SetActorRotation(humanoidPluginController.GetRotation());
+	TickHumanoidController(DeltaTime);
 
 	if(AworldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
 		humanoidPluginController.setStateWalking();
@@ -109,10 +113,14 @@ void AEntityScript::Tick(float DeltaTime)
 
 	//get player pointer if needed
 	if(playerPointer == nullptr){
-		referenceManager *i = referenceManager::instance();
-		if(i){
-			playerPointer = i->getPlayerPointer();
+		
+		if(AplayerScript *casted = AworldLevel::TGetPlayerReference<AplayerScript>()){
+			playerPointer = casted;
 		}
+		
+	
+		
+
 	}
 	if(playerPointer == nullptr){
 		return;
@@ -762,7 +770,16 @@ void AEntityScript::BeginPlayHumanoidController(){
 
 void AEntityScript::TickHumanoidController(float deltatime){
 	humanoidPluginController.Tick(deltatime);
+	CopyHumanoidControllerTransform();
 }
 
+void AEntityScript::CopyHumanoidControllerTransform(){
+	//testing needed!
 
+	FVector location = humanoidPluginController.GetLocation();
+    FRotator rotation = humanoidPluginController.GetRotation();
 
+	//copy for minimap
+	SetActorRotation(rotation);
+	SetActorLocation(location);
+}

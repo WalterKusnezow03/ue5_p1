@@ -13,6 +13,8 @@
 class USizeBox;
 class UCanvasPanel;
 
+class FMiniMapMarkerTransform;
+
 //owns all markers and actors can subsribe by type, and unsubscribe
 UCLASS()
 class P2_API UMiniMapWidget : public UUserWidget, public IBaseUiInterface{
@@ -59,7 +61,7 @@ protected:
     USizeBox *GetSizeBoxCasted();
     UCanvasPanel *GetBaseCanvasCasted();
     
-    UMiniMapMarker *CreateMarker(EMarkerType type, const FVector2D &pos);
+    UMiniMapMarker *CreateMarker(EMarkerType type, const FMiniMapMarkerTransform &targetTransform);
     UMiniMapMarker *CreateMarker(EMarkerType type);
     TArray<UMiniMapMarker *> GetAllMarkerChildren();
     UMiniMapMarker *FindMarker();
@@ -70,8 +72,8 @@ protected:
     bool GetMiniMapResolution(FVector2D &outRes);
 
     void UpdateMarkers();
-    void UpdateMarkers(const std::map<EMarkerType, TArray<FVector2D>> &mapIn);
-    void UpdateMarkers(EMarkerType type, const TArray<FVector2D> &array);
+    void UpdateMarkers(const std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &mapIn);
+    void UpdateMarkers(EMarkerType type, const TArray<FMiniMapMarkerTransform> &array);
 
     void UpdatePlayerTransformToMinimapData();
 

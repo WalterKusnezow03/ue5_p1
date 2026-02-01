@@ -6,8 +6,7 @@
 #include "playerInventory.h"
 #include "p2/entityManager/EntityManager.h"
 
-#include "p2/entityManager/referenceManager.h"
-#include "DebugPlugin/DebugHelper.h"
+ #include "DebugPlugin/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "GameCore/team/teamEnum.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
@@ -40,15 +39,16 @@ AplayerScript::AplayerScript() : Super()
 void AplayerScript::BeginPlay()
 {
 	Super::BeginPlay();
-    referenceManager *i = referenceManager::instance();
-	if(i){
-		i->setPlayerReference(this);
-	}
-
+   
     
     setTeam(teamEnum::playerTeam);
-    setupBoneController(); 
+    setupBoneController();
+    PickupDefaultWeaponOnBeginPlay();
+    CreateUiHudActorOnBeginPlay();
+    //createMiniMap();
+}
 
+void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
     EntityManager *entityMananger = AworldLevel::entityManager();
     Aweapon *weapon = nullptr;
     if(entityMananger != nullptr){
@@ -63,10 +63,10 @@ void AplayerScript::BeginPlay()
 
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
     }
-
-    CreateUiHudActorOnBeginPlay();
-    //createMiniMap();
 }
+
+
+
 
 void AplayerScript::CreateUiHudActorOnBeginPlay(){
     FVector relativeLocation(100, 0, 0);

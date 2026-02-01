@@ -1,6 +1,7 @@
 #include "MiniMapMarker.h"
 #include "customuipluginbase/baseInterface/WidgetHelper.h"
 #include "Components/CanvasPanelSlot.h"
+#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
 
 
 //unklar ob das so bestehen bleibt - oder anders hinzugefüht wird
@@ -11,10 +12,11 @@ void UMiniMapMarker::Init(UCanvasPanelSlot *slotIn){
     }
 }
 
+// ---- transform updates ----
 
-void UMiniMapMarker::UpdateTypeAndLocation(EMarkerType type, const FVector2D &target){
-    SetType(type);
-    UpdateLocation(target);
+void UMiniMapMarker::UpdateRotation(float angle){
+    //UWidget::
+    SetRenderTransformAngle(angle);
 }
 
 void UMiniMapMarker::UpdateLocation(const FVector2D &target){
@@ -22,6 +24,15 @@ void UMiniMapMarker::UpdateLocation(const FVector2D &target){
         slot->SetPosition(target);
     }
 }
+
+void UMiniMapMarker::UpdateTransform(const FMiniMapMarkerTransform &inTransform){
+    UpdateRotation(inTransform.Angle());
+    UpdateLocation(inTransform.Location());
+}
+
+// ---- transform updates end ----
+
+
 
 //hide unhide, cached by minimap widget to reassign
 bool UMiniMapMarker::MarkedFree(){

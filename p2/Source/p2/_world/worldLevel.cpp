@@ -22,8 +22,7 @@
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
-#include "p2/entityManager/referenceManager.h"
-#include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
+ #include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
 #include "p2/aeroDynamics/AeroActor.h"
 #include "GameCore/util/TVector.h"
 #include "p2/vehicles/vehicle/vehicleCar.h"
@@ -109,7 +108,7 @@ void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
     terrainLauncher = nullptr;
 
     assetManager::EndGame(); //very important
-    referenceManager::EndPlay();
+    
 
     Instance = nullptr;
 

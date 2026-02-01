@@ -30,6 +30,16 @@ public:
     static void SetPlayerReference(AActor *player);
     static AActor* GetPlayerReference();
 
+    template <typename T>
+    static T* TGetPlayerReference(){
+        if(AActor *raw = GetPlayerReference()){
+            if(T* casted = Cast<T>(raw)){
+                return casted;
+            }
+        }
+        return nullptr;
+    }
+
 protected:
     virtual void OnPlayerReferenceSet(); //enter some game mode for example
 

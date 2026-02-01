@@ -170,6 +170,5 @@ protected:
 
 	void BeginPlayHumanoidController();
 	void TickHumanoidController(float deltatime);
-
-	
+	void CopyHumanoidControllerTransform();
 };

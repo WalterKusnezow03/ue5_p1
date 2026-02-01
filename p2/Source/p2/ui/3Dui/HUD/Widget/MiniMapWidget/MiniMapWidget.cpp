@@ -4,6 +4,9 @@
 #include "Components/CanvasPanel.h"
 #include "Components/SizeBox.h"
 
+#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+
+
 
 void UMiniMapWidget::AddMarker(EMarkerType type, AActor *actor){
     miniMapData.AddMarker(type, actor);
@@ -54,11 +57,11 @@ void UMiniMapWidget::UpdateMarkers(){
 
 //only call after mark all markersfree
 void UMiniMapWidget::UpdateMarkers(
-    const std::map<EMarkerType, TArray<FVector2D>> &mapIn
+    const std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &mapIn
 ){
     for(auto &pair : mapIn){
         EMarkerType type = pair.first;
-        const TArray<FVector2D> &array = pair.second;
+        const TArray<FMiniMapMarkerTransform> &array = pair.second;
         UpdateMarkers(type, array);
     }
 }
@@ -66,12 +69,12 @@ void UMiniMapWidget::UpdateMarkers(
 //only call from map
 void UMiniMapWidget::UpdateMarkers(
     EMarkerType type,
-    const TArray<FVector2D> &array
+    const TArray<FMiniMapMarkerTransform> &array
 ){
     //just get since all markers were marked free before 
     for(int i = 0; i < array.Num(); i++){
-        const FVector2D &targetPos = array[i];
-        UMiniMapMarker *current = CreateMarker(type, targetPos);
+        const FMiniMapMarkerTransform &targetTransform = array[i];
+        UMiniMapMarker *current = CreateMarker(type, targetTransform);
     }
 }
 
@@ -116,11 +119,12 @@ void UMiniMapWidget::MarkAllMarkersFree(){
 
 UMiniMapMarker *UMiniMapWidget::CreateMarker(
     EMarkerType type,
-    const FVector2D &pos
+    const FMiniMapMarkerTransform &transformIn
 ){
     //create marker and after that set pos
     if(UMiniMapMarker *item = CreateMarker(type)){
-        item->UpdateLocation(pos);
+        item->UpdateTransform(transformIn);
+
         return item;
     }
     return nullptr;

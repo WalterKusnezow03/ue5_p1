@@ -33,22 +33,22 @@ void MiniMapData::MakePlayerInverse(){
     // M = T * R //<-- lese richtung --
     // M^-1 = R^T * T^-1 // <-- lese richtung --
     MMatrix t1 = playerLocation.invertedTranslation();
-    MMatrix r1 = playerRotation.transposedRotation();
-    PlayerTransformInverse = r1 * t1;
+    PlayerRotationInverse = playerRotation.transposedRotation();
+    PlayerTransformInverse = PlayerRotationInverse * t1; //M1 = R1 * T1 <-- lese richtung --
 }
 
 
 
-std::map<EMarkerType, TArray<FVector2D>> &MiniMapData::MapFromCollectMarkersCanvasSpace(
+std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &MiniMapData::MapFromCollectMarkersCanvasSpace(
     const FVector2D &canvasScale
 ){
-    DebugHelper::showScreenMessage(
+    /*DebugHelper::showScreenMessage(
         FString::Printf(
             TEXT("MiniMapData::Collect With scale %.2f %.2f"),
             canvasScale.X,
             canvasScale.Y
         )
-    );
+    );*/
 
     UpdateMarkersCanvasSpace(canvasScale);
     // return cached map.
@@ -62,9 +62,9 @@ void MiniMapData::UpdateMarkersCanvasSpace(const FVector2D &canvasScale){
     {
         EMarkerType type = pair.first;
         if(visibleMarkerMap.find(type) == visibleMarkerMap.end()){
-            visibleMarkerMap[type] = TArray<FVector2D>();
+            visibleMarkerMap[type] = TArray<FMiniMapMarkerTransform>();
         }
-        TArray<FVector2D> &array = visibleMarkerMap[type];
+        TArray<FMiniMapMarkerTransform> &array = visibleMarkerMap[type];
         
         //clear array before hand
         array.Empty();
@@ -78,7 +78,7 @@ void MiniMapData::UpdateMarkersCanvasSpace(const FVector2D &canvasScale){
 
 void MiniMapData::CollectMarkersCanvasSpace(
     EMarkerType type, 
-    TArray<FVector2D> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     const FVector2D &canvasScale,
     const FVector2D &canvasHalfScale
 ){
@@ -87,12 +87,16 @@ void MiniMapData::CollectMarkersCanvasSpace(
 }
 
 void MiniMapData::MoveToCanvasSpace(
-    TArray<FVector2D> &array, 
+    TArray<FMiniMapMarkerTransform> &array, 
     const FVector2D &canvasScale,
     const FVector2D &canvasHalfScale
 ){
     for (int i = 0; i < array.Num(); i++){
-        MoveToCanvasSpace(array[i], canvasScale, canvasHalfScale);
+        MoveToCanvasSpace(
+            array[i].GetPositionRef(), //get by ref
+            canvasScale, 
+            canvasHalfScale
+        );
     }
 }
 
@@ -111,19 +115,27 @@ void MiniMapData::MoveToCanvasSpace(
 
     //offset to center
     pos += canvasHalfScale;
-
-
-    //pivot offset might be needed!
-    if(false){
-        
-
-        //flip Y axis, because it goes down instead of up
-        pos.Y = canvasScale.Y - pos.Y;
-    }
+    FlipXY(pos);
+    InvertYAxis(pos, canvasScale);
 }
 
+// flip x and y, since x is forward and up, and
+// not y (from ui to game perspective coordinates)
+void MiniMapData::FlipXY(FVector2D &pos){
+    double copy = pos.X;
+    pos.X = pos.Y;
+    pos.Y = copy;
+}
+
+
+//flip Y axis, because it goes down instead of up
+void MiniMapData::InvertYAxis(FVector2D &pos, const FVector2D &canvasScale){
+    pos.Y = canvasScale.Y - pos.Y;
+}
+
+
 void MiniMapData::CollectMarkersWorld( 
-    TArray<FVector2D> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     EMarkerType type
 ){
     TArray<AActor *> &array = Find(type);
@@ -131,15 +143,23 @@ void MiniMapData::CollectMarkersWorld(
         if(AActor *current = array[i]){
             FVector2D result = LocationInPlayerRelativeSpace(current);
             if(InRange(result)){
-                outMarkers.Add(result);
 
 
-                FString message = FString::Printf(
+                FMiniMapMarkerTransform transformResult(
+                    result, 
+                    DegRotationInPlayerRelativeSpace(current)
+                );
+
+
+                outMarkers.Add(transformResult);
+
+
+                /*FString message = FString::Printf(
                     TEXT("MiniMapData::marker(%.2f %.2f)"),
                     result.X,
                     result.Y
                 );
-                DebugHelper::showScreenMessage(message, FColor::Yellow);
+                DebugHelper::showScreenMessage(message, FColor::Yellow);*/
             }
         }
     }
@@ -148,6 +168,9 @@ void MiniMapData::CollectMarkersWorld(
 bool MiniMapData::InRange(FVector2D &location){
     return location.Size() <= maxRadiusMap;
 }
+
+
+// ------ Transform inverting to relative space of player -------
 
 FVector2D MiniMapData::LocationInPlayerRelativeSpace(AActor *actor){
     if(actor){
@@ -162,6 +185,35 @@ FVector2D MiniMapData::LocationInPlayerRelativeSpace(FVector location){
 }
 
 
+float MiniMapData::DegRotationInPlayerRelativeSpace(AActor *actor){
+    if(actor){
+        return DegRotationInPlayerRelativeSpace(actor->GetActorRotation());
+    }
+    return 0.0f;
+}
+
+float MiniMapData::DegRotationInPlayerRelativeSpace(FRotator rotation){
+
+    //player look always forward
+    MMatrix rIn;
+    rIn.setRotation(rotation);
+    MMatrix playerSpaceRotation = PlayerRotationInverse * rIn; //<-- lese richtung --
+    FVector forward(1, 0, 0);
+    FVector rotated = playerSpaceRotation * forward;
+
+    FVector2D forward2D(1, 0);
+    FVector2D rotated2D(rotated.X, rotated.Y);
+
+    //testing and all needed!
+    float angle = MMatrix::signedAngleRadBetween(forward2D, rotated2D);
+    float deg = MMatrix::radToDegree(angle);
+
+    return deg;
+
+    //return result.extractRotation();
+}
+
+// ----- add and remove ------
 
 void MiniMapData::AddMarker(EMarkerType type, AActor *actor){
     if(actor){

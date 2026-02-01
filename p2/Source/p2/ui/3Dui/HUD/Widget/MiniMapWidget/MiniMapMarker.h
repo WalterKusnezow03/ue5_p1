@@ -6,6 +6,7 @@
 #include "MiniMapMarker.generated.h"
 
 class UCanvasPanelSlot;
+class FMiniMapMarkerTransform;
 
 // -- only visual representation, no aactor attached here --
 UCLASS()
@@ -24,8 +25,8 @@ public:
     //switches the imga eof the marker.
     void SetType(EMarkerType type);
     void UpdateLocation(const FVector2D &target);
-
-    void UpdateTypeAndLocation(EMarkerType type, const FVector2D &target);
+    void UpdateRotation(float angle);
+    void UpdateTransform(const FMiniMapMarkerTransform &inTransform);
 
     /*
     EMarkerType::

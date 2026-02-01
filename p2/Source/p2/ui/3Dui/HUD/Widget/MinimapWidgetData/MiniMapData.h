@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include <map>
+#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
 #include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
 
 class P2_API MiniMapData {
@@ -14,7 +15,7 @@ public:
     void UpdatePlayerTransform(AActor *player);
 
 
-    std::map<EMarkerType, TArray<FVector2D>> &MapFromCollectMarkersCanvasSpace(
+    std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &MapFromCollectMarkersCanvasSpace(
         const FVector2D &canvasScale
     );
 
@@ -27,10 +28,8 @@ private:
     MMatrix playerLocation;
 
     MMatrix PlayerTransformInverse;
+    MMatrix PlayerRotationInverse; //tracked seperatly
     void MakePlayerInverse();
-
-    
-
 
     float maxRadiusMap = 5000.0f; // 50m
 
@@ -38,19 +37,19 @@ private:
 
     void CollectMarkersCanvasSpace(
         EMarkerType type, 
-        TArray<FVector2D> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         const FVector2D &canvasScale,
         const FVector2D &canvasHalfScale
     );
 
 
     void CollectMarkersWorld(
-        TArray<FVector2D> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         EMarkerType type
     );
 
     void MoveToCanvasSpace(
-        TArray<FVector2D> &array, 
+        TArray<FMiniMapMarkerTransform> &array, 
         const FVector2D &canvasScale, 
         const FVector2D &canvasHalfScale
     );
@@ -64,7 +63,7 @@ private:
     std::map<EMarkerType, TArray<AActor *>> typeMap;
 
     // CACHE
-    std::map<EMarkerType, TArray<FVector2D>> visibleMarkerMap;
+    std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> visibleMarkerMap;
     // CACHE
    
 
@@ -73,4 +72,17 @@ private:
     FVector2D LocationInPlayerRelativeSpace(AActor *actor);
     FVector2D LocationInPlayerRelativeSpace(FVector location);
     bool InRange(FVector2D &location);
+
+    float DegRotationInPlayerRelativeSpace(AActor *actor);
+    float DegRotationInPlayerRelativeSpace(FRotator rotation);
+
+
+
+    void FlipXY(FVector2D &pos);
+    void InvertYAxis(FVector2D &pos, const FVector2D &canvasScale);
+
+
+
+
+
 };

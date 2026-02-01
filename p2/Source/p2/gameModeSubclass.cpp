@@ -3,8 +3,7 @@
 
 #include "gameModeSubclass.h"
 
-#include "p2/entityManager/referenceManager.h"
-#include "p2/entityManager/EntityManager.h"
+ #include "p2/entityManager/EntityManager.h"
 #include "Engine/World.h"
 
 #include "AssetRegistry/AssetRegistryModule.h"

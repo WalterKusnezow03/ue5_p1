@@ -45,8 +45,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void PickupDefaultWeaponOnBeginPlay();
 	void CreateUiHudActorOnBeginPlay();
-	
 
 	//derived from ACharacter
 	virtual void Jump() override;
