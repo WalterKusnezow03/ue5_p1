@@ -34,8 +34,15 @@ private:
     bool GridValid();
 
     void FlagTrue(const TArray<FVector> &polygon);
+
+    void FlagTrueInterpolate(
+        const FVector &v0,
+        const FVector &v1
+    );
+
     void FlagTrue(const FVector &pos);
     bool ToIndex(const FVector &pos, int &x, int &y);
+    void ToIndexBounded(const FVector &pos, int &x, int &y);
 
     bool FlagAt(int x, int y);
     bool PositionAtFlag(int x, int y, FVector &outPos);

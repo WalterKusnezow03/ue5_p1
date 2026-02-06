@@ -87,54 +87,63 @@ void FMeshedSurfaceGrid::GetSizeGrid(int &x, int &y, float widthOfInsideStep){
 
 void FMeshedSurfaceGrid::FlagTrue(const TArray<FVector> &polygon){
     for (int i = 0; i < polygon.Num(); i++){
-        //FlagTrue(polygon[i], polygon[i+1]);
-        FlagTrue(polygon[i]);        
+        //deprecated, since rasterized spline might not be fully 
+        //connected in step size but larger
+        //FlagTrue(polygon[i]);
+
+        int nextIndex = (i + 1) % polygon.Num();
+        FlagTrueInterpolate(polygon[i], polygon[nextIndex]);
     }
 }
 
-/*
-void FMeshedSurfaceGrid::FlagTrue(
+//in between apply.
+void FMeshedSurfaceGrid::FlagTrueInterpolate(
     const FVector &v0, 
     const FVector &v1
 ){
+    FlagTrue(v0);
+    FlagTrue(v1);
+    float step = stepSizeSaved / 2.0f;
+    float dist = FVector::Dist(v0, v1);
+    int steps = dist / step;
 
-}*/
+    FVector dirStepSized = (v1 - v0).GetSafeNormal();
+    dirStepSized *= step;
 
-
-
-
-
-
-
-
+    for (int i = 0; i < steps + 1; i++)
+    {
+        FVector result = v0 + i * dirStepSized;
+        FlagTrue(result);
+    }
+}
 
 void FMeshedSurfaceGrid::FlagTrue(const FVector &pos){
     int x, y = 0;
-    if (ToIndex(pos, x ,y)){
-        flagGrid[x][y] = true;
+    ToIndexBounded(pos, x, y);
 
-        //draw debug
-        UWorld *world = AworldLevelBase::GetWorldPointer();
-        if(world){
-            FVector posCopy = positionGrid[x][y];
-            DebugHelper::showLineBetween(
-                world,
-                posCopy,
-                posCopy + FVector(0,0,100000),
-                FColor::Purple,
-                1000.0f
-            );
-        }
-    }
+    //if (ToIndex(pos, x ,y)){
+    flagGrid[x][y] = true;
 
-    //debug extension of area, sometimes bugged.
-    //might not be needed (?)
-    if(true){
-        FVector copy = pos + FVector(stepSizeSaved, 0, 0);
-        if (ToIndex(copy, x ,y)){
-            flagGrid[x][y] = true;
-        }
+    // ------ DEBUG ------
+    UWorld *world = AworldLevelBase::GetWorldPointer();
+    if(world){
+        FVector posCopy = positionGrid[x][y];
+        DebugHelper::showLineBetween(
+            world,
+            posCopy,
+            posCopy + FVector(0,0,10000),
+            FColor::Purple,
+            1000.0f
+        );
+        DebugHelper::showLineBetween(
+            world,
+            posCopy,
+            pos + FVector(0,0,10000),
+            FColor::Green,
+            1000.0f
+        );
     }
+    //}
 }
 
 //once two bool flags are found, the space inbetween is marked true
@@ -192,6 +201,24 @@ bool FMeshedSurfaceGrid::ToIndex(const FVector &pos, int &x, int &y){
     }
     return false;
 }
+
+void FMeshedSurfaceGrid::ToIndexBounded(const FVector &pos, int &x, int &y){
+    FVector relative = pos - minSaved; //AB = B - A
+    x = FMath::RoundToInt(relative.X / stepSizeSaved);
+    y = FMath::RoundToInt(relative.Y / stepSizeSaved);
+
+    x = std::max(0, x);
+    y = std::max(0, y);
+    
+    x = std::min(x, flagGrid.Num() - 1);
+    if(x >= 0 && x < flagGrid.Num()){
+        y = std::min(y, flagGrid[x].Num() - 1);
+    }
+}
+
+
+
+
 
 bool FMeshedSurfaceGrid::FlagAt(int x, int y){
     if(x >= 0 && x < flagGrid.Num()){
