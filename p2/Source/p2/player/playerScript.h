@@ -19,7 +19,6 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 
-#include "p2/player/minimap/Minimap.h"
 
 //#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 #include "GameCore/PlayerControllerBase/WidgetInteractionIncluded/PlayerControllerWidgetInteractiveBase.h"
@@ -138,8 +137,4 @@ private:
 	);
 
 
-	//Minimap
-	/*AMinimap *minimap = nullptr;
-	void createMiniMap();
-	void TickMiniMap();*/
 };

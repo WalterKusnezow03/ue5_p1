@@ -45,7 +45,10 @@ public:
     //for creation of buildings
     //TArray<MPolygon> PolygonsForBuildingFit();
 
-
+    //if was build, get
+    const TArray<TArray<RoadQuad>> &GetBuildedMeshQuads(){
+        return buildedMeshQuads;
+    }
 
 protected:
     // ----- Base Properties -----
@@ -181,5 +184,9 @@ protected:
         RoadQuad &quad
     );
 
-    
+
+
+    // --- generate surface data for road polygons ---
+    void GenerateQuadMeshedSurfaces(terrainCreator *creator);
+    void GenerateQuadMeshedSurfacesDebugMesh();
 };

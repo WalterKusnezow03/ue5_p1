@@ -19,7 +19,7 @@ public:
     BoundingBoxSimple(const BoundingBoxSimple &other);
 
     FVector bottomLeftNearVertex();
-    FVector topRightLeftVertex();
+    FVector topRightFarVertex();
 
 
     void updateBoundsIfNeeded(TArray<FVector> &vertecies);
@@ -39,9 +39,11 @@ public:
     void Update(FKBoxElem *elem) const;
     FVector extent() const;
 
+    void Clear();
+
 private:
     FVector bottomLeftNear;
-    FVector topRightLeft;
+    FVector topRightFar;
 
     //for FKBoxElem
     float WidthY() const;

@@ -50,25 +50,35 @@ void ActorManager::EndPlay(){
 
     //save world
     chunkMeshDataParserMap.saveWorldLevel();
+    
+    //clear actors and chunk parser pointers
+    markAllActorsAsFree();
+
+    //reset map
+    ClearChunkHeaderAndParserMap();
 
     //mark all pointers as free, game doesnt need to end,
     //just terrain cleared.
-    markAllActorsAsFree();
+    
+}
+
+void ActorManager::ClearChunkHeaderAndParserMap(){
+    chunkMeshDataParserMap.Clear();
 }
 
 void ActorManager::loadWorldMeshData(FString worldLevelString){
     //try to load Chunk Data into chunkparser map.
     if(chunkMeshDataParserMap.loadWorldLevel(worldLevelString, chunkHeaderMap)){
-        DebugHelper::logMessage("ActorManager: Chunks loaded from SSD");
+        DebugHelper::logMessage("ActorManager: Chunks loaded from SSD ", worldLevelString);
         
         if(instantTerrainActorApply){
             applyChunkmeshDataCompletly();
-            DebugHelper::logMessage("ActorManager: terrain loading from SSD finished!");
+            DebugHelper::logMessage("ActorManager: terrain loading from SSD finished!", worldLevelString);
         }
 
 
     }else{
-        DebugHelper::logMessage("ActorManager: terrain generation needed!");
+        DebugHelper::logMessage("ActorManager: terrain generation needed!", worldLevelString);
         generateTerrain();
     }
 }
@@ -152,11 +162,18 @@ AcustomMeshActor *ActorManager::PopMeshActorFromFreeList(){
     }
     //found a actor for use: return
     if(actor != nullptr){
+        //add to used list!
+        actor->ClearAllMeshData();
+
+        inUse.Add(actor);
         return actor;
     }
 
     //create terrain mesh actor
     actor = AcustomMeshActor::makeInstance(worldContext);
+    if(actor){
+        inUse.Add(actor);
+    }
     return actor;
 }
 
@@ -164,11 +181,23 @@ void ActorManager::markAllActorsAsFree(){
     for (int i = 0; i < inUse.Num(); i++){
         AcustomMeshActor *current = inUse[i];
         if(current){
+
+            //and releases chunk parser pointer!
+            current->ClearAllMeshData();
+
             if(!markedFreeForUse.Contains(current)){
                 markedFreeForUse.Add(current);
             }
         }
     }
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("Terrain::ActorManager::Free(%d)<-FromUsed(%d)"),
+            markedFreeForUse.Num(),
+            inUse.Num()
+        )
+    );
+
     inUse.Empty();
 }
 

@@ -65,3 +65,15 @@ void UTextBoxWidget::SetText(FString stringin){
         text->SetText(FText::FromString(stringin));
     }
 }
+
+
+void UTextBoxWidget::ResetTextIfEmpty(){
+    if(GetText().Len() <= 0){
+        ResetText();
+    }
+}
+
+
+void UTextBoxWidget::ResetText(){
+    SetText(defaultText);
+}

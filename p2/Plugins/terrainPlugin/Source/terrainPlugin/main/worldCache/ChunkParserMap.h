@@ -42,7 +42,7 @@ public:
     /// and are not in use by an custom mesh actor (flagged)
     TArray<ChunkParser *> findQuadAreaFromCenterWhichAreNotInUseFlagged(FVector2D &center, int sizeAreaHalf);
 
-    
+    void Clear();
 
 private:
     FString worldLevelName;

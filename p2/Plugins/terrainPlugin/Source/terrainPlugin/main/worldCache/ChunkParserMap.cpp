@@ -9,6 +9,11 @@ ChunkParserMap::~ChunkParserMap(){
 
 }
 
+
+void ChunkParserMap::Clear(){
+    innerChunkParserMap.Empty();
+}
+
 void ChunkParserMap::setWorldLevelName(FString name){
     worldLevelName = name;
 }

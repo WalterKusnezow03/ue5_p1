@@ -38,7 +38,7 @@ FVector2D UVMapper2D::generateUVCoordinate(
     BoundingBoxSimple &boundingBox
 ){
     FVector bl = boundingBox.bottomLeftNearVertex();
-    FVector tr = boundingBox.topRightLeftVertex();
+    FVector tr = boundingBox.topRightFarVertex();
 
     float xMin = bl.X;
     float yMin = bl.Y;

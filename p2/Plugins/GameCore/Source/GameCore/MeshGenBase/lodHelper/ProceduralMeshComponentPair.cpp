@@ -97,6 +97,12 @@ UProceduralMeshComponent *ProceduralMeshComponentPair::noRaycastMesh(){
 
 
 
+void ProceduralMeshComponentPair::ClearAllMeshData(){
+    MeshDataMap::ClearAllMeshData();
+    updateMeshAll();
+}
+
+
 
 /**
  * 
@@ -184,6 +190,7 @@ void ProceduralMeshComponentPair::updateMesh(
     bool bIsRaycastMesh
 ){
     if(otherMesh.getVerteciesRef().Num() == 0){
+        meshcomponent.ClearMeshSection(layer);
         return;
     }
 

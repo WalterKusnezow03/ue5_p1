@@ -118,6 +118,10 @@ void RoadQuad::GenerateParalellRoad(float width){
 
     wasModified = false;
 
+    //TESTING NEEDED
+    RoadQuadMeshedSurface::ScaleDownByWidth(circle, innerCircle, width);
+
+    /*
     innerCircle.SetNum(circle.Num());
     FVector normal;
     for (int i = 0; i < circle.Num(); i++){
@@ -127,7 +131,7 @@ void RoadQuad::GenerateParalellRoad(float width){
         normal = normal.GetSafeNormal(); 
 
         innerCircle[i] = current + normal * width; //update
-    }
+    }*/
 }
 
 TArray<FVector> &RoadQuad::GetCirlce(){
@@ -151,4 +155,18 @@ void RoadQuad::RemoveOffset(FVector &offset){
     for (int i = 0; i < innerCircle.Num(); i++){
         innerCircle[i] -= offset;
     }
+}
+
+
+
+void RoadQuad::GenerateMeshedSurface(terrainCreator *creator, float widthOfInsideStep){
+    meshedSurface.Init(
+        *this, 
+        creator,
+        widthOfInsideStep
+    );
+}
+
+void RoadQuad::AppendMeshedSurface(MeshData &data){
+    meshedSurface.AppendMeshedSurface(data);
 }

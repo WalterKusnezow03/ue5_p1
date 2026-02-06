@@ -268,6 +268,10 @@ void AHumanEntityScript::setOutpost(AOutpost *outpostIn){
     }
 }
 
+void AHumanEntityScript::clearOutpost(){
+    outpost = nullptr;
+}
+
 /// @brief finds an outpost nearby if needed and subscribes to it
 void AHumanEntityScript::findOutPostNearby(){
     if(bDebugBlockOutpostRequest){

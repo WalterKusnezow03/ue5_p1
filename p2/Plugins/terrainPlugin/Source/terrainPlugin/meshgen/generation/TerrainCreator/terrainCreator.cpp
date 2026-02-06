@@ -523,6 +523,8 @@ void terrainCreator::createTerrainAndSetupChunkParserMap(
 
     //road creation
     PreMergeWithTopLeftRightChunks(); //must happen to close gaps
+
+    //fill data for roads
     createRoads(mapToFillDataTo);
 
     //fill
@@ -561,6 +563,19 @@ void terrainCreator::applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFill
         // apply position and data
         FVector newPos = currentChunk->positionPivotBottomLeft();
         currentChunkParser.createTerrainFrom2DMap(newPos, package);
+        
+        if(false){
+            //looks ok.
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("terrainCreator::setupChunkParser %.2f %.2f from (%d, %d)"),
+                    newPos.X,
+                    newPos.Y,
+                    x,
+                    y
+                )
+            );
+        }
 
 
         //---- CAUTION: WILL BE MOVED TO CHUNK PARSER! ----
@@ -818,7 +833,11 @@ AcustomMeshActor *terrainCreator::getNewMeshActor(UWorld *world){
 
 /// ----- Road gen -------
 
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadGrid/RoadMakerFromGrid.h"
+void terrainCreator::createRoadsAndBuildings(ChunkParserMap &mapToFillDataTo){
+    createRoads(mapToFillDataTo);
+    createBuildings(mapToFillDataTo);
+}
+
 void terrainCreator::createRoads(ChunkParserMap &mapToFillDataTo){
     
     int size = map.size() * terrainConstants::CHUNKSIZE * terrainConstants::ONEMETER;
@@ -826,30 +845,28 @@ void terrainCreator::createRoads(ChunkParserMap &mapToFillDataTo){
     float stepBetweenIntersecionts = terrainConstants::CHUNKSIZE * terrainConstants::ONEMETER * 2;
 
 
-
-    RoadMakerFromGrid roadMaker;
     roadMaker.CreateGrid(size2D, stepBetweenIntersecionts);
     roadMaker.WarpCirlceRandom();
-
     roadMaker.Build(
         this, 
         terrainConstants::ONEMETER, //einheitsvalue bspline
         terrainConstants::HALFWITHROAD,
         mapToFillDataTo
     );
-
-    //roadmaker.createRoads(this, map.size());
 }
 
 
+void terrainCreator::createBuildings(ChunkParserMap &mapToFillDataTo){
+
+}
 
 
 
 
 /// --- lock quads for road external (block trees) ---
 void terrainCreator::lockQuadsFromParalellArrayLines(
-    TArray<FVector> &line0,
-    TArray<FVector> &line1
+    const TArray<FVector> &line0,
+    const TArray<FVector> &line1
 ){
     /*DebugHelper::logMessage(
         FString::Printf(
@@ -867,28 +884,30 @@ void terrainCreator::lockQuadsFromParalellArrayLines(
     
     heisst: 0 und 2 bzw 1 und 3 bilden bounding box
     */
+
+
+    float scaleFromCenter = 2.0f;
     int limit = std::min(line0.Num(), line1.Num());
     for(int i = 1; i < limit; i++){
-        FVector &v2 = line1[i];
-        FVector &v0 = line0[i-1];
+        const FVector &v2 = line1[i];
+        const FVector &v0 = line0[i-1];
 
         if(true){
             /**
              * CAUTION: foliage block is still partially. Bugged.
              */
 
-            FVector &v1 = line1[i-1];
-            FVector &v3 = line0[i];
+            const FVector &v1 = line1[i-1];
+            const FVector &v3 = line0[i];
             TArray<FVector> positions = {v0, v1, v2, v3};
             TArray<chunk *> chunksCollected = chunksAt(positions);
-            ScaleUpXY(positions, 1.1f); //testing needed
+            
 
             //DebugHelper::logMessage("terrainCreator::lockQuads Chunks B", chunksCollected.Num());
 
             for (int j = 0; j < chunksCollected.Num(); j++){
-                chunk *currentChunk = chunksCollected[j];
-                if(currentChunk != nullptr){
-                    currentChunk->blockAreaForFoliage(v0, v1, v2, v3);
+                if(chunk *currentChunk = chunksCollected[j]){
+                    currentChunk->blockAreaForFoliage(v0, v1, v2, v3, scaleFromCenter);
                 }
             }
         
@@ -896,35 +915,64 @@ void terrainCreator::lockQuadsFromParalellArrayLines(
         }
         
     }
-
-
-
 }
 
 
-void terrainCreator::ScaleUpXY(TArray<FVector> &positions, float scale){
-    int num = positions.Num();
-    if(num > 1){
-        FVector center;
-        for (int i = 0; i < positions.Num(); i++){
-            center += positions[i];
-        }
-        center /= num;
-        MMatrix T;
-        T.setTranslation(center);
-        MMatrix S;
-        S.scale(scale, scale, 1.0f);
-        //M = T * S * T^-1<-- lese richtung
+// --- lock road polygon area by scale down ---
+/*
+void terrainCreator::lockQuadsFromPolygon(
+    const TArray<FVector> &polygon
+){
+    int maxIterations = 1000;
+    TArray<FVector> prev = polygon;
+    float maxArea = terrainConstants::ONEMETER * terrainConstants::ONEMETER;
 
-        FVector center1 = -1.0f * center;
-        MMatrix T1;
-        T1.setTranslation(center1);
+    for (int i = 0; i < maxIterations; i++){
+        if(AreaOfPolygonAroundCenter(prev) > maxArea){
 
-        MMatrix ST1 = S * T1;
-        MMatrix M = T * ST1;
-
-        for (int i = 0; i < positions.Num(); i++){
-            positions[i] = M * positions[i];
         }
     }
+
+    //for iterations
+        // > one meter square
+            //scale down, lock
+
+
 }
+
+bool terrainCreator::AreaOfPolygonAroundCenterExceedsLimit(
+    const TArray<FVector> &polygon,
+    TArray<FVector> &outScaledDown,
+    float minAreaToReach,
+    float scaleDownStep //inward push in cm
+){
+    FVector center = FVectorUtil::calculateCenter(polygon);
+    if(AreaOfPolygonAroundCenter(polygon, center) > minAreaToReach){
+
+    }
+
+}
+
+
+float terrainCreator::AreaOfPolygonAroundCenter(
+    const TArray<FVector> &polygon,
+    const FVector &center
+){
+    
+    float area = 0.0f;
+
+    int num = polygon.Num();
+    if(num > 1){ //lower is no triangle, at least 2.
+        for (int i = 0; i < polygon.Num(); i++)
+        {
+            int next = (i + 1) % polygon.Num();
+
+            area += FVectorUtil::AreaTriangle(
+                polygon[i],
+                polygon[next],
+                center
+            );
+        }
+    }
+    return area;
+}*/

@@ -58,6 +58,12 @@ void AcustomMeshActor::BeginPlay()
     UpdateFoliageInstanceComponent();
 }
 
+void AcustomMeshActor::ClearAllMeshData(){
+    Super::ClearAllMeshData();
+    DebugHelper::logMessage("AcustomMeshActor::ClearAllMeshData");
+    releaseChunkParserPointer();
+}
+
 // Called every frame
 void AcustomMeshActor::Tick(float DeltaTime)
 {
@@ -183,7 +189,20 @@ bool AcustomMeshActor::isDestructable(){
 // --- CHUNK PARSER SETUP / UPDATE ---
 void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
     //Super: std::map<ELod, ProceduralMeshComponentPair> meshLodContainers;
-    SetActorLocation(parser.GetActorLocation());
+    FVector copy = parser.GetActorLocation();
+    SetActorLocation(copy);
+
+    //check needed.
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("AcustomMeshActor::UpdateMeshDataAndPosition Location %.2f %.2f"),
+            copy.X,
+            copy.Y
+        )
+    );
+
+
+
     releaseChunkParserPointer();
     chunkParserPointer = &parser;
 

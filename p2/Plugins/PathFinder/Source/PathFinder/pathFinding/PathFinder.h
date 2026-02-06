@@ -42,6 +42,8 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float deltatime) override;
 
+	void KillInstance();
+
 private:
 	static void resetPathFinderPointer();
 	static bool alreadyHasInstance();
@@ -49,6 +51,7 @@ private:
 
 	static class APathFinder *pathFinderInstance;
 
+	bool wasLoaded = false;
 	FString worldLevelNameSaved;
 
 	std::vector<FVector> prevPath;

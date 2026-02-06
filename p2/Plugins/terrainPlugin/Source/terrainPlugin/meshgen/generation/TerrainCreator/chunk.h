@@ -88,24 +88,34 @@ public:
     void markBuildingCreateTrueAndBlockTrees();
 
     void blockAreaForFoliage(
-        FVector &v0,
-        FVector &v1,
-        FVector &v2,
-        FVector &v3
+        const FVector &v0,
+        const FVector &v1,
+        const FVector &v2,
+        const FVector &v3,
+        float scaleUp 
     );
-    void blockAreaForFoliage(FVector &a, FVector &b);
+
+    void blockAreaForFoliage(
+        const FVector &v0,
+        const FVector &v1,
+        const FVector &v2,
+        const FVector &v3
+    );
+    
     void freePositionsForFoliageLocal(
         TArray<FVectorTouple> &outpositions);
 
 private:
     void generateBoundingIndicesFromWorldSpace(
-        FVector &a,
-        FVector &b,
+        const FVector &a,
+        const FVector &b,
         int &minX,
         int &minY,
         int &maxX,
         int &maxY
     );
+
+    FVector FromCenterScaled(const FVector &v0, const FVector &center, float scale);
 
     bool indexFreeForFoliage(int i, int j);
     void lockPositionForAnyFoliage(int i, int j);

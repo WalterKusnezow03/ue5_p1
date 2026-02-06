@@ -13,6 +13,8 @@
 
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
 #include "terrainPlugin/main/worldCache/ChunkParserMap.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadGrid/RoadMakerFromGrid.h"
+
 
 /**
  * 
@@ -60,8 +62,8 @@ public:
 	AcustomMeshActor *getNewMeshActor(UWorld *world);
 
 	void lockQuadsFromParalellArrayLines(
-		TArray<FVector> &line0,
-		TArray<FVector> &line1
+		const TArray<FVector> &line0,
+		const TArray<FVector> &line1
 	);
 
 private:
@@ -137,10 +139,19 @@ private:
 
 	
 	//RoadMaker roadmaker;
+	void createRoadsAndBuildings(ChunkParserMap &mapToFillDataTo);
 	void createRoads(ChunkParserMap &mapToFillDataTo);
-	void ScaleUpXY(TArray<FVector> &positions, float scale);
+	void createBuildings(ChunkParserMap &mapToFillDataTo);
 
 	//NEW
 	TerrainChunkMap setupMap;
 	void setupFromChunkMapQuadPart(TerrainChunkMap &ref, int x, int y, int numChunksSide);
+
+
+
+	// --- road maker ---
+	RoadMakerFromGrid roadMaker;
+
+
+
 };

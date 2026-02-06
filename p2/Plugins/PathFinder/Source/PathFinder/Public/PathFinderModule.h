@@ -14,5 +14,5 @@ public:
 	virtual void ShutdownModule() override;
 
 	static void StartPathFinder(UWorld *world, FString worldLevelName);
-
+	static void EndPathFinder();
 };

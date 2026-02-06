@@ -30,12 +30,15 @@ public:
 	void createAlarmPolesIfNeeded();
 	void init();
 
+	void ClearAllOnEndPlay();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
 
-public:	
+	void ClearAlarmPoles();
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

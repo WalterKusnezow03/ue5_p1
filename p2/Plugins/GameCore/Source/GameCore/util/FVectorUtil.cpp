@@ -69,12 +69,29 @@ FVector FVectorUtil::calculateCenter(FVector &a, FVector &b, FVector &c, FVector
 /// @return center
 FVector FVectorUtil::calculateCenter(std::vector<FVector> &vec){
     FVector sum;
-    for (int i = 0; i < vec.size(); i++){
-        sum += vec.at(i);
+    if(vec.size() > 0){
+        for (int i = 0; i < vec.size(); i++){
+            sum += vec.at(i);
+        }
+        sum /= vec.size();
     }
-    sum /= vec.size();
     return sum;
 }
+
+FVector FVectorUtil::calculateCenter(const TArray<FVector> &vec){
+    FVector sum;
+    if(vec.Num() > 0){
+        for (int i = 0; i < vec.Num(); i++){
+            sum += vec[i];
+        }
+        float s = vec.Num();
+        sum /= s;
+    }
+    return sum;
+}
+
+
+
 
 FVector FVectorUtil::randomOffset(int range){
 
@@ -270,3 +287,17 @@ bool FVectorUtil::directionIsVertical(FVector &A){
 }
 
 
+
+
+float FVectorUtil::AreaTriangle(
+    const FVector &v0, 
+    const FVector &v1, 
+    const FVector &v2
+){
+    FVector v0v1 = v1 - v0;
+    FVector v1v2 = v2 - v1;
+    FVector n = FVector::CrossProduct(v0v1, v1v2);
+
+    //area triangle = |a x b| / 2
+    return n.Size() / 2.0f;
+}

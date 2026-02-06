@@ -10,7 +10,8 @@
 void UWorldListItem::SetText(FString stringin){
     isMarkedFree = false;
     if(UTextBlock *text = TextBlock()){
-        text->SetText(FText::FromString(stringin));
+        savedText = stringin;
+        text->SetText(FText::FromString(AsDisplayText(stringin)));
     }
 }
 
@@ -32,10 +33,11 @@ bool UWorldListItem::ContainsText(FString text){
 }
 
 FString UWorldListItem::GetText(){
-    if(UTextBlock *text = TextBlock()){
+    /*if(UTextBlock *text = TextBlock()){
         return text->GetText().ToString();
-    }
-    return TEXT("NONE");
+    }*/
+    return savedText;
+    //return TEXT("NONE");
 }
 
 void UWorldListItem::ClearParent(){
@@ -154,4 +156,15 @@ void UWorldListItem::Init(){
 
     //unclear.
     MarkVisibleBySearch(TEXT(""));
+}
+
+
+
+FString UWorldListItem::AsDisplayText(FString s){
+    if(s.Len() > maxDisplayCharacters){
+        int dif = s.Len() - maxDisplayCharacters;
+        s.LeftChop(dif + 3);
+        s += TEXT("...");
+    }
+    return s;
 }

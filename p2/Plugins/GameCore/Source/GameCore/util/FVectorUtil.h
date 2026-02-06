@@ -19,6 +19,7 @@ public:
 	static FVector calculateCenter(FVector &a, FVector &b, FVector &c);
 	static FVector calculateCenter(FVector &a, FVector &b, FVector &c, FVector &d);
 	static FVector calculateCenter(std::vector<FVector> &vec);
+	static FVector calculateCenter(const TArray<FVector> &vec);
 	static FVector randomScale(int lowerRange, int higherRange, bool symetric);
 	static FVector abs(FVector &input);
 	static FRotator randomRotation(FVector ownLocation);
@@ -42,6 +43,8 @@ public:
 	/// @return infinity
 	static float infinity();
 	static int intInfinity();
+
+	static float AreaTriangle(const FVector &v0, const FVector &v1, const FVector &v2);
 
 private:
 	FVectorUtil();

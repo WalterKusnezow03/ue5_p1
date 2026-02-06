@@ -108,6 +108,9 @@ void MeshData::clearMesh(){
     UV0.Empty();
     Tangents.Empty();
     VertexColors.Empty();
+
+    intersectFrames.Empty();
+    bounds.Clear();
 }
 
 /// @brief clears the normals 
@@ -2145,7 +2148,7 @@ void MeshData::VerticalRangeOfBounds(float &a, float &b){
 
 
     FVector bl = bounds.bottomLeftNearVertex();
-    FVector tr = bounds.topRightLeftVertex();
+    FVector tr = bounds.topRightFarVertex();
 
     a = std::min(bl.Z, tr.Z);
     b = std::max(bl.Z, tr.Z);

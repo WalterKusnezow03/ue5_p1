@@ -8,6 +8,13 @@ AworldLevelBase::AworldLevelBase(){
     PrimaryActorTick.bCanEverTick = true; 
 }
 
+UWorld *AworldLevelBase::GetWorldPointer(){
+    if(Instance){
+        return Instance->GetWorld();
+    }
+    return nullptr;
+}
+
 void AworldLevelBase::MakeInstanceBase(UWorld *world){
     if(!Instance && world){
         AworldLevelBase *made = Make<AworldLevelBase>(world);

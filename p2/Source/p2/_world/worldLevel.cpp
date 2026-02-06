@@ -97,7 +97,8 @@ void AworldLevel::OnPlayerReferenceSet(){
 /// -> pathfinder singleton instance -> all nodes will be wiped
 /// -> asset manager: all asset data wiped
 void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    
+    //EndCurrentWorld();
+
     EntityManager::EndPlay(); // very important
     AlertManager::EndPlay();
 
@@ -135,6 +136,8 @@ void AworldLevel::initWorld(FString WorldName){
     {
         return;
     }
+    instancePtr->EndCurrentWorld();
+    DebugHelper::logMessage("AworldLevel::InitWorld ", WorldName);
 
     gameStateManager.UpdateGameState(EGameState::EGamePlay);
 
@@ -192,6 +195,17 @@ void AworldLevel::createPathFinder(FString worldName){
 }
 
 
+//kill world
+void AworldLevel::EndCurrentWorld(){
+    FPathFinderModule::EndPathFinder();
+    if(terrainLauncher){
+        terrainLauncher->EndAndSave();
+    }
+    if(OutpostManager *ptr = outpostManager()){
+        ptr->EndOutpostManager();
+    }
+    DebugHelper::logMessage("AworldLevel::EndWorld");
+}
 
 /**
  * 
@@ -232,9 +246,11 @@ OutpostManager * AworldLevel::outpostManager(){
 /// @brief creates the terrain if not yet created
 /// @param world world to spawn in
 /// @param meters meters of the terrain targeted
+
+
 void AworldLevel::createTerrain(FString worldName){
     if(isTerrainInited){
-        return;
+        //return; //deprecated, auto unload reload world
     }
     if(AworldLevel *InstanceWorldLevel = GetInstance()){
         UWorld *world = InstanceWorldLevel->GetWorld();

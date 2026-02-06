@@ -62,6 +62,7 @@ private:
 
 public:
 	void setOutpost(AOutpost *outpostIn);
+	void clearOutpost();
 
 	virtual void despawn() override;
 

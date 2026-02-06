@@ -45,8 +45,7 @@ public:
 	//call to init the world.
 	static void initWorld(UWorld *world);
 	static void initWorld(FString worldName);
-
-
+	void EndCurrentWorld();
 
 	static void MakeInstance(UWorld *world);
 

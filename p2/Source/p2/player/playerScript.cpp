@@ -18,7 +18,6 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-#include "p2/player/minimap/Minimap.h"
 #include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/vehicles/vehicle/base/vehicleBase.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
@@ -632,23 +631,3 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
     }
 }
 
-
-
-// --- deprecated! ---
-/**
- * player minimap
- 
-
-void AplayerScript::createMiniMap(){
-    if(minimap == nullptr && CameraComponent != nullptr){
-        minimap = AMinimap::Construct(GetWorld(), CameraComponent);
-    }
-}
-
-void AplayerScript::TickMiniMap(){
-    if(minimap){
-        FVector pos = GetActorLocation();
-        FRotator rot = GetActorRotation();
-        minimap->updatePlayerPositionAndRotation(pos, rot);
-    }
-}*/

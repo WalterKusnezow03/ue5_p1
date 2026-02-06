@@ -31,6 +31,11 @@ void FPathFinderModule::StartPathFinder(UWorld *world, FString worldName){
 	
 }
 
+void FPathFinderModule::EndPathFinder(){
+	if(APathFinder *current = APathFinder::instance()){
+		current->KillInstance();
+	}
+}
 
 
 

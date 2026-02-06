@@ -11,7 +11,19 @@ OutpostManager::OutpostManager()
 
 OutpostManager::~OutpostManager()
 {
-    
+    EndOutpostManager();
+}
+
+void OutpostManager::EndOutpostManager(){
+    for (int i = 0; i < outposts.size(); i++){
+        AOutpost *current = outposts[i];
+        if(current){
+            current->ClearAllOnEndPlay();
+            current->Destroy();
+            outposts[i] = nullptr;
+        }
+    }
+    outposts.clear();
 }
 
 

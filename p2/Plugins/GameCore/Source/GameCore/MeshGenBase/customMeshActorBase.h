@@ -64,8 +64,7 @@ protected:
 
 	// --- damaga api end ---
 public:
-
-
+	virtual void ClearAllMeshData();
 
 	/// @brief default LOD listening is set to FALSE!
 	void enableLodListening();

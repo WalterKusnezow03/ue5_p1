@@ -28,6 +28,10 @@ public:
     void enableAlarmFunction();
     void disableAlarmFunction();
 
+    void ResetParent(){
+        outpostParentPointer = nullptr;
+    }
+
 protected:
     virtual bool isDestructable() override;
     void projectActorToGround();

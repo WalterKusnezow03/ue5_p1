@@ -75,20 +75,17 @@ void APathFinder::Setup(FString worldname){
     }else{
         DebugHelper::logMessage("Storage Interface PathFinder failed load from storage");
     }
+    wasLoaded = true;
 }
 
-void APathFinder::BeginPlay(){
-    Super::BeginPlay();
-}
-
-void APathFinder::EndPlay(const EEndPlayReason::Type EndPlayReason){
-
-    //Todo: Complete all tasks before saving to storage 
-
-
-    //save nodes to storage
-    PathFinderStorageInterface interface;
-    interface.Save(worldLevelNameSaved, this);
+void APathFinder::KillInstance(){
+    if(wasLoaded){
+        //save nodes to storage
+        PathFinderStorageInterface interface;
+        interface.Save(worldLevelNameSaved, this);
+        wasLoaded = false;
+        worldLevelNameSaved = TEXT("NONE");
+    }
 
     //reset pointer
     resetPathFinderPointer();
@@ -98,8 +95,27 @@ void APathFinder::EndPlay(const EEndPlayReason::Type EndPlayReason){
     delete (BottomRight); 
     delete (BottomLeft); 
     delete (TopLeft);
-    clearDelegates();
+    TopRight = nullptr;
+    TopLeft = nullptr;
+    BottomRight = nullptr;
+    BottomLeft = nullptr;
 
+
+
+    clearDelegates();
+}
+
+
+
+void APathFinder::BeginPlay(){
+    Super::BeginPlay();
+}
+
+void APathFinder::EndPlay(const EEndPlayReason::Type EndPlayReason){
+
+    //Todo: Complete all tasks before saving to storage
+
+    KillInstance();
 
     Super::EndPlay(EndPlayReason);
 }

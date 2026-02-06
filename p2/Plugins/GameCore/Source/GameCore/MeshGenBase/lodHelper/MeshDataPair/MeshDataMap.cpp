@@ -135,3 +135,19 @@ bool MeshDataMap::RayIntersect(
     }
     return false;
 }
+
+
+
+void MeshDataMap::ClearAllMeshData(){
+    for (auto& pair : raycastMeshData){
+        MeshData &data = pair.second;
+        data.clearMesh();
+    }
+    for (auto& pair1 : noRaycastMeshData){
+        MeshData &data = pair1.second;
+        data.clearMesh();
+    }
+
+
+    DebugHelper::logMessage("MeshDataMap::ClearAllMeshData");
+}

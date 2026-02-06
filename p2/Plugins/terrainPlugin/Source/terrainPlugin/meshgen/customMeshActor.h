@@ -114,8 +114,8 @@ public:
 		MeshData &cubeMesh
 	);
 	// -- create cube external fast helpers to create meshes --
-	
-	
+
+	virtual void ClearAllMeshData() override;
 
 protected:
 

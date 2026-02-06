@@ -68,6 +68,10 @@ public:
     //once Copied its marked false!, Single shot flag!
     bool OutpostFlagCreationNeeded();
 
+    //flag for added to navmesh or not
+    bool NavMeshUpdated();
+    void SetNavMeshUpdated(bool flag);
+
     ///mark used by actor to prevent mesh update if not needed
     void SetUsedMeshDataByActorFlag(bool flag);
 

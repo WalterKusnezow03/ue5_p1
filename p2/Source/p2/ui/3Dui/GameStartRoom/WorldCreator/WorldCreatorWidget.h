@@ -3,13 +3,15 @@
 #include "CoreMinimal.h"
 #include "customuipluginbase/Dispatcher/ClickDispatcher.h"
 #include "p2/ui/3Dui/GameStartRoom/TextBox/TextBoxWidget.h"
+#include "customuipluginbase/baseInterface/InterfaceHelper/derived/BorderInterfaceUtilButton.h"
+#include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 
 #include "WorldCreatorWidget.generated.h"
 
 class AGameStartRoom;
 
 UCLASS()
-class P2_API UWorldCreatorWidget : public UUserWidget, public IBaseUiInterface{
+class P2_API UWorldCreatorWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -34,10 +36,15 @@ public:
     virtual bool markedVisible() override { return true; };
     virtual UWidget *baseLayoutPointer() override { return this; };
 
+    virtual void dispatchUserInput(UserInput &input) override;
+
     bool TextBoxIsActive();
 
 protected:
     AGameStartRoom *parent = nullptr;
+
+    void Init();
+    BorderInterfaceUtilButton playButtonUtil;
 
     UTextBoxWidget *GetTextBoxWidget();
 };

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "terrainPlugin/meshgen/generation/bezier/extendedVersion/TBSplinePosition.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadGrid/RoadQuadMeshedSurface/RoadQuadMeshedSurface.h"
 
 
 class TERRAINPLUGIN_API RoadQuad {
@@ -43,6 +44,12 @@ public:
 
     void RemoveOffset(FVector &offset);
 
+    //meshed surface for building gen
+    void GenerateMeshedSurface(terrainCreator *creator, float widthOfInsideStep);
+
+    //debug
+    void AppendMeshedSurface(MeshData &data);
+
 protected:
     bool wasModified = false;
     TArray<FVector> circle;
@@ -56,4 +63,7 @@ protected:
     FVector center;
 
     void GenerateParalellRoad(float width);
+
+    RoadQuadMeshedSurface meshedSurface;
+    
 };

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
-#include "customuipluginbase/baseInterface/InterfaceHelper/BorderInterfaceUtil.h"
+#include "customuipluginbase/baseInterface/InterfaceHelper/derived/BorderInterfaceUtilButton.h"
 #include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 #include "Components/TextBlock.h"
 
@@ -60,7 +60,13 @@ protected:
 
     void Init();
 
-    //class needed for multi item widgets
-    BorderInterfaceUtil worldItem;
-    BorderInterfaceUtil deleteItem;
+    //util for hover and press coloring
+    BorderInterfaceUtilButton worldItem;
+    BorderInterfaceUtilButton deleteItem;
+
+
+    FString AsDisplayText(FString s);
+    FString savedText;
+
+    int maxDisplayCharacters = 10;
 };

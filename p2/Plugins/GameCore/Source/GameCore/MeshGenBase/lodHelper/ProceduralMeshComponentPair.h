@@ -76,6 +76,8 @@ public:
         MeshDataMap &other
     );
 
+    virtual void ClearAllMeshData() override;
+
 private:
     //declared in base class
     //std::map<materialEnum, MeshData> raycastMeshData;

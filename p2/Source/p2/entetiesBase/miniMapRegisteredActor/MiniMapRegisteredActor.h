@@ -16,6 +16,13 @@ public:
 
 protected:
     
+    // -- TO BE OVERRIDEN ! -- 
+    virtual EMarkerType GetMarkerType(){
+        return EMarkerType::EEnemy;
+    }
+
+
+
     void UnRegisterFromMiniMap();
     void RegisterToMiniMap();
     
@@ -24,10 +31,8 @@ protected:
 
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    // -- TO BE OVERRIDEN ! -- 
-    virtual EMarkerType GetMarkerType(){
-        return EMarkerType::EEnemy;
-    }
+    
+
 
 private:
 

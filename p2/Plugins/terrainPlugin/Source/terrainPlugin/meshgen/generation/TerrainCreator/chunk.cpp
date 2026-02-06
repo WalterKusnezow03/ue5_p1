@@ -376,8 +376,12 @@ FVector chunk::position(){
 }
 
 FVector chunk::positionPivotBottomLeft(){
-    FVector newPos = position();
-    return newPos;
+    return position();
+
+    //FVector newPos = position();
+    //return newPos;
+    
+    
     //bricks all fake raycast, keep out!
     /*
     //fix offset to be anchor at bottom left and not center of the mesh,
@@ -589,12 +593,33 @@ float chunk::minHeight(){
 
 // --- chunk block area functions ---
 
+void chunk::blockAreaForFoliage(
+    const FVector &v0,
+    const FVector &v1,
+    const FVector &v2,
+    const FVector &v3,
+    float scale
+){
+    FVector center = (v0 + v1 + v2 + v3) / 4.0f;
+    FVector v0_1 = FromCenterScaled(v0, center, scale);
+    FVector v1_1 = FromCenterScaled(v1, center, scale);
+    FVector v2_1 = FromCenterScaled(v2, center, scale);
+    FVector v3_1 = FromCenterScaled(v3, center, scale);
+    blockAreaForFoliage(v0_1, v1_1, v2_1, v3_1);
+}
+
+FVector chunk::FromCenterScaled(const FVector &v0, const FVector &center, float scale){
+    FVector dir = v0 - center; // AB = B - A
+    FVector result = center + dir * scale;
+    return result;
+}
+
 //new precise bounds
 void chunk::blockAreaForFoliage(
-    FVector &v0,
-    FVector &v1,
-    FVector &v2,
-    FVector &v3
+    const FVector &v0,
+    const FVector &v1,
+    const FVector &v2,
+    const FVector &v3
 ){
     FVector removeOffset = position();
     FVector v0_ = v0 - removeOffset;
@@ -629,37 +654,10 @@ void chunk::blockAreaForFoliage(
 
 }
 
-//old simple bounds
-void chunk::blockAreaForFoliage(
-    FVector &a, 
-    FVector &b
-){
-
-    int minX, minY, maxX, maxY = 0;
-    generateBoundingIndicesFromWorldSpace(a, b, minX, minY, maxX, maxY);
-
-
-    if (true)
-    {
-        FString message = FString::Printf(
-            TEXT(
-                "chunk::terrain blocked area: (%d, %d) (%d, %d)"
-            ),
-            minX, minY, maxX, maxY
-        );
-        DebugHelper::logMessage(message);
-    }
-
-    for(int i = minX; i <= maxX; i++){
-        for(int j = minY; j <= maxY; j++){
-            lockPositionForAnyFoliage(i,j);
-        }
-    }
-}
 
 void chunk::generateBoundingIndicesFromWorldSpace(
-    FVector &a,
-    FVector &b,
+    const FVector &a,
+    const FVector &b,
     int &minX,
     int &minY,
     int &maxX,

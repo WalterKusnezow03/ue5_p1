@@ -51,7 +51,7 @@ public:
 
     ///----> could return all or closest hitpoint too!
 
-
+    virtual void ClearAllMeshData();
 
 protected: 
 

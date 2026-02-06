@@ -20,6 +20,8 @@ public:
 	AOutpost *requestOutpost(UWorld *world, FVector &ownLocation);
 	void tryRequestOutpost(UWorld *world, AHumanEntityScript *human);
 
+	void EndOutpostManager();
+
 private:
 	
 

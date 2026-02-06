@@ -4,6 +4,7 @@
 
 void UWorldCreatorWidget::SetParent(AGameStartRoom *parentIn){
     parent = parentIn;
+    Init();
 }
 
 void UWorldCreatorWidget::ResetParent(){
@@ -14,6 +15,7 @@ void UWorldCreatorWidget::NotifyLaunch(){
     if(UTextBoxWidget *box = GetTextBoxWidget()){
         if(parent){
             parent->TryCreateWorld(box->GetText()); //copy text from text box
+            box->ResetText();
         }
     }
 }
@@ -50,6 +52,8 @@ bool UWorldCreatorWidget::dispatchClick(const FVector2D &position){
             result = true;
         }
     }
+
+    //lock player movement based on text selected flag
     if(parent){
         parent->NotifyOnClickDispatch();
     }
@@ -59,8 +63,17 @@ bool UWorldCreatorWidget::dispatchClick(const FVector2D &position){
 }
 
 bool UWorldCreatorWidget::dispatchHover(const FVector2D &position){
+    bool result = false;
+    if (playButtonUtil.dispatchHover(position)){
+        result = true;
+    }
+    if(UTextBoxWidget *widget = GetTextBoxWidget()){
+        if(widget->dispatchHover(position)){
+            result = true;
+        }
+    }
 
-    return false;
+    return result;
 }
 
 bool UWorldCreatorWidget::TextBoxIsActive(){
@@ -69,3 +82,20 @@ bool UWorldCreatorWidget::TextBoxIsActive(){
     }
     return false;
 }
+
+void UWorldCreatorWidget::dispatchUserInput(UserInput &input){
+    if(TextBoxIsActive()){
+        if(UTextBoxWidget *found = GetTextBoxWidget()){
+            found->dispatchUserInput(input);
+        }
+    }
+}
+
+
+void UWorldCreatorWidget::Init(){
+    SetupFromDefaultColors(
+        playButtonUtil,
+        GetPlayButton()
+    );
+}
+

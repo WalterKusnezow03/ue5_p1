@@ -50,11 +50,32 @@ void ATerrainLauncher::Tick(float deltatime){
 // -- external begin / end api --
 
 void ATerrainLauncher::BeginAndLoad(FString WorldLevelName){
+
+    //-- CRITICAL CHANGE --
+    if(IsADifferentWorldThanCurrent(WorldLevelName)){
+        EndAndSave(); //? testing needed
+    }
+    //-- CRITICAL CHANGE --
+
     actorManager.BeginPlay(WorldLevelName, GetWorld());
+    copiedWorldName = WorldLevelName;
+    wasInitedOnce = true;
 }
 
 void ATerrainLauncher::EndAndSave(){
+
+    //-- CRITICAL CHANGE --
+    if(!wasInitedOnce){
+        return;
+    }
+
     //actor manager save data
     actorManager.EndPlay();
 }
 
+bool ATerrainLauncher::IsADifferentWorldThanCurrent(FString WorldLevelName){
+    if(wasInitedOnce){
+        return copiedWorldName != WorldLevelName;
+    }
+    return false;
+}

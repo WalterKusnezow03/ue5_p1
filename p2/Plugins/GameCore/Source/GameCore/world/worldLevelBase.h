@@ -27,6 +27,7 @@ public:
         return false;
     }
 
+    static UWorld *GetWorldPointer();
     static void SetPlayerReference(AActor *player);
     static AActor* GetPlayerReference();
 

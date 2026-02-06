@@ -40,6 +40,26 @@ void AOutpost::init(){
 	createEntity(5, teamEnum::enemyTeam);
 }
 
+// --- on end play / reload world ---
+void AOutpost::ClearAllOnEndPlay(){
+	releaseAll();
+	teamLeaders.clear();
+	ClearAlarmPoles();
+}
+
+void AOutpost::ClearAlarmPoles(){
+
+	for (int i = 0; i < alarmPoles.size(); i++){
+		if(AOutpostAlarmPole *current = alarmPoles[i]){
+			current->ResetParent();
+			current->Destroy(); //to be tested ALL
+			alarmPoles[i] = nullptr;
+		}
+	}
+
+	alarmPoles.clear();
+}
+
 
 
 // Called every frame

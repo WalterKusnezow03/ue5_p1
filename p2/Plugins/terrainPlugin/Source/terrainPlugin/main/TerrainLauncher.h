@@ -23,8 +23,14 @@ public:
     void BeginAndLoad(FString WorldLevelName);
     void EndAndSave();
 
+   
+
 private:
+
+    bool IsADifferentWorldThanCurrent(FString WorldLevelName);
     
 
     ActorManager actorManager;
+    FString copiedWorldName = TEXT("None");
+    bool wasInitedOnce = false;
 };

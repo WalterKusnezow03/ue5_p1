@@ -161,7 +161,8 @@ void RoadMakerFromGrid::WarpCirlceRandom(){
     while(iterations > 0){
         float randomScalar = FVectorUtil::randomFloatNumber(0, 1);
         float maxDistance = sizeSaved.Size() * randomScalar;
-        float angle = FVectorUtil::randomFloatNumber(-30, 30);
+        float angle = FVectorUtil::randomFloatNumber(0, 30);
+        //FVectorUtil::randomFloatNumber(-30, 30);
 
         TArray<FVector> randomPositions = RandomPositions(
             warpCirclesPerIteration, 
@@ -279,9 +280,27 @@ void RoadMakerFromGrid::Build(
     ApplyHeightOnRawMesh(creator);
     Build(_einheitsValueForBsplineStepSize);
     LockTerrainFromGeneratedRoadQuads(creator, roadWidth);
+    //ApplyHeightOnRoadQuads(creator); <-- moved down --
+    
+    //quads surface gen for terrain and locking foliage
+    //in world space
+
+    // ---- CAUTION INFINITE LOOP / RECURSION ----
+    GenerateQuadMeshedSurfaces(creator);
+    GenerateQuadMeshedSurfacesDebugMesh();
+
+
+
     ApplyHeightOnRoadQuads(creator);
+
+
+    //move road quads to local space
     ApplyTerrain2DIndexToRoadQuadsAndRemoveTerrainOffset(creator);
     AddRoadQuadsToChunks(map);
+
+    
+
+
     wasBuilded = true;
 }
 
@@ -698,4 +717,72 @@ void RoadMakerFromGrid::AddRoadQuadToChunks(
         raycastOnLayer
     );
     quad.AppendRoadMesh(data);
+}
+
+
+
+
+
+
+// --- generate road polygon surface data ---
+void RoadMakerFromGrid::GenerateQuadMeshedSurfaces(terrainCreator *creator){
+    if(creator){
+        
+        
+        
+        
+        
+        float widthOfInsideStep = terrainConstants::ONEMETER;
+        bool debugOnly = true;
+        if(debugOnly){
+            if(buildedMeshQuads.Num() > 0 && buildedMeshQuads[0].Num() > 0){
+                RoadQuad &quad = buildedMeshQuads[0][0];
+                quad.GenerateMeshedSurface(creator, widthOfInsideStep);
+            }
+            return;
+        }
+
+        //all
+        for (int i = 0; i < buildedMeshQuads.Num(); i++)
+        {
+            TArray<RoadQuad> &currentArray = buildedMeshQuads[i];
+            for (int j = 0; j < currentArray.Num(); j++){
+                RoadQuad &current = currentArray[j];
+                current.GenerateMeshedSurface(creator, widthOfInsideStep);
+            }
+        }
+    }
+}
+
+
+
+// ---- debug ----
+
+#include "terrainPlugin/meshgen/customMeshActor.h"
+#include "GameCore/world/worldLevelBase.h"
+void RoadMakerFromGrid::GenerateQuadMeshedSurfacesDebugMesh(){
+    if(UWorld *worldPtr = AworldLevelBase::GetWorldPointer()){
+        AcustomMeshActor *actor = AcustomMeshActor::makeInstance(worldPtr);
+        if(actor){
+            MeshData &data = actor->findMeshDataReference(
+                materialEnum::wallMaterial,
+                ELod::lodNear,
+                true
+            );
+            for (int i = 0; i < buildedMeshQuads.Num(); i++)
+            {
+                TArray<RoadQuad> &currentArray = buildedMeshQuads[i];
+                for (int j = 0; j < currentArray.Num(); j++){
+                    RoadQuad &current = currentArray[j];
+                    current.AppendMeshedSurface(data);
+                }
+            }
+
+            //might be refactured to auto tick.
+            actor->ReloadMeshAndApplyAllMaterials();
+            actor->SetActorLocation(FVector(0, 0, 0));
+
+            DebugHelper::logMessage("RoadMakerFromGrid::GenerateQuadMeshedSurfacesDebugMesh");
+        }
+    }
 }

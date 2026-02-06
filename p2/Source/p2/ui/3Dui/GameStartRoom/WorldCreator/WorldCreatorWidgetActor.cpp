@@ -5,8 +5,8 @@
 //init on beginplay
 void AWorldCreatorWidgetActor::CreateWidgetMeshData(){
     if(!bMeshDataCreated && Widget){
-        float xMax = 1920.0f;
-        float yMax = 1080.0f;
+        float xMax = 400.0f;
+        float yMax = 200.0f;
 
         /*
         1-->2

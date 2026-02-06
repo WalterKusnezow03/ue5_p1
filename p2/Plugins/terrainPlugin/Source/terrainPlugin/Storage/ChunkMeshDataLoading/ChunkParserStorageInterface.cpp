@@ -115,7 +115,12 @@ void ChunkParserStorageInterface::WriteChunkInfoData(
     
     //num layers of mesh data
     FMemory::Memcpy(Ptr, &numLayers, sizeof(int32));
-    //Ptr += sizeof(int); ////not needed, ptr is not used outside
+    Ptr += sizeof(int); ////not needed, ptr is not used outside
+
+
+    bool navmeshNodesAdded = chunkData.NavMeshUpdated();
+    FMemory::Memcpy(Ptr, &navmeshNodesAdded, sizeof(bool));
+
 }
 
 
@@ -164,6 +169,13 @@ void ChunkParserStorageInterface::LoadChunkInfoData(
     //num layers of mesh data
     FMemory::Memcpy(&numLayersOut, Ptr, sizeof(int32));
     Ptr += sizeof(int32); ////NEEDED ptr is not used outside
+
+
+    bool navmeshNodesAddedOut = true;
+    FMemory::Memcpy(&navmeshNodesAddedOut, Ptr, sizeof(bool));
+    chunkData.SetOutpostFlagNeeded(outpostFlag);
+    Ptr += sizeof(bool);////NEEDED ptr is not used outside
+
 }
 
 int ChunkParserStorageInterface::headerInfoDataSize(){
@@ -172,7 +184,8 @@ int ChunkParserStorageInterface::headerInfoDataSize(){
     sizeof(FVector) + //water location
     sizeof(bool) + //water flag
     sizeof(bool) + //outpost flag
-    sizeof(int32); //count layers
+    sizeof(int32) //count layers
+    + sizeof(bool); //nav mesh inited
 }
 
 

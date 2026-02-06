@@ -34,8 +34,8 @@ MeshDataMap *ChunkParser::findMeshDataMap(ELod lod){
 }
 
 void ChunkParser::createTerrainFrom2DMap(FVector &positionChunk, TerrainChunkSetup &package){
-    actorLocation = positionChunk;
-    thisTerrainType = package.getTerrainType(); // must be set before mesh gen!
+    SetActorLocation(positionChunk);
+    thisTerrainType = package.getTerrainType();   // must be set before mesh gen!
     flagOutpostNeeded = package.OutPostFlagged(); //save outpost flag for later creation!
 
     createTerrainFrom2DMap(package.mapReference());
@@ -377,16 +377,18 @@ MeshData &ChunkParser::findMeshDataReference(
 
 
 void ChunkParser::addNodesToNavMeshIfNeeded(UWorld *world){
-    if(navmeshNodesAdded){
+    if(NavMeshUpdated()){
         return;
     }
 
     // add all normal centers to navmesh to allow the bots to move over the terrain
     if (APathFinder *f = APathFinder::instance())
     {
+        SetNavMeshUpdated(true);
+
         FVector offset(0, 0, 70);
         f->addNewNodeVector(navmeshNodes, offset);
-        navmeshNodesAdded = true;
+        //navmeshNodesAdded = true;
 
 
         //convex hulls
@@ -404,6 +406,13 @@ void ChunkParser::createBuildingIfNeeded(TerrainChunkSetup &package){
     //TODO: REFACTURE BUILDING / ROOM ACTOR!
     if(package.BuildingFlagged()){
         DebugHelper::logMessage("Chunk Parser: Room Creation NOT REFACTURED");
+
+
+        // ---- inject building creation here ----
+        
+
+
+
     }
 }
 
@@ -428,9 +437,13 @@ bool ChunkParser::OutpostFlagCreationNeeded(){
     return copy;
 }
 
+bool ChunkParser::NavMeshUpdated(){
+    return navmeshNodesAdded;
+}
 
-
-
+void ChunkParser::SetNavMeshUpdated(bool flag){
+    navmeshNodesAdded = flag;
+}
 
 /// ---- API FOR APPLY DATA ----
 void ChunkParser::SetUsedMeshDataByActorFlag(bool flag){

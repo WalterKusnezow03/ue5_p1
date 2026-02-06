@@ -34,10 +34,16 @@ public:
 
     FString GetText();
 
+    void ResetText();
+    void ResetTextIfEmpty();
+
 protected:
     UTextBlock *GetTextBlockWidget();
 
     bool isSelected = false;
 
     void SetText(FString stringin);
+
+    //do not change
+    const FString defaultText = TEXT("Type...");
 };

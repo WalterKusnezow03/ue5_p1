@@ -2,20 +2,18 @@
 
 
 BoundingBoxSimple::BoundingBoxSimple(){
-    bottomLeftNear = FVector(0, 0, 0);
-    topRightLeft = FVector(0, 0, 0);
+    Clear();
 }
 
 BoundingBoxSimple::BoundingBoxSimple(TArray<FVector> &vertecies){
-    bottomLeftNear = FVector(0, 0, 0);
-    topRightLeft = FVector(0, 0, 0);
+    Clear();
     updateBoundsIfNeeded(vertecies);
 }
 
 BoundingBoxSimple &BoundingBoxSimple::operator=(const BoundingBoxSimple &other){
     if(this != &other){
         bottomLeftNear = other.bottomLeftNear;
-        topRightLeft = other.topRightLeft;
+        topRightFar = other.topRightFar;
     }
     return *this;
 }
@@ -32,9 +30,14 @@ BoundingBoxSimple::~BoundingBoxSimple(){
 
 }
 
+void BoundingBoxSimple::Clear(){
+    bottomLeftNear = FVector(0, 0, 0);
+    topRightFar = FVector(0, 0, 0);
+}
+
 void BoundingBoxSimple::RebuildBounds(TArray<FVector> &vertecies){
     bottomLeftNear = FVector(0, 0, 0);
-    topRightLeft = FVector(0, 0, 0);
+    topRightFar = FVector(0, 0, 0);
     updateBoundsIfNeeded(vertecies);
 }
 
@@ -49,18 +52,18 @@ void BoundingBoxSimple::updateBoundsIfNeeded(FVector &other){
     bottomLeftNear.Y = std::min(bottomLeftNear.Y, other.Y);
     bottomLeftNear.Z = std::min(bottomLeftNear.Z, other.Z);
 
-    topRightLeft.X = std::max(topRightLeft.X, other.X);
-    topRightLeft.Y = std::max(topRightLeft.Y, other.Y);
-    topRightLeft.Z = std::max(topRightLeft.Z, other.Z);
+    topRightFar.X = std::max(topRightFar.X, other.X);
+    topRightFar.Y = std::max(topRightFar.Y, other.Y);
+    topRightFar.Z = std::max(topRightFar.Z, other.Z);
 }
 
 bool BoundingBoxSimple::isInsideBoundingbox(FVector &other){
     return other.X > bottomLeftNear.X &&
            other.Y > bottomLeftNear.Y &&
            other.Z > bottomLeftNear.Z &&
-           other.X < topRightLeft.X &&
-           other.Y < topRightLeft.Y &&
-           other.Z < topRightLeft.Z;
+           other.X < topRightFar.X &&
+           other.Y < topRightFar.Y &&
+           other.Z < topRightFar.Z;
 }
 
 
@@ -69,8 +72,8 @@ FVector BoundingBoxSimple::bottomLeftNearVertex(){
     return bottomLeftNear;
 }
 
-FVector BoundingBoxSimple::topRightLeftVertex(){
-    return topRightLeft;
+FVector BoundingBoxSimple::topRightFarVertex(){
+    return topRightFar;
 }
 
 
@@ -79,7 +82,7 @@ FString BoundingBoxSimple::ToString(){
     FString message = FString::Printf(
         TEXT("BoundingBoxSimple To String: (%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f)"),
         bottomLeftNear.X, bottomLeftNear.Y, bottomLeftNear.Z,
-        topRightLeft.X, topRightLeft.Y, topRightLeft.Z
+        topRightFar.X, topRightFar.Y, topRightFar.Z
     );
     return message;
 }
@@ -93,7 +96,7 @@ bool BoundingBoxSimple::DoesIntersect(const FVector &origin, const FVector &dir)
     
     //plane intersect
     FVector A0 = bottomLeftNearVertex();
-    FVector B2 = topRightLeftVertex();
+    FVector B2 = topRightFarVertex();
 
     FVector connect = B2 - A0;
     float x = connect.X;
@@ -270,7 +273,7 @@ void BoundingBoxSimple::Test(){
 
 FVector BoundingBoxSimple::extent() const {
     //AB = B - A
-    FVector result = topRightLeft - bottomLeftNear;
+    FVector result = topRightFar - bottomLeftNear;
     return result;
 }
 
@@ -299,17 +302,17 @@ void BoundingBoxSimple::Update(FKBoxElem *BoxElem) const {
 }
 
 float BoundingBoxSimple::WidthY() const {
-    return std::abs(topRightLeft.Y - bottomLeftNear.Y);
+    return std::abs(topRightFar.Y - bottomLeftNear.Y);
 }
 
 float BoundingBoxSimple::HeightZ() const {
-    return std::abs(topRightLeft.Z - bottomLeftNear.Z);
+    return std::abs(topRightFar.Z - bottomLeftNear.Z);
 }
 
 float BoundingBoxSimple::DepthX() const {
-    return std::abs(topRightLeft.X - bottomLeftNear.X);
+    return std::abs(topRightFar.X - bottomLeftNear.X);
 }
 
 FVector BoundingBoxSimple::center() const {
-    return (topRightLeft + bottomLeftNear) * 0.5f;
+    return (topRightFar + bottomLeftNear) * 0.5f;
 }
