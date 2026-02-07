@@ -120,12 +120,10 @@ void FMeshedSurfaceGrid::FlagTrueInterpolate(
 void FMeshedSurfaceGrid::FlagTrue(const FVector &pos){
     int x, y = 0;
     ToIndexBounded(pos, x, y);
-
-    //if (ToIndex(pos, x ,y)){
     flagGrid[x][y] = true;
 
     // ------ DEBUG ------
-    UWorld *world = AworldLevelBase::GetWorldPointer();
+    /*UWorld *world = AworldLevelBase::GetWorldPointer();
     if(world){
         FVector posCopy = positionGrid[x][y];
         DebugHelper::showLineBetween(
@@ -142,8 +140,8 @@ void FMeshedSurfaceGrid::FlagTrue(const FVector &pos){
             FColor::Green,
             1000.0f
         );
-    }
-    //}
+    }*/
+    
 }
 
 //once two bool flags are found, the space inbetween is marked true
@@ -191,17 +189,8 @@ void FMeshedSurfaceGrid::FlagBetweenSpaceTrue(TArray<bool> &flagBuffer, int i, i
     }
 }
 
-bool FMeshedSurfaceGrid::ToIndex(const FVector &pos, int &x, int &y){
-    FVector relative = pos - minSaved; //AB = B - A
-    x = FMath::RoundToInt(relative.X / stepSizeSaved);
-    y = FMath::RoundToInt(relative.Y / stepSizeSaved);
-    
-    if(x >= 0 && x < flagGrid.Num()){
-        return y >= 0 && y < flagGrid[0].Num();
-    }
-    return false;
-}
-
+//bounded is needed since true flag is sometimes bricked otherwise
+//because of floating point prescision errors, leading to polygon edges being OOB
 void FMeshedSurfaceGrid::ToIndexBounded(const FVector &pos, int &x, int &y){
     FVector relative = pos - minSaved; //AB = B - A
     x = FMath::RoundToInt(relative.X / stepSizeSaved);

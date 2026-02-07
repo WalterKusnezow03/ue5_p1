@@ -173,6 +173,21 @@ bool UWorldListWidget::dispatchClickTextbox(const FVector2D &position){
 }
 
 bool UWorldListWidget::dispatchClickPanel(const FVector2D &position){
+    //todo: refacture for items
+    //from getter method, enabled active, found by search
+    bool flag = false;
+    TArray<UWorldListItem *> items = GetAllItemsFiltered();
+    for(int i = 0; i < items.Num(); i++){
+        if(UWorldListItem *current = items[i]){
+            if(current->dispatchClick(position)){
+                flag = true;
+            }
+        }
+    }
+    return flag;
+
+    /*
+    // ---- DEPRECATED ----
     if(UPanelWidget *panel = GetListAsPanel()){
         ClickDispatcher dispatcher;
         UWorldListItem *casted =
@@ -181,7 +196,7 @@ bool UWorldListWidget::dispatchClickPanel(const FVector2D &position){
             return casted->dispatchClick(position);
         }
     }
-    return false;
+    return false;*/
 }
 
 
@@ -289,7 +304,7 @@ TArray<UWorldListItem *> UWorldListWidget::GetAllItemsFiltered(){
     {
         if(UWorldListItem *current = allChilds[i]){
             //not hidden
-            if(!current->IsMarkedHiddenBySearch()){
+            if(!current->IsMarkedHiddenBySearch() && !current->IsFree()){
                 filtered.Add(current);
             }
         }

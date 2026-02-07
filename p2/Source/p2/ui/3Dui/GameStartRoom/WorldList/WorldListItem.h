@@ -68,5 +68,5 @@ protected:
     FString AsDisplayText(FString s);
     FString savedText;
 
-    int maxDisplayCharacters = 10;
+    int maxDisplayCharacters = 15;
 };

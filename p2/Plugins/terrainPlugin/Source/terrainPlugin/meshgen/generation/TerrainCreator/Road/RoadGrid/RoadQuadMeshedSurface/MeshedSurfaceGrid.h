@@ -6,6 +6,8 @@ class terrainCreator;
 class MeshData;
 
 /// grid from generated b spline
+///data is transfered to position grid and boolean grid for location being
+///present inside the polygon
 class TERRAINPLUGIN_API FMeshedSurfaceGrid {
 
 public:
@@ -41,7 +43,6 @@ private:
     );
 
     void FlagTrue(const FVector &pos);
-    bool ToIndex(const FVector &pos, int &x, int &y);
     void ToIndexBounded(const FVector &pos, int &x, int &y);
 
     bool FlagAt(int x, int y);

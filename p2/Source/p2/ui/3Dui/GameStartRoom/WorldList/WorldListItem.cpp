@@ -162,8 +162,8 @@ void UWorldListItem::Init(){
 
 FString UWorldListItem::AsDisplayText(FString s){
     if(s.Len() >= maxDisplayCharacters){
-        int dif = s.Len() - maxDisplayCharacters;
-        s.LeftChop(dif + 3);
+        int dif = std::abs(maxDisplayCharacters - s.Len()); //AB = B - A
+        s = s.LeftChop(dif + 3);
         s += TEXT("...");
     }
     return s;
