@@ -48,7 +48,7 @@ public:
 
     void MarkVisibleBySearch(FString nameIn);
     bool IsMarkedHiddenBySearch();
-    
+
 
 protected:
     UWorldListWidget *parent = nullptr;

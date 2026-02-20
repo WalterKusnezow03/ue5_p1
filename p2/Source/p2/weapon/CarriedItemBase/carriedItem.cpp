@@ -30,6 +30,7 @@ void AcarriedItem::BeginPlay()
 	Super::BeginPlay();
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
+	SetupCarriedItemAxisContraints();
 	FindFingerComponentsOnBeginPlay();
 }
 
@@ -40,6 +41,10 @@ void AcarriedItem::Tick(float DeltaTime)
 
 }
 
+
+void AcarriedItem::SetupCarriedItemAxisContraints(){
+	carryInterfaceAxisConstraintNone.SetupNone();
+}
 
 
 void AcarriedItem::showScreenMessage(FString s){
@@ -88,6 +93,8 @@ void AcarriedItem::pickup(UCameraComponent *cameraIn){
 		 * this->AttachToComponent(cameraIn, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 		 * */
 		//DEBUG HIDDEN FOR BONE CONTROLLER
+
+		OnPickup();
 	}
 }
 
@@ -101,10 +108,14 @@ void AcarriedItem::pickupBot(AActor *actorIn){
 
 		showItem(true);
 
-		//this->AttachToActor(botPointer, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+		OnPickup();
+		// this->AttachToActor(botPointer, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 	}
 }
 
+void AcarriedItem::OnPickup(){
+	UnRegisterFromMiniMap();
+}
 
 bool AcarriedItem::isPickedupByPlayer(){
 	return cameraPointer != nullptr; //one must be set
@@ -181,11 +192,12 @@ void AcarriedItem::leftMouseUp(){
 // NEW IK HUMANOID ITEM POSITION DATA, data held by carried item
 CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 	//update containe, all scenes (hand and fingers are tracked inside!)
-	handAndFingerPositionManager.UpdateContainer(
-		internalCarriedItemPositionContainer,
-		this
-	);
+	handAndFingerPositionManager.UpdateContainer(internalCarriedItemPositionContainer);
 	return internalCarriedItemPositionContainer;
+}
+
+FIKCarryInterfaceAxisConstraint &AcarriedItem::getAxisConstraint(){
+	return carryInterfaceAxisConstraintNone;
 }
 
 void AcarriedItem::FindFingerComponentsOnBeginPlay(){

@@ -67,6 +67,7 @@ void HumanoidController::defaultSetup(UWorld *world){
         armPartSizeEach,
         world
     );
+    SetupEmptyArmAnimationActor(world);
     addAllActorsInChildrenToRaycastExclude();
 }
 
@@ -97,9 +98,20 @@ void HumanoidController::TickMainCarriedItemSocket(float deltatime){
 // --- Attach api ---
 
 void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
+    
+    
     //remove old item
     if(IIkCarryInterface *previousItem = mainItemSocket.attachedItemPointer()){
+        if(previousItem == newItem){
+            return;
+        }
+
         updateCollisionParams(previousItem, false); //remove old item
+    }
+
+    //update flag if is empty actor item
+    if(emptyArmTargetActor){
+        emptyActorIsPickedUp = emptyArmTargetActor == newItem;
     }
 
     torsoController.attachOrReplaceCarriedItem(newItem);
@@ -149,12 +161,19 @@ void HumanoidController::updateCollisionParams(AActor *actor, bool add){
 
 
 void HumanoidController::dropCarriedItem(){
+    if(emptyActorIsPickedUp){
+        return;
+    }
+
+
     //remove from collision params
     updateCollisionParams(mainItemSocket.attachedItemPointer(), false); //remove
 
     //drop
     torsoController.dropCarriedItem();
     mainItemSocket.dropCarriedItem();
+
+    OnDropUpdateAnimation();
 }
 
 //rotation change
@@ -237,4 +256,33 @@ void HumanoidController::changeCarriedItemSocket(ECarriedItemPosition type){
 
 void HumanoidController::defaultSetupHands(UWorld *worldIn){
     torsoController.defaultSetupHands(worldIn);
+}
+
+
+
+
+
+
+
+
+
+
+//--- drop item / empty animation item ---
+
+void HumanoidController::SetupEmptyArmAnimationActor(UWorld *world){
+    if(world && !emptyArmTargetActor){
+        emptyArmTargetActor = AIKCarryInterfaceAnimatedActor::makeInstance(world);
+        OnDropUpdateAnimation();
+    }
+}
+
+
+void HumanoidController::OnDropUpdateAnimation(){
+    if(emptyArmTargetActor){
+        DebugHelper::logMessage("HumanoidController::Pickup Empty Actor");
+        
+        attachOrReplaceCarriedItem(emptyArmTargetActor);
+        emptyArmTargetActor->FireAnimation(EArmAnimationEnum::running);
+        
+    }
 }

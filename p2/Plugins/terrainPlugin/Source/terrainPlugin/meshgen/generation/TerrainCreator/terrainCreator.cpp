@@ -4,7 +4,7 @@
 #include <cmath>
 #include "GameCore/util/FVectorUtil.h"
 #include "Algo/Sort.h"  // Include the necessary header
-#include "terrainPlugin/meshgen/generation/bezier/bezierCurve.h"
+#include "terrainPluginBase/BaseTerrainInterface/bezier/bezierCurve.h"
 #include "GameCore/util/TVector.h"
 #include "HAL/PlatformTime.h"
 #include <algorithm>
@@ -21,7 +21,7 @@
 
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkAttributes.h"
 
-#include "terrainConstants.h"
+#include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
 
 
@@ -772,7 +772,16 @@ chunk *terrainCreator::chunkAtWorldPositon(FVector &worldPos){
     );
 }
 
-
+bool terrainCreator::ChunkPositionFromIndexPair(FVector &outPos, const std::pair<int, int> &index){
+    
+    chunk *found = chunkAt(index.first, index.second);
+    if(found){
+        FVector removeOffset = found->position();
+        outPos = removeOffset;
+        return true;
+    }
+    return false;
+}
 
 TArray<chunk *> terrainCreator::chunksAt(
     TArray<FVector> &positionsWorld

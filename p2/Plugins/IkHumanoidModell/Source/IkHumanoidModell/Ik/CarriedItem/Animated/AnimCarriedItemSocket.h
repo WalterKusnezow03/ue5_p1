@@ -20,6 +20,13 @@ public:
         MMatrix &orientation //orientation of actor or even combined with limb or camera look direction.
     ) override;
 
+    virtual void Tick(
+        float deltatime,
+        MMatrix &translation,
+        MMatrix &orientationRaw, //orientation of skelleton
+        FRotator &orientationCamera //orientation of camera
+    ) override;
+
 
     ///@brief move to a location relative to the inner offset
     void TryMoveToLocal(FVector &pos, float timeFrame);

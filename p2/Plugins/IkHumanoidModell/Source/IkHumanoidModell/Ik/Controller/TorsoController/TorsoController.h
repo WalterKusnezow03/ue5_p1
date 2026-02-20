@@ -5,6 +5,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 
 class IIkCarryInterface;
+class AIKCarryInterfaceAnimatedActor;
 
 /// @brief controls two layered two bones to create a torso
 /// will also apply constrains so a torso split doesnt occur
@@ -53,8 +54,9 @@ public:
 
 
 private:
-    
-
+    //arms
     LayeredTwoJointBone partLeft;
     LayeredTwoJointBone partRight;
+
+    
 };

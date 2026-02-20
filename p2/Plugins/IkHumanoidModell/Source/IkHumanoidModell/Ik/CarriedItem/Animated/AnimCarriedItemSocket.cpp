@@ -14,16 +14,36 @@ void AnimCarriedItemSocket::Tick(
     MMatrix &translation,
     MMatrix &orientation //orientation of actor or even combined with limb or camera look direction.
 ){
+    FRotator emptyRotationCamera;
+    Tick(
+        deltatime,
+        translation,
+        orientation,     // orientation of skelleton
+        emptyRotationCamera // orientation of camera
+    );
+}
+
+void AnimCarriedItemSocket::Tick(
+    float deltatime,
+    MMatrix &translation,
+    MMatrix &orientationRaw, //orientation of skelleton
+    FRotator &orientationCamera //orientation of camera
+){
     if(itemIsAttached()){
         TickAnimation(deltatime);
         //Super tick after transform inner updated
         CarriedItemSocket::Tick(
             deltatime,
             translation,
-            orientation
+            orientationRaw,
+            orientationCamera
         );
     }
 }
+
+
+
+
 
 void AnimCarriedItemSocket::TickAnimation(float DeltaTime){
     

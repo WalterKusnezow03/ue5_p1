@@ -1,5 +1,5 @@
 #include "chunk.h"
-#include "terrainConstants.h"
+#include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
 
 /***

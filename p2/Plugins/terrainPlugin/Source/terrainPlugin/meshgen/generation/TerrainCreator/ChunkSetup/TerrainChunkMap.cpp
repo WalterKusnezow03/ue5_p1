@@ -1,6 +1,6 @@
 #include "TerrainChunkMap.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/terrainHillSetup.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainConstants.h"
+#include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 #include "GameCore/util/FVectorUtil.h"
 
 TerrainChunkMap::TerrainChunkMap(){

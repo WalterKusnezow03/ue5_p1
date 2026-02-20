@@ -5,7 +5,7 @@
 #include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 #include "GameCore/world/worldLevelBase.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/terrainConstants.h"
+#include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
 
 ActorManager::ActorManager(){

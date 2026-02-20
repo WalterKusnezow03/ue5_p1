@@ -1,6 +1,8 @@
 #include "TorsoController.h"
 #include "EArmType.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
+#include "IkHumanoidModell/carryItems/Interface/EmptyActor/IKCarryInterfaceAnimatedActor.h"
+
 
 TorsoController::TorsoController(){
 
@@ -37,6 +39,8 @@ void TorsoController::setup(
 
     
 }
+
+
 
 void TorsoController::defaultSetupHands(UWorld *worldIn){
     partLeft.defaultSetupHand(worldIn);
@@ -85,10 +89,9 @@ void TorsoController::dropCarriedItem(){
     partRight.dropCarriedItem();
 }
 
-
-
 //api for get actors:apply damaged owner casted mesh actor
 void TorsoController::getActors(TArray<AActor *> &outArray){
     partLeft.getActors(outArray);
     partRight.getActors(outArray);
 }
+

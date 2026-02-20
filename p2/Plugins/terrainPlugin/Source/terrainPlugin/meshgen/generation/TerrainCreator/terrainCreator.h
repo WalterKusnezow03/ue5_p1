@@ -13,13 +13,15 @@
 
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
 #include "terrainPlugin/main/worldCache/ChunkParserMap.h"
-#include "terrainPlugin/meshgen/generation/TerrainCreator/Road/RoadGrid/RoadMakerFromGrid.h"
+#include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadMakerFromGrid.h"
+
+#include "terrainPluginBase/BaseTerrainInterface/TerrainInterfaceBase.h"
 
 
 /**
  * 
  */
-class TERRAINPLUGIN_API terrainCreator
+class TERRAINPLUGIN_API terrainCreator : public TerrainInterfaceBase
 {
 public:
 	terrainCreator();
@@ -47,7 +49,7 @@ public:
 
 
 	// --- raycast alternative ---
-	float getHeightFor(FVector &position);
+	virtual float getHeightFor(FVector &position) override;
 	float getHeightFor(FVector2D &pos);
 	void getHeightAndDistanceFromModVertex(
 		FVector2D &a,
@@ -61,10 +63,10 @@ public:
 	//create actors
 	AcustomMeshActor *getNewMeshActor(UWorld *world);
 
-	void lockQuadsFromParalellArrayLines(
+	virtual void lockQuadsFromParalellArrayLines(
 		const TArray<FVector> &line0,
 		const TArray<FVector> &line1
-	);
+	) override;
 
 private:
 	//pre merge with top right topright chunks for fix gaps of one meter.
@@ -122,13 +124,11 @@ public:
 		TArray<FVector> &positionsWorld
 	);
 	chunk *chunkAtWorldPositon(FVector &worldPos);
-	std::pair<int, int> Index2DFromWorldPosition(
+	virtual std::pair<int, int> Index2DFromWorldPosition(
 		const FVector &worldPos
-	);
+	) override;
 
-	
-
-	
+	virtual bool ChunkPositionFromIndexPair(FVector &outPos, const std::pair<int, int> &index) override;
 
 private:
 	std::vector<ETerrainType> createRandomTerrainTypes(int count);

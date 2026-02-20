@@ -7,15 +7,31 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "KeyFrame.h"
 
+class UKeyFrameAnimationAsset;
+struct FKeyFrameAsset;
+struct FKeyFrameAssetArray;
+
 /**
  * will store keyframes for a bone movement for example
  */
 class COREMATH_API KeyFrameAnimation
 {
+protected:
+	//initialized as first member
+	std::vector<KeyFrame> frames; //might be replaced with frame class with time stamp
+
+
 public:
 	KeyFrameAnimation();
 	KeyFrameAnimation(bool loopIn);
 	~KeyFrameAnimation();
+
+	KeyFrameAnimation(UKeyFrameAnimationAsset *asset);
+	void ConstructFrom(UKeyFrameAnimationAsset *asset);
+
+	//optional to change
+	void SetLoopFlag(bool loopIn);
+	bool LoopFlagged();
 
 	void addFrame(FVector position, float timeFromLastFrame);
 	void addFrame(FVector position, float timeFromLastFrame, bool mustBeGrounded);
@@ -25,7 +41,11 @@ public:
 		bool mustBeGrounded,
 		float clampDistance
 	);
-	
+	void addFrame(const FKeyFrameAsset &frame);
+	void addAll(const TArray<FKeyFrameAsset> *ptr);
+	void addAll(const TArray<FKeyFrameAsset> &array);
+	void addAll(const FKeyFrameAssetArray &arrayIn);
+
 	FVector interpolate(float DeltaTime);
 	FVector interpolate(float DeltaTime, FVector currentPos);
 	FVector interpolateWorld(
@@ -40,6 +60,8 @@ public:
 	
 	float totalLength();
 	bool nextFrameIsProjected();
+
+	/// @brief never true, if animation marked looping
 	bool reachedLastFrameOfAnimation();
 	void overrideCurrentStartingFrame(FVector &somePoisition);
 	void overrideNextFrame(FVector &framePos);
@@ -63,9 +85,10 @@ public:
 
 	void resetAnimationToStartAndResetRotation();
 
-
-	//new 
+ 
 	void useHermiteSplineInterpolation(bool flag);
+
+	
 
 private:
 	void addRotationToFrame(FVector &localFrameToRotate);
@@ -83,7 +106,6 @@ private:
 
 	FVector latestInterpolation;
 	bool loop = true;
-	bool restarted = true;
 	bool reachedEndFrameFlag = false;
 
 	float totalLengthSave = 0.0f;
@@ -93,9 +115,9 @@ private:
 
 	
 
-	std::vector<KeyFrame> frames; //might be replaced with frame class with time stamp
-	float deltaTime = 0.0f;
-	float lastDeltatime = 0.0f;
+	
+	//float deltaTime = 0.0f;
+	//float lastDeltatime = 0.0f;
 
 	int frameIndex = 0;
 	int nextFrameIndex = 1;
@@ -124,4 +146,12 @@ private:
 public:
 	float averageVelocity();
 	void scaleToVelocityInCms(float VcmPerSecond);
+
+
+
+
+
+	// ---- TO STRING DEBUG ----
+public:
+	FString ToString();
 };

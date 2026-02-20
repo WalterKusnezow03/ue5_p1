@@ -22,7 +22,6 @@ protected:
     }
 
 
-
     void UnRegisterFromMiniMap();
     void RegisterToMiniMap();
     

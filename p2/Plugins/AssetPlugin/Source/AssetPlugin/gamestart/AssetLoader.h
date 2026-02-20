@@ -158,6 +158,10 @@ public:
 	
 	*/
 
+
+
+	/// ------ PRIMARY DATA ASSET LOADING --------
+
 	/// @brief saves an loaded asset with the given enum and key to the asset manager instance
 	/// @tparam E Enum to track in Asset Manager (Entity Enum , Weapon Enum, Texture Enum etc)
 	/// @tparam T Some Type T, UTexture2D, UClass, UMaterial
@@ -203,6 +207,42 @@ public:
 		
 	}
 
+	template <typename E0, typename E1, typename T>
+	static void LoadAndSavePrimaryDataAssetToAssetToManager(
+		E0 key0, //track in asset manager
+		E1 key1, //track in asset manager
+		FString pluginName, // like "Game" for game or any other plugin name
+		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+		FString assetName //Just the file name as displayed
+	){
+		// ------ NOT FUNCTIONAL !!!! ---------
+
+		EAssetType typeAsset = EAssetType::EUClassBlueprint;
+		
+
+		//make a path
+		AssetPathMaker pathMaker;
+		FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
+
+		T *loaded = nullptr;
+		if(UClass *classLoaded = loadUClassBluePrint(path)){
+			UE_LOG(LogTemp, Log, TEXT("AssetLoader: Loaded raw uclass %s"), *classLoaded->GetClass()->GetName());
+			if (T* Data = Cast<T>(classLoaded->GetDefaultObject()))
+			{
+				UE_LOG(LogTemp, Log, TEXT("AssetLoader: Blueprint DataAsset OK (NEW via CDO) = %s"), *Data->GetName());
+				//loaded = Data;
+				loaded = Data;
+			}
+		}
+		
+		//save asset to asset manager once found
+		if(loaded != nullptr){
+			assetManager *manager = assetManager::instance();
+			if(manager){
+				manager->Add<E0, E1, T>(key0, key1, loaded);
+			}
+		}
+	}
 
 
 

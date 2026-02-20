@@ -26,7 +26,7 @@
 #include "p2/aeroDynamics/AeroActor.h"
 #include "GameCore/util/TVector.h"
 #include "p2/vehicles/vehicle/vehicleCar.h"
-#include "terrainPlugin/meshgen/generation/bezier/bezierCurve.h"
+#include "terrainPluginBase/BaseTerrainInterface/bezier/bezierCurve.h"
 #include "p2/entityManager/OutPost/Outpost.h"
 
 

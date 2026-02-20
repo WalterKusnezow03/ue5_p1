@@ -46,9 +46,12 @@ private:
     void extractRotation(UCameraComponent &camera);
     void extractTranslation(UCameraComponent &camera);
 
+    //overriden for camera rotation inject to item socket call tick
     virtual void TickMainCarriedItemSocket(float deltatime) override;
 
     MMatrix cameraRotationMatrix;
+
+    FRotator cameraRotationLocalPitch;
     MMatrix cameraWorldLocation;
 
     MMatrix hipTDebug;

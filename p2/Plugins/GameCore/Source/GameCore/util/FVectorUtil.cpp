@@ -301,3 +301,41 @@ float FVectorUtil::AreaTriangle(
     //area triangle = |a x b| / 2
     return n.Size() / 2.0f;
 }
+
+
+
+
+
+
+
+
+
+// scale down operation towards center
+void FVectorUtil::ScaleDownByWidth(
+    const TArray<FVector> &circle,
+    TArray<FVector> &OutInnerCircle,
+    float width
+){
+    FVector center = FVectorUtil::calculateCenter(circle);
+    ScaleDownByWidth(circle, OutInnerCircle, width, center);
+}
+
+void FVectorUtil::ScaleDownByWidth(
+    const TArray<FVector> &circle,
+    TArray<FVector> &OutInnerCircle,
+    float width,
+    const FVector &center
+){
+    if(circle.Num() > 0){
+        OutInnerCircle.SetNum(circle.Num());
+        FVector normal;
+        for (int i = 0; i < circle.Num(); i++){
+            const FVector &current = circle[i];
+            normal = (center - current);// AB = B - A
+            normal.Z = 0.0f;
+            normal = normal.GetSafeNormal(); 
+
+            OutInnerCircle[i] = current + normal * width; //update
+        }
+    }
+}

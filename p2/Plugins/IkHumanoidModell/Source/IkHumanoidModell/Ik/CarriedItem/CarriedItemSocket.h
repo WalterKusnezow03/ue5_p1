@@ -19,6 +19,13 @@ public:
         MMatrix &orientation //orientation of actor or even combined with limb or camera look direction.
     );
 
+    virtual void Tick(
+        float deltatime,
+        MMatrix &translation,
+        MMatrix &orientationRaw, //orientation of skelleton
+        FRotator &orientationCamera //orientation of camera
+    );
+
     /// @brief local translation when updating the socket and carried item position and rotation
     /// as (M = T * R <--R doesnt affect translation)
     /// @param offset 

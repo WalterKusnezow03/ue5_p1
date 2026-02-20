@@ -108,6 +108,10 @@ ChunkParser &ChunkParserMap::findById(int id){
     return fallback;
 }
 
+ChunkParserInterfaceBase &ChunkParserMap::findByIndexBase(int i, int j){
+    return findByIndex(i, j);
+}
+
 ChunkParser &ChunkParserMap::findByIndex(int i, int j){
     if(i >= 0 && i < innerChunkParserMap.Num()){
         if(j >= 0 && j < innerChunkParserMap[i].Num()){
@@ -116,6 +120,8 @@ ChunkParser &ChunkParserMap::findByIndex(int i, int j){
     }
     return fallback;
 }
+
+
 
 bool ChunkParserMap::makeIndex(int id, int &i, int &j){
     int squareSize = countAxisSaved * countAxisSaved;

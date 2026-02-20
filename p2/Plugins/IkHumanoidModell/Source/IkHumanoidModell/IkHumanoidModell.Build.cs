@@ -42,6 +42,8 @@ public class IkHumanoidModell : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				//for animation loading
+				"AssetPlugin"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

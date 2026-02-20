@@ -50,6 +50,11 @@ public:
 	//Override from IKCarrayInterface: accumulate sight offset!
 	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) override;
 
+	
+	virtual EMarkerType GetMarkerType() override {
+        return EMarkerType::EWeapon;
+    }
+    
 
 
 

@@ -40,3 +40,20 @@ bool KeyFrame::mustBeGrounded(){
 float KeyFrame::distanceTo(KeyFrame &other){
     return FVector::Dist(other.position, position);
 }
+
+
+
+FString KeyFrame::ToString(){
+    FString outInfo = 
+    FString::Printf(
+        TEXT(
+            "(x%.2f, y%.2f, z%.2f)(t:%.2f)"
+        ),
+        position.X,
+        position.Y,
+        position.Z,
+        timeToFrame
+    );
+
+    return outInfo;
+}

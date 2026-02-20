@@ -68,10 +68,12 @@ void HumanoidPlayerController::extractRotation(UCameraComponent &camera){
 
     FRotator camPitchCopy;
     camPitchCopy.Pitch = cameraRot.Pitch * -1.0f; //must be flipped for reasons but its true.
-    MMatrix pitchMat(camPitchCopy);
+    cameraRotationLocalPitch = camPitchCopy;
+
+    /*MMatrix pitchMat(camPitchCopy);
 
     MMatrix rHip = hipController.getOrientation();
-    cameraRotationMatrix = rHip * pitchMat;//..then accumulate with hip actor rotation
+    cameraRotationMatrix = rHip * pitchMat;//..then accumulate with hip actor rotation*/
 }
 
 void HumanoidPlayerController::extractTranslation(UCameraComponent &camera){
@@ -80,12 +82,20 @@ void HumanoidPlayerController::extractTranslation(UCameraComponent &camera){
 }
 
 void HumanoidPlayerController::TickMainCarriedItemSocket(float deltatime){
+    MMatrix rHip = hipController.getOrientation();
     mainItemSocket.Tick(
         deltatime,
-        //hipController.getTranslation(),
         cameraWorldLocation,
-        cameraRotationMatrix //orientation of actor or even combined with limb or camera look direction.
+        rHip,
+        cameraRotationLocalPitch
     );
+    
+    /*
+    mainItemSocket.Tick(
+        deltatime,
+        cameraWorldLocation,
+        cameraRotationMatrix
+    );*/
 }
 
 

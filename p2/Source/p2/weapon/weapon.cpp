@@ -192,6 +192,7 @@ void Aweapon::updateCooltime(float time){
 void Aweapon::drop(){
 	Super::drop();
 	resetFlags();
+    RegisterToMiniMap(); //register on drop
 }
 
 void Aweapon::dropToObjectPool(){
@@ -200,6 +201,7 @@ void Aweapon::dropToObjectPool(){
 	if(entityManager != nullptr){
 		entityManager->add(this);
 	}
+	UnRegisterFromMiniMap();
 }
 
 /// @brief releases the shot (mouse up)

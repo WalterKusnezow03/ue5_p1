@@ -121,21 +121,21 @@ void AC4Item::FindComponentsOnBeginPlay(){
 
 void AC4Item::OverrideTargetsForHands(){
     /*if(c4SceneComponent){
-        handAndFingerPositionManager.OverrideComponent(
+        handAndFingerPositionManager.OverridePermanentTargetComponent(
             EArmType::ERight,
             c4SceneComponent
         );
     }
 
     if(detonatorSceneComponent){
-        handAndFingerPositionManager.OverrideComponent(
+        handAndFingerPositionManager.OverridePermanentTargetComponent(
             EArmType::ELeft,
             detonatorSceneComponent
         );
     }*/
 
     if(triggerSceneComponent){
-        handAndFingerPositionManager.OverrideComponent(
+        handAndFingerPositionManager.OverridePermanentTargetComponent(
             EArmType::ELeft,
             HandBoneIndexEnum::thumb,
             triggerSceneComponent

@@ -16,6 +16,9 @@
 #include "terrainPlugin/Storage/ChunkMeshDataLoading/MeshDataIdentifier.h"
 #include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
 
+#include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserInterfaceBase.h"
+
+
 #include <map>
 
 class ChunkParserStorageInterface;
@@ -27,7 +30,7 @@ class AcustomMeshActor;
 /// with all its layers for the custom mesh actor to use
 /// will also write immidiate to disk
 /// will be able to update a mesh actor
-class TERRAINPLUGIN_API ChunkParser {
+class TERRAINPLUGIN_API ChunkParser : public ChunkParserInterfaceBase{
 
 private:
     //allows ChunkParserStorageInterface to use the get mesh data reference method

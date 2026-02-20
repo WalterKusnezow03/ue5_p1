@@ -96,4 +96,15 @@ protected:
     //CarriedItemSocket mainItemSocket;
     AnimCarriedItemSocket mainItemSocket;
     virtual void TickMainCarriedItemSocket(float deltatime);
+
+
+
+    //animate arms on run
+    FVector previousLocation;
+    void OnDropUpdateAnimation();
+    void SetupEmptyArmAnimationActor(UWorld *world);
+
+    //empty actor to pickup, when dropping another one
+    bool emptyActorIsPickedUp = false;
+    AIKCarryInterfaceAnimatedActor *emptyArmTargetActor = nullptr;
 };

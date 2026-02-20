@@ -5,8 +5,11 @@
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
 #include "terrainPlugin/Storage/ChunkMeshDataLoading/ChunkParserStorageInterface.h"
 
+#include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserMapInterfaceBase.h"
+
+
 // will store generated or loaded from storage Chunks
-class TERRAINPLUGIN_API ChunkParserMap {
+class TERRAINPLUGIN_API ChunkParserMap : public ChunkParserMapInterfaceBase{
 
 public:
     ChunkParserMap();
@@ -22,9 +25,11 @@ public:
     void saveWorldLevel();
     bool loadWorldLevel(FString name, TerrainChunkMap &loadedHeaderMap);
 
+    // -- derived from base terrain plugin --
     //api for terrain generator aswell as internal helper
     //finds a chunkparser by index (i,j) to copy or read data from
     ChunkParser &findByIndex(int i, int j);
+    virtual ChunkParserInterfaceBase &findByIndexBase(int i, int j) override;
 
     //call on start / load level
     void createArray(int chunksPerAxis);

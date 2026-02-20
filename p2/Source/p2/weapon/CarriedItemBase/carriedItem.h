@@ -11,16 +11,17 @@
 
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
-#include "p2/weapon/CarriedItemBase/FingerPositions/carriedItemFingerPositionManager.h"
+#include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemFingerPositionManager.h"
 
 //new
-#include "GameCore/util/ActorBase/ActorBase.h"
+//#include "GameCore/util/ActorBase/ActorBase.h"
+#include "p2/entetiesBase/miniMapRegisteredActor/MiniMapRegisteredActor.h"
 
 #include "carriedItem.generated.h"
 
 UCLASS()
 class P2_API AcarriedItem : 
-public AActorBase, //AActor,  //to change to AActorBase
+public AMiniMapRegisteredActor, //public AActorBase, //AActor,  //to change to AActorBase
 public IIkCarryInterface
 {
 	GENERATED_BODY()
@@ -32,8 +33,12 @@ public:
 	// --- IK CARRY INTERFACE ---
 	//target for hands, new IkHumanoid Plugin info container!
 	virtual CarriedItemPositionData &getItemPositionDataRef() override;
+
+	virtual FIKCarryInterfaceAxisConstraint &getAxisConstraint() override;
+
 	//must have this api to update from outside
 	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) override;
+	virtual void UpdateLowerArm(EArmType typeArm, const FVector &direction) override {};
 
 	///@brief local animation offsets (weapon kickback!)
 	virtual FVector LocalAnimationOffset() override;
@@ -45,7 +50,10 @@ public:
 	void pickup(UCameraComponent *cameraIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
 
+protected:
+	virtual void OnPickup();
 
+public:
 	virtual void drop();
 	bool isPickedupByPlayer();
 	bool isPickedUp();
@@ -74,6 +82,9 @@ protected:
 
 	CarriedItemFingerPositionManager handAndFingerPositionManager;
 	CarriedItemPositionData internalCarriedItemPositionContainer;
+
+	void SetupCarriedItemAxisContraints();
+	FIKCarryInterfaceAxisConstraint carryInterfaceAxisConstraintNone;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

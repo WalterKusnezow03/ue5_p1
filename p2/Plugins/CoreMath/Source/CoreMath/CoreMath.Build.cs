@@ -27,6 +27,9 @@ public class CoreMath : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+
+				//support animation asset loading
+				"AssetPlugin",
 			}
 			);
 			

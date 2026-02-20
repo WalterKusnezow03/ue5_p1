@@ -47,6 +47,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetWeaponMarker();
 
+    
+
+
 protected:
     UWidget *GetMarker(EMarkerType type);
 

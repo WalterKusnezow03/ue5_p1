@@ -46,6 +46,19 @@ public:
 
 	static float AreaTriangle(const FVector &v0, const FVector &v1, const FVector &v2);
 
+
+	static void ScaleDownByWidth(
+        const TArray<FVector> &circle,
+        TArray<FVector> &OutInnerCircle,
+        float width
+    );
+    static void ScaleDownByWidth(
+        const TArray<FVector> &circle,
+        TArray<FVector> &OutInnerCircle,
+        float width,
+        const FVector &center
+    );
+
 private:
 	FVectorUtil();
 	~FVectorUtil();

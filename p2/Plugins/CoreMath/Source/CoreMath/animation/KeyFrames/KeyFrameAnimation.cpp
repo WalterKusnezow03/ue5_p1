@@ -4,6 +4,8 @@
 #include "CoreMath/animation/TransformInterpolator.h"
 #include "KeyFrameAnimation.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "CoreMath/animation/Asset/KeyFrameAnimationAsset.h"
+#include "CoreMath/animation/Asset/KeyFrameAssetArray.h"
 
 
 KeyFrameAnimation::KeyFrameAnimation()
@@ -15,6 +17,29 @@ KeyFrameAnimation::KeyFrameAnimation()
 
 }
 
+void KeyFrameAnimation::restart(){
+    frameIndex = 0;
+    nextFrameIndex = 1;
+}
+
+void KeyFrameAnimation::ConstructFrom(UKeyFrameAnimationAsset *assetIn){
+    //reset properties
+    frames.clear();
+    restart();
+    totalLengthSave = 0.0f;
+
+    //might change
+    loop = true;
+
+    //setup from asset
+    if (assetIn)
+    {
+        //keyframes are already constructed
+        assetIn->CopyDataTo(*this);
+    }
+}
+
+
 
 /// @brief constructor
 /// @param loopIn if true: last frame will be also interpolated to the first once one cycle is complete
@@ -22,9 +47,16 @@ KeyFrameAnimation::KeyFrameAnimation(bool loopIn){
     frameIndex = 0;
     nextFrameIndex = 1;
     totalLengthSave = 0.0f;
+    SetLoopFlag(loopIn);
+}
+
+void KeyFrameAnimation::SetLoopFlag(bool loopIn){
     loop = loopIn;
 }
 
+bool KeyFrameAnimation::LoopFlagged(){
+    return loop;
+}
 
 KeyFrameAnimation::~KeyFrameAnimation()
 {
@@ -40,7 +72,7 @@ void KeyFrameAnimation::useHermiteSplineInterpolation(bool flag){
 /// @param position position for frame
 /// @param timeFromLastFrame time to keep from last frame in seconds
 void KeyFrameAnimation::addFrame(FVector position, float timeFromLastFrame){
-    addFrame(position, timeFromLastFrame, false);
+    addFrame(position, timeFromLastFrame, false); //not grounded by default
 }
 
 void KeyFrameAnimation::addFrame(FVector position, float timeFromLastFrame, bool mustBeGrounded){
@@ -69,6 +101,39 @@ void KeyFrameAnimation::addFrame(
 
 
 
+void KeyFrameAnimation::addAll(const FKeyFrameAssetArray &dataIn){
+    addAll(dataIn.Frames);
+
+    //copy first frame if needed, to prevent jump in animation
+    if(dataIn.loopToFirst){
+        FKeyFrameAsset copyFrame;
+        if(dataIn.CopyAt(0, copyFrame)){
+            addFrame(copyFrame);
+        }
+    }
+}
+
+void KeyFrameAnimation::addAll(const TArray<FKeyFrameAsset> *ptr){
+    if(ptr){
+        addAll(*ptr);
+    }
+}
+void KeyFrameAnimation::addAll(const TArray<FKeyFrameAsset> &array){
+    for (int i = 0; i < array.Num(); i++){
+        addFrame(array[i]);
+    }
+}
+
+void KeyFrameAnimation::addFrame(const FKeyFrameAsset &frame){
+    addFrame(
+        frame.Position, 
+        frame.TimeToFrame, 
+        frame.bMustBeGrounded
+    );
+}
+
+
+
 
 
 /// @brief total length time of the animation
@@ -87,6 +152,8 @@ bool KeyFrameAnimation::reachedLastFrameOfAnimation(){
     }
     return false;
 }
+
+
 
 
 
@@ -535,4 +602,23 @@ void KeyFrameAnimation::scaleToVelocityInCms(float VcmPerSecond){
     }
     updateAverageVelocity();
 
+}
+
+
+
+
+
+
+
+
+FString KeyFrameAnimation::ToString(){
+    FString keyframeAnimationInfo = TEXT("KeyFrameAnimation:");
+    keyframeAnimationInfo += FString::Printf(TEXT("numFrames %d"), frames.size());
+
+    for (int i = 0; i < frames.size(); i++){
+        KeyFrame &current = frames[i];
+        keyframeAnimationInfo += " ";
+        keyframeAnimationInfo += current.ToString();
+    }
+    return keyframeAnimationInfo;
 }

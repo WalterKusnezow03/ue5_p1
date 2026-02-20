@@ -22,6 +22,8 @@ public:
 
 	float distanceTo(KeyFrame &other);
 
+	FString ToString();
+
 private:
 	FVector position;
 	float timeToFrame;

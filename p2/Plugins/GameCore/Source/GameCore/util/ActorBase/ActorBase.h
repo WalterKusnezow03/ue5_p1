@@ -34,7 +34,7 @@ public:
         }
     }
 
-    //is tested
+    //is tested, finds by name, overrides empty ptr passed
     template <typename T>
     void TTryAssignByName(FString name, T *&ptrToAssign){
         TArray<T *> array;
