@@ -147,9 +147,13 @@ public:
 	float averageVelocity();
 	void scaleToVelocityInCms(float VcmPerSecond);
 
-
-
-
+	//between n - 2 and n - 1, not n, if animation marked looping.
+	//else: n and n - 1 (starting and ending frame checked same internally)
+	FVector directionOfLastLogicalTwoFrames();
+protected:
+	bool IndexValid(int i);
+	FVector DirectionBetweenFrames(int i, int j);
+	bool FramesAreSame(int i, int j);
 
 	// ---- TO STRING DEBUG ----
 public:

@@ -97,7 +97,7 @@ protected:
     AnimCarriedItemSocket mainItemSocket;
     virtual void TickMainCarriedItemSocket(float deltatime);
 
-
+   
 
     //animate arms on run
     FVector previousLocation;
@@ -107,4 +107,7 @@ protected:
     //empty actor to pickup, when dropping another one
     bool emptyActorIsPickedUp = false;
     AIKCarryInterfaceAnimatedActor *emptyArmTargetActor = nullptr;
+
+
+    bool InjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem);
 };

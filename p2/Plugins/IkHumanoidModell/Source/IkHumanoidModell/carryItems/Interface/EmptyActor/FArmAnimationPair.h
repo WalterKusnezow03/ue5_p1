@@ -56,7 +56,9 @@ private:
     bool releaseActorOnEnd = false;
 
     //TODO!
-    std::map<EArmType, AActor *> attachedActors;
+    //create copy mechanism if animation changed
+    //attach actor ejected or not. As FStrcut pair.
+    //std::map<EArmType, AActor *> attachedActors;
 
 
     //keyframe animation needs local velocity

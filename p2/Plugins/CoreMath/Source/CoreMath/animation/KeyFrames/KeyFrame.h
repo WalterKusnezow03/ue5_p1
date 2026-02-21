@@ -20,7 +20,8 @@ public:
 
 	void setTimeToFrame(float timeToFrameIn);
 
-	float distanceTo(KeyFrame &other);
+	float distanceTo(const KeyFrame &other);
+	bool IsSame(const KeyFrame &other);
 
 	FString ToString();
 

@@ -70,6 +70,7 @@ private:
 
     void OnClickUpdateWeapon(weaponEnum type);
     void OnClickUpdateWeapon(UWeaponTypeWidget *widget);
+    void OnClickUpdateWeaponShowAttachmentMenus(weaponEnum type);
 
     bool dispatchClick(const FVector2D &screenPos, UWidget *widget);
     void LogScreenCoordinate(const FVector2D &screenPos);

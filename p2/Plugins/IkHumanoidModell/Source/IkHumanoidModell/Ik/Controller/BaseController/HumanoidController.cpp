@@ -114,10 +114,59 @@ void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
         emptyActorIsPickedUp = emptyArmTargetActor == newItem;
     }
 
+    //NEW for injected items
+    //inject into empty Arm Target Actor if possible
+    //instead of attaching as socket
+    if(InjectIntoEmptyIkCarryInterface(newItem)){
+        torsoController.attachOrReplaceCarriedItem(emptyArmTargetActor);
+        mainItemSocket.attachOrReplaceCarriedItem(emptyArmTargetActor);
+        updateCollisionParams(Cast<AActor>(emptyArmTargetActor), true); //add new item
+        emptyActorIsPickedUp = true;
+        return;
+    }
+
+    //default
     torsoController.attachOrReplaceCarriedItem(newItem);
     mainItemSocket.attachOrReplaceCarriedItem(newItem);
     updateCollisionParams(newItem, true); //add new item
 }
+
+
+//NOT TESTED
+
+/// @brief will try to inject the item to the empty hand animation actor
+/// returns true on success. Item picked up via empty hands.
+/// @param newItem 
+/// @return 
+bool HumanoidController::InjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem){
+    if(emptyArmTargetActor && newItem){
+        if(newItem->GetCarryType() == EIKCarryType::ECarryByHand){
+            //testing needed
+            DebugHelper::logMessage("HumanoidController::Injected Carry By Hand Item!");
+
+            emptyArmTargetActor->InjectCarryByHandItem(newItem);
+
+            updateCollisionParams(newItem, true); //add new item
+            return true;
+        }
+    }
+    return false;
+}
+
+/// ---> throwing is unclear here because a item can be thrown
+/// and also can be reloadable (?) Although somehow the item
+/// must eject itself / notify the empty arm actor that it would
+/// like to be thrown
+/// the best way would be to make the item throwable itself
+/// and reload one if possible (?)
+/// architecture quiete unclear here.
+
+
+
+
+
+
+
 
 void HumanoidController::raycastIgnoreOwner(AActor *actor){
     updateCollisionParams(actor, true);
@@ -133,6 +182,7 @@ void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr, bool add)
     }
 }
 
+//collision params for hip / leg down raycast, ground raycast
 void HumanoidController::updateCollisionParams(AActor *actor, bool add){
     if(actor != nullptr){
         if(add){
@@ -162,6 +212,10 @@ void HumanoidController::updateCollisionParams(AActor *actor, bool add){
 
 void HumanoidController::dropCarriedItem(){
     if(emptyActorIsPickedUp){
+        //eject hand carried item if needed
+        if(emptyArmTargetActor){
+            emptyArmTargetActor->EjectCarryByHandItem();
+        }
         return;
     }
 

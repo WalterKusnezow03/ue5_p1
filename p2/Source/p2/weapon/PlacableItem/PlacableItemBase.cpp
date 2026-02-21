@@ -74,3 +74,25 @@ void APlacableItemBase::setupKickBackAnimation(){
 	);
 
 }
+
+
+
+
+
+
+/// @brief items attached to empty actor will receive the hand locations 
+/// from the actor by this method, if the carry type is ECarryByHand.
+void APlacableItemBase::UpdateLocalSceneTransformCarriedByHand(
+    EArmType type, 
+    FVector &locationLocal, 
+    FRotator &rotationLocal
+){
+    //exapmple implementation
+    if(GetCarryType() == EIKCarryType::ECarryByHand){
+        if(USceneComponent *item = FindHandCarriedScene(type)){
+            item->SetRelativeLocation(locationLocal);
+            item->SetRelativeRotation(rotationLocal);
+        }
+    }
+}
+

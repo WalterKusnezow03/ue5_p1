@@ -6,6 +6,8 @@
 #include "PlacableItemBase.generated.h"
 
 //derived from weapon in case multiple can be hold for "Reloading"
+//will also be the first in hiearchy which is carried by the hands
+//instead of socket
 UCLASS()
 class P2_API APlacableItemBase : public Aweapon {
     GENERATED_BODY()
@@ -17,6 +19,21 @@ public:
 	// Sets default values for this actor's properties (constructor)
 	APlacableItemBase();
 
+    
+    // --- HAND CARRY INSTEAD OF SOCKET ---
+    virtual EIKCarryType GetCarryType() override {
+		return EIKCarryType::ECarryByHand;
+	}
+
+	/// @brief items attached to empty actor will receive the hand locations 
+	/// from the actor by this method, if the carry type is ECarryByHand.
+    virtual void UpdateLocalSceneTransformCarriedByHand(EArmType type, FVector &location, FRotator &rotation) override;
+
+protected:
+    //scene to change location and rotation from UpdateActorTransformCarriedByHand
+    virtual USceneComponent *FindHandCarriedScene(EArmType type){
+        return nullptr;
+    }
 
 protected:
     virtual void BeginPlay() override;

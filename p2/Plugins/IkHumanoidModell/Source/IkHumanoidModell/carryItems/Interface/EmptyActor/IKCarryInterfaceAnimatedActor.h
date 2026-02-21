@@ -27,9 +27,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float deltatime) override;
-	void InitComponents();
 
-	
+	//might be changed by derived class
+	virtual bool AutoInitComponents(){
+		return true;
+	}
+
+	void InitComponents();
 
 public:
 	/// --- INTERFACE OVERRIDE ---
@@ -54,12 +58,31 @@ public:
 	/// --- INTERFACE OVERRIDE END ---
 
 
-
+	// animation fire
 	virtual void FireAnimation(EArmAnimationEnum id);
 	virtual void StopAnimation();
-	
+	// animation fire
+
+	//hand attached items
+	void InjectCarryByHandItem(IIkCarryInterface *newItem);
+	void EjectCarryByHandItem();
+	//hand attached items
 
 protected:
+	bool IsHandAttachedItem(IIkCarryInterface *newItem);
+	void TickUpdateAttachedItem();
+	//copies own transform to actor
+	void TickUpdateAttachedItemGlobalTransform();
+	//update scenes to adapt to animated hand components
+	void TickUpdateAttachedItemLocalTransform(EArmType type);
+
+	//to be replaced with eject info
+	IIkCarryInterface *attachedItemDebug = nullptr;
+
+
+
+
+
 	FVector localAnimationOffset; //not needed, just on weapon kickback, not here.
 
 

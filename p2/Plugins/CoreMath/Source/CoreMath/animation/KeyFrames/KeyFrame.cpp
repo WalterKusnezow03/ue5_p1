@@ -37,11 +37,13 @@ bool KeyFrame::mustBeGrounded(){
 }
 
 
-float KeyFrame::distanceTo(KeyFrame &other){
+float KeyFrame::distanceTo(const KeyFrame &other){
     return FVector::Dist(other.position, position);
 }
 
-
+bool KeyFrame::IsSame(const KeyFrame &other){
+    return distanceTo(other) <= 1.0f;
+}
 
 FString KeyFrame::ToString(){
     FString outInfo = 

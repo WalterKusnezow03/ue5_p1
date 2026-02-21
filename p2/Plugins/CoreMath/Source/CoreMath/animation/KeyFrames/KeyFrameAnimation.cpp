@@ -606,10 +606,50 @@ void KeyFrameAnimation::scaleToVelocityInCms(float VcmPerSecond){
 
 
 
+FVector KeyFrameAnimation::directionOfLastLogicalTwoFrames(){
+    if(frames.size() > 1){ // 2
+        int first = 0;
+        int last = frames.size() - 1;
+        int prevLast = last - 1;
+
+        //[first][p-1][p=last - 1][last]
+
+        // last could be first, and another available before
+        if(prevLast > 0){ 
+            if(FramesAreSame(first, last)){
+                int prevLastShift1 = prevLast - 1;
+                return DirectionBetweenFrames(prevLastShift1, prevLast);
+            }
+        }
+        //else: return direction of last two frames.
+        return DirectionBetweenFrames(prevLast, last);
+    }
+    return FVector(0, 0, 0);
+}
 
 
+bool KeyFrameAnimation::IndexValid(int i){
+    return i >= 0 && i < frames.size();
+}
 
+bool KeyFrameAnimation::FramesAreSame(int i, int j){
+    if(IndexValid(i) && IndexValid(j)){
+        KeyFrame &frameI = frames[i];
+        KeyFrame &frameJ = frames[j];
+        return frameI.IsSame(frameJ);
+    }
+    return false;
+}
 
+FVector KeyFrameAnimation::DirectionBetweenFrames(int i, int j){
+    FVector dir(0, 0, 0);
+    if (IndexValid(i) && IndexValid(j)){
+        KeyFrame &frameA = frames[i];
+        KeyFrame &frameB = frames[j];
+        dir = frameB.readposition() - frameA.readposition(); //AB = B - A
+    }
+    return dir;
+}
 
 FString KeyFrameAnimation::ToString(){
     FString keyframeAnimationInfo = TEXT("KeyFrameAnimation:");
@@ -622,3 +662,5 @@ FString KeyFrameAnimation::ToString(){
     }
     return keyframeAnimationInfo;
 }
+
+

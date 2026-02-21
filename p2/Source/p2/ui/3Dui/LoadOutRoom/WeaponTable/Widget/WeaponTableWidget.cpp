@@ -3,6 +3,8 @@
 #include "customuipluginbase/Dispatcher/ClickDispatcher.h"
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponTypeWidget.h"
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponAttachmentWidget.h"
+#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
+#include "customuipluginbase/baseInterface/WidgetHelper.h"
 
 #include "customuipluginbase/Dispatcher/Filter/WidgetFilter.h"
 
@@ -32,6 +34,7 @@ bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos){
 
     //check weapon switch
     if(dispatchClick(screenPos, GetPanelWeaponSwitch())){
+        
         return true;
     }
 
@@ -197,7 +200,22 @@ void UWeaponTableWidget::OnClickUpdateWeapon(weaponEnum type){
             parentActorWidget->NotifyWeaponSetupChange();
         }
     }
+    OnClickUpdateWeaponShowAttachmentMenus(type);
 }
+
+void UWeaponTableWidget::OnClickUpdateWeaponShowAttachmentMenus(weaponEnum type){
+    bool visible = WeaponAttachmentValidator::CanHaveAttachments(type);
+    WidgetHelper::SetVisible(GetPanelSights(), visible);
+    WidgetHelper::SetVisible(GetPanelMuzzleAttachments(), visible);
+    WidgetHelper::SetVisible(GetPanelGripAttachments(), visible);
+}
+
+
+
+
+
+
+
 
 
 void UWeaponTableWidget::SetWeaponSetupHelperRefernce(weaponSetupHelper *setup){

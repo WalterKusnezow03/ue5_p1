@@ -54,6 +54,18 @@ protected:
     UPROPERTY()
     UPointLightComponent *c4PointLight = nullptr;
 
+
+    //scene to change location and rotation from UpdateActorTransformCarriedByHand
+    virtual USceneComponent *FindHandCarriedScene(EArmType type){
+        if(type == EArmType::ELeft){
+            return triggerSceneComponent;
+        }
+        if(type == EArmType::ERight){
+            return c4SceneComponent;
+        }
+        return nullptr;
+    }
+
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="lightSetup")
     UMaterial* materialLightPrefab;

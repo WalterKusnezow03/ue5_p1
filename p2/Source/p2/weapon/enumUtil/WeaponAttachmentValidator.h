@@ -1,6 +1,8 @@
 #pragma once
 
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
+
 
 /// @brief seperate filter class which devides all attachments in logic
 class P2_API WeaponAttachmentValidator {
@@ -17,5 +19,7 @@ public:
     static bool isAGripAttachment(weaponAttachmentEnum type);
 
 
-
+    // helper to allow attachments or not
+    static std::vector<weaponEnum> WeaponAttachmentsNotAllowed();
+    static bool CanHaveAttachments(weaponEnum typeWeapon);
 };

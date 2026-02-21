@@ -47,9 +47,11 @@ FIKCarryInterfaceAxisConstraint &AIKCarryInterfaceAnimatedActor::getAxisConstrai
 }
 
 void AIKCarryInterfaceAnimatedActor::InitComponents(){
+    
+    
     //create components by default
     // -> just hand locations for now
-    if(RootComponent){
+    if(AutoInitComponents() && RootComponent){
         //create scenes
         RightHandComponent = CarriedItemFingerPositionManager::CreateComponent(
             EArmType::ERight, 
@@ -204,6 +206,7 @@ void AIKCarryInterfaceAnimatedActor::StopAnimation(){
 void AIKCarryInterfaceAnimatedActor::Tick(float deltatime){
     Super::Tick(deltatime);
     TickAnimation(deltatime);
+    TickUpdateAttachedItem();
 }
 
 void AIKCarryInterfaceAnimatedActor::TickAnimation(float deltatime){
@@ -228,13 +231,16 @@ bool AIKCarryInterfaceAnimatedActor::CurrentAnimationCanBeTicked(){
         
 
         //DEBUG
-        canBeTicked = true;
+        //canBeTicked = true;
     }
 
     // other cases to be added.
 
     return animationActiveFlag && canBeTicked;
 }
+
+
+
 
 
 
@@ -266,4 +272,62 @@ bool AIKCarryInterfaceAnimatedActor::TickAnimationFor(EArmType type, float delta
         );
     }
     return finished;
+}
+
+
+void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItem(){
+    TickUpdateAttachedItemGlobalTransform();
+    TickUpdateAttachedItemLocalTransform(EArmType::ELeft);
+    TickUpdateAttachedItemLocalTransform(EArmType::ERight);
+}
+
+void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItemGlobalTransform(){
+    if(attachedItemDebug){
+        //update attached item location to own
+        FVector location = GetActorLocation();
+        FRotator rotation = GetActorRotation();
+        attachedItemDebug->UpdateActorTransform(location, rotation);
+    }
+}
+
+void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItemLocalTransform(EArmType type){
+    if(attachedItemDebug){
+        if(USceneComponent *hand = FindHand(type)){
+
+            //update components 
+            FVector localLocation = hand->GetRelativeLocation();
+            FRotator localRotation = hand->GetRelativeRotation();
+            attachedItemDebug->UpdateLocalSceneTransformCarriedByHand(
+                type, 
+                localLocation, 
+                localRotation
+            );
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+// ---- HAND ATTACHED ITEMS ----
+void AIKCarryInterfaceAnimatedActor::InjectCarryByHandItem(IIkCarryInterface *newItem){
+    if(IsHandAttachedItem(newItem)){
+        attachedItemDebug = newItem;
+    }
+}
+
+void AIKCarryInterfaceAnimatedActor::EjectCarryByHandItem(){
+    attachedItemDebug = nullptr;
+}
+
+bool AIKCarryInterfaceAnimatedActor::IsHandAttachedItem(IIkCarryInterface *newItem){
+    if(newItem){
+        return newItem->GetCarryType() == EIKCarryType::ECarryByHand;
+    }
+    return false;
 }

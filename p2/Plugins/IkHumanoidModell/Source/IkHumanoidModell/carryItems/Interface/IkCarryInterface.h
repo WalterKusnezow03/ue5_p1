@@ -4,6 +4,7 @@
 #include "UObject/Interface.h"
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/AxisConstraint/IKCarryInterfaceAxisConstraint.h"
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
+#include "IkHumanoidModell/carryItems/Interface/EIKCarryType.h"
 #include "IkCarryInterface.generated.h"
 
 // This class does not need to be modified.
@@ -45,4 +46,41 @@ public:
 	///@brief must be implemented if local actor position is changed for animations
 	/// (Weapon kickback manual for example)
 	virtual FVector LocalAnimationOffset();
+
+
+
+
+
+
+	/// erstmal so machen und testen!
+	///denken
+	/*
+	items könnten an sicht auch attached sein an
+	hände zum folgen / werfen, an animation
+
+	allerdings lässt sich dazu sagen dass
+	das per eigenem actor oder flag stattfinden kann
+	bei jenem actor der attachbar ist
+
+	oder gleich alles vererbt wird und alles über hände stattfindet
+
+	alternativ kann es eine basis throwable geben
+	was injected wird für wurf. Besser(?)
+	*/
+
+	virtual EIKCarryType GetCarryType(){
+		return EIKCarryType::ECarryBySocket; //default
+	}
+
+	/// -- only for hand carried items like grenade, attached to hands, not hands to item --
+	/// @brief items attached to empty actor will receive the hand locations 
+	/// from the actor by this method, if the carry type is ECarryByHand.
+	virtual void UpdateLocalSceneTransformCarriedByHand(EArmType type, FVector &location, FRotator &rotation){
+		//exapmple implementation
+		/*if(GetCarryType() == EIKCarryType::ECarryByHand){
+
+		}*/
+	}
+
+
 };

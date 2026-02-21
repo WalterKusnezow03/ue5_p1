@@ -58,3 +58,24 @@ bool WeaponAttachmentValidator::isAGripAttachment(weaponAttachmentEnum type){
     }
     return false;
 }
+
+
+
+
+std::vector<weaponEnum> WeaponAttachmentValidator::WeaponAttachmentsNotAllowed(){
+    std::vector<weaponEnum> outVec;
+    outVec.push_back(weaponEnum::C4);
+    outVec.push_back(weaponEnum::thrower);
+    return outVec;
+}
+
+bool WeaponAttachmentValidator::CanHaveAttachments(weaponEnum typeWeapon){
+    std::vector<weaponEnum> notAllowed = WeaponAttachmentsNotAllowed();
+    for (int i = 0; i < notAllowed.size(); i++){
+        weaponEnum current = notAllowed[i];
+        if(current == typeWeapon){
+            return false;
+        }
+    }
+    return true;
+}
