@@ -29,11 +29,16 @@ public:
 	/// from the actor by this method, if the carry type is ECarryByHand.
     virtual void UpdateLocalSceneTransformCarriedByHand(EArmType type, FVector &location, FRotator &rotation) override;
 
+    //virtual FIKCarryInterfaceAxisConstraint &getAxisConstraint() override;
+
 protected:
     //scene to change location and rotation from UpdateActorTransformCarriedByHand
     virtual USceneComponent *FindHandCarriedScene(EArmType type){
         return nullptr;
     }
+
+
+    virtual void SetupCarriedItemAxisContraints() override;
 
 protected:
     virtual void BeginPlay() override;

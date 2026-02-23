@@ -53,6 +53,7 @@ void CarriedItemSocket::Tick(
     );
 }
 
+#include "GameCore/world/worldLevelBase.h"
 void CarriedItemSocket::Tick(
     float deltatime,
     MMatrix &translation,
@@ -73,6 +74,27 @@ void CarriedItemSocket::Tick(
 
 
         MMatrix transformInnerModified = AddTemporaryIIkCarryInterfaceAnimationOffsetToInnerTransformOnTick();
+
+        //debug
+        //location already bricked here!!! Too far up!
+        if(false){
+            UWorld *world = AworldLevelBase::GetWorldPointer();
+            if(world){
+                FVector t = translation.getTranslation();
+                DebugHelper::showLineBetween(
+                    world,
+                    t,
+                    t + FVector(0,0,100),
+                    FColor::Blue
+                );
+                FVector copyLocation = transformInnerModified.getTranslation();
+                DebugHelper::showScreenMessage("CarriedItemSocket::Offset ", copyLocation);
+            }
+        }
+
+
+
+
 
         //M = T * R * M_inner
         MMatrix TR = translation * RcombinedOrientatationConstrainted; //<--lese richtung--
@@ -95,7 +117,7 @@ void CarriedItemSocket::Tick(
 
 
 MMatrix CarriedItemSocket::AddTemporaryIIkCarryInterfaceAnimationOffsetToInnerTransformOnTick(){
-    if (itemIsAttached()){
+    if(itemIsAttached()){
         MMatrix copy = TransformInner;
         FVector offset = copy.getTranslation();
 

@@ -10,6 +10,8 @@
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 
+class FHumanoidControllerSetupPackage;
+
 /// @brief controls two bone attachments and runnign physics based on slip data.
 /// moves the underlying hip 
 /// ---> this is the base class and will have static slip force handling
@@ -33,6 +35,8 @@ public:
 
     HipController();
     virtual ~HipController();
+
+    void setup(FHumanoidControllerSetupPackage &package);
 
     //default setup
     void setup(UWorld *world);

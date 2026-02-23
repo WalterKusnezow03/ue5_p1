@@ -10,6 +10,13 @@
 class GAMECORE_API FVectorUtil
 {
 public:
+	static FVector BuildSideVectorRight(const FVector &a);
+	static FVector BuildSideVectorLeft(const FVector &a);
+	static FVector BuildCrossProductUp(const FVector &a, const FVector &b);	  // points upwards: a x b
+	static FVector BuildCrossProductDown(const FVector &a, const FVector &b); //points downwards: b x a
+
+
+
 	//very important!
 	static FRotator lookAt(FVector ownlocation, FVector TargetLocation);
 	static FRotator lookRotation(FVector &other);

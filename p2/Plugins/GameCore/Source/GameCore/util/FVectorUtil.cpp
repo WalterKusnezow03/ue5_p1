@@ -339,3 +339,31 @@ void FVectorUtil::ScaleDownByWidth(
         }
     }
 }
+
+
+
+
+
+// --- testing needed ---
+
+FVector FVectorUtil::BuildSideVectorRight(const FVector &a){
+    FVector up(0, 0, 1);
+    return BuildCrossProductUp(up, a);
+}
+
+FVector FVectorUtil::BuildSideVectorLeft(const FVector &a){
+    FVector up(0, 0, 1);
+    return BuildCrossProductUp(a, up);
+}
+
+FVector FVectorUtil::BuildCrossProductUp(const FVector &a, const FVector &b){
+    // points upwards: a x b
+    return FVector::CrossProduct(a, b).GetSafeNormal();
+}
+
+FVector FVectorUtil::BuildCrossProductDown(const FVector &a, const FVector &b){
+    //points downwards: b x a
+    return FVector::CrossProduct(b, a).GetSafeNormal();
+}
+
+// --- testing needed ---

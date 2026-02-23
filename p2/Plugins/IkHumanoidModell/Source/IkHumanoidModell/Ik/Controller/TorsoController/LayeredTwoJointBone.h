@@ -5,6 +5,8 @@
 #include "EArmType.h"
 #include "IkHumanoidModell/Ik/Controller/HandController/HandController.h"
 
+class FHumanoidControllerSetupPackage;
+
 /// @brief will just abstract a part of the torso and follow targets,
 /// maybe applies IK to lift the skelleton up. Unclear.
 class IKHUMANOIDMODELL_API LayeredTwoJointBone {
@@ -12,6 +14,13 @@ class IKHUMANOIDMODELL_API LayeredTwoJointBone {
 public:
     LayeredTwoJointBone();
     ~LayeredTwoJointBone();
+
+
+    void setup(
+        EArmType typeArm,
+        FHumanoidControllerSetupPackage &package
+    );
+    
 
     /// @brief sets up the internal bones for layered fk ik
     void setup(
@@ -23,7 +32,7 @@ public:
         UWorld *worldIn
     );
 
-    void defaultSetupHand(UWorld *worldIn);
+    
 
     // ---- TICK SECTION ----
     
@@ -66,6 +75,13 @@ public:
     void getActors(TArray<AActor *> &outArray);
 
 private:
+    void SetupHand(
+        EArmType typeIn,
+        FHumanoidControllerSetupPackage &package
+    );
+
+    void UpdateAttachedActorLowerArmDirection();
+
     bool bDrawDebugLines = false;
 
     void findDefaultLocalTorsoTarget(float torsoHeight, float shoulderWidth);

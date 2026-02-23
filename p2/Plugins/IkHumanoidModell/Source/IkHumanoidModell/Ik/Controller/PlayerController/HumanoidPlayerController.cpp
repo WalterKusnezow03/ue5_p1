@@ -11,10 +11,18 @@ HumanoidPlayerController::~HumanoidPlayerController(){
 }
 
 void HumanoidPlayerController::defaultSetup(UWorld *world){
-    HumanoidController::defaultSetup(world);
-    defaultSetupHands(world); //player only for now
+    HumanoidController::defaultSetup(world, true);
     DebugDisableCollisionOnLimbs();
+    MarkEmptyActorOwnedByPlayer();
 }
+
+void HumanoidPlayerController::MarkEmptyActorOwnedByPlayer(){
+    if(emptyArmTargetActor){
+        emptyArmTargetActor->SetDebugPlayerAnimatedActor(true);
+    }
+}
+
+
 
 void HumanoidPlayerController::Tick(float deltatime){
     
@@ -45,8 +53,8 @@ void HumanoidPlayerController::OverrideTransformAndCamera(
     //debug manual matrix copy
     rotation.Pitch = 0.0f;
     rotation.Roll = 0.0f;
-    hipTDebug.setTranslation(location);
-    hipRDebug.setRotation(rotation);
+    hipTranslationCopy.setTranslation(location);
+    hipRotationCopy.setRotation(rotation);
 
     UpdateAttachmentSockets(camera);
 
@@ -78,22 +86,48 @@ void HumanoidPlayerController::extractRotation(UCameraComponent &camera){
 
 void HumanoidPlayerController::extractTranslation(UCameraComponent &camera){
     FVector location = camera.GetComponentLocation(); // world space (?)
-    cameraWorldLocation.setTranslation(location); 
+    cameraWorldLocation.setTranslation(location);
+}
+
+
+// -- needed for diferentiating between carried weapons and empty, hand animation --
+//camera if default weapon
+//if hand animation: relative to hip socket, otherwise to head
+MMatrix &HumanoidPlayerController::TranslationMatrixForSocket(){
+    if(EmptyActorIsPickedUp()){
+        return hipTranslationCopy;
+    }
+    return cameraWorldLocation;
 }
 
 void HumanoidPlayerController::TickMainCarriedItemSocket(float deltatime){
+    /*
+    The Empty Carried item including its animations are supposed to relative to the hip.
+    The Default Carried items for the Player are based on the relative location 
+    to the camera.
+    Both Translation matrices must be supported
+    -> if a carried item doesnt support rotation axis like pitch or roll
+    it is eliminated with the FIKCarryInterfaceAxisConstraint info.
+    */
+
+    MMatrix &translation = TranslationMatrixForSocket();
+
     MMatrix rHip = hipController.getOrientation();
     mainItemSocket.Tick(
         deltatime,
-        cameraWorldLocation,
+        translation, //cameraWorldLocation,
         rHip,
         cameraRotationLocalPitch
     );
+    /*
+    ----- CAUTION BUG HERE -> SOLVED -----
+    */
+    
     
     /*
     mainItemSocket.Tick(
         deltatime,
-        cameraWorldLocation,
+        cameraWorldLocation, //deprecated, usuable if weapon attached only.
         cameraRotationMatrix
     );*/
 }

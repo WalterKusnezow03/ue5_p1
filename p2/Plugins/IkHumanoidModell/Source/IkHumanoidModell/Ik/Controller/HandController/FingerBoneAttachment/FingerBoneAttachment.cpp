@@ -9,6 +9,16 @@ FingerBoneAttachment::~FingerBoneAttachment(){
 
 }
 
+void FingerBoneAttachment::setupBone(FHandFingerProperty &property){
+    BoneAttachment::setupBone(
+        property.GetSizeFirst(), 
+        property.GetSizeSecond(), 
+        property.GetWorld(), 
+        property.GetPivot(), 
+        property.GetWidth()
+    );
+}
+
 
 void FingerBoneAttachment::OverrideTarget(FingerTargetPair &targetIn){
     target = targetIn;
@@ -23,4 +33,6 @@ void FingerBoneAttachment::TickAutoBasedOnTarget(MMatrix &transform, float delta
         TickNone(transform, deltatime);
     }
 }
+
+
 

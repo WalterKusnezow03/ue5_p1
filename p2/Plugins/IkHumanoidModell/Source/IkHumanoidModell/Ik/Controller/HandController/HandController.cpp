@@ -3,6 +3,9 @@
 #include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
 #include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
 
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FHandProperty.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FHandFingerProperty.h"
 
 HandController::HandController(){
     bHasTargetSetup = false;
@@ -27,6 +30,55 @@ void HandController::getActors(TArray<AActor *> &outArray){
     }
     
 }
+
+void HandController::setup(FHumanoidControllerSetupPackage &package, EArmType type){
+    setup(package.GetHandSize(), type);
+}
+
+void HandController::setup(FHandProperty &property, EArmType type){
+    typeSaved = type;
+    CreatePalm(property);
+    CreateFingers(property, type);
+}
+
+void HandController::CreatePalm(FHandProperty &property){
+    if(!palm){
+        palm = CubeLimbMaker::createLimbPivotAtTop(
+            property.GetLengthHand(), //x is forward
+            property.GetWidthHand(), //y is side
+            property.GetDepthHand(), //z up 
+            property.GetWorld()
+        );
+    }
+}
+
+void HandController::CreateFingers(FHandProperty &property, EArmType type){
+    TArray<FHandFingerProperty> fingerProperties;
+    int numFingers = 5;
+    property.GenerateFingerProperties(
+        fingerProperties,
+        numFingers,
+        type
+    );
+    CreateFingers(property, fingerProperties);
+}
+
+void HandController::CreateFingers(FHandProperty &property, TArray<FHandFingerProperty> &fingerProperties){
+    if(fingerProperties.Num() > 0){
+        fingers.SetNum(fingerProperties.Num());
+        for (int i = 0; i < fingers.Num(); i++){
+            FingerBoneAttachment &current = fingers[i];
+
+            FHandFingerProperty &currentProperty = fingerProperties[i];
+            current.setupBone(currentProperty);
+        }
+    }
+}
+
+
+
+
+
 
 void HandController::setup(UWorld *world, EArmType type){
     worldPointer = world;
@@ -79,6 +131,9 @@ void HandController::CreatePalm(UWorld *world){
 }
 
 
+
+
+/// --- TICK ---
 
 void HandController::Tick(MMatrix &transform, float deltatime){
     //M = external * orientation <--lese richtung--

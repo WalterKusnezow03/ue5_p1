@@ -83,8 +83,9 @@ protected:
 	CarriedItemFingerPositionManager handAndFingerPositionManager;
 	CarriedItemPositionData internalCarriedItemPositionContainer;
 
-	void SetupCarriedItemAxisContraints();
-	FIKCarryInterfaceAxisConstraint carryInterfaceAxisConstraintNone;
+	//to be overriden!
+	virtual void SetupCarriedItemAxisContraints();
+	FIKCarryInterfaceAxisConstraint carryInterfaceAxisConstraint;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

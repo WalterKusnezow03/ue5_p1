@@ -6,6 +6,7 @@
 
 class IIkCarryInterface;
 class AIKCarryInterfaceAnimatedActor;
+class FHumanoidControllerSetupPackage;
 
 /// @brief controls two layered two bones to create a torso
 /// will also apply constrains so a torso split doesnt occur
@@ -15,6 +16,8 @@ class IKHUMANOIDMODELL_API TorsoController {
 public:
     TorsoController();
     ~TorsoController();
+
+    void setup(FHumanoidControllerSetupPackage &setupPackage);
 
     /// @brief will setup both layered ik bones symetrically
     /// @param hipBreast 
@@ -29,8 +32,6 @@ public:
         float lowerArm,
         UWorld *world
     );
-
-    void defaultSetupHands(UWorld *worldIn);
 
     void ResetAndRebuild(
         MMatrix &actorTranslation,

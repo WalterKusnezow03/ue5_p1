@@ -58,7 +58,7 @@ protected:
     //scene to change location and rotation from UpdateActorTransformCarriedByHand
     virtual USceneComponent *FindHandCarriedScene(EArmType type){
         if(type == EArmType::ELeft){
-            return triggerSceneComponent;
+            return detonatorSceneComponent;
         }
         if(type == EArmType::ERight){
             return c4SceneComponent;

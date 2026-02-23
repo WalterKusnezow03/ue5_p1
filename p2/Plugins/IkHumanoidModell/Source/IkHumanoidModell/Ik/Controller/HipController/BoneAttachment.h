@@ -5,6 +5,10 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbHipProperty.h"
+
+
+
 class IKHUMANOIDMODELL_API BoneAttachment {
 
 public:
@@ -20,6 +24,8 @@ public:
 
     void setWorld(UWorld *world);
     void setAsLeg();
+
+    void setupBone(FTwoLimbHipProperty &hipLimb);
 
     /// @brief direction of bone from bottom to up, default size stretched bone.
     FVector defaultExtendedEndToStartLocal();

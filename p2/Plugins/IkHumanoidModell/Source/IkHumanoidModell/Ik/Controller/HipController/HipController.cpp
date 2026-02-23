@@ -4,6 +4,9 @@
 #include "IkHumanoidModell/Ik/Controller/HipController/AnimationTime/AnimationTime.h"
 #include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
 
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbHipProperty.h"
+
 HipController::HipController(){
     rotationSet = false;
     worldPointer = nullptr;
@@ -55,6 +58,30 @@ void HipController::drawLocation(float deltatime){
 
 void HipController::forceYawAdd(float degree){
     orientation.yawRadAdd(MMatrix::degToRadian(degree));
+}
+
+
+
+void HipController::setup(FHumanoidControllerSetupPackage &package){
+    worldPointer = package.GetWorld();
+
+    FTwoLimbHipProperty &legPropertyLeft = package.GetLegLeft();
+    legLeft.setupBone(legPropertyLeft);
+
+    FTwoLimbHipProperty &legPropertyRight = package.GetLegRight();
+    legRight.setupBone(legPropertyRight);
+
+
+    setupLegLength = legPropertyLeft.GetFirstAndSecondSize();
+
+    //setup forward reach target
+    float lengthTotal = std::abs(setupLegLength);
+    forwardDefaultLocalLocomotionFrame = FVector(40.0f, 0, -lengthTotal);
+    DebugHelper::logMessage("Default Forward Trajectory unprojected", forwardDefaultLocalLocomotionFrame);
+    forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
+
+    buildOnStart();
+
 }
 
 void HipController::setup(UWorld *world){

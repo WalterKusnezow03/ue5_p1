@@ -43,7 +43,7 @@ void AcarriedItem::Tick(float DeltaTime)
 
 
 void AcarriedItem::SetupCarriedItemAxisContraints(){
-	carryInterfaceAxisConstraintNone.SetupNone();
+	carryInterfaceAxisConstraint.SetupNone();
 }
 
 
@@ -197,7 +197,7 @@ CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
 }
 
 FIKCarryInterfaceAxisConstraint &AcarriedItem::getAxisConstraint(){
-	return carryInterfaceAxisConstraintNone;
+	return carryInterfaceAxisConstraint;
 }
 
 void AcarriedItem::FindFingerComponentsOnBeginPlay(){

@@ -4,6 +4,9 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "IkHumanoidModell/Ik/Bone/ETwoBoneConstraint.h"
 
+
+class FTwoLimbProperty;
+
 class IKHUMANOIDMODELL_API TwoJointBone {
 
 private:
@@ -15,6 +18,11 @@ public:
 
     void ResetAndRebuild(MMatrix &worldMatrix);
 
+    void setup(FTwoLimbProperty &property);
+
+    
+
+    //-- to be marked protected! --
     void setup(float a, float b, UWorld *world);
     void setup(float a, float b, UWorld *world, float widthBone); //hand controller api
 
@@ -98,6 +106,15 @@ public:
     void getActors(TArray<AActor *> &outArray);
 
     void OverrideEndEffectorWorldLocation(FVector &location);
+
+    // --- ell to end direction for ikcarryinterface ---
+    const FVector &DirectionOfMiddleToEndEffector(){
+        return directionOfMiddleToEndEffectorSaved;
+    }
+
+private:
+    FVector directionOfMiddleToEndEffectorSaved;
+    void UpdateDirectionOfMiddleToEndEffector(MMatrix &middle, MMatrix &end);
 
 private:
     bool bLogEnabled = false;

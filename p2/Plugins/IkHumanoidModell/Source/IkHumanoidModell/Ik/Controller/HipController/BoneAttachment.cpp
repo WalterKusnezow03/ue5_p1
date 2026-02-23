@@ -18,7 +18,30 @@ void BoneAttachment::setWorld(UWorld *worldIn){
     world = worldIn;
 }
 
-//not tested!
+
+
+void BoneAttachment::setupBone(FTwoLimbHipProperty &hipLimb){
+    setWorld(hipLimb.GetWorld());
+    bone.setup(hipLimb);
+    setAsLeg();
+
+    FVector offset = hipLimb.GetOffset();
+    
+
+    innerOffset.setTranslation(offset);
+    offset *= -1.0f;
+    innerOffsetInverse.setTranslation(offset);
+
+    defaultExtendedTranslationBottomToUp = FVector(
+        0,
+        0,
+        hipLimb.GetFirstAndSecondSize()
+    );
+
+
+}
+
+
 void BoneAttachment::setAsLeg(){
     bone.markTriangleFlipAsWantedForLegs();
 }

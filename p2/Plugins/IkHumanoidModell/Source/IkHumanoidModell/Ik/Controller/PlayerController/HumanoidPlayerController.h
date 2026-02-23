@@ -42,6 +42,8 @@ public:
 private:
     void DebugDisableCollisionOnLimbs();
 
+    void MarkEmptyActorOwnedByPlayer();
+
     void UpdateAttachmentSockets(UCameraComponent &camera);
     void extractRotation(UCameraComponent &camera);
     void extractTranslation(UCameraComponent &camera);
@@ -54,8 +56,9 @@ private:
     FRotator cameraRotationLocalPitch;
     MMatrix cameraWorldLocation;
 
-    MMatrix hipTDebug;
-    MMatrix hipRDebug;
+    MMatrix hipTranslationCopy;
+    MMatrix hipRotationCopy;
+    MMatrix &TranslationMatrixForSocket();
 
     bool readyRaisedPositionFlagged = false;
 };

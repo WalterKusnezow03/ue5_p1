@@ -1,7 +1,8 @@
 #include "HumanoidController.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
-#include "IkHumanoidModell/Ik/Controller/Properties/LimbProperties.h"
+
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
 
 HumanoidController::HumanoidController(){
     FVector location(100, 0, 100);
@@ -49,27 +50,31 @@ void HumanoidController::ResetAndRebuild(){
 }
 
 void HumanoidController::defaultSetup(UWorld *world){
-    
-    
-    float torsoHeight = 50;
-    float torsoHalfWidth = 30;
 
-    LimbProperties::GetTorsoProperties(torsoHalfWidth, torsoHeight);
+    /*FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(world);
 
-    float armPartSizeEach = 40;
-    LimbProperties::GetSizeArmLimb(armPartSizeEach);
+    hipController.setup(property);
+    torsoController.setup(property);
+    SetupEmptyArmAnimationActor(world);
+    addAllActorsInChildrenToRaycastExclude();*/
+    HumanoidController::defaultSetup(world, false);
+}
 
-    hipController.setup(world);
-    torsoController.setup(
-        torsoHeight,
-        torsoHalfWidth,
-        armPartSizeEach,
-        armPartSizeEach,
-        world
-    );
+void HumanoidController::defaultSetup(UWorld *world, bool flagWantedHands){
+    FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(world);
+    if(flagWantedHands){
+        property.MarkHandsWanted();
+    }
+
+    hipController.setup(property);
+    torsoController.setup(property);
     SetupEmptyArmAnimationActor(world);
     addAllActorsInChildrenToRaycastExclude();
 }
+
+
+
+
 
 void HumanoidController::Tick(float deltatime){
 
@@ -98,30 +103,29 @@ void HumanoidController::TickMainCarriedItemSocket(float deltatime){
 // --- Attach api ---
 
 void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
-    
-    
-    //remove old item
-    if(IIkCarryInterface *previousItem = mainItemSocket.attachedItemPointer()){
-        if(previousItem == newItem){
-            return;
-        }
+    //drop previous item from hand (needed here? unclear)
+    dropItemFromEmptyActorHand();
 
+    //remove old item if not same
+    if(IIkCarryInterface *previousItem = CurrentPickedUpItem()){ //REFACTURE FOR METHOD
+        if(newItem){
+            if(previousItem == newItem){
+                return;
+            }
+        }
+        
         updateCollisionParams(previousItem, false); //remove old item
     }
 
     //update flag if is empty actor item
-    if(emptyArmTargetActor){
+    /*if(emptyArmTargetActor){
         emptyActorIsPickedUp = emptyArmTargetActor == newItem;
-    }
+    }*/
 
     //NEW for injected items
     //inject into empty Arm Target Actor if possible
     //instead of attaching as socket
-    if(InjectIntoEmptyIkCarryInterface(newItem)){
-        torsoController.attachOrReplaceCarriedItem(emptyArmTargetActor);
-        mainItemSocket.attachOrReplaceCarriedItem(emptyArmTargetActor);
-        updateCollisionParams(Cast<AActor>(emptyArmTargetActor), true); //add new item
-        emptyActorIsPickedUp = true;
+    if(TryInjectIntoEmptyIkCarryInterface(newItem)){
         return;
     }
 
@@ -129,24 +133,74 @@ void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
     torsoController.attachOrReplaceCarriedItem(newItem);
     mainItemSocket.attachOrReplaceCarriedItem(newItem);
     updateCollisionParams(newItem, true); //add new item
+
+    //set flag
+    UpdateEmptyArmTargetActorPickedUpFlag();
+}
+
+//not tested but shoudl be fine
+IIkCarryInterface *HumanoidController::CurrentPickedUpItem(){
+    if(IIkCarryInterface *item = mainItemSocket.attachedItemPointer()){
+        return item;
+    }
+    return nullptr;
+}
+
+//not tested but should be fine 
+bool HumanoidController::EmptyActorIsPickedUp(){
+    if(emptyArmTargetActor){
+        if(IIkCarryInterface *current = CurrentPickedUpItem()){
+            return emptyArmTargetActor == current;
+        }
+    }
+    return false;
 }
 
 
-//NOT TESTED
+//set flag
+void HumanoidController::UpdateEmptyArmTargetActorPickedUpFlag(){
+
+    if(emptyArmTargetActor){
+        bool flagUpdate = EmptyActorIsPickedUp();
+        emptyArmTargetActor->SetIsPickedUpFlag(flagUpdate);
+    }
+}
+
+
+
+//PARTIALLY TESTED, BUGGED
 
 /// @brief will try to inject the item to the empty hand animation actor
 /// returns true on success. Item picked up via empty hands.
 /// @param newItem 
 /// @return 
-bool HumanoidController::InjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem){
+bool HumanoidController::TryInjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem){
+    if(emptyArmTargetActor){
+        if(emptyArmTargetActor == newItem){
+            return false;
+        }
+    }
+
+
     if(emptyArmTargetActor && newItem){
         if(newItem->GetCarryType() == EIKCarryType::ECarryByHand){
+            //drop previous item
+            dropItemFromEmptyActorHand();
+
             //testing needed
             DebugHelper::logMessage("HumanoidController::Injected Carry By Hand Item!");
 
             emptyArmTargetActor->InjectCarryByHandItem(newItem);
-
             updateCollisionParams(newItem, true); //add new item
+            
+            
+            //attach empty actor since was injected
+            torsoController.attachOrReplaceCarriedItem(emptyArmTargetActor);
+            mainItemSocket.attachOrReplaceCarriedItem(emptyArmTargetActor);
+            updateCollisionParams(Cast<AActor>(emptyArmTargetActor), true); //add new item
+            UpdateEmptyArmTargetActorPickedUpFlag();
+            // emptyActorIsPickedUp = true;
+
             return true;
         }
     }
@@ -211,14 +265,18 @@ void HumanoidController::updateCollisionParams(AActor *actor, bool add){
 
 
 void HumanoidController::dropCarriedItem(){
-    if(emptyActorIsPickedUp){
-        //eject hand carried item if needed
-        if(emptyArmTargetActor){
-            emptyArmTargetActor->EjectCarryByHandItem();
-        }
+    //-- eject hand carried item --
+    if(EmptyActorIsPickedUp() && emptyArmTargetActor){
+        dropItemFromEmptyActorHand();
+
+        //IIkCarryInterface *ejected = emptyArmTargetActor->CurrentAttachedItem();
+        //updateCollisionParams(ejected, false); //remove from collision ignore
+        //emptyArmTargetActor->EjectCarryByHandItem();
         return;
     }
 
+
+    //-- eject socket carried item --
 
     //remove from collision params
     updateCollisionParams(mainItemSocket.attachedItemPointer(), false); //remove
@@ -229,6 +287,26 @@ void HumanoidController::dropCarriedItem(){
 
     OnDropUpdateAnimation();
 }
+
+void HumanoidController::dropItemFromEmptyActorHand(){
+    DebugHelper::logMessage("HumanoidController::dropItemFromEmptyActorHand A");
+    if (emptyArmTargetActor)
+    {
+        DebugHelper::logMessage("HumanoidController::dropItemFromEmptyActorHand B");
+        IIkCarryInterface *ejected = emptyArmTargetActor->CurrentAttachedItem();
+        
+        emptyArmTargetActor->EjectCarryByHandItem();
+        if(ejected){
+            updateCollisionParams(ejected, false); //remove from collision ignore
+            DebugHelper::logMessage("HumanoidController::dropItemFromEmptyActorHand C, ejected real item");
+        }
+    }
+}
+
+
+
+
+
 
 //rotation change
 void HumanoidController::LookAt(FVector &location){
@@ -308,11 +386,6 @@ void HumanoidController::changeCarriedItemSocket(ECarriedItemPosition type){
 
 
 
-void HumanoidController::defaultSetupHands(UWorld *worldIn){
-    torsoController.defaultSetupHands(worldIn);
-}
-
-
 
 
 
@@ -324,7 +397,7 @@ void HumanoidController::defaultSetupHands(UWorld *worldIn){
 //--- drop item / empty animation item ---
 
 void HumanoidController::SetupEmptyArmAnimationActor(UWorld *world){
-    if(world && !emptyArmTargetActor){
+    if(world && emptyArmTargetActor == nullptr){
         emptyArmTargetActor = AIKCarryInterfaceAnimatedActor::makeInstance(world);
         OnDropUpdateAnimation();
     }
@@ -336,7 +409,7 @@ void HumanoidController::OnDropUpdateAnimation(){
         DebugHelper::logMessage("HumanoidController::Pickup Empty Actor");
         
         attachOrReplaceCarriedItem(emptyArmTargetActor);
+        UpdateEmptyArmTargetActorPickedUpFlag();
         emptyArmTargetActor->FireAnimation(EArmAnimationEnum::running);
-        
     }
 }

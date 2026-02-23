@@ -53,7 +53,8 @@ public:
     void SetupNone(){
         allowRollRotation = true;
         allowPitchRotation = true;
-        allowYawRotation = true; 
+        allowYawRotation = true;
+        allowLocalPositionOffset = true;
     }
 
     void SetupRollPitchYaw(bool rollIn, bool pitchIn, bool yawIn){
@@ -64,4 +65,13 @@ public:
 
 
 
+    void SetupNoneButPositionLocked(){
+        SetupNone();
+        LockPositionConstraint();
+    }
+
+    /// @brief dont allow positional offsets
+    void LockPositionConstraint(){
+        allowLocalPositionOffset = false;
+    }
 };

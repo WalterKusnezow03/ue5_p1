@@ -96,3 +96,10 @@ void APlacableItemBase::UpdateLocalSceneTransformCarriedByHand(
     }
 }
 
+
+
+
+void APlacableItemBase::SetupCarriedItemAxisContraints(){
+    carryInterfaceAxisConstraint.SetupNone();
+    carryInterfaceAxisConstraint.LockPositionConstraint();
+}

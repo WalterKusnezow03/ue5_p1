@@ -9,6 +9,9 @@
 #include "IkHumanoidModell/Ik/Controller/TorsoController/EArmType.h"
 
 
+class FHandProperty;
+class FHumanoidControllerSetupPackage;
+
 class IKHUMANOIDMODELL_API HandController {
 
 public:
@@ -16,6 +19,9 @@ public:
     ~HandController();
 
     void setup(UWorld *world, EArmType type);
+
+    void setup(FHumanoidControllerSetupPackage &package, EArmType type);
+    void setup(FHandProperty &property, EArmType type);
 
     //update if item has changed
     void Update(IIkCarryInterface *item);
@@ -30,6 +36,12 @@ public:
     
 
 private:
+    //finger create
+    void CreateFingers(FHandProperty &property, EArmType type);
+    void CreateFingers(FHandProperty &property, TArray<FHandFingerProperty> &fingerProperties);
+    // finger create
+    
+    void CreatePalm(FHandProperty &property);
     void CreatePalm(UWorld *world);
     AActor *palm = nullptr;
     void TickPalm(MMatrix &transform);

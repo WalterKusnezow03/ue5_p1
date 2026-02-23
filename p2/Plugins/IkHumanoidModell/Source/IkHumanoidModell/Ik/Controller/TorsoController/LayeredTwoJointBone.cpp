@@ -1,6 +1,7 @@
 #include "LayeredTwoJointBone.h"
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
-
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbProperty.h"
 
 LayeredTwoJointBone::LayeredTwoJointBone(){
     world = nullptr;
@@ -14,20 +15,35 @@ LayeredTwoJointBone::~LayeredTwoJointBone(){
 
 void LayeredTwoJointBone::setup(
     EArmType typeIn,
-    float hipBreast,
-    float breastShoulder,
-    float upperArm,
-    float lowerArm,
-    UWorld *worldIn
+    FHumanoidControllerSetupPackage &package
 ){
     armTypeSaved = typeIn;
-    world = worldIn;
-    torsoBone.setup(hipBreast, breastShoulder, world);
+    world = package.GetWorld();
+
+    FTwoLimbProperty &torsoProperty = package.GetTorsoSize();
+    torsoBone.setup(torsoProperty);
     torsoBone.useOtherColorType();
-    armBone.setup(upperArm, lowerArm, world);
-    armBone.SetConstraint(ETwoBoneConstraint::EFlipDown);
-    findDefaultLocalTorsoTarget(hipBreast, breastShoulder);
-    findTotalMotionCircleSize(hipBreast, breastShoulder, upperArm, lowerArm);
+    
+    
+    FTwoLimbProperty &armProperty = package.GetArmSize();
+    armBone.setup(armProperty);
+    armBone.SetConstraint(ETwoBoneConstraint::EFlipDown); //bend direction of arm.
+
+
+
+    findDefaultLocalTorsoTarget(
+        torsoProperty.GetSizeFirst(), 
+        torsoProperty.GetSizeSecond()
+    );
+    findTotalMotionCircleSize(
+        torsoProperty.GetSizeFirst(), 
+        torsoProperty.GetSizeSecond(),
+        armProperty.GetSizeFirst(), 
+        armProperty.GetSizeSecond()
+    );
+
+    SetupHand(typeIn, package);
+    
 }
 
 void LayeredTwoJointBone::findTotalMotionCircleSize(
@@ -55,10 +71,16 @@ void LayeredTwoJointBone::findDefaultLocalTorsoTarget(
     localTorsoEndEffectorTarget = up + side;
 }
 
-void LayeredTwoJointBone::defaultSetupHand(UWorld *worldIn){
-    if(worldIn){
+//DEPRECATED!
+
+
+void LayeredTwoJointBone::SetupHand(
+    EArmType typeIn,
+    FHumanoidControllerSetupPackage &package
+){
+    if(!handIsSetup && package.HandsMarkedWanted()){
         handIsSetup = true;
-        hand.setup(worldIn, armTypeSaved);
+        hand.setup(package, typeIn);
     }
 }
 
@@ -142,6 +164,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
         buildTorsoBoneNone(actorTransform, deltatime);
         MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
         armBone.MoveToTarget(localTargetInArmSystem, shoulderStartM, deltatime);
+        UpdateAttachedActorLowerArmDirection();
 
         //DebugHelper::logMessage("In Local Space Arm! ");
     }
@@ -212,6 +235,7 @@ void LayeredTwoJointBone::TickForwardKinematicsWorldTarget(
 
         //build from shoulder LOCATION (?) to target hand local
         armBone.MoveToTarget(localTargetInArmSystem, shoulderStartM, deltatime);
+        UpdateAttachedActorLowerArmDirection();
     }
 }
 
@@ -252,6 +276,7 @@ void LayeredTwoJointBone::TickBuildNone(
     //build arm from shoulder end without rotation
     MMatrix shoulderStartM = torsoBone.EndEffectorTranslation();
     armBone.TickBuildForward(shoulderStartM, deltatime);
+    UpdateAttachedActorLowerArmDirection();
 }
 
 /// @brief maybe needed to be updated every frame, local target is followed (?)
@@ -406,6 +431,26 @@ FVector LayeredTwoJointBone::HandTargetWorldBasedOnAttachedItem(){
     }
     return FVector(0, 0, 0); //should be never returned if actorIsAttached is asked before
 }
+
+/// actor attachment update bone direction
+/// for hand carried items
+void LayeredTwoJointBone::UpdateAttachedActorLowerArmDirection(){
+    if(itemIsAttached()){
+
+        
+        //IIKCarryInterface::UpdateLowerArm(EArmType typeArm, const FVector &direction)
+        attachedItemInterface->UpdateLowerArm(
+            armTypeSaved, 
+            armBone.DirectionOfMiddleToEndEffector()
+        );
+    }
+
+    
+}
+
+
+
+
 
 
 //

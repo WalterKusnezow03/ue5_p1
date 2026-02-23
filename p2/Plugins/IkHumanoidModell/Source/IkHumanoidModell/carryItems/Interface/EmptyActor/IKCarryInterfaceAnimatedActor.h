@@ -8,7 +8,7 @@
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/FArmAnimationPair.h"
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemFingerPositionManager.h"
-
+#include "GameCore/util/FVectorUtil.h"
 #include "GameCore/util/ActorBase/ActorBase.h"
 
 #include "IKCarryInterfaceAnimatedActor.generated.h"
@@ -34,6 +34,8 @@ protected:
 	}
 
 	void InitComponents();
+
+	bool logEnabled = false;
 
 public:
 	/// --- INTERFACE OVERRIDE ---
@@ -64,11 +66,23 @@ public:
 	// animation fire
 
 	//hand attached items
+	IIkCarryInterface *CurrentAttachedItem();
 	void InjectCarryByHandItem(IIkCarryInterface *newItem);
 	void EjectCarryByHandItem();
 	//hand attached items
 
+	//picked up flag to animate or not
+	void SetIsPickedUpFlag(bool flag);
+	void SetDebugPlayerAnimatedActor(bool flag);
+
 protected:
+
+	bool isPickedUpFlag = false;
+	void ScreenLogPickedUpState();
+	bool isPickedUpByPlayerDebugFlag = false;
+	void DebugDrawHandLocation(EArmType type, float deltatime);
+	// picked up flag to animate or not
+
 	bool IsHandAttachedItem(IIkCarryInterface *newItem);
 	void TickUpdateAttachedItem();
 	//copies own transform to actor
@@ -79,7 +93,9 @@ protected:
 	//to be replaced with eject info
 	IIkCarryInterface *attachedItemDebug = nullptr;
 
-
+	//updates for lower arm direction resulting in 
+	//attached item rotation being orthogonal to arm direction
+	FVector OrthogonalLocalUpFor(const FVector &vec);
 
 
 
@@ -121,6 +137,18 @@ protected:
 
 	// -- components --
 
+	// -- components update --
+	void UpdateHandComponentLocation(EArmType typeArm, FVector &location);
+	
+	void UpdateHandComponentRotation(EArmType typeArm, FVector &location);
+	void UpdateHandComponentRotation(EArmType typeArm, FRotator &rotation);
+	
+
+
+
+
+
+
 	//position data to update based on animation
 	CarriedItemPositionData itemPositionData;
 	CarriedItemFingerPositionManager handAndFingerPositionManager;
@@ -133,5 +161,6 @@ protected:
 
 	//flag for ticking running animation or not
 	bool hasMovedFlag = false;
+	float distSquaredMovedFlag = 4.0f;
 	void UpdateHasMovedFlag(const FVector &location);
 };	

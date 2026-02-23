@@ -29,6 +29,7 @@ AIKCarryInterfaceAnimatedActor* AIKCarryInterfaceAnimatedActor::makeInstance(UWo
 
 void AIKCarryInterfaceAnimatedActor::BeginPlay(){
     Super::BeginPlay();
+    localAnimationOffset = FVector(0, 0, 0);
     InitComponents();
     InitAnimationTable();
     InitAxisConstraintEmpty();
@@ -36,7 +37,10 @@ void AIKCarryInterfaceAnimatedActor::BeginPlay(){
 
 
 void AIKCarryInterfaceAnimatedActor::InitAxisConstraintEmpty(){
-    axisConstraintNone.SetupNone();
+    axisConstraintNone.SetupNoneButPositionLocked();
+    
+    //debugs
+    axisConstraintNone.SetupRollPitchYaw(false, false, true);
 }
 
 FIKCarryInterfaceAxisConstraint &AIKCarryInterfaceAnimatedActor::getAxisConstraint(){
@@ -155,6 +159,15 @@ void AIKCarryInterfaceAnimatedActor::ReplaceAnimationPair(
 void AIKCarryInterfaceAnimatedActor::UpdateActorTransform(FVector &location, FRotator &rotation){
     UpdateHasMovedFlag(location);
 
+    //is bugged!
+    /*DebugHelper::showLineBetween(
+        GetWorld(),
+        location,
+        location + FVector(0,0,100),
+        FColor::Green,
+        0.1f
+    );*/
+
     SetActorLocation(location);
     SetActorRotation(rotation);
     internalTransform.setTranslation(location);
@@ -165,15 +178,33 @@ void AIKCarryInterfaceAnimatedActor::UpdateActorTransform(FVector &location, FRo
 void AIKCarryInterfaceAnimatedActor::UpdateHasMovedFlag(const FVector &location){
     hasMovedFlag = false;
     FVector current = internalTransform.getTranslation();
-    if(FVector::DistSquared(current, location) >= 1.0f){
+    if(FVector::DistSquared(current, location) >= distSquaredMovedFlag){
         hasMovedFlag = true;
+        if(logEnabled){
+            DebugHelper::showScreenMessage("AIKCarryInterfaceAnimatedActor::HAS MOVED", FColor::Green);
+        }
     }
 }
 
 //updates for attached item rotation
 void AIKCarryInterfaceAnimatedActor::UpdateLowerArm(EArmType typeArm, const FVector &direction){
+    FVector upVectorRelative = OrthogonalLocalUpFor(direction);
 
-}
+    // TESTING NEEDED
+    UpdateHandComponentRotation(typeArm, upVectorRelative);
+    // TESTING NEEDED
+}   
+
+//generates the local up vector to a given direction
+FVector AIKCarryInterfaceAnimatedActor::OrthogonalLocalUpFor(const FVector &vec){
+    FVector side = FVectorUtil::BuildSideVectorRight(vec);
+    FVector up = FVector::CrossProduct(vec, side); // up: a x b
+    return up.GetSafeNormal();
+} 
+
+
+
+
 
 
 void AIKCarryInterfaceAnimatedActor::FireAnimation(EArmAnimationEnum id){
@@ -193,10 +224,39 @@ void AIKCarryInterfaceAnimatedActor::FireAnimation(EArmAnimationEnum id){
 }
 
 void AIKCarryInterfaceAnimatedActor::StopAnimation(){
-
+    //handle is unclear here: revert to some default state (?)
 }
 
 
+
+/// ----- PICKUP FLAG ------
+
+void AIKCarryInterfaceAnimatedActor::SetIsPickedUpFlag(bool flag){
+    isPickedUpFlag = flag;
+}
+
+
+/// ----- HAND LOCAL TRANSFORM UPDATE -----
+
+void AIKCarryInterfaceAnimatedActor::UpdateHandComponentRotation(EArmType typeArm, FVector &rotationVecIn){
+    FRotator rotation = rotationVecIn.GetSafeNormal().Rotation();
+    UpdateHandComponentRotation(typeArm, rotation);
+}
+
+void AIKCarryInterfaceAnimatedActor::UpdateHandComponentRotation(EArmType typeArm, FRotator &rotation){
+    if(USceneComponent *hand = FindHand(typeArm)){
+        hand->SetRelativeRotation(rotation);
+    }
+}
+
+void AIKCarryInterfaceAnimatedActor::UpdateHandComponentLocation(
+    EArmType typeArm,
+    FVector &location
+){
+    if(USceneComponent *hand = FindHand(typeArm)){
+        hand->SetRelativeLocation(location);
+    }
+}
 
 
 
@@ -205,8 +265,31 @@ void AIKCarryInterfaceAnimatedActor::StopAnimation(){
 
 void AIKCarryInterfaceAnimatedActor::Tick(float deltatime){
     Super::Tick(deltatime);
-    TickAnimation(deltatime);
-    TickUpdateAttachedItem();
+
+    if(isPickedUpFlag || true){
+        TickAnimation(deltatime);
+        TickUpdateAttachedItem();
+    }
+
+    ScreenLogPickedUpState();
+}
+
+void AIKCarryInterfaceAnimatedActor::ScreenLogPickedUpState(){
+    if(isPickedUpByPlayerDebugFlag && logEnabled){
+
+        FString message = isPickedUpFlag ? 
+            TEXT("AIKCarryInterfaceAnimatedActor::IsPickedUp") :
+            TEXT("AIKCarryInterfaceAnimatedActor::IsNOTPickedUp");
+
+        FColor color = isPickedUpFlag ? FColor::Green : FColor::Red;
+
+        DebugHelper::showScreenMessage(message, color);
+    }
+}
+
+
+void AIKCarryInterfaceAnimatedActor::SetDebugPlayerAnimatedActor(bool flag){
+    isPickedUpByPlayerDebugFlag = flag;
 }
 
 void AIKCarryInterfaceAnimatedActor::TickAnimation(float deltatime){
@@ -231,18 +314,13 @@ bool AIKCarryInterfaceAnimatedActor::CurrentAnimationCanBeTicked(){
         
 
         //DEBUG
-        //canBeTicked = true;
+        canBeTicked = true;
     }
 
     // other cases to be added.
 
     return animationActiveFlag && canBeTicked;
 }
-
-
-
-
-
 
 
 
@@ -258,21 +336,32 @@ bool AIKCarryInterfaceAnimatedActor::TickAnimationFor(EArmType type, float delta
         outPosLocal
     );
     //Update component location
-    if(USceneComponent *component = FindHand(type)){
-        component->SetRelativeLocation(outPosLocal);
-        
-        //DEBUG
-        DebugHelper::showScreenMessage("IkCarryAnimPos ", outPosLocal);
-        DebugHelper::showLineBetween(
-            GetWorld(),
-            component->GetComponentLocation(),
-            component->GetComponentLocation() + FVector(0, 0, 10000),
-            FColor::Red,
-            deltatime * 2.0f
-        );
-    }
+    UpdateHandComponentLocation(type, outPosLocal);
+    DebugDrawHandLocation(type, deltatime);
+
     return finished;
 }
+
+
+void AIKCarryInterfaceAnimatedActor::DebugDrawHandLocation(EArmType type, float deltatime){
+    if(logEnabled){
+        if(USceneComponent *hand = FindHand(type)){
+            DebugHelper::showLineBetween(
+                GetWorld(),
+                hand->GetComponentLocation(),
+                hand->GetComponentLocation() + FVector(0, 0, 10000),
+                FColor::Red,
+                deltatime * 2.0f
+            );
+        }
+    }
+}
+
+
+
+
+
+
 
 
 void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItem(){
@@ -287,6 +376,15 @@ void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItemGlobalTransform(){
         FVector location = GetActorLocation();
         FRotator rotation = GetActorRotation();
         attachedItemDebug->UpdateActorTransform(location, rotation);
+        
+        //draw
+        /*DebugHelper::showLineBetween(
+            GetWorld(),
+            location, 
+            location + FVector(100,0,0),
+            FColor::Green,
+            0.1f
+        );*/
     }
 }
 
@@ -319,6 +417,10 @@ void AIKCarryInterfaceAnimatedActor::InjectCarryByHandItem(IIkCarryInterface *ne
     if(IsHandAttachedItem(newItem)){
         attachedItemDebug = newItem;
     }
+}
+
+IIkCarryInterface *AIKCarryInterfaceAnimatedActor::CurrentAttachedItem(){
+    return attachedItemDebug;
 }
 
 void AIKCarryInterfaceAnimatedActor::EjectCarryByHandItem(){

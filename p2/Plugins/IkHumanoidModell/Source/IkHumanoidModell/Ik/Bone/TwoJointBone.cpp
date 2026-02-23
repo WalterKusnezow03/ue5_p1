@@ -3,6 +3,7 @@
 #include "DebugPlugin/DebugHelper.h"
 
 #include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbProperty.h"
 
 
 TwoJointBone::TwoJointBone(){
@@ -27,6 +28,16 @@ void TwoJointBone::markTriangleFlipAsWantedForLegs(){
 }
 
 
+void TwoJointBone::setup(FTwoLimbProperty &property){
+
+    setup(
+        property.GetSizeFirst(),
+        property.GetSizeSecond(),
+        property.GetWorld(),
+        property.GetWidth()
+    );
+
+}
 
 void TwoJointBone::setup(float a, float b, UWorld *world){
     setupMatrices(a, b, world);
@@ -408,10 +419,10 @@ float TwoJointBone::lengthOfBone(){
 void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     //M = R * T <-- lese richtung per joint
     MMatrix j1 = r1 * t1;
-    MMatrix j2 = r2 * t2;
+    MMatrix j2 = r2 * t2; 
     MMatrix j3 = t3;
 
-    //M = world * j1 * j2 * j3
+    //M = world * j1 * j2 * j3 <-- lese richtung --
     MMatrix j1World = world * j1;
     MMatrix j2World = j1World * j2;
     MMatrix j3World = j2World * j3;
@@ -420,6 +431,8 @@ void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     startEffectorWorld = world;
     endEffectorWorld = j2World;
     draw(world, j1World, j2World, j3World, deltatime);
+
+    UpdateDirectionOfMiddleToEndEffector(j2World, j3World);
 
     //new actor visibility
     applyTransformToActors(world, j1World, j2World);
@@ -439,6 +452,7 @@ void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
     startEffectorWorld = j2World; //update start effector
     draw(world, j0World, j1World, j2World, deltatime);
 
+    UpdateDirectionOfMiddleToEndEffector(j1World, j0World);
 
     //debug rebuild forward
     //FVector target = EndEffectorRelativeLocation();
@@ -619,4 +633,14 @@ void TwoJointBone::getActors(TArray<AActor *> &outArray){
 
 void TwoJointBone::OverrideEndEffectorWorldLocation(FVector &location){
     endEffectorWorld.setTranslation(location);
+}
+
+
+
+
+// direction for middle joint to end effector: IIkcarry interface hand carried items
+void TwoJointBone::UpdateDirectionOfMiddleToEndEffector(MMatrix &middle, MMatrix &end){
+    FVector middleVec = middle.getTranslation();
+    FVector endVec = end.getTranslation();
+    directionOfMiddleToEndEffectorSaved = endVec - middleVec; // AB = B - A
 }

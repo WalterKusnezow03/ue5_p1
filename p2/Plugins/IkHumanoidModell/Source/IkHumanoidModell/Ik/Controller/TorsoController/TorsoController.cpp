@@ -2,7 +2,7 @@
 #include "EArmType.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/IKCarryInterfaceAnimatedActor.h"
-
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
 
 TorsoController::TorsoController(){
 
@@ -12,40 +12,21 @@ TorsoController::~TorsoController(){
 
 }
 
-void TorsoController::setup(
-    float hipBreast,
-    float breastShoulder,
-    float upperArm,
-    float lowerArm,
-    UWorld *world
-){
+
+void TorsoController::setup(FHumanoidControllerSetupPackage &package){
     partLeft.setup(
         EArmType::ELeft,
-        hipBreast,
-        breastShoulder,
-        upperArm,
-        lowerArm,
-        world
+        package
     );
 
     partRight.setup(
         EArmType::ERight,
-        hipBreast,
-        breastShoulder,
-        upperArm,
-        lowerArm,
-        world
+        package
     );
-
-    
 }
 
 
 
-void TorsoController::defaultSetupHands(UWorld *worldIn){
-    partLeft.defaultSetupHand(worldIn);
-    partRight.defaultSetupHand(worldIn);
-}
 
 void TorsoController::ResetAndRebuild(
     MMatrix &actorTranslation,

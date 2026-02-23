@@ -21,7 +21,8 @@ public:
     void EnableDebugLogExtended();
 
     virtual void defaultSetup(UWorld *world);
-    void defaultSetupHands(UWorld *world);
+    virtual void defaultSetup(UWorld *world, bool flagWantedHands);
+   
 
     void ResetAndRebuild();
 
@@ -98,16 +99,18 @@ protected:
     virtual void TickMainCarriedItemSocket(float deltatime);
 
    
-
-    //animate arms on run
-    FVector previousLocation;
+    
+    //empty actor to pickup, attach hand carried items to
     void OnDropUpdateAnimation();
     void SetupEmptyArmAnimationActor(UWorld *world);
 
-    //empty actor to pickup, when dropping another one
-    bool emptyActorIsPickedUp = false;
     AIKCarryInterfaceAnimatedActor *emptyArmTargetActor = nullptr;
+    IIkCarryInterface *CurrentPickedUpItem();
+    bool EmptyActorIsPickedUp();
+    void UpdateEmptyArmTargetActorPickedUpFlag();
+    void dropItemFromEmptyActorHand();
+    bool TryInjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem);
+    //empty actor to pickup, attach hand carried items to
 
 
-    bool InjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem);
 };
