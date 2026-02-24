@@ -14,7 +14,10 @@ public class p2 : ModuleRules
 			//new
 			"Slate", "SlateCore",
 
-			//terrain plugin
+			//debug: plucker bonechains
+			"PlueckerCore",
+
+			//game plugins
 			"terrainPlugin",
 			"CoreMath",
 			"GameCore",
@@ -31,6 +34,7 @@ public class p2 : ModuleRules
 			"DebugPlugin",
 			"ComputerVisionPlugin",
 			"AssetEnumCollection",
+			"AeroDynamicPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

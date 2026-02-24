@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FHumanoidModule : public IModuleInterface
+class FAeroDynamicPluginModule : public IModuleInterface
 {
 public:
 

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
-#include "GameCore/MeshGenBase/MeshData/aeroDynamic/AeroMeshData.h"
+#include "AeroDynamicPlugin/MeshData/aeroDynamic/AeroMeshData.h"
 #include <map>
 
 #include "AeroActor.generated.h"

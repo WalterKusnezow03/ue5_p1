@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <map>
 
 /**
  * will save a area of a triangle by 3 indices

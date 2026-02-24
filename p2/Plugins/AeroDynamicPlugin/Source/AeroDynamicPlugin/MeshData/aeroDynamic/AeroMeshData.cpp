@@ -361,6 +361,7 @@ FVector AeroMeshData::normalFor(int v0, int v1, int v2){
     if(isValidNormalIndex(v0,v1,v2)){
         FVector sumNormal = normals[v0] + normals[v1] + normals[v2];
         normal = sumNormal.GetSafeNormal();
+        return normal;
     }
     if(isValidVertexIndex(v0,v1,v2)){
         FVector &a = vertecies[v0];

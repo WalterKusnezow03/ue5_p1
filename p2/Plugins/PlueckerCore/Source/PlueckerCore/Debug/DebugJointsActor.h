@@ -1,33 +1,36 @@
 #pragma once 
 
 #include "CoreMinimal.h"
-#include "Humanoid/Bone/Joint.h"
+#include "PlueckerCore/Bone/Joint.h"
 #include "CoreMath/animation/timer/timer.h"
  
 #include "DebugJointsActor.generated.h"
 
+class MMatrix;
+
 UCLASS()
-class HUMANOID_API ADebugJointsActor : public AActor {
+class PLUECKERCORE_API ADebugJointsActor : public AActor {
 
     GENERATED_BODY()
 
 public:
-    static void CreateInstance(UWorld *world);
+    static void CreateInstance(UWorld *world, FVector &location);
     
     ADebugJointsActor();
     void BeginPlay() override;
     void Tick(float deltaTime) override;
 
 protected:
-    virtual void BeginDestroy() override;
-
-private:
-    void initChain();
     
 
-    timer timerFortick;
-    TArray<Joint *> createdJoints;
+private:
+    Joint rootJoint;
 
+    void initChain();
+    void TickDebugRandomTorque(MMatrix &translation, float deltaTime);
+
+    timer timerFortick;
+    
 
     //for single chain debug
     FVector angularVelocity;

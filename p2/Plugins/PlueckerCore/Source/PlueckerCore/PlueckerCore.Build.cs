@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class Humanoid : ModuleRules
+public class PlueckerCore : ModuleRules
 {
-	public Humanoid(ReadOnlyTargetRules Target) : base(Target)
+	public PlueckerCore(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

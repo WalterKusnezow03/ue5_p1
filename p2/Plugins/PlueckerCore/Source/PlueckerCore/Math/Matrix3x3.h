@@ -8,7 +8,7 @@
 /**
  * 
  */
-class HUMANOID_API Matrix3x3
+class PLUECKERCORE_API Matrix3x3
 {
 public:
 	Matrix3x3();

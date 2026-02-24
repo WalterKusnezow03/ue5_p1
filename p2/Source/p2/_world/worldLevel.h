@@ -125,4 +125,6 @@ private:
 	void createCar();
 
 	void createBoneActorDebug();
+
+	void createPluckerBoneActorDebug();
 };

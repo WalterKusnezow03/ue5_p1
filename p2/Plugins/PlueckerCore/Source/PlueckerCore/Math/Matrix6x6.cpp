@@ -25,6 +25,7 @@ void Matrix6x6::applyConstraints(FVector &w, FVector &v){
 
 
 //makes forward pluecker and refreshes the given w and v
+//transform update is saved, R and T SE3 are updated
 void Matrix6x6::forwardPluecker(
     FVector &angularVelocity, //w
     FVector &linearVelocity,  //v
@@ -180,50 +181,3 @@ MMatrix Matrix6x6::operator*(MMatrix &prev){
 
 
 
-
-/**
- * fk experimental
- */
-///@brief returns the world transform after
-//plücker forward is applied
-MMatrix Matrix6x6::tmpForwardPluecker(
-    FVector &angularVelocity,
-    MMatrix &prevTransformWorld,
-    float deltatime
-){
-
-    FVector linearVelocity(0, 0, 0); //ignored for now.
-
-    Matrix3x3 outDeltaRotation;
-    FVector outDeltaTranslation;
-    forwardDeltaPluecker(
-        angularVelocity, // w
-        linearVelocity,  // v
-        outDeltaRotation,
-        outDeltaTranslation,
-        deltatime
-    );
-
-
-    //Integrieren
-    Matrix3x3 rotationSo3Copy = RotationSO3 * outDeltaRotation; //<-- lese richtung so --
-
-
-
-
-
-
-
-    MMatrix result;
-    MMatrix translationLocal(translation);
-    MMatrix rotationLocal;
-    std::vector<float> values = rotationSo3Copy.Copy();
-    rotationLocal.setRotation(values);
-
-
-    //MWorld = prev * R * T <-- lese richtung
-    MMatrix transform = rotationLocal * translationLocal; //<-- lese richtung --
-    result = prevTransformWorld * transform; //lese richtung
-    return result;
-
-}

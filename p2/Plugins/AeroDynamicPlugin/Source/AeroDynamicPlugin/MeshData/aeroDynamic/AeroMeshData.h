@@ -5,7 +5,7 @@
 #include "KismetProceduralMeshLibrary.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/MeshGenBase/MeshData/aeroDynamic/Util/ThreeKeyMap.h"
+#include "AeroDynamicPlugin/MeshData/aeroDynamic/Util/ThreeKeyMap.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 
 class GAMECORE_API AeroMeshData : public MeshData {

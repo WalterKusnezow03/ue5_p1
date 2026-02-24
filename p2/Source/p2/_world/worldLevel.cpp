@@ -161,8 +161,12 @@ void AworldLevel::initWorld(FString WorldName){
     DebugHelper::Debugtest(instancePtr->GetWorld());
 
 
+    //bipedal locomotion 2.0 skelleton
     instancePtr->createBoneActorDebug();
     
+
+    //debug plucker forward dynamics joints
+    instancePtr->createPluckerBoneActorDebug();
 }
 
 
@@ -454,7 +458,7 @@ void AworldLevel::createAeroActor(){
 
 
 
-
+// Bipedal locomotion 2.0 debug skelleton
 void AworldLevel::createBoneActorDebug(){
     UWorld *world = GetWorld();
     if(world){
@@ -464,5 +468,10 @@ void AworldLevel::createBoneActorDebug(){
 }
 
 
+// Plucker forward dynamic debug 
+#include "PlueckerCore/Debug/DebugJointsActor.h"
+void AworldLevel::createPluckerBoneActorDebug(){
+    FVector location(0, 0, 200);
+    ADebugJointsActor::CreateInstance(GetWorld(), location);
 
-
+}

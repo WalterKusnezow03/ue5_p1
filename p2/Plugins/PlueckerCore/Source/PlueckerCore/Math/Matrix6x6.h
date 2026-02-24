@@ -6,7 +6,7 @@
 /**
  * plücker 6x6 for forward for now
  */
-class HUMANOID_API Matrix6x6 {
+class PLUECKERCORE_API Matrix6x6 {
 
 public:
     Matrix6x6();
@@ -30,20 +30,20 @@ public:
 
     void setTranslation(FVector &other);
 
-
-    //fk ik
-    MMatrix tmpForwardPluecker(
-        FVector &angularVelocity,
-        MMatrix &prevTransformWorld,
-        float deltatime
-    );
+    FVector getTranslation()const{
+        return translation;
+    }
 
 private:
+    //v will be right not eliminated by default!
     void applyConstraints(FVector &w, FVector &v);
 
+    //joint rotation
     Matrix3x3 RotationSO3;
+
+    //bone direction by default (0,0,-length) for example
     FVector translation;
 
-    //erstmal so
+    //integrated location
     FVector resultTranslation;
 };
