@@ -14,7 +14,7 @@ void FHandProperty::GenerateFingerProperties(
         for (int i = 0; i < positions.Num(); i++)
         {
             FHandFingerProperty &current = outArray[i];
-            current.setup(fingerSize, positions[i], GetWorld());
+            current.setup(fingerSize, positions[i], GetActor());
         }
     }
 }
@@ -87,9 +87,9 @@ void FHandProperty::SetupHandBody(float length, float width, float depth){
     depthHand = Validate(depth);
 }
 
-void FHandProperty::SetWorld(UWorld *world){
-    FAbstractProperty::SetWorld(world);
-    fingerSize.SetWorld(world);
+void FHandProperty::SetActor(AActor *actor){
+    FAbstractProperty::SetActor(actor);
+    fingerSize.SetActor(actor);
 }
 
 float FHandProperty::GetLengthHand(){

@@ -413,7 +413,7 @@ void AplayerScript::TickWeaponSway(){
 
 void AplayerScript::setupBoneController(){
 
-    boneController.defaultSetup(GetWorld());
+    boneController.defaultSetup(this);
 
     //keine ahnung ob das was bringt.
     if(CameraComponent){

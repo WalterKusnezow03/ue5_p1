@@ -130,7 +130,7 @@ void MMatrix::operator*=(MMatrix &other){
 /// @brief multiply and return result
 /// @param other other matrix to append like: This * other 
 /// @return returns a new matrix
-MMatrix MMatrix::operator*(MMatrix &other){
+MMatrix MMatrix::operator*(MMatrix &other) const {
     
     MMatrix result; // Temporary matrix to store the result
 
@@ -1336,7 +1336,13 @@ void MMatrix::setRotation(std::vector<float> &values){
 
 
 
-std::vector<float> MMatrix::CopyRotation(){
+std::vector<float> MMatrix::CopyRotation() const {
+    /*
+    0  1  2  -
+    4  5  6  -
+    8  9 10  -
+    -  -  -  -
+    */
     std::vector<float> values = {
         array[0],
         array[1],

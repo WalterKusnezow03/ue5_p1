@@ -10,13 +10,17 @@
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 
+
+#include "PlueckerCore/Interface/IJointInterface.h"
+#include "PlueckerCore/Bone/Joint.h"
+
 class FHumanoidControllerSetupPackage;
 
 /// @brief controls two bone attachments and runnign physics based on slip data.
 /// moves the underlying hip 
 /// ---> this is the base class and will have static slip force handling
 /// (More stable than integral precalculation)
-class IKHUMANOIDMODELL_API HipController {
+class IKHUMANOIDMODELL_API HipController : public IJointInterface{
 protected:
     bool bExtendedDebugLog = false;
     bool bDebugBlockLocomotion = false;
@@ -38,11 +42,7 @@ public:
 
     void setup(FHumanoidControllerSetupPackage &package);
 
-    //default setup
-    void setup(UWorld *world);
 
-    //setup custom needed
-    void setup(float legPart1, float legPart2, float offsetHip, UWorld *world);
 
     /// @brief resets both legs into default state.
     void ResetAndRebuild();
@@ -234,4 +234,23 @@ protected:
 
     bool IsInGround();
     void DebugIsInGround();
+
+
+    // --- pluecker joints ---
+public:
+    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void DownstreamPropagate(
+        FJointKinematicPropagatePackage &package
+    ) override;
+
+protected:
+    Joint rootJoint;
+    void SetupPlueckerJoint(UWorld *world);
+    void UpdatePlueckerJointRotation();
+
+    void DownstreamPropagateTo(
+        BoneAttachment &attachment,
+        FJointKinematicPropagatePackage package
+    );
 };

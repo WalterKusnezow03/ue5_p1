@@ -1,6 +1,6 @@
 #include "FHumanoidControllerSetupPackage.h"
 
-FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(UWorld *world){
+FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AActor *world){
     int widthMainBones = 10;
 
     FHumanoidControllerSetupPackage newPackage(world);
@@ -28,8 +28,8 @@ FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(UWor
     return newPackage;
 }
 
-FHumanoidControllerSetupPackage::FHumanoidControllerSetupPackage(UWorld *world){
-    SetWorld(world);
+FHumanoidControllerSetupPackage::FHumanoidControllerSetupPackage(AActor *world){
+    SetActor(world);
 }
 
 FHumanoidControllerSetupPackage::~FHumanoidControllerSetupPackage(){
@@ -53,19 +53,19 @@ FHumanoidControllerSetupPackage &FHumanoidControllerSetupPackage::operator=(
         torsoSize = other.torsoSize;
         handSize = other.handSize;
 
-        worldPtr = other.worldPtr;
+        SetActor(other.GetActor());
     }
     return *this;
 }
 
 
-void FHumanoidControllerSetupPackage::SetWorld(UWorld *world){
-    FAbstractProperty::SetWorld(world);
-    armSize.SetWorld(world);
-    legPropertyLeft.SetWorld(world);
-    legPropertyRight.SetWorld(world);
-    torsoSize.SetWorld(world);
-    handSize.SetWorld(world);
+void FHumanoidControllerSetupPackage::SetActor(AActor *actor){
+    FAbstractProperty::SetActor(actor);
+    armSize.SetActor(actor);
+    legPropertyLeft.SetActor(actor);
+    legPropertyRight.SetActor(actor);
+    torsoSize.SetActor(actor);
+    handSize.SetActor(actor);
 }
 
 FTwoLimbProperty &FHumanoidControllerSetupPackage::GetArmSize(){

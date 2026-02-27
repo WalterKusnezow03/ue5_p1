@@ -53,6 +53,9 @@ public:
 protected:
 	virtual void OnPickup();
 
+	void UpdatePreRequisiteTickOnPickup();
+	void UpdatePreRequisiteTickOnDrop();
+
 public:
 	virtual void drop();
 	bool isPickedupByPlayer();

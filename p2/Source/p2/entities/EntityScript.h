@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "p2/player/playerScript.h"
 #include "GameCore/team/teamEnum.h"
 #include "CoreMath/animation/timer/timer.h"
@@ -36,10 +36,7 @@ public:
 	// Sets default values for this actor's properties
 	AEntityScript();
 	//inherited from interface
-	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &from) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 

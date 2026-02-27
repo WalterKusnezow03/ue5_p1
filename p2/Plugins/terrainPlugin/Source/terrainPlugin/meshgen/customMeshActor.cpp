@@ -80,12 +80,17 @@ void AcustomMeshActor::setMaterialBehaiviour(materialEnum mat){
 
 // --- derived methods from damageinferface ---
 
-/// @brief will allow custom mesh actors such as destructables and terrain react to damage
-/// @param d 
-void AcustomMeshActor::takedamage(int d, bool surpressed){
-    //damage owner(base method)
-    Super::takedamage(d, surpressed);
+void AcustomMeshActor::takedamage(FCustomHitResult &result){
+    // -- TODO --
+    //FCustomHitResult Add String message for debug!
+    // -- TODO --   
+    DebugHelper::logMessage("AcustomMeshActor::takedamage");
+    Super::takedamage(result);
+    TakeDamageHealthFrom(result);
+    TakeDamageHitPoint(result);
+}
 
+void AcustomMeshActor::TakeDamageHealthFrom(FCustomHitResult &result){
     //new.
     EntityManagerBase *entityManager = EntityManagerBase::instanceBase();
     if(entityManager != nullptr){
@@ -93,7 +98,7 @@ void AcustomMeshActor::takedamage(int d, bool surpressed){
         // destroy if possible
         if (isDestructable())
         {
-            health -= d;
+            health -= result.Damage();
             if(health <= 0){
                 damagedOwner = nullptr;
                 health = 100;
@@ -110,32 +115,24 @@ void AcustomMeshActor::takedamage(int d, bool surpressed){
     }
 }
 
-
-
-void AcustomMeshActor::takedamage(int d){
-    takedamage(d, false);
-}
-
-/// @brief allows tha ctor to react to damage from a origin
-/// @param d 
-/// @param hitpoint hitpoint from weapon  
-void AcustomMeshActor::takedamage(int d, FVector &hitpoint){
-    takedamage(d, hitpoint, false);
+void AcustomMeshActor::TakeDamageHitPoint(FCustomHitResult &result){
+    if(result.HasHitPoint()){
+        groundReactionToHitWorld(result.HitPoint());
+        glassreactionToHitWorld(result.HitPoint()); 
+        createDebreeOnDamage(result.HitPoint());
+        DebugHelper::showScreenMessage("AcustomMeshActor damage hit registered", FColor::Orange);
+    }
+    
 }
 
 
 
-void AcustomMeshActor::takedamage(int d, FVector &hitpoint, bool surpressed){
-    groundReactionToHitWorld(hitpoint);
-    glassreactionToHitWorld(hitpoint); 
-    takedamage(d, surpressed);
-    createDebreeOnDamage(hitpoint);
 
-    //Ok
-    DebugHelper::showScreenMessage("AcustomMeshActor damage hit registered", FColor::Orange);
-}
 
-void AcustomMeshActor::createDebreeOnDamage(FVector &worldhit){
+
+
+
+void AcustomMeshActor::createDebreeOnDamage(FVector worldhit){
     FVector localHit = worldToLocalHit(worldhit);
 
     //iterate all layers, if hit: create debree    
@@ -419,7 +416,7 @@ void AcustomMeshActor::createNewMeshActors(
 
 
 
-void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
+void AcustomMeshActor::groundReactionToHitWorld(FVector hitpoint){
     
     DebugHelper::showScreenMessage("AcustomMeshActor ground hit test!", FColor::Orange);
 
@@ -473,7 +470,7 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector &hitpoint){
 
 
 ///@brief reacts to hit if has glass mesh
-void AcustomMeshActor::glassreactionToHitWorld(FVector &hitpoint){
+void AcustomMeshActor::glassreactionToHitWorld(FVector hitpoint){
     if(hasGlassMesh()){
         //world hit to local
         FVector localHit = worldToLocalHit(hitpoint);

@@ -7,7 +7,7 @@
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "GameCore/team/teamEnum.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "CoreMath/animation/timer/timer.h"
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"
@@ -24,10 +24,7 @@ class GAMECORE_API APlayerControllerBase : public ACharacter, public IDamageinte
 public:
 	// Sets default values for this character's properties
 	APlayerControllerBase();
-	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &hitpoint) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 

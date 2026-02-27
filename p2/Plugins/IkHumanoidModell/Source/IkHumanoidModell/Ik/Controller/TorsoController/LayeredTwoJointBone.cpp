@@ -482,3 +482,27 @@ void LayeredTwoJointBone::TickHandController(MMatrix &playerOrientation, float d
         hand.Tick(M, deltatime);
     }
 }
+
+
+
+
+/// ---- pluecker joints ----
+void LayeredTwoJointBone::UpstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    //TODO
+
+    if(HasParentInterface()){
+        parentInterface->UpstreamPropagate(package);
+    }
+}
+
+void LayeredTwoJointBone::DownstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    torsoBone.DownstreamPropagate(package);
+
+    MMatrix step = torsoBone.EndEffector();
+    package.transform = step;
+    armBone.DownstreamPropagate(package);
+}

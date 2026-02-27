@@ -4,12 +4,13 @@
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
 #include "EArmType.h"
 #include "IkHumanoidModell/Ik/Controller/HandController/HandController.h"
+#include "PlueckerCore/Interface/IJointInterface.h"
 
 class FHumanoidControllerSetupPackage;
 
 /// @brief will just abstract a part of the torso and follow targets,
 /// maybe applies IK to lift the skelleton up. Unclear.
-class IKHUMANOIDMODELL_API LayeredTwoJointBone {
+class IKHUMANOIDMODELL_API LayeredTwoJointBone : public IJointInterface{
 
 public:
     LayeredTwoJointBone();
@@ -174,4 +175,18 @@ private:
     HandController hand;
     void TickHandController(MMatrix &playerOrientation, float deltatime);
     void UpdateHandOnCarriedItem();
+
+
+    /// ---- pluecker ----
+public:
+    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void DownstreamPropagate(
+        FJointKinematicPropagatePackage &package
+    ) override;
+
+private:
+
+
+
 };

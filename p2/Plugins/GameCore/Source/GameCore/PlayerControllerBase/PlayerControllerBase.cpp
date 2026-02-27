@@ -125,25 +125,13 @@ void APlayerControllerBase::Tick(float DeltaTime)
 /**
  * Implemented take damage method from interface, need to override it, this method is not valid yet
  */
-void APlayerControllerBase::takedamage(int d)
-{
-    takedamage(d, false);
-}
-
-void APlayerControllerBase::takedamage(int d, FVector &hitpoint){
-    takedamage(d, hitpoint, false);
-}
-
-void APlayerControllerBase::takedamage(int d, bool surpressed){
-    health -= d;
+void APlayerControllerBase::takedamage(FCustomHitResult &result){
+    health -= result.Damage();
 	if(health <= 0){
 		health = 0;
 	}
 }
 
-void APlayerControllerBase::takedamage(int d, FVector &hitpoint, bool surpressed){
-    takedamage(d, surpressed);
-}
 
 //Movement
 /**

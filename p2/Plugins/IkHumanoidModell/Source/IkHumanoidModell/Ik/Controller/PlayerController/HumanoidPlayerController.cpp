@@ -10,8 +10,9 @@ HumanoidPlayerController::~HumanoidPlayerController(){
 
 }
 
-void HumanoidPlayerController::defaultSetup(UWorld *world){
-    HumanoidController::defaultSetup(world, true);
+void HumanoidPlayerController::defaultSetup(AActor *actor){
+    bool createHands = false;
+    HumanoidController::defaultSetup(actor, createHands);
     DebugDisableCollisionOnLimbs();
     MarkEmptyActorOwnedByPlayer();
 }

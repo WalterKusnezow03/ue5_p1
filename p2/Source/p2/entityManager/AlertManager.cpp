@@ -4,7 +4,7 @@
 #include "AlertManager.h"
 #include "CoreMinimal.h"
 #include "p2/entities/EntityScript.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "CoreMath/Matrix/MMatrix.h"
@@ -121,10 +121,15 @@ void AlertManager::damageAndAlertInArea(
                 
                 float distance = FVector::Dist(Actor->GetActorLocation(), location);
                 if(distance <= damageRadius){
-                    //old
-                    //damagable->takedamage(damage);
+                    
                     //new
-                    damagable->takedamage(damage, location);
+                    FCustomHitResult result;
+                    result.SetupHitResult(location, damage);
+                    damagable->takedamage(result);
+
+                    DebugHelper::logMessage(
+                        FString::Printf(TEXT("AlertManager::damageAndAlertInArea::DAMAGE %d"), damage)
+                    );
 
                     DebugHelper::showScreenMessage("damagable found, damage ", FColor::Red);
                 }

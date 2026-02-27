@@ -21,25 +21,34 @@ void BoneAttachment::setWorld(UWorld *worldIn){
 
 
 void BoneAttachment::setupBone(FTwoLimbHipProperty &hipLimb){
-    setWorld(hipLimb.GetWorld());
+    /*setWorld(hipLimb.GetWorld());
     bone.setup(hipLimb);
     setAsLeg();
-
-    FVector offset = hipLimb.GetOffset();
-    
-
-    innerOffset.setTranslation(offset);
-    offset *= -1.0f;
-    innerOffsetInverse.setTranslation(offset);
+    SetupPluckerJoints(hipLimb.GetOffset(), hipLimb.GetWorld());
+    setInnerOffsetTranslation(hipLimb.GetOffset());
 
     defaultExtendedTranslationBottomToUp = FVector(
         0,
         0,
         hipLimb.GetFirstAndSecondSize()
-    );
-
-
+    );*/
+    setupBoneBase(hipLimb, hipLimb.GetOffset());
+    setAsLeg();
 }
+
+void BoneAttachment::setupBoneBase(FTwoLimbProperty &package, FVector offset){
+    setWorld(package.GetWorld());
+    bone.setup(package);
+    SetupPluckerJoints(offset, package.GetWorld());
+    setInnerOffsetTranslation(offset);
+
+    defaultExtendedTranslationBottomToUp = FVector(
+        0,
+        0,
+        package.GetFirstAndSecondSize()
+    );
+}
+
 
 
 void BoneAttachment::setAsLeg(){
@@ -54,6 +63,7 @@ FVector BoneAttachment::endEffectorWorldLocation(){
     return bone.EndEffectorLocation();
 }
 
+/*
 /// @brief setup bone
 /// @param a part a (upper) lenght
 /// @param b part b (lower) length
@@ -68,10 +78,7 @@ void BoneAttachment::setupBone(
     bone.setup(a, b, worldIn);
     setWorld(worldIn);
 
-    innerOffset.setTranslation(offset);
-
-    offset *= -1.0f;
-    innerOffsetInverse.setTranslation(offset);
+    setInnerOffsetTranslation(offset);
 
     defaultExtendedTranslationBottomToUp = FVector(
         0,
@@ -110,18 +117,27 @@ void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset
     bone.setup(a, b, worldIn, widthBone);
     setWorld(worldIn);
 
-    innerOffset.setTranslation(offset);
-
-    offset *= -1.0f;
-    innerOffsetInverse.setTranslation(offset);
+    setInnerOffsetTranslation(offset);
 
     defaultExtendedTranslationBottomToUp = FVector(
         0,
         0,
         (std::abs(a) + std::abs(b))
     );
-}
+}*/
 
+
+//set inner offset translation (attachment displacement of bone)
+//sets local and inverse direction.
+void BoneAttachment::setInnerOffsetTranslation(FVector offset){
+    innerOffset.setTranslation(offset);
+    
+    FVector offset1 = offset * -1.0f;
+    innerOffsetInverse.setTranslation(offset1);
+
+    p1.SetBoneTranslationDirection(offset);
+    p1Invert.SetBoneTranslationDirection(offset1);
+}
 
 /// @brief transforms the root, adds inner offset to matrix
 /// @param worldRoot 
@@ -698,4 +714,38 @@ bool BoneAttachment::EndEffectorIsGrounded(){
         return true;
     }
     return false;
+}
+
+
+
+
+
+
+//// ---- PLUECKER JOINTS ----
+void BoneAttachment::SetupPluckerJoints(FVector &offset, UWorld *worldIn){
+    bone.SetParentInterface(this);
+    FVector offset1 = offset * -1.0f;
+
+    p1 = Joint(offset, worldIn);
+    p1Invert = Joint(offset1, worldIn);
+}
+
+void BoneAttachment::UpstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+
+    // ---- TODO ----
+
+    if(HasParentInterface()){
+        parentInterface->UpstreamPropagate(package);
+    }
+}
+
+void BoneAttachment::DownstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    MMatrix resultWorld = p1.TickAndBuildThisJoint(package);
+    package.transform = resultWorld;
+
+    bone.DownstreamPropagate(package);
 }

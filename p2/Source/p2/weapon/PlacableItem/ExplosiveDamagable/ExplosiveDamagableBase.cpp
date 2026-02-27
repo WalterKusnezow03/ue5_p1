@@ -58,23 +58,10 @@ void AExplosiveDamagableBase::release(){
 
 
 
-
-void AExplosiveDamagableBase::takedamage(int d){
+void AExplosiveDamagableBase::takedamage(FCustomHitResult &result){
     Detonate();
 }
 
-void AExplosiveDamagableBase::takedamage(int d, FVector &hitpoint){
-    takedamage(d);
-}
-
-void AExplosiveDamagableBase::takedamage(int d, bool surpressed){
-    takedamage(d);
-}
-
-
-void AExplosiveDamagableBase::takedamage(int d, FVector &hitpoint, bool surpressed){
-    takedamage(d);
-}
 
 void AExplosiveDamagableBase::setTeam(teamEnum t){
     team = t;

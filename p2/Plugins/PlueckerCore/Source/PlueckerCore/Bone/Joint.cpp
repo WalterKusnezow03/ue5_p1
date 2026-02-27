@@ -63,11 +63,48 @@ void Joint::copyDeltatime(float deltaTime){
 }
 
 
+//external build of chain
+MMatrix Joint::TickAndBuildThisJoint(FJointKinematicPropagatePackage &package){
+    return TickAndBuildThisJoint(
+        package.deltatime,
+        package.w, // angular velocity
+        package.v, // linear velocity
+        package.transform
+    );
+}
+
+
+
+MMatrix Joint::TickAndBuildThisJoint(
+    float deltaTime,
+    FVector &w, //angularVelocity, is updated
+    FVector &v, //linearVelocity, is updated
+    const MMatrix &inTransform
+){
+    spatialTransform.forwardPluecker(w, v, deltaTime);
+    MMatrix result = spatialTransform * inTransform;
+    transformCopy = result;
+    return transformCopy;
+}
+
+void Joint::OverrideJointRotation(const MMatrix &rotationMatrix){
+    spatialTransform.OverrideRotation(rotationMatrix);
+}
+
+
+void Joint::OverrideJointRotationTransposed(const Joint &other){
+    Matrix3x3 rotationOther = other.spatialTransform.GetRotation();
+    rotationOther.transpose(); //R^T = R^-1 bei R SO3
+    spatialTransform.OverrideRotation(rotationOther);
+}
+
+//external build of chain
 
 
 
 
-//FVector &angularVelocity, //w
+
+//FVector &angularVelocity, //w (roll pitch yaw)(?)
 //FVector &linearVelocity,  //v
 void Joint::Tick(float deltaTime, FVector &w, FVector &v){
     copyDeltatime(deltaTime);
@@ -127,6 +164,15 @@ void Joint::SetDrawColorRecursive(FColor colorA, FColor colorB, int layer){
         Joint &current = children[i];
         current.SetDrawColorRecursive(colorA, colorB, layer);
     }
+}
+
+/// constraints
+void Joint::OverrideConstraint(FJointConstraint &in){
+    spatialTransform.OverrideConstraint(in);
+}
+
+FJointConstraint &Joint::GetConstraint(){
+    return spatialTransform.GetConstraint();
 }
 
 /// --- DEBUG ---

@@ -4,6 +4,8 @@
 
 #include "IkHumanoidModell/actor/debugLimbs/CubeLimbMaker.h"
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbProperty.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FSingleLimbProperty.h"
+#include "IkHumanoidModell/actor/SceneComponent/BoneProceduralMeshComponent.h"
 
 
 TwoJointBone::TwoJointBone(){
@@ -36,22 +38,30 @@ void TwoJointBone::setup(FTwoLimbProperty &property){
         property.GetWorld(),
         property.GetWidth()
     );
-
+    
+    
+    
+    CreateLimbs(property);
 }
 
 void TwoJointBone::setup(float a, float b, UWorld *world){
-    setupMatrices(a, b, world);
-
-    //create debug limbs (cubes)
-    createLimbsIfNeeded(world, a, b);
+    int width = 10;
+    setup(a, b, world, width);
 }
 
-//hand api
 void TwoJointBone::setup(float a, float b, UWorld *world, float widthBone){
+    
     setupMatrices(a, b, world);
-    createLimbsIfNeeded(world, a, b, widthBone);
+    setupPlueckerJoints(a, b, world);
+
+    //DEPRECATED!
+    //createLimbsIfNeeded(world, a, b, widthBone);
 }
 
+FVector TwoJointBone::DownVector(float a){
+    a = std::abs(a);
+    return FVector(0, 0, -a);
+}
 
 void TwoJointBone::setupMatrices(float a, float b, UWorld *world){
     worldPtr = world;
@@ -60,8 +70,8 @@ void TwoJointBone::setupMatrices(float a, float b, UWorld *world){
     b = std::abs(b);
     length = a + b;
 
-    FVector aVec(0, 0, -a);
-    FVector bVec(0, 0, -b);
+    FVector aVec = DownVector(a);
+    FVector bVec = DownVector(b);
 
     t1.setTranslation(aVec);
     t2.setTranslation(bVec);
@@ -432,10 +442,23 @@ void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     endEffectorWorld = j2World;
     draw(world, j1World, j2World, j3World, deltatime);
 
+    //ik carry interface arm direction
     UpdateDirectionOfMiddleToEndEffector(j2World, j3World);
 
+
+    // --- depreacted ! ---
     //new actor visibility
     applyTransformToActors(world, j1World, j2World);
+
+    // --- replace for aactors ---
+    UpdateJointTransformCaches(world, j1World, j2World);
+
+
+
+
+    // -- UNCLEAR --
+    //update plucker (might replace with on physics switch model)
+    UpdatePluckerJointsFromCurrentJoints();
 }
 
 void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
@@ -458,6 +481,10 @@ void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
     //FVector target = EndEffectorRelativeLocation();
     //MoveToTarget(target, startEffectorWorld, deltatime);
     //buildForwardFromInverseMatrices(deltatime);
+
+    // -- UNCLEAR --
+    //update plucker (might replace with on physics switch model)
+    UpdateInvertedPluckerJointsFromCurrentPluckerJoints();
 }
 
 void TwoJointBone::copyRotationFromInverseMatrices(){
@@ -466,35 +493,48 @@ void TwoJointBone::copyRotationFromInverseMatrices(){
 }
 
 void TwoJointBone::draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, float dt){
-    FVector wT = world.getTranslation();
-    FVector aT = a.getTranslation();
-    FVector bT = b.getTranslation();
-    FVector cT = c.getTranslation();
 
     float frame = 0.01f;
     dt = std::max(frame * 3.0f, dt);
 
-    //dt = 1.0f;
-    FColor red = FColor::Red;
-    FColor blue = FColor::Blue;
-    FColor cyan = FColor::Cyan;
-
-    if(colorFlagChanged){
-        red = FColor::Green;
-        blue = FColor::Yellow;
-        cyan = FColor::Black;
-    }
     if(bDrawToWorldStart){
-        DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), wT, FColor::Green, dt);
+        DebugHelper::showLineBetween(worldPtr, FVector(0,0,0), world.getTranslation(), FColor::Green, dt);
     }
-    
+
     if(bDrawLines){
-        DebugHelper::showLineBetween(worldPtr, aT, wT, red, dt); //start segment
-        DebugHelper::showLineBetween(worldPtr, aT, bT, blue, dt); //second segment
-        //DebugHelper::showLineBetween(worldPtr, bT, cT, cyan, dt);
+        //dt = 1.0f;
+        FColor red = FColor::Red;
+        FColor blue = FColor::Blue;
+        FColor cyan = FColor::Cyan;
+        GetColorsForDraw(red, blue, cyan);
+        draw(world, a, dt, red);
+        draw(a, b, dt, blue);
+        //draw(b, c, dt, cyan);
     }
-    
 }
+
+void TwoJointBone::GetColorsForDraw(FColor &colorA, FColor &colorB, FColor &colorC){
+    if(!colorFlagChanged){
+        //default
+        colorA = FColor::Red;
+        colorB = FColor::Blue;
+        colorC = FColor::Cyan;
+    }
+    else{
+        colorA = FColor::Green;
+        colorB = FColor::Yellow;
+        colorC = FColor::Black;
+    }
+}
+
+void TwoJointBone::draw(MMatrix &a, MMatrix &b, float dt, FColor color){
+    FVector aT = a.getTranslation();
+    FVector bT = b.getTranslation();
+    if(bDrawLines){
+        DebugHelper::showLineBetween(worldPtr, aT, bT, color, dt);
+    }
+}
+
 
 
 MMatrix TwoJointBone::StartEffector(){
@@ -521,9 +561,9 @@ MMatrix TwoJointBone::EndEffectorTranslation(){
 /// @brief clear rotation before backwards kinematics, otherwise chain is
 /// build in a wrong rotation left over from forward builds !
 void TwoJointBone::removeRotationFromEndEffector(){
-    FVector l = EndEffectorLocation();
+    FVector location = EndEffectorLocation();
     endEffectorWorld.makeIdentity();
-    endEffectorWorld.setTranslation(l);
+    endEffectorWorld.setTranslation(location);
 }
 
 FVector TwoJointBone::EndEffectorRelativeLocation(){
@@ -576,10 +616,6 @@ void TwoJointBone::useOtherColorType(){
 
 
 // --- api for actor attachment ---
-void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeight){
-    int width = 10;
-    createLimbsIfNeeded(world, aHeight, bHeight, width);
-}
 
 void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeight, float widthBone){
     if(world && autoCreateLimbs){
@@ -598,6 +634,8 @@ void TwoJointBone::attachLimbs(AActor *top, AActor *bottom){
 
 void TwoJointBone::applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom){
     if(autoCreateLimbs){ //has limbs.
+
+        //rotation always in next matrix to the prev location matrix.
         applyTransform(topActor, world.getTranslation(), top);
         applyTransform(bottomActor, top.getTranslation(), bottom);
     }
@@ -616,6 +654,31 @@ void TwoJointBone::applyTransform(AActor *ptr, FVector location, MMatrix &rotati
         ptr->SetActorRotation(rotation);
     }
 }
+
+
+
+
+void TwoJointBone::UpdateJointTransformCaches(
+    MMatrix &world, //hip world
+    MMatrix &top, //knee world
+    MMatrix &bottom //foot world
+){
+    UpdateJointTransformCache(hipWorldCached, world.getTranslation(), top);
+    UpdateJointTransformCache(kneeWorldCached, top.getTranslation(), bottom);
+
+}
+
+void TwoJointBone::UpdateJointTransformCache(
+    JointTransformCache &cache, 
+    FVector location,
+    MMatrix &rotationTransform //some matrix R|t
+){  
+    MMatrix rotatorPure = rotationTransform.extarctRotatorMatrix(); //remove t
+    FRotator rotation = rotatorPure.extractRotator(); //extract rotator
+    cache.UpdateCache(location, rotation);
+}
+
+
 
 
 void TwoJointBone::getActors(TArray<AActor *> &outArray){
@@ -643,4 +706,141 @@ void TwoJointBone::UpdateDirectionOfMiddleToEndEffector(MMatrix &middle, MMatrix
     FVector middleVec = middle.getTranslation();
     FVector endVec = end.getTranslation();
     directionOfMiddleToEndEffectorSaved = endVec - middleVec; // AB = B - A
+}
+
+
+
+// --- IBoneTransform Interface ---
+
+void TwoJointBone::CreateLimbs(FTwoLimbProperty &property){
+    if(aactorBasedBones){
+        //create aactor based bones (faster than scene component.)
+        createLimbsIfNeeded(
+            property.GetWorld(),
+            property.GetSizeFirst(),
+            property.GetSizeSecond(),
+            property.GetWidth()
+        );
+    }else{
+        FSingleLimbProperty &first = property.GetFirstProperty();
+        FSingleLimbProperty &second = property.GetSecondProperty();
+
+        //create limbs with bone scene component:
+        UBoneProceduralMeshComponent::MakeInstance(first, this, 0);
+        UBoneProceduralMeshComponent::MakeInstance(second, this, 1);
+    }
+}
+
+bool TwoJointBone::GetTransform(
+    FVector &locationOut,
+    FRotator &rotationOut,
+    int limbId
+){
+    if(IdIsValid(limbId)){
+        if(limbId == 0){
+            hipWorldCached.GetTransform(locationOut, rotationOut);
+        }
+        if(limbId == 1){
+            kneeWorldCached.GetTransform(locationOut, rotationOut);
+        }
+        if(limbId == 2){
+            footWorldCached.GetTransform(locationOut, rotationOut);
+        }
+
+        return true;
+    }
+    return false;
+}
+
+bool TwoJointBone::IdIsValid(int id){
+    if(id == 0 || id == 1){
+        return true;
+    }
+    return false;
+}
+
+
+
+
+
+
+
+// --- pluecker ---
+void TwoJointBone::setupPlueckerJoints(float a, float b, UWorld *world){
+    FVector aVec = DownVector(a);
+    FVector bVec = DownVector(b);
+    FVector footTip(10, 0, 0); //not needed anyway
+
+    p1 = Joint(aVec, world);
+    p2 = Joint(bVec, world);
+    //p3 = Joint(footTip, world);
+
+    aVec *= -1.0f;
+    bVec *= -1.0f;
+    p2Invert = Joint(bVec, world);
+    p1Invert = Joint(aVec, world);
+}
+
+void TwoJointBone::UpdatePluckerJointsFromCurrentJoints(){
+    //Update local plucker joints from this joints
+    p1.OverrideJointRotation(r1);
+    p2.OverrideJointRotation(r2);
+}
+
+void TwoJointBone::UpdateInvertedPluckerJointsFromCurrentPluckerJoints(){
+    //testing needed whether this is correct for downstream propagate
+    p1Invert.OverrideJointRotationTransposed(p1);
+    p2Invert.OverrideJointRotationTransposed(p2);
+}
+
+void TwoJointBone::DownstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    MMatrix world = package.transform;
+    // w and v are updated internally
+    MMatrix j1World = p1.TickAndBuildThisJoint(
+        package.deltatime,
+        package.w, // angularVelocity, 
+        package.v, // linearVelocity
+        package.transform
+    );
+    MMatrix j2World = p2.TickAndBuildThisJoint(
+        package.deltatime,
+        package.w, // angularVelocity,
+        package.v, // linearVelocity
+        j1World
+    );
+
+    //UNKLAR ob translation kopieren oder ganze matrix! 
+    //-> layered two joint bone braucht beides! R und t
+    bool copy = true;
+    if(copy){
+        endEffectorWorld = j2World;
+    }
+    else
+    {
+        endEffectorWorld.setTranslation(j2World);
+    }
+
+    //deprecated! 
+    applyTransformToActors(world, j1World, j2World);
+
+    //will replace aactors!
+    UpdateJointTransformCaches(world, j1World, j2World);
+}
+
+
+
+void TwoJointBone::UpstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    //build from end effector upwards
+    //needed some sort of invert fuction for the joints (InvertBuild)
+    removeRotationFromEndEffector();
+    
+    // ----- TODO -----
+
+    if(HasParentInterface()){
+        parentInterface->UpstreamPropagate(package);
+    }
 }

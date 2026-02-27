@@ -8,6 +8,22 @@ Matrix6x6::~Matrix6x6(){
 
 }
 
+Matrix6x6::Matrix6x6(const Matrix6x6 &other){
+    if(this != &other){
+        *this = other;
+    }
+}
+
+Matrix6x6 &Matrix6x6::operator=(const Matrix6x6 &other){
+    if(this != &other){
+        constraint = other.constraint;
+        RotationSO3 = other.RotationSO3;
+        translation = other.translation;
+        resultTranslation = other.resultTranslation;
+    }
+    return *this;
+}
+
 void Matrix6x6::setTranslation(FVector &other){
     translation = other;
     resultTranslation = other;
@@ -15,14 +31,19 @@ void Matrix6x6::setTranslation(FVector &other){
 
 
 void Matrix6x6::applyConstraints(FVector &w, FVector &v){
-    //kugel gelenk
-    if(true){
-        v = FVector(0, 0, 0);
-    }
+    //w Angular velocity
+    //v Linear velocity
+    constraint.ApplyRotationConstraint(w);
+    constraint.ApplyPositionConstraint(v);
 }
 
+void Matrix6x6::OverrideConstraint(FJointConstraint &in){
+    constraint = in;
+}
 
-
+FJointConstraint &Matrix6x6::GetConstraint(){
+    return constraint;
+}
 
 //makes forward pluecker and refreshes the given w and v
 //transform update is saved, R and T SE3 are updated
@@ -146,8 +167,8 @@ void Matrix6x6::forwardDeltaPluecker(
 
    //dann velocity integrieren
    //deltaTwist(w1, v1)
-   //Matrix3x3 outDeltaRotation;
-   //FVector outDeltaTranslation;
+   //Matrix3x3 outDeltaRotation; -> is updated inside convertPlueckerToSE3components
+   //FVector outDeltaTranslation; -> is updated inside convertPlueckerToSE3components 
    Matrix3x3::convertPlueckerToSE3components(
        w1_constrained, v1_constrained, outDeltaRotation, outDeltaTranslation, deltatime
    );
@@ -164,7 +185,7 @@ void Matrix6x6::forwardDeltaPluecker(
 
 
 
-MMatrix Matrix6x6::operator*(MMatrix &prev){
+MMatrix Matrix6x6::operator*(const MMatrix &prev){
     MMatrix result;
 
     MMatrix translationLocal(resultTranslation);
@@ -181,3 +202,18 @@ MMatrix Matrix6x6::operator*(MMatrix &prev){
 
 
 
+// --- external transform override ---
+
+Matrix3x3 Matrix6x6::GetRotation() const {
+    return RotationSO3;
+}
+
+void Matrix6x6::OverrideRotation(const MMatrix &rotationMatIn){
+    std::vector<float> rotationValues = rotationMatIn.CopyRotation();
+    RotationSO3.Override(rotationValues);
+}
+
+
+void Matrix6x6::OverrideRotation(const Matrix3x3 &rotationMatIn){
+    RotationSO3 = rotationMatIn;
+}

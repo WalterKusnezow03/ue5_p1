@@ -109,8 +109,13 @@ protected:
 	//is marked as bool to flag if a new hitresult was made.
 	//returns true if any actor was hit. HitResult is updated!
 	virtual bool shootProtected(FVector from, FVector to, teamEnum ownTeam);
-	
-	
+
+	//this shoot method is PROTECTED against the outside, only use shoot or shootBot
+	//is marked as bool to flag if a new hitresult was made.
+	//returns true if any actor was hit. HitResult is updated!
+	//bool damageOnHit to apply damage to actor, might be disabled for any reason!
+	virtual bool shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool damageOnHit);
+
 	//-- latest raycast hit tracking -- 
 	FHitResult latestHit;
 	FVector LatestHitLocation();

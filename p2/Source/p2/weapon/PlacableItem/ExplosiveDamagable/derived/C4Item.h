@@ -107,7 +107,7 @@ protected:
     void RemoveFromParent();
     void RemoveFromChildList(AC4Item *item);
 
-    virtual void takedamage(int d) override;
+    virtual void takedamage(FCustomHitResult &result) override;
 
     void ShowComponent(USceneComponent *comp, bool flag);
 

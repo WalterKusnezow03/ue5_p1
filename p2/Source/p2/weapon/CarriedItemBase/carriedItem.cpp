@@ -115,6 +115,7 @@ void AcarriedItem::pickupBot(AActor *actorIn){
 
 void AcarriedItem::OnPickup(){
 	UnRegisterFromMiniMap();
+	UpdatePreRequisiteTickOnPickup();
 }
 
 bool AcarriedItem::isPickedupByPlayer(){
@@ -167,12 +168,39 @@ void AcarriedItem::drop(){
 	}
 	*/
 
+	UpdatePreRequisiteTickOnDrop();
+	
 	cameraPointer = nullptr;
 	botPointer = nullptr; //reset bot too, for both actors designed
 	enableCollider(true);
 	showItem(true);
+
 	
 }
+
+void AcarriedItem::UpdatePreRequisiteTickOnPickup(){
+	if(botPointer){
+		AddTickPrerequisiteActor(botPointer);
+	}
+	if(cameraPointer){
+		if(AActor *owner = cameraPointer->GetOwner()){
+			AddTickPrerequisiteActor(owner);
+		}
+	}
+}
+
+void AcarriedItem::UpdatePreRequisiteTickOnDrop(){
+	if(botPointer){
+		RemoveTickPrerequisiteActor(botPointer);
+	}
+	if(cameraPointer){
+		if(AActor *owner = cameraPointer->GetOwner()){
+			RemoveTickPrerequisiteActor(owner);
+		}
+	}
+}
+
+
 
 
 

@@ -8,15 +8,15 @@
 class IKHUMANOIDMODELL_API FHumanoidControllerSetupPackage : public FAbstractProperty{
 
 public:
-    static FHumanoidControllerSetupPackage GetDefault(UWorld *world);
+    static FHumanoidControllerSetupPackage GetDefault(AActor *actor);
 
-    FHumanoidControllerSetupPackage(UWorld *world);
+    FHumanoidControllerSetupPackage(AActor *actor);
     ~FHumanoidControllerSetupPackage();
 
     FHumanoidControllerSetupPackage(const FHumanoidControllerSetupPackage &other);
     FHumanoidControllerSetupPackage &operator=(const FHumanoidControllerSetupPackage &other);
 
-    virtual void SetWorld(UWorld *world) override;
+    virtual void SetActor(AActor *actor) override;
 
     FTwoLimbProperty &GetArmSize();
     FTwoLimbProperty &GetTorsoSize();

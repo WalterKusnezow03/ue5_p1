@@ -30,7 +30,7 @@ public:
 	void operator*=(MMatrix & other);
 
 	FVector operator*(const FVector &other);
-	MMatrix operator*(MMatrix &other);
+	MMatrix operator*(MMatrix &other) const;
 
 	FVector2D operator*(FVector2D &other);
 
@@ -124,7 +124,7 @@ public:
 	MMatrix transposedRotation();
 	MMatrix invertedTranslation();
 
-	std::vector<float> CopyRotation();
+	std::vector<float> CopyRotation() const;
 
 private:
 	//16 langes array für die 4x4 matrix

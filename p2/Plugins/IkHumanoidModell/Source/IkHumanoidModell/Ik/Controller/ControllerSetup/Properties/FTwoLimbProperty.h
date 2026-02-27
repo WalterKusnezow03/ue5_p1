@@ -2,18 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "FAbstractProperty.h"
+#include "FSingleLimbProperty.h"
 
 class IKHUMANOIDMODELL_API FTwoLimbProperty : public FAbstractProperty{
 
 public:
-    
-    
+    virtual void SetActor(AActor *actor) override {
+        FAbstractProperty::SetActor(actor);
+        firstProperty.SetActor(actor);
+        secondProperty.SetActor(actor);
+    }
+
     float GetSizeFirst(){
-        return sizeFirst;
+        return firstProperty.GetSize();
     }
 
     float GetSizeSecond(){
-        return sizeSecond;
+        return secondProperty.GetSize();
     }
 
     float GetFirstAndSecondSize(){
@@ -21,29 +26,27 @@ public:
     }
 
     float GetWidth(){
-        return widthOptional;
+        return firstProperty.GetWidth();
     }
 
-
-
-    
+    FSingleLimbProperty &GetFirstProperty(){
+        return firstProperty;
+    }
+    FSingleLimbProperty &GetSecondProperty(){
+        return secondProperty;
+    }
 
     void Setup(float a, float b){
-        sizeFirst = Validate(a);
-        sizeSecond = Validate(b);
+        Setup(a, b, 10);
     }
 
     void Setup(float a, float b, float desiredWidth){
-        Setup(a, b);
-        widthOptional = Validate(desiredWidth);
+        firstProperty.Setup(a, desiredWidth);
+        secondProperty.Setup(b, desiredWidth);
     }
 
-    
-
 protected:
-    float sizeFirst = 1.0f;
-    float sizeSecond = 1.0f;
-    float widthOptional = 1.0f;
-
     
+    FSingleLimbProperty firstProperty;
+    FSingleLimbProperty secondProperty;
 };

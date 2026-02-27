@@ -324,16 +324,12 @@ void AcustomWaterActor::refreshMesh(
  * -- damage interaction --
  */
 
-
-void AcustomWaterActor::takedamage(int d, FVector &hitpoint){
-    //DebugHelper::logMessage("water damage");
-    //return;
-    addNewRipple(hitpoint);
+void AcustomWaterActor::takedamage(FCustomHitResult &result){
+    if(result.HasHitPoint()){
+        addNewRipple(result.HitPoint());
+    }
 }
 
-void AcustomWaterActor::takedamage(int d, FVector &hitpoint, bool surpressed){
-    takedamage(d, hitpoint);
-}
 
 /**
  * 

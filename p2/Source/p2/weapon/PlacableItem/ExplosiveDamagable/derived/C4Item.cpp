@@ -230,9 +230,10 @@ void AC4Item::ResetFlagsAndProperties(){
     isDetonated = false;
 }
 
-void AC4Item::takedamage(int d){
+
+void AC4Item::takedamage(FCustomHitResult &result){
     markedDetonateByParent = false;
-    Super::takedamage(d);
+    Super::takedamage(result);
 }
 
 

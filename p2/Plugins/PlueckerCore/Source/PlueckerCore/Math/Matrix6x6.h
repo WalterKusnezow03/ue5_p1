@@ -2,6 +2,7 @@
 
 #include "Matrix3x3.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "PlueckerCore/Bone/JointConstraints/JointConstraint.h"
 
 /**
  * plücker 6x6 for forward for now
@@ -12,7 +13,10 @@ public:
     Matrix6x6();
     ~Matrix6x6();
 
-    MMatrix operator*(MMatrix &prev);
+    MMatrix operator*(const MMatrix &prev);
+
+    Matrix6x6(const Matrix6x6 &other);
+    Matrix6x6 &operator=(const Matrix6x6 &other);
 
     void forwardPluecker(
         FVector &angularVelocity, 
@@ -34,9 +38,22 @@ public:
         return translation;
     }
 
+    void OverrideConstraint(FJointConstraint &in);
+    FJointConstraint &GetConstraint();
+
+    // --- external override of transform ---
+    //override rotation of joint (needed for Ik Humanoid modell)
+    void OverrideRotation(const MMatrix &rotationMatIn);
+    void OverrideRotation(const Matrix3x3 &rotationMatIn);
+
+    Matrix3x3 GetRotation()const;
+
+    // --- external override of transform ---
+
 private:
     //v will be right not eliminated by default!
     void applyConstraints(FVector &w, FVector &v);
+    FJointConstraint constraint;
 
     //joint rotation
     Matrix3x3 RotationSO3;

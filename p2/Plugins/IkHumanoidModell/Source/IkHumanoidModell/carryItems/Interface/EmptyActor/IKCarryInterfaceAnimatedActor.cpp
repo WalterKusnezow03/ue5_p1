@@ -337,7 +337,9 @@ bool AIKCarryInterfaceAnimatedActor::TickAnimationFor(EArmType type, float delta
     );
     //Update component location
     UpdateHandComponentLocation(type, outPosLocal);
-    DebugDrawHandLocation(type, deltatime);
+
+    
+    //DebugDrawHandLocation(type, deltatime);
 
     return finished;
 }

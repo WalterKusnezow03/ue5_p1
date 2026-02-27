@@ -4,13 +4,21 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "IkHumanoidModell/Ik/Bone/ETwoBoneConstraint.h"
 
+#include "PlueckerCore/Bone/Joint.h"
+#include "PlueckerCore/Interface/IJointInterface.h"
+
+
+#include "IkHumanoidModell/Ik/Bone/JointCache/JointTransformCache.h"
+#include "IkHumanoidModell/Ik/Bone/BoneTransformInterface/BoneTransformInterface.h"
 
 class FTwoLimbProperty;
 
-class IKHUMANOIDMODELL_API TwoJointBone {
+class IKHUMANOIDMODELL_API TwoJointBone : public IJointInterface, public IBoneTransformInterface{
 
 private:
-    bool bDrawLines = false;
+    bool bDrawLines = false; //false
+
+    bool aactorBasedBones = true; //much faster than component based!!
 
 public:
     TwoJointBone();
@@ -27,6 +35,7 @@ public:
     void setup(float a, float b, UWorld *world, float widthBone); //hand controller api
 
 protected:
+    FVector DownVector(float a);
     void setupMatrices(float a, float b, UWorld *world);
 
 public:
@@ -173,7 +182,8 @@ private:
     void buildBackward(MMatrix &world, float deltatime);
 
     void draw(MMatrix &world, MMatrix &a, MMatrix &b, MMatrix &c, float dt);
-
+    void draw(MMatrix &a, MMatrix &b, float dt, FColor color);
+    void GetColorsForDraw(FColor &colorA, FColor &colorB, FColor &colorC);
 
     //Use this method for leg FK! 
     void MoveToTarget(FVector &target, FVector &localForward);
@@ -199,4 +209,51 @@ private:
     void applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix);
 
     ETwoBoneConstraint constraint = ETwoBoneConstraint::ENone;
+
+
+    // --- scene component based bones ---
+public:
+    virtual bool GetTransform(
+        FVector &location,
+        FRotator &rotation,
+        int limbId
+    ) override;
+
+protected:
+    virtual bool IdIsValid(int id) override;
+    void CreateLimbs(FTwoLimbProperty &property);
+
+    void UpdateJointTransformCaches(
+        MMatrix &world, // hip world
+        MMatrix &top,   // knee world
+        MMatrix &bottom // foot world
+    );
+    void UpdateJointTransformCache(
+        JointTransformCache &cache,
+        FVector location,
+        MMatrix &rotationTransform
+    );
+    JointTransformCache hipWorldCached;
+    JointTransformCache kneeWorldCached;
+    JointTransformCache footWorldCached;
+
+    // --- pluecker joints ---
+public:
+    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void DownstreamPropagate(
+        FJointKinematicPropagatePackage &package
+    )override;
+
+    void setupPlueckerJoints(float a, float b, UWorld * world);
+    Joint p1; //hip to knee
+    Joint p2; //knee to foot
+
+    Joint p2Invert; //foot to knee
+    Joint p1Invert; //knee to foot
+
+    //transform to plucker
+    void UpdatePluckerJointsFromCurrentJoints();
+    //plucker to inverted plucker
+    void UpdateInvertedPluckerJointsFromCurrentPluckerJoints();
 };

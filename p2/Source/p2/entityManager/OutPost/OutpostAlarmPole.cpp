@@ -88,19 +88,17 @@ bool AOutpostAlarmPole::isDestructable(){
 }
 
 ///can react to destruction only if hitpoint is given! (for now)
-void AOutpostAlarmPole::takedamage(int d, FVector &hitpoint, bool surpressed){
-    Super::takedamage(d, hitpoint, surpressed);
-
-    //react to hit on layer kasten
-
-    if(AlarmFunctionEnabled()){
+void AOutpostAlarmPole::takedamage(FCustomHitResult &result){
+    Super::takedamage(result);
+    
+    if(AlarmFunctionEnabled() && result.HasHitPoint()){
         //Super
-        if(doesHitWorld(hitpoint, materialEnum::prop_alarmBoxMaterial)){
+        if(doesHitWorld(result.HitPoint(), materialEnum::prop_alarmBoxMaterial)){
             disableAlarmFunction();
         }
     }
-    
 }
+
 
 
 bool AOutpostAlarmPole::AlarmFunctionEnabled(){

@@ -49,7 +49,7 @@ void HumanoidController::ResetAndRebuild(){
     );
 }
 
-void HumanoidController::defaultSetup(UWorld *world){
+void HumanoidController::defaultSetup(AActor *actorOwner){
 
     /*FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(world);
 
@@ -57,18 +57,18 @@ void HumanoidController::defaultSetup(UWorld *world){
     torsoController.setup(property);
     SetupEmptyArmAnimationActor(world);
     addAllActorsInChildrenToRaycastExclude();*/
-    HumanoidController::defaultSetup(world, false);
+    HumanoidController::defaultSetup(actorOwner, false);
 }
 
-void HumanoidController::defaultSetup(UWorld *world, bool flagWantedHands){
-    FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(world);
+void HumanoidController::defaultSetup(AActor *actorOwner, bool flagWantedHands){
+    FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(actorOwner);
     if(flagWantedHands){
         property.MarkHandsWanted();
     }
 
     hipController.setup(property);
     torsoController.setup(property);
-    SetupEmptyArmAnimationActor(world);
+    SetupEmptyArmAnimationActor(property.GetWorld());
     addAllActorsInChildrenToRaycastExclude();
 }
 

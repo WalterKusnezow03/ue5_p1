@@ -18,7 +18,7 @@ public:
     HandController();
     ~HandController();
 
-    void setup(UWorld *world, EArmType type);
+   
 
     void setup(FHumanoidControllerSetupPackage &package, EArmType type);
     void setup(FHandProperty &property, EArmType type);
@@ -40,7 +40,7 @@ private:
     void CreateFingers(FHandProperty &property, EArmType type);
     void CreateFingers(FHandProperty &property, TArray<FHandFingerProperty> &fingerProperties);
     // finger create
-    
+
     void CreatePalm(FHandProperty &property);
     void CreatePalm(UWorld *world);
     AActor *palm = nullptr;

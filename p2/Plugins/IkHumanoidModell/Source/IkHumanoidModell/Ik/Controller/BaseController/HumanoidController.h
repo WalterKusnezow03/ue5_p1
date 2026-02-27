@@ -8,7 +8,7 @@
 #include "IkHumanoidModell/Ik/CarriedItem/Animated/AnimCarriedItemSocket.h"
 #include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
 #include "GameCore/Raycast/query/CollisionTracker.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 
 
 /// @brief will control the skelleton, hip and torso controller
@@ -20,8 +20,8 @@ public:
 
     void EnableDebugLogExtended();
 
-    virtual void defaultSetup(UWorld *world);
-    virtual void defaultSetup(UWorld *world, bool flagWantedHands);
+    virtual void defaultSetup(AActor *actorOwner);
+    virtual void defaultSetup(AActor *actorOwner, bool flagWantedHands);
    
 
     void ResetAndRebuild();

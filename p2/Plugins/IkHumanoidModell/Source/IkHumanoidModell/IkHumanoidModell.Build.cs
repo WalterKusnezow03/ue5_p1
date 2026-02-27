@@ -43,8 +43,11 @@ public class IkHumanoidModell : ModuleRules
 				"Slate",
 				"SlateCore",
 				//for animation loading
-				"AssetPlugin"
-				// ... add private dependencies that you statically link with here ...	
+				"AssetPlugin",
+				// ... add private dependencies that you statically link with here ...
+
+				//pluecker joints
+				"PlueckerCore",
 			}
 			);
 		

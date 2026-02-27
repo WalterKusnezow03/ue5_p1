@@ -40,13 +40,7 @@ public:
 		FVector &outTranslation,
 		float deltatime
 	);
-	static void convertSE3ToPluecker(
-		Matrix3x3 &Rotation,
-		FVector &Translation,
-		FVector &outAngularVelocity,
-		FVector &outLinearVelocity,
-		float wantedAngularVelocity
-	);
+	
 
 	// skew operations end
 
@@ -67,6 +61,7 @@ public:
 	void transpose();
 
 	std::vector<float> Copy();
+	void Override(std::vector<float> &values);
 
 	void setColumn(FVector &column, int i);
 
@@ -87,6 +82,8 @@ public:
 
 	void makeIdentity();
 	void makeZero();
+
+	
 
 private:
 	void set(int i, int j, float value);

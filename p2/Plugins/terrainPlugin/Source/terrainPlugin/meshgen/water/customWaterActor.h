@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
-#include "GameCore/interfaces/DamageInterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "ripple.h"
 #include "customWaterActor.generated.h"
 
@@ -23,8 +23,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	
-	virtual void takedamage(int d, FVector &hitpoint) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
 
 	void createWaterPane(int vertexcountXIn, int detail);

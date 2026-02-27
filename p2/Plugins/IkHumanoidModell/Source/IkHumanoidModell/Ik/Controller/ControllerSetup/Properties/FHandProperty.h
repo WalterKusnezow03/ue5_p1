@@ -14,7 +14,7 @@ public:
     // get hand properties / setup
     void SetupHandBody(float length, float width, float depth);
 
-    virtual void SetWorld(UWorld *world) override;
+    virtual void SetActor(AActor *world) override;
 
     float GetLengthHand();
     float GetWidthHand();

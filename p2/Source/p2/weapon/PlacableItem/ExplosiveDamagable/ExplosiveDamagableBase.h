@@ -4,7 +4,7 @@
 #include "p2/weapon/PlacableItem/PlacableItemBase.h"
 #include "p2/weapon/ExplosiveHelper/ExplosiveHelper.h"
 
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 
 #include "ExplosiveDamagableBase.generated.h"
 
@@ -45,13 +45,9 @@ protected:
 
 public:
     //damage interface derived
-	virtual void takedamage(int d) override; //= 0 schreiben damit sie pure virtual sind
-	virtual void takedamage(int d, FVector &hitpoint) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
-
-	virtual void setTeam(teamEnum t) override;
+    virtual void setTeam(teamEnum t) override;
 	virtual teamEnum getTeam() override;
 
     teamEnum team = teamEnum::neutralTeam;

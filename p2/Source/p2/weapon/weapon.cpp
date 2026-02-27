@@ -2,7 +2,7 @@
 
 #include "weapon.h"
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "p2/entityManager/AlertManager.h"
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "p2/player/playerScript.h"
@@ -254,11 +254,15 @@ void Aweapon::shootBot(FVector target){
 
 
 
+bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
+	return shootProtected(Start, End, ownTeam, true);
+}
+
 /// @brief creates a raycast from start to end point and damages first object within the line
 /// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
 /// @param Start pos
 /// @param End pos target
-bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
+bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool damageOnHit){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
@@ -287,7 +291,11 @@ bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
 		{
 			latestHit = HitResult;
 			AActor *actor = HitResult.GetActor();
-			damageIfPossible(ownTeam, actor, HitResult, Start, End);
+			//damage if only flagged as damage.
+			if(damageOnHit){
+				damageIfPossible(ownTeam, actor, HitResult, Start, End);
+			}
+			
 			
 		}
 
@@ -335,19 +343,22 @@ void Aweapon::damageIfPossible(
 			}
 
 			FVector hitpoint = HitResult.ImpactPoint;
-			float damage = WeaponPropertiesMap::damageFor(
-				Type,
-				start,
-				hitpoint
+			float damage = WeaponPropertiesMap::damageFor(Type, start, hitpoint);
+
+			FCustomHitResult hitResultPackage;
+			hitResultPackage.SetupHitResult(
+				HitResult,
+				damage, 
+				isSoundSurpressed(), 
+				start
 			);
 
-			DebugHelper::showScreenMessage(FString::Printf(TEXT("Weapon Shot Damage: (%.2f)"), damage), FColor::Orange);
+			DebugHelper::showScreenMessage(
+				FString::Printf(TEXT("Weapon Shot Damage: (%.2f)"), damage), FColor::Orange
+			);
 
-			entity->takedamage(
-				damage,
-				hitpoint,
-				isSoundSurpressed()
-			); // must be changed later
+			entity->takedamage(hitResultPackage);
+				
 		}else{
 			//own team hit / any other
 			if(DEBUG_DRAW){
@@ -356,6 +367,8 @@ void Aweapon::damageIfPossible(
 		}
 	}
 }
+
+
 
 
 

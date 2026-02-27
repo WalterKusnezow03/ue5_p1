@@ -270,95 +270,6 @@ void Matrix3x3::convertPlueckerToSE3components(
 }
 
 
-/**
- * convert T to Pluecker
- */
-void Matrix3x3::convertSE3ToPluecker(
-    Matrix3x3 &Rotation, //R
-    FVector &translation, //p
-    FVector &outAngularVelocity,
-    FVector &outLinearVelocity,
-    float wantedAngularVelocity
-){
-    /*
-    l = (               
-        r32 - r23,             
-        r13 - r31, 
-        r21 - r12
-        )
-    omega = l / (2*sin(theta)) //für s(omega)
-    
-    theta = sign(l dot p) * (acos((r11 + r22 + r33 - 1) / 2))
-
-    h = (l · p)/(2 · θ · sin(θ))
-
-    v = h * omega
-
-    */
-
-    //bestimmung xi(w,v)
-
-    //falsch rum?
-    FVector l(
-        Rotation.getRowMajor(2,1) - Rotation.getRowMajor(1,2),
-        Rotation.getRowMajor(0,2) - Rotation.getRowMajor(2,0),
-        Rotation.getRowMajor(1,0) - Rotation.getRowMajor(0,1)
-    );
-    DebugHelper::showScreenMessage("l0", l);
-    FVector l1(
-        Rotation.get(2,1) - Rotation.get(1,2),
-        Rotation.get(0,2) - Rotation.get(2,0),
-        Rotation.get(1,0) - Rotation.get(0,1)
-    );
-    DebugHelper::showScreenMessage("l1", l1);
-
-
-
-    FVector p = translation;
-    float LPdot = FVector::DotProduct(l, p);
-    float sign = LPdot >= 0.0f ? 1.0f : -1.0f;
-
-    float inner = (
-        Rotation.getRowMajor(0, 0) + 
-        Rotation.getRowMajor(1, 1) + 
-        Rotation.getRowMajor(2, 2) - 1
-    ) / 2.0f;
-    inner = FMath::Clamp(inner, -1.0f, 1.0f);
-    float theta = sign * std::acosf(inner);
-
-    float sinTheta = std::sin(theta);
-    
-    //void div by zero
-    if(std::abs(sinTheta) < 0.000000000001f){
-        outAngularVelocity = FVector(0.00001f,0.0f,0.0f);
-        outLinearVelocity = translation;
-        DebugHelper::showScreenMessage("sin theta not ok", (float)sinTheta);
-        return;
-    }
-    if(std::abs(theta) < 0.000000000001f){
-        outAngularVelocity = FVector::ZeroVector;
-        outLinearVelocity = translation;
-        DebugHelper::showScreenMessage("theta not ok", (float)theta);
-        return;
-    }
-    
-    FVector omega = l * (1.0f / (2.0f * sinTheta));
-
-    float h = LPdot / (2.0f * theta * sinTheta);
-
-    FVector w = omega; //* theta ? gute frage.
-    FVector v = h * omega;
-
-    DebugHelper::showScreenMessage("dir w", w.GetSafeNormal(), FColor::Green);
-
-    outAngularVelocity = w; //gute frage.
-    outLinearVelocity = v;
-
-    //test
-    //outAngularVelocity = w.GetSafeNormal() * wantedAngularVelocity;
-    //outAngularVelocity = v.GetSafeNormal() * wantedAngularVelocity;
-}
-
 
 
 
@@ -385,6 +296,21 @@ std::vector<float> Matrix3x3::Copy(){
         array[8]
     };
     return output;
+}
+
+void Matrix3x3::Override(std::vector<float> &values){
+    makeIdentity();
+    if(values.size() >= 9){
+        array[0] = values[0];
+        array[1] = values[1];
+        array[2] = values[2];
+        array[3] = values[3];
+        array[4] = values[4];
+        array[5] = values[5];
+        array[6] = values[6];
+        array[7] = values[7];
+        array[8] = values[8];
+    }
 }
 
 /**

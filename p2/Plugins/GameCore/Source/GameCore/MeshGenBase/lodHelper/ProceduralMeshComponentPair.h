@@ -16,7 +16,11 @@ private:
 public:
     ProceduralMeshComponentPair();
     ~ProceduralMeshComponentPair();
-
+    void init(
+        FString name,
+        int index,
+        USceneComponent *RootComponent
+    );
     void init(
         FString name,
         int index,
@@ -24,6 +28,7 @@ public:
         USceneComponent *RootComponent
     );
 
+    
     void overrideMeshPair(UProceduralMeshComponent *raycastMeshIn, UProceduralMeshComponent *noraycastIn);
 
     UProceduralMeshComponent *RaycastMesh();
@@ -37,6 +42,7 @@ public:
 
     void setCollisionEnabled(bool flag);
     void setHiddenInGame(bool flag);
+    void SetPhysicsEnabled(bool flag);
 
     void updateMeshAllAndApplyMaterial(materialEnum type);
 
@@ -46,6 +52,8 @@ public:
     void updateMeshAll(materialEnum type);
     void updateMeshRaycast(materialEnum type);
     void updateMeshNoRaycast(materialEnum type);
+
+    void updateMeshAllAndApplyMaterials();
 
     //All refresh map methods are allowed to UPDATE the vertex buffer, for example for cpu side wave shader
     void refreshMeshRaycast(materialEnum type);
@@ -116,4 +124,23 @@ private:
     ///returns a instance dynamic from a material if a expression was found from material
     ///plugin or does not.
     UMaterialInstanceDynamic *ApplyExpressionData(UMaterial *material);
-};
+
+
+
+
+public:
+    //debug tools 
+    // will return if the raycast or non raycast mesh was initialized
+    bool IsValid(bool raycastMeshFlag);
+
+    //will return the component location world for debug
+    FVector GetComponentLocation(bool raycastMeshFlag);
+
+private:
+    UProceduralMeshComponent *FindMeshComponent(bool withRaycast);
+
+    //debug tools
+
+
+
+};  

@@ -164,30 +164,23 @@ void AEntityScript::Tick(float DeltaTime)
 	
 }
 
-//allows the entity to take damage
-void AEntityScript::takedamage(int d){
-	takedamage(d, false);
-}
-/// @brief hitpoint processing not specified, will only damage as default
-/// @param d 
-/// @param hitpoint 
-void AEntityScript::takedamage(int d, FVector &hitpoint){
-	takedamage(d, hitpoint, false);
-}
 
-///@brief main reaction method
-void AEntityScript::takedamage(int d, bool surpressed){
-	//showScreenMessage("enemy entity damage");
-	health -= d;
+//allows the entity to take damage.
+void AEntityScript::takedamage(FCustomHitResult &result){
+	if(result.HasHitPoint()){
+		//propagate to skelleton 
+		//add impulse (?)
+	}
+
+	health -= result.Damage();
 	if(health <= 0){
-		d = 0;
+		health = 0;
 		die();
 	}
-	updateToReducedSpottingTimeIfNotSpottedYet();
-}
-
-void AEntityScript::takedamage(int d, FVector &hitpoint, bool surpressed){
-	takedamage(d, surpressed);
+	if(result.IsSurpressed()){
+		updateToReducedSpottingTimeIfNotSpottedYet();
+	}
+	//updateToReducedSpottingTimeIfNotSpottedYet();
 }
 
 
@@ -763,7 +756,7 @@ void AEntityScript::drawPath(){
 // ------------ new skelleton section --------------
 void AEntityScript::BeginPlayHumanoidController(){
 	humanoidPluginController.raycastIgnoreOwner(this);
-	humanoidPluginController.defaultSetup(GetWorld());
+	humanoidPluginController.defaultSetup(this);
 	humanoidPluginController.setDamagedOwner(this); //must be called after controller setup
 }
 

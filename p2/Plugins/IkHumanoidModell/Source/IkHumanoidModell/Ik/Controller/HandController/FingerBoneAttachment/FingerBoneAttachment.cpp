@@ -10,13 +10,15 @@ FingerBoneAttachment::~FingerBoneAttachment(){
 }
 
 void FingerBoneAttachment::setupBone(FHandFingerProperty &property){
-    BoneAttachment::setupBone(
+    /*BoneAttachment::setupBone(
         property.GetSizeFirst(), 
         property.GetSizeSecond(), 
         property.GetWorld(), 
         property.GetPivot(), 
         property.GetWidth()
-    );
+    );*/
+    BoneAttachment::setupBoneBase(property, property.GetPivot());
+    //setInnerOffsetTranslation(property.GetPivot());
 }
 
 

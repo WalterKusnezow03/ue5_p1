@@ -10,7 +10,7 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "GameCore/team/teamEnum.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "CoreMath/animation/timer/timer.h"
 #include "WingsuitInterface.h"
 #include "GameCore/Input/InputContainer.h"

@@ -7,14 +7,21 @@ public:
         return std::max(std::abs(size), 1.0f);
     }
 
-    virtual void SetWorld(UWorld *worldIn){
-        worldPtr = worldIn;
+    virtual void SetActor(AActor *ownerIn){
+        actorOwner = ownerIn;
     }
 
-    UWorld *GetWorld(){
-        return worldPtr;
+    AActor *GetActor()const{
+        return actorOwner;
+    }
+
+    UWorld *GetWorld()const{
+        if(actorOwner){
+            return actorOwner->GetWorld();
+        }
+        return nullptr;
     }
 
 protected:
-    UWorld *worldPtr = nullptr;
+    AActor *actorOwner = nullptr;
 };

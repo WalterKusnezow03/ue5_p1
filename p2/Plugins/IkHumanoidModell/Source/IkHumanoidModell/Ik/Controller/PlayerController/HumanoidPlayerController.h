@@ -18,7 +18,7 @@ public:
     HumanoidPlayerController();
     virtual ~HumanoidPlayerController();
 
-    virtual void defaultSetup(UWorld *world) override;
+    virtual void defaultSetup(AActor *actor) override;
 
     virtual void Tick(float deltatime) override;
 

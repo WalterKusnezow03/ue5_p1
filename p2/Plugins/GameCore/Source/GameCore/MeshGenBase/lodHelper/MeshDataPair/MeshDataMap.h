@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
+#include <map>
 
 class ProceduralMeshComponentPair; // forward declaration
 

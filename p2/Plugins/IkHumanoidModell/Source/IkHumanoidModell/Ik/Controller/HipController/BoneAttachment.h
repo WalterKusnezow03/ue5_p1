@@ -7,9 +7,10 @@
 
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbHipProperty.h"
 
+#include "PlueckerCore/Interface/IJointInterface.h"
+#include "PlueckerCore/Bone/Joint.h"
 
-
-class IKHUMANOIDMODELL_API BoneAttachment {
+class IKHUMANOIDMODELL_API BoneAttachment : public IJointInterface{
 
 public:
     BoneAttachment();
@@ -25,12 +26,13 @@ public:
     void setWorld(UWorld *world);
     void setAsLeg();
 
+    void setupBoneBase(FTwoLimbProperty &package, FVector offset);
     void setupBone(FTwoLimbHipProperty &hipLimb);
 
     /// @brief direction of bone from bottom to up, default size stretched bone.
     FVector defaultExtendedEndToStartLocal();
     
-    void setupBone(float a, float b, UWorld *world, FVector offset);
+    /*void setupBone(float a, float b, UWorld *world, FVector offset);
     void setupBone(
         float a,
         float b,
@@ -41,7 +43,7 @@ public:
     );
 
     //hand controller api set width
-    void setupBone(float a, float b, UWorld *world, FVector offset, float widthBone);
+    void setupBone(float a, float b, UWorld *world, FVector offset, float widthBone);*/
 
     ///sets the local (forward kinematic, end effector) target by transforming into local space
     void setForwardTargetWorld(
@@ -115,6 +117,8 @@ public:
     void getActors(TArray<AActor *> &outArray);
 
 private:
+    void setInnerOffsetTranslation(FVector offset);
+
     FVector defaultExtendedTranslationBottomToUp;
 
     FVector localMovingDirectionSaved;
@@ -189,4 +193,18 @@ private:
 
 
 
+
+
+    /// ---- PLUECKER ----
+public:
+    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void DownstreamPropagate(
+        FJointKinematicPropagatePackage &package
+    ) override;
+
+protected:
+    void SetupPluckerJoints(FVector &offset, UWorld *worldIn);
+    Joint p1;
+    Joint p1Invert;
 };

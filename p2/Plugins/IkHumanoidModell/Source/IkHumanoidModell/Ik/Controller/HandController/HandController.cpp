@@ -79,46 +79,6 @@ void HandController::CreateFingers(FHandProperty &property, TArray<FHandFingerPr
 
 
 
-
-void HandController::setup(UWorld *world, EArmType type){
-    worldPointer = world;
-    typeSaved = type;
-
-    float lengthA = 3.0f;
-    float lengthB = 2.0f;
-    float widthFinger = 1.0f;
-    LimbProperties::GetSizeFingers(lengthA, lengthB, widthFinger);
-
-    float forwardFingerOffset = 0.0f;
-    LimbProperties::GetFingerForwardOffset(forwardFingerOffset);
-
-    bool bLeftHand = type == EArmType::ELeft;
-
-    fingers.SetNum(5);
-
-    //x is forward, y right
-    TArray<FVector> offsets = {
-        FVector(forwardFingerOffset, -2.0f, 0.0f), //thumb
-        FVector(forwardFingerOffset, -1.0f, 0.0f),
-        FVector(forwardFingerOffset, 0.0f, 0.0f),
-        FVector(forwardFingerOffset, 1.0f, 0.0f),
-        FVector(forwardFingerOffset, 2.0f, 0.0f)
-    };
-    for (int i = 0; i < fingers.Num(); i++){
-        FingerBoneAttachment &current = fingers[i];
-        if(i < offsets.Num()){
-            FVector &offset = offsets[i];
-            if(bLeftHand){
-                offset.Y *= -1.0f;
-            }
-
-            current.setupBone(lengthA, lengthB, worldPointer, offset, widthFinger);
-        }
-        
-    }
-    CreatePalm(world);
-}
-
 void HandController::CreatePalm(UWorld *world){
     if(!palm){
         float x = 8;

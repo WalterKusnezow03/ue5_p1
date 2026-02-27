@@ -10,6 +10,21 @@ ProceduralMeshComponentPair::~ProceduralMeshComponentPair(){
 
 }
 
+
+void ProceduralMeshComponentPair::init(
+    FString name,
+    int index,
+    USceneComponent *RootComponent
+){
+    if(RootComponent){
+        if(AActor *owner = RootComponent->GetOwner()){
+            init(name, index, owner, RootComponent);
+        }
+    }
+}
+
+
+
 void ProceduralMeshComponentPair::init(
     FString name, 
     int index,
@@ -35,6 +50,7 @@ void ProceduralMeshComponentPair::init(
         }
 
         setCollisionEnabled(true); //default
+        setHiddenInGame(false);
     }
 }
 
@@ -58,6 +74,18 @@ void ProceduralMeshComponentPair::setCollisionEnabled(bool flag){
         raycastMesh->SetCollisionEnabled(collision);
     }
 }
+
+//unclear whether needed!
+void ProceduralMeshComponentPair::SetPhysicsEnabled(bool flag){
+    if(noraycastMesh){
+        noraycastMesh->SetSimulatePhysics(false);
+    }
+    if(raycastMesh){
+        raycastMesh->SetSimulatePhysics(flag);
+    }
+}
+
+
 
 void ProceduralMeshComponentPair::setHiddenInGame(bool flag){
     if(noraycastMesh){
@@ -125,6 +153,11 @@ void ProceduralMeshComponentPair::updateMeshAll(){
 }
 
 
+
+void ProceduralMeshComponentPair::updateMeshAllAndApplyMaterials(){
+    updateMeshAll();
+    ApplyAllMaterials();
+}
 
 void ProceduralMeshComponentPair::updateMeshAll(materialEnum type){
     updateMeshRaycast(type);
@@ -528,7 +561,7 @@ void ProceduralMeshComponentPair::overrideMeshDataFromBaseAndUpdateMesh(
 
 
 
-//collision cache
+//collision cache (not really used, performance was very slow.)
 bool ProceduralMeshComponentPair::CopyCollisionCache(FProcMeshCollisionStorageInterface &cache){
     if(raycastMesh){
         if(cache.SerializeCollision(raycastMesh)){
@@ -546,4 +579,32 @@ bool ProceduralMeshComponentPair::SetupFromCollisionCache(FProcMeshCollisionStor
         }
     }
     return false;
+}
+
+
+
+
+
+
+
+// --- Debug ---
+
+bool ProceduralMeshComponentPair::IsValid(bool raycastOnMesh){
+    return FindMeshComponent(raycastOnMesh) != nullptr;
+}
+
+UProceduralMeshComponent *ProceduralMeshComponentPair::FindMeshComponent(bool withRaycast){
+    if(withRaycast){
+        return raycastMesh;
+    }else{
+        return noraycastMesh;
+    }
+}
+
+//will return the component location world for debug
+FVector ProceduralMeshComponentPair::GetComponentLocation(bool raycastMeshFlag){
+    if(UProceduralMeshComponent *ptr = FindMeshComponent(raycastMeshFlag)){
+        return ptr->GetComponentLocation();
+    }
+    return FVector(0, 0, 0);
 }

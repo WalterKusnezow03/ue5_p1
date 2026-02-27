@@ -2,6 +2,7 @@
 #include "IkHumanoidModell/Ik/Bone/TwoJointBone.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/FHumanoidControllerSetupPackage.h"
 
 
 void AIkDebugActor::CreateInstance(UWorld *world){
@@ -64,14 +65,16 @@ void AIkDebugActor::BeginPlayHipController(){
 
         float initRotation = -90; //180 //10
         hipController.forceYawAdd(initRotation);
-        hipController.setup(GetWorld());
+
+        FHumanoidControllerSetupPackage package = FHumanoidControllerSetupPackage::GetDefault(this);
+        hipController.setup(package);
         hipController.setStateWalking();
     }
 }
 
 void AIkDebugActor::BeginPlayHumanoidController(){
     if(debugPart == EDebugPart::EDebugHumanoidController){
-        humanController.defaultSetup(GetWorld());
+        humanController.defaultSetup(this);
         FVector startWorld(400, -400, 210);
         humanController.SetLocation(startWorld);
         humanController.setStateWalking();

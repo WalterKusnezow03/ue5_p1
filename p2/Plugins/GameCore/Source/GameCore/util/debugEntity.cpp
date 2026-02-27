@@ -16,7 +16,7 @@ void AdebugEntity::BeginPlay()
 {
 	Super::BeginPlay();
 	clicked = false;
-	takedamage(0);
+	
 }
 
 // Called every frame
@@ -27,23 +27,13 @@ void AdebugEntity::Tick(float DeltaTime)
 	debugFunction(DeltaTime);
 }
 
-void AdebugEntity::takedamage(int d){
+void AdebugEntity::takedamage(FCustomHitResult &result){
 	if(!clicked){
 		clicked = true;
 		//debugFunction();
 	}
 }
-void AdebugEntity::takedamage(int d, FVector &from){
-	takedamage(d);
-}
 
-
-void AdebugEntity::takedamage(int d, bool surpressed){
-	takedamage(d);
-}
-void AdebugEntity::takedamage(int d, FVector &hitpoint, bool surpressed){
-	takedamage(d);
-}
 
 /// @brief sets the team, is empyt here, will not be set
 /// @param team 

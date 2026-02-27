@@ -23,10 +23,8 @@ void TorsoController::setup(FHumanoidControllerSetupPackage &package){
         EArmType::ERight,
         package
     );
+    SetupJointParents();
 }
-
-
-
 
 void TorsoController::ResetAndRebuild(
     MMatrix &actorTranslation,
@@ -76,3 +74,34 @@ void TorsoController::getActors(TArray<AActor *> &outArray){
     partRight.getActors(outArray);
 }
 
+
+
+
+
+
+// ---- pluecker joints ----
+void TorsoController::SetupJointParents(){
+    partLeft.SetParentInterface(this);
+    partRight.SetParentInterface(this);
+}
+
+
+void TorsoController::UpstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    //TODO
+}
+
+void TorsoController::DownstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    DownstreamPropagateTo(partLeft, package);
+    DownstreamPropagateTo(partRight, package);
+}
+
+void TorsoController::DownstreamPropagateTo(
+    LayeredTwoJointBone &attachment,
+    FJointKinematicPropagatePackage &package
+){
+    attachment.DownstreamPropagate(package);
+}

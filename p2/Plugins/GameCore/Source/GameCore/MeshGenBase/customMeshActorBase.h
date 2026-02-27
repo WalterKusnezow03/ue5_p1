@@ -13,7 +13,7 @@
 
 #include "GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h"
 
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "GameCore/team/teamEnum.h"
 
 #include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
@@ -45,10 +45,7 @@ protected:
 public:
 	//derived methods IDamageinterface
 	//methods
-	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &from) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
 	virtual void setTeam(teamEnum t) override;
 	virtual teamEnum getTeam() override;

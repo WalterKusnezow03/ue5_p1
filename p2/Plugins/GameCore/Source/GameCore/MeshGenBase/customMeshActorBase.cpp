@@ -287,29 +287,14 @@ void AcustomMeshActorBase::filterTouplesForVerticalVectors(
  * 
  * 
  */
+
 /// @brief will allow custom mesh actors such as destructables and terrain react to damage
-/// @param d 
-void AcustomMeshActorBase::takedamage(int d, bool surpressed){
+void AcustomMeshActorBase::takedamage(FCustomHitResult &result){
     //damage owner as this could be a kimb of an actor
     if(damagedOwner != nullptr){
         DebugHelper::showScreenMessage("AcustomMeshActorBase Damage Owner!");
-        damagedOwner->takedamage(d);
+        damagedOwner->takedamage(result);
     }
-}
-
-void AcustomMeshActorBase::takedamage(int d){
-    takedamage(d, false);
-}
-
-/// @brief allows tha ctor to react to damage from a origin
-/// @param d 
-/// @param hitpoint hitpoint from weapon  
-void AcustomMeshActorBase::takedamage(int d, FVector &hitpoint){
-    takedamage(d, hitpoint, false);
-}
-
-void AcustomMeshActorBase::takedamage(int d, FVector &hitpoint, bool surpressed){
-    takedamage(d, surpressed);
 }
 
 

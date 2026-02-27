@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "LayeredTwoJointBone.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "PlueckerCore/Interface/IJointInterface.h"
 
 class IIkCarryInterface;
 class AIKCarryInterfaceAnimatedActor;
@@ -11,7 +12,7 @@ class FHumanoidControllerSetupPackage;
 /// @brief controls two layered two bones to create a torso
 /// will also apply constrains so a torso split doesnt occur
 /// and the other torso part gets moved if a layered Ik case occurs
-class IKHUMANOIDMODELL_API TorsoController {
+class IKHUMANOIDMODELL_API TorsoController : public IJointInterface{
 
 public:
     TorsoController();
@@ -60,4 +61,24 @@ private:
     LayeredTwoJointBone partRight;
 
     
+
+    // ---- pluecker joints ----
+public:
+    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void DownstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+protected:
+    void SetupJointParents();
+    void DownstreamPropagateTo(
+        LayeredTwoJointBone &attachment,
+        FJointKinematicPropagatePackage &package
+    );
+
+
+
+
+
+
+
 };

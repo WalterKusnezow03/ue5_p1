@@ -58,9 +58,8 @@ void HipController::drawLocation(float deltatime){
 
 void HipController::forceYawAdd(float degree){
     orientation.yawRadAdd(MMatrix::degToRadian(degree));
+    UpdatePlueckerJointRotation();
 }
-
-
 
 void HipController::setup(FHumanoidControllerSetupPackage &package){
     worldPointer = package.GetWorld();
@@ -79,44 +78,10 @@ void HipController::setup(FHumanoidControllerSetupPackage &package){
     forwardDefaultLocalLocomotionFrame = FVector(40.0f, 0, -lengthTotal);
     DebugHelper::logMessage("Default Forward Trajectory unprojected", forwardDefaultLocalLocomotionFrame);
     forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
-
-    buildOnStart();
-
-}
-
-void HipController::setup(UWorld *world){
-    worldPointer = world;
-
-    float lengthA = 50.0f;
-    float lengthB = 50.0f;
-    LimbProperties::GetSizeLegs(lengthA, lengthB);
-
     
-    setupLegLength = lengthA + lengthB;
-
-
-    //x is forward
-    FVector offsetLeft(0, -20.0f, 0.0f);
-    legLeft.setupBone(lengthA, lengthB, world, offsetLeft, bodyMass, motionTime);
-    legLeft.setAsLeg();
-
-    FVector offsetRight = offsetLeft * -1.0f;
-    legRight.setupBone(lengthA, lengthB, world, offsetRight, bodyMass, motionTime);
-    legRight.setAsLeg();
-
-    //setup forward reach target
-    float lengthTotal = std::abs(lengthA) + std::abs(lengthB);
-
-    forwardDefaultLocalLocomotionFrame = FVector(40.0f, 0, -lengthTotal);
-    DebugHelper::logMessage("Default Forward Trajectory unprojected", forwardDefaultLocalLocomotionFrame);
-    forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
-
-
-    //debug
-    //forwardDefaultLocalLocomotionFrame = FVector(40.0f, 20, -lengthTotal);
-    //forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
-
+    
     buildOnStart();
+    SetupPlueckerJoint(package.GetWorld());
 }
 
 void HipController::buildOnStart(){
@@ -907,6 +872,7 @@ void HipController::TickHipRotation(float deltatime){
         FRotator rTicked = hipRotationInterpolator.interpolate(deltatime);
         MMatrix newRotation(rTicked);
         orientation = rTicked;
+        UpdatePlueckerJointRotation();
 
         DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
     }
@@ -955,7 +921,7 @@ void HipController::getActors(TArray<AActor *> &outArray){
 // ---- external override ---- (just player)
 void HipController::forceOverrideRotation(FRotator &rotation){
     orientation.setRotation(rotation);
-
+    UpdatePlueckerJointRotation();
     //speed may be removed, unclear if player will run on physics!
 }
 
@@ -963,6 +929,7 @@ void HipController::forceOverrideRotation(FRotator &rotation){
 void HipController::ResetAndRebuild(){
     FRotator none;
     orientation.setRotation(none);
+    UpdatePlueckerJointRotation();
 
     legLeft.ResetAndRebuild(translation, orientation);
     legRight.ResetAndRebuild(translation, orientation);
@@ -1109,4 +1076,55 @@ bool HipController::DebugHorizontalVelocityOvershoot(){
     }
 
     return false;
+}
+
+
+
+
+
+
+
+/// ---- pluecker joints ----
+void HipController::SetupPlueckerJoint(UWorld *world){
+    FVector offsetNone;
+    rootJoint = Joint(offsetNone, world);
+
+    legLeft.SetParentInterface(this);
+    legRight.SetParentInterface(this);
+}
+
+void HipController::UpdatePlueckerJointRotation(){
+    rootJoint.OverrideJointRotation(orientation);
+}
+
+
+
+void HipController::UpstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    // --- TODO ---
+}
+
+void HipController::DownstreamPropagate(
+    FJointKinematicPropagatePackage &package
+){
+    MMatrix resultTransform = rootJoint.TickAndBuildThisJoint(package);
+    package.transform = resultTransform;
+    DownstreamPropagateTo(legLeft, package);
+    DownstreamPropagateTo(legRight, package);
+
+
+    //update own matrices might be needed here!
+    //testing needed!:
+    if(true){//not tested! not known if needed here! -> actor transform update will happen tho. needed.
+        resultTransform.setTranslation(0, 0, 0);
+        orientation = resultTransform;
+    }
+}
+
+void HipController::DownstreamPropagateTo(
+    BoneAttachment &attachment, 
+    FJointKinematicPropagatePackage package
+){
+    attachment.DownstreamPropagate(package);
 }

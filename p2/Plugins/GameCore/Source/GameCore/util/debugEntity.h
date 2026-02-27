@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameCore/interfaces/Damageinterface.h"
+#include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "GameCore/team/teamEnum.h"
 
 
@@ -27,10 +27,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void takedamage(int damage) override;
-	virtual void takedamage(int damage, FVector &from) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
 	virtual void setTeam(teamEnum team) override;
 	virtual teamEnum getTeam() override;

@@ -20,8 +20,8 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-    using AcustomMeshActor::takedamage;
-    virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+    
+    virtual void takedamage(FCustomHitResult &result) override;
 
     bool AlarmFunctionEnabled();
 

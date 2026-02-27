@@ -40,16 +40,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void TakeDamageHealthFrom(FCustomHitResult &result);
+	void TakeDamageHitPoint(FCustomHitResult &result);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	//derived methods
 	//methods
-	virtual void takedamage(int d) override;
-	virtual void takedamage(int d, FVector &from) override;
-	virtual void takedamage(int d, bool surpressed) override;
-	virtual void takedamage(int d, FVector &hitpoint, bool surpressed) override;
+	virtual void takedamage(FCustomHitResult &result) override;
 
 	//chunkParser Setup: will copy data, BUT KEEP POINTER, Parser must be a non value variable!
 	//planned to be used as Ptr which is passed.
@@ -136,9 +136,9 @@ protected:
 	/// @brief called when lod is switched.
 	void OnLodSwitch() override;
 
-	void groundReactionToHitWorld(FVector &hitpoint);
+	void groundReactionToHitWorld(FVector hitpoint);
 
-	void createDebreeOnDamage(FVector &worldhit);
+	void createDebreeOnDamage(FVector worldhit);
 
 
 	bool destructableBool = false;
@@ -153,7 +153,7 @@ protected:
 
 	
 
-	void glassreactionToHitWorld(FVector &hitWorld);
+	void glassreactionToHitWorld(FVector hitWorld);
 	void glassreactionToHitLocal(FVector &hitlocal);
 	void debugDrawMeshData(MeshData &meshdata);
 
