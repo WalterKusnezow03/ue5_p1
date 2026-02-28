@@ -40,6 +40,10 @@ public:
     virtual bool markedVisible() { return true; }
     virtual UWidget *baseLayoutPointer() { return this; };
 
+    //remove hover on widget left
+    virtual void removeHover() override;
+
+
 protected:
 
 private:

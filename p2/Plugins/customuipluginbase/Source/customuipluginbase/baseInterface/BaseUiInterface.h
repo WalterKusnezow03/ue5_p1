@@ -38,6 +38,10 @@ public:
 	/// ---- OPTIONAL VIRTUAL ----
 
 	virtual bool dispatchHover(const FVector2D &position) { return false; };
+
+	//can be implemented, will remove the hover state (is for game core 3D ui widgets.)
+	virtual void removeHover() {};
+
 	virtual void SetVisible(bool flag) {};
 	virtual bool markedVisible() { return true; }
 
@@ -57,4 +61,7 @@ public:
 	virtual void OnHover() {};
 
 
+
+
+	
 };

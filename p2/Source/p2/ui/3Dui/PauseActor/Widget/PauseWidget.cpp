@@ -65,6 +65,14 @@ void UPauseWidget::Init(){
     SetupFromDefaultColors(homeButtonUtil, GetHomeButton());
 }
 
+//remove hover on widget left
+void UPauseWidget::removeHover(){
+    loadoutButtonUtil.removeHover();
+    exitButtonUtil.removeHover();
+    homeButtonUtil.removeHover();
+}
+
+
 /*
 UWidget *GetLoadoutButton();
 UWidget *GetExitButton();

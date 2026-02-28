@@ -115,6 +115,7 @@ protected:
     void UpdateBodySetupOverride(); //copied defintion from source
 
 
-
-
+    //update hover state external on tick
+    //update hover state if this widget is not hovered anymore. (reset widget hover state. Widget in 3D space left.)
+    void UpdateHoverWidgetLeft();
 };

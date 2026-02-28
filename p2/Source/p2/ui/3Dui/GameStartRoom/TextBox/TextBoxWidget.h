@@ -23,6 +23,8 @@ public:
     virtual void Tick(float DeltaTime) override;
     virtual bool dispatchClick(const FVector2D &position) override;
     virtual bool dispatchHover(const FVector2D &position) override;
+
+    virtual void removeHover() override;
    
     virtual void dispatchUserInput(UserInput &input) override;
 

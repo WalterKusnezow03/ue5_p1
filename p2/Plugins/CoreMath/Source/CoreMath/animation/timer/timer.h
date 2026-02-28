@@ -26,6 +26,7 @@ public:
 	}
 
 	virtual float scalar();
+	float InvertedScalar();
 
 private:
 	float initialTime;

@@ -112,6 +112,12 @@ bool UWorldListItem::dispatchHover(const FVector2D &position){
     return false;
 }
 
+//remove hover on widget left
+void UWorldListItem::removeHover(){
+    worldItem.removeHover();
+    deleteItem.removeHover();
+}
+
 void UWorldListItem::SetVisible(bool flag){
     if(flag){
         SetVisibility(ESlateVisibility::Visible);

@@ -151,14 +151,22 @@ void UAnyMeshWidgetInteractionComponent::SetInteractionHoverActive(bool enabled)
 
 
 
+#include "GameCore/Ui3D/InteractionComponentCache/InteractionComponentHoveredCache.h"
+
 // hover ticked
 void UAnyMeshWidgetInteractionComponent::TickHovered(
     const FVector &origin,
     const FVector &direction
 ){
     if(isHoverEnabled && isEnabled){
-        if(ACustomMeshUIActor *found = RayIntersectFound(origin, direction)){
+        
+        if (ACustomMeshUIActor *found = RayIntersectFound(origin, direction))
+        {
             found->RayIntersectHover(origin, direction);
+        }else{
+            //update cache even if none found: none is hovered, must be updated
+            //too for "cursor leave"
+            UInteractionComponentHoveredCache::UpdateHovered(nullptr);
         }
     }
 }

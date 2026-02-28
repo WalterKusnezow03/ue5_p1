@@ -36,6 +36,9 @@ public:
     virtual bool markedVisible() override { return true; };
     virtual UWidget *baseLayoutPointer() override { return this; };
 
+    //remove hover on widget left
+    virtual void removeHover() override;
+
     virtual void dispatchUserInput(UserInput &input) override;
 
     bool TextBoxIsActive();

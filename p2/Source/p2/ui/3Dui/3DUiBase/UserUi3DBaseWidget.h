@@ -31,8 +31,6 @@ protected:
     virtual TArray<IBaseUiInterface *> GetAllItemsForDispatch();
     bool DispatchHoverToAllItemsForDispatch(const FVector2D &pos);
 
-private:
-    
-
-
+    //remove hover from all interfaces from "GetAllItemsForDispatch()"
+    void RemoveHoverFromAllItemsForDispatch();
 };

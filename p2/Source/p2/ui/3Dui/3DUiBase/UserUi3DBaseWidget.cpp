@@ -60,3 +60,13 @@ bool UUserUi3DBaseWidget::DispatchHoverToAllItemsForDispatch(const FVector2D &po
     }
     return result;
 }
+
+void UUserUi3DBaseWidget::RemoveHoverFromAllItemsForDispatch(){
+    TArray<IBaseUiInterface *> array = GetAllItemsForDispatch();
+    for (int i = 0; i < array.Num(); i++){
+        if(IBaseUiInterface *current = array[i]){
+            current->removeHover();
+        }
+    }
+}
+

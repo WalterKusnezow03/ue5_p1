@@ -22,6 +22,10 @@ bool UTextBoxWidget::dispatchHover(const FVector2D &position){
 }
 
 
+void UTextBoxWidget::removeHover(){
+    
+}
+
 
 UTextBlock *UTextBoxWidget::GetTextBlockWidget(){
     if(UWidget *raw = GetTextWidget()){

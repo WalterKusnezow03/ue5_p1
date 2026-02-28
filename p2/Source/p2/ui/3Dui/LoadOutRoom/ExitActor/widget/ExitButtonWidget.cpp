@@ -23,6 +23,12 @@ bool UExitButtonWidget::dispatchHover(const FVector2D &pos){
     return borderInterface.dispatchHover(pos);
 }
 
+
+
+void UExitButtonWidget::removeHover(){
+    borderInterface.removeHover();
+}
+
 void UExitButtonWidget::Init(){
     SetupFromDefaultColors(borderInterface, GetBorderWidget());
 }

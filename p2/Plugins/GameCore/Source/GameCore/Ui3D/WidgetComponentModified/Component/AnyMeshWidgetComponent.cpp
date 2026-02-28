@@ -2,7 +2,7 @@
 
 #include "DynamicMeshWidgetSceneProxy.h"
 #include "GameCore/MeshGenBase/MeshData/intersectCache/IntersectHitResult.h"
-
+#include "GameCore/Ui3D/InteractionComponentCache/InteractionComponentHoveredCache.h"
 
 /*
 UAnyMeshWidgetComponent::UAnyMeshWidgetComponent(const FObjectInitializer &ObjectInitializer)
@@ -41,8 +41,18 @@ void UAnyMeshWidgetComponent::TickComponent(
 	if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
 		casted->Tick(DeltaTime);
 	}
-
+	UpdateHoverWidgetLeft();
 }
+
+void UAnyMeshWidgetComponent::UpdateHoverWidgetLeft(){
+	if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
+		if(!UInteractionComponentHoveredCache::IsHoveredWidgetComponent(this)){
+			casted->removeHover();
+		}
+	}
+}
+
+
 
 void UAnyMeshWidgetComponent::FlagMeshDataDirty(){
 	MeshDataWasModified = true;
@@ -122,6 +132,9 @@ bool UAnyMeshWidgetComponent::RayIntersectHover(
 		if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
 			casted->dispatchHover(result.constScreenPositionReference());	
 		}
+		//update hover widget cache, set this widget as hovered.
+		UInteractionComponentHoveredCache::UpdateHovered(this);
+
 		return true;
 	}
 	return false;

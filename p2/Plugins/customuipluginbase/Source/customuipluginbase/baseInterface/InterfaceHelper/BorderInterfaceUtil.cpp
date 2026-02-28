@@ -56,6 +56,10 @@ void BorderInterfaceUtil::SetHovered(bool flag){
     }
 }
 
+void BorderInterfaceUtil::removeHover(){
+    SetHovered(false);
+}
+
 void BorderInterfaceUtil::SetDefault(){
     if(borderWidget){
         borderWidget->SetBrushColor(colorBase);

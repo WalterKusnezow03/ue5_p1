@@ -66,7 +66,8 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+
 	// 3D Widget Component that displays UI in the world space
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	UAnyMeshWidgetComponent* Widget;

@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "CoreMath/util/SphereCaster.h"
 
 std::vector<AEntityScript *> AlertManager::subscribedToAlert;
 
@@ -88,7 +89,7 @@ void AlertManager::damageAndAlertInArea(
 
     //OLD SPHERE CAST -- needed for terrain --
     TArray<IDamageinterface*> inRangeInterfaces;
-    getDamagableActorsInAreaBySubscriptionAndSphereCast(
+    getDamagableActorsInAreaBySphereCast(
         world, 
         location, 
         SphereRadius,
@@ -145,12 +146,31 @@ void AlertManager::damageAndAlertInArea(
     }*/
 }
 
-void AlertManager::getDamagableActorsInAreaBySubscriptionAndSphereCast(
+void AlertManager::getDamagableActorsInAreaBySphereCast(
     UWorld *world, 
     const FVector &location, 
     float SphereRadius,
     TArray<IDamageinterface*> &outArray
 ){
+
+    SphereCaster sphereCaster;
+    TArray<IDamageinterface *> interfaces = 
+        sphereCaster.getTActorsInRadius<IDamageinterface>(world, location, SphereRadius);
+    for(int i = 0; i < interfaces.Num(); i++){
+        if(IDamageinterface *damagable = interfaces[i]){
+            
+            //DebugHelper::logMessage("AlertManager::damagebleInRange Test", damagable->GetName());
+            //check needed here or immidiate add?
+            if(damagable->IsInRange(location, SphereRadius)){
+                outArray.Add(damagable);
+
+                //DebugHelper::logMessage("AlertManager::damagebleInRange ", damagable->GetName());
+            }
+        }
+    }
+
+    /*
+    //deprecated!
     TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
     for(int i = 0; i < actors.Num(); i++){
         if(AActor *current = actors[i]){
@@ -165,7 +185,7 @@ void AlertManager::getDamagableActorsInAreaBySubscriptionAndSphereCast(
                 }
             }
         }
-    }
+    }*/
 
 }
 

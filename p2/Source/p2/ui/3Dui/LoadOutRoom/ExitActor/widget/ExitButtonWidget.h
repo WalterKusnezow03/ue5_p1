@@ -22,6 +22,9 @@ public:
     virtual bool dispatchClick(const FVector2D &pos) override;
     virtual bool dispatchHover(const FVector2D &pos) override;
 
+    //remove hover on widget left
+    virtual void removeHover() override;
+
     virtual void Tick(float DeltaTime) override;
     virtual void SetVisible(bool flag) override {};
     virtual bool markedVisible() { return true; }

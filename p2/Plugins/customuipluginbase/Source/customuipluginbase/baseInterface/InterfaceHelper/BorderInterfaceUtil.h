@@ -29,7 +29,8 @@ public:
     //override
     virtual bool dispatchClick(const FVector2D &position);
     bool dispatchHover(const FVector2D &position);
-   
+    void removeHover();
+
     bool IsChecked(){
         return bIsChecked;
     }

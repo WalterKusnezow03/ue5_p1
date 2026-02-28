@@ -62,6 +62,9 @@ public:
         return this;
     }
 
+    //remove hover on widget left
+    virtual void removeHover() override;
+
 protected:
     bool bIsChecked = false;
     bool bMarkedVisible = true;

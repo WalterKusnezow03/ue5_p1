@@ -46,6 +46,9 @@ public:
     virtual bool markedVisible() override;
     virtual UWidget *baseLayoutPointer() override { return this; };
 
+    //remove hover on widget left
+    virtual void removeHover() override;
+
     void MarkVisibleBySearch(FString nameIn);
     bool IsMarkedHiddenBySearch();
 

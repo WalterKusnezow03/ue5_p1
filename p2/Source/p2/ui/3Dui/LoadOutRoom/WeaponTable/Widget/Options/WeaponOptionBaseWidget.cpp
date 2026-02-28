@@ -81,3 +81,8 @@ bool UWeaponOptionBaseWidget::dispatchClick(const FVector2D &position){
 bool UWeaponOptionBaseWidget::dispatchHover(const FVector2D &position){
     return borderInterface.dispatchHover(position);
 }
+
+//remove hover on widget left
+void UWeaponOptionBaseWidget::removeHover(){
+    borderInterface.removeHover();
+}

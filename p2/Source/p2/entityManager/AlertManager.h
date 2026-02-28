@@ -66,7 +66,7 @@ private:
 
 	//alert by subscription
 	static void AlertSubscribedActorsInRange(const FVector &location, float SphereRadius);
-	static void getDamagableActorsInAreaBySubscriptionAndSphereCast(
+	static void getDamagableActorsInAreaBySphereCast(
 		UWorld *world, 
 		const FVector &location, 
 		float SphereRadius,

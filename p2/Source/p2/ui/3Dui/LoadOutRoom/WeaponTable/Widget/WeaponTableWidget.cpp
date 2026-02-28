@@ -27,6 +27,12 @@ bool UWeaponTableWidget::dispatchHover(const FVector2D &position){
     return DispatchHoverToAllItemsForDispatch(position);
 }
 
+
+//remove hover on widget left
+void UWeaponTableWidget::removeHover(){
+    RemoveHoverFromAllItemsForDispatch();
+}
+
 bool UWeaponTableWidget::dispatchClick(const FVector2D &screenPos){
     LogScreenCoordinate(screenPos);
 

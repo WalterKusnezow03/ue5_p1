@@ -30,6 +30,7 @@ public class CoreMath : ModuleRules
 
 				//support animation asset loading
 				"AssetPlugin",
+				"Engine",
 			}
 			);
 			

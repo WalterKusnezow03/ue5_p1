@@ -76,6 +76,16 @@ bool UWorldCreatorWidget::dispatchHover(const FVector2D &position){
     return result;
 }
 
+//remove hover on widget left
+void UWorldCreatorWidget::removeHover(){
+    playButtonUtil.removeHover();
+    if(UTextBoxWidget *widget = GetTextBoxWidget()){
+        return widget->removeHover();
+    }
+}
+
+
+
 bool UWorldCreatorWidget::TextBoxIsActive(){
     if(UTextBoxWidget *widget = GetTextBoxWidget()){
         return widget->IsMarkedSelected();

@@ -356,40 +356,15 @@ void KeyFrameAnimation::skipAnimationOnceWorld(MMatrix &actor, FVector start, FV
 
 
 
-
+#include "CoreMath/util/Raycaster.h"
 /// @brief performs a raycast from a start, into a direction, with a max length in this method
 /// @param Start start position
 /// @param dir direction of interest
 /// @param outputHit output hit if any hit happened
 /// @return bool anything was hit
 bool KeyFrameAnimation::performRaycast(UWorld *world, FVector &Start, FVector &dir, FVector &outputHit) {
-
-    if(world == nullptr){
-        return false;
-    }
-
-	FVector End = Start + dir * raycastScaleVector; // gx = A + r (B - A)
-
-	// Perform the raycast
-	FHitResult HitResult;
-
-	FCollisionQueryParams ignoreParams;
-	
-	//params to avoid hitting own bones, weapons, etc
-	/*if(EntityManager *e = AworldLevel::entityManager()){
-		//example for getting all
-		ignoreParams = e->getIgnoredRaycastParams();
-	}*/
-	bool bHit = world->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, ignoreParams);
-	
-
-	//anything was hit
-	if (bHit){
-		outputHit = HitResult.ImpactPoint; //write impactpoint to output
-		return true;
-	}
-
-	return false;
+    Raycaster raycaster;
+    return raycaster.performRaycast(world, Start, dir, raycastScaleVector, outputHit);
 }
 
 
