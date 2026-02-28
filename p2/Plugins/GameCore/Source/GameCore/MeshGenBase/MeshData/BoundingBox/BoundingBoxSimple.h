@@ -11,8 +11,8 @@ class GAMECORE_API BoundingBoxSimple{
 
 public:
     BoundingBoxSimple();
-    BoundingBoxSimple(TArray<FVector> &vertecies);
-    BoundingBoxSimple(TArray<FVector3f> &vertecies);
+    BoundingBoxSimple(const TArray<FVector> &vertecies);
+    BoundingBoxSimple(const TArray<FVector3f> &vertecies);
     ~BoundingBoxSimple();
 
     BoundingBoxSimple &operator=(const BoundingBoxSimple &other);
@@ -22,12 +22,12 @@ public:
     FVector topRightFarVertex();
 
 
-    void updateBoundsIfNeeded(TArray<FVector> &vertecies);
-    void updateBoundsIfNeeded(FVector &other);
+    void updateBoundsIfNeeded(const TArray<FVector> &vertecies);
+    void updateBoundsIfNeeded(const FVector &other);
 
-    void RebuildBounds(TArray<FVector> &vertecies);
+    void RebuildBounds(const TArray<FVector> &vertecies);
 
-    bool isInsideBoundingbox(FVector &other);
+    bool isInsideBoundingbox(const FVector &other) const;
 
     FString ToString();
 

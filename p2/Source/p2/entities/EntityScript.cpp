@@ -183,8 +183,11 @@ void AEntityScript::takedamage(FCustomHitResult &result){
 	//updateToReducedSpottingTimeIfNotSpottedYet();
 }
 
-
-
+bool AEntityScript::IsInRange(const FVector &position, float maxDistance){
+	float distSquared = maxDistance * maxDistance;
+	FVector skeletonLocation = humanoidPluginController.GetLocation();
+	return FVector::DistSquared(position, skeletonLocation) <= distSquared;
+}
 
 /// @brief checks if an actor is within 180 degree range to own forward vector
 /// @param target 

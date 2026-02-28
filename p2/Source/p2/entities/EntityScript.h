@@ -37,6 +37,7 @@ public:
 	AEntityScript();
 	//inherited from interface
 	virtual void takedamage(FCustomHitResult &result) override;
+	virtual bool IsInRange(const FVector &position, float maxDistance) override;
 
 	bool isActivatedForUpdate(); //VERY IMPORTANT DO NOT REMOVE
 

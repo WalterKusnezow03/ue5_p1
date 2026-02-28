@@ -44,6 +44,10 @@ public:
     float Distance();
     bool HasHitPoint();
 
+    //debug
+    void LogMessage(FString messagePrefix);
+    void SetMessage(FString s);
+
 private:
     int damage = 0;
     
@@ -57,4 +61,6 @@ private:
 
     void UpdateDirectionAndDistance(FVector &startRaycastLocation);
 
+    void SetDefaultMessageIfNeeded();
+    FString message;
 };

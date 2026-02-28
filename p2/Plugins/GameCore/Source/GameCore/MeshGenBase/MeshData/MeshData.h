@@ -352,10 +352,12 @@ public:
 		return bounds.extent();
 	}
 
+	bool isInsideBoundingbox(const FVector &other);
+
 protected:	
 	void updateBoundsIfNeeded(FVector &other);
 
-	bool isInsideBoundingbox(FVector &other);
+	
 
 	float AverageDist2TriangleShapedBuffer(TArray<FVector> &buffer);
 

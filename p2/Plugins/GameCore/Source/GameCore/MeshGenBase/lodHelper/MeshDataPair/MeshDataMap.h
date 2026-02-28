@@ -55,10 +55,16 @@ public:
 
     virtual void ClearAllMeshData();
 
-protected: 
+    
+    bool IsInBound(const FVector &localPosition);
+    bool IsInBound(const FVector &localPosition, bool raycastEnabledMesh);
+
+
+protected:
+    bool IsInBound(const FVector &localPosition, std::map<materialEnum, MeshData> &mapToCheck);
 
     std::map<materialEnum, MeshData> raycastMeshData;
     std::map<materialEnum, MeshData> noRaycastMeshData; //no physics mesh at all
 
-    
+   
 };

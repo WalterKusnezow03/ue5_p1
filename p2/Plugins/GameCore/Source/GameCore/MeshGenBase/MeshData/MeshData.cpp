@@ -1958,7 +1958,8 @@ void MeshData::RebuildBounds(){
 
 
 ///@brief checks if a vertex is inside the bounding box, NOT allowing edge cases!
-bool MeshData::isInsideBoundingbox(FVector &other){
+bool MeshData::isInsideBoundingbox(const FVector &other){
+    //updateBoundsIfNeeded(); //needed here?
     return bounds.isInsideBoundingbox(other);
 }
 

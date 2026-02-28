@@ -35,6 +35,12 @@ void AdebugEntity::takedamage(FCustomHitResult &result){
 }
 
 
+bool AdebugEntity::IsInRange(const FVector &position, float maxDistance){
+	float distSquared = maxDistance * maxDistance;
+	return FVector::DistSquared(position, GetActorLocation()) <= distSquared;
+}
+
+
 /// @brief sets the team, is empyt here, will not be set
 /// @param team 
 void AdebugEntity::setTeam(teamEnum team){

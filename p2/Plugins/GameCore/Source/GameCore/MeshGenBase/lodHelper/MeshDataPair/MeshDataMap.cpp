@@ -151,3 +151,34 @@ void MeshDataMap::ClearAllMeshData(){
 
     DebugHelper::logMessage("MeshDataMap::ClearAllMeshData");
 }
+
+
+
+
+
+// bounds check trough all meshdata
+bool MeshDataMap::IsInBound(const FVector &localPosition){
+    return IsInBound(localPosition, true) || IsInBound(localPosition, false);
+}
+
+bool MeshDataMap::IsInBound(const FVector &localPosition, bool raycastEnabledMesh){
+    if(raycastEnabledMesh){
+        return IsInBound(localPosition, raycastMeshData);
+    }else{
+        return IsInBound(localPosition, noRaycastMeshData);
+    }
+}
+
+bool MeshDataMap::IsInBound(
+    const FVector &localPosition, 
+    std::map<materialEnum, MeshData> &mapToCheck
+){
+    for(auto &pair : mapToCheck){
+        MeshData &data = pair.second;
+        if(data.isInsideBoundingbox(localPosition)){
+            return true;
+        }
+    }
+
+    return false;
+}

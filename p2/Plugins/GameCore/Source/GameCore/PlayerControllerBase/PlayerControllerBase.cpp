@@ -133,6 +133,17 @@ void APlayerControllerBase::takedamage(FCustomHitResult &result){
 }
 
 
+bool APlayerControllerBase::IsInRange(const FVector &position, float maxDistance){
+	float distSquared = maxDistance * maxDistance;
+
+    //testing needed!
+    FVector currentLocation = CameraLocation(); //GetActorLocation()
+    return FVector::DistSquared(position, currentLocation) <= distSquared;
+}
+
+
+
+
 //Movement
 /**
  * moves the player forward

@@ -32,6 +32,8 @@ public:
 	virtual void setTeam(teamEnum team) override;
 	virtual teamEnum getTeam() override;
 
+	virtual bool IsInRange(const FVector &position, float maxDistance) override;
+
 private:
 	bool clicked;
 	void debugFunction();

@@ -52,5 +52,5 @@ public:
 
     teamEnum team = teamEnum::neutralTeam;
 
-
+    virtual bool IsInRange(const FVector &position, float maxDistance) override;
 };

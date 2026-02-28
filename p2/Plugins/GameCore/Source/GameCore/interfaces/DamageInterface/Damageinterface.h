@@ -28,6 +28,9 @@ public:
 	//methods
 	virtual void takedamage(FCustomHitResult &result);
 
+	//actor location might not be enough for explosive / alert management
+	virtual bool IsInRange(const FVector &position, float maxDistance) = 0;
+
 	virtual void setTeam(teamEnum t) = 0;
 	virtual teamEnum getTeam() = 0;
 };

@@ -133,7 +133,7 @@ void AcustomMeshActor::TakeDamageHitPoint(FCustomHitResult &result){
 
 
 void AcustomMeshActor::createDebreeOnDamage(FVector worldhit){
-    FVector localHit = worldToLocalHit(worldhit);
+    FVector localHit = worldToLocalPosition(worldhit);
 
     //iterate all layers, if hit: create debree    
     std::vector<materialEnum> materials = MaterialEnumHelper::materialVector();
@@ -158,13 +158,6 @@ void AcustomMeshActor::createDebreeOnDamage(FVector worldhit){
 }
 
 
-void AcustomMeshActor::setHealth(int d){
-    if(d <= 0){
-        health = 1;
-        return;
-    }
-    health = d;
-}
 
 // --- mesh actor methods ---
 
@@ -420,7 +413,7 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector hitpoint){
     
     DebugHelper::showScreenMessage("AcustomMeshActor ground hit test!", FColor::Orange);
 
-    FVector meshHit = worldToLocalHit(hitpoint);
+    FVector meshHit = worldToLocalPosition(hitpoint);
     DebugHelper::logMessage("AcustomMeshActor mesh hit at", meshHit);
 
     std::vector<materialEnum> hitMaterials = {
@@ -473,7 +466,7 @@ void AcustomMeshActor::groundReactionToHitWorld(FVector hitpoint){
 void AcustomMeshActor::glassreactionToHitWorld(FVector hitpoint){
     if(hasGlassMesh()){
         //world hit to local
-        FVector localHit = worldToLocalHit(hitpoint);
+        FVector localHit = worldToLocalPosition(hitpoint);
         glassreactionToHitLocal(localHit);
     }
 }

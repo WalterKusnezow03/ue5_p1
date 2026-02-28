@@ -28,6 +28,8 @@ public:
 	virtual void setTeam(teamEnum teamIn) override;
 	virtual teamEnum getTeam() override;
 
+	virtual bool IsInRange(const FVector &position, float maxDistance) override;
+
 	void showCursor(bool show);
 	void setPaused(bool in);
 	void EjectMouse();

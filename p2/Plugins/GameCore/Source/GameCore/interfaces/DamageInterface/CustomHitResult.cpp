@@ -10,6 +10,7 @@ void FCustomHitResult::SetupHitResult(
 ){
     damage = std::abs(inDamage);
     surpressed = inSurpressed;
+    SetDefaultMessageIfNeeded();
 }
 
 void FCustomHitResult::SetupHitResult(
@@ -76,4 +77,23 @@ float FCustomHitResult::Distance(){
 
 bool FCustomHitResult::HasHitPoint(){
     return hitPointSetup;
+}
+
+
+
+
+void FCustomHitResult::SetDefaultMessageIfNeeded(){
+    if(message.Len() == 0){
+        SetMessage("Default");
+    }
+}
+
+
+void FCustomHitResult::LogMessage(FString messagePrefix){
+    FString finalMessage = messagePrefix + message;
+    DebugHelper::logMessage(finalMessage);
+}
+
+void FCustomHitResult::SetMessage(FString s){
+    message = TEXT(" FCustomHitResult - ") + s;
 }

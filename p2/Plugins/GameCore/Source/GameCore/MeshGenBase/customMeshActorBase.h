@@ -15,13 +15,14 @@
 
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "GameCore/team/teamEnum.h"
+#include "GameCore/util/ActorBase/ActorBase.h"
 
 #include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
 
 #include "customMeshActorBase.generated.h"
 
 UCLASS()
-class GAMECORE_API AcustomMeshActorBase : public AActor, public IDamageinterface
+class GAMECORE_API AcustomMeshActorBase : public AActorBase, public IDamageinterface
 {
 	GENERATED_BODY()
 	
@@ -46,6 +47,7 @@ public:
 	//derived methods IDamageinterface
 	//methods
 	virtual void takedamage(FCustomHitResult &result) override;
+	virtual bool IsInRange(const FVector &position, float maxDistance) override;
 
 	virtual void setTeam(teamEnum t) override;
 	virtual teamEnum getTeam() override;
@@ -143,7 +145,8 @@ public:
 
 
 	//HIT REACT MATERIALS
-	FVector worldToLocalHit(FVector &worldhit);
+	
+
 	bool doesHitWorld(FVector &hitWorld, materialEnum mat);
 	bool doesHitLocal(FVector &hitLocal, materialEnum mat);
 
@@ -180,7 +183,8 @@ protected:
 
 	/// @brief saves mesh data per lod level per material and raycast / no raycast mesh
 	std::map<ELod, ProceduralMeshComponentPair> meshLodContainers;
-
+	//returns nullptr if not setup!
+	ProceduralMeshComponentPair *FindProceduralMeshComponentPairByLod(ELod lod);
 
 
 

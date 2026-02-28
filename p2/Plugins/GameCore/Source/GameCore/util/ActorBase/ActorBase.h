@@ -11,6 +11,8 @@ class GAMECORE_API AActorBase : public AActor {
 
 public:
 
+    FVector worldToLocalPosition(const FVector &worldhit);
+
     void FindAllChildsByName(FString namepart, TArray<USceneComponent *> &container);
     void FindAllChildsByName(
         USceneComponent *comp,

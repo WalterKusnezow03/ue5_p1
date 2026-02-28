@@ -120,3 +120,12 @@ AActor *AActorBase::FindChildActorByName(FString namePart){
     }
     return nullptr;
 }
+
+
+
+
+FVector AActorBase::worldToLocalPosition(const FVector &worldhit){
+    //world hit to local
+    FTransform worldTransform = GetActorTransform();
+    return worldTransform.InverseTransformPosition(worldhit);
+}

@@ -144,7 +144,7 @@ protected:
 	bool destructableBool = false;
 	bool splitOnDeath = false;
 	virtual bool isDestructable();
-	void setHealth(int d);
+	
 
 
 

@@ -5,7 +5,7 @@ BoundingBoxSimple::BoundingBoxSimple(){
     Clear();
 }
 
-BoundingBoxSimple::BoundingBoxSimple(TArray<FVector> &vertecies){
+BoundingBoxSimple::BoundingBoxSimple(const TArray<FVector> &vertecies){
     Clear();
     updateBoundsIfNeeded(vertecies);
 }
@@ -35,19 +35,19 @@ void BoundingBoxSimple::Clear(){
     topRightFar = FVector(0, 0, 0);
 }
 
-void BoundingBoxSimple::RebuildBounds(TArray<FVector> &vertecies){
+void BoundingBoxSimple::RebuildBounds(const TArray<FVector> &vertecies){
     bottomLeftNear = FVector(0, 0, 0);
     topRightFar = FVector(0, 0, 0);
     updateBoundsIfNeeded(vertecies);
 }
 
-void BoundingBoxSimple::updateBoundsIfNeeded(TArray<FVector> &vertecies){
+void BoundingBoxSimple::updateBoundsIfNeeded(const TArray<FVector> &vertecies){
     for (int i = 0; i < vertecies.Num(); i++){
         updateBoundsIfNeeded(vertecies[i]);
     }
 }
 
-void BoundingBoxSimple::updateBoundsIfNeeded(FVector &other){
+void BoundingBoxSimple::updateBoundsIfNeeded(const FVector &other){
     bottomLeftNear.X = std::min(bottomLeftNear.X, other.X);
     bottomLeftNear.Y = std::min(bottomLeftNear.Y, other.Y);
     bottomLeftNear.Z = std::min(bottomLeftNear.Z, other.Z);
@@ -57,7 +57,7 @@ void BoundingBoxSimple::updateBoundsIfNeeded(FVector &other){
     topRightFar.Z = std::max(topRightFar.Z, other.Z);
 }
 
-bool BoundingBoxSimple::isInsideBoundingbox(FVector &other){
+bool BoundingBoxSimple::isInsideBoundingbox(const FVector &other) const {
     return other.X > bottomLeftNear.X &&
            other.Y > bottomLeftNear.Y &&
            other.Z > bottomLeftNear.Z &&

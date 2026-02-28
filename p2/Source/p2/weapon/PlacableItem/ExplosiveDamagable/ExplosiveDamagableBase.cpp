@@ -63,6 +63,13 @@ void AExplosiveDamagableBase::takedamage(FCustomHitResult &result){
 }
 
 
+bool AExplosiveDamagableBase::IsInRange(const FVector &position, float maxDistance){
+	float distSquared = maxDistance * maxDistance;
+	return FVector::DistSquared(position, GetActorLocation()) <= distSquared;
+}
+
+
+
 void AExplosiveDamagableBase::setTeam(teamEnum t){
     team = t;
 }

@@ -83,42 +83,49 @@ void AlertManager::damageAndAlertInArea(
     float damageRadius
 ){
 
-    std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
-    for (int i = 0; i < indexArray.size(); i++){
-        int currentIndex = indexArray[i];
-        AEntityScript *entity = subscribedToAlert[currentIndex];
-        if(entity){
-            if(entity->isWithinMaxRange(location)){
-                //look at immidiatly
-                entity->alarm();
-            }else{
-                entity->alert(location);
+    /// ------ testing needed ! ------
+    AlertSubscribedActorsInRange(location, SphereRadius);
+
+    //OLD SPHERE CAST -- needed for terrain --
+    TArray<IDamageinterface*> inRangeInterfaces;
+    getDamagableActorsInAreaBySubscriptionAndSphereCast(
+        world, 
+        location, 
+        SphereRadius,
+        inRangeInterfaces
+    );
+
+    //DebugHelper::logMessage("AlertManager::damageAndAlertInArea found Interfaces ", inRangeInterfaces.Num());
+
+    for (int i = 0; i < inRangeInterfaces.Num(); i++){
+        if(IDamageinterface *current = inRangeInterfaces[i]){
+            //check needed here?
+            if(current->IsInRange(location, damageRadius)){
+                FCustomHitResult result;
+                result.SetupHitResult(location, damage);
+                result.SetMessage("Explosive!");
+                current->takedamage(result);
             }
         }
     }
 
-    //OLD SPHERE CAST
-    
+    /*
     TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
     // Process the results
     for (AActor* Actor : actors){
         // Notify or process the actor in some way (based on distance)
         if (Actor){
-            /*
-            AEntityScript *entity = Cast<AEntityScript>(Actor);
-            if(entity){
-
-                if(entity->isWithinMaxRange(location)){
-                    //look at immidiatly
-                    entity->alarm();
-                }else{
-                    entity->alert();
-                }   
-            }*/
-
+            
             IDamageinterface *damagable = Cast<IDamageinterface>(Actor);
             if(damagable != nullptr){
-                
+
+                if(damagable->IsInRange(location, damageRadius)){
+
+                }
+
+
+
+                //deprecated!
                 float distance = FVector::Dist(Actor->GetActorLocation(), location);
                 if(distance <= damageRadius){
                     
@@ -135,8 +142,56 @@ void AlertManager::damageAndAlertInArea(
                 }
             }
         }
+    }*/
+}
+
+void AlertManager::getDamagableActorsInAreaBySubscriptionAndSphereCast(
+    UWorld *world, 
+    const FVector &location, 
+    float SphereRadius,
+    TArray<IDamageinterface*> &outArray
+){
+    TArray<AActor*> actors = AlertManager::getAActorsInArea(world, location, SphereRadius);
+    for(int i = 0; i < actors.Num(); i++){
+        if(AActor *current = actors[i]){
+            if(IDamageinterface *damagable = Cast<IDamageinterface>(current)){
+                
+                DebugHelper::logMessage("AlertManager::damagebleInRange Test", current->GetName());
+                //check needed here or immidiate add?
+                if(damagable->IsInRange(location, SphereRadius)){
+                    outArray.Add(damagable);
+
+                    DebugHelper::logMessage("AlertManager::damagebleInRange ", current->GetName());
+                }
+            }
+        }
+    }
+
+}
+
+void AlertManager::AlertSubscribedActorsInRange(
+    const FVector &location, float SphereRadius
+){
+    std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
+    for (int i = 0; i < indexArray.size(); i++){
+        int currentIndex = indexArray[i];
+        AEntityScript *entity = subscribedToAlert[currentIndex];
+        if(entity){
+            if(entity->isWithinMaxRange(location)){
+                //look at immidiatly
+                entity->alarm();
+            }else{
+                entity->alert(location);
+            }
+        }
     }
 }
+
+    
+
+
+
+
 
 
 ///@brief gets all entity aactors in a given area
@@ -156,7 +211,8 @@ TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location,
         // Collision query parameters
         TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes; // You can specify what kind of objects to detect
         TArray<AActor*> IgnoreActors; // Actors to ignore in the overlap check
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)); // Example: looking for Pawns
+        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
 
         // Perform the overlap query
         UKismetSystemLibrary::SphereOverlapActors(
@@ -183,7 +239,7 @@ TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location,
 /**
  * subscription
  */
-std::vector<int> AlertManager::subscribedActorsInAreaByIndex(FVector &location, float SphereRadius){
+std::vector<int> AlertManager::subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius){
     std::vector<int> entitiesInAreaByIndex;
     for (int i = 0; i < subscribedToAlert.size(); i++)
     {

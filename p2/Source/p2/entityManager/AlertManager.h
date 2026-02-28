@@ -59,7 +59,17 @@ private:
 
 
 	//subrciption
-	static std::vector<int> subscribedActorsInAreaByIndex(FVector &location, float SphereRadius);
+	static std::vector<int> subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius);
 	static int findIndex(AEntityScript *pointer);
 	static std::vector<AEntityScript *> subscribedToAlert;
+
+
+	//alert by subscription
+	static void AlertSubscribedActorsInRange(const FVector &location, float SphereRadius);
+	static void getDamagableActorsInAreaBySubscriptionAndSphereCast(
+		UWorld *world, 
+		const FVector &location, 
+		float SphereRadius,
+		TArray<IDamageinterface*> &outArray
+	);
 };

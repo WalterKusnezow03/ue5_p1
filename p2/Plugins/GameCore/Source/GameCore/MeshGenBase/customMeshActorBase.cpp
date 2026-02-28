@@ -288,6 +288,23 @@ void AcustomMeshActorBase::filterTouplesForVerticalVectors(
  * 
  */
 
+
+bool AcustomMeshActorBase::IsInRange(const FVector &position, float maxDistance){
+    float distSquared = maxDistance * maxDistance;
+    FVector location = GetActorLocation();
+    if(FVector::DistSquared(location, position) <= distSquared){
+        return true;
+    }
+
+    //check meshdata for bound
+    //check near lod only
+    if(ProceduralMeshComponentPair *data = FindProceduralMeshComponentPairByLod(ELod::lodNear)){
+        FVector localPos = worldToLocalPosition(position);
+        return data->IsInBound(localPos);
+    }
+    return false;
+}
+
 /// @brief will allow custom mesh actors such as destructables and terrain react to damage
 void AcustomMeshActorBase::takedamage(FCustomHitResult &result){
     //damage owner as this could be a kimb of an actor
@@ -295,6 +312,8 @@ void AcustomMeshActorBase::takedamage(FCustomHitResult &result){
         DebugHelper::showScreenMessage("AcustomMeshActorBase Damage Owner!");
         damagedOwner->takedamage(result);
     }
+
+    result.LogMessage("AcustomMeshActorBase::ReceiveDamage");
 }
 
 
@@ -316,6 +335,14 @@ void AcustomMeshActorBase::setDamagedOwner(IDamageinterface *damagedOwnerIn){
  * 
  * 
  */
+
+ProceduralMeshComponentPair *AcustomMeshActorBase::FindProceduralMeshComponentPairByLod(ELod lod){
+    if(meshLodContainers.find(lod) != meshLodContainers.end()){
+        return &meshLodContainers[lod];
+    }
+    return nullptr;
+}
+
 
 /// @brief the mesh data reference will by near lod if not specified
 /// @param type 
@@ -847,15 +874,9 @@ void AcustomMeshActorBase::refreshMesh(
  * 
  */
 
-FVector AcustomMeshActorBase::worldToLocalHit(FVector &worldhit){
-    //world hit to local
-    FTransform worldTransform = GetActorTransform();
-    return worldTransform.InverseTransformPosition(worldhit);
-}
-
 
 bool AcustomMeshActorBase::doesHitWorld(FVector &hitWorld, materialEnum mat){
-    FVector hitLocal = worldToLocalHit(hitWorld);
+    FVector hitLocal = worldToLocalPosition(hitWorld);
     return doesHitLocal(hitLocal, mat);
 }
 
