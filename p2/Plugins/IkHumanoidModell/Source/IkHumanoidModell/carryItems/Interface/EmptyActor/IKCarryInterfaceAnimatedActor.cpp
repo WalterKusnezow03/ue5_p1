@@ -225,9 +225,8 @@ void AIKCarryInterfaceAnimatedActor::FireAnimation(EArmAnimationEnum id){
 
 void AIKCarryInterfaceAnimatedActor::StopAnimation(){
     //handle is unclear here: revert to some default state (?)
+    animationActiveFlag = false;
 }
-
-
 
 /// ----- PICKUP FLAG ------
 

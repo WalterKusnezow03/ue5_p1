@@ -11,7 +11,7 @@ struct PLUECKERCORE_API FJointKinematicPropagatePackage {
     FVector v; // linear velocity
     MMatrix transform;
 
-    void Setup(float deltatimeIn, FVector &wIn, FVector &vIn, MMatrix &transformIn){
+    void Setup(float deltatimeIn, const FVector &wIn, const FVector &vIn, const MMatrix &transformIn){
         deltatime = deltatimeIn;
         w = wIn;
         v = vIn;

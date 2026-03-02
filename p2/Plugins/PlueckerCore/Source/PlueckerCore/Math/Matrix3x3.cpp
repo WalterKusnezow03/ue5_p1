@@ -63,19 +63,19 @@ Matrix3x3& Matrix3x3::operator=(const Matrix3x3 &other){
     return *this;
 }
 
-void Matrix3x3::operator+=(Matrix3x3 &other){
+void Matrix3x3::operator+=(const Matrix3x3 &other){
     for (int i = 0; i < size; i++){
         array[i] += other.array[i];
     }
 }
 
-void Matrix3x3::operator-=(Matrix3x3 &other){
+void Matrix3x3::operator-=(const Matrix3x3 &other){
     for (int i = 0; i < size; i++){
         array[i] -= other.array[i];
     }
 }
 
-Matrix3x3 Matrix3x3::operator-(Matrix3x3 &other){
+Matrix3x3 Matrix3x3::operator-(const Matrix3x3 &other) const {
     Matrix3x3 result;
     for (int i = 0; i < size; i++){
         result.array[i] = array[i] - other.array[i];
@@ -85,7 +85,7 @@ Matrix3x3 Matrix3x3::operator-(Matrix3x3 &other){
 
 /// @brief multiply with another matrix
 /// @param other 
-void Matrix3x3::operator*=(Matrix3x3 &other){
+void Matrix3x3::operator*=(const Matrix3x3 &other){
     Matrix3x3 r = *this * other;
     *this = r;
 }
@@ -100,7 +100,7 @@ void Matrix3x3::operator*=(float scalar){
 /// @brief multiply and return result
 /// @param other other matrix to append like: This * other 
 /// @return returns a new matrix
-Matrix3x3 Matrix3x3::operator*(Matrix3x3 &other){
+Matrix3x3 Matrix3x3::operator*(const Matrix3x3 &other) const {
     
     Matrix3x3 result; // Temporary matrix to store the result
 
@@ -124,7 +124,7 @@ Matrix3x3 Matrix3x3::operator*(Matrix3x3 &other){
 /// @brief multiply with a vector 
 /// @param other 
 /// @return 
-FVector Matrix3x3::operator*(FVector &other){
+FVector Matrix3x3::operator*(const FVector &other) const {
     FVector resultVec;
 
     float row[] = {other.X, other.Y, other.Z};
@@ -161,6 +161,21 @@ float Matrix3x3::radToDegree(float rad){
     return angleInDeg;
 }
 
+
+void Matrix3x3::scaleUniform(float s){
+    scale(s, s, s);
+}
+void Matrix3x3::scale(float x, float y, float z){
+    /*
+    0 1 2
+    3 4 5
+    6 7 8
+    */
+    makeIdentity();
+    array[0] = x;
+    array[4] = y;
+    array[8] = z;
+}
 
 /**
  * 
@@ -642,7 +657,7 @@ void Matrix3x3::setColumn(FVector &column, int i){
 /// an identity matrix is returned if the inverse is not possible to make (det(A) = 0)
 /// the inverse is calculated in O(n^2)
 /// @return inverse matrix, or identity if an issue occured
-Matrix3x3 Matrix3x3::jordanInverse(){
+Matrix3x3 Matrix3x3::jordanInverse() const {
     Matrix3x3 identity; //operationen auf diese identity matrix auch anwenden,
     identity.makeIdentity();
 
@@ -710,7 +725,7 @@ Matrix3x3 Matrix3x3::jordanInverse(){
 /// THIS VALUES ARE TESTED FOR THE BONECONTROLLER AND SEEMS TO WORK OK! DO NOT CHANGE!
 /// @param other value to check
 /// @return value to allow invertion of the matrix with jordan gauß verfahren
-float Matrix3x3::clampDivisionByZero(float other){
+float Matrix3x3::clampDivisionByZero(float other) const {
     float min = 0.000000000001f; // 0.000001f
     if (std::abs(other) <= min)
     {

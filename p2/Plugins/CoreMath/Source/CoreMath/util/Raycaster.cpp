@@ -36,9 +36,41 @@ bool Raycaster::performRaycast(
     );
 }
 
+bool Raycaster::performRaycast(
+    UWorld *world, 
+    const FVector &Start, 
+    const FVector &dir,
+    float rayScale, 
+    FVector &outputHit,
+    FCollisionQueryParams &ignoreParams
+){
+    FHitResult none;
+    return performRaycast(
+        world, 
+        Start, 
+        dir,
+        ignoreParams,
+        rayScale,
+        outputHit,
+        none
+    );
+}
 
-
-
+bool Raycaster::performRaycast(
+    UWorld *world, 
+    const FVector &Start, 
+    const FVector &dir,
+    float rayScale
+){
+    FVector ignoredOutput;
+    return performRaycast(
+        world, 
+        Start, 
+        dir,
+        rayScale, 
+        ignoredOutput
+    );
+}
 
 bool Raycaster::performRaycast(
     UWorld *world, 

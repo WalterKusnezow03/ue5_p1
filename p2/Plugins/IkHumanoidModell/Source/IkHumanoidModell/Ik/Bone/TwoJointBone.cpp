@@ -844,3 +844,11 @@ void TwoJointBone::UpstreamPropagate(
         parentInterface->UpstreamPropagate(package);
     }
 }
+
+
+
+
+
+void TwoJointBone::SetStateCollapse(bool flag){
+    IJointInterface::SetStateCollapse(flag);
+}

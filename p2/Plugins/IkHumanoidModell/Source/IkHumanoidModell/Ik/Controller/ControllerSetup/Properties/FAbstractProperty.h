@@ -1,12 +1,10 @@
 #pragma once
+#include "FAbstractPropertyBase.h"
 
-class IKHUMANOIDMODELL_API FAbstractProperty {
+class IKHUMANOIDMODELL_API FAbstractProperty : public FAbstractPropertyBase {
 
 public:
-    float Validate(float size){
-        return std::max(std::abs(size), 1.0f);
-    }
-
+    
     virtual void SetActor(AActor *ownerIn){
         actorOwner = ownerIn;
     }

@@ -66,6 +66,9 @@ void AEntityScript::init(){
 
 	projectActorToGround();
 	RegisterToMiniMap();
+
+	//disable collapse physics
+	humanoidPluginController.SetStateCollapse(false);
 }
 
 // Called every frame
@@ -636,6 +639,7 @@ void AEntityScript::enableCollider(bool enable){
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
+	humanoidPluginController.SetStateCollapseTrue();
 
 	UnRegisterFromMiniMap();
 	resetpath();

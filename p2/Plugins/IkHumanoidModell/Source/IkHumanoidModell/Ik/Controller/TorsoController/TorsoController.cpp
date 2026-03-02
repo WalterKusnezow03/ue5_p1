@@ -100,8 +100,22 @@ void TorsoController::DownstreamPropagate(
 }
 
 void TorsoController::DownstreamPropagateTo(
-    LayeredTwoJointBone &attachment,
+    LayeredTwoJointBone &layeredBone,
     FJointKinematicPropagatePackage &package
 ){
-    attachment.DownstreamPropagate(package);
+    layeredBone.DownstreamPropagate(package);
 }
+
+
+
+
+
+
+
+void TorsoController::SetStateCollapse(bool flag){
+    IJointInterface::SetStateCollapse(flag);
+    partLeft.SetStateCollapse(flag);
+    partRight.SetStateCollapse(flag);
+}
+
+

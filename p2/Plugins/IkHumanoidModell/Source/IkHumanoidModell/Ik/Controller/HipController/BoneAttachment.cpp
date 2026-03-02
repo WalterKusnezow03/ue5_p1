@@ -749,3 +749,10 @@ void BoneAttachment::DownstreamPropagate(
 
     bone.DownstreamPropagate(package);
 }
+
+
+
+void BoneAttachment::SetStateCollapse(bool flag){
+    IJointInterface::SetStateCollapse(flag);
+    bone.SetStateCollapse(flag);
+}

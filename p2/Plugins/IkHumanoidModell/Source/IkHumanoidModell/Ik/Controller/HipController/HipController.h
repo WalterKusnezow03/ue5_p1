@@ -9,6 +9,7 @@
 #include "CoreMath/animation/FVectorInterpolator.h"
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
+#include "IkHumanoidModell/Ik/Controller/ControllerSetup/LocoMotionProperty/FLocomotionProperty.h"
 
 
 #include "PlueckerCore/Interface/IJointInterface.h"
@@ -77,6 +78,17 @@ public:
 
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
+
+
+//--- enable /disable collapse physics ---
+public:
+    //enable collapse physics
+    virtual void SetStateCollapse(bool flag) override;
+
+protected:
+
+    void TickCollapsePhysics(float deltatime);
+    FLocomotionProperty locomotionProperty;
 
 protected:
     //removed ik carried item

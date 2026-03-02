@@ -185,7 +185,7 @@ void Matrix6x6::forwardDeltaPluecker(
 
 
 
-MMatrix Matrix6x6::operator*(const MMatrix &prev){
+MMatrix Matrix6x6::operator*(const MMatrix &worldPrev){
     MMatrix result;
 
     MMatrix translationLocal(resultTranslation);
@@ -194,9 +194,9 @@ MMatrix Matrix6x6::operator*(const MMatrix &prev){
     rotationLocal.setRotation(values);
 
 
-    //MWorld = T * R * prev
-    MMatrix transform = rotationLocal * translationLocal; //<-- lese richtung --
-    result = prev * transform; //lese richtung
+    //MWorld = prev * R * T <--
+    MMatrix transformLocal = rotationLocal * translationLocal; //<-- lese richtung --
+    result = worldPrev * transformLocal; //lese richtung
     return result;
 }
 

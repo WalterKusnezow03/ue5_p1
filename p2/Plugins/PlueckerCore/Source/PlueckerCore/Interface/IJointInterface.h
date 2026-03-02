@@ -16,12 +16,7 @@ public:
 
     virtual void DownstreamPropagate(FJointKinematicPropagatePackage &package) {};
 
-    virtual void DownstreamPropagate(
-        float deltatime,
-        FVector &w, // angular velocity
-        FVector &v,  // linear velocity
-        MMatrix &world
-    ) {};
+    
 
     //set parent interface for upstream propagation
     void SetParentInterface(IJointInterface *parent){
@@ -36,8 +31,13 @@ public:
         return parentInterface != nullptr;
     }
 
+    virtual void SetStateCollapse(bool flag){
+        collapseEnabledFlag = flag;
+    }
+    
+
 protected:
     IJointInterface *parentInterface = nullptr;
-
-    //external impulse (?)
+    bool collapseEnabledFlag = false;
+    // external impulse (?)
 };

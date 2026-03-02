@@ -75,6 +75,12 @@ public:
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
 
+
+public:
+    //enable collapse physics
+    virtual void SetStateCollapse(bool flag) override;
+
+
 private:
     void SetupHand(
         EArmType typeIn,

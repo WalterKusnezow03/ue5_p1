@@ -55,6 +55,13 @@ public:
     void getActors(TArray<AActor *> &outArray);
 
 
+
+
+
+public:
+    //enable collapse physics
+    virtual void SetStateCollapse(bool flag) override;
+
 private:
     //arms
     LayeredTwoJointBone partLeft;

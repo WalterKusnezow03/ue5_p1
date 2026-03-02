@@ -28,6 +28,22 @@ public:
         FVector &outputHit,
         FHitResult &outHitResult
     );
+    bool performRaycast(
+        UWorld *world,
+        const FVector &Start,
+        const FVector &dir,
+        float rayScale,
+        FVector &outputHit,
+        FCollisionQueryParams &ignoreParams
+    );
+
+    //no outhit
+    bool performRaycast(
+        UWorld *world, 
+        const FVector &Start, 
+        const FVector &dir,
+        float rayScale
+    );
 
 private:
 

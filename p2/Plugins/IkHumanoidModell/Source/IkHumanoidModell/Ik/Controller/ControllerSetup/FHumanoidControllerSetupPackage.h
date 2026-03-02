@@ -24,11 +24,15 @@ public:
     FTwoLimbHipProperty &GetLegLeft();
     FTwoLimbHipProperty &GetLegRight();
 
+    FLocomotionProperty &GetLocomotionProperty();
+
     void MarkHandsWanted();
     bool HandsMarkedWanted();
     FHandProperty &GetHandSize();
 
 private:
+    FLocomotionProperty locoMotionProperty;
+
     FTwoLimbProperty armSize;
     FTwoLimbHipProperty legPropertyLeft;
     FTwoLimbHipProperty legPropertyRight;

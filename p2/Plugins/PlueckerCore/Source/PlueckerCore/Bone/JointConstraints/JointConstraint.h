@@ -30,6 +30,28 @@ public:
         ApplyConstraint(allowPositionOffsetZ, pos.Z);
     }
 
+    void Mark6DOFJoint(){
+        allowRollRotation = true;
+        allowPitchRotation = true;
+        allowYawRotation = true;
+        allowPositionOffsetX = true;
+        allowPositionOffsetY = true;
+        allowPositionOffsetZ = true;
+    }
+
+
+    void UnLockPositionConstraint(){
+        allowPositionOffsetX = true;
+        allowPositionOffsetY = true;
+        allowPositionOffsetZ = true;
+    }
+
+    void LockPositionConstraint(){
+        allowPositionOffsetX = false;
+        allowPositionOffsetY = false;
+        allowPositionOffsetZ = false;
+    }
+
 private:
     void ApplyConstraint(bool flag, double &num)const{
         if(!flag){

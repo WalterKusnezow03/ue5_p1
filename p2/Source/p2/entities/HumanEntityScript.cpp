@@ -210,7 +210,12 @@ void AHumanEntityScript::die(){
     enableActiveStatus(false); //disable?
     UnRegisterFromMiniMap();
 
+    
+    DebugHelper::showScreenMessage("AHumanEntityScript::DIE", FColor::Red);
+    
+
     humanoidPluginController.dropCarriedItem();
+    humanoidPluginController.SetStateCollapseTrue();
 
     //entity manager
     EntityManager *entityManager = AworldLevel::entityManager();

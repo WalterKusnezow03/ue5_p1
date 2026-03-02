@@ -506,3 +506,15 @@ void LayeredTwoJointBone::DownstreamPropagate(
     package.transform = step;
     armBone.DownstreamPropagate(package);
 }
+
+
+
+
+
+void LayeredTwoJointBone::SetStateCollapse(bool flag){
+    IJointInterface::SetStateCollapse(flag);
+    torsoBone.SetStateCollapse(flag);
+    armBone.SetStateCollapse(flag);
+}
+
+

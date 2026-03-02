@@ -96,18 +96,21 @@ void ADebugJointsActor::Tick(float deltaTime){
 
 void ADebugJointsActor::TickDebugRandomTorque(MMatrix &transform, float deltaTime){
     FVector angular(0, 3, 4); //x and y are logically flipped
-
-    //FVector linear(1, 10, 10);
     FVector linear(0, 0, 0);
 
-    rootJoint.Tick(
-        deltaTime,
-        angular, // FVector &w // angular,
-        linear // FVector &v // linear
-    );
+    if(timerFortick.timesUp()){
+        angular = FVector(0, 0, 0);
+    }
 
-    rootJoint.Build(transform);
+    //testing needed!
+    rootJoint.TickAndBuildRecursive(
+        deltaTime, //deltaTime * 0.0001f,
+        angular,
+        linear,
+        transform
+    );
     rootJoint.DrawJointLocation(deltaTime);
+
 }
 
 

@@ -69,7 +69,13 @@ public:
     void setDamagedOwner(IDamageinterface *damagedOwnerIn);
 
 
+public:
+    //enable collapse physics
+    void SetStateCollapse(bool flag);
+    void SetStateCollapseTrue();
+
 protected:
+    bool collapseEnabledPhysics = false;
 
     //collision params tracking
     CollisionTracker collisionParamsProvider;

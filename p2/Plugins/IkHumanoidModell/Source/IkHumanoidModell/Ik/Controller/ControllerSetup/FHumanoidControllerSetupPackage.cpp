@@ -25,6 +25,9 @@ FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AAct
     legLeft.SetHipOffset(20.0f);
     legRight.SetHipOffset(-20.0f);
 
+    FLocomotionProperty &locomotion = newPackage.GetLocomotionProperty();
+    locomotion.SetMaxVelocity(500.0f);
+
     return newPackage;
 }
 
@@ -84,7 +87,9 @@ FTwoLimbProperty &FHumanoidControllerSetupPackage::GetTorsoSize(){
     return torsoSize;
 }
 
-
+FLocomotionProperty &FHumanoidControllerSetupPackage::GetLocomotionProperty(){
+    return locoMotionProperty;
+}
 
 
 void FHumanoidControllerSetupPackage::MarkHandsWanted(){

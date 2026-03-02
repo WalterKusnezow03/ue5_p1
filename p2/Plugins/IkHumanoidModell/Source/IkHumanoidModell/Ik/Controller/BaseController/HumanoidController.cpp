@@ -385,8 +385,20 @@ void HumanoidController::changeCarriedItemSocket(ECarriedItemPosition type){
 }
 
 
+//--- enable /disable collapse physics ---
+void HumanoidController::SetStateCollapse(bool flag){
+    collapseEnabledPhysics = flag;
+    hipController.SetStateCollapse(flag);
+    torsoController.SetStateCollapse(flag);
 
+    if(flag && emptyArmTargetActor){
+        emptyArmTargetActor->StopAnimation();
+    }
+}
 
+void HumanoidController::SetStateCollapseTrue(){
+    SetStateCollapse(true);
+}
 
 
 

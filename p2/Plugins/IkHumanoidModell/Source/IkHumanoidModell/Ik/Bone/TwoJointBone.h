@@ -121,6 +121,17 @@ public:
         return directionOfMiddleToEndEffectorSaved;
     }
 
+
+
+
+public:
+    //enable collapse physics
+    virtual void SetStateCollapse(bool flag) override;
+
+
+
+
+
 private:
     FVector directionOfMiddleToEndEffectorSaved;
     void UpdateDirectionOfMiddleToEndEffector(MMatrix &middle, MMatrix &end);

@@ -19,15 +19,15 @@ public:
 	Matrix3x3(const Matrix3x3 &other);
 	Matrix3x3& operator=(const Matrix3x3 &other);
 
-	void operator+=(Matrix3x3 &other);
-	void operator-=(Matrix3x3 &other);
-	void operator*=(Matrix3x3 & other);
+	void operator+=(const Matrix3x3 &other);
+	void operator-=(const Matrix3x3 &other);
+	void operator*=(const Matrix3x3 & other);
 	void operator*=(float scalar);
 
-	FVector operator*(FVector &other);
+	FVector operator*(const FVector &other) const;
 
-	Matrix3x3 operator*(Matrix3x3 &other);
-	Matrix3x3 operator-(Matrix3x3 &other);
+	Matrix3x3 operator*(const Matrix3x3 &other) const;
+	Matrix3x3 operator-(const Matrix3x3 &other) const;
 
 	//skew operations
 	void makeSkew(FVector &omega);
@@ -40,7 +40,9 @@ public:
 		FVector &outTranslation,
 		float deltatime
 	);
-	
+
+	void scaleUniform(float s);
+	void scale(float x, float y, float z);
 
 	// skew operations end
 
@@ -65,7 +67,7 @@ public:
 
 	void setColumn(FVector &column, int i);
 
-	Matrix3x3 jordanInverse();
+	Matrix3x3 jordanInverse() const;
 
 	FString asString();
 	static void testInverse();
@@ -94,7 +96,7 @@ private:
 
 
 	//for inverse
-	float clampDivisionByZero(float other);
+	float clampDivisionByZero(float other) const;
 	void scaleRow(int row, float scale);
 	void minusForRow(int row, int otherRow, float faktor);
 };

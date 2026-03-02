@@ -116,6 +116,14 @@ public:
     //api for set damaged owner
     void getActors(TArray<AActor *> &outArray);
 
+public:
+    //enable collapse physics
+    virtual void SetStateCollapse(bool flag) override;
+
+
+
+
+
 private:
     void setInnerOffsetTranslation(FVector offset);
 

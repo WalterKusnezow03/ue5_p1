@@ -78,8 +78,8 @@ void HipController::setup(FHumanoidControllerSetupPackage &package){
     forwardDefaultLocalLocomotionFrame = FVector(40.0f, 0, -lengthTotal);
     DebugHelper::logMessage("Default Forward Trajectory unprojected", forwardDefaultLocalLocomotionFrame);
     forwardRotatedLocalLocomotionFrame = forwardDefaultLocalLocomotionFrame;
-    
-    
+
+    locomotionProperty = package.GetLocomotionProperty();
     buildOnStart();
     SetupPlueckerJoint(package.GetWorld());
 }
@@ -120,6 +120,11 @@ bool HipController::groundedByDistance(){
 }
 
 void HipController::Tick(float deltatime){
+    if(collapseEnabledFlag){
+        TickCollapsePhysics(deltatime);
+        return;
+    }
+
     //TickLocomotion(deltatime);
     showExtendedDebugLog(deltatime);
     
@@ -567,7 +572,10 @@ void HipController::RebuildLegsNone(float deltatime){
 //hack
 void HipController::ClampMaxVelocity(){
     FVector2D velocity2D(velocity.X, velocity.Y);
-    float maxHorizontalVelocity = 200.0f;
+    //float maxHorizontalVelocity = 200.0f;
+
+    float maxHorizontalVelocity = locomotionProperty.GetMaxVelocity();
+
     if(velocity2D.Size() > maxHorizontalVelocity){
         velocity2D = velocity2D.GetSafeNormal() * maxHorizontalVelocity;
         velocity.X = velocity2D.X;
@@ -1088,6 +1096,7 @@ bool HipController::DebugHorizontalVelocityOvershoot(){
 void HipController::SetupPlueckerJoint(UWorld *world){
     FVector offsetNone;
     rootJoint = Joint(offsetNone, world);
+    
 
     legLeft.SetParentInterface(this);
     legRight.SetParentInterface(this);
@@ -1127,4 +1136,40 @@ void HipController::DownstreamPropagateTo(
     FJointKinematicPropagatePackage package
 ){
     attachment.DownstreamPropagate(package);
+}
+
+
+
+//--- enable /disable collapse physics ---
+void HipController::SetStateCollapse(bool flag){
+    IJointInterface::SetStateCollapse(flag);
+    legLeft.SetStateCollapse(flag);
+    legRight.SetStateCollapse(flag);
+
+    //update joint location
+    rootJoint.OverrideWorldLocation(translation.getTranslation());
+}
+
+void HipController::TickCollapsePhysics(float deltatime){
+    DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
+
+    //update for safety.
+    FCollisionQueryParams params = ASharedRaycastParamManager::getCollisonParams();
+    rootJoint.UpdateIgnoreParams(params);
+
+    //check ground
+    rootJoint.TickUpdateGroundedFlag();
+    if(!rootJoint.JointIsGrounded()){
+        DebugHelper::showScreenMessage("HipController::TickCollapsePhysics Fall", FColor::Cyan);
+        //fall
+        rootJoint.TickGravity6DOF(deltatime, translation);
+
+        //rebuild?
+        //debug
+        if(true){
+            RebuildLegsEndInPlace(deltatime);
+        }
+
+        DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
+    }
 }
