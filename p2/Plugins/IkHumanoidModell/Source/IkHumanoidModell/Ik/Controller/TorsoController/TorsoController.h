@@ -54,9 +54,7 @@ public:
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
 
-
-
-
+    TArray<Joint *> GetTopJoints();
 
 public:
     //enable collapse physics
@@ -71,16 +69,13 @@ private:
 
     // ---- pluecker joints ----
 public:
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
 
-    virtual void DownstreamPropagate(FJointKinematicPropagatePackage &package) override;
+
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
 protected:
     void SetupJointParents();
-    void DownstreamPropagateTo(
-        LayeredTwoJointBone &attachment,
-        FJointKinematicPropagatePackage &package
-    );
+   
 
 
 

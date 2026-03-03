@@ -17,11 +17,10 @@ public:
    
 
 
-    void ApplyRotationConstraint(FVector &rotation) const{
+    virtual void ApplyRotationConstraint(FVector &rotation) const{
         ApplyConstraint(allowRollRotation, rotation.X);
         ApplyConstraint(allowPitchRotation, rotation.Y);
         ApplyConstraint(allowYawRotation, rotation.Z);
-
     }
 
     void ApplyPositionConstraint(FVector &pos) const { 

@@ -81,7 +81,7 @@ MMatrix& MMatrix::operator=(const MMatrix &other){
 
 
 
-void MMatrix::setTranslation(FVector &other){
+void MMatrix::setTranslation(const FVector &other){
     //copy to correct positions in array 
     //(0,1,2,3)
     //(-,-,-,7)
@@ -100,13 +100,13 @@ void MMatrix::setTranslation(float x, float y, float z){
 
 /// @brief will copy the translation of the given matrix
 /// @param other other matrix to copy the translation from
-void MMatrix::setTranslation(MMatrix &other){
+void MMatrix::setTranslation(const MMatrix &other){
     array[3] = other.array[3];
     array[7] = other.array[7];
     array[11] = other.array[11];
 }
 
-FVector MMatrix::getTranslation(){
+FVector MMatrix::getTranslation() const{
     FVector out;
     out.X = array[3];
     out.Y = array[7];
@@ -209,8 +209,16 @@ FString MMatrix::asString(){
 }
 
 
-
-
+FString MMatrix::asStringExtractedTransform(){
+    FRotator r = extractRotator();
+    FVector t = getTranslation();
+    FString message = FString::Printf(
+        TEXT("R(%.2f %.2f %.2f), t(%.2f %.2f %.2f)"),
+        r.Roll, r.Pitch, r.Yaw,
+        t.X, t.Y, t.Z
+    );
+    return message;
+}
 
 /// @brief util converts degrees to radian
 /// @param deg deg input
@@ -777,7 +785,7 @@ void MMatrix::setRotation(FRotator &other){
 
 /// @brief will copy the rotation of the other matrix
 /// @param other rotation to copy from matrix
-void MMatrix::setRotation(MMatrix &other){
+void MMatrix::setRotation(const MMatrix &other){
     for (int i = 0; i < 3; i++){
         for (int j = 0; j < 3; j++){
             set(i, j, other.get(i, j));
@@ -885,7 +893,7 @@ void MMatrix::swapIndices(int a, int b){
 
 /// @brief extracts the rotator from this matrix
 /// @return FRotator rotation of this matrix
-FRotator MMatrix::extractRotator(){
+FRotator MMatrix::extractRotator() const {
     
     //rotation wird mithilfe von unreal extrahiert 
     //weil ich es selber nicht weiss
@@ -1036,7 +1044,7 @@ void MMatrix::set(int column, int row, float value){
 /// @param columnX column to get X
 /// @param rowY row to get Y
 /// @return 
-float MMatrix::get(int columnX, int rowY){
+float MMatrix::get(int columnX, int rowY) const{
     
     bool lowerRange = columnX >= 0 && rowY >= 0;
     bool higherRange = columnX < 4 && rowY < 4;

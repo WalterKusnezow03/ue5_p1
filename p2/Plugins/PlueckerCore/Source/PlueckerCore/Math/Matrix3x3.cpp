@@ -298,7 +298,7 @@ void Matrix3x3::convertPlueckerToSE3components(
 /**
  * copy
  */
-std::vector<float> Matrix3x3::Copy(){
+std::vector<float> Matrix3x3::Copy() const{
     std::vector<float> output = {
         array[0],
         array[1],
@@ -449,7 +449,7 @@ void Matrix3x3::rotate(Matrix3x3 &other){
 
 /// @brief resets the rotation and rotates in roll pitch yaw order
 /// @param other rotation to rotate in
-void Matrix3x3::setRotation(FRotator &other){
+void Matrix3x3::setRotation(FRotator other){
     if (FMath::IsNaN(other.Roll))
     {
         other.Roll = 0.0f;

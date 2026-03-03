@@ -185,14 +185,20 @@ private:
 
     /// ---- pluecker ----
 public:
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+    
 
-    virtual void DownstreamPropagate(
-        FJointKinematicPropagatePackage &package
-    ) override;
+
+
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
+
+    Joint *GetTopJoint(){
+        return torsoBone.GetTopJoint(); //lower side.
+    }
 
 private:
-
-
-
+    void TickPhysicsCollpase(
+        MMatrix &actorTranslation,
+        MMatrix &actorRotation,
+        float deltatime
+    );
 };

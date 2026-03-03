@@ -28,6 +28,8 @@ void SpatialVector::AddTorque(
     if(torque.Size() < 0.0001f){
         return;
     }
+    //tau = I * a_theta
+    //a_theta = I^-1 * tau
 
     /*
     $$
@@ -41,8 +43,9 @@ void SpatialVector::AddTorque(
     FVector angularAcceleration = interiaInverse * torque;
     w += angularAcceleration * deltaTime;
     //DebugHelper::showScreenMessage("Spatial Torque ", torque, FColor::Red);
-    DebugHelper::showScreenMessage("Spatial Angular ", w);
-
+    if(false){
+        DebugHelper::showScreenMessage("Spatial Angular ", w);
+    }
 
     //debug
     if(false){DebugKeepRange(w, 2.0f);}

@@ -31,9 +31,8 @@ ADebugJointsActor::ADebugJointsActor() : AActor(){
 void ADebugJointsActor::BeginPlay(){
     Super::BeginPlay();
     initChain();
-    timerFortick.Begin(3.0f, true); //auto reset
-    target = FVector(100, 0, 0);
-
+    timerFortick.Begin(1.0f, true); //auto reset
+    
     Matrix3x3::testInverse();
 }
 
@@ -58,6 +57,9 @@ void ADebugJointsActor::initChain(){
     j0.AddChild(j11);
     j0.AddChild(j1);
     jRoot.AddChild(j0);
+
+    jRoot.BuildParentingRecursive();
+    jRoot.SetLogEnabled(false);
 
     rootJoint = jRoot;
     rootJoint.SetDrawColorRecursive(FColor::Red, FColor::Cyan, 0);
@@ -95,15 +97,21 @@ void ADebugJointsActor::Tick(float deltaTime){
 
 
 void ADebugJointsActor::TickDebugRandomTorque(MMatrix &transform, float deltaTime){
-    FVector angular(0, 3, 4); //x and y are logically flipped
+    FVector angular(2, 1, 0); //x and y are logically flipped
     FVector linear(0, 0, 0);
 
     if(timerFortick.timesUp()){
-        angular = FVector(0, 0, 0);
+        //angular = FVector(0, 0, 0);
+        FVector force(3, 4, 1);
+        rootJoint.AddForce(force, 10.0f);
+
+        float time = 1.0f;
+        timerFortick.Begin(time);
     }
 
     //testing needed!
-    rootJoint.TickAndBuildRecursive(
+    //rootJoint.TickAndBuildRecursive(
+    rootJoint.TickAndBuildRecursiveAsRoot(
         deltaTime, //deltaTime * 0.0001f,
         angular,
         linear,

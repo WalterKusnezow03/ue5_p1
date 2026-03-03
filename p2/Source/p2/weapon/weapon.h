@@ -121,6 +121,14 @@ protected:
 	FVector LatestHitLocation();
 	FVector LatestHitNormal();
 
+
+
+	FCustomHitResult MakeHitResult(
+		FHitResult &HitResult, 
+		FVector &start
+	);
+
+
 	// -- damaga propagation on hit --
 
 	void damageIfPossible(

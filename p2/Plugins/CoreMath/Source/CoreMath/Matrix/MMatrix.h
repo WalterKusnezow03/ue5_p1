@@ -18,10 +18,10 @@ public:
 	MMatrix(const MMatrix &other);
 	MMatrix& operator=(const MMatrix &other);
 
-	void setTranslation(MMatrix &other);
-	void setTranslation(FVector &pos);
+	void setTranslation(const MMatrix &other);
+	void setTranslation(const FVector &pos);
 	void setTranslation(float x, float y, float z);
-	FVector getTranslation();
+	FVector getTranslation() const;
 
 	void operator+=(FVector &other);
 	void operator-=(FVector &other);
@@ -35,8 +35,7 @@ public:
 	FVector2D operator*(FVector2D &other);
 
 	FString asString();
-
-	
+	FString asStringExtractedTransform();
 
 	void pitchRad(float angle);
 	void rollRad(float angle);
@@ -96,7 +95,7 @@ public:
 
 	void rotate(MMatrix &other);
 	void setRotation(FRotator &other);
-	void setRotation(MMatrix &other);
+	void setRotation(const MMatrix &other);
 	void setRotation(FVector &other);
 
 	void setRotation(const FQuat &quat);
@@ -105,12 +104,13 @@ public:
 
 	MMatrix createInverse();
 
-	FRotator extractRotator();
+	FRotator extractRotator() const;
 	MMatrix extarctRotatorMatrix();
 	float extractYawAngleRad();
 
 	void transformFromWorldToLocalCoordinates(FVector &position);
 
+	//transposes the rotationblock for R^T
 	void invertRotation();
 
 	static void rotateVectorDeg2D(float angleDeg, FVector2D &vector);
@@ -152,7 +152,7 @@ public:
 
 private:
 	void set(int i, int j, float value);
-	float get(int column, int row);
+	float get(int column, int row) const;
 	void scaleRow(int row, float scale);
 	void minusForRow(int row, int otherRow, float faktor);
 

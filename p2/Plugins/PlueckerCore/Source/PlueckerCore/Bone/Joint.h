@@ -7,11 +7,16 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "PlueckerCore/Math/SpatialVector.h"
 #include "PlueckerCore/Interface/FJointKinematicPropagatePackage.h"
+#include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
 
 class PLUECKERCORE_API Joint {
 
+protected:
+    bool logEnabled = false;
+    bool is6DOF = false;
+
 public:
-    
+
     Joint();
     Joint(FVector translationVector);
     Joint(FVector translationVector, UWorld *worldIn);
@@ -20,12 +25,19 @@ public:
     Joint(const Joint &other);
     Joint &operator=(const Joint &other);
 
+    MMatrix copyEnd();
+
+    void MarkAs6DOF(bool flag){
+        is6DOF = flag;
+    }
+
     // add force
     //mass internal property of joint
 protected:
     void AddTorque(const FVector &torque, float deltaTime);
 public:
     void AddForce(const FVector &force, float deltaTime); //mass internal property of joint
+    void ReactToDamage(const FCustomHitResult &hitResult);
 
     // ---- external building of joints ----
 
@@ -49,7 +61,15 @@ public:
     // external transform updates
     void OverrideJointRotation(const MMatrix &rotationMatrix);
     void OverrideJointRotationTransposed(const Joint &other);
+    void OverrideWorldLocation(MMatrix mat);
     void OverrideWorldLocation(FVector pos);
+    void OverrideJointWorldTransform(FVector pos, FRotator roation);
+
+    MMatrix GetRotation()const{
+        MMatrix result;
+        spatialTransform.CopyRotationTo(result);
+        return result;
+    }
 
     // ---- external building of joints ----
 
@@ -64,6 +84,24 @@ public:
         FVector &v,
         MMatrix &transform
     );
+    void TickAndBuildRecursive(
+        float deltaTime
+    );
+
+    //as root with all torque
+    void TickAndBuildRecursiveAsRoot(float deltaTime);
+    void TickAndBuildRecursiveAsRoot(
+        float deltaTime,
+        FVector &w,
+        FVector &v,
+        MMatrix &transform
+    );
+
+protected:
+    void TickAndBuildAll(TArray<Joint*> array, FVector w, FVector v, MMatrix root, float deltatime);
+    void TickAndBuildChild(Joint &joint, FVector w, FVector v, MMatrix root, float deltatime);
+
+public:
     //internal build to child
 
     void SetWorld(UWorld *worldIn);
@@ -81,7 +119,7 @@ public:
     FJointConstraint &GetConstraint();
 
     void SetInteriaMatrixAuto();
-    void SetInteriaMatrix(const Matrix3x3 &interiaIn);
+    
 
 private:
     FColor color = FColor::Red;
@@ -103,31 +141,57 @@ private:
     
     FVector GravityForce();
     FVector Torque(FVector force);
+    FVector GravityTorque();
+    
 
     UWorld *world = nullptr;
-    void draw(MMatrix &a, MMatrix &b, float deltatime);
+    void draw(const MMatrix &a, const MMatrix &b, float deltatime);
     void LogSpatialVelocities(FString Prefix, const FVector &w, const FVector &v);
+    void LogPosition(FString Prefix);
 
     TArray<Joint> children;
+
+    //all of these must be handeld externally. Litterally just pointers.
+    TArray<Joint *> ChildsByPointer;
+    TArray<Joint *> ParentsByPointer;
+    TArray<Joint *> AllChildren();
+
+    bool HasChildren();
 
     void UpdateSpatialVelocityAndPassedVelocities(FVector &w, FVector &v);
 
     // ---- GRAVITY EXPERIMENTAL ----
+   
 public:
-    void TickGravity6DOF(float deltaTime, MMatrix &updateTransform);
-    void TickGravity(float deltatime, MMatrix &updateTransform); //no constraint unlock
+    
     void TickGravityAndAddUpdateToSptialVector(float deltaTime);
 
-    void TickUpdateGroundedFlag();
-    bool JointIsGrounded();
-    
-    void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn){
-        ignoreParams = ignoreParamsIn;
-    }
+    void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn);
+    void UpdateIgnoreParamsRecursive(FCollisionQueryParams &ignoreParamsIn);
 
 protected:
-    //new experimental
-    bool bIsGrounded = false;
-    float velocityDown = 0.0f;
-    FCollisionQueryParams ignoreParams;
+    void UpdateIgnoreParamsDownStream(FCollisionQueryParams &params);
+    void UpdateIgnoreParamsUpStream(FCollisionQueryParams &params);
+
+public:
+    // ADD CHILD BY PTR
+
+    /// @brief adds child by pointer, but child gets parent by pointer too!
+    void AddChildByPointer(Joint *jIn);
+    void AddChildsByPointer(TArray<Joint*> childs);
+    void SetActor(AActor *attachActor);
+
+    void AddParentByPointer(Joint *jIn);
+    void BuildParentingRecursive();
+
+    void SetLogEnabled(bool flag);
+
+private:
+    AActor *attachedActor = nullptr;
+    //t and R, in is always translation, updated always rotation.
+    void UpdateActorTransform(const MMatrix &transformIn, const MMatrix &transformUpdate);
+
+    void PropagateWrench(float deltatime);
+    void PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint *> &parents);
+    void PropagateWrench(FVector &n, FVector &f, float deltatime);
 };

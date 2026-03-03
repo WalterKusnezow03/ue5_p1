@@ -47,6 +47,7 @@ void HumanoidController::ResetAndRebuild(){
         hipController.getTranslation(), // MMatrix &actorTranslation,
         hipController.getOrientation() // MMatrix &actorRotation,
     );
+    SetStateCollapse(false);
 }
 
 void HumanoidController::defaultSetup(AActor *actorOwner){
@@ -68,8 +69,18 @@ void HumanoidController::defaultSetup(AActor *actorOwner, bool flagWantedHands){
 
     hipController.setup(property);
     torsoController.setup(property);
+    AddTorsoControllerTopJointsToHipForPlueckerJoints();
+
     SetupEmptyArmAnimationActor(property.GetWorld());
     addAllActorsInChildrenToRaycastExclude();
+}
+
+
+void HumanoidController::AddTorsoControllerTopJointsToHipForPlueckerJoints(){
+    //connect torso and hip via plücker joints.
+    if(Joint *hipJoint = hipController.GetTopJoint()){
+        hipJoint->AddChildsByPointer(torsoController.GetTopJoints());
+    }
 }
 
 
@@ -400,6 +411,18 @@ void HumanoidController::SetStateCollapseTrue(){
     SetStateCollapse(true);
 }
 
+
+void HumanoidController::ReactToDamage(const FCustomHitResult &hitResult){
+    //UNCLEAR WHETHER BLOCK HERE
+    if(!collapseEnabledPhysics){
+        DebugHelper::showScreenMessage("HumanoidController::ReactToDamage BLOCKED", FColor::Red);
+        return;
+    }
+    DebugHelper::showScreenMessage("HumanoidController::ReactToDamage TREPASS", FColor::Green);
+
+    hipController.ReactToDamage(hitResult);
+    torsoController.ReactToDamage(hitResult);
+}
 
 
 

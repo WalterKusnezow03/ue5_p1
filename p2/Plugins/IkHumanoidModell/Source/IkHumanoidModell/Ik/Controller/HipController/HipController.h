@@ -250,19 +250,15 @@ protected:
 
     // --- pluecker joints ---
 public:
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
-
-    virtual void DownstreamPropagate(
-        FJointKinematicPropagatePackage &package
-    ) override;
+    virtual Joint *GetTopJoint() override;
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
 protected:
     Joint rootJoint;
     void SetupPlueckerJoint(UWorld *world);
+    void SetPlueckerHipConstraint(BoneAttachment &attachment);
     void UpdatePlueckerJointRotation();
+    void SetRotation(const MMatrix &mat);
 
-    void DownstreamPropagateTo(
-        BoneAttachment &attachment,
-        FJointKinematicPropagatePackage package
-    );
+    
 };

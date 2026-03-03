@@ -205,11 +205,8 @@ private:
 
     /// ---- PLUECKER ----
 public:
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
-
-    virtual void DownstreamPropagate(
-        FJointKinematicPropagatePackage &package
-    ) override;
+    virtual Joint *GetTopJoint() override;
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
 protected:
     void SetupPluckerJoints(FVector &offset, UWorld *worldIn);

@@ -935,6 +935,7 @@ void HipController::forceOverrideRotation(FRotator &rotation){
 
 
 void HipController::ResetAndRebuild(){
+    SetStateCollapse(false);
     FRotator none;
     orientation.setRotation(none);
     UpdatePlueckerJointRotation();
@@ -1096,10 +1097,34 @@ bool HipController::DebugHorizontalVelocityOvershoot(){
 void HipController::SetupPlueckerJoint(UWorld *world){
     FVector offsetNone;
     rootJoint = Joint(offsetNone, world);
-    
 
-    legLeft.SetParentInterface(this);
-    legRight.SetParentInterface(this);
+    //concatenate child
+    rootJoint.AddChildByPointer(legRight.GetTopJoint());
+    rootJoint.AddChildByPointer(legLeft.GetTopJoint());
+    
+    //set constraints on hip joints:
+    SetPlueckerHipConstraint(legRight);
+    SetPlueckerHipConstraint(legLeft);
+
+
+    //rootJoint.MarkAs6DOF(true); //for gravity.
+    //FJointConstraint &constraintOfJoint = rootJoint.GetConstraint();
+    //constraintOfJoint.UnLockPositionConstraint(); //unlock constraint
+}
+
+void HipController::SetPlueckerHipConstraint(BoneAttachment &attachment){
+    if(Joint *boneAttachmentJoint = attachment.GetTopJoint()){
+        FJointConstraint &constraint = boneAttachmentJoint->GetConstraint();
+        constraint.allowRollRotation = false; //100% false
+        constraint.allowPitchRotation = false;
+        // pitch unclear
+    }
+}
+
+
+
+Joint *HipController::GetTopJoint(){
+    return &rootJoint;
 }
 
 void HipController::UpdatePlueckerJointRotation(){
@@ -1108,37 +1133,17 @@ void HipController::UpdatePlueckerJointRotation(){
 
 
 
-void HipController::UpstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    // --- TODO ---
-}
-
-void HipController::DownstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    MMatrix resultTransform = rootJoint.TickAndBuildThisJoint(package);
-    package.transform = resultTransform;
-    DownstreamPropagateTo(legLeft, package);
-    DownstreamPropagateTo(legRight, package);
 
 
-    //update own matrices might be needed here!
-    //testing needed!:
-    if(true){//not tested! not known if needed here! -> actor transform update will happen tho. needed.
-        resultTransform.setTranslation(0, 0, 0);
-        orientation = resultTransform;
-    }
-}
-
-void HipController::DownstreamPropagateTo(
-    BoneAttachment &attachment, 
-    FJointKinematicPropagatePackage package
-){
-    attachment.DownstreamPropagate(package);
+void HipController::SetRotation(const MMatrix &other){
+    orientation.setRotation(other);
 }
 
 
+void HipController::ReactToDamage(const FCustomHitResult &hitResult){
+    legLeft.ReactToDamage(hitResult);
+    legRight.ReactToDamage(hitResult);
+}
 
 //--- enable /disable collapse physics ---
 void HipController::SetStateCollapse(bool flag){
@@ -1151,25 +1156,16 @@ void HipController::SetStateCollapse(bool flag){
 }
 
 void HipController::TickCollapsePhysics(float deltatime){
-    DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
+    bool BLOCK = false;
+    if(BLOCK){
+        return;
+    }
+
+    //DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
 
     //update for safety.
     FCollisionQueryParams params = ASharedRaycastParamManager::getCollisonParams();
-    rootJoint.UpdateIgnoreParams(params);
-
-    //check ground
-    rootJoint.TickUpdateGroundedFlag();
-    if(!rootJoint.JointIsGrounded()){
-        DebugHelper::showScreenMessage("HipController::TickCollapsePhysics Fall", FColor::Cyan);
-        //fall
-        rootJoint.TickGravity6DOF(deltatime, translation);
-
-        //rebuild?
-        //debug
-        if(true){
-            RebuildLegsEndInPlace(deltatime);
-        }
-
-        DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
-    }
+    rootJoint.UpdateIgnoreParamsRecursive(params);
+    rootJoint.TickAndBuildRecursiveAsRoot(deltatime);
+    rootJoint.DrawJointLocation(deltatime);
 }

@@ -74,6 +74,8 @@ public:
     void SetStateCollapse(bool flag);
     void SetStateCollapseTrue();
 
+    void ReactToDamage(const FCustomHitResult &hitResult);
+
 protected:
     bool collapseEnabledPhysics = false;
 
@@ -119,4 +121,8 @@ protected:
     //empty actor to pickup, attach hand carried items to
 
 
+
+
+    //pluecker setup
+    void AddTorsoControllerTopJointsToHipForPlueckerJoints();
 };

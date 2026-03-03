@@ -342,6 +342,7 @@ void Aweapon::damageIfPossible(
 				DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 1.0f, 0, 1.0f);
 			}
 
+			/*
 			FVector hitpoint = HitResult.ImpactPoint;
 			float damage = WeaponPropertiesMap::damageFor(Type, start, hitpoint);
 
@@ -355,7 +356,9 @@ void Aweapon::damageIfPossible(
 
 			DebugHelper::showScreenMessage(
 				FString::Printf(TEXT("Weapon Shot Damage: (%.2f)"), damage), FColor::Orange
-			);
+			);*/
+
+			FCustomHitResult hitResultPackage = MakeHitResult(HitResult, start);
 
 			entity->takedamage(hitResultPackage);
 				
@@ -367,6 +370,29 @@ void Aweapon::damageIfPossible(
 		}
 	}
 }
+
+
+FCustomHitResult Aweapon::MakeHitResult(
+	FHitResult &HitResult, 
+	FVector &start
+){
+	FVector hitpoint = HitResult.ImpactPoint;
+	float damage = WeaponPropertiesMap::damageFor(Type, start, hitpoint);
+
+	float DeltaTime = GetWorld()->GetDeltaSeconds();
+	FCustomHitResult hitResultPackage;
+	hitResultPackage.SetupHitResult(
+		HitResult,
+		damage, 
+		isSoundSurpressed(), 
+		start,
+		DeltaTime
+	);
+	return hitResultPackage;
+}
+
+
+
 
 
 

@@ -31,12 +31,7 @@ private:
 
     timer timerFortick;
     
-
-    //for single chain debug
-    FVector angularVelocity;
-    FVector linearVelocity;
-
-    FVector target;
+    
 
 
     void debugSolveIk();

@@ -44,6 +44,10 @@ void TorsoController::Tick(
     MMatrix &actorRotation, 
     float deltatime
 ){
+    if(collapseEnabledFlag){ //physics managed by hip.
+        return;
+    }
+
     partLeft.Tick(actorTranslation, actorRotation, deltatime);
     partRight.Tick(actorTranslation, actorRotation, deltatime);
 }
@@ -81,35 +85,18 @@ void TorsoController::getActors(TArray<AActor *> &outArray){
 
 // ---- pluecker joints ----
 void TorsoController::SetupJointParents(){
-    partLeft.SetParentInterface(this);
-    partRight.SetParentInterface(this);
-}
-
-
-void TorsoController::UpstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    //TODO
-}
-
-void TorsoController::DownstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    DownstreamPropagateTo(partLeft, package);
-    DownstreamPropagateTo(partRight, package);
-}
-
-void TorsoController::DownstreamPropagateTo(
-    LayeredTwoJointBone &layeredBone,
-    FJointKinematicPropagatePackage &package
-){
-    layeredBone.DownstreamPropagate(package);
+    
 }
 
 
 
 
 
+
+void TorsoController::ReactToDamage(const FCustomHitResult &hitResult){
+    partLeft.ReactToDamage(hitResult);
+    partRight.ReactToDamage(hitResult);
+}
 
 
 void TorsoController::SetStateCollapse(bool flag){
@@ -119,3 +106,10 @@ void TorsoController::SetStateCollapse(bool flag){
 }
 
 
+
+TArray<Joint *> TorsoController::GetTopJoints(){
+    TArray<Joint *> outArray;
+    outArray.Add(partLeft.GetTopJoint());
+    outArray.Add(partRight.GetTopJoint());
+    return outArray;
+}

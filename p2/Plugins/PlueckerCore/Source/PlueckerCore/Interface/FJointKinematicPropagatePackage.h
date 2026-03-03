@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "DebugPlugin/DebugHelper.h"
 
 /// @brief struct to organize angular and linear velocity for joint propagation
 struct PLUECKERCORE_API FJointKinematicPropagatePackage {
@@ -16,5 +17,19 @@ struct PLUECKERCORE_API FJointKinematicPropagatePackage {
         w = wIn;
         v = vIn;
         transform = transformIn;
+    }
+
+    void LogPackage(FString prefix){
+        DebugHelper::logMessage(prefix, ToString());
+    }
+
+    FString ToString(){
+        FString message = FString::Printf(
+            TEXT("FJointKinematicPropagatePackage:: %s w(%s) v(%s)"),
+            *transform.asStringExtractedTransform(),
+            *w.ToString(),
+            *v.ToString()
+        );
+        return message;
     }
 };

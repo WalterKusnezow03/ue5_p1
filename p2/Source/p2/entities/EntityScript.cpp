@@ -69,6 +69,7 @@ void AEntityScript::init(){
 
 	//disable collapse physics
 	humanoidPluginController.SetStateCollapse(false);
+
 }
 
 // Called every frame
@@ -174,6 +175,9 @@ void AEntityScript::takedamage(FCustomHitResult &result){
 		//propagate to skelleton 
 		//add impulse (?)
 	}
+
+	//propagate result force dead or not. Alwyas. For now.
+	humanoidPluginController.ReactToDamage(result);
 
 	health -= result.Damage();
 	if(health <= 0){

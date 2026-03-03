@@ -49,7 +49,7 @@ public:
 	void rollRadAdd(float angle);
 	void pitchRadAdd(float angle);
 	void yawRadAdd(float angle);
-	void setRotation(FRotator &other);
+	void setRotation(FRotator other);
 	void setRotation(Matrix3x3 &other);
 	void setRotation(MMatrix &other);
 
@@ -62,7 +62,7 @@ public:
 	
 	void transpose();
 
-	std::vector<float> Copy();
+	std::vector<float> Copy() const;
 	void Override(std::vector<float> &values);
 
 	void setColumn(FVector &column, int i);

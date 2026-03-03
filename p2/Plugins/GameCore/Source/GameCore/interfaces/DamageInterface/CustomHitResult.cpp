@@ -6,46 +6,52 @@ void FCustomHitResult::SetupHitResult(int damageIn){
 
 void FCustomHitResult::SetupHitResult(
     int inDamage,
-    bool inSurpressed
+    bool inSurpressed,
+    float deltaTimeIn
 ){
     damage = std::abs(inDamage);
     surpressed = inSurpressed;
     SetDefaultMessageIfNeeded();
+    SetDeltaTime(deltaTimeIn);
 }
 
 void FCustomHitResult::SetupHitResult(
     FVector &customHitPoint,
     int inDamage,
-    bool inSurpressed
+    bool inSurpressed,
+    float deltaTimeIn
 ){
-    SetupHitResult(inDamage, inSurpressed);
+    SetupHitResult(inDamage, inSurpressed, deltaTimeIn);
     hitPoint = customHitPoint;
     hitPointSetup = true;
 }
 
 void FCustomHitResult::SetupHitResult(
     FVector &customHitPoint,
-    int inDamage
+    int inDamage,
+    float deltaTimeIn
 ){
-    SetupHitResult(customHitPoint, inDamage, false);
+    SetupHitResult(customHitPoint, inDamage, false, deltaTimeIn);
 }
 
 void FCustomHitResult::SetupHitResult(
     FHitResult &inResult, 
     int inDamage, 
-    bool inSurpressed
+    bool inSurpressed,
+    float deltaTimeIn
 ){
     result = inResult;
-    SetupHitResult(inResult.ImpactPoint, inDamage, inSurpressed);
+    SetupHitResult(inResult.ImpactPoint, inDamage, inSurpressed, deltaTimeIn);
 }
 
 void FCustomHitResult::SetupHitResult(
     FHitResult &inResult,
     int inDamage,
     bool inSurpressed,
-    FVector &raycastStart
+    FVector &raycastStart,
+    float deltaTimeIn
 ){
-    SetupHitResult(inResult, inDamage, inSurpressed);
+    SetupHitResult(inResult, inDamage, inSurpressed, deltaTimeIn);
     UpdateDirectionAndDistance(raycastStart);
 }
 
@@ -55,11 +61,18 @@ void FCustomHitResult::UpdateDirectionAndDistance(FVector &startingLocation){
     direction = direction.GetSafeNormal();
 }
 
+void FCustomHitResult::SetDeltaTime(float deltaTimeIn){
+    savedDeltaTime = deltaTimeIn;
+}
 
-int FCustomHitResult::Damage(){
+float FCustomHitResult::DeltaTime() const {
+    return savedDeltaTime;
+}
+
+int FCustomHitResult::Damage() const {
     return damage;
 }
-bool FCustomHitResult::IsSurpressed(){
+bool FCustomHitResult::IsSurpressed() const {
     return surpressed;
 }
 
@@ -67,15 +80,19 @@ FVector &FCustomHitResult::HitPoint(){
     return hitPoint;
 }
 
-FVector &FCustomHitResult::Direction(){
+const FVector &FCustomHitResult::Direction() const {
     return direction;
 }
 
-float FCustomHitResult::Distance(){
+AActor *FCustomHitResult::GetActor() const {
+    return result.GetActor();
+}
+
+float FCustomHitResult::Distance() const {
     return distance;
 }
 
-bool FCustomHitResult::HasHitPoint(){
+bool FCustomHitResult::HasHitPoint() const {
     return hitPointSetup;
 }
 

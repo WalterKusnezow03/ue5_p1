@@ -29,6 +29,11 @@ void LayeredTwoJointBone::setup(
     armBone.setup(armProperty);
     armBone.SetConstraint(ETwoBoneConstraint::EFlipDown); //bend direction of arm.
 
+    //new
+    torsoBone.AddChildToLowerJoint(armBone.GetTopJoint());
+
+
+
 
 
     findDefaultLocalTorsoTarget(
@@ -96,6 +101,11 @@ void LayeredTwoJointBone::Tick(
     MMatrix &actorRotation, 
     float deltatime
 ){
+    if(collapseEnabledFlag){
+        TickPhysicsCollpase(actorTranslation, actorRotation, deltatime);
+        return;
+    }
+
     //follow actor
     if(itemIsAttached()){
         worldTarget = HandTargetWorldBasedOnAttachedItem();
@@ -487,34 +497,29 @@ void LayeredTwoJointBone::TickHandController(MMatrix &playerOrientation, float d
 
 
 /// ---- pluecker joints ----
-void LayeredTwoJointBone::UpstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    //TODO
 
-    if(HasParentInterface()){
-        parentInterface->UpstreamPropagate(package);
-    }
+
+void LayeredTwoJointBone::ReactToDamage(const FCustomHitResult &hitResult){
+    torsoBone.ReactToDamage(hitResult);
+    armBone.ReactToDamage(hitResult);
 }
 
-void LayeredTwoJointBone::DownstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    torsoBone.DownstreamPropagate(package);
+void LayeredTwoJointBone::TickPhysicsCollpase(
+    MMatrix &actorTranslation,
+    MMatrix &actorRotation,
+    float deltatime
+){//none
+    /*
+    MMatrix M = actorTranslation * actorRotation; // T * R <--
 
-    MMatrix step = torsoBone.EndEffector();
-    package.transform = step;
-    armBone.DownstreamPropagate(package);
+    
+    if(collapseEnabledFlag){
+        torsoBone.Tick(deltatime, M);
+    }*/
 }
-
-
-
-
 
 void LayeredTwoJointBone::SetStateCollapse(bool flag){
     IJointInterface::SetStateCollapse(flag);
     torsoBone.SetStateCollapse(flag);
     armBone.SetStateCollapse(flag);
 }
-
-

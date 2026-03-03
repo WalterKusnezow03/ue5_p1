@@ -13,7 +13,7 @@
 
 class FTwoLimbProperty;
 
-class IKHUMANOIDMODELL_API TwoJointBone : public IJointInterface, public IBoneTransformInterface{
+class IKHUMANOIDMODELL_API TwoJointBone : public IJointInterface{
 
 private:
     bool bDrawLines = false; //false
@@ -223,15 +223,9 @@ private:
 
 
     // --- scene component based bones ---
-public:
-    virtual bool GetTransform(
-        FVector &location,
-        FRotator &rotation,
-        int limbId
-    ) override;
 
 protected:
-    virtual bool IdIsValid(int id) override;
+    
     void CreateLimbs(FTwoLimbProperty &property);
 
     void UpdateJointTransformCaches(
@@ -248,23 +242,37 @@ protected:
     JointTransformCache kneeWorldCached;
     JointTransformCache footWorldCached;
 
+    void UpdateJointTransformCachesFromInverted(
+        MMatrix &bottom,// foot world
+        MMatrix &top,   // knee world
+        MMatrix &world  // hip world
+    );
+
     // --- pluecker joints ---
 public:
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) override;
+    virtual Joint *GetTopJoint() override;
+    void AddChildToLowerJoint(Joint *inJoint);
+   
 
-    virtual void DownstreamPropagate(
-        FJointKinematicPropagatePackage &package
-    )override;
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
+
+    void TickCollapsePhysics(float deltatime, MMatrix &root);
+
+protected:
+    void ReactToDamage(
+        const FCustomHitResult &hitResult,
+        JointTransformCache &jointCache,
+        Joint &affectedJoint
+    );
+    void UpdateTransformFromCache(Joint &joint, JointTransformCache &cache);
 
     void setupPlueckerJoints(float a, float b, UWorld * world);
     Joint p1; //hip to knee
     Joint p2; //knee to foot
 
-    Joint p2Invert; //foot to knee
-    Joint p1Invert; //knee to foot
+   
 
     //transform to plucker
     void UpdatePluckerJointsFromCurrentJoints();
-    //plucker to inverted plucker
-    void UpdateInvertedPluckerJointsFromCurrentPluckerJoints();
+    
 };

@@ -190,8 +190,6 @@ void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, f
 }
 
 
-    
-
 
 
 
@@ -450,14 +448,10 @@ void TwoJointBone::buildForward(MMatrix &world, float deltatime){
     //new actor visibility
     applyTransformToActors(world, j1World, j2World);
 
-    // --- replace for aactors ---
+
+    // --- cache for plücker. ---
     UpdateJointTransformCaches(world, j1World, j2World);
 
-
-
-
-    // -- UNCLEAR --
-    //update plucker (might replace with on physics switch model)
     UpdatePluckerJointsFromCurrentJoints();
 }
 
@@ -484,7 +478,45 @@ void TwoJointBone::buildBackward(MMatrix &world, float deltatime){
 
     // -- UNCLEAR --
     //update plucker (might replace with on physics switch model)
-    UpdateInvertedPluckerJointsFromCurrentPluckerJoints();
+    //UpdateInvertedPluckerJointsFromCurrentPluckerJoints();
+}
+
+
+
+
+
+void TwoJointBone::UpdateJointTransformCaches(
+    MMatrix &world, //hip world
+    MMatrix &top, //knee world
+    MMatrix &bottom //foot world
+){
+    UpdateJointTransformCache(hipWorldCached, world.getTranslation(), top);
+    UpdateJointTransformCache(kneeWorldCached, top.getTranslation(), bottom);
+
+    MMatrix rNone;
+    UpdateJointTransformCache(footWorldCached, bottom.getTranslation(), rNone);
+}
+
+void TwoJointBone::UpdateJointTransformCache(
+    JointTransformCache &cache, 
+    FVector location,
+    MMatrix &rotationTransform //some matrix R|t
+){  
+    MMatrix rotatorPure = rotationTransform.extarctRotatorMatrix(); //remove t
+    FRotator rotation = rotatorPure.extractRotator(); //extract rotator
+    cache.UpdateCache(location, rotation);
+}
+
+/// ----- NOT TESTED! ------
+void TwoJointBone::UpdateJointTransformCachesFromInverted(
+    MMatrix &bottom, //foot world
+    MMatrix &top, //knee world
+    MMatrix &world //hip world
+){
+    bottom.invertRotation();
+    top.invertRotation();
+    world.invertRotation();
+    UpdateJointTransformCaches(world, top, bottom);
 }
 
 void TwoJointBone::copyRotationFromInverseMatrices(){
@@ -630,6 +662,8 @@ void TwoJointBone::createLimbsIfNeeded(UWorld *world, float aHeight, float bHeig
 void TwoJointBone::attachLimbs(AActor *top, AActor *bottom){
     topActor = top;
     bottomActor = bottom;
+    p1.SetActor(topActor);
+    p2.SetActor(bottomActor);
 }
 
 void TwoJointBone::applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom){
@@ -658,25 +692,6 @@ void TwoJointBone::applyTransform(AActor *ptr, FVector location, MMatrix &rotati
 
 
 
-void TwoJointBone::UpdateJointTransformCaches(
-    MMatrix &world, //hip world
-    MMatrix &top, //knee world
-    MMatrix &bottom //foot world
-){
-    UpdateJointTransformCache(hipWorldCached, world.getTranslation(), top);
-    UpdateJointTransformCache(kneeWorldCached, top.getTranslation(), bottom);
-
-}
-
-void TwoJointBone::UpdateJointTransformCache(
-    JointTransformCache &cache, 
-    FVector location,
-    MMatrix &rotationTransform //some matrix R|t
-){  
-    MMatrix rotatorPure = rotationTransform.extarctRotatorMatrix(); //remove t
-    FRotator rotation = rotatorPure.extractRotator(); //extract rotator
-    cache.UpdateCache(location, rotation);
-}
 
 
 
@@ -721,51 +736,22 @@ void TwoJointBone::CreateLimbs(FTwoLimbProperty &property){
             property.GetSizeSecond(),
             property.GetWidth()
         );
-    }else{
-        FSingleLimbProperty &first = property.GetFirstProperty();
-        FSingleLimbProperty &second = property.GetSecondProperty();
-
-        //create limbs with bone scene component:
-        UBoneProceduralMeshComponent::MakeInstance(first, this, 0);
-        UBoneProceduralMeshComponent::MakeInstance(second, this, 1);
     }
 }
-
-bool TwoJointBone::GetTransform(
-    FVector &locationOut,
-    FRotator &rotationOut,
-    int limbId
-){
-    if(IdIsValid(limbId)){
-        if(limbId == 0){
-            hipWorldCached.GetTransform(locationOut, rotationOut);
-        }
-        if(limbId == 1){
-            kneeWorldCached.GetTransform(locationOut, rotationOut);
-        }
-        if(limbId == 2){
-            footWorldCached.GetTransform(locationOut, rotationOut);
-        }
-
-        return true;
-    }
-    return false;
-}
-
-bool TwoJointBone::IdIsValid(int id){
-    if(id == 0 || id == 1){
-        return true;
-    }
-    return false;
-}
-
-
-
 
 
 
 
 // --- pluecker ---
+
+Joint *TwoJointBone::GetTopJoint(){
+    return &p1;
+}
+
+void TwoJointBone::AddChildToLowerJoint(Joint *inJoint){
+    p2.AddChildByPointer(inJoint);
+}
+
 void TwoJointBone::setupPlueckerJoints(float a, float b, UWorld *world){
     FVector aVec = DownVector(a);
     FVector bVec = DownVector(b);
@@ -773,12 +759,12 @@ void TwoJointBone::setupPlueckerJoints(float a, float b, UWorld *world){
 
     p1 = Joint(aVec, world);
     p2 = Joint(bVec, world);
+    p1.AddChildByPointer(&p2);
+
     //p3 = Joint(footTip, world);
 
     aVec *= -1.0f;
     bVec *= -1.0f;
-    p2Invert = Joint(bVec, world);
-    p1Invert = Joint(aVec, world);
 }
 
 void TwoJointBone::UpdatePluckerJointsFromCurrentJoints(){
@@ -787,63 +773,39 @@ void TwoJointBone::UpdatePluckerJointsFromCurrentJoints(){
     p2.OverrideJointRotation(r2);
 }
 
-void TwoJointBone::UpdateInvertedPluckerJointsFromCurrentPluckerJoints(){
-    //testing needed whether this is correct for downstream propagate
-    p1Invert.OverrideJointRotationTransposed(p1);
-    p2Invert.OverrideJointRotationTransposed(p2);
+
+
+
+
+
+void TwoJointBone::ReactToDamage(const FCustomHitResult &hitResult){
+
+    if(AActor *hitActor = hitResult.GetActor()){
+        if(hitActor == topActor){
+            ReactToDamage(hitResult, hipWorldCached, p1);
+            DebugHelper::logMessage("TwoJointBone::ReactToDamage TOP hitactor found!");
+        }
+        if(hitActor == bottomActor){
+            //up stream
+            //Joint p2; //knee to foot
+            DebugHelper::logMessage("TwoJointBone::ReactToDamage BOTTOM hitactor found!");
+            //ReactToDamage(hitResult, footWorldCached, p2Invert);
+        }
+    }else{
+        DebugHelper::logMessage("TwoJointBone::ReactToDamage NO hitactor found!");
+    }
 }
 
-void TwoJointBone::DownstreamPropagate(
-    FJointKinematicPropagatePackage &package
+//joint must be refactured to be bi-directional!
+void TwoJointBone::ReactToDamage(
+    const FCustomHitResult &hitResult,
+    JointTransformCache &jointCache,
+    Joint &affectedJoint
 ){
-    MMatrix world = package.transform;
-    // w and v are updated internally
-    MMatrix j1World = p1.TickAndBuildThisJoint(
-        package.deltatime,
-        package.w, // angularVelocity, 
-        package.v, // linearVelocity
-        package.transform
-    );
-    MMatrix j2World = p2.TickAndBuildThisJoint(
-        package.deltatime,
-        package.w, // angularVelocity,
-        package.v, // linearVelocity
-        j1World
-    );
-
-    //UNKLAR ob translation kopieren oder ganze matrix! 
-    //-> layered two joint bone braucht beides! R und t
-    bool copy = true;
-    if(copy){
-        endEffectorWorld = j2World;
-    }
-    else
-    {
-        endEffectorWorld.setTranslation(j2World);
-    }
-
-    //deprecated! 
-    applyTransformToActors(world, j1World, j2World);
-
-    //will replace aactors!
-    UpdateJointTransformCaches(world, j1World, j2World);
+    //up and down stream
+    affectedJoint.ReactToDamage(hitResult); // hip to knee
 }
 
-
-
-void TwoJointBone::UpstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    //build from end effector upwards
-    //needed some sort of invert fuction for the joints (InvertBuild)
-    removeRotationFromEndEffector();
-    
-    // ----- TODO -----
-
-    if(HasParentInterface()){
-        parentInterface->UpstreamPropagate(package);
-    }
-}
 
 
 
@@ -851,4 +813,14 @@ void TwoJointBone::UpstreamPropagate(
 
 void TwoJointBone::SetStateCollapse(bool flag){
     IJointInterface::SetStateCollapse(flag);
+
+    UpdateTransformFromCache(p1, hipWorldCached);
+    UpdateTransformFromCache(p2, kneeWorldCached);
+}
+
+void TwoJointBone::UpdateTransformFromCache(Joint &joint, JointTransformCache &cache){
+    FVector location;
+    FRotator rotation;
+    cache.GetTransform(location, rotation);
+    joint.OverrideJointWorldTransform(location, rotation);
 }

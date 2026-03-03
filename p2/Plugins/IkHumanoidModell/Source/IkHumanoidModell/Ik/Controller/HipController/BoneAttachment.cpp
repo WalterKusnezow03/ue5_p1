@@ -723,36 +723,31 @@ bool BoneAttachment::EndEffectorIsGrounded(){
 
 //// ---- PLUECKER JOINTS ----
 void BoneAttachment::SetupPluckerJoints(FVector &offset, UWorld *worldIn){
-    bone.SetParentInterface(this);
+   
     FVector offset1 = offset * -1.0f;
 
     p1 = Joint(offset, worldIn);
+    p1.AddChildByPointer(bone.GetTopJoint());
+
     p1Invert = Joint(offset1, worldIn);
 }
 
-void BoneAttachment::UpstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-
-    // ---- TODO ----
-
-    if(HasParentInterface()){
-        parentInterface->UpstreamPropagate(package);
-    }
+Joint *BoneAttachment::GetTopJoint(){
+    return &p1;
 }
 
-void BoneAttachment::DownstreamPropagate(
-    FJointKinematicPropagatePackage &package
-){
-    MMatrix resultWorld = p1.TickAndBuildThisJoint(package);
-    package.transform = resultWorld;
-
-    bone.DownstreamPropagate(package);
+/*
+Joint *BoneAttachment::GetAttachedBoneFirstJoint(){
+    return bone.GetTopJoint();
 }
-
-
+*/
 
 void BoneAttachment::SetStateCollapse(bool flag){
     IJointInterface::SetStateCollapse(flag);
     bone.SetStateCollapse(flag);
+}
+
+
+void BoneAttachment::ReactToDamage(const FCustomHitResult &hitResult){
+    bone.ReactToDamage(hitResult);
 }

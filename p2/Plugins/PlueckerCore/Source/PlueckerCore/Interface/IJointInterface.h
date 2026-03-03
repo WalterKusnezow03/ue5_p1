@@ -2,34 +2,30 @@
 
 #include "CoreMinimal.h"
 #include "PlueckerCore/Interface/FJointKinematicPropagatePackage.h"
+#include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
 
 //might have more than one joint to propagate
 class PLUECKERCORE_API IJointInterface {
 
 public: 
 
+    //new simplified joint chains by ptr childs
+    virtual Joint *GetTopJoint(){
+        return nullptr;
+    }
+
     //Todo: Implement Impulse Propagation!
 
 
     // propagate angualar and linear veloicty
-    virtual void UpstreamPropagate(FJointKinematicPropagatePackage &package) {};
-
-    virtual void DownstreamPropagate(FJointKinematicPropagatePackage &package) {};
-
+    
     
 
-    //set parent interface for upstream propagation
-    void SetParentInterface(IJointInterface *parent){
-        parentInterface = parent;
-    }
+    //force propagation, find closest joint / attached actor
+    virtual void ReactToDamage(const FCustomHitResult &hitResult) {};
 
-    void ResetParentInterface(){
-        parentInterface = nullptr;
-    }
-
-    bool HasParentInterface(){
-        return parentInterface != nullptr;
-    }
+    
+    
 
     virtual void SetStateCollapse(bool flag){
         collapseEnabledFlag = flag;
@@ -37,7 +33,7 @@ public:
     
 
 protected:
-    IJointInterface *parentInterface = nullptr;
+    
     bool collapseEnabledFlag = false;
     // external impulse (?)
 };

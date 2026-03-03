@@ -4,18 +4,20 @@
 
 
 Joint::Joint(){
-
+    SetLogEnabled(false);
 }
 
 Joint::Joint(FVector translationVector){
     spatialTransform.setTranslation(translationVector);
     SetInteriaMatrixAuto();
+    SetLogEnabled(false);
 }
 
 Joint::Joint(FVector translationVector, UWorld *worldIn){
     spatialTransform.setTranslation(translationVector);
     SetWorld(worldIn);
     SetInteriaMatrixAuto();
+    SetLogEnabled(false);
 }
 
 Joint::Joint(const Joint &other){
@@ -28,10 +30,13 @@ Joint &Joint::operator=(const Joint &other){
     if(this != &other){
         children = other.children;
         world = other.world;
-        //spatialTransform = other.spatialTransform;
+        spatialTransform = other.spatialTransform;
         color = other.color;
+        is6DOF = other.is6DOF;
+        attachedActor = other.attachedActor;
+        logEnabled = other.logEnabled;
         SetBoneTranslationDirection(other.BoneTranslationDirection());
-
+        SetLogEnabled(other.logEnabled);
     }
     return *this;
 }
@@ -40,8 +45,27 @@ Joint::~Joint(){
     
 }
 
+void Joint::SetLogEnabled(bool flag){
+    logEnabled = flag;
+    spatialTransform.bLogMessage = flag;
+    for (int i = 0; i < children.Num(); i++)
+    {
+        Joint &current = children[i];
+        current.SetLogEnabled(flag);
+    }
+    for (int i = 0; i < ChildsByPointer.Num(); i++){
+        if(Joint *current = ChildsByPointer[i]){
+            current->SetLogEnabled(flag);
+        }
+    }
+}
+
 void Joint::SetWorld(UWorld *worldIn){
     world = worldIn;
+    spatialTransform.SetWorld(worldIn);
+
+    FString message = worldIn != nullptr ? TEXT("Joint::SetWorld VALID") : TEXT("Joint::SetWorld INVALID");
+    DebugHelper::logMessage(message);
 }
 
 void Joint::SetBoneTranslationDirection(FVector direction){
@@ -72,17 +96,6 @@ void Joint::SetInteriaMatrixAuto(){
     I1.scale(s1,s1,rotationAroundZ);
     interiaInverse = I1;
 
-
-    /*
-    //was stable but slow!
-    s1 = rotationAroundZ;
-    Matrix3x3 I1;
-    I1.scale(s1,s1,rotationAroundZ);
-    interiaInverse = I1;*/
-}
-
-void Joint::SetInteriaMatrix(const Matrix3x3 &interiaIn){
-    interiaInverse = interiaIn.jordanInverse();
 }
 
 
@@ -119,17 +132,26 @@ MMatrix Joint::TickAndBuildThisJoint(
     FVector &v, //linearVelocity, is updated
     const MMatrix &inTransform
 ){
+    //-- CAUTION -> MOVING TO BACKWARDS PROPAGATION! --
     //add gravity force to spatial vector
-    TickGravityAndAddUpdateToSptialVector(deltaTime);
+    //TickGravityAndAddUpdateToSptialVector(deltaTime);
 
     //add incoming velocities and copy back inside for propagation
     UpdateSpatialVelocityAndPassedVelocities(w, v); 
 
     //update spatial transform and return new world update
     spatialTransform.forwardPluecker(w, v, deltaTime);
+
     MMatrix result = spatialTransform * inTransform;
-    transformCopy = result; //cache
-    return transformCopy;
+
+
+    //update attached actor.
+    UpdateActorTransform(inTransform, result);
+    draw(inTransform, result, deltaTime);
+
+    transformCopy = inTransform; //cache startingJoint
+
+    return result;
 }
 
 
@@ -143,6 +165,19 @@ void Joint::AddForce(const FVector &force, float deltaTime){
 
 void Joint::AddTorque(const FVector &torque, float deltaTime){
     spatialVelocity.AddTorque(torque, interiaInverse, deltaTime);
+}
+
+
+void Joint::ReactToDamage(const FCustomHitResult &hitResult){
+    if(true){
+        return;
+    }
+
+    const FVector &dir = hitResult.Direction();
+
+    float sizeForce = 1.0f;
+    FVector asForce = dir.GetSafeNormal() * sizeForce;
+    AddForce(asForce, hitResult.DeltaTime());
 }
 
 /// --- FORCE ---
@@ -173,8 +208,10 @@ void Joint::OverrideJointRotationTransposed(const Joint &other){
     spatialTransform.OverrideRotation(rotationOther);
 }
 
-
-
+void Joint::OverrideJointWorldTransform(FVector pos, FRotator roation){
+    OverrideWorldLocation(pos);
+    spatialTransform.OverrideRotation(roation);
+}
 
 //external build of chain
 
@@ -191,10 +228,14 @@ FJointKinematicPropagatePackage Joint::GeneratePackage(
     return outPackage;
 }
 
-
-
-
-
+void Joint::TickAndBuildRecursive(
+    float deltaTime
+){
+    MMatrix m = transformCopy;
+    FVector w(0, 0, 0);
+    FVector v(0, 0, 0);
+    TickAndBuildRecursive(deltaTime, w, v, m);
+}
 
 void Joint::TickAndBuildRecursive(
     float deltaTime,
@@ -211,34 +252,147 @@ void Joint::TickAndBuildRecursive(
     );
 
     //log sptail velocities
-    LogSpatialVelocities("Joint::TickAndBuildRecursive",w, v);
-
-    //since more than one child can change wAngularVelocity and vLinVelcoity
-    //it must be copied
-    for (int i = 0; i < children.Num(); i++)
-    {
-        FVector wCopy = w;
-        FVector vCopy = v;
-        MMatrix resultCopy = result;
-        Joint &current = children[i];
-        current.TickAndBuildRecursive(deltaTime, wCopy, vCopy, resultCopy);
+    //LogSpatialVelocities("Joint::TickAndBuildRecursive",w, v);
+    if(HasChildren()){
+        TickAndBuildAll(AllChildren(), w, v, result, deltaTime); //includes parents.
+    }else{
+        PropagateWrench(deltaTime);
     }
-
-    draw(transform, result, deltaTime);
 }
+
+TArray<Joint *> Joint::AllChildren(){
+    TArray<Joint *> outArray = ChildsByPointer;
+    for (int i = 0; i < children.Num(); i++){
+        Joint *current = &children[i];
+        outArray.Add(current);
+    }
+    return outArray;
+}
+
+
+
+
+bool Joint::HasChildren(){
+    return children.Num() > 0 || ChildsByPointer.Num() > 0;
+}
+
+
+void Joint::TickAndBuildAll(TArray<Joint*> array, FVector w, FVector v, MMatrix root, float deltatime){
+    for (int i = 0; i < array.Num(); i++){
+        if(Joint *current = array[i]){
+            TickAndBuildChild(*current, w, v, root, deltatime);
+        }
+    }
+}
+
+void Joint::TickAndBuildChild(Joint &joint, FVector w, FVector v, MMatrix root, float deltaTime){
+    joint.TickAndBuildRecursive(deltaTime, w, v, root);
+}
+
+
+
+
+
+
+void Joint::PropagateWrench(float deltatime){
+    //FVector f = GravityForce();
+    //FVector n = GravityTorque();
+
+    FVector f = spatialTransform.Force(mass);
+    FVector n = spatialTransform.Torque(f, centerOfMass);
+    PropagateWrench(n, f, deltatime);
+}
+
+void Joint::PropagateWrench(FVector &n, FVector &f, float deltaTime){
+   
+    //F_i = F_{\text{eigene externe}} + \sum X^T F_{child}
+    
+    //propagate up
+    spatialTransform.backwardWrench( //X^T * (n,f)
+        n, //n
+        f, //f
+        deltaTime
+    );
+
+    f += spatialTransform.Force(mass);
+    n += spatialTransform.Torque(f, centerOfMass);
+
+    //integrate, will be build in next frame!
+    spatialVelocity.AddForce(f, mass, deltaTime);
+    spatialVelocity.AddTorque(n, interiaInverse, deltaTime); 
+
+    PropagateWrench(n, f, deltaTime, ParentsByPointer);
+    
+}
+
+void Joint::PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint*> &parents){
+    for (int i = 0; i < parents.Num(); i++){
+        if(Joint *current = parents[i]){
+            FVector nCopy = n;
+            FVector fCopy = f;
+            current->PropagateWrench(nCopy, fCopy, deltatime);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+//as root
+void Joint::TickAndBuildRecursiveAsRoot(float deltaTime){
+    TickGravityAndAddUpdateToSptialVector(deltaTime); //a nur in root
+    TickAndBuildRecursive(deltaTime);
+    LogPosition("Joint::TickAndBuildRecursiveAsRoot Result-> ");
+}
+
+void Joint::TickAndBuildRecursiveAsRoot(
+    float deltaTime,
+    FVector &w,
+    FVector &v,
+    MMatrix &transform
+){
+    TickGravityAndAddUpdateToSptialVector(deltaTime); //a nur in root
+    TickAndBuildRecursive(deltaTime,w,v,transform);
+}
+
+
+
+
+
+
 
 void Joint::LogSpatialVelocities(FString Prefix, const FVector &w, const FVector &v){
-    FString message = FString::Printf(
-        TEXT("%s w(%.2f, %.2f, %.2f), v(%.2f, %.2f, %.2f)"),
-        *Prefix,
-        w.X, w.Y, w.Z,
-        v.X, v.Y, v.Z
-    );
-    DebugHelper::showScreenMessage(message, FColor::Cyan);
+    if(logEnabled){
+        FString message = FString::Printf(
+            TEXT("%s w(%.2f, %.2f, %.2f), v(%.2f, %.2f, %.2f)"),
+            *Prefix,
+            w.X, w.Y, w.Z,
+            v.X, v.Y, v.Z
+        );
+        DebugHelper::showScreenMessage(message, FColor::Cyan);
+    }
+}
+
+void Joint::LogPosition(FString Prefix){
+    if(logEnabled){
+        FVector pos = transformCopy.getTranslation();
+        FString message = FString::Printf(
+            TEXT("%s pos(%.2f, %.2f, %.2f)"),
+            *Prefix,
+            pos.X, pos.Y, pos.Z
+        );
+        DebugHelper::showScreenMessage(message, FColor::Cyan);
+    }
 }
 
 
-void Joint::draw(MMatrix &a, MMatrix &b, float deltaTime){
+
+
+void Joint::draw(const MMatrix &a, const MMatrix &b, float deltaTime){
     deltaTime = std::max(deltaTime, 1.0f / 60.0f);
     FVector t1 = a.getTranslation();
     FVector t2 = b.getTranslation();
@@ -294,43 +448,18 @@ void Joint::DrawJointLocation(float deltaTime){
 
 /// --- Grounded flag ---
 
+void Joint::OverrideWorldLocation(MMatrix mat){
+    transformCopy.setTranslation(mat.getTranslation());
+}
+
 void Joint::OverrideWorldLocation(FVector pos){
     transformCopy.setTranslation(pos);
 }
 
-void Joint::TickUpdateGroundedFlag(){
-    if(world){
-        DebugHelper::showScreenMessage("Joint::TickUpdateGroundedFlag", FColor::Cyan);
-        bIsGrounded = false;
-        FVector Start = transformCopy.getTranslation();
-        FVector dir(0, 0, -1.0f);
-        FVector outputHit;
-
-        
-
-        Raycaster raycaster;
-        if(raycaster.performRaycast(
-            world, 
-            Start, 
-            dir,
-            distanceToGroundedFlag, 
-            outputHit,
-            ignoreParams
-        )){
-            bIsGrounded = true;
-            DebugHelper::showScreenMessage("Joint::ISGROUNDED", FColor::Green);
-        }
-    }
-}
-
-bool Joint::JointIsGrounded(){
-    return bIsGrounded;
-}
-
-
 //w and v changed but no transform update in
 //spatial transform.
 void Joint::TickGravityAndAddUpdateToSptialVector(float deltaTime){
+    
     //includes torque and force update, integrated to velocities.
     //joint rebuild needed.
     FVector g = GravityForce();
@@ -339,38 +468,114 @@ void Joint::TickGravityAndAddUpdateToSptialVector(float deltaTime){
 
 
 
-//no degree unlock
-void Joint::TickGravity(float deltaTime, MMatrix &updateTransform){
-    MMatrix result = TickAndBuildThisJoint(deltaTime, updateTransform);
-    updateTransform.setTranslation(result);
-}
-
-//unlock if update needed for transform
-void Joint::TickGravity6DOF(float deltaTime, MMatrix &updateTransform){
-    FJointConstraint &constraintOfJoint = GetConstraint();
-    constraintOfJoint.UnLockPositionConstraint(); //unlock constraint
-    TickGravity(deltaTime, updateTransform);
-    constraintOfJoint.LockPositionConstraint(); //lock constraint
-}
-
-
-
 
 
 //torque = com x Fg
+FVector Joint::GravityTorque(){
+    return Torque(GravityForce());
+}
 
 FVector Joint::Torque(FVector force){
-    Matrix3x3 R1 = spatialTransform.GetRotation();
-    R1.transpose(); //is not R^T = R^-1
-
-    // centerOfMass ist lokal
-    // GravityForce ist global, aber transformiere nur die Richtung in lokal
-    FVector gravityLocal = R1 * force;
-    return FVector::CrossProduct(centerOfMass, gravityLocal);
+    return spatialTransform.Torque(force, centerOfMass);
 }
 
 
 FVector Joint::GravityForce(){
-    float damp = 1.0f;
+    float damp = 1.0f; //debug
     return FVector(0, 0, -981.0f) * mass * damp;
+}
+
+
+
+
+
+
+/// --- new add childs by pointer ! ---
+void Joint::AddChildByPointer(Joint *jIn){
+    if(jIn){
+        if(ChildsByPointer.Contains(jIn) == false){
+            ChildsByPointer.Add(jIn);
+
+            //new.
+            jIn->AddParentByPointer(this);
+        }
+    }
+}
+
+void Joint::AddChildsByPointer(TArray<Joint*> childs){
+    for (int i = 0; i < childs.Num(); i++)
+    {
+        AddChildByPointer(childs[i]);
+    }
+}
+
+
+void Joint::AddParentByPointer(Joint *jIn){
+    if(jIn){
+        if(ParentsByPointer.Contains(jIn) == false){
+            ParentsByPointer.Add(jIn);
+
+            //could add as child aswell for safety.
+        }
+    }
+}
+
+void Joint::BuildParentingRecursive(){
+    
+    TArray<Joint *> array = AllChildren();
+    for (int i = 0; i < array.Num(); i++)
+    {
+        if(Joint *current = array[i]){
+            current->AddParentByPointer(this);
+            current->BuildParentingRecursive();
+        }
+    }
+}
+
+
+
+//t and R, in is always translation, updated always rotation.
+void Joint::UpdateActorTransform(const MMatrix &transformIn, const MMatrix &transformUpdate){
+    if(attachedActor){
+        FVector t = transformIn.getTranslation();
+        FRotator r = transformUpdate.extractRotator();
+        attachedActor->SetActorLocation(t);
+        attachedActor->SetActorRotation(r);
+    }
+}
+void Joint::SetActor(AActor *attachActor){
+    attachedActor = attachActor;
+}
+
+
+
+
+
+
+void Joint::UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn){
+    spatialTransform.UpdateIgnoreParams(ignoreParamsIn);
+}
+void Joint::UpdateIgnoreParamsRecursive(FCollisionQueryParams &ignoreParamsIn){
+    UpdateIgnoreParams(ignoreParamsIn);
+    UpdateIgnoreParamsUpStream(ignoreParamsIn);
+    UpdateIgnoreParamsDownStream(ignoreParamsIn);
+}
+
+void Joint::UpdateIgnoreParamsDownStream(FCollisionQueryParams &params){
+    TArray<Joint *> array = AllChildren();
+    for (int i = 0; i < array.Num(); i++){
+        if(Joint *joint = array[i]){
+            joint->UpdateIgnoreParams(params);
+            joint->UpdateIgnoreParamsDownStream(params);
+        }
+    }
+}
+
+void Joint::UpdateIgnoreParamsUpStream(FCollisionQueryParams &params){
+    for (int i = 0; i < ParentsByPointer.Num(); i++){
+        if(Joint *joint = ParentsByPointer[i]){
+            joint->UpdateIgnoreParams(params);
+            joint->UpdateIgnoreParamsUpStream(params);
+        }
+    }
 }
