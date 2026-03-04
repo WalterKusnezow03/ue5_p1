@@ -19,6 +19,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
+#include "CoreMath/util/Raycaster.h"
 
 #include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 #include "p2/weapon/weaponProperties/WeaponPropertiesMap.h"
@@ -212,22 +213,17 @@ void Aweapon::releaseShoot(){
 /// @brief shoot method for player! make sure camera is attached!
 void Aweapon::shoot(){
 	if(cameraPointer != nullptr && canShoot()){
-
+		//component world look dir
 		FVector ForwardVector = cameraPointer->GetForwardVector();
-    	// Now you can use ForwardVector which represents the direction the camera is facing
-
-		// Get the camera location and rotation
+    	
+		//Component World Location
     	FVector CameraLocation = cameraPointer->GetComponentLocation();
-    	//FRotator CameraRotation = CameraComponent->GetComponentRotation();
-
+    	
 		// Define the start and end vectors for the raycast
 		FVector Start = CameraLocation + ForwardVector * 100; // todo: owner also by interface! to exclude from query
 
-		FVector End = Start + (ForwardVector * 50000.0f); //50000 units in front of the camera, must be changed later
-
-
-	
-		shootProtected(Start, End, teamEnum::none);//shoot from a start to an endpoint
+		float sizeRay = 50000.0f;
+		shootProtected(Start, ForwardVector, sizeRay, teamEnum::none); // shoot from a start to an endpoint
 	}
 }
 
@@ -247,22 +243,23 @@ void Aweapon::shootBot(FVector target){
 			ownTeam = h->getTeam();
 		}
 
-		shootProtected(start, target, ownTeam); // protected weapon shoot call
+		float sizeRay = 50000.0f;
+		shootProtected(start, connect, sizeRay, ownTeam); // protected weapon shoot call
 		releaseShoot(); //release for bot automatically
 	}
 }
 
 
 
-bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
-	return shootProtected(Start, End, ownTeam, true);
+bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum ownTeam){
+	return shootProtected(Start, dir, sizeRay, ownTeam, true);
 }
 
 /// @brief creates a raycast from start to end point and damages first object within the line
 /// IS NOT DESIGNED TO BE CALLED FROM OUT SIDE! ONLY IN CLASS
 /// @param Start pos
 /// @param End pos target
-bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool damageOnHit){
+bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum ownTeam, bool damageOnHit){
 	//FString::Printf(TEXT("subgraph size %d"), subgraph.size());
 	
 	if(canShoot()){ //check if can shoot
@@ -272,6 +269,25 @@ bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool 
 		resetCoolTime(cooldownTime());
 		bulletsInMag--;
 
+
+
+
+		bool traceComplex = false;
+		FHitResult HitResult;
+		FVector outputHitPointIgnored;
+		Raycaster caster;
+		bool bHit = caster.performRaycast(
+			GetWorld(), 
+			Start, 
+			dir,
+			GetFCollisionQueryParams(), //AcarriedItem::GetFCollisionQueryParams
+			sizeRay,
+			outputHitPointIgnored,
+			HitResult,
+			traceComplex
+		);
+
+		/*
 		// Perform the raycast
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -280,11 +296,8 @@ bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool 
 			Params.AddIgnoredActor(botPointer);
 		}
 		Params.bTraceComplex = false; //new lower complexity
-
-		
-
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-
+		*/
 
 		// If the raycast hit something, save hitresult and return positive
 		if (bHit)
@@ -293,7 +306,7 @@ bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool 
 			AActor *actor = HitResult.GetActor();
 			//damage if only flagged as damage.
 			if(damageOnHit){
-				damageIfPossible(ownTeam, actor, HitResult, Start, End);
+				damageIfPossible(ownTeam, actor, HitResult, Start, dir, sizeRay);
 			}
 			
 			
@@ -313,6 +326,19 @@ bool Aweapon::shootProtected(FVector Start, FVector End, teamEnum ownTeam, bool 
 	return false;
 }
 
+
+
+void Aweapon::damageIfPossible(
+	teamEnum ownTeam,
+	AActor *actor,
+	FHitResult &hitresult,
+	FVector &start,
+	FVector &dir,
+	float sizeRay
+){
+	FVector end = start + dir * sizeRay;
+	damageIfPossible(ownTeam, actor, hitresult, start, end);
+}
 
 void Aweapon::damageIfPossible(
 	teamEnum ownTeam,
@@ -342,24 +368,7 @@ void Aweapon::damageIfPossible(
 				DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 1.0f, 0, 1.0f);
 			}
 
-			/*
-			FVector hitpoint = HitResult.ImpactPoint;
-			float damage = WeaponPropertiesMap::damageFor(Type, start, hitpoint);
-
-			FCustomHitResult hitResultPackage;
-			hitResultPackage.SetupHitResult(
-				HitResult,
-				damage, 
-				isSoundSurpressed(), 
-				start
-			);
-
-			DebugHelper::showScreenMessage(
-				FString::Printf(TEXT("Weapon Shot Damage: (%.2f)"), damage), FColor::Orange
-			);*/
-
 			FCustomHitResult hitResultPackage = MakeHitResult(HitResult, start);
-
 			entity->takedamage(hitResultPackage);
 				
 		}else{

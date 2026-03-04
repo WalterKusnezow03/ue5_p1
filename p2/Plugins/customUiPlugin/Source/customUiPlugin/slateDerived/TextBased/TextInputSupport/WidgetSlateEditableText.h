@@ -11,7 +11,7 @@
 #include "customuipluginbase/UserInputTracking/UserInput.h"
 
 #include "customUiPlugin/slateDerived/TextBased/Text/WidgetSlateText.h"
-#include "customUiPlugin/ui/Widgets/callback/callback.h"
+#include "customuipluginbase/callback/callback.h"
 
 #include "WidgetSlateEditableText.generated.h"
 

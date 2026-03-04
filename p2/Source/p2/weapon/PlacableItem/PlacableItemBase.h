@@ -44,7 +44,8 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
-    virtual bool shootProtected(FVector Start, FVector End, teamEnum ownTeam) override;
+    virtual bool shootProtected(FVector from, FVector dir, float sizeRay, teamEnum ownTeam)override;
+    
     
     //surpressed by default on place
     virtual bool isSoundSurpressed() override {

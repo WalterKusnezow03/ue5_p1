@@ -76,6 +76,16 @@ void AcarriedItem::enableCollider(bool enable){
 }
 
 
+FCollisionQueryParams AcarriedItem::GetFCollisionQueryParams(){
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // Ignore the character itself
+	if(botPointer != nullptr){
+		Params.AddIgnoredActor(botPointer);
+	}
+	Params.bTraceComplex = false; //new lower complexity
+	return Params;
+}
+
 
 /// @brief allows the player to pickup the weapon
 /// @param cameraRefIn 

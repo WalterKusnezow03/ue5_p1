@@ -138,6 +138,10 @@ protected:
 	//sight offset for weapons
 	FVector verticalSightOffset;
 
+
+	//collsion query params for raycasting
+	virtual FCollisionQueryParams GetFCollisionQueryParams();
+
 public:
 	FVector sightOffsetNoRotation();
 	

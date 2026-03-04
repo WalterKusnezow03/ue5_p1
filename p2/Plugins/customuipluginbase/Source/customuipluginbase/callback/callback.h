@@ -4,7 +4,7 @@
 #include "callback.generated.h"
 
 UCLASS()
-class CUSTOMUIPLUGIN_API UCallback : public UObject
+class CUSTOMUIPLUGINBASE_API UCallback : public UObject
 {
     GENERATED_BODY()
 

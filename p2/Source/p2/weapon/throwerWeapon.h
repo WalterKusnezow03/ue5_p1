@@ -30,7 +30,7 @@ public:
 	throwableEnum throwableTypeToThrow; //type to throw / instantiate
 
 protected:
-	virtual bool shootProtected(FVector from, FVector to, teamEnum ownTeam) override;
+	virtual bool shootProtected(FVector from, FVector dir, float sizeRay, teamEnum ownTeam) override;
 	virtual void reload(int amount) override;
 
 	bool showThrowableItem;

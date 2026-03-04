@@ -79,7 +79,7 @@ void UWidgetArrowBase::CreateMeshOnConstruct(){
     //SetWidthAndHeightToUniformBounds(); //broken right now!
 }
 
-#include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
+#include "customUiPlugin/colors/UiColors.h"
 void UWidgetArrowBase::SetupBackground(){
     //reset scale extension after new polygon hitting the bounds added.
     if(polygonMap.IsValid()){

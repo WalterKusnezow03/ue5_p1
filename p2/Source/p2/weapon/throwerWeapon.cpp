@@ -40,7 +40,7 @@ void AthrowerWeapon::Tick(float deltaTime){
     }
 }
 
-bool AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){ //team enum is ignored here
+bool AthrowerWeapon::shootProtected(FVector from, FVector dir, float sizeRay, teamEnum ownTeam){ //team enum is ignored here
     //throw an item here instead
 
     DebugHelper::showScreenMessage("AthrowerWeapon Shoot protected try!");
@@ -64,8 +64,10 @@ bool AthrowerWeapon::shootProtected(FVector from, FVector to, teamEnum ownTeam){
 		resetCoolTime(cooldownTime());
         bulletsInMag--;
 
-        FVector connect = to - from; //AB = B - A
-        connect = connect.GetSafeNormal(); //dir normalized
+        //FVector connect = to - from; //AB = B - A
+        //connect = connect.GetSafeNormal(); //dir normalized
+
+        FVector connect = dir.GetSafeNormal();
 
         throwableActorPointer->throwIntoDirection(from, connect);
 

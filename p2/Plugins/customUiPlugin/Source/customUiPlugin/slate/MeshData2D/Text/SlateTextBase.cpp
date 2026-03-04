@@ -1,7 +1,7 @@
 #include "SlateTextBase.h"
 #include "Rendering/SlateRenderer.h"
 #include "Fonts/FontMeasure.h"
-#include "customUiPlugin/ui/Widgets/Text/UiTextStyle.h"
+#include "customUiPlugin/Text/UiTextStyle.h"
 #include "customUiPlugin/Private/Debug/UiDebugHelper.h"
 
 #include "Framework/Application/SlateApplication.h"

@@ -1,5 +1,5 @@
 #include "WidgetSlateEditableText.h"
-#include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
+#include "customUiPlugin/colors/UiColors.h"
 
 void UWidgetSlateEditableText::ConstructWidget(){
     Super::ConstructWidget();

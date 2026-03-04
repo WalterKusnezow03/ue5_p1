@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Styling/SlateTypes.h"
-#include "customUiPlugin/ui/Widgets/buttons/colors/UiColors.h"
+#include "customUiPlugin/colors/UiColors.h"
 
 //generates text styles
 class CUSTOMUIPLUGIN_API UiTextStyle {

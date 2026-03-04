@@ -4,14 +4,16 @@ bool Raycaster::performRaycast(
     UWorld *world, 
     const FVector &Start, 
     const FVector &dirScaled,
-    FVector &outputHit
+    FVector &outputHit,
+    bool traceComplex
 ){
     return performRaycast(
         world, 
         Start, 
         dirScaled,
         1.0f, 
-        outputHit
+        outputHit,
+        traceComplex
     );
 }
 
@@ -21,7 +23,8 @@ bool Raycaster::performRaycast(
     const FVector &Start, 
     const FVector &dir,
     float rayScale, 
-    FVector &outputHit
+    FVector &outputHit,
+    bool traceComplex
 ){
     FHitResult empty;
     FCollisionQueryParams ignoreParams;
@@ -32,7 +35,8 @@ bool Raycaster::performRaycast(
         ignoreParams,
         rayScale,
         outputHit,
-        empty
+        empty,
+        traceComplex
     );
 }
 
@@ -42,7 +46,8 @@ bool Raycaster::performRaycast(
     const FVector &dir,
     float rayScale, 
     FVector &outputHit,
-    FCollisionQueryParams &ignoreParams
+    FCollisionQueryParams ignoreParams,
+    bool traceComplex
 ){
     FHitResult none;
     return performRaycast(
@@ -52,7 +57,8 @@ bool Raycaster::performRaycast(
         ignoreParams,
         rayScale,
         outputHit,
-        none
+        none,
+        traceComplex
     );
 }
 
@@ -60,7 +66,8 @@ bool Raycaster::performRaycast(
     UWorld *world, 
     const FVector &Start, 
     const FVector &dir,
-    float rayScale
+    float rayScale,
+    bool traceComplex
 ){
     FVector ignoredOutput;
     return performRaycast(
@@ -68,7 +75,8 @@ bool Raycaster::performRaycast(
         Start, 
         dir,
         rayScale, 
-        ignoredOutput
+        ignoredOutput,
+        traceComplex
     );
 }
 
@@ -76,14 +84,16 @@ bool Raycaster::performRaycast(
     UWorld *world, 
     const FVector &Start, 
     const FVector &dir,
-    FCollisionQueryParams &ignoreParams,
+    FCollisionQueryParams ignoreParams,
     float rayScale,
     FVector &outputHit,
-    FHitResult &outHitResult
+    FHitResult &outHitResult,
+    bool traceComplex
 ){
     if(world == nullptr){
         return false;
     }
+    ignoreParams.bTraceComplex = traceComplex; //lower complexity if false
 
     rayScale = std::abs(rayScale);
 	FVector End = Start + dir * rayScale; // gx = A + r (B - A)

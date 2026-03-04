@@ -18,9 +18,9 @@ void APlacableItemBase::Tick(float deltatime){
 
 
 
-bool APlacableItemBase::shootProtected(FVector Start, FVector End, teamEnum ownTeam){
+bool APlacableItemBase::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum ownTeam){
     bool damageOnHit = false; //palce is not damaging.
-    if (Super::shootProtected(Start, End, ownTeam, damageOnHit))
+    if (Super::shootProtected(Start, dir, sizeRay, ownTeam, damageOnHit))
     { // false:
 
         //place item at latest hit location

@@ -10,23 +10,26 @@ public:
         UWorld *world, 
         const FVector &Start, 
         const FVector &dirScaled,
-        FVector &outputHit
+        FVector &outputHit,
+        bool traceComplex = true
     );
     bool performRaycast(
         UWorld *world, 
         const FVector &Start, 
         const FVector &dir,
         float rayScale, 
-        FVector &outputHit
+        FVector &outputHit,
+        bool traceComplex = true
     );
     bool performRaycast(
         UWorld *world,
         const FVector &Start,
         const FVector &dir,
-        FCollisionQueryParams &ignoreParams,
+        FCollisionQueryParams ignoreParams,
         float rayScale,
         FVector &outputHit,
-        FHitResult &outHitResult
+        FHitResult &outHitResult,
+        bool traceComplex = true
     );
     bool performRaycast(
         UWorld *world,
@@ -34,7 +37,8 @@ public:
         const FVector &dir,
         float rayScale,
         FVector &outputHit,
-        FCollisionQueryParams &ignoreParams
+        FCollisionQueryParams ignoreParams,
+        bool traceComplex = true
     );
 
     //no outhit
@@ -42,7 +46,8 @@ public:
         UWorld *world, 
         const FVector &Start, 
         const FVector &dir,
-        float rayScale
+        float rayScale,
+        bool traceComplex = true
     );
 
 private:
