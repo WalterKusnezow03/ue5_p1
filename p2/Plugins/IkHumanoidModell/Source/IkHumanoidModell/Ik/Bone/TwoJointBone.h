@@ -3,17 +3,21 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "IkHumanoidModell/Ik/Bone/ETwoBoneConstraint.h"
+#include "IkHumanoidModell/Ik/Bone/ETwoBoneType.h"
 
 #include "PlueckerCore/Bone/Joint.h"
 #include "PlueckerCore/Interface/IJointInterface.h"
 
 
 #include "IkHumanoidModell/Ik/Bone/JointCache/JointTransformCache.h"
-#include "IkHumanoidModell/Ik/Bone/BoneTransformInterface/BoneTransformInterface.h"
 
 class FTwoLimbProperty;
 
 class IKHUMANOIDMODELL_API TwoJointBone : public IJointInterface{
+
+    //NOT TESTED
+public:
+    MMatrix EndEffectorRotation();
 
 private:
     bool bDrawLines = false; //false
@@ -66,6 +70,8 @@ public:
     /// @brief start effector WORLD Matrix
     /// @return 
     MMatrix StartEffector();
+
+    
 
     /// @brief endeffector WORLD MATRIX
     /// @return 
@@ -121,8 +127,7 @@ public:
         return directionOfMiddleToEndEffectorSaved;
     }
 
-
-
+   
 
 public:
     //enable collapse physics
@@ -132,11 +137,11 @@ public:
 
 
 
-private:
+protected:
     FVector directionOfMiddleToEndEffectorSaved;
     void UpdateDirectionOfMiddleToEndEffector(MMatrix &middle, MMatrix &end);
 
-private:
+protected:
     bool bLogEnabled = false;
     bool bDrawBackwardReach = false;
     bool bDrawToWorldStart = false;
@@ -148,13 +153,21 @@ private:
     //resets the rotation matrices
     void resetRotations();
 
-    bool markedForTriangleFlip = false; //for arms to have their elbows down
+    //bool markedForTriangleFlip = false; //for arms to have their elbows down
 
-    bool markedForTriangleflipArms = false;
-    bool markedForTriangleflipLegs = false;
+    //both contstraints.
+    void FlipTrianglesBasedOnAllConstraints(
+        float &pitch1, float &pitch2, FVector target
+    );
+
+    //contstraint arm and leg explicit
+    //bool markedForTriangleflipArms = false;
+    //bool markedForTriangleflipLegs = false;
+
+    ETwoBoneType twoBoneTypecontstraint = ETwoBoneType::ENone;
     void flipTriangleIfMarkedWanted(float &pitch1, float &pitch2);
 
-    //new not tested
+    //additional contstraint
     void FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, FVector targetLocal);
     void FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, float angleToForwardLocal);
 
@@ -205,11 +218,9 @@ private:
 public:
     void attachLimbs(AActor *top, AActor *bottom);
 
-    void SetConstraint(ETwoBoneConstraint constraintIn){
-        constraint = constraintIn;
-    }
+    void SetConstraint(ETwoBoneConstraint constraintIn);
 
-private:
+protected:
     bool autoCreateLimbs = true;
     void createLimbsIfNeeded(UWorld *world, float a, float b);
     void createLimbsIfNeeded(UWorld *world, float a, float b, float widthBone);
@@ -252,16 +263,15 @@ protected:
 public:
     virtual Joint *GetTopJoint() override;
     void AddChildToLowerJoint(Joint *inJoint);
-   
+    void AddChildsToLowerJoint(TArray<Joint *> inJoints);
 
     virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
-    void TickCollapsePhysics(float deltatime, MMatrix &root);
+    
 
 protected:
     void ReactToDamage(
         const FCustomHitResult &hitResult,
-        JointTransformCache &jointCache,
         Joint &affectedJoint
     );
     void UpdateTransformFromCache(Joint &joint, JointTransformCache &cache);

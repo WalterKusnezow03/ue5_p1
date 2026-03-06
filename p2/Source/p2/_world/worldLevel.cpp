@@ -153,7 +153,7 @@ void AworldLevel::initWorld(FString WorldName){
     instancePtr->createPathFinder(WorldName);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    instancePtr->humanBotsOnStart(1);
+    instancePtr->humanBotsOnStart(5);
         
     //InstanceWorldLevel->createGroundPane();
 
@@ -292,9 +292,10 @@ void AworldLevel::humanBotsOnStart(int count){
     EntityManager *e = entityManager();
     if (e != nullptr)
     {
+        FVector spawnLocation(-1000, -1000, 100);
         for (int i = 0; i < count; i++){
-            FVector spawnLocation(-1000, -1000, 100);
-            e->spawnHumanEntity(GetWorld(), spawnLocation, teamEnum::enemyTeam);
+            FVector spawnLocationCurrent = spawnLocation + FVector(0, count * 200,0);
+            e->spawnHumanEntity(GetWorld(), spawnLocationCurrent, teamEnum::enemyTeam);
         }
 
         

@@ -17,6 +17,7 @@ void APlayerControllerWidgetInteractiveBase::SetupWidgetInteractionComponentOnBe
             GetWorld(),
             this
         );
+        SetInteractionComponentNotifiedInterface();
         SetWidgetInteractionComponentHoverActive(true);
     }
 }
@@ -38,6 +39,15 @@ void APlayerControllerWidgetInteractiveBase::SetWidgetInteractionComponentHoverA
         interactionComponent->SetInteractionHoverActive(flag);
     }
 }
+
+//inject this actor to the interaction component: will dispatch pointer to widgets
+//to notify the player
+void APlayerControllerWidgetInteractiveBase::SetInteractionComponentNotifiedInterface(){
+    if(interactionComponent){
+        interactionComponent->SetCallbackForDelayedInteractions(this);
+    }
+}
+
 
 
 
@@ -72,6 +82,22 @@ void APlayerControllerWidgetInteractiveBase::TickInteractionComponent(){
                 origin,
                 direction
             );
-        }   
+        }
     }   
+}
+
+
+void APlayerControllerWidgetInteractiveBase::DispatchInteractKeyPressedStateToInteractionComponent(){
+    if(interactionComponent){
+        bool holdInteractKey = playerInputContainer.interactKeyIsHoldDown();
+        interactionComponent->TickInteractKeyHoldDown(holdInteractKey);
+    }
+}
+    
+
+
+
+
+void APlayerControllerWidgetInteractiveBase::ReceiveCallback(AActor *payloadActor){
+    //NOTHING - FOR SUB CLASSES IN P2 GAME
 }

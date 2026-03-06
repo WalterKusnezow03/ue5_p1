@@ -42,17 +42,20 @@ void UAnyMeshWidgetComponent::TickComponent(
 		casted->Tick(DeltaTime);
 	}
 	UpdateHoverWidgetLeft();
+	UpdateInteractKeyHoldState();
 }
 
 void UAnyMeshWidgetComponent::UpdateHoverWidgetLeft(){
 	if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
-		if(!UInteractionComponentHoveredCache::IsHoveredWidgetComponent(this)){
+		if(!IsMarkedHovered()){
 			casted->removeHover();
 		}
 	}
 }
 
-
+bool UAnyMeshWidgetComponent::IsMarkedHovered(){
+	return UInteractionComponentHoveredCache::IsHoveredWidgetComponent(this);
+}
 
 void UAnyMeshWidgetComponent::FlagMeshDataDirty(){
 	MeshDataWasModified = true;
@@ -344,4 +347,15 @@ FCollisionShape UAnyMeshWidgetComponent::GetCollisionShape(float Inflation) cons
 	
 	/*const FVector Extent = GetLocalBounds().BoxExtent + FVector(Inflation);
     return FCollisionShape::MakeBox(Extent);*/
+}
+
+
+
+
+
+void UAnyMeshWidgetComponent::UpdateInteractKeyHoldState(){
+	isInteractHoldDown = UInteractionComponentHoveredCache::IsInteractKeyHoldWidgetComponent(this);
+	if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
+		casted->UpdateInteractKeyHoldState(isInteractHoldDown);
+	}
 }

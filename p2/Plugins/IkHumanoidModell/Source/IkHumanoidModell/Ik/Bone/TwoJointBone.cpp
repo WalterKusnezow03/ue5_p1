@@ -9,7 +9,7 @@
 
 
 TwoJointBone::TwoJointBone(){
-    markedForTriangleFlip = false;
+    twoBoneTypecontstraint = ETwoBoneType::ENone;
 }
 
 TwoJointBone::~TwoJointBone(){
@@ -17,16 +17,18 @@ TwoJointBone::~TwoJointBone(){
 }
 
 void TwoJointBone::markTriangleFlipAsWantedForArms(){
-    markedForTriangleFlip = true;
+    //markedForTriangleflipLegs = false;
+    //markedForTriangleflipArms = true;
 
-    markedForTriangleflipLegs = false;
-    markedForTriangleflipArms = true;
+    twoBoneTypecontstraint = ETwoBoneType::ETwoBoneArm;
 }
 
 //new
 void TwoJointBone::markTriangleFlipAsWantedForLegs(){
-    markedForTriangleflipLegs = true;
-    markedForTriangleflipArms = false;
+    //markedForTriangleflipLegs = true;
+    //markedForTriangleflipArms = false;
+
+    twoBoneTypecontstraint = ETwoBoneType::ETwoBoneLeg;
 }
 
 
@@ -129,10 +131,20 @@ bool TwoJointBone::targetIsInMotionCircle(FVector &target){
     return target.Size() < length;
 }
 
+
+void TwoJointBone::FlipTrianglesBasedOnAllConstraints(
+    float &pitch1, float &pitch2, FVector target
+){
+    flipTriangleIfMarkedWanted(pitch1, pitch2); //further testing needed!
+    FlipTriangleBasedOnConstraint(pitch1, pitch2, target); 
+}
+
+
 void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
 
     //legs, genau überlegt
-    if(markedForTriangleflipLegs){
+    if(twoBoneTypecontstraint == ETwoBoneType::ETwoBoneLeg){
+    //if(markedForTriangleflipLegs){
         //only pos on hip, neg knee (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
         pitch1 = std::abs(pitch1)* -1.0f;
         pitch2 = std::abs(pitch2);
@@ -141,7 +153,9 @@ void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
 
     //---- temporary! - nicht genau überlegt ----
     //arme naturel nach unten
-    if(markedForTriangleflipArms){
+    
+    //if(markedForTriangleflipArms){
+    if(twoBoneTypecontstraint == ETwoBoneType::ETwoBoneArm){
         //only neg on shoulder, neg ellbow (drehrichtung knie beachten, pos gegen uhrzeiger sinn!)
         pitch1 = std::abs(pitch1) * -1.0f;
         pitch2 = std::abs(pitch2);
@@ -149,10 +163,11 @@ void TwoJointBone::flipTriangleIfMarkedWanted(float &pitch1, float &pitch2){
     }
 
     //deprecated
+    /*
     if(markedForTriangleFlip){
         pitch1 *= -1.0f;
         pitch2 *= -1.0f;
-    }
+    }*/
 }
 
 void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, FVector target){
@@ -160,6 +175,10 @@ void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, F
     target.Z = 0.0f;
     float angle = FVector::DotProduct(rawXForward, target.GetSafeNormal());
     FlipTriangleBasedOnConstraint(pitch1, pitch2, angle);
+}
+
+ void TwoJointBone::SetConstraint(ETwoBoneConstraint constraintIn){
+    constraint = constraintIn;
 }
 
 void TwoJointBone::FlipTriangleBasedOnConstraint(float &pitch1, float &pitch2, float angleToForwardLocal){
@@ -211,7 +230,7 @@ void TwoJointBone::MoveToTarget(FVector target, MMatrix &world, float deltatime)
     }
 }
 
-/// @brief forward kinematics method default
+/// @brief forward kinematics method default for ARMS
 /// @param target 
 void TwoJointBone::MoveToTarget(FVector &target){
     resetRotations();
@@ -253,10 +272,14 @@ void TwoJointBone::MoveToTarget(FVector &target){
 
     float distance = target.Size();
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
-    flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
+    
 
-    //testing needed
-    FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target); //TESTING NEEDED
+    // ---- testing needed ----
+
+    //disabled for new constraint
+    //flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
+    //FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target);
+    FlipTrianglesBasedOnAllConstraints(pitchHip, pitchKnee, target);
 
     //erst anziehen
     r1.pitchRadAdd(pitchHip);
@@ -291,6 +314,7 @@ void TwoJointBone::MoveToTarget(
 
 
 /// @brief Method for using roll instead of yaw rotation based on moving direction
+/// use for LEG IK.
 /// @param target 
 void TwoJointBone::MoveToTarget(FVector &target, FVector &localForward){
     resetRotations();
@@ -318,9 +342,11 @@ void TwoJointBone::MoveToTarget(FVector &target, FVector &localForward){
 
     float distance = target.Size();
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t1, t2);
-    flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //further testing needed!
 
-    FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target); //TESTING NEEDED
+    //DISBALED TESTING NEEDED WITHOUT!
+    //flipTriangleIfMarkedWanted(pitchHip, pitchKnee); //needed because legs sometimes flip randomly.
+    //FlipTriangleBasedOnConstraint(pitchHip, pitchKnee, target); //TESTING NEEDED
+    FlipTrianglesBasedOnAllConstraints(pitchHip, pitchKnee, target);
 
     //erst anziehen
     r1.pitchRadAdd(pitchHip);
@@ -405,6 +431,8 @@ void TwoJointBone::MoveToTargetInverse(FVector &target){
     float pitchKnee = 0.0f;
     float distance = target.Size();
     TwoBoneGeometricSolve::createPitchAnglesFor(distance, pitchHip, pitchKnee, t2, t1);
+
+    //only leg arm contstraints
     flipTriangleIfMarkedWanted(pitchHip, pitchKnee);
 
     //Special for backwards inverse kinematic
@@ -573,6 +601,8 @@ MMatrix TwoJointBone::StartEffector(){
     return startEffectorWorld;
 }
 
+
+
 /// @brief returns the world end effector from the latest build inclding all rotation.
 /// @return 
 MMatrix TwoJointBone::EndEffector(){
@@ -585,9 +615,17 @@ FVector TwoJointBone::EndEffectorLocation(){
     return endEffectorWorld.getTranslation();
 }
 
+/// @brief WORLD SPACE
 MMatrix TwoJointBone::EndEffectorTranslation(){
     FVector location = EndEffectorLocation();
     return MMatrix(location);
+}
+
+///@brief WORLD SPACE --> NOT TESTED USED BY SPINE
+MMatrix TwoJointBone::EndEffectorRotation(){
+    MMatrix copy = endEffectorWorld;
+    copy.setTranslation(0, 0, 0);
+    return copy;
 }
 
 /// @brief clear rotation before backwards kinematics, otherwise chain is
@@ -744,8 +782,14 @@ void TwoJointBone::CreateLimbs(FTwoLimbProperty &property){
 
 // --- pluecker ---
 
+//start effector pluecker joint
 Joint *TwoJointBone::GetTopJoint(){
     return &p1;
+}
+
+//add to end effector pluecker joints (spine connect to other.)
+void TwoJointBone::AddChildsToLowerJoint(TArray<Joint*> inJoints){
+    p2.AddChildsByPointer(inJoints);
 }
 
 void TwoJointBone::AddChildToLowerJoint(Joint *inJoint){
@@ -782,7 +826,7 @@ void TwoJointBone::ReactToDamage(const FCustomHitResult &hitResult){
 
     if(AActor *hitActor = hitResult.GetActor()){
         if(hitActor == topActor){
-            ReactToDamage(hitResult, hipWorldCached, p1);
+            ReactToDamage(hitResult, p1);
             DebugHelper::logMessage("TwoJointBone::ReactToDamage TOP hitactor found!");
         }
         if(hitActor == bottomActor){
@@ -799,7 +843,6 @@ void TwoJointBone::ReactToDamage(const FCustomHitResult &hitResult){
 //joint must be refactured to be bi-directional!
 void TwoJointBone::ReactToDamage(
     const FCustomHitResult &hitResult,
-    JointTransformCache &jointCache,
     Joint &affectedJoint
 ){
     //up and down stream
@@ -824,3 +867,11 @@ void TwoJointBone::UpdateTransformFromCache(Joint &joint, JointTransformCache &c
     cache.GetTransform(location, rotation);
     joint.OverrideJointWorldTransform(location, rotation);
 }
+
+
+
+
+
+
+
+

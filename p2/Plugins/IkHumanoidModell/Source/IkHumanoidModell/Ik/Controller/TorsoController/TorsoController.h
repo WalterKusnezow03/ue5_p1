@@ -20,20 +20,7 @@ public:
 
     void setup(FHumanoidControllerSetupPackage &setupPackage);
 
-    /// @brief will setup both layered ik bones symetrically
-    /// @param hipBreast 
-    /// @param breastShoulder 
-    /// @param upperArm 
-    /// @param lowerArm 
-    /// @param world 
-    void setup(
-        float hipBreast,
-        float breastShoulder,
-        float upperArm,
-        float lowerArm,
-        UWorld *world
-    );
-
+    
     void ResetAndRebuild(
         MMatrix &actorTranslation,
         MMatrix &actorRotation
@@ -54,14 +41,32 @@ public:
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
 
-    TArray<Joint *> GetTopJoints();
+    //connect hip
+    Joint *GetTopJoint();
+
+private:
+    //connect spine to layered bones.
+    TArray<Joint *> GetTopJointsOfLayeredArms();
 
 public:
     //enable collapse physics
     virtual void SetStateCollapse(bool flag) override;
 
+
+protected:
+    //tick
+    void BuildSpine(
+        const MMatrix &actorTranslation,
+        const MMatrix &actorRotation,
+        float deltatime
+    );
+
 private:
-    //arms
+    //spine
+    TwoJointBone spine;
+    FVector spineTarget;
+
+    //arms from chest
     LayeredTwoJointBone partLeft;
     LayeredTwoJointBone partRight;
 

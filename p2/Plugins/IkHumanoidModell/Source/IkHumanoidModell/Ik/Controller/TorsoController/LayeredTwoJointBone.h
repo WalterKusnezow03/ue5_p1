@@ -12,6 +12,9 @@ class FHumanoidControllerSetupPackage;
 /// maybe applies IK to lift the skelleton up. Unclear.
 class IKHUMANOIDMODELL_API LayeredTwoJointBone : public IJointInterface{
 
+private:
+    bool bDrawDebugLines = false;
+
 public:
     LayeredTwoJointBone();
     ~LayeredTwoJointBone();
@@ -21,18 +24,6 @@ public:
         EArmType typeArm,
         FHumanoidControllerSetupPackage &package
     );
-    
-
-    /// @brief sets up the internal bones for layered fk ik
-    void setup(
-        EArmType typeArm,
-        float hipBreast,
-        float breastShoulder,
-        float upperArm,
-        float lowerArm,
-        UWorld *worldIn
-    );
-
     
 
     // ---- TICK SECTION ----
@@ -89,7 +80,7 @@ private:
 
     void UpdateAttachedActorLowerArmDirection();
 
-    bool bDrawDebugLines = false;
+    
 
     void findDefaultLocalTorsoTarget(float torsoHeight, float shoulderWidth);
     FVector localTorsoEndEffectorTarget;

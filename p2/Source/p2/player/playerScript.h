@@ -11,7 +11,7 @@
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
 #include "GameCore/team/teamEnum.h"
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
-#include "CoreMath/animation/timer/timer.h"
+
 #include "WingsuitInterface.h"
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"
@@ -51,7 +51,7 @@ protected:
 	virtual void Jump() override;
 
 	//tracks input for steering vehicles, and unseat
-	InputContainer playerInputContainer;
+	//InputContainer playerInputContainer;
 
 	///overriden from base class!
 	virtual bool IsPaused() override;

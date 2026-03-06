@@ -36,6 +36,7 @@ protected:
 	void InitComponents();
 
 	bool logEnabled = false;
+	bool drawLineOnTransformUpdate = false;
 
 public:
 	/// --- INTERFACE OVERRIDE ---

@@ -152,6 +152,15 @@ void ProceduralMeshComponentPair::updateMeshAll(){
     }
 }
 
+void ProceduralMeshComponentPair::transformAllVertecies(MMatrix &other){
+    MeshDataMap::transformAllVertecies(other);
+    updateMeshAll();
+}
+
+void ProceduralMeshComponentPair::appendMeshData(MeshDataMap &other){
+    MeshDataMap::appendMeshData(other);
+    updateMeshAll();
+}
 
 
 void ProceduralMeshComponentPair::updateMeshAllAndApplyMaterials(){
@@ -580,10 +589,6 @@ bool ProceduralMeshComponentPair::SetupFromCollisionCache(FProcMeshCollisionStor
     }
     return false;
 }
-
-
-
-
 
 
 

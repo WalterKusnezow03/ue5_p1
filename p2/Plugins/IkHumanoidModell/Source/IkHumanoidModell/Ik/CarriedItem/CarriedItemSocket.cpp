@@ -44,7 +44,7 @@ void CarriedItemSocket::Tick(
         attachedItem->UpdateActorTransform(updateLocation, updateRotator);
     }*/
 
-    FRotator empty;
+    FRotator empty(0,0,0);
     Tick(
         deltatime,
         translation,
@@ -84,7 +84,7 @@ void CarriedItemSocket::Tick(
                 DebugHelper::showLineBetween(
                     world,
                     t,
-                    t + FVector(0,0,100),
+                    t + (RcombinedOrientatationConstrainted * FVector(100,0,0)),
                     FColor::Blue
                 );
                 FVector copyLocation = transformInnerModified.getTranslation();

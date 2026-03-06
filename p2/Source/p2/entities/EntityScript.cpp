@@ -47,6 +47,14 @@ void AEntityScript::BeginPlay()
 /// set the spotting time and
 /// the entity team
 void AEntityScript::init(){
+	FVector location = GetActorLocation();
+	init(location);
+}
+
+void AEntityScript::init(FVector &location){
+	SetActorLocation(location);
+	humanoidPluginController.SetLocation(location);
+
 	//DebugHelper::showScreenMessage("entity init");
 	enableActiveStatus(true);
 	AlertManager::subscribeToAlert(this);
@@ -69,8 +77,9 @@ void AEntityScript::init(){
 
 	//disable collapse physics
 	humanoidPluginController.SetStateCollapse(false);
-
 }
+
+
 
 // Called every frame
 void AEntityScript::Tick(float DeltaTime)
@@ -355,10 +364,10 @@ bool AEntityScript::performRaycast(FVector &direction, FVector &output, int cmLe
 
 void AEntityScript::projectActorToGround(){
 	int meters = 100 * 50;
-	FVector Start = GetActorLocation() + FVector(0, 0, meters);
+	FVector Start = humanoidPluginController.GetLocation() + FVector(0, 0, meters);
 
 	// Get the camera location and rotation
-	FVector End = GetActorLocation() - FVector(0, 0, meters);
+	FVector End = Start - FVector(0, 0, meters * 2.0f);
 
 	// Perform the raycast
 	FHitResult HitResult;

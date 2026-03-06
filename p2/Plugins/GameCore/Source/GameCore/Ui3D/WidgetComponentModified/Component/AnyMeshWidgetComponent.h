@@ -92,6 +92,13 @@ public:
         const FVector &direction
     );
 
+
+
+
+    /// @brief will tell if this component is marked as hovered in
+    /// UInteractionComponentHoveredCache -> needed for external use in customUi actor parent.
+    bool IsMarkedHovered();
+
 protected:
     MeshData assignedMeshData;
     bool MeshDataWasModified = false;
@@ -118,4 +125,12 @@ protected:
     //update hover state external on tick
     //update hover state if this widget is not hovered anymore. (reset widget hover state. Widget in 3D space left.)
     void UpdateHoverWidgetLeft();
+
+
+    //update interact key hold on this widget
+    void UpdateInteractKeyHoldState();
+    bool isInteractHoldDown = false;
+
+
+
 };

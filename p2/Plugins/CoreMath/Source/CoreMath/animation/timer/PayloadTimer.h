@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Timer.h"
 #include "CoreMath/animation/timer/PayloadInterface/IPayloadInterface.h"
-
 #include "CoreMath/animation/timer/PayloadInterface/Payload.h"
 
 /**
  * 
  */
-class COREMATH_API PayloadTimer : public timer
+class COREMATH_API PayloadTimer : public Timer
 {
 public:
 	PayloadTimer();

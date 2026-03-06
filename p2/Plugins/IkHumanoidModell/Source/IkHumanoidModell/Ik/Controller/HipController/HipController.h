@@ -74,7 +74,7 @@ public:
     void stopLocomotion();
     void stopLocomotionOnceRotationHasFinished();
 
-    void updateCollisionParams(FCollisionQueryParams Params);
+    
 
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
@@ -90,9 +90,11 @@ protected:
     void TickCollapsePhysics(float deltatime);
     FLocomotionProperty locomotionProperty;
 
+    //gets the latest collision params from ASharedRaycastParamManager.
+    FCollisionQueryParams GetCollisionParams();
+
 protected:
-    //removed ik carried item
-    FCollisionQueryParams collisionParams;
+    
 
     float setupLegLength = 100.0f; //some value, cant be 0 for setting location.
     float bodyMass = 30.0f; // 10 kg ?

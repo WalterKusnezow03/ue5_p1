@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-#include "IkHumanoidModell/Ik/Bone/BoneTransformInterface/BoneTransformInterface.h"
+#include "IkHumanoidModell/actor/SceneComponent/BoneTransformInterface/BoneTransformInterface.h"
 #include "GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h"
 //#include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FSingleLimbProperty.h"
 //#include "GameCore/MeshGenBase/MeshData/MeshData.h"

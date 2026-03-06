@@ -8,7 +8,6 @@
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "GameCore/team/teamEnum.h"
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
-#include "CoreMath/animation/timer/timer.h"
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"
 
@@ -90,6 +89,8 @@ protected:
 	bool aiming;
 	bool holding;
 	bool sprinting;
+	
+
 	void sprint();
 	static const int BASE_SPEED = 600;
 	static const int SPRINT_SPEED = 700;
@@ -106,6 +107,8 @@ protected:
     virtual void MoveRight(float Value);
     
 	virtual void interact();
+	virtual void interactReleased();
+
 	virtual void reload();
 	virtual void drop();
 	virtual void aim();

@@ -41,6 +41,9 @@ void Matrix6x6::applyConstraints(FVector &w, FVector &v){
     //v Linear velocity
     constraint.ApplyRotationConstraint(w);
     constraint.ApplyPositionConstraint(v);
+
+    groundContactConstraint.ApplyRotationConstraint(w);
+    groundContactConstraint.ApplyRotationConstraint(v);
 }
 
 void Matrix6x6::OverrideConstraint(FJointConstraint &in){
@@ -227,6 +230,48 @@ void Matrix6x6::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
     if (IsGrounded(prev) || IsGrounded(current)){
         contactFloor = true;
     }
+
+    UpdateGroundConstraint(current);
+
+}
+
+void Matrix6x6::UpdateGroundConstraint(const MMatrix &worldResult){
+    UpdateGroundConstraintPitchAndPosition();
+    UpdateGroundConstraintRoll(worldResult);
+}
+
+void Matrix6x6::UpdateGroundConstraintPitchAndPosition(){
+    groundContactConstraint.allowPitchRotationPositive = true;
+    groundContactConstraint.allowPitchRotationNegative = true;
+    groundContactConstraint.allowPositionOffsetZGrounded = true;
+
+    if(contactFloor){
+        groundContactConstraint.allowPitchRotationNegative = false;
+        groundContactConstraint.allowPositionOffsetZGrounded = false;
+    }
+}
+
+void Matrix6x6::UpdateGroundConstraintRoll(const MMatrix &worldResult){
+    //roll constraint based on current bone rotation: R rotation!
+    
+    // --- NOT TESTED ---
+
+    groundContactConstraint.allowRollRotationPositive = true;
+    groundContactConstraint.allowRollRotationNegative = true;
+    if(contactFloor){
+        FVector zAxis(0, 0, 1);
+        zAxis = worldResult * zAxis;
+
+        //ALSO DOT NORMAL ? UNKLAR! ROTATION IN GROUND VERHINDERN!
+
+        float heightValue = zAxis.Z;
+
+        groundContactConstraint.allowRollRotationPositive = heightValue > 0.0f;
+        groundContactConstraint.allowRollRotationNegative = heightValue < 0.0f;
+    }
+
+
+
 }
 
 // cache
@@ -376,9 +421,11 @@ FVector Matrix6x6::Force(float mass){
 }
 
 FVector Matrix6x6::GravityForce(float mass){
-    return FVector(0, 0, -981.0f) * mass;
+    if(!contactFloor){
+        return FVector(0, 0, -981.0f) * mass;
+    }
+    return FVector(0, 0, 0);
 }
-
 
 FVector Matrix6x6::NormalForce(float mass){
     if(contactFloor){

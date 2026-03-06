@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 
 #include "GameCore/Ui3D/WidgetComponentModified/Component/AnyMeshWidgetComponent.h"
+#include "GameCore/PlayerControllerBase/InteractionCallbackInterface/WidgetInteractionCallbackInterface.h"
+
 
 #include "Blueprint/UserWidget.h"
 #include "Components/SceneComponent.h"
@@ -45,6 +47,19 @@ public:
 	}
 
 	void ScaleMeshDataToMaxCm(float num);
+
+	// ---- PLAYER CALLBACK FOR WIDGETS ----
+	// ---- callback interface injection for p2 game widgets if needed ----
+	// if a widget has processed work it can notify this interface via
+	// this parent which will own a AnyMeshWidget and its UWidget.
+	// (Do NOT break the hierachy of ACustomMeshUiActor->AnyMeshWidgetComp->UWidget)
+	void SetCallbackForDelayedInteractions(IWidgetInteractionCallbackInterface *interfaceIn);
+	
+protected:
+    void ResetWidgetInteractionCallbackIfNotHovered();
+    IWidgetInteractionCallbackInterface *widgetInteracionCallbackInterface = nullptr;
+
+	// ---- PLAYER CALLBACK FOR WIDGETS ---- END ----
 
 protected:
 	//property for debug

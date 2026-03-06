@@ -23,6 +23,9 @@ void LayeredTwoJointBone::setup(
     FTwoLimbProperty &torsoProperty = package.GetTorsoSize();
     torsoBone.setup(torsoProperty);
     torsoBone.useOtherColorType();
+
+    //NEW
+    torsoBone.markTriangleFlipAsWantedForLegs();
     
     
     FTwoLimbProperty &armProperty = package.GetArmSize();
@@ -111,7 +114,7 @@ void LayeredTwoJointBone::Tick(
         worldTarget = HandTargetWorldBasedOnAttachedItem();
 
         //looks ok
-        if(false && bDrawDebugLines){
+        if(true && bDrawDebugLines){
             DebugHelper::showLineBetween(
                 world,
                 actorTranslation.getTranslation(),

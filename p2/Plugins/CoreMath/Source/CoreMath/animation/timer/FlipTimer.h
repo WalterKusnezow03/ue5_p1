@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 
-#include "timer.h"
+#include "Timer.h"
 
 
-class COREMATH_API FlipTimer : public timer{
+class COREMATH_API FlipTimer : public Timer{
 
 public:
     FlipTimer();

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/interfaces/Steeringinterface.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
 #include "vehicleBase.generated.h"
 
 UCLASS()
@@ -37,7 +37,7 @@ protected:
     FVector moveDirectionToLocalRotationSpace(FVector &dir);
     FVector moveDirectionToWorldRotationSpace(FVector &dir);
 
-    timer unseatTimer;
+    Timer unseatTimer;
     bool canUnseat();
     void TickUnseatTimer(float deltatime);
     void resetUnseatTimer();

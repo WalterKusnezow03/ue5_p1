@@ -29,5 +29,8 @@ private:
     void loadPauseRoomAssets();
     void loadGameStartRoomAssets();
     void loadLoadoutRoomAssets();
+
+    void load3DWidgetData();
+    void loadWidgetMaterial();
     void load3DWidgets();
 };

@@ -74,11 +74,10 @@ void UWidgetProgressBarBase::SetColorForeground(FLinearColor color){
 
 
 
-void UWidgetProgressBarBase::SetProgress(float num){
+void UWidgetProgressBarBase::SetProgress(float scalar){
     // scale for foreground by scalar
-    num = ClampProgress(num);
-    progressCopy = num;
-    MMatrix2D scale = MMatrix2D::MakeScaleMatrix(num, 1.0f); // scaled on X axis for now.
+    scalar = ClampProgress(scalar);
+    MMatrix2D scale = MMatrix2D::MakeScaleMatrix(scalar, 1.0f); // scaled on X axis for now.
 
     SlateMeshDataPolygon &polygon = PolygonForeGround();
     SlateMeshData &meshData = polygon.MeshDataRef();
@@ -91,10 +90,10 @@ void UWidgetProgressBarBase::ResetProgress(){
 }
 
 
-float UWidgetProgressBarBase::ClampProgress(float num){
-    num = std::max(num, 0.0f);
-    num = std::min(num, 1.0f);
-    return num;
+float UWidgetProgressBarBase::ClampProgress(float scalar){
+    scalar = std::max(scalar, 0.0f);
+    scalar = std::min(scalar, 1.0f);
+    return scalar;
 }
 
 

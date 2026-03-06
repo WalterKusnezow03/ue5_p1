@@ -7,17 +7,18 @@
 /**
  * 
  */
-class COREMATH_API timer
+class COREMATH_API Timer
 {
 public:
-	timer();
-	timer(float time, bool resetsItselfIn);
-	virtual ~timer();
+	Timer();
+	Timer(float time, bool resetsItselfIn);
+	virtual ~Timer();
 
 	void Begin(float time);
 	void Begin(float time, bool resetsItselfIn);
+	void Reset();
 	virtual void Tick(float deltaTime);
-	
+
 	virtual bool timesUp();
 	virtual bool TickWithTimesUpReset(float deltatime);
 
@@ -25,7 +26,10 @@ public:
 		return timeLeft;
 	}
 
+	//between 0 and 1, reached or not
 	virtual float scalar();
+
+	//between 1 and 0, 0 if no time left
 	float InvertedScalar();
 
 private:

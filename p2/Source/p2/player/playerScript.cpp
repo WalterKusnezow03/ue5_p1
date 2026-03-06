@@ -84,6 +84,8 @@ void AplayerScript::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     PlayerInputComponent->BindAction("key3", IE_Pressed, this, &AplayerScript::keydown3);
     PlayerInputComponent->BindAction("key4", IE_Pressed, this, &AplayerScript::keydown4);
 
+
+
 }
 
 
@@ -273,6 +275,9 @@ void AplayerScript::interact(){
     }
 	Super::interact(); //performs Raycast and sets AActor* interactedActorPointer!!
 
+    //show if held pressed
+    DebugHelper::showScreenMessage("AplayerScript::Interact E", FColor::Green);
+
     if(interactedActorPointer){
         Aweapon *weapon = Cast<Aweapon>(interactedActorPointer);
         if(weapon){
@@ -282,9 +287,13 @@ void AplayerScript::interact(){
 
         AvehicleBase *vehicle = Cast<AvehicleBase>(interactedActorPointer);
         if(vehicle != nullptr){
-            vehicle->seatAsDriver(this); //interface
+            vehicle->seatAsDriver(this); //interface passed here
             return;
         }
+
+        
+
+
     }
     interactedActorPointer = nullptr; //reset
 }

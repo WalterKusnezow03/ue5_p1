@@ -36,6 +36,7 @@ bool StorageInterface::LoadBinaryData(
 
 // ------ PATH -------
 
+/*
 /// @brief creates a path as "/ProjectDir/worldLevelName/", "/" at end, append inner path.
 /// @param worldLevelName 
 /// @return 
@@ -49,7 +50,7 @@ FString StorageInterface::BaseDir(FString worldLevelName){
 FString StorageInterface::BaseDir(){
     return FPaths::ProjectSavedDir() //has "/" at end
     + TEXT("StorageInterfaceSaved/");
-}
+}*/
 
 
 // ----- REMOVE DIR ------

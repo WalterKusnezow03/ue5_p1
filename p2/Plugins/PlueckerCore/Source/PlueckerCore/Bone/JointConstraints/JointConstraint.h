@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "JointConstraintBase.h"
 
-class PLUECKERCORE_API FJointConstraint {
+class PLUECKERCORE_API FJointConstraint : public FJointConstraintBase{
     
 public:
     //default setup does not allow position, but all degrees of freedom for rotation
@@ -23,7 +24,7 @@ public:
         ApplyConstraint(allowYawRotation, rotation.Z);
     }
 
-    void ApplyPositionConstraint(FVector &pos) const { 
+    virtual void ApplyPositionConstraint(FVector &pos) const { 
         ApplyConstraint(allowPositionOffsetX, pos.X);
         ApplyConstraint(allowPositionOffsetY, pos.Y);
         ApplyConstraint(allowPositionOffsetZ, pos.Z);
@@ -52,11 +53,10 @@ public:
     }
 
 private:
-    void ApplyConstraint(bool flag, double &num)const{
-        if(!flag){
-            num = 0.0;
-        }
-    }
+    
+
+
+    
 
 
 

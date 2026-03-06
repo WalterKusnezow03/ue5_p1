@@ -34,9 +34,28 @@ void UInteractionComponentHoveredCache::UpdateHovered(UWidgetComponent *inWidget
 bool UInteractionComponentHoveredCache::IsHoveredWidgetComponent(UWidgetComponent *checkComponent){
     if(checkComponent){
         CreateInstanceIfNeeded(checkComponent);
-        if(checkComponent == instancePtr->currentHoveredWidget){
-            return true;
+        if(instancePtr){
+            if(checkComponent == instancePtr->currentHoveredWidget){
+                return true;
+            }
         }
+        
+    }
+    return false;
+}
+
+
+
+
+void UInteractionComponentHoveredCache::UpdateInteractKeyHoldFlag(bool holdKey){
+    if(instancePtr){
+        instancePtr->interactKeyHoldDownCache = holdKey;
+    }
+}
+bool UInteractionComponentHoveredCache::IsInteractKeyHoldWidgetComponent(UWidgetComponent *checkComponent){
+    if(instancePtr){
+        return instancePtr->interactKeyHoldDownCache &&
+               IsHoveredWidgetComponent(checkComponent);
     }
     return false;
 }

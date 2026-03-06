@@ -16,7 +16,6 @@ protected:
     //Custom Constructor override - is called internally from post properties override!
     virtual void ConstructWidget() override;
 
-    float progressCopy = 1.0f;
 
 public:
 
@@ -24,7 +23,7 @@ public:
     void SetColorForeground(FLinearColor color);
 
     ///@brief set progress of bar, between 0 and 1
-    void SetProgress(float num);
+    void SetProgress(float scalar);
     void ResetProgress();
 
     //overriden but super call needed
@@ -40,7 +39,7 @@ private:
 
     void CreateBar();
 
-    float ClampProgress(float num);
+    float ClampProgress(float scalar);
 
     float debugTime = 0.0f;
 };

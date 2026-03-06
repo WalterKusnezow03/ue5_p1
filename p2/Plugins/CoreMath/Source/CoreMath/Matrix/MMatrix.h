@@ -13,7 +13,7 @@ public:
 	MMatrix();
 	~MMatrix();
 
-	MMatrix(FVector &other);
+	MMatrix(const FVector &other);
 	MMatrix(FRotator &other);
 	MMatrix(const MMatrix &other);
 	MMatrix& operator=(const MMatrix &other);
@@ -23,16 +23,16 @@ public:
 	void setTranslation(float x, float y, float z);
 	FVector getTranslation() const;
 
-	void operator+=(FVector &other);
-	void operator-=(FVector &other);
+	void operator+=(const FVector &other);
+	void operator-=(const FVector &other);
 
-	void operator+=(MMatrix &other);
-	void operator*=(MMatrix & other);
+	void operator+=(const MMatrix &other);
+	void operator*=(const MMatrix & other);
 
-	FVector operator*(const FVector &other);
-	MMatrix operator*(MMatrix &other) const;
+	FVector operator*(const FVector &other) const;
+	MMatrix operator*(const MMatrix &other) const;
 
-	FVector2D operator*(FVector2D &other);
+	FVector2D operator*(const FVector2D &other) const;
 
 	FString asString();
 	FString asStringExtractedTransform();
@@ -61,12 +61,12 @@ public:
 
 	static MMatrix createRotatorFromRad(float x, float y, float z);
 	static MMatrix createRotatorFromDeg(float x, float y, float z);
-	static MMatrix createRotatorFrom(FRotator &other);
-	static MMatrix createRotatorFrom(FVector &other);
-	static MMatrix createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZAxis);
+	static MMatrix createRotatorFrom(const FRotator &other);
+	static MMatrix createRotatorFrom(const FVector &other);
+	static MMatrix createRotatorFrom(const FVector &other, FVector2D XAxis, FVector2D ZAxis);
 
 	static MMatrix createRotatorFrom(
-		FVector &other,
+		const FVector &other,
 		FVector2D XAxis,
 		FVector2D ZAxis,
 		bool yawConstraint90
@@ -74,7 +74,7 @@ public:
 
 	//debug method
 	static MMatrix createRotatorFrom(
-		FVector &other,
+		const FVector &other,
 		FVector2D XAxis,
 		FVector2D ZAxis,
 		bool yawConstraint90,
@@ -84,7 +84,7 @@ public:
 
 	//new method for choosing roll instead of yaw
 	static MMatrix createRotatorFrom(
-		FVector &other,
+		const FVector &other,
 		FVector2D XAxis,
 		FVector2D ZAxis,
 		bool yawConstraint90,
@@ -93,10 +93,10 @@ public:
 
 	void resetRotation();
 
-	void rotate(MMatrix &other);
+	void rotate(const MMatrix &other);
 	void setRotation(FRotator &other);
 	void setRotation(const MMatrix &other);
-	void setRotation(FVector &other);
+	void setRotation(const FVector &other);
 
 	void setRotation(const FQuat &quat);
 
@@ -140,6 +140,11 @@ private:
 
 	static float signForAngle(FVector2D &a, FVector2D &b);
 
+	static bool IsParalellToZAxis(const FVector &check);
+	static bool IsParalell(
+		const FVector &a,
+		const FVector &b
+	);
 
 public:
 	MMatrix jordanInverse();
@@ -161,5 +166,5 @@ private:
 
 	//extraction rotation special
 	static bool useRoll(float dotProduct);
-	static float DotProduct2D(FVector &a, FVector &b);
+	static float DotProduct2D(const FVector &a, const FVector &b);
 };

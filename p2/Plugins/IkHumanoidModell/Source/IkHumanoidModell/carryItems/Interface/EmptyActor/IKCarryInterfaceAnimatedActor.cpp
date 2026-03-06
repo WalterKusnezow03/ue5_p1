@@ -45,7 +45,7 @@ void AIKCarryInterfaceAnimatedActor::InitAxisConstraintEmpty(){
 
 FIKCarryInterfaceAxisConstraint &AIKCarryInterfaceAnimatedActor::getAxisConstraint(){
     if(animationActiveFlag){
-        return activeAnimation.getAxisConstraint();
+        //return activeAnimation.getAxisConstraint();
     }
     return axisConstraintNone;
 }
@@ -159,19 +159,42 @@ void AIKCarryInterfaceAnimatedActor::ReplaceAnimationPair(
 void AIKCarryInterfaceAnimatedActor::UpdateActorTransform(FVector &location, FRotator &rotation){
     UpdateHasMovedFlag(location);
 
-    //is bugged!
-    /*DebugHelper::showLineBetween(
-        GetWorld(),
-        location,
-        location + FVector(0,0,100),
-        FColor::Green,
-        0.1f
-    );*/
+    //is bugged! (not anymore)
+    if(drawLineOnTransformUpdate){
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            location,
+            location + FVector(0,0,100),
+            FColor::Green,
+            0.1f
+        );
+    }
+    
 
     SetActorLocation(location);
     SetActorRotation(rotation);
     internalTransform.setTranslation(location);
     internalTransform.setRotation(rotation);
+
+
+
+    ///// ---- BUG HERE ! ---- ROTATION GOES INTO VERY RANDOM DIRECTIONS ! ----
+
+    //debug show rotation
+    FVector forward(100, 0, 0);
+    MMatrix r(rotation);
+    forward = r * forward;
+
+    if(drawLineOnTransformUpdate){
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            location,
+            location + forward,
+            FColor::Red,
+            0.1f
+        );
+    }
+    
 }
 
 // called by UpdateActorTransform, By Skelleton, on Tick.

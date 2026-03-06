@@ -1,5 +1,7 @@
 #include "AnyMeshWidgetInteractionComponent.h"
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
+#include "GameCore/Ui3D/InteractionComponentCache/InteractionComponentHoveredCache.h"
+
 
 
 UAnyMeshWidgetInteractionComponent *UAnyMeshWidgetInteractionComponent::MakeInstance(
@@ -113,13 +115,17 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
                     DebugHelper::logMessage(
                         FString::Printf(
                             TEXT("UAnyMeshWidgetInteractionComponent::Hit3DUIWidget %s"),
-                            *found->GetDebugName() //EDITOR ONLY
+                            *casted->GetDebugName() //EDITOR ONLY
                         )
                     );
                     #endif*/
 
-
+                    //injects notify interface into hit actor.
+                    //if the hit actor is not hovered anymore it will eject the
+                    //interface on its own!
+                    casted->SetCallbackForDelayedInteractions(notifyInterface);
                     return casted;
+
                 }else{
                     if(bDrawDebugLine){
                         DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Blue);
@@ -151,7 +157,6 @@ void UAnyMeshWidgetInteractionComponent::SetInteractionHoverActive(bool enabled)
 
 
 
-#include "GameCore/Ui3D/InteractionComponentCache/InteractionComponentHoveredCache.h"
 
 // hover ticked
 void UAnyMeshWidgetInteractionComponent::TickHovered(
@@ -173,4 +178,23 @@ void UAnyMeshWidgetInteractionComponent::TickHovered(
 
 bool UAnyMeshWidgetInteractionComponent::IsHoverActive(){
     return isHoverEnabled;
+}
+
+
+
+
+
+void UAnyMeshWidgetInteractionComponent::TickInteractKeyHoldDown(bool holdInteractKey){
+    UInteractionComponentHoveredCache::UpdateInteractKeyHoldFlag(holdInteractKey);
+}
+
+
+
+
+//the player controller will register here, the pointer will
+//be dispatched to widgets to notify player if needed.
+void UAnyMeshWidgetInteractionComponent::SetCallbackForDelayedInteractions(
+    IWidgetInteractionCallbackInterface *interfaceIn
+){
+    notifyInterface = interfaceIn;
 }

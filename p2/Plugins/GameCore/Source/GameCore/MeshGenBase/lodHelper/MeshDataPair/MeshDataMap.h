@@ -29,6 +29,8 @@ public:
         materialEnum type
     );
 
+    virtual void appendMeshData(MeshDataMap &other);
+
     ///@brief will check the whole meshdata map for intersection
     /// (use this from uproeceduralmeshcomponentpair - acustommeshactor)
     /// for raycast alternative
@@ -60,11 +62,15 @@ public:
     bool IsInBound(const FVector &localPosition, bool raycastEnabledMesh);
 
 
+
+    virtual void transformAllVertecies(MMatrix &other);
+    
+
 protected:
     bool IsInBound(const FVector &localPosition, std::map<materialEnum, MeshData> &mapToCheck);
 
     std::map<materialEnum, MeshData> raycastMeshData;
     std::map<materialEnum, MeshData> noRaycastMeshData; //no physics mesh at all
 
-   
+    void transformAllVertecies(MMatrix &other, std::map<materialEnum, MeshData> &mapTotransform);
 };

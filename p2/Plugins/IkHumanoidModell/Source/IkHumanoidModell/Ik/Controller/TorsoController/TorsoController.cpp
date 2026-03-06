@@ -14,6 +14,11 @@ TorsoController::~TorsoController(){
 
 
 void TorsoController::setup(FHumanoidControllerSetupPackage &package){
+
+    FTwoLimbProperty &spinePackage = package.GetTorsoSpineSize();
+    spine.setup(spinePackage);
+    spineTarget = FVector(0, 0, spinePackage.GetFirstAndSecondSize()); //up ward default target
+
     partLeft.setup(
         EArmType::ELeft,
         package
@@ -48,9 +53,31 @@ void TorsoController::Tick(
         return;
     }
 
-    partLeft.Tick(actorTranslation, actorRotation, deltatime);
-    partRight.Tick(actorTranslation, actorRotation, deltatime);
+    //build spine
+    BuildSpine(actorTranslation, actorRotation, deltatime);
+    MMatrix spineWorldTranslation = spine.EndEffectorTranslation();
+
+    //build top torso - not tested!
+    partLeft.Tick(spineWorldTranslation, actorRotation, deltatime);
+    partRight.Tick(spineWorldTranslation, actorRotation, deltatime);
+
+
+    //build torso - OLD
+    //partLeft.Tick(actorTranslation, actorRotation, deltatime);
+    //partRight.Tick(actorTranslation, actorRotation, deltatime);
 }
+
+void TorsoController::BuildSpine(
+    const MMatrix &actorTranslation,
+    const MMatrix &actorRotation,
+    float deltatime
+){
+    MMatrix worldTransform = actorTranslation * actorRotation; // M = T * R <-- lese richtung --
+    spine.MoveToTarget(spineTarget, worldTransform, deltatime);
+}
+
+
+
 
 
 void TorsoController::SetWorldTargetLeft(FVector &target){
@@ -76,16 +103,13 @@ void TorsoController::dropCarriedItem(){
 void TorsoController::getActors(TArray<AActor *> &outArray){
     partLeft.getActors(outArray);
     partRight.getActors(outArray);
+    spine.getActors(outArray);
 }
-
-
-
-
-
 
 // ---- pluecker joints ----
 void TorsoController::SetupJointParents(){
-    
+    //connect shoulders to spine
+    spine.AddChildsToLowerJoint(GetTopJointsOfLayeredArms());
 }
 
 
@@ -94,6 +118,7 @@ void TorsoController::SetupJointParents(){
 
 
 void TorsoController::ReactToDamage(const FCustomHitResult &hitResult){
+    spine.ReactToDamage(hitResult);
     partLeft.ReactToDamage(hitResult);
     partRight.ReactToDamage(hitResult);
 }
@@ -101,13 +126,18 @@ void TorsoController::ReactToDamage(const FCustomHitResult &hitResult){
 
 void TorsoController::SetStateCollapse(bool flag){
     IJointInterface::SetStateCollapse(flag);
+    spine.SetStateCollapse(flag);
     partLeft.SetStateCollapse(flag);
     partRight.SetStateCollapse(flag);
 }
 
+Joint *TorsoController::GetTopJoint(){
+    return spine.GetTopJoint();
+}
 
-
-TArray<Joint *> TorsoController::GetTopJoints(){
+//internal use of start effector joints of layered two joint bone to connect spine
+//to shoulders.
+TArray<Joint *> TorsoController::GetTopJointsOfLayeredArms(){
     TArray<Joint *> outArray;
     outArray.Add(partLeft.GetTopJoint());
     outArray.Add(partRight.GetTopJoint());

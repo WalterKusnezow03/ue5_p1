@@ -54,6 +54,7 @@ public:
 	
 	//called on begin play and get from gc entity manager
 	virtual void init();
+	virtual void init(FVector &location);
 
 	//virtual void setTeam(int teamIn) override;
 	//virtual int getTeam() override;
@@ -146,9 +147,9 @@ protected:
 
 
 	int pathDelayTime = 10;
-	class timer pathDelayTimer;
+	class Timer pathDelayTimer;
 
-	class timer spottingTimer;
+	class Timer spottingTimer;
 
 	
 
@@ -163,7 +164,7 @@ protected:
 
 
 	//--humanoid controller--
-	class timer debugRecordRotationTimer;
+	class Timer debugRecordRotationTimer;
 	HumanoidController humanoidPluginController;
 
 	void BeginPlayHumanoidController();

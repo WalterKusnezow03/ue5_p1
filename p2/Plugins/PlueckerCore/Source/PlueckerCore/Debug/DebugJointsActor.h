@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PlueckerCore/Bone/Joint.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
  
 #include "DebugJointsActor.generated.h"
 
@@ -29,7 +29,7 @@ private:
     void initChain();
     void TickDebugRandomTorque(MMatrix &translation, float deltaTime);
 
-    timer timerFortick;
+    Timer timerFortick;
     
     
 

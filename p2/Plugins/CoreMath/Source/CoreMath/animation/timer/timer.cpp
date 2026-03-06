@@ -1,23 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "timer.h"
+#include "Timer.h"
 
 
 
-timer::timer(){
+Timer::Timer(){
 
 }
 
 /// @brief starts the timer at a given time
 /// @param time time will be absolute
 /// @param resetsItselfIn tells if the timer resets itsself when the timesUpFunction returns true
-timer::timer(float time, bool resetsItselfIn)
+Timer::Timer(float time, bool resetsItselfIn)
 {
     Begin(time, resetsItself);
 }
 
-timer::~timer()
+Timer::~Timer()
 {
 }
 
@@ -25,7 +25,7 @@ timer::~timer()
 /// @brief starts the timer at a given time
 /// @param time time will be absolute
 /// @param resetsItselfIn tells if the timer resets itsself when the timesUpFunction returns true
-void timer::Begin(float time, bool resetsItselfIn){
+void Timer::Begin(float time, bool resetsItselfIn){
     time = std::abs(time);
     initialTime = time;
     timeLeft = time;
@@ -34,20 +34,24 @@ void timer::Begin(float time, bool resetsItselfIn){
 
 /// @brief will begin the timer, one time timer!
 /// @param time 
-void timer::Begin(float time){
+void Timer::Begin(float time){
     Begin(time, false);
 }
 
-void timer::Tick(float deltaTime){
+void Timer::Reset(){
+    timeLeft = initialTime;
+}
+
+void Timer::Tick(float deltaTime){
     timeLeft -= deltaTime;
 }
 
-bool timer::TickWithTimesUpReset(float deltatime){
+bool Timer::TickWithTimesUpReset(float deltatime){
     Tick(deltatime);
     return timesUp();
 }
 
-bool timer::timesUp()
+bool Timer::timesUp()
 {
     bool timeIsUp = timeLeft < 0.05f;
     if(timeIsUp && resetsItself){
@@ -57,14 +61,14 @@ bool timer::timesUp()
 }
 
 //between 0 and 1, reached or not
-float timer::scalar(){
+float Timer::scalar(){
     float reached = initialTime - timeLeft; 
     float denominator = std::max(initialTime, 0.1f);
     return reached / denominator;
 }
 
 //0 if reached. 1 if at time 0
-float timer::InvertedScalar(){
+float Timer::InvertedScalar(){
     float _scalar = 1.0f - scalar();
     return std::max(_scalar, 0.0f);
 }

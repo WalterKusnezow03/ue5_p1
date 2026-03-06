@@ -14,7 +14,7 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "CoreMath/animation/KeyFrames/KeyFrameAnimation.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
 #include "CoreMath/animation/timer/PayloadTimer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 

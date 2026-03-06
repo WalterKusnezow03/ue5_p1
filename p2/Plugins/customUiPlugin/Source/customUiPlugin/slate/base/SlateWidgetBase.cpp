@@ -109,7 +109,7 @@ void SSlateWidgetBase::DrawPolygon(
     const FGeometry& AllottedGeometry
 )const{
     if(!polygon.bIsEnabled()){
-        return; //rendering disabled.
+        return; //rendering disabled, do net render!
     }
 
     //DEFAULT DRAW

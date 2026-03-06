@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
 
 /**
  * 
@@ -34,7 +34,7 @@ private:
 	bool wingsuitJumpTriggered = false;
 	bool wingsuitIsOpen = false;
 	float wingsuitUpdateInvertall = 1.0f;
-	class timer wingsuitTimer;
+	class Timer wingsuitTimer;
 	int minDistanceGroundForWingsuit = 200; //10000
 
 	FVector actorLocation;

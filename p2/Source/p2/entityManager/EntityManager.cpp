@@ -116,8 +116,6 @@ void EntityManager::add(Aweapon *weaponIn){
     if(weaponIn != nullptr){
         FVector hiddenLocation = FVector(0, 0, -10000);
         weaponIn->SetActorLocation(hiddenLocation);
-
-
         weaponIn->showWeapon(false);
         
         
@@ -295,22 +293,11 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
         //kleiner tessttt, weiss net wo es sonst hin soll wenn es in gc auch gespawned wird
         if(found){
             addActorToIgnoreRaycastParams(found, teamEnum::neutralTeam);
-            found->SetActorLocation(Location);
-            found->init();
+            
+            found->init(Location);
             return found;
         }
     }
-
-    /*
-    //get from list if any left
-    if(entityList.hasActorsLeft()){
-        AEntityScript *entity = entityList.getFirstActor();
-        if(entity != nullptr){
-            entity->SetActorLocation(Location);
-            entity->init();
-            return entity;
-        }
-    }*/
 
     //else: create
     if(assetManager *a = assetManager::instance()){
@@ -346,8 +333,8 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
         );
 
         if(human){
-            human->SetActorLocation(Location);
-            human->init();
+            
+            human->init(Location);
             human->setTeam(team);
             addActorToIgnoreRaycastParams(human, team);
 
@@ -356,46 +343,6 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
     }
 
 
-
-    /*
-    //get from list if any left
-    if(humanEntityMap.hasActorsLeft(team)){
-
-        AHumanEntityScript *human = humanEntityMap.getFirstActor(team);
-        if(human != nullptr){
-            //DebugHelper::showScreenMessage("human from list !", FColor::Yellow);
-            human->SetActorLocation(Location);
-            human->init();
-            
-
-            return human;
-        }
-    }*/
-
-
-
-    //object pool will spawn.
-    /*
-    if(assetManager *a = assetManager::instance()){
-       UClass *bp = a->Find<entityEnum, UClass>(entityEnum::human_enum);
-       // a->findBp(entityEnum::human_enum);
-       if (bp != nullptr)
-       {
-           AActor *actor = spawnAactor(world, bp, Location);
-           if (actor != nullptr)
-           {
-               addActorToIgnoreRaycastParams(actor, team);
-               AHumanEntityScript *casted = Cast<AHumanEntityScript>(actor);
-               if (casted != nullptr)
-               {
-                   casted->SetActorLocation(Location);
-                   casted->init();
-                   casted->setTeam(team);
-                   return casted;
-               }
-           }
-        }
-    }*/
     return nullptr;
 }
 

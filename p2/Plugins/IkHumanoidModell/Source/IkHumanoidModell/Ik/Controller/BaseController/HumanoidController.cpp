@@ -77,9 +77,17 @@ void HumanoidController::defaultSetup(AActor *actorOwner, bool flagWantedHands){
 
 
 void HumanoidController::AddTorsoControllerTopJointsToHipForPlueckerJoints(){
-    //connect torso and hip via plücker joints.
+
+    //DEPRECATED
+    /*//connect torso and hip via plücker joints.
     if(Joint *hipJoint = hipController.GetTopJoint()){
         hipJoint->AddChildsByPointer(torsoController.GetTopJoints());
+    }*/
+
+    //NEW TO SPINE CONNECT
+    //connect torso and hip via plücker joints.
+    if(Joint *hipJoint = hipController.GetTopJoint()){
+        hipJoint->AddChildByPointer(torsoController.GetTopJoint());
     }
 }
 
@@ -90,13 +98,13 @@ void HumanoidController::AddTorsoControllerTopJointsToHipForPlueckerJoints(){
 void HumanoidController::Tick(float deltatime){
 
     hipController.Tick(deltatime);
-
+    TickMainCarriedItemSocket(deltatime);
     torsoController.Tick(
         hipController.getTranslation(), // MMatrix &actorTranslation,
         hipController.getOrientation(), // MMatrix &actorRotation,
         deltatime
     );
-    TickMainCarriedItemSocket(deltatime);
+    
 }
 
 void HumanoidController::TickMainCarriedItemSocket(float deltatime){
@@ -250,25 +258,12 @@ void HumanoidController::updateCollisionParams(IIkCarryInterface *ptr, bool add)
 //collision params for hip / leg down raycast, ground raycast
 void HumanoidController::updateCollisionParams(AActor *actor, bool add){
     if(actor != nullptr){
+        //are updated in hipcontroller behind the scenes.
         if(add){
             ASharedRaycastParamManager::Add(actor);
         }else{
             ASharedRaycastParamManager::Remove(actor);
         }
-        hipController.updateCollisionParams(ASharedRaycastParamManager::getCollisonParams());
-
-
-
-        //deprecated
-        /*
-        if(add){
-            collisionParamsProvider.AddIgnoredActor(actor);
-        }else{
-            collisionParamsProvider.RemoveIgnoredActor(actor);
-        }
-        //update params since anything has changed
-        hipController.updateCollisionParams(collisionParamsProvider.getCollisonParams());
-        */
     }
 }
 
@@ -441,6 +436,7 @@ void HumanoidController::SetupEmptyArmAnimationActor(UWorld *world){
 
 void HumanoidController::OnDropUpdateAnimation(){
     if(emptyArmTargetActor){
+        updateCollisionParams(Cast<AActor>(emptyArmTargetActor), true); //add irgnored.
         DebugHelper::logMessage("HumanoidController::Pickup Empty Actor");
         
         attachOrReplaceCarriedItem(emptyArmTargetActor);

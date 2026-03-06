@@ -19,6 +19,9 @@ public:
     float forwardAxisValue();
     float rightAxisValue();
 
+    void setInteractKeyHold(bool flag);
+    bool interactKeyIsHoldDown();
+
 private:
     //W and S key
     float forwardAxis = 0.0f;
@@ -28,4 +31,7 @@ private:
 
     bool spacebarPressed = false;
     bool interactKeyPressed = false;
+
+    //different state than tracking pressed and resetting it in interactKeyWasPressed method.
+    bool interactKeyHoldDown = false;
 };

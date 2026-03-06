@@ -87,6 +87,8 @@ void APlayerControllerBase::SetupPlayerInputComponent(UInputComponent* PlayerInp
     PlayerInputComponent->BindAction("openPauseKey", IE_Pressed, this, &APlayerControllerBase::openPauseMenu);
 
     PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &APlayerControllerBase::interact);
+    PlayerInputComponent->BindAction("InteractKey", IE_Released, this, &APlayerControllerBase::interactReleased);
+
 	PlayerInputComponent->BindAction("ReloadKey", IE_Pressed, this, &APlayerControllerBase::reload);
 	PlayerInputComponent->BindAction("DropKey", IE_Pressed, this, &APlayerControllerBase::drop);
     PlayerInputComponent->BindAction("JumpKey", IE_Pressed, this, &APlayerControllerBase::Jump);
@@ -288,7 +290,8 @@ void APlayerControllerBase::sprint(){
  * allows the player to interact (for example picking up a weapon by pressing "E")
  */
 void APlayerControllerBase::interact(){
-	playerInputContainer.setInteractKeyPressedTrue();
+	playerInputContainer.setInteractKeyPressedTrue(); //flag pressed once
+    playerInputContainer.setInteractKeyHold(true); //flag holding down, on release: remove flag
 
     interactedActorPointer = nullptr; //reset!
     interactedActorPointer = performRaycast();
@@ -304,6 +307,12 @@ void APlayerControllerBase::interact(){
     }
     
 }
+
+void APlayerControllerBase::interactReleased(){
+    playerInputContainer.setInteractKeyHold(false);
+}
+
+
 
 AActor* APlayerControllerBase::performRaycast()
 {

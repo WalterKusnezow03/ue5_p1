@@ -86,6 +86,9 @@ public:
 
     virtual void ClearAllMeshData() override;
 
+    virtual void appendMeshData(MeshDataMap &other) override;
+    virtual void transformAllVertecies(MMatrix &other) override;
+
 private:
     //declared in base class
     //std::map<materialEnum, MeshData> raycastMeshData;

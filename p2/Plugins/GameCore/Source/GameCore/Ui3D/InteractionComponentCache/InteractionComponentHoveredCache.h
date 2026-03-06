@@ -13,16 +13,20 @@ private:
     static UInteractionComponentHoveredCache *instancePtr;
 public:
     
-    static void UpdateHovered(UWidgetComponent *inActor); //can also be nullptr.
-    static bool IsHoveredWidgetComponent(UWidgetComponent *checkActor);
+    static void UpdateHovered(UWidgetComponent *inComponent); //can also be nullptr.
+    static bool IsHoveredWidgetComponent(UWidgetComponent *checkComponent);
+
+    static void UpdateInteractKeyHoldFlag(bool holdKey);
+    static bool IsInteractKeyHoldWidgetComponent(UWidgetComponent *checkComponent);
 
 
 protected:
     virtual void BeginDestroy() override;
 
     
-    static void CreateInstanceIfNeeded(UWidgetComponent *inActor);
+    static void CreateInstanceIfNeeded(UWidgetComponent *inComponent);
     static void CreateInstanceIfNeeded(UWorld *world);
 
     UWidgetComponent *currentHoveredWidget = nullptr;
+    bool interactKeyHoldDownCache = false;
 };

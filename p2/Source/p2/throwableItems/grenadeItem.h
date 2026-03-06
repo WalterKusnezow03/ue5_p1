@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/throwableItems/throwableItem.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
 #include "p2/weapon/ExplosiveHelper/ExplosiveHelper.h"
 #include "grenadeItem.generated.h"
 
@@ -28,7 +28,7 @@ protected:
 
 	void detonate();
 
-	class timer timer;
+	class Timer timer;
 
 	ExplosiveHelper explosiveHelper;
 	int EXPLOSION_RADIUS = 10000; // 20 000 --> (20 * 100 = 20m)

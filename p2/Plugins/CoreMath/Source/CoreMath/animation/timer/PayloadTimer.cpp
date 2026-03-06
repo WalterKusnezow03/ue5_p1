@@ -1,6 +1,6 @@
 #include "PayloadTimer.h"
 
-PayloadTimer::PayloadTimer() : timer() {
+PayloadTimer::PayloadTimer() : Timer() {
 
 }
 PayloadTimer::~PayloadTimer(){
@@ -9,7 +9,7 @@ PayloadTimer::~PayloadTimer(){
 
 
 bool PayloadTimer::TickWithTimesUpReset(float deltatime){
-    if(timer::TickWithTimesUpReset(deltatime)){
+    if(Timer::TickWithTimesUpReset(deltatime)){
         NotifyAll();
         return true;
     }

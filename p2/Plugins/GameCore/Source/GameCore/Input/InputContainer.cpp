@@ -51,3 +51,15 @@ bool InputContainer::interactKeyWasPressed(){
     }
     return false;
 }
+
+
+
+
+
+void InputContainer::setInteractKeyHold(bool flag){
+    interactKeyHoldDown = flag;
+}
+
+bool InputContainer::interactKeyIsHoldDown(){
+    return interactKeyHoldDown;
+}

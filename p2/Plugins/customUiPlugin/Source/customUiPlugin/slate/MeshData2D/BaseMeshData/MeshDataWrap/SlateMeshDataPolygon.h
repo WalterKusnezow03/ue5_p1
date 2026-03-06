@@ -71,7 +71,7 @@ public:
     void CopyTextData(SlateMeshDataPolygon &oldPolygon);
 
 
-    //rendering
+    //rendering enable and disable
     void EnableRender(bool bFlag);
     bool bIsEnabled() const;
 

@@ -3,6 +3,7 @@
 #include "Matrix3x3.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "PlueckerCore/Bone/JointConstraints/JointConstraint.h"
+#include "PlueckerCore/Bone/JointConstraints/JointGroundedConstraint.h"
 
 /**
  * plücker 6x6 for forward for now
@@ -80,10 +81,9 @@ private:
     FVector NormalForce(float mass);
     FVector GravityForce(float mass);
 
-    
-
-
-
+    void UpdateGroundConstraint(const MMatrix &worldResult);
+    void UpdateGroundConstraintPitchAndPosition();
+    void UpdateGroundConstraintRoll(const MMatrix &worldResult);
 
     void ShowPosition(const MMatrix &other);
     void ShowPosition(FVector pos);
@@ -92,6 +92,7 @@ private:
     //v will be right not eliminated by default!
     void applyConstraints(FVector &w, FVector &v);
     FJointConstraint constraint;
+    FJointGroundedConstraint groundContactConstraint;
 
     FCollisionQueryParams ignoreParams;
 

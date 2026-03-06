@@ -182,3 +182,34 @@ bool MeshDataMap::IsInBound(
 
     return false;
 }
+
+
+
+
+
+void MeshDataMap::transformAllVertecies(MMatrix &other){
+    transformAllVertecies(other, raycastMeshData);
+    transformAllVertecies(other, noRaycastMeshData);
+}
+
+void MeshDataMap::transformAllVertecies(MMatrix &other, std::map<materialEnum, MeshData> &mapTotransform){
+    for(auto &pair : mapTotransform){
+        MeshData &data = pair.second;
+        data.transformAllVertecies(other);
+    }
+}
+
+
+void MeshDataMap::appendMeshData(MeshDataMap &other){
+    
+    for(auto &pair : other.raycastMeshData){
+        materialEnum type = pair.first;
+        MeshData &data = pair.second;
+        appendMeshDataRaycast(data, type);
+    }
+    for(auto &pair : other.noRaycastMeshData){
+        materialEnum type = pair.first;
+        MeshData &data = pair.second;
+        appendMeshDataNoRaycast(data, type);
+    }
+}

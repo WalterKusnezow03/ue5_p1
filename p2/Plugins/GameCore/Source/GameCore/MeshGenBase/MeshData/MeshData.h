@@ -159,6 +159,7 @@ public:
 	const TArray<FProcMeshTangent> &getTangentsRefConst() const;
 
 	void offsetAllvertecies(FVector &offset);
+	
 	void transformAllVertecies(MMatrix &other);
 
 	void appendVertecies(std::vector<FVector> &vec);

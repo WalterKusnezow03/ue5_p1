@@ -1,22 +1,39 @@
 #include "FHumanoidControllerSetupPackage.h"
 
+/// --- default setup ---
+
 FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AActor *world){
     int widthMainBones = 10;
 
     FHumanoidControllerSetupPackage newPackage(world);
+    DefaultTorsoSetup(newPackage, widthMainBones);
+    DefaultLegSetup(newPackage, widthMainBones);
+    DefaultHandSetup(newPackage);
+
+    return newPackage;
+}
+
+void FHumanoidControllerSetupPackage::DefaultTorsoSetup(
+    FHumanoidControllerSetupPackage &newPackage,
+    int widthMainBones
+){
     FTwoLimbProperty &arm = newPackage.GetArmSize();
+    FTwoLimbProperty &torsoSpine = newPackage.GetTorsoSpineSize();
     FTwoLimbProperty &torso = newPackage.GetTorsoSize();
 
     arm.Setup(40.0f, 40.0f, widthMainBones);
-    torso.Setup(50.0f, 30.0f, widthMainBones);
 
-    FHandProperty &hand = newPackage.GetHandSize();
-    hand.SetupHandBody(6.0f, 6.0f, 3.0f);
-    FTwoLimbProperty &handFinger = hand.GetFingerSize();
-    handFinger.Setup(3.0f, 2.0f, 1.0f);
-    
+    torsoSpine.Setup(25.0f, 25.0f, widthMainBones);
+    torso.Setup(15.0f, 30.0f, widthMainBones);
 
+    //old
+    //torso.Setup(50.0f, 30.0f, widthMainBones);
+}
 
+void FHumanoidControllerSetupPackage::DefaultLegSetup(
+    FHumanoidControllerSetupPackage &newPackage,
+    int widthMainBones
+){
     FTwoLimbHipProperty &legLeft = newPackage.GetLegLeft();
     FTwoLimbHipProperty &legRight = newPackage.GetLegRight();
     legLeft.Setup(50.0f, 50.0f, widthMainBones);
@@ -27,9 +44,19 @@ FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AAct
 
     FLocomotionProperty &locomotion = newPackage.GetLocomotionProperty();
     locomotion.SetMaxVelocity(500.0f);
-
-    return newPackage;
 }
+
+void FHumanoidControllerSetupPackage::DefaultHandSetup(FHumanoidControllerSetupPackage &newPackage){
+    FHandProperty &hand = newPackage.GetHandSize();
+    hand.SetupHandBody(6.0f, 6.0f, 3.0f);
+    FTwoLimbProperty &handFinger = hand.GetFingerSize();
+    handFinger.Setup(3.0f, 2.0f, 1.0f);
+}
+
+
+
+
+/// --- class methods ---
 
 FHumanoidControllerSetupPackage::FHumanoidControllerSetupPackage(AActor *world){
     SetActor(world);
@@ -54,6 +81,7 @@ FHumanoidControllerSetupPackage &FHumanoidControllerSetupPackage::operator=(
         legPropertyLeft = other.legPropertyLeft;
         legPropertyRight = other.legPropertyRight;
         torsoSize = other.torsoSize;
+        torsoSpineSize = other.torsoSpineSize;
         handSize = other.handSize;
 
         SetActor(other.GetActor());
@@ -68,6 +96,7 @@ void FHumanoidControllerSetupPackage::SetActor(AActor *actor){
     legPropertyLeft.SetActor(actor);
     legPropertyRight.SetActor(actor);
     torsoSize.SetActor(actor);
+    torsoSpineSize.SetActor(actor);
     handSize.SetActor(actor);
 }
 
@@ -81,6 +110,10 @@ FTwoLimbHipProperty &FHumanoidControllerSetupPackage::GetLegLeft(){
 
 FTwoLimbHipProperty &FHumanoidControllerSetupPackage::GetLegRight(){
     return legPropertyRight;
+}
+
+FTwoLimbProperty &FHumanoidControllerSetupPackage::GetTorsoSpineSize(){
+    return torsoSpineSize;
 }
 
 FTwoLimbProperty &FHumanoidControllerSetupPackage::GetTorsoSize(){

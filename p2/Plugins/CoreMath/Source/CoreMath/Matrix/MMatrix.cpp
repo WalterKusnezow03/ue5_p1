@@ -45,7 +45,7 @@ void MMatrix::resetRotation(){
 
 }
 
-MMatrix::MMatrix(FVector &other){
+MMatrix::MMatrix(const FVector &other){
     makeIdentity();
     setTranslation(other);
 }
@@ -114,7 +114,7 @@ FVector MMatrix::getTranslation() const{
     return out;
 }
 
-void MMatrix::operator+=(MMatrix &other){
+void MMatrix::operator+=(const MMatrix &other){
 
 }
 
@@ -122,7 +122,7 @@ void MMatrix::operator+=(MMatrix &other){
 
 /// @brief multiply with another matrix
 /// @param other 
-void MMatrix::operator*=(MMatrix &other){
+void MMatrix::operator*=(const MMatrix &other){
     MMatrix r = *this * other;
     *this = r;
 }
@@ -130,7 +130,7 @@ void MMatrix::operator*=(MMatrix &other){
 /// @brief multiply and return result
 /// @param other other matrix to append like: This * other 
 /// @return returns a new matrix
-MMatrix MMatrix::operator*(MMatrix &other) const {
+MMatrix MMatrix::operator*(const MMatrix &other) const {
     
     MMatrix result; // Temporary matrix to store the result
 
@@ -154,7 +154,7 @@ MMatrix MMatrix::operator*(MMatrix &other) const {
 /// @brief multiply with a vector 
 /// @param other 
 /// @return 
-FVector MMatrix::operator*(const FVector &other){
+FVector MMatrix::operator*(const FVector &other) const {
     FVector resultVec;
 
     float row[] = {other.X, other.Y, other.Z, 1.0f};
@@ -176,7 +176,7 @@ FVector MMatrix::operator*(const FVector &other){
     return resultVec;
 }
 
-FVector2D MMatrix::operator*(FVector2D &other){
+FVector2D MMatrix::operator*(const FVector2D &other) const {
     FVector d3Vec(other.X, other.Y, 0.0f);
     d3Vec = *this * d3Vec;
     return FVector2D(d3Vec.X, d3Vec.Y);
@@ -184,13 +184,13 @@ FVector2D MMatrix::operator*(FVector2D &other){
 
 
 
-void MMatrix::operator+=(FVector &other){
+void MMatrix::operator+=(const FVector &other){
     array[3] += other.X;
     array[7] += other.Y;
     array[11] += other.Z;
 }
-void MMatrix::operator-=(FVector &other){
-    FVector copy = other * -1;
+void MMatrix::operator-=(const FVector &other){
+    FVector copy = other * -1.0f;
     *this += other;
 }
 
@@ -407,7 +407,7 @@ MMatrix MMatrix::createRotatorFromDeg(float x, float y, float z){
 }
 
 
-MMatrix MMatrix::createRotatorFrom(FRotator &other){
+MMatrix MMatrix::createRotatorFrom(const FRotator &other){
     float x = MMatrix::degToRadian(other.Roll);
     float y = MMatrix::degToRadian(other.Pitch);
     float z = MMatrix::degToRadian(other.Yaw);
@@ -429,7 +429,7 @@ MMatrix MMatrix::createRotatorFrom(FRotator &other){
 /// are the x axis for yaw and pitch!! (1,0) (1,0)!!
 /// @param other vector (direction) - will be normalized internally.
 /// @return rotator matrix
-MMatrix MMatrix::createRotatorFrom(FVector &other){
+MMatrix MMatrix::createRotatorFrom(const FVector &other){
     FVector2D Xaxis(1.0f, 0); //default axis, x nach vorne schauend
     return createRotatorFrom(other, Xaxis, Xaxis); 
 }
@@ -440,7 +440,7 @@ MMatrix MMatrix::createRotatorFrom(FVector &other){
 /// @param XAxis axis to measure yaw agains
 /// @param ZAxis axis to measure pitch against
 /// @return 
-MMatrix MMatrix::createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZAxis){
+MMatrix MMatrix::createRotatorFrom(const FVector &other, FVector2D XAxis, FVector2D ZAxis){
     FVector normalized = other.GetSafeNormal();
 
     //yaw angle
@@ -473,7 +473,7 @@ MMatrix MMatrix::createRotatorFrom(FVector &other, FVector2D XAxis, FVector2D ZA
 
 
 MMatrix MMatrix::createRotatorFrom(
-    FVector &other, 
+    const FVector &other, 
     FVector2D XAxis, 
     FVector2D ZAxis,
     bool yawConstraint90
@@ -528,9 +528,28 @@ MMatrix MMatrix::createRotatorFrom(
 }
 
 
+bool MMatrix::IsParalellToZAxis(
+    const FVector &a
+){
+    FVector zUp(0, 0, 1);
+    if(IsParalell(a, zUp)){
+        return true;
+    }
+    FVector zDown(0, 0, -1);
+    return IsParalell(a, zDown);
+}
+
+bool MMatrix::IsParalell(
+    const FVector &a,
+    const FVector &b
+){
+    float dot = FVector::DotProduct(a.GetSafeNormal(), b.GetSafeNormal());
+    return dot >= 0.99f;
+}
+
 //debug
 MMatrix MMatrix::createRotatorFrom(
-    FVector &other, 
+    const FVector &other, //target rotation look at
     FVector2D XAxis, 
     FVector2D ZAxis,
     bool yawConstraint90,
@@ -543,6 +562,13 @@ MMatrix MMatrix::createRotatorFrom(
     FVector2D xydir(normalized.X, normalized.Y);
     float yawRad = signedAngleRadBetween(XAxis, xydir); //signiert voll umfänglich notwendig anders als pitch
     
+
+    //wenn Zaxis paralell oder anti paralell liegen, kann es keinen
+    //yaw geben, es gibt keine grundlage
+    if(IsParalellToZAxis(other)){
+        yawRad = 0.0f;
+    }
+
     /**
      * wenn sich der zielpunkt nahe der 0 werte befindet,
      * ist der acos(0) = 90 degree, was seltsame
@@ -590,7 +616,7 @@ MMatrix MMatrix::createRotatorFrom(
 
 //experimental roll instead of yaw
 MMatrix MMatrix::createRotatorFrom(
-    FVector &other, //targeted
+    const FVector &other, //targeted
     FVector2D XAxis,
     FVector2D ZAxis,
     bool yawConstraint90,
@@ -668,7 +694,7 @@ MMatrix MMatrix::createRotatorFrom(
 
 }
 
-float MMatrix::DotProduct2D(FVector &a, FVector &b){
+float MMatrix::DotProduct2D(const FVector &a, const FVector &b){
     FVector a2D(a.X, a.Y, 0.0f);
     FVector b2D(b.X, b.Y, 0.0f);
     float dot = FVector::DotProduct(a2D.GetSafeNormal(), b2D.GetSafeNormal());
@@ -732,7 +758,7 @@ float MMatrix::signForAngle(FVector2D &a, FVector2D &b){
 
 /// @brief multiply with another matrix ROTATION ONLY
 /// @param other 
-void MMatrix::rotate(MMatrix &other){
+void MMatrix::rotate(const MMatrix &other){
     
     MMatrix result; 
     for (int col = 0; col < 3; col++){
@@ -797,7 +823,7 @@ void MMatrix::setRotation(const MMatrix &other){
 /// @brief will create a new rotation from a given vector. Translation not touched,
 /// rotation is resetted. Only can extract yaw and pitch rotation!
 /// @param other 
-void MMatrix::setRotation(FVector &other){
+void MMatrix::setRotation(const FVector &other){
     MMatrix rotatorMat = createRotatorFrom(other);
     setRotation(rotatorMat);
 }

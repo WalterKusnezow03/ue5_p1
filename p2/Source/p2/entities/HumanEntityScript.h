@@ -28,6 +28,7 @@ private:
 public:
 	AHumanEntityScript();
 	virtual void init() override;
+	virtual void init(FVector &location) override;
 
 public:	
 	// Called every frame

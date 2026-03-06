@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CoreMath/animation/timer/timer.h"
+#include "CoreMath/animation/timer/Timer.h"
 #include "AssetEnumCollection/assetEnums/particleEnum.h"
 #include "particle.generated.h"
 
@@ -51,7 +51,7 @@ private:
 	FVector direction;
 	float speed;
 	float decrease = -9.81f;
-	class timer timer;
+	Timer timer;
 
 	enum class particleEnum type;
 

@@ -10,6 +10,13 @@ class IKHUMANOIDMODELL_API FHumanoidControllerSetupPackage : public FAbstractPro
 public:
     static FHumanoidControllerSetupPackage GetDefault(AActor *actor);
 
+protected:
+    static void DefaultTorsoSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);
+    static void DefaultLegSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);
+
+    static void DefaultHandSetup(FHumanoidControllerSetupPackage &newPackage);
+
+public:
     FHumanoidControllerSetupPackage(AActor *actor);
     ~FHumanoidControllerSetupPackage();
 
@@ -20,6 +27,7 @@ public:
 
     FTwoLimbProperty &GetArmSize();
     FTwoLimbProperty &GetTorsoSize();
+    FTwoLimbProperty &GetTorsoSpineSize();
 
     FTwoLimbHipProperty &GetLegLeft();
     FTwoLimbHipProperty &GetLegRight();
@@ -37,7 +45,11 @@ private:
     FTwoLimbHipProperty legPropertyLeft;
     FTwoLimbHipProperty legPropertyRight;
 
-    //FTwoLimbProperty legSize;
+    
+    //spine
+    FTwoLimbProperty torsoSpineSize;
+
+    //breast
     FTwoLimbProperty torsoSize;
 
     bool handWanted = false;

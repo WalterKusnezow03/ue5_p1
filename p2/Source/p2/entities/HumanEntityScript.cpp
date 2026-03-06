@@ -40,7 +40,13 @@ void AHumanEntityScript::BeginPlay(){
 }
 
 void AHumanEntityScript::init(){
-    Super::init(); //will setup default vars and preoject skelleton to ground.
+    FVector location = GetActorLocation();
+    init(location);
+}
+
+void AHumanEntityScript::init(FVector &location){
+
+    Super::init(location); //will setup default vars and preoject skelleton to ground.
 
     attackTypeOfBot = EAttackType::EAssault;
 

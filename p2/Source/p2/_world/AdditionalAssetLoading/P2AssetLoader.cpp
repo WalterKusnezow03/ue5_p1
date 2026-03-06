@@ -318,7 +318,7 @@ void P2AssetLoader::Load3DUiAssets(){
     loadLoadoutRoomAssets();
     loadGameStartRoomAssets();
     loadPauseRoomAssets();
-    load3DWidgets();
+    load3DWidgetData();
 }
 
 void P2AssetLoader::loadUiDataAssets(){
@@ -365,14 +365,24 @@ void P2AssetLoader::loadPauseRoomAssets(){
 
 
 
-void P2AssetLoader::load3DWidgets(){
+void P2AssetLoader::load3DWidgetData(){
+    loadWidgetMaterial();
+    load3DWidgets();
+}
 
+//might not be needed (removing the material.)
+void P2AssetLoader::loadWidgetMaterial(){
     AssetLoader::LoadAndSaveAssetToManager<materialEnum, UMaterial>(
         materialEnum::widgetMaterial, 
         "Game", //plugin name or "Game" 
         "Prefabs/ui3D", //inner path, not trailing slash
         "widgetMaterial" //asset name just as displayed
     );
+}
+
+void P2AssetLoader::load3DWidgets(){
+
+   
 
     
     AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
@@ -390,6 +400,17 @@ void P2AssetLoader::load3DWidgets(){
         "Prefabs/ui3D/weapon3Dui",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "WeaponTableUiActor"           // Just the file name as displayed
     );
+
+
+    
+    AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
+        Eui3DWidgetEnum::EInteractWidget, // track in asset manager
+        "Game",                  // like "Game" for game or any other plugin name
+        "Prefabs/ui3D/gameWorldUi/InteractWidget",// like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "InteractWidgetActorBP"           // Just the file name as displayed
+    );
+
+    
 
 }
 

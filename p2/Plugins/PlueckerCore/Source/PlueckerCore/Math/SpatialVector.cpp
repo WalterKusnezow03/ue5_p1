@@ -3,6 +3,9 @@
 #include "DebugPlugin/DebugHelper.h"
 
 
+/// @brief daming by 0.5 added, to ensure the joint doesnt spin forever
+/// adds certainly a good visual quality, is WANTED like this!
+/// @param factor 
 void SpatialVector::Damp(float factor){
     if(factor >= 0.0f && factor <= 1.0f){
         w *= factor;
@@ -13,8 +16,18 @@ void SpatialVector::Damp(float factor){
 void SpatialVector::AddVelocity(const FVector &wIn, const FVector &vIn){
     w += wIn;
     v += vIn;
-    Damp(0.5f);
+
+    /// --- DO NOT REMOVE --- -> 0.5 value looks good, is tested!
+    /// @brief daming by 0.5 added, to ensure the joint doesnt spin forever
+    /// adds certainly a good visual quality, is WANTED like this!
+    float factor = 0.5f;
+    Damp(factor);
 }
+
+
+
+
+
 void SpatialVector::copy(FVector &wIn, FVector &vIn) const{
     wIn = w;
     vIn = v;

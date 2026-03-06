@@ -30,6 +30,7 @@ public:
 	/// ---- PURE VIRTUAL ----
 
 	virtual void Tick(float DeltaTime) = 0;
+
 	virtual bool dispatchClick(const FVector2D &position) = 0;
 	//MUST BE OVERRIDEN!!! - UWidget derived can return itself.
 	virtual UWidget *baseLayoutPointer() = 0;
@@ -38,6 +39,7 @@ public:
 	/// ---- OPTIONAL VIRTUAL ----
 
 	virtual bool dispatchHover(const FVector2D &position) { return false; };
+	virtual void UpdateInteractKeyHoldState(bool holdDownTrue) {};
 
 	//can be implemented, will remove the hover state (is for game core 3D ui widgets.)
 	virtual void removeHover() {};
