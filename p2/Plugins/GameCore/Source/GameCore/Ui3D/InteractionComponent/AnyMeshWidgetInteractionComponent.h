@@ -84,4 +84,7 @@ private:
         const FVector &origin,
         const FVector &direction
     );
+    void TryInjectInteractCallbakInterfaceTo(
+        ACustomMeshUIActor *raw 
+    );
 };

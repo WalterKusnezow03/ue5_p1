@@ -33,8 +33,6 @@ protected:
 
     virtual bool backwardsKinematicAllowed();
 
-   
-
 public:
     void EnableDebugLogExtended();
 

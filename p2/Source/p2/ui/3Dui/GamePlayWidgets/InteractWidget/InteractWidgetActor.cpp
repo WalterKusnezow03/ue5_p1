@@ -64,8 +64,6 @@ void AInteractWidgetActor::InitFromObjectPool(){
 
 void AInteractWidgetActor::ReleaseToObjectPool(){
     Super::ReleaseToObjectPool();
-    payloadActor = nullptr;
-    widgetInteracionCallbackInterface = nullptr;
     //reset flag?
 }
 
@@ -93,19 +91,12 @@ void AInteractWidgetActor::InitInteractWidgetOnBeginPlay(){
 
 
 
-void AInteractWidgetActor::SetPayload(AActor *actor){
-    payloadActor = actor;
-}
 
 void AInteractWidgetActor::Notify(){
     if(!isActive){
         return;
     }
-
-    //has interface to notify
-    if(widgetInteracionCallbackInterface && payloadActor){
-        widgetInteracionCallbackInterface->ReceiveCallback(payloadActor);
-    }
+    Super::NotifyAllCallbacks();
 }
 
 void AInteractWidgetActor::SetInteractWidgetActive(bool flag){

@@ -126,14 +126,7 @@ void SSlateWidgetBase::DrawPolygon(
     }
     LayerId++;
 
-    //draw text ontop
-    DrawText(
-        polygon,
-        OutDrawElements,
-        LayerId + 100, // (higher index to force text to be ontop, 1 is not enough!) 
-        //dont change, polygons drawn later will overlap previous ones by default.
-        AllottedGeometry
-    );
+    
 }
 
 void SSlateWidgetBase::DrawPolygonFilled(
@@ -208,66 +201,6 @@ void SSlateWidgetBase::DrawPolygonOutlineOnly(
 
 
 
-// --- TESTING NEEDED ! ---
-
-void SSlateWidgetBase::DrawText(
-    const SlateMeshDataPolygon &polygon,
-    FSlateWindowElementList& OutDrawElements,
-    int32 LayerId, //dont change, polygons drawn later will overlap previous ones by default.
-    const FGeometry& AllottedGeometry
-) const {
-    if(polygon.bHasText()){
-        
-        const SlateTextBase &text = polygon.GetSlateTextConst();
-        FVector2f pivot = polygon.SlateTextPivot2f();
-        const FSlateFontInfo &fontInfo = text.FontInfo();
-        FColor color = text.Color();
-        FString stringToDisplay = text.GetText();
-
-        FVector2f LocalSize = FVector2f(AllottedGeometry.GetLocalSize());
-        
-        //doesnt help against text bug
-        if(PolygonMapExternal.IsValid()){
-            LocalSize = FVector2f(PolygonMapExternal->BoundsConst());
-        }
-
-        
-        
-
-        //old
-        //FVector2f(AllottedGeometry.GetLocalSize());
-        FSlateLayoutTransform LayoutTransform(pivot); // pivot ist FVector2f
-
-        FSlateDrawElement::MakeText(
-            OutDrawElements,
-            LayerId,
-            AllottedGeometry.ToPaintGeometry(LocalSize, LayoutTransform),
-            FText::FromString(stringToDisplay),
-            fontInfo,
-            ESlateDrawEffect::None,
-            color
-        );
-
-
-
-
-        /*
-        FSlateDrawElement::
-        static void MakeText  
-        (  
-            FSlateWindowElementList & ElementList,  
-            uint32 InLayer,  
-            const FPaintGeometry & PaintGeometry,  
-            const FString & InText,  
-            const int32 StartIndex,  
-            const int32 EndIndex,  
-            const FSlateFontInfo & InFontInfo,  
-            ESlateDrawEffect InDrawEffects,  
-            const FLinearColor & InTint  
-        ) 
-        */
-    }
-}
 
 
 

@@ -1100,8 +1100,13 @@ bool HipController::DebugHorizontalVelocityOvershoot(){
 
 /// ---- pluecker joints ----
 void HipController::SetupPlueckerJoint(UWorld *world){
-    FVector offsetNone;
+
+    //wenn der root joint eine sehr kurze länge hat, wird
+    //die spatial transform kalkulation instabil!
+    FVector offsetNone(0,0,100.0f);
     rootJoint = Joint(offsetNone, world);
+
+
 
     //concatenate child
     rootJoint.AddChildByPointer(legRight.GetTopJoint());
@@ -1156,7 +1161,20 @@ void HipController::SetStateCollapse(bool flag){
     legLeft.SetStateCollapse(flag);
     legRight.SetStateCollapse(flag);
 
-    //update joint location
+
+    //debug draw
+    FVector location = GetLocation();
+    DebugHelper::showLineBetween(
+        worldPointer,
+        location,
+        location + FVector(0,0,100),
+        FColor::Cyan,
+        10.0f
+    );
+
+
+
+    // update joint location
     rootJoint.OverrideWorldLocation(translation.getTranslation());
 }
 

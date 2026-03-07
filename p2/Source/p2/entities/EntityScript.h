@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
+#include "GameCore/PlayerControllerBase/InteractionCallbackInterface/WidgetInteractionCallbackInterface.h"
+
 #include "p2/player/playerScript.h"
 #include "GameCore/team/teamEnum.h"
 #include "CoreMath/animation/timer/timer.h"
@@ -20,7 +22,10 @@
 class AInteractWidgetActor;
 
 UCLASS()
-class P2_API AEntityScript : public AMiniMapRegisteredActor, public IDamageinterface
+class P2_API AEntityScript : 
+public AMiniMapRegisteredActor, 
+public IDamageinterface, 
+public IWidgetInteractionCallbackInterface //callback on E pressed to release widget
 {
 	GENERATED_BODY()
 	
@@ -81,6 +86,9 @@ public:
 	void alarm(); //sets spotting status to true
 
 protected:
+	void FindPlayerReferenceIfNeeded();
+	void UpdateCanSeePlayerStatus();
+	void UpdateVisionTimers(float DeltaTime);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -176,6 +184,9 @@ protected:
 
 
 	//-- interaction widget on death --
+public:
+	virtual void ReceiveCallback() override;
+
 protected:
 	void RequestInteractWidget();
 	void ReleaseInteractWidget();

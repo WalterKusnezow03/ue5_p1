@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h"
-#include "customUiPlugin/slate/MeshData2D/Text/SlateTextBase.h"
 
 class MMatrix2D;
 
@@ -20,8 +19,10 @@ public:
     void AppendClosedShape(TArray<FVector2D> &shape);
     void AppendClosedShape(TArray<FVector2D> &shape, int detail);
 
+    //changing
     SlateMeshData &MeshDataRef();
 
+    //rendering
     const SlateMeshData &MeshDataRefConst() const;
 
     ///@brief ticks the polygon and tells if changes were made
@@ -55,22 +56,6 @@ public:
 
 
 
-    //Text
-    bool bHasText() const;
-    const SlateTextBase &GetSlateTextConst() const;
-    SlateTextBase &GetSlateText();
-
-    FVector2f SlateTextPivot2f() const;
-    FVector2D SlateTextPivot() const;
-
-    void SetText(FString textIn);
-    void ClearText();
-    void AppendChar(TCHAR &character);
-    void RemoveChar();
-
-    void CopyTextData(SlateMeshDataPolygon &oldPolygon);
-
-
     //rendering enable and disable
     void EnableRender(bool bFlag);
     bool bIsEnabled() const;
@@ -84,8 +69,6 @@ protected:
     bool bDynamicCursorColorEnabled = true;
     bool bDrawOutlineOnly = false;
 
-    //text
-    SlateTextBase internalText;
 
     //animation
 

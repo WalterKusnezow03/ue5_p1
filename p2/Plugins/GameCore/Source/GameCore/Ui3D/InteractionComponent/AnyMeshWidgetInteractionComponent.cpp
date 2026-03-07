@@ -1,5 +1,6 @@
 #include "AnyMeshWidgetInteractionComponent.h"
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
+#include "GameCore/Ui3D/WidgetComponentModified/ActorCallbackSupported/CustomMeshUICallbackActor.h"
 #include "GameCore/Ui3D/InteractionComponentCache/InteractionComponentHoveredCache.h"
 
 
@@ -97,8 +98,6 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
         }
         Params.bTraceComplex = false; //new lower complexity
 
-        //Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
-
         //ECC_GameTraceChannel1 widget Channel
         bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_GameTraceChannel1, Params);
 
@@ -111,19 +110,8 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
                     if(bDrawDebugLine){
                         DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Red);
                     }
-                    /*#if WITH_EDITOR
-                    DebugHelper::logMessage(
-                        FString::Printf(
-                            TEXT("UAnyMeshWidgetInteractionComponent::Hit3DUIWidget %s"),
-                            *casted->GetDebugName() //EDITOR ONLY
-                        )
-                    );
-                    #endif*/
+                    TryInjectInteractCallbakInterfaceTo(casted);
 
-                    //injects notify interface into hit actor.
-                    //if the hit actor is not hovered anymore it will eject the
-                    //interface on its own!
-                    casted->SetCallbackForDelayedInteractions(notifyInterface);
                     return casted;
 
                 }else{
@@ -137,6 +125,24 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
     }
     return nullptr;
 }
+
+void UAnyMeshWidgetInteractionComponent::TryInjectInteractCallbakInterfaceTo(
+    ACustomMeshUIActor *raw 
+){
+    //injects notify interface into hit actor.
+    //if the hit actor is not hovered anymore it will eject the
+    //interface on its own!
+    if(raw && notifyInterface){
+        if(ACustomMeshUICallbackActor *callbackCastedActor = Cast<ACustomMeshUICallbackActor>(raw)){
+            callbackCastedActor->SetCallbackForDelayedInteractions(notifyInterface);
+        }
+    }
+}
+
+
+
+
+
 
 // enable - disable section
 
@@ -186,10 +192,16 @@ bool UAnyMeshWidgetInteractionComponent::IsHoverActive(){
 
 void UAnyMeshWidgetInteractionComponent::TickInteractKeyHoldDown(bool holdInteractKey){
     UInteractionComponentHoveredCache::UpdateInteractKeyHoldFlag(holdInteractKey);
+
+    if(false){
+        FString prefix = TEXT("UAnyMeshWidgetInteractionComponent::TickInteractKeyHoldDown");
+        FString postfix = holdInteractKey ? TEXT("TRUE") : TEXT("FALSE");
+        FColor color = holdInteractKey ? FColor::Green : FColor::Red;
+        FString message = prefix + postfix;
+        DebugHelper::showScreenMessage(message, color);
+    }
+    
 }
-
-
-
 
 //the player controller will register here, the pointer will
 //be dispatched to widgets to notify player if needed.

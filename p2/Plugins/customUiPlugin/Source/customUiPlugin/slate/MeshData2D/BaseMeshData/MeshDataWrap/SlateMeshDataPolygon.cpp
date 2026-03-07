@@ -20,7 +20,7 @@ SlateMeshDataPolygon &SlateMeshDataPolygon::operator=(const SlateMeshDataPolygon
         meshData = other.meshData;
         bDynamicCursorColorEnabled = other.bDynamicCursorColorEnabled;
         bDrawOutlineOnly = other.bDrawOutlineOnly;
-        internalText = other.internalText;
+        
         rendered = other.rendered;
     }
     return *this;
@@ -80,12 +80,6 @@ void SlateMeshDataPolygon::SetCursorColorEnabled(bool flag){
 
 void SlateMeshDataPolygon::ApplyTransformImmidiate(MMatrix2D &transform){
     meshData.ApplyTransformationImmidiate(transform);
-
-    //update text.
-    if(meshData.blockedTransformUpdates() == false){
-        internalText.TransformFitMaxSize(transform);
-    }
-    
 }
 
 void SlateMeshDataPolygon::SetRuntimeTransformation(MMatrix2D &transform){
@@ -106,66 +100,6 @@ bool SlateMeshDataPolygon::IsFlaggedDrawOutlineOnly() const {
 }
 
 
-
-//text
-const SlateTextBase &SlateMeshDataPolygon::GetSlateTextConst() const{
-    return internalText;
-}
-
-
-FVector2f SlateMeshDataPolygon::SlateTextPivot2f() const {
-    FVector2D as2D = SlateTextPivot();
-    return FVector2f(as2D.X, as2D.Y);
-}
-
-FVector2D SlateMeshDataPolygon::SlateTextPivot() const {
-    FVector2D pivot(0, 0);
-
-    FVector2D textBounds = internalText.Bounds();
-    FVector2D center = meshData.CenterOfMesh();
-    pivot = center - textBounds * 0.5f;
-
-    pivot.X = std::floor(pivot.X);
-    pivot.Y = std::floor(pivot.Y);
-
-    if(internalText.bShouldCenteredInWidget()){
-        return pivot;
-    }
-
-    if(internalText.bShouldCenterVertical()){
-        pivot.X = 0;
-    }
-
-    return pivot;
-}
-
-SlateTextBase &SlateMeshDataPolygon::GetSlateText(){
-    return internalText;
-}
-
-bool SlateMeshDataPolygon::bHasText()const{
-    return internalText.Lenght() > 0;
-}
-
-void SlateMeshDataPolygon::SetText(FString textIn){
-    internalText.SetText(textIn);
-}
-
-void SlateMeshDataPolygon::AppendChar(TCHAR &character){
-    internalText.AppendChar(character);
-}
-
-void SlateMeshDataPolygon::RemoveChar(){
-    internalText.RemoveChar();
-}
-
-void SlateMeshDataPolygon::CopyTextData(SlateMeshDataPolygon &other){
-    internalText = other.internalText;
-}
-
-void SlateMeshDataPolygon::ClearText(){
-    internalText.SetText("");
-}
 
 
 

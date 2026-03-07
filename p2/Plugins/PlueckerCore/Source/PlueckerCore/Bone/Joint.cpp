@@ -232,6 +232,7 @@ void Joint::TickAndBuildRecursive(
     float deltaTime
 ){
     MMatrix m = transformCopy;
+    //keep like this, current spatial velocity is copied in "tick build this joint"
     FVector w(0, 0, 0);
     FVector v(0, 0, 0);
     TickAndBuildRecursive(deltaTime, w, v, m);
@@ -298,8 +299,12 @@ void Joint::PropagateWrench(float deltatime){
     //FVector f = GravityForce();
     //FVector n = GravityTorque();
 
-    FVector f = spatialTransform.Force(mass);
-    FVector n = spatialTransform.Torque(f, centerOfMass);
+    //FVector f = spatialTransform.Force(mass);
+    //FVector n = spatialTransform.Torque(f, centerOfMass);
+
+    //no motorized torque or force in end limb, added later.
+    FVector f(0, 0, 0);
+    FVector n(0, 0, 0);
     PropagateWrench(n, f, deltatime);
 }
 
@@ -460,6 +465,13 @@ void Joint::OverrideWorldLocation(FVector pos){
 //spatial transform.
 void Joint::TickGravityAndAddUpdateToSptialVector(float deltaTime){
     
+    //not known if needed!
+    if(true){
+        return;
+    }
+
+    
+
     //includes torque and force update, integrated to velocities.
     //joint rebuild needed.
     FVector g = GravityForce();

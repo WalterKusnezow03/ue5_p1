@@ -139,9 +139,7 @@ bool ACustomMeshUIActor::RayIntersect(
     const FVector &direction
 ){
     if(Widget && AllowRayIntersectInteraction()){
-        bool result = Widget->RayIntersect(origin, direction);
-        ResetWidgetInteractionCallbackIfNotHovered(); //remove callback interface if not hovered / clicked anymore
-        return result;
+        return Widget->RayIntersect(origin, direction);
     }
     return false;
 }
@@ -152,9 +150,7 @@ bool ACustomMeshUIActor::RayIntersectHover(
     const FVector &direction
 ){
     if(Widget && AllowRayIntersectInteraction()){
-        bool result = Widget->RayIntersectHover(origin, direction);
-        ResetWidgetInteractionCallbackIfNotHovered(); //remove callback interface if not hovered anymore
-        return result;
+        return Widget->RayIntersectHover(origin, direction);
     }
     return false;
 }
@@ -181,22 +177,3 @@ void ACustomMeshUIActor::EnableCollision(bool flag){
 
 
 
-
-//setup callback
-void ACustomMeshUIActor::SetCallbackForDelayedInteractions(
-    IWidgetInteractionCallbackInterface *interfaceIn
-){
-
-    widgetInteracionCallbackInterface = interfaceIn;
-    // EMPTY FOR P2 IMPLEMENTATION
-    // GetWidget<T>... -> INJECT INTERFACE
-}
-
-void ACustomMeshUIActor::ResetWidgetInteractionCallbackIfNotHovered(){
-    if(Widget){
-        //hovered by raycast / interaction component -> saved in UInteractionComponentHoveredCache (static shared.)
-        if(!Widget->IsMarkedHovered()){
-            widgetInteracionCallbackInterface = nullptr;
-        }
-    }
-}

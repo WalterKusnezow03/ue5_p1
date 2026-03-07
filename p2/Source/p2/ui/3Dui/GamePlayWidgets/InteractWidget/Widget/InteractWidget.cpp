@@ -10,9 +10,10 @@ void UInteractWidget::SetParentActor(AInteractWidgetActor *parent){
 }
 
 void UInteractWidget::Init(){
+    ResetCircleProgress();
     SetupFromDefaultColors(borderInterface, GetBorderWidget());
 
-    float defaultTime = 3.0f;
+    float defaultTime = 2.0f;
     bool resetsItself = false;
     interactTimer.Begin(defaultTime, resetsItself);
 }
@@ -22,8 +23,11 @@ bool UInteractWidget::dispatchClick(const FVector2D &pos){
 }
 
 bool UInteractWidget::dispatchHover(const FVector2D &pos){
-    return borderInterface.dispatchHover(pos);
-    // return false;
+    bool result = borderInterface.dispatchHover(pos);
+    bDebugIsHovered = result;
+    return result;
+
+    //return borderInterface.dispatchHover(pos);
 }
 
 //remove hover on widget left
@@ -46,6 +50,19 @@ void UInteractWidget::Tick(float DeltaTime){
 void UInteractWidget::UpdateInteractKeyHoldState(bool holdDownTrue){
     ResetCircleProgressIfStateChanged(holdDownTrue);
     interactionKeyIsHoldDown = holdDownTrue;
+
+    //works as expected
+    if(bDebugIsHovered && false){
+        DebugHelper::showScreenMessage(
+            holdDownTrue,
+            TEXT("UInteractWidget::UpdateInteractKeyHoldState TRUE"),
+            TEXT("UInteractWidget::UpdateInteractKeyHoldState FALSE"),
+            FColor::Green,
+            FColor::Red
+        );
+    }
+
+
 }
 
 
@@ -96,6 +113,10 @@ void UInteractWidget::SetCircleProgress(float scalar){
     if(UWidgetProgressQuadCircular *circle = GetProgressWidgetCasted()){
         circle->SetProgress(scalar);
     }
+}
+
+void UInteractWidget::ResetCircleProgress(){
+    SetCircleProgress(0.0f);
 }
 
 UWidgetProgressQuadCircular *UInteractWidget::GetProgressWidgetCasted(){

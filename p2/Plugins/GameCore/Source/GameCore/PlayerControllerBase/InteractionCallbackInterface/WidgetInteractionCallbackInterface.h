@@ -23,10 +23,6 @@ class IWidgetInteractionCallbackInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
-    virtual void ReceiveCallback(AActor *payloadActor) = 0;
-
-
-
-    
+    virtual void ReceiveCallback() {}; //empty callback
+    virtual void ReceiveCallback(AActor *payloadActor){}; //for now just aactor
 };

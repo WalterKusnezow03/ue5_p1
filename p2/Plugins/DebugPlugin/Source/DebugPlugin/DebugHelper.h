@@ -31,6 +31,15 @@ public:
 
 	static void showScreenMessageCompare(FString message, FVector a, FVector b, float maxDistance);
 
+	static void showScreenMessage(
+		bool flag,
+		FString trueString,
+		FString falseString,
+		FColor trueColor,
+		FColor falseColor
+	) ;
+
+
 	//Log Messages
 	static void logMessage(FString s);
 	static void logMessage(FString s, int a);

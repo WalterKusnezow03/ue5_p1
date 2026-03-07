@@ -95,13 +95,6 @@ void AEntityScript::Tick(float DeltaTime)
 		return;
 	}
 
-	//tick bone controller
-
-	// --- deprecated ---
-	//humanoidPluginController.Tick(DeltaTime);
-	//override location for markers and pathfinding, all.
-	//SetActorLocation(humanoidPluginController.GetLocation()); 
-	//SetActorRotation(humanoidPluginController.GetRotation());
 	TickHumanoidController(DeltaTime);
 
 	if(AworldLevel::DebugSkelletonRecordMode()){ //worldLeevlBase method
@@ -122,39 +115,44 @@ void AEntityScript::Tick(float DeltaTime)
 	}
 	drawPath(); //debug
 
-	
-	
+	FindPlayerReferenceIfNeeded();
+	if(!playerPointer){
+		return;
+	}
+	UpdateCanSeePlayerStatus();
+	UpdateVisionTimers(DeltaTime);
 
+	//moves towards player is spotted and cant see player
+	//moveTowardsPlayer(DeltaTime);
+	updatePathDelay(DeltaTime);
+	actUponCurrentAction(DeltaTime);
 
-	//get player pointer if needed
-	if(playerPointer == nullptr){
-		
+	
+}
+
+void AEntityScript::FindPlayerReferenceIfNeeded(){
+	if(!playerPointer){
 		if(AplayerScript *casted = AworldLevel::TGetPlayerReference<AplayerScript>()){
 			playerPointer = casted;
 		}
-		
-	
-		
-
 	}
-	if(playerPointer == nullptr){
-		return;
+}
+
+void AEntityScript::UpdateCanSeePlayerStatus(){
+	canSeePlayer = false;
+	if(playerPointer){
+		// if not spotted yet, check angle, if angle ok, check vision
+		if(
+			withinVisionAngle(playerPointer) && 
+			isWithinMaxRange(playerPointer->GetActorLocation())
+		){
+			//DebugHelper::showScreenMessage("player vision check");
+			canSeePlayer = performRaycast(playerPointer);
+		}
 	}
+}
 
-	canSeePlayer = false; //reset if not reserved for frane update
-	
-
-	// if not spotted yet, check angle, if angle ok, check vision
-	if(
-		withinVisionAngle(playerPointer) && 
-		isWithinMaxRange(playerPointer->GetActorLocation())
-	){
-		//DebugHelper::showScreenMessage("player vision check");
-		canSeePlayer = performRaycast(playerPointer);
-	}
-
-
-
+void AEntityScript::UpdateVisionTimers(float DeltaTime){
 	//act based on vision
 	if(canSeePlayer){
 		if(!spottedPlayer){
@@ -170,14 +168,10 @@ void AEntityScript::Tick(float DeltaTime)
 			setSpottingTime(defaultSpottingTime);
 		}
 	}
-
-	//moves towards player is spotted and cant see player
-	//moveTowardsPlayer(DeltaTime);
-	updatePathDelay(DeltaTime);
-	actUponCurrentAction(DeltaTime);
-
-	
 }
+
+
+
 
 
 //allows the entity to take damage.
@@ -810,10 +804,15 @@ void AEntityScript::CopyHumanoidControllerTransform(){
 
 
 
-/// inetraction widget 
+/// interaction widget on death
+
+void AEntityScript::ReceiveCallback(){
+	ReleaseInteractWidget();
+}
+
 void AEntityScript::RequestInteractWidget(){
 	if(!currentInteractWidget){
-		FVector relativeLocation(0, 0, 100);
+		FVector relativeLocation(0, 0, 50);
 		if(EntityManager *e = AworldLevel::entityManager()){
 			AWorldDynamicWidgetActor *found = e->spawnAWorldDynamicWidgetActor(
 				EWorldDynamicWidgetEnum::EInteractWidget,
@@ -824,7 +823,14 @@ void AEntityScript::RequestInteractWidget(){
 			if(found){
 				if(AInteractWidgetActor *casted = Cast<AInteractWidgetActor>(found)){
 					currentInteractWidget = casted;
-					currentInteractWidget->SetPayload(this); //notify player for this actor.
+					 
+
+					//add self to widget notified actors
+					currentInteractWidget->AddPersistentCallbackInterface(this);
+
+					//notify player for this actor as payload
+    	 			currentInteractWidget->SetActorPayLoad(this);
+
 				}else{
 					found->ReleaseToObjectPool(); //should not happen.
 				}

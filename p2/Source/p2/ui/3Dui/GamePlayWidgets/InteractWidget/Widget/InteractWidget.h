@@ -48,6 +48,7 @@ protected:
     void ResetCircleProgressIfStateChanged(bool holdDown);
     void SetCircleProgressFromTimer();
     void SetCircleProgress(float scalar);
+    void ResetCircleProgress();
     UWidgetProgressQuadCircular *GetProgressWidgetCasted();
 
     //tick slate widget wrapper base on circle widget
@@ -63,4 +64,9 @@ private:
     //tick timer if held down, otherwise reset
     bool interactionKeyIsHoldDown = false;
     Timer interactTimer;
+
+
+
+    //debug
+    bool bDebugIsHovered = false;
 };

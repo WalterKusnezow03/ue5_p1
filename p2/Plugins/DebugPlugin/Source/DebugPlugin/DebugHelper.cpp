@@ -59,6 +59,22 @@ void DebugHelper::showScreenMessage(FString s){
 	showScreenMessage(s, FColor::Green);
 }
 
+void DebugHelper::showScreenMessage(
+	bool flag,
+	FString trueString,
+	FString falseString,
+	FColor trueColor,
+	FColor falseColor
+){
+	if(flag){
+		showScreenMessage(trueString, trueColor);
+	}else{
+		showScreenMessage(falseString, falseColor);
+	}
+}
+
+
+
 
 
 void DebugHelper::showScreenMessage(FString s, int argument, FColor color){

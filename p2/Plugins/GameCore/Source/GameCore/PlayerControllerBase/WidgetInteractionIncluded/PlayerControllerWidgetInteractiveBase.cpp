@@ -76,6 +76,7 @@ void APlayerControllerWidgetInteractiveBase::WidgetInteractionOnLeftMouseUp(){
 void APlayerControllerWidgetInteractiveBase::TickInteractionComponent(){
     if(interactionComponent){
         if(interactionComponent->IsHoverActive()){
+            DispatchInteractKeyPressedStateToInteractionComponent();
             FVector origin = CameraLocation();
             FVector direction = playerLookDir();
             interactionComponent->TickHovered(

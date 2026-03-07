@@ -31,7 +31,7 @@ public:
 
     //to be called by owning entity to completly disable or enable
     void SetInteractWidgetActive(bool flag);
-    void SetPayload(AActor *actor);
+    
 
     virtual EWorldDynamicWidgetEnum GetWidgetType() override {
         return EWorldDynamicWidgetEnum::EInteractWidget;

@@ -43,7 +43,7 @@ void Matrix6x6::applyConstraints(FVector &w, FVector &v){
     constraint.ApplyPositionConstraint(v);
 
     groundContactConstraint.ApplyRotationConstraint(w);
-    groundContactConstraint.ApplyRotationConstraint(v);
+    groundContactConstraint.ApplyPositionConstraint(v);
 }
 
 void Matrix6x6::OverrideConstraint(FJointConstraint &in){
@@ -515,15 +515,18 @@ bool Matrix6x6::IsGrounded(FVector &Start){
         );
         groundNormal = outHitResult.ImpactNormal.GetSafeNormal();
         SetGroundPenetration(result, Start, outputHit);
-        DrawGroundPenetration(Start);
-
-        if(result){
-            FVector smallDir = groundNormal * 10.0f;
-            DebugHelper::showLineBetween(world, Start, Start + smallDir, FColor::Cyan, 1.0f);
-        }else{
-            FVector smallDir(10,0,0);
-            DebugHelper::showLineBetween(world, Start, Start + smallDir, FColor::Yellow, 1.0f);
+        
+        if(false){
+            DrawGroundPenetration(Start);
+            if(result){
+                FVector smallDir = groundNormal * 10.0f;
+                DebugHelper::showLineBetween(world, Start, Start + smallDir, FColor::Cyan, 1.0f);
+            }else{
+                FVector smallDir(10,0,0);
+                DebugHelper::showLineBetween(world, Start, Start + smallDir, FColor::Yellow, 1.0f);
+            }
         }
+        
 
         
         

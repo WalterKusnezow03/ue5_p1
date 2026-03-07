@@ -2,7 +2,6 @@
 
 #include "customUiPlugin/slate/MeshData2D/BaseMeshData/SlateMeshData.h"
 
-#include "customUiPlugin/slate/MeshData2D/Text/SlateTextBase.h"
 
 //constructor.
 void UWidgetProgressBarBase::ConstructWidget(){
@@ -10,11 +9,7 @@ void UWidgetProgressBarBase::ConstructWidget(){
     //Super::ConstructWidget(); // debug
     CreateBar();
 
-    //debug create text
-    if(false){
-        SlateMeshDataPolygon &p = PolygonBackground();
-        SlateTextBase &text = p.GetSlateText();
-    }
+    
 
 
     if(false)
