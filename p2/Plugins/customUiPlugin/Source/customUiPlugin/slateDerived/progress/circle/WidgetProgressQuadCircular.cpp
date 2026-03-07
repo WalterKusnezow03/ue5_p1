@@ -16,7 +16,8 @@ void UWidgetProgressQuadCircular::ConstructWidget(){
 
     CreateBackground();
     CreateTiles();
-    SetDefaultColors();
+    SetColorsFromProperty();
+    SetProgress(progressScalar); //DEBUG SHOWCASE
 }
 
 //temporary reference, use one at a time!
@@ -43,7 +44,7 @@ int UWidgetProgressQuadCircular::VerifyTileIdToPolygonId(int tileId){
 
 void UWidgetProgressQuadCircular::CreateBackground(){
     FVector2D a(0, 0);
-    FVector2D b(setupResolution, setupResolution);
+    FVector2D b = desiredResolution;
 
     SlateMeshDataPolygon &background = PolygonBackground();
     SlateMeshData &meshData = background.MeshDataRef();
@@ -53,49 +54,62 @@ void UWidgetProgressQuadCircular::CreateBackground(){
 }
 
 
-int UWidgetProgressQuadCircular::TilesPerAxis(){
-    return setupResolution;
+
+int UWidgetProgressQuadCircular::TilesPerAxisX(){
+    return TilesPerAxis(desiredResolution.X, tileResolution) - 1;
 }
 
-float UWidgetProgressQuadCircular::TileSize(){
-    return TilesPerAxis() / setupResolution;
+int UWidgetProgressQuadCircular::TilesPerAxisY(){
+    return TilesPerAxis(desiredResolution.Y, tileResolution) - 1;
 }
+
+int UWidgetProgressQuadCircular::TilesPerAxis(double axis, double size){
+    size = std::max(size, 1.0);
+    return axis / size;
+}
+
+
+
+
+
+
 
 int UWidgetProgressQuadCircular::TilesTotal(){
-    return TilesPerAxis() * 4; //erstmal so lassen
+    return TilesPerAxisX() * 2 + TilesPerAxisY() * 2; //erstmal so lassen
 }
 
 
 void UWidgetProgressQuadCircular::CreateTiles(){
+
     //start top left
     FVector2D pivot(0, 0);
     int tileId = 0;
     //0-to->x
-    for (int x = 0; x < TilesPerAxis(); x++)
+    for (int x = 0; x < TilesPerAxisX(); x++)
     {
         AppendTile(pivot, tileId);
 
-        pivot += FVector2D(TileSize(), 0);
+        pivot += FVector2D(tileResolution, 0);
         tileId++;
     }
 
     //x
     //|to down
     //y
-    for (int y = 0; y < TilesPerAxis(); y++)
+    for (int y = 0; y < TilesPerAxisY(); y++)
     {
         AppendTile(pivot, tileId);
 
-        pivot += FVector2D(0, TileSize());
+        pivot += FVector2D(0, tileResolution);
         tileId++;
     }
 
-    //0<--to--y
-    for (int y = 0; y < TilesPerAxis(); y++)
+    //0<--to--y on x
+    for (int x = 0; x < TilesPerAxisX(); x++)
     {
         AppendTile(pivot, tileId);
 
-        pivot -= FVector2D(TileSize(), 0);
+        pivot -= FVector2D(tileResolution, 0);
         tileId++;
     }
 
@@ -103,11 +117,11 @@ void UWidgetProgressQuadCircular::CreateTiles(){
     //x
     //|to up
     //y
-    for (int y = 0; y < TilesPerAxis(); y++)
+    for (int y = 0; y < TilesPerAxisY(); y++)
     {
         AppendTile(pivot, tileId);
 
-        pivot -= FVector2D(0, TileSize());
+        pivot -= FVector2D(0, tileResolution);
         tileId++;
     }
 
@@ -115,7 +129,7 @@ void UWidgetProgressQuadCircular::CreateTiles(){
 
 void UWidgetProgressQuadCircular::AppendTile(FVector2D pivot, int tileId){
     FVector2D a = pivot + FVector2D(0, 0);
-    FVector2D b = pivot + FVector2D(TileSize(), TileSize());
+    FVector2D b = pivot + FVector2D(tileResolution, tileResolution);
 
     SlateMeshDataPolygon &tilePolygon = PolygonForeGround(tileId);
     SlateMeshData &meshData = tilePolygon.MeshDataRef();
@@ -128,14 +142,9 @@ void UWidgetProgressQuadCircular::AppendTile(FVector2D pivot, int tileId){
 
 
 
-
-
-
-
-
-void UWidgetProgressQuadCircular::SetDefaultColors(){
-    SetColorForeground(FLinearColor::Green);
-    SetColorBackground(FLinearColor::White);
+void UWidgetProgressQuadCircular::SetColorsFromProperty(){
+    SetColorForeground(FLinearColor(colorForeground));
+    SetColorBackground(FLinearColor(colorBackground));
 }
 
 
@@ -161,9 +170,10 @@ void UWidgetProgressQuadCircular::SetColorForeground(FLinearColor color){
 
 
 void UWidgetProgressQuadCircular::SetProgress(float num){
+    Super::SetProgress(num);
     // scale for foreground by scalar
-    EnableTileRangeByScalar(0, num, true);
-    EnableTileRangeByScalar(num, 1, false);
+    EnableTileRangeByScalar(0, progressScalar, true);
+    EnableTileRangeByScalar(progressScalar, 1, false);
 }
 
 void UWidgetProgressQuadCircular::EnableTileRangeByScalar(
@@ -200,10 +210,5 @@ void UWidgetProgressQuadCircular::ResetProgress(){
 }
 
 
-float UWidgetProgressQuadCircular::ClampProgress(float num){
-    num = std::max(num, 0.0f);
-    num = std::min(num, 1.0f);
-    return num;
-}
 
 

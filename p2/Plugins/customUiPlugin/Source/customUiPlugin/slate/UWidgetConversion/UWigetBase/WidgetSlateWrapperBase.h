@@ -20,11 +20,18 @@ UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetSlateWrapperBase : public USizeBox, public IBaseUiInterface
 {
     GENERATED_BODY()
+
+protected:
+    UPROPERTY(EditAnywhere, Category="WidgetData")
+    FVector2D desiredResolution;
+
+    void UpdateResolutionFromProperty();
+
 protected:
     virtual void PostInitProperties() override;
     virtual void BeginDestroy() override;
-    int id = 0;
-    static int idGlobal;
+
+    // virtual void PostEditChangeProperty() override;
 
     float margin = 5.0f;
 
@@ -65,28 +72,12 @@ private:
     bool bWasConstructed = false;
     FResolutionUpdateTask task;
     FResolutionUpdateTask taskRawXY;
-    FResolutionUpdateTask taskRawX;
-    FResolutionUpdateTask taskRawY;
+
+    
 
 public:
 
-    /// --- scaling internal mesh data ! ---
-    ///@brief sets the widget meshdata scale and with literally.
-    virtual void SetResolution(FVector2D scale);
-    void SetResolutionXUniform(int scale);
-    void SetResolutionYUniform(int scale);
 
-    FVector2D GetResolution();
-    bool GetResolutionIsValid(FVector2D &outRes);
-
-private:
-    /// @brief sets width and height of the sizebox, not the mesh data!
-    void SetWidthAndHeightToUniformBoundsSizeBox();
-    void SetWidthAndHeightSizeBox(FVector2D size);
-
-    bool ResolutionReached(const FVector2D &target);
-
-public:
     // ---- IBaseUiInterface ----
 
     // Tick for bounds update. VERY IMPORTANT, RESIZE DOESNT WORK WITHOUT IT

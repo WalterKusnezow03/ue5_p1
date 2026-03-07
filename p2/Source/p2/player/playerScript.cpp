@@ -441,52 +441,6 @@ void AplayerScript::setupBoneController(){
 }
 
 
-AActor *AplayerScript::createLimbPivotAtTop(int x, int y, int height, int pushFront){
-
-	height *= -1; //orient downwardss
-	
-
-	EntityManager *entitymanagerPointer = AworldLevel::entityManager();
-	if(entitymanagerPointer != nullptr){
-		FVector location(0, 0, 0);
-		AcustomMeshActor *oberschenkel = entitymanagerPointer->spawnAcustomMeshActor(GetWorld(), location);
-		if(oberschenkel != nullptr){
-			//int width = 10;
-			//int height = -(legScaleCM / 2);
-
-			float xHalf = x / 2.0f;
-			float yHalf = y / 2.0f;
-
-			FVector a(-xHalf + pushFront, -yHalf,0);
-			FVector b(xHalf + pushFront, -yHalf, 0);
-			FVector c(xHalf + pushFront, yHalf,0);
-			FVector d(pushFront, yHalf,0);
-
-
-			FVector at(-xHalf + pushFront, -yHalf, height);
-			FVector bt(xHalf + pushFront, -yHalf, height);
-			FVector ct(xHalf + pushFront, yHalf, height);
-			FVector dt(pushFront, yHalf, height);
-
-			oberschenkel->createCube(
-				a,b,c,d,at,bt,ct,dt,
-				materialEnum::wallMaterial
-			);
-            oberschenkel->disablePhysicscollision();
-
-            entitymanagerPointer->addActorToIgnoreRaycastParams(
-				this, getTeam()
-			);
-
-			oberschenkel->setDamagedOwner(this);
-
-
-
-			return oberschenkel;
-		}
-	}
-	return nullptr;
-}
 
 
 

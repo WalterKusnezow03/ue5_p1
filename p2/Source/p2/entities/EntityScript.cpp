@@ -14,6 +14,8 @@
 #include "GameCore/util/FVectorUtil.h"
 #include "p2/_world/worldLevel.h"
 
+#include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
+#include "p2/ui/3Dui/GamePlayWidgets/InteractWidget/InteractWidgetActor.h"
 
 
 
@@ -653,6 +655,7 @@ void AEntityScript::enableCollider(bool enable){
 void AEntityScript::die(){
 	AlertManager::unSubscribeFromAlert(this);
 	humanoidPluginController.SetStateCollapseTrue();
+	RequestInteractWidget();
 
 	UnRegisterFromMiniMap();
 	resetpath();
@@ -795,4 +798,44 @@ void AEntityScript::CopyHumanoidControllerTransform(){
 	//copy for minimap
 	SetActorRotation(rotation);
 	SetActorLocation(location);
+}
+
+
+
+
+
+
+
+
+
+
+
+/// inetraction widget 
+void AEntityScript::RequestInteractWidget(){
+	if(!currentInteractWidget){
+		FVector relativeLocation(0, 0, 100);
+		if(EntityManager *e = AworldLevel::entityManager()){
+			AWorldDynamicWidgetActor *found = e->spawnAWorldDynamicWidgetActor(
+				EWorldDynamicWidgetEnum::EInteractWidget,
+				GetWorld(), 
+				RootComponent,
+				relativeLocation
+			);
+			if(found){
+				if(AInteractWidgetActor *casted = Cast<AInteractWidgetActor>(found)){
+					currentInteractWidget = casted;
+					currentInteractWidget->SetPayload(this); //notify player for this actor.
+				}else{
+					found->ReleaseToObjectPool(); //should not happen.
+				}
+			}
+		}
+	}
+}
+
+void AEntityScript::ReleaseInteractWidget(){
+	if(currentInteractWidget){
+		currentInteractWidget->ReleaseToObjectPool();
+	}
+	currentInteractWidget = nullptr;
 }

@@ -215,8 +215,8 @@ void AHumanEntityScript::die(){
     AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
     UnRegisterFromMiniMap();
+    RequestInteractWidget();
 
-    
     DebugHelper::showScreenMessage("AHumanEntityScript::DIE", FColor::Red);
     
 

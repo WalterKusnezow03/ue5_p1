@@ -109,8 +109,6 @@ private:
 
 	
 	class HumanoidPlayerController boneController;
-	// class BoneController boneController;
-	AActor *createLimbPivotAtTop(int x, int y, int height, int pushFront);
 	void setupBoneController();
 
 

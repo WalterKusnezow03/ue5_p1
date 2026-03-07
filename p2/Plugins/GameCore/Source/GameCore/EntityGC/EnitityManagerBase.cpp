@@ -59,9 +59,4 @@ EntityManagerGeneric<AActor> &EntityManagerBase::find(ETrackedActors type){
 
 
 
-/**
- * spawning
- */
-
-
 

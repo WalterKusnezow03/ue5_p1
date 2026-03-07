@@ -69,8 +69,7 @@ public:
 	void setMaterialBehaiviour(materialEnum mat);
 
 
-	void splitIntoAllTriangles();
-	void createNewMeshActors(std::vector<MeshData> &meshes, materialEnum material);
+	
 
 	
 	//void createTerrainFrom2DMap(TerrainChunkSetup &package);

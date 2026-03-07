@@ -17,7 +17,7 @@
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
-#include "GameCore/EntityGC/EntityManagerGenericMap.h"
+
 #include "GameCore/EntityGC/EntityManagerGeneric.h"
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
@@ -27,10 +27,14 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
 
+#include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
 
 
 
 #include "GameCore/Raycast/query/mapTracker/TCollisionTracker.h"
+
+
+class AWorldDynamicWidgetActor;
 
 /**
  * OBJECT POOL MANAGER
@@ -40,6 +44,8 @@
  * will spawn and hold entites which are despawned
  * only this class will spawn any enteties and manage them if they are not needed!
  * will help with object pooling for the whole game
+ * 
+ * communication to Gc / obejct pool Plugin
  */
 class P2_API EntityManager : public EntityManagerBase
 {
@@ -75,7 +81,7 @@ public:
 	void add(AthrowableItem *throwableItem);
 	void add(Aparticle *particleIn);
 	void add(AcustomMeshActor *meshActorIn);
-	
+	void add(AWorldDynamicWidgetActor *actorIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);
@@ -90,6 +96,13 @@ public:
 
 	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
 
+
+	AWorldDynamicWidgetActor *spawnAWorldDynamicWidgetActor(
+		EWorldDynamicWidgetEnum typeWidgetActorToSpawn,
+		UWorld *world, 
+		USceneComponent *attachTo,
+		FVector relativeLocation
+	);
 	
 
 	/// @brief spawns aactor in the world
@@ -106,31 +119,13 @@ public:
 	void createDebree(UWorld *world, FVector &location, materialEnum materialType);
 
 
-	//terrain
-	std::vector<AcustomMeshActor *> requestMeshActors(UWorld *world, int requestCount);
-
-	//meshes in general
-	void createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d);
 
 private:
 	
 
 	
 
-
-	//hier nur den typ parameter als klasse angeben nicht pointer oderso
-	//weil hier so nicht gewollt, wie in java den generic type
-	//team unabhängig speichern
-	EntityManagerGeneric<AEntityScript> entityList; 
 	
-	//hier werden ALLE toten humans ausbewahrt, basierend auf team
-	EntityManagerGenericMap<teamEnum, AHumanEntityScript> humanEntityMap;
-	EntityManagerGeneric<AcustomMeshActor> meshActorList;
-
-	//GENERIC ENUM MAPS OF GENERIC MANAGERS / BACKUP ON DEATH 
-	EntityManagerGenericMap<weaponEnum, Aweapon> weaponMap;
-	EntityManagerGenericMap<throwableEnum, AthrowableItem> throwableMap;
-	EntityManagerGenericMap<particleEnum,Aparticle> particleMap;
 
 	
 

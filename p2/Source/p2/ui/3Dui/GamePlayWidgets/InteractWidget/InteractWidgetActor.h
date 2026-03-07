@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-#include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
+#include "p2/ui/3Dui/GamePlayWidgets/base/WorldDynamicWidgetActor.h"
 
 #include "InteractWidgetActor.generated.h"
 
@@ -12,15 +12,19 @@ class UInteractWidget;
 /// @brief press e to interact widget, timer based.
 /// ----> TOOD: SLATE CUSTOM UI CIRCULAR?
 UCLASS()
-class GAMECORE_API AInteractWidgetActor : public ACustomMeshUIActor {
+class GAMECORE_API AInteractWidgetActor : public AWorldDynamicWidgetActor {
     GENERATED_BODY()
 
 public:
-    static AInteractWidgetActor *MakeInstance(
+    /*static AInteractWidgetActor *MakeInstance(
         UWorld *world,
         USceneComponent *attachTo,
         FVector relativeLocation
-    );
+    );*/
+
+    //reset / init method from entity manager
+    virtual void InitFromObjectPool() override;
+    virtual void ReleaseToObjectPool() override;
 
     //to be called by interact widget and no one else.
     void Notify();
@@ -29,16 +33,18 @@ public:
     void SetInteractWidgetActive(bool flag);
     void SetPayload(AActor *actor);
 
+    virtual EWorldDynamicWidgetEnum GetWidgetType() override {
+        return EWorldDynamicWidgetEnum::EInteractWidget;
+    }
+   
+    
+
 private:
     bool isActive = true; //active flag for notfiy
     AActor *payloadActor = nullptr;
 
 protected:
-    void AttachToSceneWithRelativeLocation(
-        USceneComponent *attachTo,
-        const FVector &location
-    );
-    void AttachToScene(USceneComponent *attachTo);
+    
 
     virtual void CreateWidgetMeshData() override;
 

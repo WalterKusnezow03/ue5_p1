@@ -17,6 +17,8 @@
 
 #include "EntityScript.generated.h"
 
+class AInteractWidgetActor;
+
 UCLASS()
 class P2_API AEntityScript : public AMiniMapRegisteredActor, public IDamageinterface
 {
@@ -151,8 +153,8 @@ protected:
 
 	class Timer spottingTimer;
 
-	
-
+	//TODO!
+	class Timer despawnBodyTimer;
 
 	//NEW ACTION MANAGER
 	void actUponCurrentAction(float DeltaTime);
@@ -170,4 +172,12 @@ protected:
 	void BeginPlayHumanoidController();
 	void TickHumanoidController(float deltatime);
 	void CopyHumanoidControllerTransform();
+
+
+
+	//-- interaction widget on death --
+protected:
+	void RequestInteractWidget();
+	void ReleaseInteractWidget();
+	AInteractWidgetActor *currentInteractWidget = nullptr;
 };

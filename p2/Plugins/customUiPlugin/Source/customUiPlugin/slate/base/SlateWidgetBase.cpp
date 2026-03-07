@@ -74,12 +74,18 @@ int32 SSlateWidgetBase::OnPaint(const FPaintArgs& Args,
         AllottedGeometry
     );
 
-    return LayerId + 1;
+    //return LayerId + 1;
+    LayerId += 1;
+    return SCompoundWidget::OnPaint(
+        Args,
+        AllottedGeometry,
+        MyCullingRect,
+        OutDrawElements,
+        LayerId,
+        InWidgetStyle,
+        bParentEnabled
+    );
 }
-
-
-
-
 
 void SSlateWidgetBase::DrawAllPolygons(
     FSlateWindowElementList& OutDrawElements,

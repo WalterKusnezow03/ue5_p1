@@ -40,6 +40,7 @@ public:
 		return true;
 	}
 
+	void UpdateVisibilityAndCollision(bool flag);
 	void EnableCollision(bool flag);
 
 	FString GetDebugName(){

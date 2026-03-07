@@ -12,6 +12,7 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
 #include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
+#include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
@@ -402,9 +403,10 @@ void P2AssetLoader::load3DWidgets(){
     );
 
 
-    
-    AssetLoader::LoadAndSaveAssetToManager<Eui3DWidgetEnum, UClass>(
-        Eui3DWidgetEnum::EInteractWidget, // track in asset manager
+
+    //EWorldDynamicWidgetEnum on purpose!
+    AssetLoader::LoadAndSaveAssetToManager<EWorldDynamicWidgetEnum, UClass>(
+        EWorldDynamicWidgetEnum::EInteractWidget, // track in asset manager
         "Game",                  // like "Game" for game or any other plugin name
         "Prefabs/ui3D/gameWorldUi/InteractWidget",// like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "InteractWidgetActorBP"           // Just the file name as displayed

@@ -22,17 +22,12 @@
 #include "GcGameCore/Launcher/GcLauncher.h"
 
 #include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
+#include "p2/ui/3Dui/GamePlayWidgets/InteractWidget/InteractWidgetActor.h"
+
+#include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
+
 
 #include <map>
-
-
-template class EntityManagerGeneric<AEntityScript>;
-template class EntityManagerGenericMap<teamEnum, AHumanEntityScript>;
-template class EntityManagerGeneric<AcustomMeshActor>;
-template class EntityManagerGenericMap<weaponEnum, Aweapon>;
-template class EntityManagerGenericMap<throwableEnum, AthrowableItem>;
-template class EntityManagerGenericMap<particleEnum, Aparticle>;
-
 
 
 //must be called before anything happens. On Begin Play !
@@ -88,8 +83,7 @@ void EntityManager::add(AEntityScript *entity){
             gc->collection.Add<teamEnum>(entity, entity->getTeam());
         }
 
-        //deprecated
-        //entityList.add(entity);
+
     }
 }
 
@@ -104,8 +98,6 @@ void EntityManager::add(AHumanEntityScript *humanEntity){
             gc->collection.Add<teamEnum>(humanEntity, humanEntity->getTeam());
         }
         
-        //deprecated
-        //humanEntityMap.add(humanEntity->getTeam(), humanEntity);
     }
 }
 
@@ -129,11 +121,7 @@ void EntityManager::add(Aweapon *weaponIn){
             gc->collection.Add<weaponEnum>(weaponIn, type);
         }
 
-        //deprecated
-        /*
-        //new map manager
-        weaponMap.add(type, weaponIn);
-        */
+        
     }
 }
 
@@ -142,8 +130,6 @@ void EntityManager::add(Aweapon *weaponIn){
 void EntityManager::add(AthrowableItem *throwableItem){
     if(throwableItem != nullptr){
         throwableEnum type = throwableItem->getType();
-        //throwableMap.add(type, throwableItem);
-
 
         AGcLauncher *gc = AGcLauncher::Instance();
         if(gc){
@@ -161,7 +147,7 @@ void EntityManager::add(Aparticle *particleIn){
         //particle will manage this it self
         //AActorUtil::showActor(*particleIn, false);
         particleEnum type = particleIn->getType();
-        //particleMap.add(type, particleIn);
+        
 
         AGcLauncher *gc = AGcLauncher::Instance();
         if(gc){
@@ -175,13 +161,24 @@ void EntityManager::add(Aparticle *particleIn){
 /// @param meshActorIn 
 void EntityManager::add(AcustomMeshActor *meshActorIn){
     if(meshActorIn != nullptr){
-        //meshActorList.add(meshActorIn);
-
 
         AGcLauncher *gc = AGcLauncher::Instance();
         if(gc){
             // gc->Add<E>(uobject*, e);
             gc->collection.Add(meshActorIn);
+        }
+    }
+}
+
+
+
+void EntityManager::add(AWorldDynamicWidgetActor *actorIn){
+    if(actorIn){
+        EWorldDynamicWidgetEnum typeWidget = actorIn->GetWidgetType();
+        AGcLauncher *gc = AGcLauncher::Instance();
+        if(gc){
+            // gc->Add<E>(uobject*, e);
+            gc->collection.Add<EWorldDynamicWidgetEnum>(actorIn, typeWidget);
         }
     }
 }
@@ -221,33 +218,6 @@ void EntityManager::addActorToIgnoreRaycastParams(AActor *actor, teamEnum team){
         tCollisionMap.AddIgnoredActor(team, actor);
 
 
-        /*
-        if(collisionMap.find(team) == collisionMap.end()){
-            collisionMap[team] = FCollisionQueryParams();
-        }
-
-        //add to correct map
-        FCollisionQueryParams *ref = &collisionMap[team];
-        ref->AddIgnoredActor(actor);
-
-        //&collisionMap[team].AddIgnoredActor(actor); // add to team map
-
-        //add to player and enemy team if neutral to create a proper filter
-        if(team == teamEnum::neutralTeam || team == teamEnum::none){
-
-            if(collisionMap.find(teamEnum::playerTeam) == collisionMap.end()){
-                collisionMap[teamEnum::playerTeam] = FCollisionQueryParams();
-            }
-            ref = &collisionMap[teamEnum::playerTeam];
-            ref->AddIgnoredActor(actor);
-
-            if(collisionMap.find(teamEnum::enemyTeam) == collisionMap.end()){
-                collisionMap[teamEnum::enemyTeam] =  FCollisionQueryParams();
-            }
-            ref = &collisionMap[teamEnum::enemyTeam];
-            ref->AddIgnoredActor(actor);
-        }*/
-
         //add to all
         addActorToIgnoredAllParams(actor);
     }
@@ -273,7 +243,7 @@ void EntityManager::addActorToIgnoredAllParams(AActor *actor){
 
 
 /**
- * ---- SPAWN SECTION HERE ----
+ * ---- SPAWN / OBJECT POOL SECTION HERE ----
  */
 
 
@@ -393,18 +363,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
 
 
 
-    /*
-    //weapon map testing
-    if(weaponMap.hasActorsLeft(typeToSpawn)){
-        Aweapon *fromManager = weaponMap.getFirstActor(typeToSpawn);
-        if(fromManager != nullptr){
-            fromManager->showItem(true);
-
-            //testing as default sight
-            fromManager->applySight(weaponAttachmentEnum::iron_sight);
-            return fromManager;
-        }
-    }*/
 
     UClass *selectedBp = nullptr;
     if(assetManager *a = assetManager::instance()){
@@ -432,24 +390,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, weaponEnum typeToSpawn){
             }
         }
 
-
-
-
-        /*
-        AActor *spawned = spawnAactor(world, selectedBp, Location);
-        if(spawned != nullptr){
-            addActorToIgnoreRaycastParams(spawned, teamEnum::neutralTeam);
-        }
-        Aweapon *w = Cast<Aweapon>(spawned);
-        if(w != nullptr){
-            //show weapon
-            w->showItem(true);
-
-            //testing as default sight
-            w->applySight(weaponAttachmentEnum::iron_sight);
-
-            return w;
-        }*/
     }
     
     return nullptr;
@@ -516,37 +456,6 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
         }
 
 
-        /*
-        //DebugHelper::showScreenMessage("THROWABLE REQUETS TEST");
-        if (throwableMap.hasActorsLeft(type))
-        {
-            //DebugHelper::showScreenMessage("THROWABLE REQUEST OK ", FColor::Green);
-            AthrowableItem *a = throwableMap.getFirstActor(type);
-            if(a != nullptr){
-                a->reset();
-                return a;
-            }
-        }
-
-
-        UClass *fromMap = nullptr;
-        if(assetManager *a = assetManager::instance()){
-            fromMap = a->Find<throwableEnum, UClass>(type);
-            // a->findBp(type);
-        }
-
-        if(fromMap != nullptr){
-
-            AActor * spawned = spawnAactor(world, fromMap, location);
-            if(spawned != nullptr){
-                addActorToIgnoreRaycastParams(spawned, teamEnum::neutralTeam);
-            }
-
-            AthrowableItem *casted = Cast<AthrowableItem>(spawned);
-            if(casted != nullptr){
-                return casted;
-            }
-        }*/
     }
     //an issue occured
     return nullptr;
@@ -590,34 +499,6 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
 
 
 
-
-
-
-
-    /*
-    //new code not tested
-    //get from manager or spawn
-    AthrowerWeapon *weapon = nullptr;
-    if (weaponMap.hasActorsLeft(weaponEnum::thrower))
-    {
-        Aweapon *fromMap = weaponMap.getFirstActor(weaponEnum::thrower);
-        weapon = Cast<AthrowerWeapon>(fromMap);
-    }
-    else
-    {
-        UClass *selectedBp = nullptr;
-        if(assetManager *a = assetManager::instance()){
-            selectedBp = a->Find<weaponEnum, UClass>(weaponEnum::thrower);
-            // a->findBp(weaponEnum::thrower);
-        }
-        AActor *spawned = spawnAactor(world, selectedBp, Location);
-        weapon = Cast<AthrowerWeapon>(spawned);
-    }
-
-    if(weapon != nullptr){
-        weapon->setThrowableType(typeToSpawn);
-        return weapon;
-    }*/
     return nullptr;
 }
 
@@ -640,25 +521,8 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
         }
     }
     
-
-    
-    
-    
-    
-    
     /*
     if(world != nullptr){
-
-        if(meshActorList.hasActorsLeft()){
-            AcustomMeshActor *pointer = meshActorList.getFirstActor();
-            if(pointer != nullptr){
-                //debug, need to remove later
-                //DebugHelper::showScreenMessage("POPPED MESH FROM BACKUP", FColor::Green);
-                pointer->SetActorLocation(location);
-                return pointer;
-            }
-        }
-
         // --- new testing spawn by static class ---
         // Spawn the actor
         FRotator rotation;
@@ -676,6 +540,69 @@ AcustomMeshActor *EntityManager::spawnAcustomMeshActor(UWorld *world, FVector &l
 }
 
 
+
+
+AWorldDynamicWidgetActor *EntityManager::spawnAWorldDynamicWidgetActor(
+    EWorldDynamicWidgetEnum typeWidgetActorToSpawn,
+    UWorld *world, 
+    USceneComponent *attachTo,
+    FVector relativeLocation
+){
+    if(world && attachTo){
+        UClass *selectedBp = nullptr;
+        if(assetManager *a = assetManager::instance()){
+            selectedBp = a->Find<EWorldDynamicWidgetEnum, UClass>(typeWidgetActorToSpawn);
+        }
+
+        if(selectedBp != nullptr){
+
+            AGcLauncher *gc = AGcLauncher::Instance();
+            if(gc){
+                // gc->Add<E>(uobject*, e);
+                // T* gc->Get<T, E>(UClass_T*, e);
+
+                //will spawn if not found by blueprint.
+                AWorldDynamicWidgetActor *widgetActor = 
+                    gc->collection.Get<AWorldDynamicWidgetActor,EWorldDynamicWidgetEnum>(
+                        selectedBp, typeWidgetActorToSpawn
+                    );
+
+                if(widgetActor){
+                    widgetActor->InitFromObjectPool(attachTo, relativeLocation);
+
+                    return widgetActor;
+                }
+            }
+
+        }
+    }
+    return nullptr;
+}
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// ---> to be refactured, very old code.
 /** 
 * ---- PARTICLE / EXPLOSION SECTION ----
 */
@@ -761,32 +688,6 @@ void EntityManager::createParticle(
         }
     }
 
-    /*
-    if(world != nullptr){
-
-
-        
-        if(bp != nullptr){
-
-            AActor *a = nullptr;
-            if(particleMap.hasActorsLeft(enumtype)){
-                a = particleMap.getFirstActor(enumtype);
-            }else{
-                a = spawnAactor(world, bp, location);
-            }
-
-            //spawn aactor if none was found
-            //AActor *a = spawnAactor(world, bp, location);
-            if(a != nullptr){
-                a->SetActorLocation(location);
-                Aparticle *created = Cast<Aparticle>(a);
-                if(created != nullptr){
-                    created->setParticleType(enumtype); //set the partcle type on start
-                    created->applyImpulse(dir, speed, lifeTime);
-                }
-            }
-        }
-    }*/
     
 }
 
@@ -836,38 +737,6 @@ void EntityManager::createParticle(
 
 
 
-    /*
-    if(world != nullptr){
-        UClass *bp = nullptr; // getParticleBp(enumtype);
-
-        if(assetManager *am = assetManager::instance()){
-            bp = am->Find<particleEnum, UClass>(particleEnum::particleNone_enum);
-            // am->findBp(particleEnum::particleNone_enum); //none here.
-        }
-
-        if(bp != nullptr){
-
-            AActor *a = nullptr;
-            if(particleMap.hasActorsLeft(particleEnum::particleNone_enum)){
-                a = particleMap.getFirstActor(particleEnum::particleNone_enum);
-            }else{
-                a = spawnAactor(world, bp, location);
-            }
-
-            //spawn aactor if none was found
-            //AActor *a = spawnAactor(world, bp, location);
-            if(a != nullptr){
-                a->SetActorLocation(location);
-                Aparticle *created = Cast<Aparticle>(a);
-                if(created != nullptr){
-                    created->setParticleType(particleEnum::particleNone_enum); //set the partcle type on start
-
-                    FVector scale(0.5f, 0.5f, 0.5f);
-                    created->applyImpulse(dir, speed, lifeTime, materialToApply, scale);
-                }
-            }
-        }
-    }*/
     
 }
 
@@ -875,59 +744,6 @@ void EntityManager::createParticle(
 
 
 
-
-
-/**
- * ---- SECTION FOR TERRAIN ----
- * 
- */
-
-
-
-
-/// @brief returns a vector by value of meshactor pointers
-/// @param world world to spawn in
-/// @param requestCount request count how many you need
-/// @return vector of actors
-std::vector<AcustomMeshActor*> EntityManager::requestMeshActors(UWorld *world, int requestCount){
-    std::vector<AcustomMeshActor *> output;
-    if (world != nullptr){
-        output.reserve(requestCount);
-        FVector location(0, 0, 0);
-
-        //fill the vector with actors.
-        while (output.size() < requestCount)
-        {
-            AcustomMeshActor *pointer = spawnAcustomMeshActor(world, location);
-            if(pointer != nullptr){
-                output.push_back(pointer);
-            }
-        }
-    }
-
-    return output;
-}
-
-
-
-void EntityManager::createTwoSidedQuad(UWorld *world, FVector &a, FVector &b, FVector &c, FVector &d){
-    //implementation needs to be tested!
-
-   
-    FVector location(0, 0, 0);
-
-    AcustomMeshActor *customMesh = spawnAcustomMeshActor(world, location);
-    if(customMesh != nullptr){
-
-        customMesh->createTwoSidedQuad(
-            a, b, c, d,
-            materialEnum::wallMaterial
-        );
-
-    }
-
-    
-}
 
 
 

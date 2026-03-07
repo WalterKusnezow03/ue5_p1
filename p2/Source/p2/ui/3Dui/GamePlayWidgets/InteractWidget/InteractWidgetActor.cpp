@@ -6,7 +6,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
 
-
+/*
 AInteractWidgetActor *AInteractWidgetActor::MakeInstance(
     UWorld *world, 
     USceneComponent *attachTo,
@@ -54,34 +54,20 @@ AInteractWidgetActor *AInteractWidgetActor::MakeInstance(
     spawned->AttachToSceneWithRelativeLocation(attachTo, relativeLocation);
 
     return spawned;
+}*/
+
+
+void AInteractWidgetActor::InitFromObjectPool(){
+    Super::InitFromObjectPool();
+
 }
 
-
-void AInteractWidgetActor::AttachToSceneWithRelativeLocation(
-    USceneComponent *attachTo,
-    const FVector &location
-){
-    AttachToScene(attachTo);
-    SetActorRelativeLocation(location);
+void AInteractWidgetActor::ReleaseToObjectPool(){
+    Super::ReleaseToObjectPool();
+    payloadActor = nullptr;
+    widgetInteracionCallbackInterface = nullptr;
+    //reset flag?
 }
-
-void AInteractWidgetActor::AttachToScene(USceneComponent *attachTo){
-    if(attachTo){
-        AttachToComponent(attachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 void AInteractWidgetActor::BeginPlay(){
     Super::BeginPlay();
@@ -133,8 +119,8 @@ UInteractWidget *AInteractWidgetActor::GetInteractWidgetCasted(){
 //init on beginplay
 void AInteractWidgetActor::CreateWidgetMeshData(){
     if(!bMeshDataCreated && Widget){
-        float xMax = 200.0f;
-        float yMax = 200.0f;
+        float xMax = 300.0f;
+        float yMax = 300.0f;
 
         /*
         1-->2

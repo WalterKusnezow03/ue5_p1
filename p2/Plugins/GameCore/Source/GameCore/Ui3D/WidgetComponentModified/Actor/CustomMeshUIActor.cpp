@@ -159,7 +159,10 @@ bool ACustomMeshUIActor::RayIntersectHover(
     return false;
 }
 
-
+void ACustomMeshUIActor::UpdateVisibilityAndCollision(bool flag){
+    SetActorHiddenInGame(!flag);
+    EnableCollision(flag);
+}
 
 void ACustomMeshUIActor::EnableCollision(bool flag){
     if(Widget){
