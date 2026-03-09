@@ -5,16 +5,19 @@
 #include "p2/weapon/weapon.h"
 #include "p2/weapon/ammunitionEnum.h"
 #include <map>
+#include "p2/player/inventory/InventorySlot.h"
 #include "CoreMinimal.h"
+
+class UWidgetEntityLootPayload;
 
 /**
  * must be refactured to carried item!
  */
-class P2_API playerInventory
+class P2_API PlayerInventory
 {
 public:
-	playerInventory();
-	~playerInventory();
+	PlayerInventory();
+	~PlayerInventory();
 
 	void shoot();
 	void aim(bool aim);
@@ -31,7 +34,7 @@ public:
 
 	void addWeaponIfNotInInventory(Aweapon *weaponIn);
 	void reloadWeapon();
-	void addAmmunition(int ammunition, int type);
+	
 
 	float recoilValue();
 
@@ -47,27 +50,16 @@ public:
 	///@brief current index in inventory selected
 	int currentIndexNum();
 
-private:
-	class wslot{
-		public:
-			wslot(Aweapon *in);
-			~wslot();
-			Aweapon *weaponPointer = nullptr;
-			
-			void shoot();
-			void reload(int amount);
-			void drop();
-			void show(bool show);
-			void aim(bool aim);
-			void releaseShoot();
-			int getMagSize();
-			int getBulletsInMag();
-			float recoilValue();
-	};
+	void Collect(UWidgetEntityLootPayload *payload);
 
+private:
+	void UpdateShowWeapon();
+	InventorySlot &CurrentSlotRef();
+	int ValidateIndex(int index);
 
 	/// @brief stored on heap because copy constructor must be const, NOT wanted here!
-	std::vector<playerInventory::wslot *> weaponVector;
+	TArray<InventorySlot> weaponVector;
+	InventorySlot fallback;
 	int currentIndex;
 
 	int ammunition;

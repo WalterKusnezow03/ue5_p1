@@ -570,27 +570,6 @@ void ProceduralMeshComponentPair::overrideMeshDataFromBaseAndUpdateMesh(
 
 
 
-//collision cache (not really used, performance was very slow.)
-bool ProceduralMeshComponentPair::CopyCollisionCache(FProcMeshCollisionStorageInterface &cache){
-    if(raycastMesh){
-        if(cache.SerializeCollision(raycastMesh)){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool ProceduralMeshComponentPair::SetupFromCollisionCache(FProcMeshCollisionStorageInterface &cache){
-    if(raycastMesh){
-        if(cache.ApplyData(raycastMesh)){
-            WasSetupFromCache = true;
-            return true;
-        }
-    }
-    return false;
-}
-
-
 
 // --- Debug ---
 

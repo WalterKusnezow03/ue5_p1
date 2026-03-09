@@ -805,12 +805,31 @@ void AEntityScript::CopyHumanoidControllerTransform(){
 
 /// interaction widget on death
 
+void AEntityScript::SetupLootDeathPayload(){
+	CreatePayloadIfNeeded();
+	if (deathLootPayload){
+		deathLootPayload->SetActor(this);
+	}
+}
+
+void AEntityScript::CreatePayloadIfNeeded(){
+	if(!deathLootPayload){
+		deathLootPayload = NewObject<UWidgetEntityLootPayload>(this);
+	}
+}
+
+
+//remove interact widget since it has beed interacted with.
 void AEntityScript::ReceiveCallback(){
 	ReleaseInteractWidget();
 }
 
 void AEntityScript::RequestInteractWidget(){
 	if(!currentInteractWidget){
+
+		//setup payload for interaction callback.
+		SetupLootDeathPayload(); 
+
 		FVector relativeLocation(0, 0, 50);
 		if(EntityManager *e = AworldLevel::entityManager()){
 			AWorldDynamicWidgetActor *found = e->spawnAWorldDynamicWidgetActor(
@@ -827,9 +846,9 @@ void AEntityScript::RequestInteractWidget(){
 					//add self to widget notified actors
 					currentInteractWidget->AddPersistentCallbackInterface(this);
 
-					//notify player for this actor as payload
-    	 			currentInteractWidget->SetActorPayLoad(this);
-
+					//notify player for this actor as payload, 
+					//will be resettet automatically on interaction finish.
+					currentInteractWidget->SetPayloadByPointer(deathLootPayload);
 				}else{
 					found->ReleaseToObjectPool(); //should not happen.
 				}

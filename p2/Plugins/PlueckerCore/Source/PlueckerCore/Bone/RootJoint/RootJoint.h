@@ -31,14 +31,21 @@ public:
 
     void TickAndBuildRecursive(float deltatime);
 
-    
-    virtual void OverrideWorldLocation(FVector pos) override;
-    void OverrideJointWorldTransform(FVector pos, FRotator roation) override;
+    void OverrideJointWorldTransform(FVector pos, FRotator roation);
+    virtual void OverrideWorldLocation(MMatrix mat);
+    virtual void OverrideWorldLocation(FVector pos);
+    virtual FVector GetWorldLocation() const override;
 
     void OverrideLinearVelocity(FVector &vIn);
 
 
-
-
+    //update com on backward build own force
+protected:
+    virtual void FindSelfInteriaAndGravitySpatialMoment(
+        FVector &outN, // torque
+        FVector &outF // force
+    ) override;
+    void UpdateCenterOfMassOnBackwardBuildForce();
+    //virtual FVector CenterOfMassWorld() const override;
 
 };

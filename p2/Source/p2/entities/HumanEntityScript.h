@@ -76,4 +76,8 @@ protected:
 
 	
 	bool playerIsInLookDir();
+
+
+	//-- death payload / widget interaction override --
+	virtual void SetupLootDeathPayload() override; //is called on widget request.
 };

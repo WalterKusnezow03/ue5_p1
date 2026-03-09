@@ -3,7 +3,6 @@
 #include "weaponSetupHelper.h"
 #include "GameCore/util/TVector.h"
 #include "p2/_world/worldLevel.h"
-#include "p2/player/playerInventory.h"
 #include "p2/entityManager/EntityManager.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "LoadoutHelper.h"

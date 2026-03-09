@@ -153,6 +153,12 @@ void DebugHelper::showScreenMessage(FString s, FString t){
 	showScreenMessage(s + t);
 }
 
+void DebugHelper::showScreenMessage(FString s, FString t, FColor color){
+	showScreenMessage(s + t, color);
+}
+
+
+
 void DebugHelper::showScreenMessage(FString s, FVector a, FVector b, FColor color){
 
 	FString sOut = s;

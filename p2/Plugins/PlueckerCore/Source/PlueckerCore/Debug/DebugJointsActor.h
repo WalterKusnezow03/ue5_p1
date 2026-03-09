@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PlueckerCore/Bone/Joint.h"
+#include "PlueckerCore/Bone/RootJoint/RootJoint.h"
 #include "CoreMath/animation/timer/Timer.h"
  
 #include "DebugJointsActor.generated.h"
@@ -13,6 +14,8 @@ class PLUECKERCORE_API ADebugJointsActor : public AActor {
 
     GENERATED_BODY()
 
+
+
 public:
     static void CreateInstance(UWorld *world, FVector &location);
     
@@ -21,19 +24,18 @@ public:
     void Tick(float deltaTime) override;
 
 protected:
-    
+    bool isEnabled = true;
 
 private:
-    Joint rootJoint;
+    RootJoint rootJoint;
 
     void initChain();
-    void TickDebugRandomTorque(MMatrix &translation, float deltaTime);
+    void LockPosition();
+    void TickDebugRandomTorque(float deltaTime);
 
     Timer timerFortick;
     
     
 
 
-    void debugSolveIk();
-    void testForwardTmpPluecker();
 };

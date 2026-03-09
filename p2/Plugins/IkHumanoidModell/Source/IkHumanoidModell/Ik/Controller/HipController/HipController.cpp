@@ -1174,18 +1174,10 @@ void HipController::UpdateRootJointOnCollapse(){
 
 
 void HipController::TickCollapsePhysics(float deltatime){
-    bool BLOCK = false;
-    if(BLOCK){
-        return;
-    }
-
-    //DebugHelper::showScreenMessage("HipController::TickCollapsePhysics", FColor::Cyan);
-
-    //update for safety.
+    
     FCollisionQueryParams params = ASharedRaycastParamManager::getCollisonParams();
     rootJoint.UpdateIgnoreParamsRecursive(params);
     rootJoint.TickAndBuildRecursive(deltatime);
-    rootJoint.DrawJointLocation(deltatime);
     
     //rootJoint.logGroundedState("HipController::", FColor::Cyan);
 }

@@ -41,7 +41,7 @@ public:
 
 private:
     bool isActive = true; //active flag for notfiy
-    AActor *payloadActor = nullptr;
+   
 
 protected:
     

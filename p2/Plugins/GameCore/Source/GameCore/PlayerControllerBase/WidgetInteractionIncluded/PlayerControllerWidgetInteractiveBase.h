@@ -45,5 +45,5 @@ private:
 
     // callback from 3D world widgets
 public:
-    virtual void ReceiveCallback(AActor *payloadActor) override;
+    virtual void ReceiveCallback(UWidgetInteractPayload *payload) override;
 };

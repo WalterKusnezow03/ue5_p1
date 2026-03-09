@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "GameCore/PlayerControllerBase/InteractionCallbackInterface/WidgetInteractionCallbackInterface.h"
+#include "p2/entities/widgetPayloads/WidgetEntityLootPayload.h"
 
 #include "p2/player/playerScript.h"
 #include "GameCore/team/teamEnum.h"
@@ -188,7 +189,15 @@ public:
 	virtual void ReceiveCallback() override;
 
 protected:
+	//will also call the setup loot payload.
 	void RequestInteractWidget();
 	void ReleaseInteractWidget();
 	AInteractWidgetActor *currentInteractWidget = nullptr;
+
+	UPROPERTY()
+	UWidgetEntityLootPayload *deathLootPayload = nullptr;
+	
+	void SetupLootDeathPayloadAndRequestInteractWidget();
+	virtual void SetupLootDeathPayload();
+	void CreatePayloadIfNeeded();
 };

@@ -2541,3 +2541,28 @@ float MeshData::AverageDist2TriangleShapedBuffer(TArray<FVector> &buffer){
     float trianglCount = buffer.Num() / 3.0f;
     return distAccumulated / trianglCount;
 }
+
+
+
+
+
+
+
+
+//new, not tested
+void MeshData::SmartMeshDataOverride(MeshData &other){
+    
+    //wir wollen hier daten kopieren
+    //wenn der andere in mich reinpasst kann ich alles kopieren
+    //wenn nicht, muss ich vorher extenden.
+    //rest des arrays wird automatisch kollabiert
+    TCopyTArrayData<FVector>(vertecies, other.vertecies);
+    TCopyTArrayData<int32>(triangles, other.triangles);
+    TCopyTArrayData<FVector>(normals, other.normals);
+    TCopyTArrayData<FProcMeshTangent>(Tangents, other.Tangents);
+    TCopyTArrayData<FColor>(VertexColors, other.VertexColors);
+    TCopyTArrayData<FVector2D>(UV0, other.UV0);
+
+    bounds = other.bounds;
+    materialPreferred = other.materialPreferred;
+}

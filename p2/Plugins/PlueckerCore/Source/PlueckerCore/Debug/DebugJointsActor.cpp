@@ -44,7 +44,7 @@ void ADebugJointsActor::initChain(){
     Joint j11(FVector(20, 0, -30), GetWorld());
     Joint j1(FVector(0, 0, -50), GetWorld());
     Joint j0(FVector(0, 0, -50), GetWorld());
-    Joint jRoot(FVector(0, 0, -50), GetWorld());
+    RootJoint jRoot(FVector(0, 0, -50), GetWorld());
 
     //lower joints debug
     j2.AddChild(j3);
@@ -57,45 +57,38 @@ void ADebugJointsActor::initChain(){
     j0.AddChild(j11);
     j0.AddChild(j1);
     jRoot.AddChild(j0);
-
-    jRoot.BuildParentingRecursive();
-
     rootJoint = jRoot;
+    rootJoint.BuildParentingRecursive();
+
+    rootJoint.SetDrawingEnabledRecursive(true);
     rootJoint.SetDrawColorRecursive(FColor::Red, FColor::Cyan, 0);
 
-    /*
-    TArray<FVector> lengths = {
-        FVector(0, 0, -50),
-        FVector(0, 0, -50),
-        FVector(0, 0, -50),
-    };
-    Joint *parent = nullptr;
-    for (int i = 0; i < lengths.Num(); i++)
-    {
-        FVector &currentTranslation = lengths[i];
-        Joint *newJoint = new Joint(GetWorld(), currentTranslation);
-        createdJoints.Add(newJoint);
-        if(parent != nullptr){
-            parent->SetChild(newJoint);
-        }
-        parent = newJoint;
-    }*/
+    FVector translation(1000, -1000, 300);
+    rootJoint.OverrideWorldLocation(translation);
 
+
+    if(false){
+        LockPosition();
+    }
+}
+
+void ADebugJointsActor::LockPosition(){
+    FJointConstraint &constraint = rootJoint.GetConstraint();
+    constraint.LockPositionConstraint();
 }
 
 void ADebugJointsActor::Tick(float deltaTime){
     Super::Tick(deltaTime);
+
+    if(!isEnabled){
+        return;
+    }
     timerFortick.Tick(deltaTime);
-
-    MMatrix transform;
-    FVector translation(1000, -1000, 300);
-    transform.setTranslation(translation);
-
-    TickDebugRandomTorque(transform, deltaTime);
+    TickDebugRandomTorque(deltaTime);
 }
 
 
-void ADebugJointsActor::TickDebugRandomTorque(MMatrix &transform, float deltaTime){
+void ADebugJointsActor::TickDebugRandomTorque(float deltaTime){
     FVector angular(2, 1, 0); //x and y are logically flipped
     FVector linear(0, 0, 0);
 
@@ -108,14 +101,7 @@ void ADebugJointsActor::TickDebugRandomTorque(MMatrix &transform, float deltaTim
         timerFortick.Begin(time);
     }
 
-    //testing needed!
-    //rootJoint.TickAndBuildRecursive(
-    rootJoint.TickAndBuildRecursive(
-        deltaTime, //deltaTime * 0.0001f,
-        angular,
-        linear,
-        transform
-    );
+    rootJoint.TickAndBuildRecursive(deltaTime);
     rootJoint.DrawJointLocation(deltaTime);
 
 }

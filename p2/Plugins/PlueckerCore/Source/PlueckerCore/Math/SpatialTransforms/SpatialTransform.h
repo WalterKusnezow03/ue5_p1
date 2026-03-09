@@ -6,7 +6,7 @@
 #include "PlueckerCore/Bone/JointConstraints/JointGroundedConstraint.h"
 
 /*
-Spatial transform matrix 6x6
+Abstract Spatial transform matrix 6x6
 */
 //base class for spatial transformations of spatial velocities and wrenches
 class PLUECKERCORE_API SpatialTransform {
@@ -15,14 +15,21 @@ class PLUECKERCORE_API SpatialTransform {
 protected:
     //derived class specific
     virtual MMatrix Transform() = 0;
+    virtual MMatrix TransformInverse() = 0;
 
     //axis for velocity / force propagation (use translation in bone.)
     virtual FVector &axis() = 0;
+
+    //might update translation of bone if wanted,
+    //might be extra constrained!
+    virtual void OnForwardPlueckerFinished() = 0;
 
     //helper for matrices
     MMatrix Translation();
     MMatrix Rotation();
 
+    MMatrix TranslationInverted();
+    MMatrix RotationTransposed(); //R^T = R^-1
 
     
 
@@ -104,6 +111,9 @@ protected:
 
     //v will be right not eliminated by default!
     void applyConstraints(FVector &w, FVector &v);
+    virtual void applyJointConstraint(FVector &w, FVector &v);
+    virtual void applyGravityConstraint(FVector &w, FVector &v);
+
     FJointConstraint constraint;
     FJointGroundedConstraint groundContactConstraint;
 
@@ -123,15 +133,19 @@ protected:
     //integrated location with forward pluecker v
     FVector resultTranslation;
 
-    
-    void UpdateFloorContact(const MMatrix &prev, const MMatrix &current);
+    virtual void UpdateFloorContact(const MMatrix &prev, const MMatrix &current) = 0;
     bool IsGrounded(const MMatrix &prev);
     bool IsGrounded(FVector &Start);
 
 
     //world transformCache
-    void SafeWorldResultCache(const MMatrix &other);
+    virtual void SafeWorldResultCache(const MMatrix &prevTransform, const MMatrix &endBone) = 0;
+
+
+    //cache after build with martix mulitplication
     FVector worldLocationCache;
+    FRotator worldRotatorCache;
+    MMatrix worldTransformCache;
 
 
 
@@ -145,6 +159,7 @@ protected:
     //raycast
     bool contactFloor = false;
     FVector groundNormal;
+    FVector groundTruth;
     float groundPenetration = 0.0f;
     FVector velocitycache;
 
@@ -153,4 +168,12 @@ protected:
     void DrawGroundPenetration(const FVector &pos);
 
     
+
+
+
+    //actor transform data extraction from cache
+public:
+    FVector ActorTranslationFromCache() const;
+    FRotator ActorRotationFromCache() const;
+    FVector centerOfMassWorld(const FVector &comLocal) const;
 };

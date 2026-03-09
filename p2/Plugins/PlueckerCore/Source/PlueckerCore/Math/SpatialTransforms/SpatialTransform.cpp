@@ -40,12 +40,21 @@ void SpatialTransform::setTranslation(FVector &other){
 void SpatialTransform::applyConstraints(FVector &w, FVector &v){
     //w Angular velocity
     //v Linear velocity
+    applyJointConstraint(w, v);
+    applyGravityConstraint(w, v);
+}
+
+void SpatialTransform::applyJointConstraint(FVector &w, FVector &v){
     constraint.ApplyRotationConstraint(w);
     constraint.ApplyPositionConstraint(v);
+}
 
+void SpatialTransform::applyGravityConstraint(FVector &w, FVector &v){
     groundContactConstraint.ApplyRotationConstraint(w);
     groundContactConstraint.ApplyPositionConstraint(v);
 }
+
+
 
 
 
@@ -60,56 +69,14 @@ void SpatialTransform::forwardPluecker(
     FVector &linearVelocity,  //v
     float deltatime
 ){
-    /*
+    /*FString message = FString::Printf(
+        TEXT("SpatialTransform::forwardPluecker(%s)(%s)"),
+        *angularVelocity.ToString(),
+        *linearVelocity.ToString()
+    );
+    DebugHelper::showScreenMessage(message, FColor::Yellow);*/
+
     
-    X = |R        0_3x3|
-        |R*s(w)   R    |
-    
-        R in SO3 Gruppe
-    
-
-    j_v(w,v) = X * i_v(w,v)
-
-    */
-
-    //erst j_v ausrechnen
-    /*
-        |w
-        |v
-    -------
-    a b |aw + bv  //jetzt mal w1 genannt
-    c d |cw + dv  //v1 genannt
-    */
-
-    //moved to tmp fuction
-    /*
-    Matrix3x3 a = RotationSO3;
-    Matrix3x3 b;
-    b.makeZero();
-
-    Matrix3x3 c1 = RotationSO3;
-    Matrix3x3 c2 = Matrix3x3::skew(translation);
-    Matrix3x3 c = c1 * c2;
-
-    Matrix3x3 d = RotationSO3;
-
-    FVector w1 = a * angularVelocity + b * linearVelocity;
-    FVector v1 = c * angularVelocity + d * linearVelocity;
-
-    //constraints limitieren:
-    FVector w1_constrained = w1;
-    FVector v1_constrained = v1;
-    applyConstraints(w1_constrained, v1_constrained); // ob hier noch unklar.
-
-    //dann velocity integrieren
-    //deltaTwist(w1, v1)
-    Matrix3x3 outDeltaRotation;
-    FVector outDeltaTranslation;
-    Matrix3x3::convertPlueckerToSE3components(
-        w1_constrained, v1_constrained, outDeltaRotation, outDeltaTranslation, deltatime
-    );*/
-
-
     Matrix3x3 outDeltaRotation;
     FVector outDeltaTranslation;
     forwardDeltaPluecker(
@@ -124,8 +91,16 @@ void SpatialTransform::forwardPluecker(
     resultTranslation = outDeltaTranslation + translation; // sollte so ok sein
     RotationSO3 = RotationSO3 * outDeltaRotation; //<-- lese richtung so --
 
-}
 
+
+
+    // --- TODO: WARNING --- UNCLEAR ---
+    //achtung: hier müssen noch constraints rein, 
+    //es wurden KEINE JOINTS MIT velocity constraints getestet!
+
+    //VERY IMPORTANT TO CALL!
+    OnForwardPlueckerFinished();
+}
 
 void SpatialTransform::forwardDeltaPluecker(
     FVector &angularVelocity, //w
@@ -134,7 +109,6 @@ void SpatialTransform::forwardDeltaPluecker(
     FVector &outDeltaTranslation,
     float deltatime
 ){
-
     /*
     
     X = |R        0_3x3|
@@ -168,10 +142,28 @@ void SpatialTransform::forwardDeltaPluecker(
     FVector w1 = a * angularVelocity + b * linearVelocity;
     FVector v1 = c * angularVelocity + d * linearVelocity;
 
-    //constraints limitieren:
+    /*FString message = FString::Printf(
+        TEXT("SpatialTransform::forwardPluecker Result w(%s) v(%s)"),
+        *w1.ToString(),
+        *v1.ToString()
+    );
+    DebugHelper::showScreenMessage(message, FColor::Yellow);*/
+
+    
     FVector w1_constrained = w1;
     FVector v1_constrained = v1;
-    applyConstraints(w1_constrained, v1_constrained); // ob hier noch unklar.
+    //resultierende velocities für den joint constrainen.
+    applyConstraints(w1_constrained, v1_constrained); 
+
+    /*FString message = FString::Printf(
+        TEXT("SpatialTransform::forwardPlueckerConstrained w(%s) v(%s)"),
+        *w1_constrained.ToString(),
+        *v1_constrained.ToString()
+    );
+    DebugHelper::showScreenMessage(message, FColor::Yellow);*/
+
+
+
 
     //dann velocity integrieren
     //deltaTwist(w1, v1)
@@ -210,20 +202,12 @@ MMatrix SpatialTransform::operator*(const MMatrix &worldPrev){
     MMatrix result = worldPrev * transformLocal; // lese richtung
 
     //save world result into cache
-    SafeWorldResultCache(result);
+    SafeWorldResultCache(worldPrev, result);
 
     UpdateFloorContact(worldPrev, result);
     return result;
 }
 
-/*
-MMatrix SpatialTransform::Transform(){
-    MMatrix translationLocal(resultTranslation);
-    MMatrix rotationLocal;
-    CopyRotationTo(rotationLocal);
-    MMatrix transformLocal = rotationLocal * translationLocal; //<-- lese richtung --
-    return transformLocal;
-}*/
 
 MMatrix SpatialTransform::Translation(){
     MMatrix translationMat(resultTranslation);
@@ -236,6 +220,19 @@ MMatrix SpatialTransform::Rotation(){
     return rotationLocal;
 }
 
+MMatrix SpatialTransform::TranslationInverted(){
+    FVector t1 = resultTranslation * -1.0f;
+    MMatrix translationMat1(t1);
+    return translationMat1;
+}
+
+MMatrix SpatialTransform::RotationTransposed(){
+    MMatrix r1 = Rotation();
+    r1.transposeRotation();
+    return r1;
+}
+
+/*
 void SpatialTransform::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
     
     contactFloor = false;
@@ -243,10 +240,8 @@ void SpatialTransform::UpdateFloorContact(const MMatrix &prev, const MMatrix &cu
     if (IsGrounded(prev) || IsGrounded(current)){
         contactFloor = true;
     }
-
     UpdateGroundConstraint(current);
-
-}
+}*/
 
 void SpatialTransform::UpdateGroundConstraint(const MMatrix &worldResult){
     UpdateGroundConstraintPitchAndPosition();
@@ -264,6 +259,7 @@ void SpatialTransform::UpdateGroundConstraintPitchAndPosition(){
     }
 }
 
+// --- NOT TESTED ---
 void SpatialTransform::UpdateGroundConstraintRoll(const MMatrix &worldResult){
     //roll constraint based on current bone rotation: R rotation!
     
@@ -287,10 +283,6 @@ void SpatialTransform::UpdateGroundConstraintRoll(const MMatrix &worldResult){
 
 }
 
-// cache
-void SpatialTransform::SafeWorldResultCache(const MMatrix &other){
-    worldLocationCache = other.getTranslation();
-}
 
 
 
@@ -498,6 +490,7 @@ bool SpatialTransform::IsGrounded(FVector &Start){
             outputHit,
             outHitResult
         );
+        groundTruth = outputHit;
         groundNormal = outHitResult.ImpactNormal.GetSafeNormal();
         SetGroundPenetration(result, Start, outputHit);
         
@@ -543,4 +536,21 @@ void SpatialTransform::DrawGroundPenetration(const FVector &pos){
 
 bool SpatialTransform::BelowGround(const FVector &check, const FVector &ground){
     return check.Z < ground.Z;
+}
+
+
+
+
+
+FVector SpatialTransform::ActorTranslationFromCache() const {
+    return worldLocationCache;
+}
+
+FRotator SpatialTransform::ActorRotationFromCache() const {
+    return worldRotatorCache;
+}
+
+
+FVector SpatialTransform::centerOfMassWorld(const FVector &comLocal) const {
+    return worldTransformCache * comLocal; //move to world space. (transform by bone or root managed properly.)
 }

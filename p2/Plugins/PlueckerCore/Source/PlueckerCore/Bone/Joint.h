@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 
-#include "PlueckerCore/Math/Matrix6x6.h"
+
 #include "PlueckerCore/Math/SpatialTransforms/SpatialTransform.h"
 #include "PlueckerCore/Math/SpatialTransforms/SpatialTransformBone.h"
 
@@ -20,7 +20,9 @@ class PLUECKERCORE_API Joint {
 
 protected:
     bool logEnabled = false;
-    
+    bool drawEnabled = false;
+    bool disableCoriolisForce = true; //true
+
     //--- spatial transform -- overriden in root --
 private:
     SpatialTransformBone spatialTransformBase;
@@ -81,11 +83,9 @@ public:
     // external transform updates
     void OverrideJointRotation(const FRotator &r);
     void OverrideJointRotation(const MMatrix &rotationMatrix);
-    virtual void OverrideJointWorldTransform(FVector pos, FRotator roation);
+    
 
-    void OverrideWorldLocation(MMatrix mat);
-    virtual void OverrideWorldLocation(FVector pos);
-
+    virtual FVector GetWorldLocation() const;
 
 
 
@@ -151,10 +151,10 @@ protected:
 
     bool BoneTranslationValidForInteriaMatrix(const FVector &size);
     void SetInteriaMatrixAuto(const FVector &boneTranslation);
-    void SetInteriaMatrixAngularVelocityLocked();
+    void SetInteriaMatrixSphere();
 
 
-    void FindSelfInteriaAndGravitySpatialMoment(
+    virtual void FindSelfInteriaAndGravitySpatialMoment(
         FVector &outN, // torque
         FVector &outF // force
     );
@@ -162,7 +162,7 @@ protected:
     UWorld *world = nullptr;
     void draw(const MMatrix &a, const MMatrix &b, float deltatime);
     
-    void LogPosition(FString Prefix);
+    
 
     TArray<Joint> children;
 
@@ -179,10 +179,11 @@ protected:
    
 public:
     
-    void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn);
+    
     void UpdateIgnoreParamsRecursive(FCollisionQueryParams &ignoreParamsIn);
 
 protected:
+    void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn);
     void UpdateIgnoreParamsDownStream(FCollisionQueryParams &params);
     void UpdateIgnoreParamsUpStream(FCollisionQueryParams &params);
 
@@ -193,16 +194,23 @@ public:
     void AddChildByPointer(Joint *jIn);
     void AddChildsByPointer(TArray<Joint*> childs);
     void SetActor(AActor *attachActor);
-
-    void AddParentByPointer(Joint *jIn);
     void BuildParentingRecursive();
+protected:
+    void AddParentByPointer(Joint *jIn);
 
+
+public:
     void SetLogEnabled(bool flag);
+    void SetDrawingEnabledRecursive(bool flag);
+protected:
+    void SetDrawingEnabled(bool flag);
+    void SetDrawingEnabledDownStream(bool flag);
+    void SetDrawingEnabledUpStream(bool flag);
 
 protected:
     AActor *attachedActor = nullptr;
-    //t and R, in is always translation, updated always rotation.
-    void UpdateActorTransform(const MMatrix &transformIn, const MMatrix &transformUpdate);
+    
+    void UpdateActorTransform();
 
     void PropagateWrench(float deltatime);
     void PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint *> &parents);
@@ -210,4 +218,17 @@ protected:
     void AddAndIntegrateOwnSptialForce(FVector &outN, FVector &outF, float deltaTime);
 
     
+
+
+
+    // center of mass recursive
+
+protected:
+    FVector CenterOfMassWorldWeightedRecursive();
+    FVector CenterOfMassWorldWeightedRecursive(const FVector &root, float &sumMass);
+    FVector CenterOfMassWorldWeightedRelativeTo(const FVector &pos) const;
+    FVector CenterOfMassWorldRelativeTo(const FVector &pos) const;
+    FVector CenterOfMassWorld() const;
+
+
 };

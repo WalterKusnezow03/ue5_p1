@@ -215,7 +215,7 @@ void AHumanEntityScript::die(){
     AlertManager::unSubscribeFromAlert(this);
     enableActiveStatus(false); //disable?
     UnRegisterFromMiniMap();
-    RequestInteractWidget();
+    RequestInteractWidget(); //also setups payload for death
 
     DebugHelper::showScreenMessage("AHumanEntityScript::DIE", FColor::Red);
     
@@ -362,4 +362,16 @@ void AHumanEntityScript::alert(FVector lookat){
         Super::resetpath();
         LookAt(lookat);
     }
+}
+
+
+
+
+
+void AHumanEntityScript::SetupLootDeathPayload(){
+    Super::SetupLootDeathPayload();
+    if(deathLootPayload){
+        deathLootPayload->Setup(weaponPointer);
+    }
+    
 }

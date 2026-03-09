@@ -51,13 +51,6 @@ void HumanoidController::ResetAndRebuild(){
 }
 
 void HumanoidController::defaultSetup(AActor *actorOwner){
-
-    /*FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(world);
-
-    hipController.setup(property);
-    torsoController.setup(property);
-    SetupEmptyArmAnimationActor(world);
-    addAllActorsInChildrenToRaycastExclude();*/
     HumanoidController::defaultSetup(actorOwner, false);
 }
 
@@ -77,15 +70,7 @@ void HumanoidController::defaultSetup(AActor *actorOwner, bool flagWantedHands){
 
 
 void HumanoidController::AddTorsoControllerTopJointsToHipForPlueckerJoints(){
-
-    //DEPRECATED
-    /*//connect torso and hip via plücker joints.
-    if(Joint *hipJoint = hipController.GetTopJoint()){
-        hipJoint->AddChildsByPointer(torsoController.GetTopJoints());
-    }*/
-
-    //NEW TO SPINE CONNECT
-    //connect torso and hip via plücker joints.
+    //connect torso spine and hip via plücker joints.
     if(Joint *hipJoint = hipController.GetTopJoint()){
         hipJoint->AddChildByPointer(torsoController.GetTopJoint());
     }

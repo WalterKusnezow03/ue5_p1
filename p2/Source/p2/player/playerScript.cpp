@@ -2,11 +2,10 @@
 
 
 #include "playerScript.h"
-#include "p2/weapon/weapon.h"
-#include "playerInventory.h"
+
 #include "p2/entityManager/EntityManager.h"
 
- #include "DebugPlugin/DebugHelper.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "Animation/AnimSequence.h"
 #include "GameCore/team/teamEnum.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
@@ -24,6 +23,7 @@
 
 #include "p2/_world/worldLevel.h"
 
+#include "p2/entities/widgetPayloads/WidgetEntityLootPayload.h"
 
 #include "p2/ui/3Dui/HUD/HudUiActor.h"
 
@@ -593,4 +593,18 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
         // boneController.attachCarriedItem(weapon);
     }
 }
+
+
+
+
+
+void AplayerScript::ReceiveCallback(UWidgetInteractPayload *payload){
+    if(payload && IsValid(payload)){
+        if(UWidgetEntityLootPayload *entityPayload = Cast<UWidgetEntityLootPayload>(payload)){
+            playerInventory.Collect(entityPayload);
+        }
+    }
+}
+
+
 

@@ -14,7 +14,6 @@
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 #include "terrainPlugin/Storage/ChunkMeshDataLoading/MeshDataIdentifier.h"
-#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
 
 #include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserInterfaceBase.h"
 
@@ -154,14 +153,5 @@ private:
     void createBuildingIfNeeded(TerrainChunkSetup &package);
 
 
-
-    //// ---- COOKED COLLISION CACHE: too slow. ----
-public:
-    FProcMeshCollisionStorageInterface &GetCookedCollisionDataCache(ELod lod);
-    void SaveCollisionDataFrom(AcustomMeshActor *actor);
-    void SetupFromCollisionCache(AcustomMeshActor *actor);
-
-private:
-    std::map<ELod, FProcMeshCollisionStorageInterface> collsionDataCacheMap;
 
 };

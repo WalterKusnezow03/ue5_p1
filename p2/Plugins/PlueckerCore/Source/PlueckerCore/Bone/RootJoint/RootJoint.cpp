@@ -41,16 +41,19 @@ void RootJoint::RemoveConstraints(){
 void RootJoint::SetInteriaMatrixAuto(){
     interia.makeZero();
     interiaInverse.makeZero();
-    SetInteriaMatrixAngularVelocityLocked();
+    
 
-    float weight = 100000000.0f;
+    float weight = 10000000.0f; //100000000.0f;
     float w1 = 1.0f / weight;
     interia.scale(weight, weight, weight);
     interiaInverse.scale(w1, w1, w1);
 
-    //needed here: 
+    //needed here: (? UNCLEAR)
     //recursive interia matrix,
     //also needed: Interia Sum!
+
+    mass = 30.0f * 100.0f;
+    SetInteriaMatrixSphere();
 }
 
 
@@ -69,6 +72,10 @@ void RootJoint::TickAndBuildRecursive(
     FVector w(0, 0, 0);
     FVector v(0, 0, 0);
     Joint::TickAndBuildRecursive(deltaTime, w, v, m);
+
+    //debug log spatial velocity
+    FString message = spatialVelocity.ToString("RootJoint::SpatialVelocity");
+    DebugHelper::showScreenMessage(message, FColor::Red);
 }
 
 
@@ -79,12 +86,57 @@ void RootJoint::OverrideLinearVelocity(FVector &vIn){
 }
 
 
+void RootJoint::OverrideWorldLocation(MMatrix mat){
+    OverrideWorldLocation(mat.getTranslation());
+}
+
 void RootJoint::OverrideWorldLocation(FVector pos){
-    Joint::OverrideWorldLocation(pos);
     GetSpatialTransform().setTranslation(pos); //world location stored in spatial transform
+}
+
+FVector RootJoint::GetWorldLocation() const {
+    return GetSpatialTransformConst().getTranslation();
 }
 
 void RootJoint::OverrideJointWorldTransform(FVector pos, FRotator rotation){
     OverrideJointRotation(rotation);
     OverrideWorldLocation(pos);
+}
+
+
+
+
+
+//never called. Unknown why. Bad.
+
+//update com on backward build
+void RootJoint::FindSelfInteriaAndGravitySpatialMoment(
+    FVector &outN, // torque
+    FVector &outF // force
+){
+    DebugHelper::showScreenMessage("RootJoint FindSelfInteriaAndGravitySpatialMoment ", FColor::Orange);
+    
+    //debug disable
+    UpdateCenterOfMassOnBackwardBuildForce();
+    Joint::FindSelfInteriaAndGravitySpatialMoment(outN, outF);
+    //...
+    //centerOfMass---> update needed
+    //FVector torqueExternal = GetSpatialTransform().Torque(forceExternal, centerOfMass);
+    //...
+}
+
+
+void RootJoint::UpdateCenterOfMassOnBackwardBuildForce(){
+    centerOfMass = CenterOfMassWorldWeightedRecursive();
+    //DebugHelper::showScreenMessage("RootJoint Com ", centerOfMass, FColor::Orange);
+
+    //draw
+    FVector worldLocation = GetWorldLocation();
+    DebugHelper::showLineBetween(
+        world,
+        worldLocation,
+        worldLocation + centerOfMass,
+        FColor::Orange,
+        1.0f
+    );
 }

@@ -863,7 +863,7 @@ void TwoJointBone::UpdateTransformFromCache(Joint &joint, JointTransformCache &c
     FVector location;
     FRotator rotation;
     cache.GetTransform(location, rotation);
-    joint.OverrideJointWorldTransform(location, rotation);
+    joint.OverrideJointRotation(rotation);
 }
 
 

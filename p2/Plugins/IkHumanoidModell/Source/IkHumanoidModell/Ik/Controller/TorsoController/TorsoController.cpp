@@ -61,10 +61,6 @@ void TorsoController::Tick(
     partLeft.Tick(spineWorldTranslation, actorRotation, deltatime);
     partRight.Tick(spineWorldTranslation, actorRotation, deltatime);
 
-
-    //build torso - OLD
-    //partLeft.Tick(actorTranslation, actorRotation, deltatime);
-    //partRight.Tick(actorTranslation, actorRotation, deltatime);
 }
 
 void TorsoController::BuildSpine(
@@ -108,8 +104,24 @@ void TorsoController::getActors(TArray<AActor *> &outArray){
 
 // ---- pluecker joints ----
 void TorsoController::SetupJointParents(){
-    //connect shoulders to spine
+    //connect shoulders to spine end (up)
     spine.AddChildsToLowerJoint(GetTopJointsOfLayeredArms());
+}
+
+//internal use of start effector joints of layered two joint bone to connect spine
+//to shoulders.
+TArray<Joint *> TorsoController::GetTopJointsOfLayeredArms(){
+    TArray<Joint *> outArray;
+    outArray.Add(partLeft.GetTopJoint());
+    outArray.Add(partRight.GetTopJoint());
+    return outArray;
+}
+
+
+
+//lower spine starting joint to connect to hip as child.
+Joint *TorsoController::GetTopJoint(){
+    return spine.GetTopJoint(); //lower spine location
 }
 
 
@@ -129,17 +141,4 @@ void TorsoController::SetStateCollapse(bool flag){
     spine.SetStateCollapse(flag);
     partLeft.SetStateCollapse(flag);
     partRight.SetStateCollapse(flag);
-}
-
-Joint *TorsoController::GetTopJoint(){
-    return spine.GetTopJoint();
-}
-
-//internal use of start effector joints of layered two joint bone to connect spine
-//to shoulders.
-TArray<Joint *> TorsoController::GetTopJointsOfLayeredArms(){
-    TArray<Joint *> outArray;
-    outArray.Add(partLeft.GetTopJoint());
-    outArray.Add(partRight.GetTopJoint());
-    return outArray;
 }

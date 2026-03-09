@@ -4,6 +4,7 @@
 
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "GameCore/PlayerControllerBase/InteractionCallbackInterface/WidgetInteractionCallbackInterface.h"
+#include "GameCore/PlayerControllerBase/InteractionCallbackInterface/WidgetInteractPayload.h"
 
 
 #include "CustomMeshUICallbackActor.generated.h"
@@ -18,8 +19,10 @@ class GAMECORE_API ACustomMeshUICallbackActor : public ACustomMeshUIActor
 	GENERATED_BODY()
 
 public:
-    void ClearAllCallacks();
+    void ClearAllCallacksAndPayload();
     void NotifyAllCallbacks();
+
+    void NotifyAllCallbacks(UWidgetInteractPayload *payload);
 
 public:
     // ---- PLAYER TEMPORARY CALLBACK FOR WIDGETS IF HOVERED ----
@@ -39,7 +42,11 @@ public:
     ) override;
     // --- API AnyMeshWidgetInteractionComponent ---
 
-    void SetActorPayLoad(AActor *inActor);
+    void SetPayloadByPointer(UWidgetInteractPayload *payload);
+
+protected:
+    UWidgetInteractPayload *injectedPayload = nullptr;
+    bool HasPayload();
 
 protected:
     //resets main notify interface if not hovered anymore
@@ -60,6 +67,7 @@ public:
     
 
 protected:
+    void NotifyInjectedInterfaces();
     void ClearPersistentCallbackInterfaceBuffer();
     TArray<IWidgetInteractionCallbackInterface *> injectedPersistentCallbacksNoPayload;
 };

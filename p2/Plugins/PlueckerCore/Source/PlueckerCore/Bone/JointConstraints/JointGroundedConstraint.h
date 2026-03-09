@@ -12,7 +12,7 @@ public:
     bool allowRollRotationPositive = true;
     bool allowRollRotationNegative = true;
 
-    bool allowPositionOffsetZGrounded = false;
+    bool allowPositionOffsetZGrounded = true;
     
     virtual void ApplyRotationConstraint(FVector &rotation) const override{
         ApplyConstraintNaN(rotation);
@@ -24,9 +24,18 @@ public:
         ApplyBelowZeroConstraint(allowRollRotationNegative, rotation.X);
     }
 
-    virtual void ApplyPositionConstraint(FVector &position) const override{
+    virtual void ApplyPositionConstraint(FVector &velocity) const override{
         //FJointConstraint::ApplyPositionConstraint(position);
-        ApplyConstraintNaN(position);
-        ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, position.Z);
+        ApplyConstraintNaN(velocity);
+        ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, velocity.Z);
+    }
+
+    FString ToString(){
+        FString flag = allowPositionOffsetZGrounded ? TEXT("Z ALLOWED") : TEXT("Z NOT! ALLOWED");
+        FString result = FString::Printf(
+            TEXT("FJointGroundedConstraint:: Z Constraint: (%s)"),
+            *flag
+        );
+        return result;
     }
 };

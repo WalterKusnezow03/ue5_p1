@@ -24,7 +24,7 @@ public:
 
 
 private:
-	int internalLayerId = 0;
+	
 
 	// ------ MEMBER VARIABLES NEEDED FOR COPY CONSTRUCTOR ------
 protected:
@@ -440,4 +440,70 @@ protected:
 
 private:
 	TArray<FTriangleIntersectFrame> intersectFrames;
+
+
+public:
+	//new, not tested
+	
+	//should only extend the vertex buffer size if needed,
+	//will collapse not needed triangles.
+	void SmartMeshDataOverride(MeshData &data);
+
+
+protected:
+
+	//copies data into destination but does not reset 
+	//data after that.
+	template <typename T> 
+	void TCopyTArrayData(TArray<T> &destination, TArray<T> &source){
+		int32 sizeThis = destination.Num();
+		int32 sizeOther = source.Num();
+		if(sizeOther <= 0){
+			return;
+		}
+
+		/*
+		FMemory::Memcpy ( 
+			void* Dest,
+			const void* Src,
+			SIZE_T Count  (in bytes if using uint8*)
+		)
+		*/
+		if(sizeThis < sizeOther){
+			destination.SetNumUninitialized(sizeOther);
+		}
+		const int32 bytesSize = sizeOther * sizeof(T);
+		FMemory::Memcpy(
+			destination.GetData(),
+			source.GetData(),
+			bytesSize
+		);
+
+		//--> rest des arrays wird automatisch kollabiert
+		//fill rest with dumb data override
+		if(sizeThis > sizeOther){
+			int32 difference = sizeThis - sizeOther; // AB = B - A
+			TArray<T> dummy;
+			dummy.SetNum(difference);
+
+			uint8 *ptr = (uint8*)destination.GetData();
+			ptr += bytesSize;
+
+			const int32 bytesSizeDifference = difference * sizeof(T);
+
+			FMemory::Memcpy(
+				ptr,
+				dummy.GetData(),
+				bytesSizeDifference
+			);
+
+
+		}
+	}
+
+
+
+
+
+
 };

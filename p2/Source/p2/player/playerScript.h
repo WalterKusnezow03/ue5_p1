@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 //#include "weapon.h"
-#include "playerInventory.h"
+
 #include "Components/CapsuleComponent.h" // Include for UCapsuleComponent
 #include "Camera/CameraComponent.h" // Include for UCameraComponent
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
@@ -19,6 +19,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 
+#include "p2/player/inventory/PlayerInventory.h"
 
 //#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 #include "GameCore/PlayerControllerBase/WidgetInteractionIncluded/PlayerControllerWidgetInteractiveBase.h"
@@ -63,7 +64,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+
+	//receive payloads from widgets
+	virtual void ReceiveCallback(UWidgetInteractPayload *payload) override;
 
 private:
 	bool isCamInPlayer = true;
@@ -73,7 +76,7 @@ private:
 	void cameraDefaultFpv();
 	void cameraDebugFpv();
 
-	class playerInventory playerInventory;
+	PlayerInventory playerInventory;
 
 
 	// Pointer to the Skeletal Mesh Component

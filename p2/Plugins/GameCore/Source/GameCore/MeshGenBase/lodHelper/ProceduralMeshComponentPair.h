@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameCore/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h"
-#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/physicSerialize/FProcMeshCollisionStorageInterface.h"
+
 
 
 /// @brief will store a uprocedural mesh with raycast and without including their mesh
@@ -34,9 +34,7 @@ public:
     UProceduralMeshComponent *RaycastMesh();
     UProceduralMeshComponent *noRaycastMesh();
 
-    //collision cache
-    bool CopyCollisionCache(FProcMeshCollisionStorageInterface &cache);
-    bool SetupFromCollisionCache(FProcMeshCollisionStorageInterface &cache);
+    
 
 
 

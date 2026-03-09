@@ -64,7 +64,7 @@ void AInteractWidgetActor::InitFromObjectPool(){
 
 void AInteractWidgetActor::ReleaseToObjectPool(){
     Super::ReleaseToObjectPool();
-    //reset flag?
+    injectedPayload = nullptr;
 }
 
 void AInteractWidgetActor::BeginPlay(){
@@ -98,6 +98,8 @@ void AInteractWidgetActor::Notify(){
     }
     Super::NotifyAllCallbacks();
 }
+
+
 
 void AInteractWidgetActor::SetInteractWidgetActive(bool flag){
     isActive = flag;

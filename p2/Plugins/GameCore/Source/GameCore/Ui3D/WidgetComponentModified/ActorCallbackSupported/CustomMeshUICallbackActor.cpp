@@ -32,15 +32,29 @@ void ACustomMeshUICallbackActor::ResetWidgetInteractionCallbackIfNotHovered(){
     }
 }
 
-void ACustomMeshUICallbackActor::SetActorPayLoad(AActor *inActor){
-    payloadActorForPlayer = inActor;
-}
 
 void ACustomMeshUICallbackActor::NotifyAllCallbacks(){
+    if(HasPayload()){
+        NotifyAllCallbacks(injectedPayload);
+        return;
+    }
+
+    //notify without payload
+    if(widgetInteracionCallbackInterfacePlayer){
+        widgetInteracionCallbackInterfacePlayer->ReceiveCallback();
+    }
+    NotifyInjectedInterfaces();
+}
+
+void ACustomMeshUICallbackActor::NotifyAllCallbacks(UWidgetInteractPayload *payload){
     //notify with payload
     if(widgetInteracionCallbackInterfacePlayer){
-        widgetInteracionCallbackInterfacePlayer->ReceiveCallback(payloadActorForPlayer);
+        widgetInteracionCallbackInterfacePlayer->ReceiveCallback(payload);
     }
+    NotifyInjectedInterfaces();
+}
+
+void ACustomMeshUICallbackActor::NotifyInjectedInterfaces(){
     //notify others without payload (may be changed later.)
     for (int i = 0; i < injectedPersistentCallbacksNoPayload.Num(); i++){
         if(IWidgetInteractionCallbackInterface * current = injectedPersistentCallbacksNoPayload[i]){
@@ -70,8 +84,20 @@ void ACustomMeshUICallbackActor::ClearPlayerCallback(){
     widgetInteracionCallbackInterfacePlayer = nullptr;
 }
 
-void ACustomMeshUICallbackActor::ClearAllCallacks(){
+void ACustomMeshUICallbackActor::ClearAllCallacksAndPayload(){
     ClearPersistentCallbackInterfaceBuffer();
     ClearPlayerCallback();
-    payloadActorForPlayer = nullptr;
+    injectedPayload = nullptr;
+}
+
+
+
+
+/// @brief pointer must be persistent!
+/// @param payload 
+void ACustomMeshUICallbackActor::SetPayloadByPointer(UWidgetInteractPayload *payload){
+    injectedPayload = payload;
+}
+bool ACustomMeshUICallbackActor::HasPayload(){
+    return injectedPayload != nullptr;
 }

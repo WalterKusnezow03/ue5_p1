@@ -35,7 +35,7 @@ void AWorldDynamicWidgetActor::ReleaseToObjectPool(){
     wasReleased = true;
     DetachFromScene();
     UpdateVisibilityAndCollision(false);
-    ClearAllCallacks();
+    ClearAllCallacksAndPayload();
 
     if(EntityManager *e = AworldLevel::entityManager()){
         e->add(this);

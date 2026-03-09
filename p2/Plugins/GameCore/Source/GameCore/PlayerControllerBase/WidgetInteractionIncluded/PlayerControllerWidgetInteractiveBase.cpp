@@ -97,8 +97,6 @@ void APlayerControllerWidgetInteractiveBase::DispatchInteractKeyPressedStateToIn
     
 
 
-
-
-void APlayerControllerWidgetInteractiveBase::ReceiveCallback(AActor *payloadActor){
+void APlayerControllerWidgetInteractiveBase::ReceiveCallback(UWidgetInteractPayload *payload){
     //NOTHING - FOR SUB CLASSES IN P2 GAME
 }

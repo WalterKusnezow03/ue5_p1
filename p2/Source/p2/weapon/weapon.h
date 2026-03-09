@@ -20,6 +20,10 @@
 
 #include "weapon.generated.h"
 
+
+
+
+
 //forward declare
 class IDamageinterface;
 
@@ -71,6 +75,8 @@ public:
 	virtual void reload(int amount); //might be override from other classes (for example thrower weapon)
 	int getMagSize();
 	int getBulletsInMag();
+
+
 
 	//the class has 3 shoot methods: both public methods collect start and target point
 	//the "shootProtected" must only be called within the class!
