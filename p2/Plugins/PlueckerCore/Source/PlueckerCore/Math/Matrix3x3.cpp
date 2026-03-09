@@ -187,7 +187,7 @@ void Matrix3x3::scale(float x, float y, float z){
 
 /// @brief makes the skew matrix for omega
 /// @param omega must be normalized!
-void Matrix3x3::makeSkew(FVector &omega){
+void Matrix3x3::makeSkew(const FVector &omega){
     //wenn man einen vektor mit der skew matrix multipliziert kommt
     //das kreuz produkt bei raus
 
@@ -213,7 +213,7 @@ void Matrix3x3::makeSkew(FVector &omega){
 
 }
 
-Matrix3x3 Matrix3x3::skew(FVector &omega){
+Matrix3x3 Matrix3x3::skew(const FVector &omega){
     Matrix3x3 result;
     result.makeSkew(omega);
     return result;
@@ -243,8 +243,8 @@ Matrix3x3 Matrix3x3::makeExponentialMap_Skew(FVector &screw, float theta){
 
 //convert to SE3 4x4
 void Matrix3x3::convertPlueckerToSE3components(
-    FVector &angularVelocity, //w0
-    FVector &linearVelocity, //v0
+    const FVector &angularVelocity, //w0
+    const FVector &linearVelocity, //v0
     Matrix3x3 &outRotation, //delta rotation 
     FVector &outTranslation, //delta translation
     float deltatime //used for theta over time, angvelocity * deltatime

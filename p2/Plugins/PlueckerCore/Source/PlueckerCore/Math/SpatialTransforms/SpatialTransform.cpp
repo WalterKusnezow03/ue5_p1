@@ -1,24 +1,25 @@
-#include "Matrix6x6.h"
+#include "SpatialTransform.h"
 
-void Matrix6x6::SetWorld(UWorld *worldIn){
+
+void SpatialTransform::SetWorld(UWorld *worldIn){
     world = worldIn;
 }
 
-Matrix6x6::Matrix6x6(){
+SpatialTransform::SpatialTransform(){
 
 }
 
-Matrix6x6::~Matrix6x6(){
+SpatialTransform::~SpatialTransform(){
 
 }
 
-Matrix6x6::Matrix6x6(const Matrix6x6 &other){
+SpatialTransform::SpatialTransform(const SpatialTransform &other){
     if(this != &other){
         *this = other;
     }
 }
 
-Matrix6x6 &Matrix6x6::operator=(const Matrix6x6 &other){
+SpatialTransform &SpatialTransform::operator=(const SpatialTransform &other){
     if(this != &other){
         constraint = other.constraint;
         RotationSO3 = other.RotationSO3;
@@ -30,13 +31,13 @@ Matrix6x6 &Matrix6x6::operator=(const Matrix6x6 &other){
     return *this;
 }
 
-void Matrix6x6::setTranslation(FVector &other){
+void SpatialTransform::setTranslation(FVector &other){
     translation = other;
     resultTranslation = other;
 }
 
 
-void Matrix6x6::applyConstraints(FVector &w, FVector &v){
+void SpatialTransform::applyConstraints(FVector &w, FVector &v){
     //w Angular velocity
     //v Linear velocity
     constraint.ApplyRotationConstraint(w);
@@ -48,13 +49,13 @@ void Matrix6x6::applyConstraints(FVector &w, FVector &v){
 
 
 
-FJointConstraint &Matrix6x6::GetConstraint(){
+FJointConstraint &SpatialTransform::GetConstraint(){
     return constraint;
 }
 
 //makes forward pluecker and refreshes the given w and v
 //transform update is saved, R and T SE3 are updated
-void Matrix6x6::forwardPluecker(
+void SpatialTransform::forwardPluecker(
     FVector &angularVelocity, //w
     FVector &linearVelocity,  //v
     float deltatime
@@ -126,7 +127,7 @@ void Matrix6x6::forwardPluecker(
 }
 
 
-void Matrix6x6::forwardDeltaPluecker(
+void SpatialTransform::forwardDeltaPluecker(
     FVector &angularVelocity, //w
     FVector &linearVelocity,  //v
     Matrix3x3 &outDeltaRotation,
@@ -159,7 +160,7 @@ void Matrix6x6::forwardDeltaPluecker(
     b.makeZero();
 
     Matrix3x3 c1 = RotationSO3;
-    Matrix3x3 c2 = Matrix3x3::skew(translation);
+    Matrix3x3 c2 = Matrix3x3::skew(axis());
     Matrix3x3 c = c1 * c2;
 
     Matrix3x3 d = RotationSO3;
@@ -189,6 +190,9 @@ void Matrix6x6::forwardDeltaPluecker(
     //UNKLAR OB HIER CONSTRAINTED ODER NICHT!
     angularVelocity = w1_constrained;
     linearVelocity = v1_constrained;
+
+
+
     velocitycache = v1_constrained;
 
     /*//refresh, for propagation to next joint
@@ -199,22 +203,10 @@ void Matrix6x6::forwardDeltaPluecker(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-MMatrix Matrix6x6::operator*(const MMatrix &worldPrev){
+MMatrix SpatialTransform::operator*(const MMatrix &worldPrev){
 
     //MWorld = prev * R * T <--
-    MMatrix transformLocal = LocalTransform();
+    MMatrix transformLocal = Transform();
     MMatrix result = worldPrev * transformLocal; // lese richtung
 
     //save world result into cache
@@ -224,15 +216,27 @@ MMatrix Matrix6x6::operator*(const MMatrix &worldPrev){
     return result;
 }
 
-MMatrix Matrix6x6::LocalTransform(){
+/*
+MMatrix SpatialTransform::Transform(){
     MMatrix translationLocal(resultTranslation);
     MMatrix rotationLocal;
     CopyRotationTo(rotationLocal);
     MMatrix transformLocal = rotationLocal * translationLocal; //<-- lese richtung --
     return transformLocal;
+}*/
+
+MMatrix SpatialTransform::Translation(){
+    MMatrix translationMat(resultTranslation);
+    return translationMat;
 }
 
-void Matrix6x6::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
+MMatrix SpatialTransform::Rotation(){
+    MMatrix rotationLocal;
+    CopyRotationTo(rotationLocal);
+    return rotationLocal;
+}
+
+void SpatialTransform::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
     
     contactFloor = false;
     //if (IsGrounded(prev) && IsGrounded(current))
@@ -244,12 +248,12 @@ void Matrix6x6::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
 
 }
 
-void Matrix6x6::UpdateGroundConstraint(const MMatrix &worldResult){
+void SpatialTransform::UpdateGroundConstraint(const MMatrix &worldResult){
     UpdateGroundConstraintPitchAndPosition();
     UpdateGroundConstraintRoll(worldResult);
 }
 
-void Matrix6x6::UpdateGroundConstraintPitchAndPosition(){
+void SpatialTransform::UpdateGroundConstraintPitchAndPosition(){
     groundContactConstraint.allowPitchRotationPositive = true;
     groundContactConstraint.allowPitchRotationNegative = true;
     groundContactConstraint.allowPositionOffsetZGrounded = true;
@@ -260,7 +264,7 @@ void Matrix6x6::UpdateGroundConstraintPitchAndPosition(){
     }
 }
 
-void Matrix6x6::UpdateGroundConstraintRoll(const MMatrix &worldResult){
+void SpatialTransform::UpdateGroundConstraintRoll(const MMatrix &worldResult){
     //roll constraint based on current bone rotation: R rotation!
     
     // --- NOT TESTED ---
@@ -284,7 +288,7 @@ void Matrix6x6::UpdateGroundConstraintRoll(const MMatrix &worldResult){
 }
 
 // cache
-void Matrix6x6::SafeWorldResultCache(const MMatrix &other){
+void SpatialTransform::SafeWorldResultCache(const MMatrix &other){
     worldLocationCache = other.getTranslation();
 }
 
@@ -293,27 +297,27 @@ void Matrix6x6::SafeWorldResultCache(const MMatrix &other){
 
 // --- external transform override ---
 
-Matrix3x3 Matrix6x6::GetRotation() const {
+Matrix3x3 SpatialTransform::GetRotation() const {
     return RotationSO3;
 }
 
-void Matrix6x6::CopyRotationTo(MMatrix &copyInside) const {
+void SpatialTransform::CopyRotationTo(MMatrix &copyInside) const {
     std::vector<float> values = RotationSO3.Copy();
     copyInside.setRotation(values);
 }
 
 
-void Matrix6x6::OverrideRotation(const MMatrix &rotationMatIn){
+void SpatialTransform::OverrideRotation(const MMatrix &rotationMatIn){
     std::vector<float> rotationValues = rotationMatIn.CopyRotation();
     RotationSO3.Override(rotationValues);
 }
 
 
-void Matrix6x6::OverrideRotation(const Matrix3x3 &rotationMatIn){
+void SpatialTransform::OverrideRotation(const Matrix3x3 &rotationMatIn){
     RotationSO3 = rotationMatIn;
 }
 
-void Matrix6x6::OverrideRotation(const FRotator &r){
+void SpatialTransform::OverrideRotation(const FRotator &r){
     RotationSO3.setRotation(r);
 }
 
@@ -332,7 +336,7 @@ void Matrix6x6::OverrideRotation(const FRotator &r){
 
 //makes forward pluecker and refreshes the given w and v
 //transform update is saved, R and T SE3 are updated
-void Matrix6x6::backwardWrench(
+void SpatialTransform::backwardWrench(
     FVector &moment, //n
     FVector &force //f
 ){
@@ -346,24 +350,25 @@ void Matrix6x6::backwardWrench(
         R in SO3 Gruppe
 
 
-    j_f(n,f) = X * i_f(n,f)
+    j_f(n,f) = X^T * i_f(n,f)
 
     */
 
     //erst j_v ausrechnen
     /*
-        |w
-        |v
+        |n
+        |f
     -------
-    a b |aw + bv  //jetzt mal w1 genannt
-    c d |cw + dv  //v1 genannt
+    a b |aw + bv  //n1 genannt
+    c d |cw + dv  //f1 genannt
     */
     Matrix3x3 a = RotationSO3;
     a.transpose();
 
     Matrix3x3 b1 = RotationSO3;
     b1.transpose();
-    Matrix3x3 b2 = Matrix3x3::skew(translation);
+
+    Matrix3x3 b2 = Matrix3x3::skew(axis());
     Matrix3x3 b = b2 * b1;
 
     Matrix3x3 c;
@@ -372,16 +377,16 @@ void Matrix6x6::backwardWrench(
     Matrix3x3 d = a;
 
 
-    FVector f1 = a * moment + b * force;
-    FVector n1 = c * moment + d * force;
+    FVector n1 = a * moment + b * force;
+    FVector f1 = c * moment + d * force;
 
     //constraints limitieren:
     /*FVector f1_constrained = f1;
     FVector n1_constrained = n1;
     applyConstraints(f1_constrained, n1_constrained); // ob hier noch unklar.*/
 
-    moment = f1;
-    force = n1;
+    moment = n1;
+    force = f1;
 }
 
 
@@ -391,22 +396,15 @@ void Matrix6x6::backwardWrench(
 
 //// ----- internal torque ------
 
-FVector Matrix6x6::Force(float mass){
+FVector SpatialTransform::Force(float mass){
     FVector totalForce(0, 0, 0);
     totalForce += GravityForce(mass);
     totalForce += NormalForce(mass);
     //ShowVector(totalForce, 100.0f, FColor::Purple); //normal force is too low?
     return totalForce;
-
-    /*
-    if(!contactFloor){
-        return GravityForce(mass);
-    }else{
-        return NormalForce(mass);
-    }*/
 }
 
-FVector Matrix6x6::GravityForce(float mass){
+FVector SpatialTransform::GravityForce(float mass){
     if(!contactFloor){
         FVector g(0, 0, -981.0f);
         return g * mass;
@@ -414,7 +412,7 @@ FVector Matrix6x6::GravityForce(float mass){
     return FVector(0, 0, 0);
 }
 
-FVector Matrix6x6::NormalForce(float mass){
+FVector SpatialTransform::NormalForce(float mass){
     if(contactFloor){
         float k = 500.0f;        // Federkonstante
         float d = 50.0f;         // Dämpfung
@@ -425,28 +423,28 @@ FVector Matrix6x6::NormalForce(float mass){
     return FVector(0, 0, 0);
 }
 
-FVector Matrix6x6::Torque(const FVector &force, const FVector &centerOfMass){
+FVector SpatialTransform::Torque(const FVector &force, const FVector &centerOfMass){
     //return Torque(RotationSO3, force, centerOfMass);
     return Torque(RotationSO3, force, centerOfMass);
 }
 
-FVector Matrix6x6::Torque(const Matrix3x3 &rotationSpace, const FVector &force, const FVector &centerOfMass){
+FVector SpatialTransform::Torque(const Matrix3x3 &rotationSpace, const FVector &force, const FVector &centerOfMass){
     FVector comWorld = rotationSpace * centerOfMass;
     return FVector::CrossProduct(comWorld, force);
 }
 
 
 //// ----- GROUNDED CHECKS -----
-void Matrix6x6::UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn){
+void SpatialTransform::UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn){
     ignoreParams = ignoreParamsIn;
 }
 
 //debug
-void Matrix6x6::ShowPosition(const MMatrix &other){
+void SpatialTransform::ShowPosition(const MMatrix &other){
     ShowPosition(other.getTranslation());
 }
 
-void Matrix6x6::ShowPosition(FVector pos){
+void SpatialTransform::ShowPosition(FVector pos){
     DebugHelper::showLineBetween(
         world,
         pos,
@@ -456,7 +454,7 @@ void Matrix6x6::ShowPosition(FVector pos){
     );
 }
 
-void Matrix6x6::ShowVector(const FVector &vec, float size, FColor color){
+void SpatialTransform::ShowVector(const FVector &vec, float size, FColor color){
     DebugHelper::showLineBetween(
         world,
         worldLocationCache,
@@ -469,12 +467,12 @@ void Matrix6x6::ShowVector(const FVector &vec, float size, FColor color){
 
 //debug
 
-bool Matrix6x6::IsGrounded(const MMatrix &prev){
+bool SpatialTransform::IsGrounded(const MMatrix &prev){
     FVector t = prev.getTranslation();
     return IsGrounded(t);
 }
 
-bool Matrix6x6::IsGrounded(FVector &Start){
+bool SpatialTransform::IsGrounded(FVector &Start){
     if(Start.Z < staticGroundHeight){
         groundNormal = FVector(0, 0, 1);
         return true;
@@ -527,7 +525,7 @@ bool Matrix6x6::IsGrounded(FVector &Start){
 }
 
 
-void Matrix6x6::SetGroundPenetration(bool result, const FVector &start, const FVector &hit){
+void SpatialTransform::SetGroundPenetration(bool result, const FVector &start, const FVector &hit){
     groundPenetration = 0.0f;
     if(result && BelowGround(start, hit)){ //start lower than hit, stuck in ground
         FVector groundPenetrationDirection = start - hit;
@@ -539,10 +537,10 @@ void Matrix6x6::SetGroundPenetration(bool result, const FVector &start, const FV
     }
 }
 
-void Matrix6x6::DrawGroundPenetration(const FVector &pos){
+void SpatialTransform::DrawGroundPenetration(const FVector &pos){
     DebugHelper::showLineBetween(world, pos, pos + FVector(0, 0, groundPenetration), FColor::Orange, 1.0f);
 }
 
-bool Matrix6x6::BelowGround(const FVector &check, const FVector &ground){
+bool SpatialTransform::BelowGround(const FVector &check, const FVector &ground){
     return check.Z < ground.Z;
 }

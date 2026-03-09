@@ -153,8 +153,9 @@ void AworldLevel::initWorld(FString WorldName){
     instancePtr->createPathFinder(WorldName);
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
-    instancePtr->humanBotsOnStart(5);
-        
+    int count = 1;
+    instancePtr->humanBotsOnStart(count);
+
     //InstanceWorldLevel->createGroundPane();
 
     //testing

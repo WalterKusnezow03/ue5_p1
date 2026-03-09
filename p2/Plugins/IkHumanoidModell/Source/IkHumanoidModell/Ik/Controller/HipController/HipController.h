@@ -14,6 +14,7 @@
 
 #include "PlueckerCore/Interface/IJointInterface.h"
 #include "PlueckerCore/Bone/Joint.h"
+#include "PlueckerCore/Bone/RootJoint/RootJoint.h"
 
 class FHumanoidControllerSetupPackage;
 
@@ -254,11 +255,11 @@ public:
     virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
 protected:
-    Joint rootJoint;
+    RootJoint rootJoint;
     void SetupPlueckerJoint(UWorld *world);
     void SetPlueckerHipConstraint(BoneAttachment &attachment);
     void UpdatePlueckerJointRotation();
     void SetRotation(const MMatrix &mat);
 
-    
+    void UpdateRootJointOnCollapse();
 };

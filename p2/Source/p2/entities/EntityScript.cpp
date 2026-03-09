@@ -176,13 +176,12 @@ void AEntityScript::UpdateVisionTimers(float DeltaTime){
 
 //allows the entity to take damage.
 void AEntityScript::takedamage(FCustomHitResult &result){
-	if(result.HasHitPoint()){
-		//propagate to skelleton 
-		//add impulse (?)
-	}
-
 	//propagate result force dead or not. Alwyas. For now.
 	humanoidPluginController.ReactToDamage(result);
+
+	if(health <= 0){
+		return;
+	}
 
 	health -= result.Damage();
 	if(health <= 0){

@@ -30,7 +30,10 @@ public:
     virtual void SetStateCollapse(bool flag){
         collapseEnabledFlag = flag;
     }
-    
+
+    bool isAlreadyCollapsed(){
+        return collapseEnabledFlag;
+    }
 
 protected:
     

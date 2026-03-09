@@ -211,5 +211,5 @@ public:
 protected:
     void SetupPluckerJoints(FVector &offset, UWorld *worldIn);
     Joint p1;
-    Joint p1Invert;
+    
 };

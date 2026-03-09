@@ -136,7 +136,7 @@ void BoneAttachment::setInnerOffsetTranslation(FVector offset){
     innerOffsetInverse.setTranslation(offset1);
 
     p1.SetBoneTranslationDirection(offset);
-    p1Invert.SetBoneTranslationDirection(offset1);
+    
 }
 
 /// @brief transforms the root, adds inner offset to matrix
@@ -729,7 +729,6 @@ void BoneAttachment::SetupPluckerJoints(FVector &offset, UWorld *worldIn){
     p1 = Joint(offset, worldIn);
     p1.AddChildByPointer(bone.GetTopJoint());
 
-    p1Invert = Joint(offset1, worldIn);
 }
 
 Joint *BoneAttachment::GetTopJoint(){

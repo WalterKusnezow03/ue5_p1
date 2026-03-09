@@ -19,12 +19,14 @@ public:
 
 
     virtual void ApplyRotationConstraint(FVector &rotation) const{
+        ApplyConstraintNaN(rotation);
         ApplyConstraint(allowRollRotation, rotation.X);
         ApplyConstraint(allowPitchRotation, rotation.Y);
         ApplyConstraint(allowYawRotation, rotation.Z);
     }
 
-    virtual void ApplyPositionConstraint(FVector &pos) const { 
+    virtual void ApplyPositionConstraint(FVector &pos) const {
+        ApplyConstraintNaN(pos);
         ApplyConstraint(allowPositionOffsetX, pos.X);
         ApplyConstraint(allowPositionOffsetY, pos.Y);
         ApplyConstraint(allowPositionOffsetZ, pos.Z);

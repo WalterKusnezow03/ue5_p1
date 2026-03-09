@@ -166,9 +166,11 @@ void ACustomMeshUIActor::EnableCollision(bool flag){
             Widget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         }else{
             Widget->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); 
+            /*
             Widget->SetCollisionResponseToAllChannels(ECR_Ignore); 
             Widget->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block); 
             Widget->SetCollisionResponseToChannel(ECC_Camera, ECR_Block); 
+            */
             Widget->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); 
         }
     }

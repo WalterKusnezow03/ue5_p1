@@ -1,6 +1,7 @@
 #include "SpatialVector.h"
 #include "PlueckerCore/Math/Matrix3x3.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "PlueckerCore/Bone/JointConstraints/JointConstraintBase.h"
 
 
 /// @brief daming by 0.5 added, to ensure the joint doesnt spin forever
@@ -8,8 +9,8 @@
 /// @param factor 
 void SpatialVector::Damp(float factor){
     if(factor >= 0.0f && factor <= 1.0f){
-        w *= factor;
-        v *= factor;
+        w *= factor; //ang vel only.
+        //v *= factor;
     }
 }
 
@@ -25,22 +26,17 @@ void SpatialVector::AddVelocity(const FVector &wIn, const FVector &vIn){
 }
 
 
-
-
-
-void SpatialVector::copy(FVector &wIn, FVector &vIn) const{
-    wIn = w;
-    vIn = v;
+void SpatialVector::AddOwnVelocityTo(FVector &wIn, FVector &vIn){
+    wIn += w;
+    vIn += v;
 }
+
 
 void SpatialVector::AddTorque(
     const FVector &torque, 
     const Matrix3x3 &interiaInverse,
     float deltaTime
 ){
-    if(torque.Size() < 0.0001f){
-        return;
-    }
     //tau = I * a_theta
     //a_theta = I^-1 * tau
 
@@ -61,7 +57,7 @@ void SpatialVector::AddTorque(
     }
 
     //debug
-    if(false){DebugKeepRange(w, 2.0f);}
+    DebugKeepRange(w, 1000.0f);
 
     Damp(0.5f);
 }
@@ -88,6 +84,7 @@ void SpatialVector::AddForce(
 
     FVector a = force / mass;
     v += a * deltaTime;
+    DebugKeepRange(v, 1000.0f);
 }
 
 float SpatialVector::SafeDenominator(float value){
@@ -112,4 +109,79 @@ void SpatialVector::RemoveFloatingError(double &value){
     if(abs <= 0.01f){
         value = 0.0f;
     }
+}
+
+
+
+FString SpatialVector::ToString(){
+    return FString::Printf(
+        TEXT("SpatialVelocity w(%.2f %.2f %.2f) v(%.2f %.2f %.2f)"),
+        w.X, w.Y, w.Z,
+        v.X, v.Y, v.Z
+    );
+}
+FString SpatialVector::ToString(FString prefix){
+    return prefix + ToString();
+}
+
+
+
+void SpatialVector::AddNoise(){
+    AddNoise(0.1f); //0.01
+}
+void SpatialVector::AddNoise(float range){
+     w += FVector(
+        FMath::FRandRange(-range,range),
+        FMath::FRandRange(-range,range),
+        FMath::FRandRange(-range,range)
+    );
+}
+
+
+
+
+void SpatialVector::ExtractCurrentForce(
+    const Matrix3x3 &interia,
+    float mass,
+    FVector &outN,
+    FVector &outF
+){
+    //F = Ia * v x Iv //I 6x6, v 6x1, a negotiable, inetgrated before.
+    //I [Icm , 0]
+    //  [0,   m1]
+
+    //...
+    
+    // vereinfacht ohne I a
+
+    /*$$
+    F_{motion} =
+    \begin{bmatrix}
+        [w]_x & 0 \\
+        [v]_x & [w]_x
+    \end{bmatrix}
+    \cdot 
+    \begin{bmatrix}
+        I \cdot  w \\ 
+        m1 \cdot  v
+    \end{bmatrix}
+    $$*/
+    Matrix3x3 adT_a = Matrix3x3::skew(w);
+    Matrix3x3 adT_b;
+    adT_b.makeZero();
+
+    Matrix3x3 adT_c = Matrix3x3::skew(v);
+    Matrix3x3 adT_d = adT_a;
+
+    FVector Iw = interia * w;
+    FVector mv = mass * v;
+
+    FVector n = adT_a * Iw + adT_b * mv;
+    FVector f = adT_c * Iw + adT_d * mv;
+
+    FJointConstraintBase::ApplyConstraintNaN(n);
+    FJointConstraintBase::ApplyConstraintNaN(f);
+
+    outN = n;
+    outF = f;
 }

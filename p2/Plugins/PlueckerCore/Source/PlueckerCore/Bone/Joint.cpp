@@ -4,20 +4,15 @@
 
 
 Joint::Joint(){
-    SetLogEnabled(false);
+    
 }
 
 Joint::Joint(FVector translationVector){
-    spatialTransform.setTranslation(translationVector);
-    SetInteriaMatrixAuto();
-    SetLogEnabled(false);
+    Setup(translationVector);
 }
 
 Joint::Joint(FVector translationVector, UWorld *worldIn){
-    spatialTransform.setTranslation(translationVector);
-    SetWorld(worldIn);
-    SetInteriaMatrixAuto();
-    SetLogEnabled(false);
+    Setup(translationVector, worldIn);
 }
 
 Joint::Joint(const Joint &other){
@@ -30,13 +25,11 @@ Joint &Joint::operator=(const Joint &other){
     if(this != &other){
         children = other.children;
         world = other.world;
-        spatialTransform = other.spatialTransform;
+        spatialTransformBase = other.spatialTransformBase;
         color = other.color;
-        is6DOF = other.is6DOF;
         attachedActor = other.attachedActor;
         logEnabled = other.logEnabled;
         SetBoneTranslationDirection(other.BoneTranslationDirection());
-        SetLogEnabled(other.logEnabled);
     }
     return *this;
 }
@@ -45,59 +38,93 @@ Joint::~Joint(){
     
 }
 
-void Joint::SetLogEnabled(bool flag){
-    logEnabled = flag;
-    spatialTransform.bLogMessage = flag;
-    for (int i = 0; i < children.Num(); i++)
-    {
-        Joint &current = children[i];
-        current.SetLogEnabled(flag);
-    }
-    for (int i = 0; i < ChildsByPointer.Num(); i++){
-        if(Joint *current = ChildsByPointer[i]){
-            current->SetLogEnabled(flag);
-        }
-    }
+
+void Joint::Setup(FVector &translationVector){
+    GetSpatialTransform().setTranslation(translationVector);
+    SetInteriaMatrixAuto();
+}
+
+void Joint::Setup(FVector &translationVector, UWorld *worldIn){
+    SetWorld(worldIn);
+    Setup(translationVector);
 }
 
 void Joint::SetWorld(UWorld *worldIn){
     world = worldIn;
-    spatialTransform.SetWorld(worldIn);
+    GetSpatialTransform().SetWorld(worldIn);
 
     FString message = worldIn != nullptr ? TEXT("Joint::SetWorld VALID") : TEXT("Joint::SetWorld INVALID");
     DebugHelper::logMessage(message);
 }
 
 void Joint::SetBoneTranslationDirection(FVector direction){
-    spatialTransform.setTranslation(direction);
+    GetSpatialTransform().setTranslation(direction);
     SetInteriaMatrixAuto();
 }
 
 FVector Joint::BoneTranslationDirection()const {
-    return spatialTransform.getTranslation();
+    return GetSpatialTransformConst().getTranslation();
 }
 
 
 
 void Joint::SetInteriaMatrixAuto(){
+
+
+
     //float I = mass * length * length * 0.3f;
-    FVector boneTranslation = spatialTransform.getTranslation();
-    centerOfMass = boneTranslation * 0.5f; //at bottom
-
-    float lengthBone = boneTranslation.Size() * 0.5f;
-    float l2 = lengthBone * lengthBone;
-    float scale = mass * l2 * 0.3f;
-    float s1 = 1.0f / scale;
-    float rotationAroundZ = 0.000000000001f;
-
-
-    //testing needed if stable!
-    Matrix3x3 I1;
-    I1.scale(s1,s1,rotationAroundZ);
-    interiaInverse = I1;
-
+    FVector boneTranslation = GetSpatialTransform().getTranslation();
+    if(BoneTranslationValidForInteriaMatrix(boneTranslation)){
+        SetInteriaMatrixAuto(boneTranslation);
+    }
+    else
+    {
+        SetInteriaMatrixAngularVelocityLocked();
+    }
 }
 
+void Joint::SetInteriaMatrixAuto(const FVector &boneTranslation){
+    centerOfMass = boneTranslation * 0.5f;
+
+    float L = boneTranslation.Size();
+
+    float Iperp = mass * L * L * (1.0f / 12.0f);
+    float Iaxis = Iperp / 10.0f; // Iperp * 5000.0f; // 0.05f;   // kleine aber stabile Trägheit
+
+    Matrix3x3 I;
+    I.scale(Iperp, Iperp, Iaxis);  // Z = Knochenachse
+    interia = I;
+
+    Matrix3x3 Iinv;
+    Iinv.scale(
+        1.0f / Iperp,
+        1.0f / Iperp,
+        1.0f / Iaxis
+    );
+    interiaInverse = Iinv;
+    
+}
+
+
+bool Joint::BoneTranslationValidForInteriaMatrix(const FVector &size){
+    return size.Size() > 1.0f;
+}
+
+//if the scaling elements are all near zero, any incoming torque will be killed.
+void Joint::SetInteriaMatrixAngularVelocityLocked(){
+    centerOfMass = FVector(0, 0, 0);
+    float r = 10.0f; // effektiver Radius
+    float Ival = 0.4f * mass * r * r;
+
+    Matrix3x3 I;
+    I.scale(Ival, Ival, Ival);
+    interia = I;
+
+    Matrix3x3 Iinv;
+    float inv = 1.0f / Ival;
+    Iinv.scale(inv, inv, inv);
+    interiaInverse = Iinv;
+}
 
 
 void Joint::AddChild(Joint &childIn){
@@ -132,23 +159,21 @@ MMatrix Joint::TickAndBuildThisJoint(
     FVector &v, //linearVelocity, is updated
     const MMatrix &inTransform
 ){
-    //-- CAUTION -> MOVING TO BACKWARDS PROPAGATION! --
-    //add gravity force to spatial vector
-    //TickGravityAndAddUpdateToSptialVector(deltaTime);
-
-    //add incoming velocities and copy back inside for propagation
-    UpdateSpatialVelocityAndPassedVelocities(w, v); 
+    AddOwnJointVelociyTo(w, v); 
 
     //update spatial transform and return new world update
-    spatialTransform.forwardPluecker(w, v, deltaTime);
+    GetSpatialTransform().forwardPluecker(w, v, deltaTime);
 
-    MMatrix result = spatialTransform * inTransform;
+    MMatrix result = GetSpatialTransform() * inTransform;
 
 
     //update attached actor.
     UpdateActorTransform(inTransform, result);
     draw(inTransform, result, deltaTime);
 
+    //DO NOT REMOVE
+    //VERY FUCKING IMPORTANT FOR ROOT JOINTS, internal transform cache to prevent 
+    //extern reliance on a matrix.
     transformCopy = inTransform; //cache startingJoint
 
     return result;
@@ -159,35 +184,30 @@ MMatrix Joint::TickAndBuildThisJoint(
 
 void Joint::AddForce(const FVector &force, float deltaTime){
     spatialVelocity.AddForce(force, mass, deltaTime);
-    FVector torque = Torque(force);
-    AddTorque(torque, deltaTime);
-}
-
-void Joint::AddTorque(const FVector &torque, float deltaTime){
+    FVector torque = GetSpatialTransform().Torque(force, centerOfMass);
     spatialVelocity.AddTorque(torque, interiaInverse, deltaTime);
 }
 
 
 void Joint::ReactToDamage(const FCustomHitResult &hitResult){
-    if(true){
+    if(false){
         return;
     }
+    DebugHelper::showScreenMessage("Joint::ReactToDamage", FColor::Orange);
 
     const FVector &dir = hitResult.Direction();
 
-    float sizeForce = 1.0f;
+    float sizeForce = 3.0f;
     FVector asForce = dir.GetSafeNormal() * sizeForce;
     AddForce(asForce, hitResult.DeltaTime());
 }
 
 /// --- FORCE ---
 
-void Joint::UpdateSpatialVelocityAndPassedVelocities(FVector &w, FVector &v){
-    spatialVelocity.AddVelocity(w,v); //update self joint
-    spatialVelocity.copy(w, v); //update summed values for spatial transform update 
+void Joint::AddOwnJointVelociyTo(FVector &w, FVector &v){
+    //aus kraft integration eigene velocity anfügen
+    spatialVelocity.AddOwnVelocityTo(w, v);
 }
-
-
 
 
 
@@ -198,45 +218,29 @@ void Joint::UpdateSpatialVelocityAndPassedVelocities(FVector &w, FVector &v){
 
 
 void Joint::OverrideJointRotation(const MMatrix &rotationMatrix){
-    spatialTransform.OverrideRotation(rotationMatrix);
+    GetSpatialTransform().OverrideRotation(rotationMatrix);
+}
+void Joint::OverrideJointRotation(const FRotator &r){
+    GetSpatialTransform().OverrideRotation(r);
 }
 
+void Joint::OverrideWorldLocation(MMatrix mat){
+    OverrideWorldLocation(mat.getTranslation());
+}
 
-void Joint::OverrideJointRotationTransposed(const Joint &other){
-    Matrix3x3 rotationOther = other.spatialTransform.GetRotation();
-    rotationOther.transpose(); //R^T = R^-1 bei R SO3
-    spatialTransform.OverrideRotation(rotationOther);
+void Joint::OverrideWorldLocation(FVector pos){
+    transformCopy.setTranslation(pos);
 }
 
 void Joint::OverrideJointWorldTransform(FVector pos, FRotator roation){
     OverrideWorldLocation(pos);
-    spatialTransform.OverrideRotation(roation);
+    OverrideJointRotation(roation);
 }
 
 //external build of chain
 
 
 
-FJointKinematicPropagatePackage Joint::GeneratePackage(
-    MMatrix &transform,
-    float deltaTime
-){
-    FJointKinematicPropagatePackage outPackage;
-    outPackage.transform = transform;
-    outPackage.deltatime = deltaTime;
-    spatialVelocity.copy(outPackage.w, outPackage.v); //paste own velocities inside
-    return outPackage;
-}
-
-void Joint::TickAndBuildRecursive(
-    float deltaTime
-){
-    MMatrix m = transformCopy;
-    //keep like this, current spatial velocity is copied in "tick build this joint"
-    FVector w(0, 0, 0);
-    FVector v(0, 0, 0);
-    TickAndBuildRecursive(deltaTime, w, v, m);
-}
 
 void Joint::TickAndBuildRecursive(
     float deltaTime,
@@ -313,21 +317,78 @@ void Joint::PropagateWrench(FVector &n, FVector &f, float deltaTime){
     //F_i = F_{\text{eigene externe}} + \sum X^T F_{child}
     
     //propagate up
-    spatialTransform.backwardWrench( //X^T * (n,f)
-        n, //n
-        f, //f
-        deltaTime
-    );
+    //X^T * (n,f)
+    GetSpatialTransform().backwardWrench(n,f);
+    AddAndIntegrateOwnSptialForce(n, f, deltaTime);
 
-    f += spatialTransform.Force(mass);
-    n += spatialTransform.Torque(f, centerOfMass);
+    //global if is root
+    if(ParentsByPointer.Num() == 0){
+        spatialVelocity.AddForce(f, mass, deltaTime);
+        spatialVelocity.AddTorque(n, interiaInverse, deltaTime);
+
+        //draw
+        FVector start = transformCopy.getTranslation();
+        DebugHelper::showLineBetween(
+            world,
+            start,
+            start + f.GetSafeNormal() * 100.0f,
+            FColor::Cyan,
+            deltaTime * 2.0f
+        );
+        //DebugHelper::showScreenMessage("Joint::Root Force", f);
+    }
 
     //integrate, will be build in next frame!
+    /*
     spatialVelocity.AddForce(f, mass, deltaTime);
-    spatialVelocity.AddTorque(n, interiaInverse, deltaTime); 
+    spatialVelocity.AddTorque(n, interiaInverse, deltaTime);*/
 
     PropagateWrench(n, f, deltaTime, ParentsByPointer);
     
+}
+
+
+void Joint::AddAndIntegrateOwnSptialForce(FVector &outN, FVector &outF, float deltaTime){
+    FVector forceSelf;
+    FVector torqueSelf;
+    FindSelfInteriaAndGravitySpatialMoment(torqueSelf, forceSelf);
+
+    //DO NOT
+    //integrate for next forward pass if has parents
+    if(true && ParentsByPointer.Num() > 0){
+        spatialVelocity.AddForce(forceSelf, mass, deltaTime);
+        spatialVelocity.AddTorque(torqueSelf, interiaInverse, deltaTime); 
+    }
+
+    outF += forceSelf;
+    outN += torqueSelf;
+}
+
+
+
+void Joint::FindSelfInteriaAndGravitySpatialMoment(
+    FVector &outN, // torque
+    FVector &outF // force
+){
+    FVector forceExternal = GetSpatialTransform().Force(mass);
+    FVector torqueExternal = GetSpatialTransform().Torque(forceExternal, centerOfMass);
+
+    FVector forceInteria(0,0,0);
+    FVector torqueInteria(0,0,0);
+    bool disableCoriolis = true; //MUST BE ESPECIALLY DISBALED FOR ROOT
+    if(!disableCoriolis){
+        spatialVelocity.ExtractCurrentForce(
+            interia,
+            mass,
+            torqueInteria,
+            forceInteria
+        );
+    }
+    
+    //DebugHelper::showScreenMessage("Joint::Force forceInteria", forceInteria);
+
+    outN = torqueInteria + torqueExternal;
+    outF = forceInteria + forceExternal;
 }
 
 void Joint::PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint*> &parents){
@@ -347,40 +408,6 @@ void Joint::PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Join
 
 
 
-//as root
-void Joint::TickAndBuildRecursiveAsRoot(float deltaTime){
-    TickGravityAndAddUpdateToSptialVector(deltaTime); //a nur in root
-    TickAndBuildRecursive(deltaTime);
-    LogPosition("Joint::TickAndBuildRecursiveAsRoot Result-> ");
-}
-
-void Joint::TickAndBuildRecursiveAsRoot(
-    float deltaTime,
-    FVector &w,
-    FVector &v,
-    MMatrix &transform
-){
-    TickGravityAndAddUpdateToSptialVector(deltaTime); //a nur in root
-    TickAndBuildRecursive(deltaTime,w,v,transform);
-}
-
-
-
-
-
-
-
-void Joint::LogSpatialVelocities(FString Prefix, const FVector &w, const FVector &v){
-    if(logEnabled){
-        FString message = FString::Printf(
-            TEXT("%s w(%.2f, %.2f, %.2f), v(%.2f, %.2f, %.2f)"),
-            *Prefix,
-            w.X, w.Y, w.Z,
-            v.X, v.Y, v.Z
-        );
-        DebugHelper::showScreenMessage(message, FColor::Cyan);
-    }
-}
 
 void Joint::LogPosition(FString Prefix){
     if(logEnabled){
@@ -424,12 +451,10 @@ void Joint::SetDrawColorRecursive(FColor colorA, FColor colorB, int layer){
 }
 
 /// constraints
-void Joint::OverrideConstraint(FJointConstraint &in){
-    spatialTransform.OverrideConstraint(in);
-}
+
 
 FJointConstraint &Joint::GetConstraint(){
-    return spatialTransform.GetConstraint();
+    return GetSpatialTransform().GetConstraint();
 }
 
 /// --- DEBUG ---
@@ -449,53 +474,14 @@ void Joint::DrawJointLocation(float deltaTime){
 
 
 
+
 /// --- GRAVITY ---
 
 /// --- Grounded flag ---
 
-void Joint::OverrideWorldLocation(MMatrix mat){
-    transformCopy.setTranslation(mat.getTranslation());
-}
-
-void Joint::OverrideWorldLocation(FVector pos){
-    transformCopy.setTranslation(pos);
-}
-
-//w and v changed but no transform update in
-//spatial transform.
-void Joint::TickGravityAndAddUpdateToSptialVector(float deltaTime){
-    
-    //not known if needed!
-    if(true){
-        return;
-    }
-
-    
-
-    //includes torque and force update, integrated to velocities.
-    //joint rebuild needed.
-    FVector g = GravityForce();
-    AddForce(g, deltaTime);
-}
 
 
 
-
-
-//torque = com x Fg
-FVector Joint::GravityTorque(){
-    return Torque(GravityForce());
-}
-
-FVector Joint::Torque(FVector force){
-    return spatialTransform.Torque(force, centerOfMass);
-}
-
-
-FVector Joint::GravityForce(){
-    float damp = 1.0f; //debug
-    return FVector(0, 0, -981.0f) * mass * damp;
-}
 
 
 
@@ -565,7 +551,7 @@ void Joint::SetActor(AActor *attachActor){
 
 
 void Joint::UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn){
-    spatialTransform.UpdateIgnoreParams(ignoreParamsIn);
+    GetSpatialTransform().UpdateIgnoreParams(ignoreParamsIn);
 }
 void Joint::UpdateIgnoreParamsRecursive(FCollisionQueryParams &ignoreParamsIn){
     UpdateIgnoreParams(ignoreParamsIn);
@@ -591,3 +577,24 @@ void Joint::UpdateIgnoreParamsUpStream(FCollisionQueryParams &params){
         }
     }
 }
+
+
+void Joint::logGroundedState(FString prefix, FColor trueColor){
+    bool result = GetSpatialTransform().bIsGrounded();
+    FString a = prefix + " TRUE";
+    FString b = prefix + " FALSE";
+    DebugHelper::showScreenMessage(result, a, b, trueColor, FColor::Red);
+}
+
+MMatrix Joint::GetRotation()const{
+    MMatrix result;
+    GetSpatialTransformConst().CopyRotationTo(result);
+    return result;
+}
+
+
+
+
+
+
+

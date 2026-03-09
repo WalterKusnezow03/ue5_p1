@@ -15,6 +15,7 @@ public:
     bool allowPositionOffsetZGrounded = false;
     
     virtual void ApplyRotationConstraint(FVector &rotation) const override{
+        ApplyConstraintNaN(rotation);
         ApplyAboveZeroConstraint(allowPitchRotationPositive, rotation.Y);
         ApplyBelowZeroConstraint(allowPitchRotationNegative, rotation.Y);
 
@@ -24,7 +25,8 @@ public:
     }
 
     virtual void ApplyPositionConstraint(FVector &position) const override{
-        FJointConstraint::ApplyPositionConstraint(position);
+        //FJointConstraint::ApplyPositionConstraint(position);
+        ApplyConstraintNaN(position);
         ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, position.Z);
     }
 };

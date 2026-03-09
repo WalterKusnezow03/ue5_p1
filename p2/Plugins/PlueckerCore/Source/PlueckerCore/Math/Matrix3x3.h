@@ -30,12 +30,12 @@ public:
 	Matrix3x3 operator-(const Matrix3x3 &other) const;
 
 	//skew operations
-	void makeSkew(FVector &omega);
-	static Matrix3x3 skew(FVector &omega);
+	void makeSkew(const FVector &omega);
+	static Matrix3x3 skew(const FVector &omega);
 	static Matrix3x3 makeExponentialMap_Skew(FVector &screw, float thetaOrTime);
 	static void convertPlueckerToSE3components(
-		FVector &angularVelocity,
-		FVector &linearVelocity,
+		const FVector &angularVelocity,
+		const FVector &linearVelocity,
 		Matrix3x3 &outRotation,
 		FVector &outTranslation,
 		float deltatime

@@ -827,16 +827,14 @@ void TwoJointBone::ReactToDamage(const FCustomHitResult &hitResult){
     if(AActor *hitActor = hitResult.GetActor()){
         if(hitActor == topActor){
             ReactToDamage(hitResult, p1);
-            DebugHelper::logMessage("TwoJointBone::ReactToDamage TOP hitactor found!");
+            DebugHelper::showScreenMessage("TwoJointBone::ReactToDamage TOP hitactor found!");
         }
         if(hitActor == bottomActor){
-            //up stream
-            //Joint p2; //knee to foot
-            DebugHelper::logMessage("TwoJointBone::ReactToDamage BOTTOM hitactor found!");
-            //ReactToDamage(hitResult, footWorldCached, p2Invert);
+            ReactToDamage(hitResult, p2);
+            DebugHelper::showScreenMessage("TwoJointBone::ReactToDamage BOTTOM hitactor found!");
         }
     }else{
-        DebugHelper::logMessage("TwoJointBone::ReactToDamage NO hitactor found!");
+        //DebugHelper::logMessage("TwoJointBone::ReactToDamage NO hitactor found!");
     }
 }
 

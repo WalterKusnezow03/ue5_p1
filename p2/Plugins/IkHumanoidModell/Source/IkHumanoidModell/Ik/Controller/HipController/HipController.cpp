@@ -1101,10 +1101,8 @@ bool HipController::DebugHorizontalVelocityOvershoot(){
 /// ---- pluecker joints ----
 void HipController::SetupPlueckerJoint(UWorld *world){
 
-    //wenn der root joint eine sehr kurze länge hat, wird
-    //die spatial transform kalkulation instabil!
-    FVector offsetNone(0,0,100.0f);
-    rootJoint = Joint(offsetNone, world);
+    rootJoint = RootJoint(GetLocation(), world);
+
 
 
 
@@ -1157,26 +1155,23 @@ void HipController::ReactToDamage(const FCustomHitResult &hitResult){
 
 //--- enable /disable collapse physics ---
 void HipController::SetStateCollapse(bool flag){
+    if(!isAlreadyCollapsed() && flag){
+        UpdateRootJointOnCollapse();
+    }
     IJointInterface::SetStateCollapse(flag);
     legLeft.SetStateCollapse(flag);
     legRight.SetStateCollapse(flag);
-
-
-    //debug draw
-    FVector location = GetLocation();
-    DebugHelper::showLineBetween(
-        worldPointer,
-        location,
-        location + FVector(0,0,100),
-        FColor::Cyan,
-        10.0f
-    );
-
-
-
-    // update joint location
-    rootJoint.OverrideWorldLocation(translation.getTranslation());
+    
 }
+
+void HipController::UpdateRootJointOnCollapse(){
+    rootJoint.OverrideWorldLocation(translation.getTranslation());
+    rootJoint.OverrideLinearVelocity(velocity);
+}
+
+
+
+
 
 void HipController::TickCollapsePhysics(float deltatime){
     bool BLOCK = false;
@@ -1189,6 +1184,8 @@ void HipController::TickCollapsePhysics(float deltatime){
     //update for safety.
     FCollisionQueryParams params = ASharedRaycastParamManager::getCollisonParams();
     rootJoint.UpdateIgnoreParamsRecursive(params);
-    rootJoint.TickAndBuildRecursiveAsRoot(deltatime);
+    rootJoint.TickAndBuildRecursive(deltatime);
     rootJoint.DrawJointLocation(deltatime);
+    
+    //rootJoint.logGroundedState("HipController::", FColor::Cyan);
 }

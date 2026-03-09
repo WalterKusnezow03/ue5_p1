@@ -1,16 +1,32 @@
 #pragma once
 
-#include "Matrix3x3.h"
+#include "PlueckerCore/Math/Matrix3x3.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "PlueckerCore/Bone/JointConstraints/JointConstraint.h"
 #include "PlueckerCore/Bone/JointConstraints/JointGroundedConstraint.h"
 
-/**
- * plücker 6x6 for forward for now
- */
-class PLUECKERCORE_API Matrix6x6 {
+/*
+Spatial transform matrix 6x6
+*/
+//base class for spatial transformations of spatial velocities and wrenches
+class PLUECKERCORE_API SpatialTransform {
 
-private:
+
+protected:
+    //derived class specific
+    virtual MMatrix Transform() = 0;
+
+    //axis for velocity / force propagation (use translation in bone.)
+    virtual FVector &axis() = 0;
+
+    //helper for matrices
+    MMatrix Translation();
+    MMatrix Rotation();
+
+
+    
+
+protected:
     UWorld *world = nullptr;
 
     int staticGroundHeight = 0;
@@ -18,15 +34,15 @@ private:
 public:
     bool bLogMessage = false;
 
-    Matrix6x6();
-    virtual ~Matrix6x6();
-
-    MMatrix operator*(const MMatrix &prev);
-
-    Matrix6x6(const Matrix6x6 &other);
-    Matrix6x6 &operator=(const Matrix6x6 &other);
-
     void SetWorld(UWorld *worldIn);
+
+    SpatialTransform();
+    ~SpatialTransform();
+    MMatrix operator*(const MMatrix &prev);
+    SpatialTransform(const SpatialTransform &other);
+    SpatialTransform &operator=(const SpatialTransform &other);
+
+    
 
     void forwardPluecker(
         FVector &angularVelocity, 
@@ -43,7 +59,6 @@ public:
     );
 
     void setTranslation(FVector &other);
-
     FVector getTranslation()const{
         return translation;
     }
@@ -70,14 +85,11 @@ public:
     void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn);
 
     FVector Force(float mass);
-    FVector Torque(const FVector &force, const FVector &centerOfMass);
+    virtual FVector Torque(const FVector &force, const FVector &centerOfMass);
 
 
-    bool bIsGrounded(){
-        return contactFloor;
-    }
 
-private:
+protected:
     FVector Torque(const Matrix3x3 &rotationSpace, const FVector &force, const FVector &centerOfMass);
     FVector NormalForce(float mass);
     FVector GravityForce(float mass);
@@ -97,6 +109,11 @@ private:
 
     FCollisionQueryParams ignoreParams;
 
+
+
+
+
+
     //joint rotation
     Matrix3x3 RotationSO3;
 
@@ -106,7 +123,7 @@ private:
     //integrated location with forward pluecker v
     FVector resultTranslation;
 
-    MMatrix LocalTransform();
+    
     void UpdateFloorContact(const MMatrix &prev, const MMatrix &current);
     bool IsGrounded(const MMatrix &prev);
     bool IsGrounded(FVector &Start);
@@ -116,6 +133,15 @@ private:
     void SafeWorldResultCache(const MMatrix &other);
     FVector worldLocationCache;
 
+
+
+public:
+    bool bIsGrounded(){
+        return contactFloor;
+    }
+
+
+protected:
     //raycast
     bool contactFloor = false;
     FVector groundNormal;

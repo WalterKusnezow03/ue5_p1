@@ -59,7 +59,6 @@ void ADebugJointsActor::initChain(){
     jRoot.AddChild(j0);
 
     jRoot.BuildParentingRecursive();
-    jRoot.SetLogEnabled(false);
 
     rootJoint = jRoot;
     rootJoint.SetDrawColorRecursive(FColor::Red, FColor::Cyan, 0);
@@ -111,7 +110,7 @@ void ADebugJointsActor::TickDebugRandomTorque(MMatrix &transform, float deltaTim
 
     //testing needed!
     //rootJoint.TickAndBuildRecursive(
-    rootJoint.TickAndBuildRecursiveAsRoot(
+    rootJoint.TickAndBuildRecursive(
         deltaTime, //deltaTime * 0.0001f,
         angular,
         linear,

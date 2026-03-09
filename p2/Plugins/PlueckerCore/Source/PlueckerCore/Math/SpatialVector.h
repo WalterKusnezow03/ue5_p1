@@ -15,7 +15,8 @@ public:
 
     //adds own velocity to wIn and vIn for twist propagation
     void AddVelocity(const FVector &wIn, const FVector &vIn);
-    void copy(FVector &wIn, FVector &vIn) const;
+    void AddOwnVelocityTo(FVector &wIn, FVector &vIn);
+    
 
     void AddTorque(
         const FVector &torque,
@@ -28,15 +29,41 @@ public:
         float deltaTime
     );
 
+    void Override(const FVector &wIn, const FVector &vIn){
+        w = wIn;
+        v = vIn;
+    }
+
     void Damp(float factor);
 
+    void OverrideLinearVelocity(FVector &vIn){
+        v = vIn;
+    }
+
+    FString ToString();
+    FString ToString(FString prefix);
+
+    void AddNoise();
+
+
+    void ExtractCurrentForce(
+        const Matrix3x3 &interia,
+        float mass,
+        FVector &outN,
+        FVector &outF
+    );
+
+
+
 private:
-    FVector w;
-    FVector v;
+    FVector w = FVector(0,0,0);
+    FVector v = FVector(0,0,0);
 
     float SafeDenominator(float value);
     void DebugKeepRange(FVector &vec, double limit);
 
     void RemoveFloatingError(FVector &vec);
     void RemoveFloatingError(double &value);
+
+    void AddNoise(float range);
 };
