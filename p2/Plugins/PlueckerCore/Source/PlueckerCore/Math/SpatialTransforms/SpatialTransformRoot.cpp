@@ -19,8 +19,12 @@ MMatrix SpatialTransformRoot::TransformInverse(){
 }
 
 
-//DEBUG!
+
 void SpatialTransformRoot::applyJointConstraint(FVector &w, FVector &v){
+    
+    //heright velocity never locked.
+
+    //DEBUG!
     v.X = 0.0f;
     v.Y = 0.0f; 
 }
@@ -58,6 +62,7 @@ FVector &SpatialTransformRoot::axis(){
 void SpatialTransformRoot::UpdateFloorContact(const MMatrix &prev, const MMatrix &current){
     
     contactFloor = false;
+    groundNormal = FVector(0, 0, 0);
     if (IsGrounded(current)){
         contactFloor = true;
     }
@@ -78,4 +83,97 @@ void SpatialTransformRoot::SafeWorldResultCache(
     worldLocationCache = rootMatrix.getTranslation();
     worldTransformCache = rootMatrix; //root prev is alwyas identity.
     worldRotatorCache = rootMatrix.extractRotator();
+}
+
+
+
+
+
+
+
+
+
+/// override delta plücker implementation!
+
+void SpatialTransformRoot::forwardDeltaPluecker(
+    FVector &angularVelocity, //w
+    FVector &linearVelocity,  //v
+    Matrix3x3 &outDeltaRotation,
+    FVector &outDeltaTranslation,
+    float deltatime
+){
+    //das default
+    /*
+    
+    X = |R        0_3x3|
+        |R*s(w)   R    |
+    
+        R in SO3 Gruppe
+    
+
+    j_v(w,v) = X * i_v(w,v)
+
+    */
+
+    //erst j_v ausrechnen
+    /*
+        |w
+        |v
+    -------
+    a b |aw + bv  //jetzt mal w1 genannt
+    c d |cw + dv  //v1 genannt
+    */
+    Matrix3x3 a = RotationSO3;
+    Matrix3x3 b;
+    b.makeZero();
+
+    Matrix3x3 c1 = RotationSO3;
+    Matrix3x3 c2 = Matrix3x3::skew(axis());
+    Matrix3x3 c = c1 * c2;
+
+    Matrix3x3 d = RotationSO3;
+
+    FVector w1 = a * angularVelocity + b * linearVelocity;
+    FVector v1 = c * angularVelocity + d * linearVelocity;
+    
+    FVector w1_constrained = w1;
+    FVector v1_constrained = v1;
+    //resultierende velocities für den joint constrainen.
+    applyConstraints(w1_constrained, v1_constrained); 
+
+    
+
+
+    
+    //----> TRANSLATION NOT FOR ROOT!
+
+    //dann velocity integrieren
+    //deltaTwist(w1, v1)
+    //Matrix3x3 outDeltaRotation; -> is updated inside convertPlueckerToSE3components
+    //FVector outDeltaTranslation; -> is updated inside convertPlueckerToSE3components 
+    Matrix3x3::convertPlueckerToSE3components(
+        w1_constrained, v1_constrained, outDeltaRotation, outDeltaTranslation, deltatime
+    );
+
+    //CUTSOM TRANSLATION INTEGRATION FOR ROOT!
+    //root instant default integration
+    outDeltaTranslation = v1_constrained * deltatime; 
+
+
+
+
+    // ---- TESTING NEEDED ! ----
+
+    //UNKLAR OB HIER CONSTRAINTED ODER NICHT!
+    angularVelocity = w1_constrained;
+    linearVelocity = v1_constrained;
+
+
+
+    velocitycache = v1_constrained;
+
+    /*//refresh, for propagation to next joint
+    angularVelocity = w1;
+    linearVelocity = v1;*/
+
 }

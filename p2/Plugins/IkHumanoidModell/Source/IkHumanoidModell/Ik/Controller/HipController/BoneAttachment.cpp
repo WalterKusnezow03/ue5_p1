@@ -228,7 +228,7 @@ void BoneAttachment::TickForwardKinematicOutOfReachTarget(
          */
         //roll oder pitch der hip nicht beachtet. Achtung.
 
-        DebugHelper::showScreenMessage("target out of reach ", outOfReach);
+        //DebugHelper::showScreenMessage("target out of reach ", outOfReach);
     }
 
     MMatrix worldRoot = translation * orientation;
@@ -366,7 +366,7 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
         rootOrientation
     );
     FVector relative = localEnd * -1.0f;
-    DebugHelper::logMessage("boneAttachment: foot to hip A: ", relative);
+    //DebugHelper::logMessage("boneAttachment: foot to hip A: ", relative);
 
     //wrong bei backward kinematic 180 degree rotation!
     if(false){
@@ -507,14 +507,16 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
         otherLegWorldSpace, nextTrajectoryOfOtherLegWorldSpace, velocityHorizontal, velocityDown
     );
 
+
     time = B1 + F1 + B2;
-    DebugHelper::logMessage(
-        FString::Printf(TEXT("time total B1 F1 B2 %.2f"), 
-            time
-        )
-    );
+    if(false){
+        DebugHelper::logMessage(
+            FString::Printf(TEXT("time total B1 F1 B2 %.2f"), 
+                time
+            )
+        );
 
-
+    }   
 
 
     //lift off frame relative to start effector found, from (0,0,0), rotation space supported.
@@ -592,8 +594,8 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(
         message += TEXT("Fallback to fake trajectory, angle too narrow!");
 
         message += FString::Printf(TEXT("%.2f"), MMatrix::radToDegree(angle));
-        DebugHelper::showScreenMessage(message);
-        DebugHelper::logMessage(message);
+        //DebugHelper::showScreenMessage(message);
+        //DebugHelper::logMessage(message);
         return false;
     }
     FVector up = -1.0f * down;
@@ -611,8 +613,8 @@ bool BoneAttachment::LiftOffTrajectoryIsValid(
         TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), 
         angle
     );
-    DebugHelper::showScreenMessage(message);
-    DebugHelper::logMessage(message);
+    //DebugHelper::showScreenMessage(message);
+    //DebugHelper::logMessage(message);
     return true;
 }
 // ------ DEPRECATED precalculated slip force: deprecated end --------

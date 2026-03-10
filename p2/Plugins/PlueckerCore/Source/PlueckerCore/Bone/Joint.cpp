@@ -347,7 +347,7 @@ void Joint::PropagateWrench(FVector &n, FVector &f, float deltaTime){
         );
 
         FVector fMeters = f / 100.0f;
-        DebugHelper::showScreenMessage("Joint::Root Force in meters ", fMeters);
+        //DebugHelper::showScreenMessage("Joint::Root Force in meters ", fMeters);
     }
 
     PropagateWrench(n, f, deltaTime, ParentsByPointer);    

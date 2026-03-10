@@ -795,10 +795,10 @@ void HipController::slowDownBasedOnRotationInRadian(
     //kann man radiant (pi/2) auf mit x / pi zu skalaren umwandeln?
 
     if(rotatevelocity){
-        DebugHelper::logMessage("HipController update hVeloity on rotation before ", velocity);
+        //DebugHelper::logMessage("HipController update hVeloity on rotation before ", velocity);
         FVector updatedVelocity2D = forwardDeltaApplied.GetSafeNormal() * velocity.Size() * slow;
         updateHorizontalVelocity(updatedVelocity2D);
-        DebugHelper::logMessage("HipController update hVeloity on rotation after ", velocity);
+        //DebugHelper::logMessage("HipController update hVeloity on rotation after ", velocity);
         //return;
     }
 
@@ -864,8 +864,7 @@ void HipController::TickHipRotation(float deltatime){
             rotationSet = false;
             rotationTimeOverriden = false;
 
-            //DebugHelper::logMessage("hipRotation finished!");
-            DebugHelper::showScreenMessage("hipRotation finished!");
+            //DebugHelper::showScreenMessage("hipRotation finished!");
 
             //reset leg orientation / forward local vector 
             //to tell legs ("we are aligned again, no roll yaw adjustment needed anymore")
@@ -887,7 +886,7 @@ void HipController::TickHipRotation(float deltatime){
         orientation = rTicked;
         UpdatePlueckerJointRotation();
 
-        DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
+        //DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
     }
 }
 

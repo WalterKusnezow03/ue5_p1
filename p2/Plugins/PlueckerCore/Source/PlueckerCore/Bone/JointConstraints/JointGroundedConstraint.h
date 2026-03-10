@@ -12,7 +12,7 @@ public:
     bool allowRollRotationPositive = true;
     bool allowRollRotationNegative = true;
 
-    bool allowPositionOffsetZGrounded = true;
+    bool isGroundedFlag = true;
     
     virtual void ApplyRotationConstraint(FVector &rotation) const override{
         ApplyConstraintNaN(rotation);
@@ -27,11 +27,17 @@ public:
     virtual void ApplyPositionConstraint(FVector &velocity) const override{
         //FJointConstraint::ApplyPositionConstraint(position);
         ApplyConstraintNaN(velocity);
-        ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, velocity.Z);
+        
+        
+        if(isGroundedFlag){
+            velocity.Z = std::max(0.0, velocity.Z);
+        }
+
+        //ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, velocity.Z);
     }
 
     FString ToString(){
-        FString flag = allowPositionOffsetZGrounded ? TEXT("Z ALLOWED") : TEXT("Z NOT! ALLOWED");
+        FString flag = isGroundedFlag ? TEXT("Z NOT ALLOWED") : TEXT("Z ALLOWED");
         FString result = FString::Printf(
             TEXT("FJointGroundedConstraint:: Z Constraint: (%s)"),
             *flag

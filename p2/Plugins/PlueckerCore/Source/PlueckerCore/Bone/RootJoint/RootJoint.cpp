@@ -52,7 +52,7 @@ void RootJoint::SetInteriaMatrixAuto(){
     //recursive interia matrix,
     //also needed: Interia Sum!
 
-    mass = 30.0f * 100.0f;
+    mass = 10.0f * 100.0f;
     SetInteriaMatrixSphere();
 }
 
@@ -114,9 +114,9 @@ void RootJoint::FindSelfInteriaAndGravitySpatialMoment(
     FVector &outN, // torque
     FVector &outF // force
 ){
-    DebugHelper::showScreenMessage("RootJoint FindSelfInteriaAndGravitySpatialMoment ", FColor::Orange);
+    //DebugHelper::showScreenMessage("RootJoint FindSelfInteriaAndGravitySpatialMoment ", FColor::Orange);
     
-    //debug disable
+    //use complete body center of mass for torque
     UpdateCenterOfMassOnBackwardBuildForce();
     Joint::FindSelfInteriaAndGravitySpatialMoment(outN, outF);
     //...

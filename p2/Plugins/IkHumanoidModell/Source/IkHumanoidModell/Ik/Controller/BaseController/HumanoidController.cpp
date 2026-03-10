@@ -422,7 +422,7 @@ void HumanoidController::SetupEmptyArmAnimationActor(UWorld *world){
 void HumanoidController::OnDropUpdateAnimation(){
     if(emptyArmTargetActor){
         updateCollisionParams(Cast<AActor>(emptyArmTargetActor), true); //add irgnored.
-        DebugHelper::logMessage("HumanoidController::Pickup Empty Actor");
+        //DebugHelper::logMessage("HumanoidController::Pickup Empty Actor");
         
         attachOrReplaceCarriedItem(emptyArmTargetActor);
         UpdateEmptyArmTargetActorPickedUpFlag();

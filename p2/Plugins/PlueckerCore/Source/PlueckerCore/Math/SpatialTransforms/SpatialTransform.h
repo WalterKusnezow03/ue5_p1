@@ -57,13 +57,20 @@ public:
         float deltatime
     );
 
-    void forwardDeltaPluecker(
+    //default implementation only for bones.
+    virtual void forwardDeltaPluecker(
         FVector &angularVelocity, // w
         FVector &linearVelocity,  // v
         Matrix3x3 &outDeltaRotation,
         FVector &outDeltaTranslation,
         float deltatime
     );
+
+    virtual void OnForwardPlueckerFinishedLogDeltaTranslation(
+        const FVector & outDeltaTranslation
+    ){};
+
+
 
     void setTranslation(FVector &other);
     FVector getTranslation()const{
@@ -165,15 +172,13 @@ protected:
 
     void SetGroundPenetration(bool result, const FVector &start, const FVector &hit);
     bool BelowGround(const FVector &check, const FVector &ground);
+    bool BelowGround(const FVector &check, const FVector &ground, float epislon);
     void DrawGroundPenetration(const FVector &pos);
 
-    
-
-
-
-    //actor transform data extraction from cache
+    //actor transform data extraction from cache, and interia world for root
 public:
     FVector ActorTranslationFromCache() const;
     FRotator ActorRotationFromCache() const;
     FVector centerOfMassWorld(const FVector &comLocal) const;
+    //actor transform data extraction from cache, and interia world for root
 };

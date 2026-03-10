@@ -24,7 +24,7 @@ public:
     void Tick(float deltaTime) override;
 
 protected:
-    bool isEnabled = true;
+    bool isEnabled = false;
 
 private:
     RootJoint rootJoint;

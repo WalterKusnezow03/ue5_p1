@@ -99,6 +99,7 @@ void SpatialTransform::forwardPluecker(
     //es wurden KEINE JOINTS MIT velocity constraints getestet!
 
     //VERY IMPORTANT TO CALL!
+    OnForwardPlueckerFinishedLogDeltaTranslation(outDeltaTranslation);
     OnForwardPlueckerFinished();
 }
 
@@ -251,11 +252,11 @@ void SpatialTransform::UpdateGroundConstraint(const MMatrix &worldResult){
 void SpatialTransform::UpdateGroundConstraintPitchAndPosition(){
     groundContactConstraint.allowPitchRotationPositive = true;
     groundContactConstraint.allowPitchRotationNegative = true;
-    groundContactConstraint.allowPositionOffsetZGrounded = true;
+    groundContactConstraint.isGroundedFlag = false;
 
     if(contactFloor){
         groundContactConstraint.allowPitchRotationNegative = false;
-        groundContactConstraint.allowPositionOffsetZGrounded = false;
+        groundContactConstraint.isGroundedFlag = true;
     }
 }
 
@@ -397,22 +398,16 @@ FVector SpatialTransform::Force(float mass){
 }
 
 FVector SpatialTransform::GravityForce(float mass){
-    if(!contactFloor){
+    if(true || !contactFloor){
         FVector g(0, 0, -981.0f);
         return g * mass;
     }
     return FVector(0, 0, 0);
 }
 
+#include "PlueckerCore/Math/SpatialTransforms/Force/NormalForce.h"
 FVector SpatialTransform::NormalForce(float mass){
-    if(contactFloor){
-        float k = 500.0f;        // Federkonstante
-        float d = 50.0f;         // Dämpfung
-        float penetrationVel = FVector::DotProduct(velocitycache, groundNormal);
-        FVector FNormal = (k * groundPenetration - d * penetrationVel) * groundNormal.GetSafeNormal();
-        return FNormal * mass; 
-    }
-    return FVector(0, 0, 0);
+    return FNormalForce::NormalForce(groundNormal, groundPenetration, velocitycache);
 }
 
 FVector SpatialTransform::Torque(const FVector &force, const FVector &centerOfMass){
@@ -471,8 +466,9 @@ bool SpatialTransform::IsGrounded(FVector &Start){
     }
 
     if(world){
-        FVector dir(0, 0, -1.0f);
         
+        FVector dir(0, 0, -1.0f);
+
         float offsetUp = 200.0f;
         FVector StartRay = Start + FVector(0, 0, offsetUp);
         float sizeRay = 20.0f + offsetUp;
@@ -520,8 +516,10 @@ bool SpatialTransform::IsGrounded(FVector &Start){
 
 void SpatialTransform::SetGroundPenetration(bool result, const FVector &start, const FVector &hit){
     groundPenetration = 0.0f;
-    if(result && BelowGround(start, hit)){ //start lower than hit, stuck in ground
-        FVector groundPenetrationDirection = start - hit;
+
+    float groundEpsilon = 10.0f; //extra for bone size
+    if(result && BelowGround(start, hit, groundEpsilon)){ //start lower than hit, stuck in ground
+        FVector groundPenetrationDirection = start - hit; //AB = B - A
         float dot = FVector::DotProduct(groundNormal, groundPenetrationDirection.GetSafeNormal());
         if(dot <= 0.0f){
             //is inside floor
@@ -538,6 +536,9 @@ bool SpatialTransform::BelowGround(const FVector &check, const FVector &ground){
     return check.Z < ground.Z;
 }
 
+bool SpatialTransform::BelowGround(const FVector &check, const FVector &ground, float epislon){
+    return check.Z < (ground.Z + epislon);
+}
 
 
 
