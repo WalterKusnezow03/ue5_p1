@@ -10,7 +10,7 @@
 
 #include "PlueckerCore/Bone/JointConstraints/JointConstraint.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "PlueckerCore/Math/SpatialVector.h"
+#include "PlueckerCore/Math/SpatialVector/SpatialVector.h"
 #include "PlueckerCore/Interface/FJointKinematicPropagatePackage.h"
 #include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
 
@@ -19,8 +19,7 @@
 class PLUECKERCORE_API Joint {
 
 protected:
-    bool logEnabled = false;
-    bool drawEnabled = false;
+    bool bLogEnabled = false;
     bool disableCoriolisForce = true; //true
 
     //--- spatial transform -- overriden in root --
@@ -36,6 +35,9 @@ protected:
         return spatialTransformBase;
     }
 
+    SpatialVector &GetSpatialVelocity(){
+        return GetSpatialTransform().GetSpatialVelocity();
+    }
 
 public:
 
@@ -137,10 +139,8 @@ protected:
 
     FColor color = FColor::Red;
 
-    MMatrix transformCopy;
+    
 
-    //saves the current w and v of this joint, allows to add torque and force.
-    SpatialVector spatialVelocity;
 
     //for force accumulation
     Matrix3x3 interia;
@@ -173,7 +173,6 @@ protected:
 
     bool HasChildren();
 
-    void AddOwnJointVelociyTo(FVector &w, FVector &v);
 
     // ---- GRAVITY ----
    
@@ -213,8 +212,8 @@ protected:
     void UpdateActorTransform();
 
     void PropagateWrench(float deltatime);
-    void PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint *> &parents);
-    void PropagateWrench(FVector &n, FVector &f, float deltatime);
+    void PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint *> &parents, float massAccumulated);
+    void PropagateWrench(FVector &n, FVector &f, float deltatime, float massAccumulated);
     void AddAndIntegrateOwnSptialForce(FVector &outN, FVector &outF, float deltaTime);
 
     
@@ -230,5 +229,7 @@ protected:
     FVector CenterOfMassWorldRelativeTo(const FVector &pos) const;
     FVector CenterOfMassWorld() const;
 
-
+    float MassOfSubTree();
+    float GetTotalMassOfSubtree();
+    void GetMassRecursive(float &massIn);
 };

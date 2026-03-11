@@ -56,6 +56,8 @@ protected:
 	void UpdatePreRequisiteTickOnPickup();
 	void UpdatePreRequisiteTickOnDrop();
 
+	void EnablePhysics(bool flag);
+
 public:
 	virtual void drop();
 	bool isPickedupByPlayer();

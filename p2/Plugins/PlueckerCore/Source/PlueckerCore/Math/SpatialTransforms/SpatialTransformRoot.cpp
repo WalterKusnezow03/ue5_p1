@@ -25,8 +25,11 @@ void SpatialTransformRoot::applyJointConstraint(FVector &w, FVector &v){
     //heright velocity never locked.
 
     //DEBUG!
-    v.X = 0.0f;
-    v.Y = 0.0f; 
+    float scaleDebug = 0.0001f; // 0.0f;
+    scaleDebug = 0.9f;
+
+    v.X *= scaleDebug;
+    v.Y *= scaleDebug;
 }
 
 void SpatialTransformRoot::OnForwardPlueckerFinished(){
@@ -36,7 +39,7 @@ void SpatialTransformRoot::OnForwardPlueckerFinished(){
     translation = resultTranslation;
     OnForwardPlueckerFinishedCutTranslationAgainstGround();
 
-    DebugHelper::showScreenMessage("SpatialTransformRoot::Result ", translation.ToString());
+    //DebugHelper::showScreenMessage("SpatialTransformRoot::Result ", translation.ToString());
 }
 
 void SpatialTransformRoot::OnForwardPlueckerFinishedCutTranslationAgainstGround(){
@@ -68,7 +71,10 @@ void SpatialTransformRoot::UpdateFloorContact(const MMatrix &prev, const MMatrix
     }
     UpdateGroundConstraint(current);
 
-    DebugHelper::showScreenMessage("SpatialTransformRoot::", groundContactConstraint.ToString(), FColor::Red);
+    if(bLogEnabled){
+        DebugHelper::showScreenMessage("SpatialTransformRoot::", groundContactConstraint.ToString(), FColor::Red);
+    }
+    
 }
 
 
@@ -83,15 +89,8 @@ void SpatialTransformRoot::SafeWorldResultCache(
     worldLocationCache = rootMatrix.getTranslation();
     worldTransformCache = rootMatrix; //root prev is alwyas identity.
     worldRotatorCache = rootMatrix.extractRotator();
+    worldRotationCache.setRotation(worldRotatorCache);
 }
-
-
-
-
-
-
-
-
 
 /// override delta plücker implementation!
 
@@ -102,9 +101,10 @@ void SpatialTransformRoot::forwardDeltaPluecker(
     FVector &outDeltaTranslation,
     float deltatime
 ){
-    //das default
-    /*
     
+    //das default
+    
+    /*
     X = |R        0_3x3|
         |R*s(w)   R    |
     
@@ -135,18 +135,34 @@ void SpatialTransformRoot::forwardDeltaPluecker(
 
     FVector w1 = a * angularVelocity + b * linearVelocity;
     FVector v1 = c * angularVelocity + d * linearVelocity;
-    
     FVector w1_constrained = w1;
     FVector v1_constrained = v1;
+
+
+
+
+
+
+    //FVector w1_constrained = angularVelocity;
+    //FVector v1_constrained = linearVelocity;
+
+
+    //add own velocities for integration of position
+    spatialVelocity.AddOwnVelocityTo(w1_constrained, v1_constrained); //in current space add current space velocity
+
+
+
+
     //resultierende velocities für den joint constrainen.
     applyConstraints(w1_constrained, v1_constrained); 
 
-    
 
+    
 
     
     //----> TRANSLATION NOT FOR ROOT!
 
+    
     //dann velocity integrieren
     //deltaTwist(w1, v1)
     //Matrix3x3 outDeltaRotation; -> is updated inside convertPlueckerToSE3components
@@ -155,12 +171,10 @@ void SpatialTransformRoot::forwardDeltaPluecker(
         w1_constrained, v1_constrained, outDeltaRotation, outDeltaTranslation, deltatime
     );
 
+
     //CUTSOM TRANSLATION INTEGRATION FOR ROOT!
     //root instant default integration
-    outDeltaTranslation = v1_constrained * deltatime; 
-
-
-
+    outDeltaTranslation = v1_constrained * deltatime;
 
     // ---- TESTING NEEDED ! ----
 
@@ -172,8 +186,5 @@ void SpatialTransformRoot::forwardDeltaPluecker(
 
     velocitycache = v1_constrained;
 
-    /*//refresh, for propagation to next joint
-    angularVelocity = w1;
-    linearVelocity = v1;*/
 
 }

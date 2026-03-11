@@ -2,6 +2,7 @@
 
 #include "PlueckerCore/Math/Matrix3x3.h"
 #include "CoreMath/Matrix/MMatrix.h"
+#include "PlueckerCore/Math/SpatialVector/SpatialVector.h"
 #include "PlueckerCore/Bone/JointConstraints/JointConstraint.h"
 #include "PlueckerCore/Bone/JointConstraints/JointGroundedConstraint.h"
 
@@ -31,7 +32,10 @@ protected:
     MMatrix TranslationInverted();
     MMatrix RotationTransposed(); //R^T = R^-1
 
-    
+
+    SpatialVector spatialVelocity;
+
+
 
 protected:
     UWorld *world = nullptr;
@@ -39,7 +43,7 @@ protected:
     int staticGroundHeight = 0;
 
 public:
-    bool bLogMessage = false;
+    bool bLogEnabled = false;
 
     void SetWorld(UWorld *worldIn);
 
@@ -49,7 +53,9 @@ public:
     SpatialTransform(const SpatialTransform &other);
     SpatialTransform &operator=(const SpatialTransform &other);
 
-    
+    SpatialVector &GetSpatialVelocity(){
+        return spatialVelocity;
+    }
 
     void forwardPluecker(
         FVector &angularVelocity, 
@@ -98,15 +104,25 @@ public:
 
     void UpdateIgnoreParams(FCollisionQueryParams &ignoreParamsIn);
 
-    FVector Force(float mass);
+    void ForceAndTorqueLocalSpace(
+        FVector &force, 
+        FVector &torque, 
+        float mass,
+        const FVector &centerOfMass
+    );
+
     virtual FVector Torque(const FVector &force, const FVector &centerOfMass);
+protected:
+    FVector ForceLocal(float mass);
+    
 
 
 
 protected:
     FVector Torque(const Matrix3x3 &rotationSpace, const FVector &force, const FVector &centerOfMass);
-    FVector NormalForce(float mass);
+    FVector NormalForce();
     FVector GravityForce(float mass);
+    FVector FrictionForce();
 
     void UpdateGroundConstraint(const MMatrix &worldResult);
     void UpdateGroundConstraintPitchAndPosition();
@@ -152,6 +168,7 @@ protected:
     //cache after build with martix mulitplication
     FVector worldLocationCache;
     FRotator worldRotatorCache;
+    MMatrix worldRotationCache;
     MMatrix worldTransformCache;
 
 

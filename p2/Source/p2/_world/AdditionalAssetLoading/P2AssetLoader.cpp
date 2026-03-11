@@ -16,6 +16,7 @@
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
+#include "p2/weapon/animationEnum/EweaponAnimation.h"
 #include <map>
 
 
@@ -38,6 +39,7 @@ void P2AssetLoader::LoadGameAssets(){
     loadMaterials(); //materials need to be loaded first to not have any issues
     loadEntities();
     loadWeapons();
+    loadWeaponAnimations();
     loadWeaponAttachments();
     loadThrowables();
     loadParticles();
@@ -182,6 +184,66 @@ void P2AssetLoader::loadWeapons(){
         "c4BP"                // Just the file name as displayed
     );
 }
+
+void P2AssetLoader::loadWeaponAnimations(){
+    
+    //UAnimSequence
+    //pistol loading
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::pistol,
+        EweaponAnimation::verschlussAnimationShoot,
+        "Game",               
+        "Prefabs/Weapons/pistol/pistolNew", 
+        "verschlussAnim"// Just the file name as displayed
+    );
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::pistol,
+        EweaponAnimation::magAnimationReload,
+        "Game",               
+        "Prefabs/Weapons/pistol/pistolMag", 
+        "magAnim"// Just the file name as displayed
+    );
+
+    //ar loading
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::assaultRifle,
+        EweaponAnimation::verschlussAnimationShoot,
+        "Game",               
+        "Prefabs/weapons/rifle2", 
+        "verschlussAnim"// Just the file name as displayed
+    );
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::assaultRifle,
+        EweaponAnimation::magAnimationReload,
+        "Game",               
+        "Prefabs/Weapons/rifle2", 
+        "magAnim"// Just the file name as displayed
+    );
+
+    //note: never used: custom kick back lerp.
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::assaultRifle,
+        EweaponAnimation::gehauseAnimationShoot,
+        "Game",               
+        "Prefabs/weapons/rifle2", 
+        "gehauseAnim"// Just the file name as displayed
+    );
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::assaultRifle,
+        EweaponAnimation::magAnimationShoot,
+        "Game",               
+        "Prefabs/Weapons/rifle2", 
+        "magAnimShoot"// Just the file name as displayed
+    );
+
+
+}
+
+
+
+
+
+
 
 
 /// @brief load throwables

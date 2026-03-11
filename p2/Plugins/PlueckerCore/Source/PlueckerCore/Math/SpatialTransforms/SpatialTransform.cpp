@@ -25,7 +25,8 @@ SpatialTransform &SpatialTransform::operator=(const SpatialTransform &other){
         RotationSO3 = other.RotationSO3;
         translation = other.translation;
         resultTranslation = other.resultTranslation;
-        //world = other.world;
+        spatialVelocity = other.spatialVelocity;
+        // world = other.world;
         SetWorld(other.world);
     }
     return *this;
@@ -110,10 +111,11 @@ void SpatialTransform::forwardDeltaPluecker(
     FVector &outDeltaTranslation,
     float deltatime
 ){
+    //bring parent force to local space
     /*
     
     X = |R        0_3x3|
-        |R*s(w)   R    |
+        |R*s(t)   R    |
     
         R in SO3 Gruppe
     
@@ -150,18 +152,20 @@ void SpatialTransform::forwardDeltaPluecker(
     );
     DebugHelper::showScreenMessage(message, FColor::Yellow);*/
 
+
+    //add own velocities for integration of position
+    spatialVelocity.AddOwnVelocityTo(w1, v1); //in current space add current space velocity
+
+
+
     
     FVector w1_constrained = w1;
     FVector v1_constrained = v1;
-    //resultierende velocities für den joint constrainen.
     applyConstraints(w1_constrained, v1_constrained); 
 
-    /*FString message = FString::Printf(
-        TEXT("SpatialTransform::forwardPlueckerConstrained w(%s) v(%s)"),
-        *w1_constrained.ToString(),
-        *v1_constrained.ToString()
-    );
-    DebugHelper::showScreenMessage(message, FColor::Yellow);*/
+    
+
+
 
 
 
@@ -185,13 +189,7 @@ void SpatialTransform::forwardDeltaPluecker(
     linearVelocity = v1_constrained;
 
 
-
     velocitycache = v1_constrained;
-
-    /*//refresh, for propagation to next joint
-    angularVelocity = w1;
-    linearVelocity = v1;*/
-
 }
 
 
@@ -389,29 +387,65 @@ void SpatialTransform::backwardWrench(
 
 //// ----- internal torque ------
 
-FVector SpatialTransform::Force(float mass){
+void SpatialTransform::ForceAndTorqueLocalSpace(
+    FVector &force, 
+    FVector &torque, 
+    float mass,
+    const FVector &centerOfMass
+){
+    force = ForceLocal(mass);
+    torque = FVector::CrossProduct(centerOfMass, force); //local force, local torque
+
+}
+
+FVector SpatialTransform::ForceLocal(float mass){
     FVector totalForce(0, 0, 0);
     totalForce += GravityForce(mass);
-    totalForce += NormalForce(mass);
-    //ShowVector(totalForce, 100.0f, FColor::Purple); //normal force is too low?
+    totalForce += NormalForce();
+    totalForce += FrictionForce();
+
+    //world rotation needed here?
+    //put to correct rotation space
+    MMatrix r1 = worldRotationCache;
+    r1.transposeRotation();
+    totalForce = r1 * totalForce;
+    //totalForce = RotationTransposed() * totalForce;
+
     return totalForce;
 }
 
 FVector SpatialTransform::GravityForce(float mass){
-    if(true || !contactFloor){
+    if(!contactFloor){
         FVector g(0, 0, -981.0f);
-        return g * mass;
+        g *= mass;
+        return g;
     }
     return FVector(0, 0, 0);
 }
 
 #include "PlueckerCore/Math/SpatialTransforms/Force/NormalForce.h"
-FVector SpatialTransform::NormalForce(float mass){
-    return FNormalForce::NormalForce(groundNormal, groundPenetration, velocitycache);
+FVector SpatialTransform::NormalForce(){
+    if(contactFloor){
+        return FNormalForce::NormalForce(groundNormal, groundPenetration, velocitycache);
+    }
+    return FVector(0, 0, 0);
 }
 
+//experimental
+FVector SpatialTransform::FrictionForce(){
+    if(contactFloor){
+        float linearFrictionCoeff = 0.99f;  // z.B. N/(m/s)
+        FVector frictionForce = -linearFrictionCoeff * velocitycache;   // wirkt entgegen Bewegungsrichtung
+        return frictionForce;
+    }
+    return FVector(0, 0, 0);
+}
+
+/// ---- TORQUE WORLD SPACE ----
+
 FVector SpatialTransform::Torque(const FVector &force, const FVector &centerOfMass){
-    //return Torque(RotationSO3, force, centerOfMass);
+    //rotation space of RotationSO3 is correct already since were propagation which X^T before
+    //hand
     return Torque(RotationSO3, force, centerOfMass);
 }
 
@@ -432,23 +466,28 @@ void SpatialTransform::ShowPosition(const MMatrix &other){
 }
 
 void SpatialTransform::ShowPosition(FVector pos){
-    DebugHelper::showLineBetween(
-        world,
-        pos,
-        pos + FVector(10,0,100),
-        FColor::Purple,
-        1.0f
-    );
+    if(bLogEnabled){
+        DebugHelper::showLineBetween(
+            world,
+            pos,
+            pos + FVector(10,0,100),
+            FColor::Purple,
+            1.0f
+        );
+    }
 }
 
 void SpatialTransform::ShowVector(const FVector &vec, float size, FColor color){
-    DebugHelper::showLineBetween(
-        world,
-        worldLocationCache,
-        worldLocationCache + vec.GetSafeNormal() * size,
-        color,
-        0.1f
-    );
+    if(bLogEnabled){
+        DebugHelper::showLineBetween(
+            world,
+            worldLocationCache,
+            worldLocationCache + vec.GetSafeNormal() * size,
+            color,
+            0.1f
+        );
+    }
+    
 }
 
 
@@ -462,6 +501,7 @@ bool SpatialTransform::IsGrounded(const MMatrix &prev){
 bool SpatialTransform::IsGrounded(FVector &Start){
     if(Start.Z < staticGroundHeight){
         groundNormal = FVector(0, 0, 1);
+        DrawGroundPenetration(Start);
         return true;
     }
 
@@ -492,10 +532,10 @@ bool SpatialTransform::IsGrounded(FVector &Start){
         
         
         
-        if(false){
+        if(bLogEnabled){
             DrawGroundPenetration(Start);
             if(result){
-                FVector smallDir = groundNormal * 10.0f;
+                FVector smallDir = groundNormal * 30.0f;
                 DebugHelper::showLineBetween(world, Start, Start + smallDir, FColor::Cyan, 1.0f);
             }else{
                 FVector smallDir(10,0,0);
@@ -517,19 +557,21 @@ bool SpatialTransform::IsGrounded(FVector &Start){
 void SpatialTransform::SetGroundPenetration(bool result, const FVector &start, const FVector &hit){
     groundPenetration = 0.0f;
 
-    float groundEpsilon = 10.0f; //extra for bone size
+    float groundEpsilon = 20.0f; //extra for bone size
     if(result && BelowGround(start, hit, groundEpsilon)){ //start lower than hit, stuck in ground
         FVector groundPenetrationDirection = start - hit; //AB = B - A
         float dot = FVector::DotProduct(groundNormal, groundPenetrationDirection.GetSafeNormal());
         if(dot <= 0.0f){
             //is inside floor
-            groundPenetration = groundPenetrationDirection.Size() * dot;
+            groundPenetration = (groundEpsilon + groundPenetrationDirection.Size()) * dot;
         }
     }
 }
 
 void SpatialTransform::DrawGroundPenetration(const FVector &pos){
-    DebugHelper::showLineBetween(world, pos, pos + FVector(0, 0, groundPenetration), FColor::Orange, 1.0f);
+    if(bLogEnabled){
+        DebugHelper::showLineBetween(world, pos, pos + FVector(0, 0, groundPenetration), FColor::Orange, 1.0f);
+    }
 }
 
 bool SpatialTransform::BelowGround(const FVector &check, const FVector &ground){

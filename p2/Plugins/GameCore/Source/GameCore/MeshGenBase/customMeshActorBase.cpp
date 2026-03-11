@@ -16,7 +16,6 @@
 
 #include "DebugPlugin/DebugHelper.h"
 
-#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/ProceduralMeshComponentCustom.h"
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"
 
 

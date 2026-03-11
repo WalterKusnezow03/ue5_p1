@@ -35,6 +35,7 @@ protected:
 	TArray<FProcMeshTangent> Tangents; 
     TArray<FColor> VertexColors;
 	TArray<FVector2D> UV0; //Uv generation custom planar mapping not implemented yet, to come
+	TArray<FTriangleIntersectFrame> intersectFrames;
 
 	//bound data needed for hittesting
 	BoundingBoxSimple bounds;
@@ -438,8 +439,6 @@ protected:
 		const FTriangleIntersectFrame &frame
 	);
 
-private:
-	TArray<FTriangleIntersectFrame> intersectFrames;
 
 
 public:

@@ -28,17 +28,16 @@ Joint &Joint::operator=(const Joint &other){
         spatialTransformBase = other.spatialTransformBase;
         color = other.color;
         attachedActor = other.attachedActor;
-        logEnabled = other.logEnabled;
-        drawEnabled = other.drawEnabled;
+        bLogEnabled = other.bLogEnabled;
         SetBoneTranslationDirection(other.BoneTranslationDirection());
     }
     return *this;
 }
 
 Joint::~Joint(){
-    
+    children.Empty();
+    ChildsByPointer.Empty();
 }
-
 
 void Joint::Setup(FVector &translationVector){
     GetSpatialTransform().setTranslation(translationVector);
@@ -166,7 +165,6 @@ MMatrix Joint::TickAndBuildThisJoint(
     FVector &v, //linearVelocity, is updated
     const MMatrix &inTransform
 ){
-    AddOwnJointVelociyTo(w, v); 
 
     //update spatial transform and return new world update
     GetSpatialTransform().forwardPluecker(w, v, deltaTime);
@@ -178,52 +176,44 @@ MMatrix Joint::TickAndBuildThisJoint(
     UpdateActorTransform();
     draw(inTransform, result, deltaTime);
 
-    //DO NOT REMOVE
-    //VERY FUCKING IMPORTANT FOR ROOT JOINTS, internal transform cache to prevent 
-    //extern reliance on a matrix.
-    transformCopy = inTransform; //cache startingJoint
-
     return result;
 }
 
 
 /// --- FORCE ---
 
+//external add force
 void Joint::AddForce(const FVector &force, float deltaTime){
-    spatialVelocity.AddForce(force, mass, deltaTime);
+    GetSpatialVelocity().AddForce(force, mass, deltaTime);
     FVector torque = GetSpatialTransform().Torque(force, centerOfMass);
-    spatialVelocity.AddTorque(torque, interiaInverse, deltaTime);
+    GetSpatialVelocity().AddTorque(torque, interiaInverse, deltaTime);
 }
 
-
 void Joint::ReactToDamage(const FCustomHitResult &hitResult){
-   
+    
     DebugHelper::showScreenMessage("Joint::ReactToDamage", FColor::Orange);
 
     const FVector &dir = hitResult.Direction();
     float sizeForce = 300.0f;
     FVector asForce = dir.GetSafeNormal() * sizeForce;
-    asForce.Z *= -1.0f; //debug
 
     AddForce(asForce, hitResult.DeltaTime());
 
 
     //draw
-    FVector worldLocation = GetWorldLocation();
-    DebugHelper::showLineBetween(
-        world,
-        worldLocation,
-        worldLocation + asForce,
-        FColor::Purple,
-        1.0f);
+    if(bLogEnabled){
+        FVector worldLocation = GetWorldLocation();
+        DebugHelper::showLineBetween(
+            world,
+            worldLocation,
+            worldLocation + asForce,
+            FColor::Purple,
+            1.0f
+        );
+    }
 }
 
 /// --- FORCE END ---
-
-void Joint::AddOwnJointVelociyTo(FVector &w, FVector &v){
-    //aus kraft integration eigene velocity anfügen
-    spatialVelocity.AddOwnVelocityTo(w, v);
-}
 
 
 
@@ -310,47 +300,42 @@ void Joint::TickAndBuildChild(Joint &joint, FVector w, FVector v, MMatrix root, 
 
 
 void Joint::PropagateWrench(float deltatime){
-    //FVector f = GravityForce();
-    //FVector n = GravityTorque();
-
-    //FVector f = spatialTransform.Force(mass);
-    //FVector n = spatialTransform.Torque(f, centerOfMass);
-
-    //no motorized torque or force in end limb, added later.
     FVector f(0, 0, 0);
     FVector n(0, 0, 0);
-    PropagateWrench(n, f, deltatime);
+    PropagateWrench(n, f, deltatime, 0.0f);
 }
 
-void Joint::PropagateWrench(FVector &n, FVector &f, float deltaTime){
-   
-    //F_i = F_{\text{eigene externe}} + \sum X^T F_{child}
-    
-    //propagate up
-    //X^T * (n,f)
-    GetSpatialTransform().backwardWrench(n,f);
-    AddAndIntegrateOwnSptialForce(n, f, deltaTime);
+void Joint::PropagateWrench(
+    FVector &n, 
+    FVector &f, 
+    float deltaTime,
+    float massAccumulated
+){
+    massAccumulated += mass;
 
     //global if is root
-    if(ParentsByPointer.Num() == 0){
-        spatialVelocity.AddForce(f, mass, deltaTime);
-        spatialVelocity.AddTorque(n, interiaInverse, deltaTime);
-
-        //draw
-        FVector start = GetWorldLocation();
-        DebugHelper::showLineBetween(
-            world,
-            start,
-            start + f.GetSafeNormal() * 100.0f,
-            FColor::Cyan,
-            deltaTime * 2.0f
-        );
-
-        FVector fMeters = f / 100.0f;
-        //DebugHelper::showScreenMessage("Joint::Root Force in meters ", fMeters);
+    if(ParentsByPointer.Num() == 0 && false){    
+        GetSpatialVelocity().AddForce(f, massAccumulated, deltaTime); //hier nicht MassOfSubTree()
+        GetSpatialVelocity().AddTorque(n, interiaInverse, deltaTime);
+        if(bLogEnabled){
+            FVector fMeters = f / 100.0f;
+            DebugHelper::showScreenMessage("Joint::Root Force in meters ", fMeters);
+        }
     }
 
-    PropagateWrench(n, f, deltaTime, ParentsByPointer);    
+
+
+    // DAS IST RICHTIG SO, summieren.
+    AddAndIntegrateOwnSptialForce(n, f, deltaTime);
+
+    // F_i = F_local + \sum X^T F_{child}
+
+    //updated force: propagate up
+    //X^T * (n,f)
+    GetSpatialTransform().backwardWrench(n,f);
+
+
+    PropagateWrench(n, f, deltaTime, ParentsByPointer, massAccumulated);    
 }
 
 
@@ -358,48 +343,59 @@ void Joint::AddAndIntegrateOwnSptialForce(FVector &outN, FVector &outF, float de
     FVector forceSelf;
     FVector torqueSelf;
     FindSelfInteriaAndGravitySpatialMoment(torqueSelf, forceSelf);
-
-    //integrate for next forward pass if has parents
-    if(ParentsByPointer.Num() > 0){
-        spatialVelocity.AddForce(forceSelf, mass, deltaTime);
-        spatialVelocity.AddTorque(torqueSelf, interiaInverse, deltaTime); 
-    }
-
     outF += forceSelf;
     outN += torqueSelf;
+
+    // ---- FORWARD DYNAMICS PART -----
+    //integrate self force for forward dynamics part.
+    GetSpatialVelocity().AddForce(forceSelf, mass, deltaTime);
+    GetSpatialVelocity().AddTorque(torqueSelf, interiaInverse, deltaTime); 
+
 }
 
 
 
 void Joint::FindSelfInteriaAndGravitySpatialMoment(
-    FVector &outN, // torque
-    FVector &outF // force
+    FVector &outNSelf, // torque
+    FVector &outFSelf // force
 ){
-    //DebugHelper::showScreenMessage("Joint BASE FindSelfInteriaAndGravitySpatialMoment ", FColor::Yellow);
-    FVector forceExternal = GetSpatialTransform().Force(mass);
-    FVector torqueExternal = GetSpatialTransform().Torque(forceExternal, centerOfMass);
+    FVector forceExternal;
+    FVector torqueExternal;
+    GetSpatialTransform().ForceAndTorqueLocalSpace(
+        forceExternal, 
+        torqueExternal, 
+        mass,
+        centerOfMass
+    );
 
     FVector forceInteria(0,0,0);
     FVector torqueInteria(0,0,0);
-    if(!disableCoriolisForce){
+    /*if(!disableCoriolisForce){
         spatialVelocity.ExtractCurrentForce(
             interia,
-            mass,
+            MassOfSubTree(),
             torqueInteria,
             forceInteria
         );
-    }
+    }*/
 
-    outN = torqueInteria + torqueExternal;
-    outF = forceInteria + forceExternal;
+    //adding local mass for up propagation
+    outNSelf = torqueInteria + torqueExternal;
+    outFSelf = forceInteria + forceExternal;
 }
 
-void Joint::PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Joint*> &parents){
+void Joint::PropagateWrench(
+    FVector &n, 
+    FVector &f, 
+    float deltatime, 
+    TArray<Joint*> &parents,
+    float massAccumulated
+){
     for (int i = 0; i < parents.Num(); i++){
         if(Joint *current = parents[i]){
             FVector nCopy = n;
             FVector fCopy = f;
-            current->PropagateWrench(nCopy, fCopy, deltatime);
+            current->PropagateWrench(nCopy, fCopy, deltatime, massAccumulated);
         }
     }
 }
@@ -418,7 +414,7 @@ void Joint::PropagateWrench(FVector &n, FVector &f, float deltatime, TArray<Join
 
 
 void Joint::draw(const MMatrix &a, const MMatrix &b, float deltaTime){
-    if(drawEnabled){
+    if(bLogEnabled){
         deltaTime = std::max(deltaTime, 1.0f / 60.0f);
         FVector t1 = a.getTranslation();
         FVector t2 = b.getTranslation();
@@ -455,7 +451,7 @@ FJointConstraint &Joint::GetConstraint(){
 
 /// --- DEBUG ---
 void Joint::DrawJointLocation(float deltaTime){
-    if(world){
+    if(world && bLogEnabled){
         DebugHelper::showLineBetween(
             world,
             FVector(0, 0, 0),
@@ -576,7 +572,7 @@ void Joint::SetDrawingEnabledRecursive(bool flag){
 }
 
 void Joint::SetDrawingEnabled(bool flag){
-    drawEnabled = flag;
+    bLogEnabled = flag;
 }
 
 
@@ -605,10 +601,13 @@ void Joint::SetDrawingEnabledUpStream(bool flag){
 
 
 void Joint::logGroundedState(FString prefix, FColor trueColor){
-    bool result = GetSpatialTransform().bIsGrounded();
-    FString a = prefix + " TRUE";
-    FString b = prefix + " FALSE";
-    DebugHelper::showScreenMessage(result, a, b, trueColor, FColor::Red);
+    if(bLogEnabled){
+        bool result = GetSpatialTransform().bIsGrounded();
+        FString a = prefix + " TRUE";
+        FString b = prefix + " FALSE";
+        DebugHelper::showScreenMessage(result, a, b, trueColor, FColor::Red);
+    }
+    
 }
 
 
@@ -622,6 +621,32 @@ void Joint::logGroundedState(FString prefix, FColor trueColor){
 
 
 /// recurive center of mass for root forces
+
+
+// for root joint
+float Joint::MassOfSubTree(){
+    return GetTotalMassOfSubtree();
+}
+
+float Joint::GetTotalMassOfSubtree(){
+    float massAll = mass;
+    GetMassRecursive(massAll);
+    return massAll;
+}
+
+void Joint::GetMassRecursive(float &massIn){
+    massIn += mass;
+    TArray<Joint *> array = AllChildren();
+    for (int i = 0; i < array.Num(); i++){
+        if(Joint *current = array[i]){
+            current->GetMassRecursive(massIn);
+        }
+    }
+}
+
+
+
+
 
 
 

@@ -126,6 +126,7 @@ void AcarriedItem::pickupBot(AActor *actorIn){
 void AcarriedItem::OnPickup(){
 	UnRegisterFromMiniMap();
 	UpdatePreRequisiteTickOnPickup();
+	EnablePhysics(false);
 }
 
 bool AcarriedItem::isPickedupByPlayer(){
@@ -185,7 +186,7 @@ void AcarriedItem::drop(){
 	enableCollider(true);
 	showItem(true);
 
-	
+	EnablePhysics(true);
 }
 
 void AcarriedItem::UpdatePreRequisiteTickOnPickup(){
@@ -306,4 +307,18 @@ void AcarriedItem::addToAnimationOffset(FVector &other){
 //api bone controller sight offset
 FVector AcarriedItem::sightOffsetNoRotation(){
 	return verticalSightOffset;
+}
+
+
+
+
+void AcarriedItem::EnablePhysics(bool flag){
+	//root component must be static mesh!
+	/*if(RootComponent){
+		DebugHelper::logMessage("AcarriedItem::EnablePhysics change sucess!");
+		RootComponent->SetSimulatePhysics(flag);
+		RootComponent->SetEnableGravity(flag);
+	}else{
+		DebugHelper::logMessage("AcarriedItem::EnablePhysics failed, no root!");
+	}*/
 }

@@ -90,7 +90,6 @@ void Aweapon::BeginPlay()
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
 
-	findAttachmentChildActors(); //DEPRECATED
 
 	//only on begin play!
 	spawnAllAvailableAttachments();
@@ -581,7 +580,7 @@ void Aweapon::showWeapon(bool show){
 
 
 ////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
-
+/*
 /// @brief will set the paths to the animations based on weapon enum type
 /// to not create subclasses! DO NOT REMOVE
 void Aweapon::animationPathSet(){
@@ -607,8 +606,7 @@ void Aweapon::animationPathSet(){
 		magShootAnimpath = TEXT("/Game/Prefabs/weapons/rifle2/magAnimShoot");
 	}
 
-	setVerschlussPath(verschluss_anim_path);
-	setMagAnimPath(mag_anim_path);
+	
 
 
 	//pre load the animations
@@ -617,18 +615,44 @@ void Aweapon::animationPathSet(){
 	gehauseAnimSequence = LoadObject<UAnimSequence>(nullptr, *gehauseAnimPath);
 	magAnimationShootSequence = LoadObject<UAnimSequence>(nullptr, *magShootAnimpath);
 }
+*/
 
-void Aweapon::setVerschlussPath(FString path){
-	verschlussPath = path;
+#include "p2/weapon/animationEnum/EweaponAnimation.h"
+void Aweapon::LoadAnimationsFromAssetManager(){
+	if(assetManager *manager = assetManager::instance()){
+
+		//pre load the animations
+		verschlussAnimationSquence = manager->Find<weaponEnum, EweaponAnimation, UAnimSequence>(
+			Type, //type weapon
+			EweaponAnimation::verschlussAnimationShoot
+		);
+
+		magAnimationSequence = manager->Find<weaponEnum, EweaponAnimation, UAnimSequence>(
+			Type, //type weapon
+			EweaponAnimation::magAnimationReload
+		);
+		gehauseAnimSequence = manager->Find<weaponEnum, EweaponAnimation, UAnimSequence>(
+			Type, //type weapon
+			EweaponAnimation::gehauseAnimationShoot
+		);
+		magAnimationShootSequence = manager->Find<weaponEnum, EweaponAnimation, UAnimSequence>(
+			Type, //type weapon
+			EweaponAnimation::magAnimationShoot
+		);
+
+		DebugHelper::logMessage("Aweapon::LoadAnimationsFromAssetManager");
+	}
 }
-void Aweapon::setMagAnimPath(FString path){
-	magAnimPath = path;
-}
+
+
+
+
+
 
 /// @brief setups all components for the animations
 void Aweapon::setupAnimations()
 {
-	animationPathSet(); //used for skeletal animations!
+	LoadAnimationsFromAssetManager();
 
 	FString s;
 	// Find all components of type USkeletalMeshComponent attached to this actor
@@ -725,46 +749,6 @@ void Aweapon::playAnimation(
 
 
 
-
-
-
-/// @brief finds all the attachments in blueprint for the weapon being DIRECT CHILD ACTOR in the weapon
-void Aweapon::findAttachmentChildActors(){
-	//deprecated, are spawned!
-	/*
-	TArray<UChildActorComponent *> childs; //create a TArray of the targeted type
-	GetComponents<UChildActorComponent>(childs); //collect all types with GetComponents<dt>(array) method
-	if(childs.Num() > 0){
-		for (int i = 0; i < childs.Num(); i++){
-			if(childs[i] != nullptr){
-				FString name = childs[i]->GetName();
-				if(name.Contains("reddot")){
-					DebugHelper::showScreenMessage("REDDOT FOUND", FColor::Red);
-					reddotSightChildActor = childs[i];
-
-					AActor *a = childs[i]->GetChildActor();
-					if(a != nullptr){
-						sightMap[weaponSightEnum::enum_reddot] = a;
-					}
-				}
-				if(name.Contains("ironSight")){
-					DebugHelper::showScreenMessage("IRON SIGHT FOUND", FColor::Red);
-					ironSightChildActor = childs[i];
-
-					AActor *a = childs[i]->GetChildActor();
-					if(a != nullptr){
-						sightMap[weaponSightEnum::enum_ironsight] = a;
-					}
-				}
-			}
-		}
-	}
-
-
-	//default value
-	//applySight(weaponSightEnum::enum_ironsight);
-	applySight(weaponAttachmentEnum::reddot);*/
-}
 
 
 

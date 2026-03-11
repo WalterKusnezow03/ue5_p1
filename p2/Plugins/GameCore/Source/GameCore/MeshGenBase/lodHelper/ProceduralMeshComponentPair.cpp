@@ -1,6 +1,5 @@
 #include "ProceduralMeshComponentPair.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
-#include "GameCore/MeshGenBase/ProceduralMeshComponentDerived/ProceduralMeshComponentCustom.h"
 #include "DebugPlugin/DebugHelper.h"
 
 ProceduralMeshComponentPair::ProceduralMeshComponentPair(){
@@ -32,7 +31,7 @@ void ProceduralMeshComponentPair::init(
     USceneComponent *RootComponent
 ){
     //old:UProceduralMeshComponent
-    //new: UProceduralMeshComponentCustom
+    
     if(RootComponent && actorOwner){
         FString nameMesh = name + FString::Printf(TEXT("raycastMesh_%d"), index);
         raycastMesh = NewObject<UProceduralMeshComponent>(actorOwner, *nameMesh);
@@ -236,13 +235,6 @@ void ProceduralMeshComponentPair::updateMesh(
         return;
     }
 
-    //try cast ---> EXPERIMENTAL
-    UProceduralMeshComponentCustom *casted = Cast<UProceduralMeshComponentCustom>(&meshcomponent);
-    if (casted)
-    {
-        casted->UpdateMesh(layer, otherMesh, true);
-        return;
-    }
 
     /**
      * example: 
@@ -330,13 +322,6 @@ void ProceduralMeshComponentPair::refreshMesh(
         return;
     }
 
-    //new.
-    UProceduralMeshComponentCustom *casted = Cast<UProceduralMeshComponentCustom>(&meshComponent);
-    if (casted)
-    {
-        casted->UpdateMesh(layer, other, true);
-        return;
-    }
 
 
     meshComponent.UpdateMeshSection(

@@ -6,7 +6,7 @@ RootJoint::RootJoint(){
 }
 
 RootJoint::~RootJoint(){
-
+    Joint::~Joint();
 }
 
 RootJoint::RootJoint(FVector location, UWorld *world){
@@ -74,15 +74,17 @@ void RootJoint::TickAndBuildRecursive(
     Joint::TickAndBuildRecursive(deltaTime, w, v, m);
 
     //debug log spatial velocity
-    FString message = spatialVelocity.ToString("RootJoint::SpatialVelocity");
-    DebugHelper::showScreenMessage(message, FColor::Red);
+    if(bLogEnabled){
+        FString message = GetSpatialVelocity().ToString("RootJoint::SpatialVelocity");
+        DebugHelper::showScreenMessage(message, FColor::Red);
+    }
 }
 
 
 
 // override velocity on collapse hip
 void RootJoint::OverrideLinearVelocity(FVector &vIn){
-    spatialVelocity.OverrideLinearVelocity(vIn);
+    GetSpatialVelocity().OverrideLinearVelocity(vIn);
 }
 
 
@@ -117,7 +119,10 @@ void RootJoint::FindSelfInteriaAndGravitySpatialMoment(
     //DebugHelper::showScreenMessage("RootJoint FindSelfInteriaAndGravitySpatialMoment ", FColor::Orange);
     
     //use complete body center of mass for torque
-    UpdateCenterOfMassOnBackwardBuildForce();
+    if(true){
+        UpdateCenterOfMassOnBackwardBuildForce();
+    }
+    
     Joint::FindSelfInteriaAndGravitySpatialMoment(outN, outF);
     //...
     //centerOfMass---> update needed
@@ -131,12 +136,17 @@ void RootJoint::UpdateCenterOfMassOnBackwardBuildForce(){
     //DebugHelper::showScreenMessage("RootJoint Com ", centerOfMass, FColor::Orange);
 
     //draw
-    FVector worldLocation = GetWorldLocation();
-    DebugHelper::showLineBetween(
-        world,
-        worldLocation,
-        worldLocation + centerOfMass,
-        FColor::Orange,
-        1.0f
-    );
+    if(bLogEnabled){
+        FVector worldLocation = GetWorldLocation();
+        DebugHelper::showLineBetween(
+            world,
+            worldLocation,
+            worldLocation + centerOfMass,
+            FColor::Orange,
+            1.0f
+        );
+    }
 }
+
+
+

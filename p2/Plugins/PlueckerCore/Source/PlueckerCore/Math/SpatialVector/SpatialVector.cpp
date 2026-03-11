@@ -84,8 +84,9 @@ void SpatialVector::AddForce(
 
     FVector a = force / mass;
     v += a * deltaTime;
-    
-    //DebugKeepRange(v, 1000.0f);
+
+    //very effective. Keep.
+    v *= 0.9f;
 }
 
 float SpatialVector::SafeDenominator(float value){

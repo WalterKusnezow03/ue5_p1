@@ -19,6 +19,8 @@ private:
     void loadEntities();
     void loadWeapons();
     void loadWeaponAttachments();
+    void loadWeaponAnimations();
+
     void loadThrowables();
     void loadParticles();
     void loadTextures();

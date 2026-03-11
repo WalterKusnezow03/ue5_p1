@@ -104,7 +104,7 @@ void TorsoController::getActors(TArray<AActor *> &outArray){
 
 // ---- pluecker joints ----
 void TorsoController::SetupJointParents(){
-    //connect shoulders to spine end (up)
+    //connect shoulders to spine end (upper end)
     spine.AddChildsToLowerJoint(GetTopJointsOfLayeredArms());
 }
 
@@ -121,7 +121,7 @@ TArray<Joint *> TorsoController::GetTopJointsOfLayeredArms(){
 
 //lower spine starting joint to connect to hip as child.
 Joint *TorsoController::GetTopJoint(){
-    return spine.GetTopJoint(); //lower spine location
+    return spine.GetTopJoint(); //lower spine location (returns p1.)
 }
 
 

@@ -17,6 +17,7 @@ protected:
 
 private:
     SpatialTransformRoot rootTransform;
+    float rootMass = 10 * 100;
 
     void RemoveConstraints();
 

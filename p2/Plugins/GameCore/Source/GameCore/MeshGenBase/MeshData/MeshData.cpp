@@ -2551,7 +2551,7 @@ float MeshData::AverageDist2TriangleShapedBuffer(TArray<FVector> &buffer){
 
 //new, not tested
 void MeshData::SmartMeshDataOverride(MeshData &other){
-    
+
     //wir wollen hier daten kopieren
     //wenn der andere in mich reinpasst kann ich alles kopieren
     //wenn nicht, muss ich vorher extenden.
@@ -2562,6 +2562,11 @@ void MeshData::SmartMeshDataOverride(MeshData &other){
     TCopyTArrayData<FProcMeshTangent>(Tangents, other.Tangents);
     TCopyTArrayData<FColor>(VertexColors, other.VertexColors);
     TCopyTArrayData<FVector2D>(UV0, other.UV0);
+
+
+    //this or rebuild
+    TCopyTArrayData<FTriangleIntersectFrame>(intersectFrames, other.intersectFrames);
+    //RebuildAllIntersectFrames();
 
     bounds = other.bounds;
     materialPreferred = other.materialPreferred;

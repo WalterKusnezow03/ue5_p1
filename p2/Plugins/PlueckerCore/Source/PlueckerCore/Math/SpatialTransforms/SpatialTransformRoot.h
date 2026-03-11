@@ -31,7 +31,7 @@ protected:
         float deltatime
     ) override;
 
-    
+
     virtual void OnForwardPlueckerFinished() override;
     void OnForwardPlueckerFinishedCutTranslationAgainstGround();
 
@@ -43,11 +43,13 @@ protected:
     virtual void OnForwardPlueckerFinishedLogDeltaTranslation(
         const FVector & outDeltaTranslation
     )override {
-        DebugHelper::showScreenMessage(
-            FString::Printf(
-                TEXT("SpatialTransformRoot::DeltaTranslation %s"),
-                *outDeltaTranslation.ToString()
-            )
-        );
+        if(bLogEnabled){
+            DebugHelper::showScreenMessage(
+                FString::Printf(
+                    TEXT("SpatialTransformRoot::DeltaTranslation %s"),
+                    *outDeltaTranslation.ToString()
+                )
+            );
+        }
     }
 };

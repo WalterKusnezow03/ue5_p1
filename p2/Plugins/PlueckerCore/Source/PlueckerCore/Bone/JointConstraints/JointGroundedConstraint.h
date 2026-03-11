@@ -31,6 +31,11 @@ public:
         
         if(isGroundedFlag){
             velocity.Z = std::max(0.0, velocity.Z);
+
+            //friction experimental
+            float friction = 0.5f;
+            velocity.X *= friction;
+            velocity.Y *= friction;
         }
 
         //ApplyAboveZeroConstraint(allowPositionOffsetZGrounded, velocity.Z);

@@ -34,7 +34,9 @@ void DebugHelper::Debugtest(UWorld *world){
 void DebugHelper::showScreenMessage(FString s, FColor color){
 
 	//debug
-	
+	if(DisableScreenMessages()){
+		return;
+	}
 
 	bool check = false;
 	if(check){

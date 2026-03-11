@@ -13,6 +13,10 @@ public:
 	DebugHelper();
 	~DebugHelper();
 
+	static bool DisableScreenMessages(){
+		return false;
+	}
+
 	//debugging
 	static void Debugtest(UWorld *world);
 

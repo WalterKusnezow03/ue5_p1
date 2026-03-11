@@ -17,6 +17,7 @@
 #include "CoreMath/animation/timer/Timer.h"
 #include "CoreMath/animation/timer/PayloadTimer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
+#include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
 
 #include "weapon.generated.h"
 
@@ -198,10 +199,10 @@ protected:
 	void shootAnimation();
 	void reloadAnimation();
 
-	void animationPathSet();
-	void setVerschlussPath(FString path);
-	void setMagAnimPath(FString path);
+	
+	
 	void setupAnimations();
+	void LoadAnimationsFromAssetManager();
 
 	//plays any anim
 	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);

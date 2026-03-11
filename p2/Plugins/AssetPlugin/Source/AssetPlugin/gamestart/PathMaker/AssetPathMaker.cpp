@@ -126,6 +126,13 @@ FString AssetPathMaker::ToString(EAssetType type){
     if(type == EAssetType::EUStaticMesh){
         return TEXT("StaticMesh");
     }
+    if(type == EAssetType::EUAnimSequence){
+        return TEXT("AnimSequence"); //nichts - und so auch eigentlich richtig für animationen
+    }
+
+    if(type == EAssetType::EUndefined){
+        return TEXT("");
+    }
 
     //not tested
     /*if(type == EAssetType::EUPrimaryDataAsset){

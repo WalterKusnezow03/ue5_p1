@@ -47,4 +47,5 @@ void SpatialTransformBone::SafeWorldResultCache(
     worldTransformCache.makeIdentity();
     worldTransformCache.setRotation(worldRotatorCache);
     worldTransformCache.setTranslation(worldLocationCache);
+    worldRotationCache.setRotation(worldRotatorCache);
 }

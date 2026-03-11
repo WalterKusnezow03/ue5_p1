@@ -293,6 +293,10 @@ private:
 			outType = EAssetType::EUStaticMesh;
 			found = true;
 		}
+		else if constexpr (std::is_base_of<UAnimSequence, T>::value){
+			outType = EAssetType::EUAnimSequence;
+			found = true;
+		}
 		else {
 			found = false;
 		}
