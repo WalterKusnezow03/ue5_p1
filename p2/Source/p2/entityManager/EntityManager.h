@@ -13,7 +13,6 @@
 #include "AssetEnumCollection/assetEnums/throwableEnum.h"
 #include "p2/throwableItems/throwableItem.h"
 
-#include "p2/particleSystem/particle.h"
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
@@ -22,19 +21,20 @@
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "AssetEnumCollection/assetEnums/throwableEnum.h"
-#include "AssetEnumCollection/assetEnums/particleEnum.h"
+
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
 
 #include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
-
+#include "p2/vfx/type/EVFXActorType.h"
 
 
 #include "GameCore/Raycast/query/mapTracker/TCollisionTracker.h"
 
 
 class AWorldDynamicWidgetActor;
+class AVFXActor;
 
 /**
  * OBJECT POOL MANAGER
@@ -79,9 +79,10 @@ public:
 	void add(AHumanEntityScript *humanEntity);
 	void add(Aweapon *weaponIn);
 	void add(AthrowableItem *throwableItem);
-	void add(Aparticle *particleIn);
+	
 	void add(AcustomMeshActor *meshActorIn);
 	void add(AWorldDynamicWidgetActor *actorIn);
+	void add(AVFXActor *actorIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);
@@ -103,7 +104,8 @@ public:
 		USceneComponent *attachTo,
 		FVector relativeLocation
 	);
-	
+
+	AVFXActor *spawnAVFXActor(EVFXActorType typeVFX);
 
 	/// @brief spawns aactor in the world
 	/// @param world world to spawn in, cannot be nullptr!
@@ -114,9 +116,8 @@ public:
 
 	
 	//particles
-	void createExplosion(UWorld *world, FVector &location);
-	void createFire(UWorld *world, FVector &location);
-	void createDebree(UWorld *world, FVector &location, materialEnum materialType);
+	void createExplosion(FVector &location);
+	
 
 
 
@@ -128,29 +129,4 @@ private:
 	
 
 	
-
-	//Particles 
-
-	/// @brief returns a pointer (which should be dereferenced for a set for the blueprint)
-	/// or used to instantiate the correct particle
-	/// @param type type to get from this iv variables
-	/// @return uclass or nullptr 
-	UClass *getParticleBp(particleEnum type);
-
-	void createParticle(
-		UWorld *world, 
-		particleEnum enumtype, 
-		FVector &location, 
-		FVector &dir, 
-		float speed, 
-		float lifeTime
-	);
-	void createParticle(
-		UWorld *world,
-		UMaterialInterface *materialToApply, 
-		FVector &location,
-		FVector &dir,
-		float speed,
-		float lifeTime
-	);
 };

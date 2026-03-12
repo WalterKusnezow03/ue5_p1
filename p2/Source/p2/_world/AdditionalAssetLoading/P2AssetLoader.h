@@ -22,7 +22,7 @@ private:
     void loadWeaponAnimations();
 
     void loadThrowables();
-    void loadParticles();
+    void loadVFX();
     void loadTextures();
 
     void Load3DUiAssets();

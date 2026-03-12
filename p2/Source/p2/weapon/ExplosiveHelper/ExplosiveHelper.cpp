@@ -45,7 +45,7 @@ void ExplosiveHelper::detonate(FVector &location, UWorld *world){
 
         //visual explosion
         if(EntityManager *e = AworldLevel::entityManager()){
-            e->createExplosion(world, location);
+            e->createExplosion(location);
         }
     }
 }

@@ -290,7 +290,7 @@ private:
 	assetManagerGeneric<entityEnum, UClass> entityAssets;
 	assetManagerGeneric<weaponEnum, UClass> weaponAssets;
 	assetManagerGeneric<throwableEnum, UClass> throwableAssets;
-	assetManagerGeneric<particleEnum, UClass> particleAssets;
+	
 
 	assetManagerGeneric<materialEnum, UMaterialInterface> materialAssets;
 	assetManagerGeneric<textureEnum, UTexture2D> textureAssets;

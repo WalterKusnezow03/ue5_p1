@@ -32,6 +32,7 @@ public class GameCore : ModuleRules
 				"ProceduralMeshComponent",
 				"DebugPlugin",
 				"AssetEnumCollection",
+				"Niagara",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

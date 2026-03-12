@@ -33,7 +33,6 @@ void assetManager::setupDefaultTracker(){
     Track<entityEnum>();
     Track<weaponEnum>();
     Track<throwableEnum>();
-    Track<particleEnum>();
     Track<materialEnum>();
     Track<textureEnum>();
     */

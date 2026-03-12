@@ -3,7 +3,6 @@
 
 #include "EntityManager.h"
 #include "GameCore/EntityGC/EntityManagerGeneric.h"
-#include "p2/particleSystem/particle.h"
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
@@ -25,6 +24,8 @@
 #include "p2/ui/3Dui/GamePlayWidgets/InteractWidget/InteractWidgetActor.h"
 
 #include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
+
+#include "p2/vfx/base/VFXActor.h"
 
 
 #include <map>
@@ -140,22 +141,6 @@ void EntityManager::add(AthrowableItem *throwableItem){
 }
 
 
-/// @brief adds a partile to the entity manager
-/// @param particleIn 
-void EntityManager::add(Aparticle *particleIn){
-    if(particleIn != nullptr){
-        //particle will manage this it self
-        //AActorUtil::showActor(*particleIn, false);
-        particleEnum type = particleIn->getType();
-        
-
-        AGcLauncher *gc = AGcLauncher::Instance();
-        if(gc){
-            // gc->Add<E>(uobject*, e);
-            gc->collection.Add<particleEnum>(particleIn, type);
-        }
-    }
-}
 
 /// @brief adds a mesh actor the entity manager
 /// @param meshActorIn 
@@ -179,6 +164,19 @@ void EntityManager::add(AWorldDynamicWidgetActor *actorIn){
         if(gc){
             // gc->Add<E>(uobject*, e);
             gc->collection.Add<EWorldDynamicWidgetEnum>(actorIn, typeWidget);
+        }
+    }
+}
+
+
+#include "p2/vfx/type/EVFXActorType.h"
+void EntityManager::add(AVFXActor *actorIn){
+    if(actorIn){
+        EVFXActorType typeAdded = actorIn->typeVFX;
+        AGcLauncher *gc = AGcLauncher::Instance();
+        if(gc){
+            // gc->Add<E>(uobject*, e);
+            gc->collection.Add<EVFXActorType>(actorIn, typeAdded);
         }
     }
 }
@@ -611,139 +609,33 @@ AWorldDynamicWidgetActor *EntityManager::spawnAWorldDynamicWidgetActor(
 /// @brief creates an visual explosion at a given location
 /// @param world 
 /// @param location 
-void EntityManager::createExplosion(UWorld *world, FVector &location){
-    if(world != nullptr){
-        int amount = 20;
-        float speed = 200.0f; //2 * 100 cm/s = 2ms
+void EntityManager::createExplosion(FVector &location){
+    DebugHelper::showScreenMessage("EntityManager::createExplosion -> A", FColor::Orange);
+    if(AVFXActor *actor = spawnAVFXActor(EVFXActorType::EExplosion)){
+        actor->SetActorLocation(location);
+        DebugHelper::showScreenMessage("EntityManager::createExplosion -> B", FColor::Green);
+    }
+}
 
-        float smokeLifeTime = 20.0f;
-        float fireLifeTime = 1.0f;
+AVFXActor *EntityManager::spawnAVFXActor(EVFXActorType typeVFX){
+    
+    UClass *selectedBp = nullptr;
+    if(assetManager *a = assetManager::instance()){
+        selectedBp = a->Find<EVFXActorType, UClass>(typeVFX);
+    }
+    if(selectedBp != nullptr){
+        AGcLauncher *gc = AGcLauncher::Instance();
+        if(gc){
+            //will spawn if not found by blueprint.
+            AVFXActor *actor = gc->collection.Get<AVFXActor,EVFXActorType>(
+                selectedBp, typeVFX
+            );
 
-        for (int i = 0; i < amount; i++)
-        {
-            FVector dir = FVectorUtil::randomOffset(100); //lets say just one meter because its normalized
-            dir.Z = 200;
-
-            createParticle(world, particleEnum::smoke_enum, location, dir, speed, smokeLifeTime);
-
-
-            //fire testing
-            if(i < 10){
-                createParticle(world, particleEnum::fire_enum, location, dir, speed * 10, fireLifeTime);
+            if(actor){
+                actor->Init();
+                return actor;
             }
         }
     }
+    return nullptr;
 }
-
-
-void EntityManager::createDebree(UWorld *world, FVector &location, materialEnum materialType){
-
-    assetManager *am = assetManager::instance();
-    if(am != nullptr){
-        UMaterialInterface *material = am->Find<materialEnum, UMaterial>(materialType); // am->findMaterial(materialType);
-        if(material != nullptr){
-            FVector dir = FVectorUtil::randomOffset(100);
-            float speed = 3000.0f;
-            int lifetime = 2;
-            createParticle(world, material, location, dir, speed, lifetime);
-        }
-    }
-}
-
-
-/// @brief creates an indivudual particle from an enum type
-/// @param world to spawn in
-/// @param enumtype type of particle
-/// @param location to spawn at
-/// @param dir direction of impulse
-/// @param speed speed to apply
-void EntityManager::createParticle(
-    UWorld *world, 
-    particleEnum enumtype, 
-    FVector &location, 
-    FVector &dir, 
-    float speed, 
-    float lifeTime
-){
-    
-    
-    UClass *bp = nullptr; // getParticleBp(enumtype);
-
-    if(assetManager *am = assetManager::instance()){
-        bp = am->Find<particleEnum, UClass>(enumtype); // am->findBp(enumtype);
-    }
-
-    
-    AGcLauncher *gc = AGcLauncher::Instance();
-    if(gc && bp){
-
-        // gc->Add<E>(uobject*, e);
-        // T* gc->Get<T, E>(UClass_T_toSpawn*, e); 
-        Aparticle *found = gc->collection.Get<Aparticle,particleEnum>(bp,enumtype);
-        if(found != nullptr){
-            found->SetActorLocation(location);
-            found->setParticleType(enumtype); //set the partcle type on start
-            found->applyImpulse(dir, speed, lifeTime);
-            //return found;
-        }
-    }
-
-    
-}
-
-
-/// @brief creates an indivudual particle from an material?
-/// @param world to spawn in
-/// @param UMaterial material to apply
-/// @param location to spawn at
-/// @param dir direction of impulse
-/// @param speed speed to apply
-void EntityManager::createParticle(
-    UWorld *world, 
-    UMaterialInterface *materialToApply,
-    FVector &location, 
-    FVector &dir, 
-    float speed, 
-    float lifeTime
-){
-    
-    UClass *bp = nullptr; // getParticleBp(enumtype);
-
-    if(assetManager *am = assetManager::instance()){
-        bp = am->Find<particleEnum, UClass>(particleEnum::particleNone_enum);
-        // am->findBp(particleEnum::particleNone_enum); //none here.
-    }
-    
-    AGcLauncher *gc = AGcLauncher::Instance();
-    if(gc && bp){
-
-        // gc->Add<E>(uobject*, e);
-        // T* gc->Get<T, E>(UClass_T_toSpawn*, e); 
-        Aparticle *found = gc->collection.Get<Aparticle,particleEnum>(bp,particleEnum::particleNone_enum);
-        if(found != nullptr){
-            found->SetActorLocation(location);
-            found->setParticleType(particleEnum::particleNone_enum); //set the partcle type on start
-            
-            FVector scale(0.5f, 0.5f, 0.5f);
-            found->applyImpulse(dir, speed, lifeTime, materialToApply, scale);
-            
-            
-            //return found;
-        }
-    }
-
-
-
-
-
-
-    
-}
-
-
-
-
-
-
-
-

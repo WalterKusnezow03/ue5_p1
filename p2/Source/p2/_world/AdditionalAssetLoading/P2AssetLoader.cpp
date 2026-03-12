@@ -7,7 +7,7 @@
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
 #include "AssetEnumCollection/assetEnums/throwableEnum.h"
-#include "AssetEnumCollection/assetEnums/particleEnum.h"
+
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/entityEnum.h"
@@ -18,6 +18,9 @@
 #include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
 #include "p2/weapon/animationEnum/EweaponAnimation.h"
 #include <map>
+
+#include "p2/vfx/base/VFXActor.h"
+#include "p2/vfx/type/EVFXActorType.h"
 
 
 /*
@@ -42,7 +45,7 @@ void P2AssetLoader::LoadGameAssets(){
     loadWeaponAnimations();
     loadWeaponAttachments();
     loadThrowables();
-    loadParticles();
+    loadVFX();
     loadTextures();
 
     Load3DUiAssets();
@@ -262,35 +265,26 @@ void P2AssetLoader::loadThrowables(){
 
 
 
-/// @brief load particles for the entitymanager
-/// @param entityManager to set in
-void P2AssetLoader::loadParticles(){
-    
-    AssetLoader::LoadAndSaveAssetToManager<particleEnum, UClass>(
-        particleEnum::smoke_enum, // track in asset manager
+
+//NEW
+void P2AssetLoader::loadVFX(){
+
+    AssetLoader::LoadAndSaveAssetToManager<EVFXActorType, UClass>(
+        EVFXActorType::EExplosion, // track in asset manager
         "Game",                       // like "Game" for game or any other plugin name
-        "Prefabs/particle",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
-        "particleSmoke"                   // Just the file name as displayed
+        "Prefabs/particle/actorBP",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "ExplosionActorBP"                   // Just the file name as displayed
     );
 
-    AssetLoader::LoadAndSaveAssetToManager<particleEnum, UClass>(
-        particleEnum::fire_enum, // track in asset manager
-        "Game",                  // like "Game" for game or any other plugin name
-        "Prefabs/particle",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
-        "particleFire"           // Just the file name as displayed
-    );
-
-    AssetLoader::LoadAndSaveAssetToManager<particleEnum, UClass>(
-        particleEnum::particleNone_enum, // track in asset manager
-        "Game",                  // like "Game" for game or any other plugin name
-        "Prefabs/particle",      // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
-        "particleNone"           // Just the file name as displayed
-    );
-    
 
 
 
 }
+
+
+
+
+
 
 
 
