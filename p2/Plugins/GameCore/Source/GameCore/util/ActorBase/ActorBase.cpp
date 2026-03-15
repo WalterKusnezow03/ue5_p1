@@ -7,6 +7,16 @@ void AActorBase::FindAllChildsByName(FString namepart, TArray<USceneComponent*> 
     //check all child for being actos
     TArray<USceneComponent *> childs;
     GetComponents<USceneComponent>(childs);
+    
+    if(RootComponent){
+        if(USceneComponent *casted = Cast<USceneComponent>(RootComponent)){
+            if(childs.Contains(casted) == false){
+                childs.Add(casted);
+            }
+        }
+    }
+
+
     for (int i = 0; i < childs.Num(); i++){
         FindAllChildsByName(childs[i], namepart, container);
     }

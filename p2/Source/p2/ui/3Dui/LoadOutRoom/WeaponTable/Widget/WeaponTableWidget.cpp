@@ -149,7 +149,6 @@ void UWeaponTableWidget::SelectWidgetFromPanel(UWidget *panel, UWidget *found){
 void UWeaponTableWidget::InitWidgets(){
 
     InitOptionWidgetsFromPanel(GetPanelWeaponSwitch());
-
     InitOptionWidgetsFromPanel(GetPanelSights());
     InitOptionWidgetsFromPanel(GetPanelMuzzleAttachments());
     InitOptionWidgetsFromPanel(GetPanelGripAttachments());

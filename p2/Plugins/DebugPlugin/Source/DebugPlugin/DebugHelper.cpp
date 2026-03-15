@@ -284,6 +284,22 @@ FString DebugHelper::FVectorToString(FVector vec){
     return sOut;
 }
 
+void DebugHelper::logMessage(
+	bool flag,
+	FString trueString,
+	FString falseString
+){
+	if(flag){
+		logMessage(trueString);
+	}else{
+		logMessage(falseString);
+	}
+}
+
+
+
+
+
 /**
  * 
  *  --- DRAW LINES ---

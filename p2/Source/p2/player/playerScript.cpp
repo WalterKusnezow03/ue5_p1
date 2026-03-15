@@ -38,8 +38,8 @@ AplayerScript::AplayerScript() : Super()
 void AplayerScript::BeginPlay()
 {
 	Super::BeginPlay();
-   
-    
+    playerInventory.Setup(CameraComponent);
+
     setTeam(teamEnum::playerTeam);
     setupBoneController();
     PickupDefaultWeaponOnBeginPlay();
@@ -270,7 +270,7 @@ void AplayerScript::Jump(){
  * allows the player to interact (for example picking up a weapon by pressing "E")
  */
 void AplayerScript::interact(){
-    if(IsPaused()){
+    if(InteractionBlockedPauseAndAnimation()){
         return;
     }
 	Super::interact(); //performs Raycast and sets AActor* interactedActorPointer!!
@@ -303,14 +303,11 @@ void AplayerScript::interact(){
 /// @brief drops the weapon from the inventory and bone controller and attaches the new weapon if
 /// possible
 void AplayerScript::drop(){
-    if(IsPaused()){
+    if(InteractionBlockedPauseAndAnimation()){
         return;
     }
     Super::drop();
-    //boneController.dropWeapon();
     playerInventory.dropWeapon();
-
-    
     boneController.dropCarriedItem();
 
 
@@ -323,7 +320,7 @@ void AplayerScript::drop(){
 }
 
 void AplayerScript::reload(){
-    if(IsPaused()){
+    if(InteractionBlockedPauseAndAnimation()){
         return;
     }
     Super::reload();
@@ -332,7 +329,7 @@ void AplayerScript::reload(){
 
 void AplayerScript::aim(){
     Super::aim();
-    if(IsPaused()){
+    if(InteractionBlockedPauseAndAnimation()){
         return;
     }
     
@@ -351,7 +348,7 @@ void AplayerScript::aim(){
  * shoot the weapon if needed or release. Method handles this automatically
  */
 void AplayerScript::shoot(){
-    if(IsPaused())
+    if(InteractionBlockedPauseAndAnimation())
     {
         //DebugHelper::showScreenMessage("GAME IS PAUSED!", FColor::Orange)        
         return;
@@ -360,12 +357,50 @@ void AplayerScript::shoot(){
     if(holding){ //checks if holding mouse down
         
         playerInventory.shoot();
-        float recoil = playerInventory.recoilValue(); 
-        DebugHelper::logMessageFloat("WeaponRecoil", recoil); //ok
-        addPendingRecoil(recoil * 10.0f);
+        ApplyRecoil();
+
     }else{
-        playerInventory.releaseShoot(); //abzug loslassen
+        //weil das drücken jetzt losgelassen wird
+        //können werfbare items weggeworfen werden
+        //der humanoid controller muss dazu informiert werden
+        //wenn ein throwable item tatsächlich vorliegt.
+        if(released){
+            released = false;
+            if(boneController.IsPerformingThrowItem()){
+                return;
+            }
+            playerInventory.releaseShoot(); // abzug loslassen
+
+
+
+
+
+            
+
+            //since a throwable is the current item, the new one must be attached and
+            //the other thrown away.
+            if(playerInventory.CurrentItemIsThrowable()){
+                //notify
+                Aweapon *spawnedNewItem = playerInventory.GetCurrenThrowablePointer(); //inner reload 
+                boneController.NotifyThrowItem(spawnedNewItem);
+
+                //reload newley spawned item
+                //boneController.attachOrReplaceCarriedItem(spawnedNewItem);
+
+
+                DebugHelper::logMessage("AplayerScript::NotifyThrowItem");
+                DebugHelper::showScreenMessage("AplayerScript::NotifyThrowItem");
+            }
+            
+        }
+        
     }
+}
+
+void AplayerScript::ApplyRecoil(){
+    float recoil = playerInventory.recoilValue(); 
+    DebugHelper::logMessageFloat("WeaponRecoil", recoil); //ok
+    addPendingRecoil(recoil * 10.0f);
 }
 
 
@@ -386,19 +421,29 @@ void AplayerScript::keydown4(){
 }
 
 void AplayerScript::switchToIndex(int index){
-    if(IsPaused()){
+    if(InteractionBlockedPauseAndAnimation()){
         return;
     }
     if(playerInventory.currentIndexNum() != index){
         //find index weapon in inventory, pickup
+        playerInventory.selectIndex(index);
+        
+        //even if null, it must be collected
+        //empty arms will be selected in this case.
 
         Aweapon *targetedWeapon = playerInventory.getItemPointerAtIndex(index);
-        if(targetedWeapon != nullptr){
+        boneController.attachOrReplaceCarriedItem(targetedWeapon);
+        
+        
+        
+        
+        
+        /*if(targetedWeapon != nullptr){
             //bone controller pickup
             pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
                 targetedWeapon
             );
-        }
+        }*/
     }
 }
 
@@ -502,6 +547,10 @@ void AplayerScript::addWingsuitVelocity(float DeltaTime){
 /// @return 
 bool AplayerScript::IsPaused(){
     return AworldLevel::gameStateManager.GameStateIsPaused();
+}
+
+bool AplayerScript::InteractionBlockedPauseAndAnimation(){
+    return IsPaused() || boneController.IsPerformingThrowItem();
 }
 
 void AplayerScript::openPauseMenu(){

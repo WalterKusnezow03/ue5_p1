@@ -14,8 +14,9 @@
 
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/boneTargetPair/HandBoneTargetPair.h"
 
-/// @brief will track all components. If a component is comapatible as bone, it will be animated.
-class IKHUMANOIDMODELL_API CarriedItemFingerPositionManager : public IPayloadInterface{
+/// @brief WILL TRACK ALL COMPONENTS FOR HANDS AND FINGERS TO REMOVE THIS FROM WEAPON / CARRIED ITEM!
+/// will track all components. If a component is comapatible as bone, it will be animated.
+class IKHUMANOIDMODELL_API CarriedItemHandComponentManager : public IPayloadInterface{
 
 public:
     // ---- instancing components helper, no BP needed ----
@@ -37,17 +38,28 @@ public:
     );
     
 
+    // --- package for skelleton ---
+    CarriedItemPositionData &getItemPositionDataRef();
 
-    // ---- data ----
-
-    CarriedItemFingerPositionManager();
-    ~CarriedItemFingerPositionManager();
-
-    void UpdateFrom(AActorBase *baseActor);
-    
+private:
+    //internal update data, must be renamed class!
+    CarriedItemPositionData updateDataForSkelleton;
     void UpdateContainer(
         CarriedItemPositionData &data
     );
+
+
+
+public:
+
+    // ---- data ----
+
+    CarriedItemHandComponentManager();
+    ~CarriedItemHandComponentManager();
+
+    void UpdateFrom(AActorBase *baseActor);
+    
+    
 
     static FString ToString(EArmType typeArm);
     static FString ToString(HandBoneIndexEnum index);
@@ -86,8 +98,7 @@ public:
         USceneComponent *scene
     );
 
-
-
+    USceneComponent *findPermanentTargetComponent(EArmType typeArm);
 
 private:
     

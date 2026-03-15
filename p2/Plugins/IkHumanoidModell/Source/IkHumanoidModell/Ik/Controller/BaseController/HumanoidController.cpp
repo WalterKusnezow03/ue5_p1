@@ -110,6 +110,13 @@ void HumanoidController::attachOrReplaceCarriedItem(IIkCarryInterface *newItem){
     //drop previous item from hand (needed here? unclear)
     dropItemFromEmptyActorHand();
 
+    if(newItem == nullptr){
+        if(emptyArmTargetActor){
+            attachOrReplaceCarriedItem(emptyArmTargetActor);
+        }
+        return;
+    }
+
     //remove old item if not same
     if(IIkCarryInterface *previousItem = CurrentPickedUpItem()){ //REFACTURE FOR METHOD
         if(newItem){
@@ -184,7 +191,13 @@ bool HumanoidController::TryInjectIntoEmptyIkCarryInterface(IIkCarryInterface *n
             return false;
         }
     }
+    if(!emptyArmTargetActor){
+        return false;
+    }
 
+    if(!newItem){
+        dropItemFromEmptyActorHand();
+    }
 
     if(emptyArmTargetActor && newItem){
         if(newItem->GetCarryType() == EIKCarryType::ECarryByHand){
@@ -428,4 +441,32 @@ void HumanoidController::OnDropUpdateAnimation(){
         UpdateEmptyArmTargetActorPickedUpFlag();
         emptyArmTargetActor->FireAnimation(EArmAnimationEnum::running);
     }
+}
+
+
+
+
+
+//--- notify throw item if possible ---
+void HumanoidController::NotifyThrowItem(IIkCarryInterface *newItemToAdd){
+    DebugHelper::logMessage("HumanoidController::ThrowItem A");
+    if (EmptyActorIsPickedUp() && emptyArmTargetActor)
+    {
+        DebugHelper::logMessage("HumanoidController::ThrowItem B");
+
+        //fire animation
+        emptyArmTargetActor->FireAnimation(EArmAnimationEnum::throwItem);
+
+        //queue next item
+        emptyArmTargetActor->InjectCarryByHandItem(newItemToAdd);
+    }
+}
+
+
+bool HumanoidController::IsPerformingThrowItem(){
+    if (EmptyActorIsPickedUp() && emptyArmTargetActor)
+    {
+        return emptyArmTargetActor->IsAnimationActive(EArmAnimationEnum::throwItem);
+    }
+    return false;
 }

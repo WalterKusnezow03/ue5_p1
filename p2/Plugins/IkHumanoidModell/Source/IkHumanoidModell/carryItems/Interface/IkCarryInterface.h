@@ -72,7 +72,12 @@ public:
 		return EIKCarryType::ECarryBySocket; //default
 	}
 
-	/// -- only for hand carried items like grenade, attached to hands, not hands to item --
+
+
+	/// ----- HAND CARRIED ------
+
+	/// -- ONLY FOR HAND CARRIED ITEMS (not socket.) --
+	/// like grenade, attached to hands, not hands to item --
 	/// @brief items attached to empty actor will receive the hand locations 
 	/// from the actor by this method, if the carry type is ECarryByHand.
 	virtual void UpdateLocalSceneTransformCarriedByHand(EArmType type, FVector &location, FRotator &rotation){
@@ -81,6 +86,11 @@ public:
 
 		}*/
 	}
+
+	virtual void MarkForApplyImpulse(FVector &direction){
+		//may only be implemented for throwable items
+	}
+
 
 
 };

@@ -11,7 +11,7 @@
 
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/IkCarryInterface.h"
-#include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemFingerPositionManager.h"
+#include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemHandComponentManager.h"
 
 //new
 //#include "GameCore/util/ActorBase/ActorBase.h"
@@ -46,7 +46,7 @@ public:
 	// Api
 
 	/// @brief pickup by player.
-	/// @param cameraIn 
+	/// @param cameraIn must be a camera to get the proper shooting direction!
 	void pickup(UCameraComponent *cameraIn);
 	void pickupBot(AActor *actorIn); //pickup for bot!
 
@@ -84,8 +84,10 @@ protected:
 	
 	void FindFingerComponentsOnBeginPlay();
 	
+	//internal saving of scene components for hands.
+	CarriedItemHandComponentManager handAndFingerPositionManager;
 
-	CarriedItemFingerPositionManager handAndFingerPositionManager;
+	//dispatched to bone controller for hand targets
 	CarriedItemPositionData internalCarriedItemPositionContainer;
 
 	//to be overriden!
@@ -146,5 +148,15 @@ protected:
 
 public:
 	FVector sightOffsetNoRotation();
-	
+
+
+protected:
+	UPROPERTY()
+	USceneComponent *rightHandSceneComponent = nullptr;
+
+	UPROPERTY()
+	USceneComponent *leftHandSceneComponent = nullptr;
+
+
+
 };

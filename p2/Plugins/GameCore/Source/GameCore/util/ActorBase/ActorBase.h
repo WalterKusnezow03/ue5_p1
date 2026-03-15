@@ -13,6 +13,7 @@ public:
 
     FVector worldToLocalPosition(const FVector &worldhit);
 
+    ///@brief finds all childs CONTAINING NAMEPART!
     void FindAllChildsByName(FString namepart, TArray<USceneComponent *> &container);
     void FindAllChildsByName(
         USceneComponent *comp,
@@ -26,7 +27,7 @@ public:
     template <typename T>
     void TFindAllChildsByName(FString name, TArray<T*> &outarray){
         TArray<USceneComponent *> found;
-        FindAllChildsByName(name, found);
+        FindAllChildsByName(name, found); //containing name part
         for (int i = 0; i < found.Num(); i++){
             if(USceneComponent *current = found[i]){
                 if(T* castedComponent = Cast<T>(current)){
@@ -36,9 +37,9 @@ public:
         }
     }
 
-    //is tested, finds by name, overrides empty ptr passed
+    //is tested, finds by name extact, overrides empty ptr passed
     template <typename T>
-    void TTryAssignByName(FString name, T *&ptrToAssign){
+    void TTryAssignByNameExact(FString name, T *&ptrToAssign){
         TArray<T *> array;
         TFindAllChildsByName(name, array);
         for (int i = 0; i < array.Num(); i++){
@@ -52,6 +53,29 @@ public:
             }
         }
     }
+
+    //first component to be triggered by substring is returned
+    template <typename T>
+    void TTryAssignByNameContains(FString subString, T *&ptrToAssign){
+        TArray<T *> array;
+        TFindAllChildsByName(subString, array);
+        for (int i = 0; i < array.Num(); i++){
+            if(T *current = array[i]){
+                if(USceneComponent *casted = Cast<T>(current)){
+                    if(casted->GetName().Contains(subString)){
+                        ptrToAssign = current;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+
 
 
     //find all by type

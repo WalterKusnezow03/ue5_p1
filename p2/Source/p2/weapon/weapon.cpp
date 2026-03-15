@@ -85,8 +85,10 @@ float Aweapon::calculateRpm(int rpm){
 void Aweapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	setupAnimations(); //sets up the animations from bp and finds all skeletal components
+
+	setupAllComponentsAndAnimationsOnBeginPlay();
+
+
 	enableCollider(true);
 	isVisible = true; //inital setting of visibilty, do not remove!
 
@@ -116,6 +118,7 @@ void Aweapon::Tick(float DeltaTime)
 	TickKickback(DeltaTime);
 	TickVerschlussKickBack(DeltaTime);
 	TickSway(DeltaTime);
+	NiagaraTickAll(DeltaTime);
 }
 
 
@@ -268,9 +271,6 @@ bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum
 		resetCoolTime(cooldownTime());
 		bulletsInMag--;
 
-
-
-
 		bool traceComplex = false;
 		FHitResult HitResult;
 		FVector outputHitPointIgnored;
@@ -319,6 +319,9 @@ bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum
 			float distance = 50000; //50 * 100cm = 50m
 			AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
 		}
+		NiagaraTriggerMuzzleFlash();
+
+
 
 		return bHit;
 	}
@@ -650,14 +653,19 @@ void Aweapon::LoadAnimationsFromAssetManager(){
 
 
 /// @brief setups all components for the animations
-void Aweapon::setupAnimations()
+void Aweapon::setupAllComponentsAndAnimationsOnBeginPlay()
 {
 	LoadAnimationsFromAssetManager();
+	findAllSkeletalAndSceneComponents();
+}
 
-	FString s;
-	// Find all components of type USkeletalMeshComponent attached to this actor
+void Aweapon::findAllSkeletalAndSceneComponents(){
+	findAllSkeletalComponents();
+	findAllNiagaraComponents();
+}
 
-    TArray<USkeletalMeshComponent*> SkeletalMeshComponents; //create t array
+void Aweapon::findAllSkeletalComponents(){
+	TArray<USkeletalMeshComponent*> SkeletalMeshComponents; //create t array
     GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents); // ask actor for components
 
     // Add each component to the output array
@@ -680,8 +688,42 @@ void Aweapon::setupAnimations()
 			}
 		}
 	}
-    
 }
+
+void Aweapon::findAllNiagaraComponents(){
+	TTryAssignByNameContains<UNiagaraComponentCustom>(
+		"niagaraMuzzleFlash",
+		niagaraMuzzleFlash
+	);
+	if(niagaraMuzzleFlash){
+		niagaraMuzzleFlash->timeOfEffect = cooldownTime();
+		niagaraMuzzleFlash->StopEffectImmediate();
+	}
+}
+
+void Aweapon::NiagaraTickAll(float deltatime){
+	if(niagaraMuzzleFlash){
+		niagaraMuzzleFlash->TickExternal(deltatime);
+	}
+}
+
+
+
+
+void Aweapon::NiagaraTriggerMuzzleFlash(){
+	if(niagaraMuzzleFlash){
+		niagaraMuzzleFlash->ResetAndRestart();
+	}
+}
+
+
+
+
+
+
+
+
+
 
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
@@ -708,10 +750,8 @@ void Aweapon::shootAnimation(){
 /// @brief plays the reload animation
 void Aweapon::reloadAnimation(){
 	if(magSkeletonPointer != nullptr){
-		//playAnimation(magAnimPath, magSkeletonPointer, reloadTime);
+		//play animation on skeletal mesh component with the UAnimation Sequence.
 		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime());
-
-		
 	}
 }
 

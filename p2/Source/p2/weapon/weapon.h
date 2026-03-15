@@ -18,6 +18,7 @@
 #include "CoreMath/animation/timer/PayloadTimer.h"
 #include "p2/weapon/sway/SwayInterpolator.h"
 #include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
+#include "GameCore/Niagara/NiagaraComponentCustom.h"
 
 #include "weapon.generated.h"
 
@@ -84,7 +85,7 @@ public:
 	virtual void shoot(); //PLAYER SHOOT METHOD --> can be overriden for subclasses
 	virtual void shootBot(FVector target); //BOT SHOOT METHOD --> can be overriden for subclasses
 
-	void releaseShoot();
+	virtual void releaseShoot();
 	virtual void aim(bool aimstatus);
 
 	bool isCooling();
@@ -181,7 +182,9 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//void followPlayer();
+	
+
+	// void followPlayer();
 	void updateCooltime(float time);
 	void resetCoolTime(float time);
 	float calculateRpm(int rpm);
@@ -201,8 +204,11 @@ protected:
 
 	
 	
-	void setupAnimations();
+	void setupAllComponentsAndAnimationsOnBeginPlay();
 	void LoadAnimationsFromAssetManager();
+	void findAllSkeletalAndSceneComponents();
+	void findAllSkeletalComponents();
+	void findAllNiagaraComponents();
 
 	//plays any anim
 	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
@@ -249,6 +255,13 @@ protected:
 	
 
 	int damageForAmmunitionType();
+
+
+	// --- niagara components: ---
+	class UNiagaraComponentCustom *niagaraMuzzleFlash = nullptr;
+
+	void NiagaraTriggerMuzzleFlash();
+	void NiagaraTickAll(float deltatime);
 
 public:
 	void applySight(weaponAttachmentEnum sight);

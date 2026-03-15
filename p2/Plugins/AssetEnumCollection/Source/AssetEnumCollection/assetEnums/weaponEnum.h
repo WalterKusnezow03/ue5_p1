@@ -13,5 +13,6 @@ enum class weaponEnum
 	assaultRifle,
 	pistol,
 	thrower,
-	C4
+	C4,
+	grenade,
 };

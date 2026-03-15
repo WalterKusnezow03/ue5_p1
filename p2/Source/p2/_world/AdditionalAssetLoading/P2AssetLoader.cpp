@@ -186,6 +186,15 @@ void P2AssetLoader::loadWeapons(){
         "Prefabs/Weapons/c4", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "c4BP"                // Just the file name as displayed
     );
+
+
+    
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::grenade,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/grenade", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "throwableGrenadeBP"                // Just the file name as displayed
+    );
 }
 
 void P2AssetLoader::loadWeaponAnimations(){

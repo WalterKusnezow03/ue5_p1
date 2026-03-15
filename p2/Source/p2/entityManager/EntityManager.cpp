@@ -111,9 +111,6 @@ void EntityManager::add(Aweapon *weaponIn){
         weaponIn->SetActorLocation(hiddenLocation);
         weaponIn->showWeapon(false);
         
-        
-        
-        
         weaponEnum type = weaponIn->weaponType();
         
         AGcLauncher *gc = AGcLauncher::Instance();

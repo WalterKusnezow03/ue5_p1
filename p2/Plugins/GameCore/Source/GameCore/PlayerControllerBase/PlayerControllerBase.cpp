@@ -370,13 +370,14 @@ void APlayerControllerBase::setHolding(bool h){
 
 
 void APlayerControllerBase::leftMouseDown(){
-    setHolding(true);
+    holding = true;
+    released = false;
 }
 
 void APlayerControllerBase::leftMouseUp(){
-    setHolding(false);
+    holding = false;
+    released = true;
 }
-
 
 void APlayerControllerBase::setTeam(teamEnum teamIn){
     this->team = teamIn;

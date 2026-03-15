@@ -32,6 +32,7 @@ public:
     virtual void Tick(float deltatime);
     void attachOrReplaceCarriedItem(IIkCarryInterface *ptr);
     void dropCarriedItem();
+    bool IsPerformingThrowItem();
 
     //add owning actor to be ignored from collision for trajectory grounding
     void raycastIgnoreOwner(AActor *actor);
@@ -68,6 +69,8 @@ public:
     /// Call after AFTER Setup - Internal Bones not setup before!
     void setDamagedOwner(IDamageinterface *damagedOwnerIn);
 
+    //throwing a item (by player for now.)
+    void NotifyThrowItem(IIkCarryInterface *nextItem);
 
 public:
     //enable collapse physics

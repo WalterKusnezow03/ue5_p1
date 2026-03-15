@@ -35,8 +35,6 @@ void AthrowerWeapon::Tick(float deltaTime){
     if(throwableActorPointer != nullptr){
         throwableActorPointer->SetActorLocation(GetActorLocation());
         throwableActorPointer->SetActorRotation(GetActorRotation());
-
-        DebugHelper::showLineBetween(GetWorld(), GetActorLocation(), throwableActorPointer->GetActorLocation(), FColor::Red);
     }
 }
 
@@ -148,8 +146,6 @@ ammunitionEnum AthrowerWeapon::getAmmunitionType(){
     switch(throwableTypeToThrow){
     case throwableEnum::greneade_enum:
         return ammunitionEnum::grenade_ammunition;
-    case throwableEnum::rocket_enum:
-        return ammunitionEnum::rpg_ammunition;
     case throwableEnum::molotov_enum:
         return ammunitionEnum::molotov_ammunition;
     }

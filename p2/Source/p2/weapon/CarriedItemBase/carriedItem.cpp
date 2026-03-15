@@ -230,9 +230,7 @@ void AcarriedItem::leftMouseUp(){
 // ---- IK INTERFACE API ----
 // NEW IK HUMANOID ITEM POSITION DATA, data held by carried item
 CarriedItemPositionData &AcarriedItem::getItemPositionDataRef(){
-	//update containe, all scenes (hand and fingers are tracked inside!)
-	handAndFingerPositionManager.UpdateContainer(internalCarriedItemPositionContainer);
-	return internalCarriedItemPositionContainer;
+	return handAndFingerPositionManager.getItemPositionDataRef();
 }
 
 FIKCarryInterfaceAxisConstraint &AcarriedItem::getAxisConstraint(){

@@ -42,7 +42,7 @@ public:
 		FString falseString,
 		FColor trueColor,
 		FColor falseColor
-	) ;
+	);
 
 
 	//Log Messages
@@ -53,6 +53,11 @@ public:
 	static void logMessage(FString s, FVector a, FVector b);
 	static void logMessage(FString s, FVector a);
 	static void logMessage(FString s, FString t);
+	static void logMessage(
+		bool flag,
+		FString trueString,
+		FString falseString
+	);
 	static FString FVectorToString(FVector vec);
 
 	//time

@@ -7,12 +7,13 @@
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/EArmAnimationEnum.h"
 #include "IkHumanoidModell/carryItems/container/CarriedItemPositionData.h"
 #include "IkHumanoidModell/carryItems/Interface/EmptyActor/FArmAnimationPair.h"
-#include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemFingerPositionManager.h"
+#include "IkHumanoidModell/carryItems/Interface/EmptyActor/FingerPositions/CarriedItemHandComponentManager.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "GameCore/util/ActorBase/ActorBase.h"
 
 #include "IKCarryInterfaceAnimatedActor.generated.h"
 
+/// --- EMPTY ARM TARGET ACTOR ---
 //will hold an animation and animate the actor scene components
 //instead of carrying a raw item, it will be invisible
 //actors will be attachable (carry a greande, throwing, states switchable)
@@ -64,6 +65,7 @@ public:
 	// animation fire
 	virtual void FireAnimation(EArmAnimationEnum id);
 	virtual void StopAnimation();
+	bool IsAnimationActive(EArmAnimationEnum id);
 	// animation fire
 
 	//hand attached items
@@ -72,9 +74,14 @@ public:
 	void EjectCarryByHandItem();
 	//hand attached items
 
+
+
+
 	//picked up flag to animate or not
 	void SetIsPickedUpFlag(bool flag);
 	void SetDebugPlayerAnimatedActor(bool flag);
+
+
 
 protected:
 
@@ -91,8 +98,21 @@ protected:
 	//update scenes to adapt to animated hand components
 	void TickUpdateAttachedItemLocalTransform(EArmType type);
 
-	//to be replaced with eject info
-	IIkCarryInterface *attachedItemDebug = nullptr;
+	//carried item by hand
+	IIkCarryInterface *attachedHandCarriedItem = nullptr;
+
+	//qeued carried item if current is thrown away by animation
+	IIkCarryInterface *qeuedForPickupAttachedHandCarriedItem = nullptr;
+
+
+	bool ActiveAnimationIsThrowingItemAnimation();
+
+	//only call on any animation finish to check whether to inject the next item.
+	void ApplyImpulseToCarriedItemIfThrowFinished();
+	void PickupQeuedItemIfThrowFinished();
+
+
+
 
 	//updates for lower arm direction resulting in 
 	//attached item rotation being orthogonal to arm direction
@@ -140,19 +160,17 @@ protected:
 
 	// -- components update --
 	void UpdateHandComponentLocation(EArmType typeArm, FVector &location);
-	
-	void UpdateHandComponentRotation(EArmType typeArm, FVector &location);
+	void UpdateHandComponentRotation(EArmType typeArm, FVector &rotationDirection);
 	void UpdateHandComponentRotation(EArmType typeArm, FRotator &rotation);
+
+	void LogCurrentAnimationStatus();
+
+
+
 	
-
-
-
-
-
 
 	//position data to update based on animation
-	CarriedItemPositionData itemPositionData;
-	CarriedItemFingerPositionManager handAndFingerPositionManager;
+	CarriedItemHandComponentManager handAndFingerPositionManager;
 
 	void InitAxisConstraintEmpty();
 	FIKCarryInterfaceAxisConstraint axisConstraintNone;
@@ -164,4 +182,8 @@ protected:
 	bool hasMovedFlag = false;
 	float distSquaredMovedFlag = 4.0f;
 	void UpdateHasMovedFlag(const FVector &location);
+
+
+	//not lösung!
+	FVector ThrowingDirectionOfItem();
 };	

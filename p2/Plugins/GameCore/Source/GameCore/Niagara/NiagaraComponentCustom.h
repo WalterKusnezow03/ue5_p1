@@ -25,15 +25,17 @@ public:
     virtual void TickExternal(float DeltaTime);
 
     void StartEffect();
-    void StopEffect();
+    
     void StopEffectImmediate();
     void Reset();
+
+    void ResetAndRestart();
 
     bool IsFinished();
 
 protected:
     Timer timer;
-    bool isActiveFlag = false;
+    bool timerFinshed = true; //true on begin.
 
    
 

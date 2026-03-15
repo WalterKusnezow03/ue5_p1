@@ -1,6 +1,7 @@
 #include "C4Item.h"
 #include "p2/weapon/CarriedItemBase/carriedItem.h"
-
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 
 AC4Item::AC4Item() : Super() {
 
@@ -103,13 +104,13 @@ void AC4Item::aim(bool aimstatus){
 }
 
 void AC4Item::FindComponentsOnBeginPlay(){
-    TTryAssignByName<USceneComponent>("trigger", triggerSceneComponent); //from detonator
-    TTryAssignByName<USceneComponent>("detonatorScene", detonatorSceneComponent);
+    TTryAssignByNameExact<USceneComponent>("trigger", triggerSceneComponent); //from detonator
+    TTryAssignByNameExact<USceneComponent>("detonatorScene", detonatorSceneComponent);
 
-    TTryAssignByName<USceneComponent>("c4scene", c4SceneComponent);
-    TTryAssignByName<USceneComponent>("c4LightComponent", c4light);
+    TTryAssignByNameExact<USceneComponent>("c4scene", c4SceneComponent);
+    TTryAssignByNameExact<USceneComponent>("c4LightComponent", c4light);
 
-    TTryAssignByName<UPointLightComponent>("PointLight", c4PointLight);
+    TTryAssignByNameExact<UPointLightComponent>("PointLight", c4PointLight);
     
     //debug
     FString found = c4PointLight ? TEXT("AC4Item::c4PointLight Found!") : TEXT("AC4Item::c4PointLight NOT FOUND");

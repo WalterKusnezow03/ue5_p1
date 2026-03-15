@@ -96,7 +96,7 @@ FString IKAnimationAssetLoader::InnerPath(){
 bool IKAnimationAssetLoader::AnimationToString(EArmAnimationEnum type, FString &outString){
     std::map<EArmAnimationEnum, FString> animationStrings;
     animationStrings[EArmAnimationEnum::running] = "RunningAnimation";
-    animationStrings[EArmAnimationEnum::throwItem] = "ThrowItemAnimation";
+    animationStrings[EArmAnimationEnum::throwItem] = "ThrowingAnimation";
     if(animationStrings.find(type) != animationStrings.end()){
         outString = animationStrings[type];
         return true;

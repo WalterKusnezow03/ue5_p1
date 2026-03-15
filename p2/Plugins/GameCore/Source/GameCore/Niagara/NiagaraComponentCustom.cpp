@@ -9,9 +9,16 @@ UNiagaraComponentCustom::UNiagaraComponentCustom() : Super()
 
 void UNiagaraComponentCustom::TickExternal(float DeltaTime){
     if(!isInfinite){
+        if(timerFinshed){ //not restarted yet.
+            Reset();
+            return;
+        }
+
         timer.Tick(DeltaTime);
         if(timer.timesUp()){
-            StopEffect();
+            // StopEffect();
+            timerFinshed = true;
+            Reset();
         }
     }
 }
@@ -23,19 +30,17 @@ bool UNiagaraComponentCustom::IsFinished(){
 
 void UNiagaraComponentCustom::StartEffect()
 {
-    if(!isActiveFlag){
-        Activate(true);
-        
-        if(!isInfinite){
-            timer.Begin(timeOfEffect);
-        }
+    Activate(true);
+    if(!isInfinite){
+        timer.Begin(timeOfEffect);
+        timerFinshed = false;
     }
 }
 
-void UNiagaraComponentCustom::StopEffect()
+/*void UNiagaraComponentCustom::StopEffect()
 {
     Deactivate();
-}
+}*/
 
 void UNiagaraComponentCustom::StopEffectImmediate()
 {
@@ -43,7 +48,13 @@ void UNiagaraComponentCustom::StopEffectImmediate()
 }
 
 void UNiagaraComponentCustom::Reset(){
-    DeactivateImmediate();
+    StopEffectImmediate();
     ResetSystem();
-    StopEffect();
+    StopEffectImmediate();
+}
+
+
+void UNiagaraComponentCustom::ResetAndRestart(){
+    Reset();
+    StartEffect();
 }

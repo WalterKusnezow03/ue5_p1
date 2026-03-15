@@ -21,7 +21,6 @@ FArmAnimationPair &FArmAnimationPair::operator=(const FArmAnimationPair &other){
     if(this != &other){
         animationMap = other.animationMap;
         typeSaved = other.typeSaved;
-
         axisConstraint = other.axisConstraint;
     }
     return *this;

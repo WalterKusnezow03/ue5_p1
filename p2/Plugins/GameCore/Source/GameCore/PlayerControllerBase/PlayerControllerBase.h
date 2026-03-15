@@ -87,9 +87,9 @@ protected:
     teamEnum team;
 
 	bool aiming;
-	bool holding;
+	bool holding; //holding left mouse down
+	bool released; //released left mouse down
 	bool sprinting;
-	
 
 	void sprint();
 	static const int BASE_SPEED = 600;

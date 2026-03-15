@@ -1,8 +1,8 @@
-#include "CarriedItemFingerPositionManager.h"
+#include "CarriedItemHandComponentManager.h"
  
 /// ---- instancing ----
 
-USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
+USceneComponent *CarriedItemHandComponentManager::CreateComponent(
     EArmType type, 
     USceneComponent *attachTo,
     AActor *actorOwner
@@ -11,7 +11,7 @@ USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
     return CreateComponent(name, attachTo, actorOwner);
 }
 
-USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
+USceneComponent *CarriedItemHandComponentManager::CreateComponent(
     EArmType type, 
     HandBoneIndexEnum index, 
     USceneComponent *attachTo,
@@ -21,7 +21,7 @@ USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
     return CreateComponent(name, attachTo, actorOwner);
 }
 
-USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
+USceneComponent *CarriedItemHandComponentManager::CreateComponent(
     FString name, 
     USceneComponent *attachTo,
     AActor *actorOwner
@@ -40,15 +40,15 @@ USceneComponent *CarriedItemFingerPositionManager::CreateComponent(
 // ---- Manager ----
 
 
-CarriedItemFingerPositionManager::CarriedItemFingerPositionManager(){
+CarriedItemHandComponentManager::CarriedItemHandComponentManager(){
 
 }
 
-CarriedItemFingerPositionManager::~CarriedItemFingerPositionManager(){
+CarriedItemHandComponentManager::~CarriedItemHandComponentManager(){
 
 }
 
-bool CarriedItemFingerPositionManager::HasType(FString message, EArmType &typeArm){
+bool CarriedItemHandComponentManager::HasType(FString message, EArmType &typeArm){
     if(message.Contains("lefthand")){
         typeArm = EArmType::ELeft;
         return true;
@@ -60,7 +60,7 @@ bool CarriedItemFingerPositionManager::HasType(FString message, EArmType &typeAr
     return false;
 }
 
-FString CarriedItemFingerPositionManager::ToString(EArmType typeArm){
+FString CarriedItemHandComponentManager::ToString(EArmType typeArm){
     std::map<EArmType, FString> armName;
     armName[EArmType::ELeft] = "lefthand";
     armName[EArmType::ERight] = "righthand";
@@ -72,7 +72,7 @@ FString CarriedItemFingerPositionManager::ToString(EArmType typeArm){
     return TEXT("NONE");
 }
 
-FString CarriedItemFingerPositionManager::ToString(HandBoneIndexEnum index){
+FString CarriedItemHandComponentManager::ToString(HandBoneIndexEnum index){
     std::map<HandBoneIndexEnum, FString> fingerName;
     fingerName[HandBoneIndexEnum::thumb] = "thumb";
     fingerName[HandBoneIndexEnum::finger1] = "finger1";
@@ -87,15 +87,15 @@ FString CarriedItemFingerPositionManager::ToString(HandBoneIndexEnum index){
     return TEXT("NONE");
 }
 
-FString CarriedItemFingerPositionManager::ToString(EArmType typeArm, HandBoneIndexEnum index){
+FString CarriedItemHandComponentManager::ToString(EArmType typeArm, HandBoneIndexEnum index){
     return ToString(typeArm) + ToString(index);
 }
 
-FString CarriedItemFingerPositionManager::ResetMessage(EArmType typeArm){
+FString CarriedItemHandComponentManager::ResetMessage(EArmType typeArm){
     return TEXT("reset") + ToString(typeArm);
 }
 
-void CarriedItemFingerPositionManager::UpdateFrom(AActorBase *baseActor){
+void CarriedItemHandComponentManager::UpdateFrom(AActorBase *baseActor){
     OverridePermanentTargetComponent(EArmType::ELeft, HandBoneIndexEnum::thumb, baseActor);
     OverridePermanentTargetComponent(EArmType::ELeft, HandBoneIndexEnum::finger1, baseActor);
     OverridePermanentTargetComponent(EArmType::ELeft, HandBoneIndexEnum::finger2, baseActor);
@@ -116,15 +116,22 @@ void CarriedItemFingerPositionManager::UpdateFrom(AActorBase *baseActor){
 
 
 
+// --- package for skelleton ---
+CarriedItemPositionData &CarriedItemHandComponentManager::getItemPositionDataRef(){
+    UpdateContainer(updateDataForSkelleton);
+    return updateDataForSkelleton;
+}
 
-void CarriedItemFingerPositionManager::UpdateContainer(
+
+
+void CarriedItemHandComponentManager::UpdateContainer(
     CarriedItemPositionData &data
 ){
     UpdateContainer(data, EArmType::ELeft);
     UpdateContainer(data, EArmType::ERight);
 }
 
-void CarriedItemFingerPositionManager::UpdateContainer(
+void CarriedItemHandComponentManager::UpdateContainer(
     CarriedItemPositionData &data,
     EArmType typeArm
 ){
@@ -138,7 +145,7 @@ void CarriedItemFingerPositionManager::UpdateContainer(
     );
 }
 
-USceneComponent *CarriedItemFingerPositionManager::GetComponentStatic(
+USceneComponent *CarriedItemHandComponentManager::GetComponentStatic(
     EArmType typeArm
 ){
     if(handMap.find(typeArm) != handMap.end()){
@@ -147,7 +154,7 @@ USceneComponent *CarriedItemFingerPositionManager::GetComponentStatic(
     return nullptr;
 }
 
-FVector CarriedItemFingerPositionManager::FindLocation(EArmType type){
+FVector CarriedItemHandComponentManager::FindLocation(EArmType type){
     if(HasTemporaryTarget(type)){
         return handMapTemporary[type].boneLocation();
     }
@@ -163,7 +170,7 @@ FVector CarriedItemFingerPositionManager::FindLocation(EArmType type){
 
 
 
-FVector CarriedItemFingerPositionManager::FindLocation(
+FVector CarriedItemHandComponentManager::FindLocation(
     EArmType typeArm, 
     HandBoneIndexEnum index
 ){
@@ -181,14 +188,14 @@ FVector CarriedItemFingerPositionManager::FindLocation(
 
 
 
-void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
+void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
     EArmType typeArm, 
     HandBoneIndexEnum index,
     AActorBase *baseActor
 ){
     if(baseActor){
         USceneComponent *scene = nullptr;
-        baseActor->TTryAssignByName<USceneComponent>(
+        baseActor->TTryAssignByNameExact<USceneComponent>(
             ToString(typeArm, index),
             scene
         );
@@ -199,7 +206,7 @@ void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
 }
 
 
-void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
+void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
     EArmType typeArm, 
     HandBoneIndexEnum index,
     USceneComponent *scene
@@ -214,7 +221,7 @@ void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
 
 
 
-void CarriedItemFingerPositionManager::GetComponents(
+void CarriedItemHandComponentManager::GetComponents(
     EArmType type, 
     TArray<USceneComponent*> &outArray
 ){
@@ -226,7 +233,7 @@ void CarriedItemFingerPositionManager::GetComponents(
 }
 
 
-USceneComponent *CarriedItemFingerPositionManager::GetComponent(
+USceneComponent *CarriedItemHandComponentManager::GetComponent(
     EArmType typeArm, 
     HandBoneIndexEnum index
 ){
@@ -243,13 +250,13 @@ USceneComponent *CarriedItemFingerPositionManager::GetComponent(
 
 //hand 
 
-void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
+void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
     EArmType typeArm, 
     AActorBase *baseActor
 ){
     if(baseActor){
         USceneComponent *scene = nullptr;
-        baseActor->TTryAssignByName<USceneComponent>(
+        baseActor->TTryAssignByNameExact<USceneComponent>(
             ToString(typeArm),
             scene
         );
@@ -260,18 +267,22 @@ void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
 }
 
 
-void CarriedItemFingerPositionManager::OverridePermanentTargetComponent(
+void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
     EArmType typeArm, 
     USceneComponent *scene
 ){
     handMap[typeArm] = scene;
 }
 
-
-
+USceneComponent *CarriedItemHandComponentManager::findPermanentTargetComponent(EArmType typeArm){
+    if(handMap.find(typeArm) != handMap.end()){
+        return handMap[typeArm];
+    }
+    return nullptr;
+}
 
 /// ---- temporary follow handle ----
-Payload CarriedItemFingerPositionManager::UpdateTemporaryTargetWithPaylaod(
+Payload CarriedItemHandComponentManager::UpdateTemporaryTargetWithPaylaod(
     EArmType typearm, 
     USkeletalMeshComponent *comp,
     FString boneName
@@ -282,7 +293,7 @@ Payload CarriedItemFingerPositionManager::UpdateTemporaryTargetWithPaylaod(
     return payload;
 }
 
-void CarriedItemFingerPositionManager::UpdateTemporaryTarget(
+void CarriedItemHandComponentManager::UpdateTemporaryTarget(
     EArmType typeArm, 
     USkeletalMeshComponent *comp,
     FString boneName
@@ -293,7 +304,7 @@ void CarriedItemFingerPositionManager::UpdateTemporaryTarget(
     }
 }
 
-void CarriedItemFingerPositionManager::ResetTemporaryTarget(EArmType typeArm){
+void CarriedItemHandComponentManager::ResetTemporaryTarget(EArmType typeArm){
     if(HasTemporaryTarget(typeArm)){
         handMapTemporary[typeArm].disable();
     }
@@ -301,12 +312,12 @@ void CarriedItemFingerPositionManager::ResetTemporaryTarget(EArmType typeArm){
 
 
 
-bool CarriedItemFingerPositionManager::HasTemporaryTarget(EArmType typeArm){
+bool CarriedItemHandComponentManager::HasTemporaryTarget(EArmType typeArm){
     CreateTemporaryTargetIfNeeded(typeArm);
     return handMapTemporary[typeArm].isEnabled();
 }
 
-void CarriedItemFingerPositionManager::CreateTemporaryTargetIfNeeded(EArmType typeArm){
+void CarriedItemHandComponentManager::CreateTemporaryTargetIfNeeded(EArmType typeArm){
     if(handMapTemporary.find(typeArm) == handMapTemporary.end()){
         handMapTemporary[typeArm] = HandBoneTargetPair();
     }
@@ -314,7 +325,7 @@ void CarriedItemFingerPositionManager::CreateTemporaryTargetIfNeeded(EArmType ty
 
 
 //notify reset target
-void CarriedItemFingerPositionManager::Notify(FString message){
+void CarriedItemHandComponentManager::Notify(FString message){
     //react to socket change
     EArmType armFound;
     if (HasType(message, armFound) && MessageIsTargetReset(message)){
@@ -322,6 +333,6 @@ void CarriedItemFingerPositionManager::Notify(FString message){
     }
 }
 
-bool CarriedItemFingerPositionManager::MessageIsTargetReset(FString message){
+bool CarriedItemHandComponentManager::MessageIsTargetReset(FString message){
     return message.Contains("reset");
 }

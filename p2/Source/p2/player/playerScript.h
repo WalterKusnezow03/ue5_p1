@@ -56,6 +56,7 @@ protected:
 
 	///overriden from base class!
 	virtual bool IsPaused() override;
+	bool InteractionBlockedPauseAndAnimation();
 
 public:	
 	// Called every frame
@@ -96,7 +97,7 @@ private:
 	void TickWeaponSway();
 
 	void shoot();
-	
+	void ApplyRecoil();
 
 	void keydown1();
 	void keydown2();

@@ -11,6 +11,9 @@ FString WeaponEnumStringConverter::toString(weaponEnum type){
     if(type == weaponEnum::C4){
         name = FString::Printf(TEXT("C4"));
     }
+    if(type == weaponEnum::grenade){
+        name = FString::Printf(TEXT("Grenade"));
+    }
     return name;
 }
 
@@ -19,7 +22,8 @@ std::vector<weaponEnum> WeaponEnumStringConverter::AllWeaponTypes(){
         weaponEnum::assaultRifle,
         weaponEnum::pistol,
         weaponEnum::thrower,
-        weaponEnum::C4
+        weaponEnum::C4,
+        weaponEnum::grenade
     };
     return output;
 }

@@ -5,7 +5,12 @@
 #include "p2/weapon/weapon.h"
 #include "p2/weapon/ammunitionEnum.h"
 #include <map>
-#include "p2/player/inventory/InventorySlot.h"
+#include "p2/player/inventory/Slots/InventorySlot.h"
+#include "Camera/CameraComponent.h"
+
+#include "p2/player/inventory/InventorySubdevide/WeaponInventory.h"
+#include "p2/player/inventory/InventorySubdevide/ThrowableInventory.h"
+
 #include "CoreMinimal.h"
 
 class UWidgetEntityLootPayload;
@@ -15,14 +20,24 @@ class UWidgetEntityLootPayload;
  */
 class P2_API PlayerInventory
 {
+
+protected:
+	WeaponInventory weaponInventory;
+	ThrowableInventory throwableInventory;
+
 public:
 	PlayerInventory();
 	~PlayerInventory();
+
+	void Setup(UCameraComponent *cameraIn);
 
 	void shoot();
 	void aim(bool aim);
 	void releaseShoot();
 	void dropWeapon();
+
+	
+	Aweapon *GetCurrenThrowablePointer();
 
 	bool CurrentWeaponHasAimDisplacement();
 
@@ -40,6 +55,7 @@ public:
 
 	Aweapon *getItemPointer();
 	Aweapon *getItemPointerAtIndex(int index);
+	bool CurrentItemIsThrowable();
 
 	//ui interface
 	int currentAmmunition();
@@ -48,31 +64,28 @@ public:
 	
 
 	///@brief current index in inventory selected
-	int currentIndexNum();
+	int currentIndexNum(){
+		return currentIndex;
+	}
 
 	void Collect(UWidgetEntityLootPayload *payload);
 
 private:
+	void logMessage();
+
+	int TotalSizeInventory();
 	void UpdateShowWeapon();
 	InventorySlot &CurrentSlotRef();
 	int ValidateIndex(int index);
 
-	/// @brief stored on heap because copy constructor must be const, NOT wanted here!
-	TArray<InventorySlot> weaponVector;
-	InventorySlot fallback;
+	
 	int currentIndex;
-
-	int ammunition;
 
 	bool currentIndexIsValid();
 	bool indexIsValid(int index);
 
-	void addToAmmunition(ammunitionEnum type, int amount);
-	int getFromAmmunition(ammunitionEnum type, int amount);
-
-	std::map<ammunitionEnum, int> ammunitionMap;
-
-	
+	int IndexInWeaponInventory(int index);
+	int IndexInThrowableInventory(int index);
 
 	bool alreadyInInventory(Aweapon *weaponIn, int &foundindex);
 };

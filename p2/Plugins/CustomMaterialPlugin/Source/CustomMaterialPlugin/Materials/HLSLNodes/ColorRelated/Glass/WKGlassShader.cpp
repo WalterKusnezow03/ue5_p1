@@ -18,6 +18,9 @@ void UWKGlassShader::SetupInputsOnConstruct(){
         customExpression->Inputs.Add(FCustomInput{TEXT("Normal")});
         customExpression->Inputs.Add(FCustomInput{TEXT("ViewDir")});
         customExpression->Inputs.Add(FCustomInput{TEXT("IOR")});
+        
+        customExpression->Inputs.Add(FCustomInput{TEXT("ColorMix")});
+        customExpression->Inputs.Add(FCustomInput{TEXT("ColorMixScalar")});
     }
     
 }
@@ -68,7 +71,23 @@ void UWKGlassShader::SetupInternalExpressionsOnConstruct()
             float3 refrDir = (k < 0) ? float3(0,0,0) : etaRatio * V + (etaRatio * cosi - sqrt(k)) * n;
 
             // -- output --
-            return float4(refrDir * fresnel, 1.0);
+            float4 colorBase = float4(refrDir * fresnel, 1.0);
+
+            //check color mix val
+            if(ColorMixScalar < 0.0){
+                ColorMixScalar = 0.0;
+            }
+            if(ColorMixScalar > 1.0){
+                ColorMixScalar = 1.0;
+            }
+
+
+
+            float scalarInvert = 1.0 - ColorMixScalar;
+            
+            float4 result = ColorMix * ColorMixScalar + scalarInvert * colorBase;
+            return result;
+
         )");
     }
 }
