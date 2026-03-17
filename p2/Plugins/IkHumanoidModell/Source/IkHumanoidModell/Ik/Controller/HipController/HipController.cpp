@@ -119,6 +119,8 @@ bool HipController::groundedByDistance(){
     return false;
 }
 
+
+
 void HipController::Tick(float deltatime){
     if(collapseEnabledFlag){
         TickCollapsePhysics(deltatime);
@@ -417,6 +419,9 @@ void HipController::setupForwardInterpolation(){
     //no gravity at all. More consitent.
     dynamicMotionTime = motionTime;
 
+    //copy for IK hand interface
+    FlagUpdatedMotionTimeForArmAnimation(dynamicMotionTime);
+
     interpolatorForwardWorld.setHermiteSplineFlag(true);
     interpolatorForwardWorld.setTarget(
         currentEndEffector,
@@ -427,6 +432,7 @@ void HipController::setupForwardInterpolation(){
 
     //interpolatorForwardWorld.setTarget(currentEndEffector, worldTrajectoryProjected, motionTime);
 }
+
 
 void HipController::ApplyVelocityToLocalTrajectory(FVector &localTrajectory){
     //move local trajectory into rotation space: apply velocity offset, 
@@ -1179,4 +1185,35 @@ void HipController::TickCollapsePhysics(float deltatime){
     rootJoint.TickAndBuildRecursive(deltatime);
     
     //rootJoint.logGroundedState("HipController::", FColor::Cyan);
+}
+
+
+
+
+FVector HipController::GetVelocity(){
+    return velocity;
+}
+
+FVector2D HipController::GetHorizontalVelocity(){
+    return FVector2D(velocity.X, velocity.Y);
+}
+
+
+
+
+void HipController::FlagUpdatedMotionTimeForArmAnimation(float dynamicMotionTimeInForward){
+    //forward and backward is same right now
+    float dynamicMotionTimeInForwardAndBackward = dynamicMotionTimeInForward * 2.0f;
+    
+    updatedMotionTime = dynamicMotionTimeInForwardAndBackward;
+    bMotionTimeUpdatedForArms = true;
+}
+
+bool HipController::HasMotionTimeUpdate(float &outMotionTime){
+    bool copy = bMotionTimeUpdatedForArms;
+    bMotionTimeUpdatedForArms = false;
+    if (copy){
+        outMotionTime = updatedMotionTime;
+    }
+    return copy;
 }

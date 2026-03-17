@@ -24,6 +24,10 @@ void KeyFrame::setTimeToFrame(float timeToFrameIn){
     timeToFrame = std::abs(timeToFrameIn);
 }
 
+void KeyFrame::ScaleTimeToFrame(float scalar){
+    timeToFrame *= scalar;
+}
+
 FVector KeyFrame::readposition(){
     return position;
 }

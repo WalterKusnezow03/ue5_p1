@@ -28,6 +28,7 @@ void TorsoController::setup(FHumanoidControllerSetupPackage &package){
         EArmType::ERight,
         package
     );
+    headController.setup(package);
     SetupJointParents();
 }
 
@@ -60,7 +61,7 @@ void TorsoController::Tick(
     //build top torso - not tested!
     partLeft.Tick(spineWorldTranslation, actorRotation, deltatime);
     partRight.Tick(spineWorldTranslation, actorRotation, deltatime);
-
+    headController.Tick(spineWorldTranslation, actorRotation, deltatime);
 }
 
 void TorsoController::BuildSpine(
@@ -100,12 +101,15 @@ void TorsoController::getActors(TArray<AActor *> &outArray){
     partLeft.getActors(outArray);
     partRight.getActors(outArray);
     spine.getActors(outArray);
+    headController.getActors(outArray);
 }
 
 // ---- pluecker joints ----
 void TorsoController::SetupJointParents(){
     //connect shoulders to spine end (upper end)
     spine.AddChildsToLowerJoint(GetTopJointsOfLayeredArms());
+
+    spine.AddChildToLowerJoint(headController.GetTopJoint());
 }
 
 //internal use of start effector joints of layered two joint bone to connect spine
@@ -133,6 +137,7 @@ void TorsoController::ReactToDamage(const FCustomHitResult &hitResult){
     spine.ReactToDamage(hitResult);
     partLeft.ReactToDamage(hitResult);
     partRight.ReactToDamage(hitResult);
+    headController.ReactToDamage(hitResult);
 }
 
 
@@ -141,4 +146,5 @@ void TorsoController::SetStateCollapse(bool flag){
     spine.SetStateCollapse(flag);
     partLeft.SetStateCollapse(flag);
     partRight.SetStateCollapse(flag);
+    headController.SetStateCollapse(flag);
 }

@@ -247,6 +247,9 @@ protected:
 
     bool IsInGround();
     void DebugIsInGround();
+    
+    FVector GetVelocity();
+    FVector2D GetHorizontalVelocity();
 
 
     // --- pluecker joints ---
@@ -262,4 +265,15 @@ protected:
     void SetRotation(const MMatrix &mat);
 
     void UpdateRootJointOnCollapse();
+
+
+
+    //ik carried item hands interface
+    float updatedMotionTime = 1.0f;
+    bool bMotionTimeUpdatedForArms = false;
+    void FlagUpdatedMotionTimeForArmAnimation(float time);
+
+public:
+    //ik carried item hands interface
+    bool HasMotionTimeUpdate(float &outMotionTime);
 };

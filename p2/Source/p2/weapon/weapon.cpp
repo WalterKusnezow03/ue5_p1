@@ -60,7 +60,8 @@ Aweapon::Aweapon()
 
 void Aweapon::resetFlags(){
 	kickbackStarted = false;
-	verschlussKickBackStarted = false;
+	//verschlussKickBackStarted = false;
+	verschlussState = EVerschlussState::ENone;
 	recoilCopied = false;
 	abzugHinten = false; 
 	isReloading = false;
@@ -97,7 +98,7 @@ void Aweapon::BeginPlay()
 	spawnAllAvailableAttachments();
 
 	setupKickBackAnimation();
-	setupVerschlussAnimation();
+	setupVerschlussAnimations();
 
 
 	setupSwayAnimation();
@@ -173,21 +174,20 @@ void Aweapon::updateCooltime(float time){
 		if(!singleFireMode()){
 			abzugHinten = false; 
 		}
+
+		VerschlussToFrontAfterReloadEmpty();
+
 		isReloading = false;
 	}
 
-	/*
-	if(!timer.timesUp()){
-		timer.Tick(time);
-	}else{
-		if(!singleFireMode()){
-			abzugHinten = false; 
-		}
-		isReloading = false;
-	}*/
-
 }
 
+void Aweapon::VerschlussToFrontAfterReloadEmpty(){
+	if(isEmptyReload && isReloading){
+		verschlussState = EVerschlussState::EEmptyReloadRevert;
+		DebugHelper::logMessage("Aweapon::VerschlussToFrontAfterReloadEmpty");
+	}
+}
 
 /// @brief Unbind from player or bot
 /// will unbind the weapon from the camera or bot Pointer passed when picking up the weapon
@@ -286,17 +286,6 @@ bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum
 			traceComplex
 		);
 
-		/*
-		// Perform the raycast
-		FHitResult HitResult;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this); // Ignore the character itself
-		if(botPointer != nullptr){
-			Params.AddIgnoredActor(botPointer);
-		}
-		Params.bTraceComplex = false; //new lower complexity
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-		*/
 
 		// If the raycast hit something, save hitresult and return positive
 		if (bHit)
@@ -476,14 +465,46 @@ bool Aweapon::enoughBulletsInMag(){
 /// @brief will return if the weapon can perform a reload now
 /// @return 
 bool Aweapon::canReload(){
-	return !isCooling() && isActive() && (getMagSize() > bulletsInMag);
+	FString reason;
+	if(!canReload(reason)){
+		DebugHelper::logMessage(reason);
+	}
+	return true;
+
+	//return !isCooling() && isActive() && (getMagSize() > bulletsInMag);
 }
+
+bool Aweapon::canReload(FString &reason){
+	if(isCooling()){
+		reason = TEXT("Aweapon::reload cant reload, cooling ") + WeaponTypeToString();
+		return false;
+	}
+	if(getMagSize() <= bulletsInMag){
+		reason = TEXT("Aweapon::reload cant reload, enough bullets ") + WeaponTypeToString();
+		return false;
+	}
+	reason = TEXT("- allowed -");
+	DebugHelper::logMessage("Aweapon::reload can reload ", WeaponTypeToString());
+	return true;
+
+}
+
+
+
+
 
 /**
  * reload the weapon with an amount of ammunition. negative numbers are ignored
  */
+#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
 void Aweapon::reload(int amount){
 	if(amount > 0){
+		isEmptyReload = (bulletsInMag <= 0);
+		if(isEmptyReload){
+			verschlussState = EVerschlussState::ENone;
+		}
+		
+
 		bulletsInMag += amount;
 		resetCoolTime(reloadTime());
 		reloadAnimation();
@@ -499,8 +520,23 @@ void Aweapon::reload(int amount){
 		);
 		timer.AddPayload(generated);
 
+
+
+		//DEBUG
+		FString message = FString::Printf(
+			TEXT("Aweapon::reload! type: %s: amount: %d"),
+			*WeaponTypeToString(),
+			amount
+		);
+
+		DebugHelper::logMessage(message);
 	}
 }
+
+FString Aweapon::WeaponTypeToString(){
+	return WeaponEnumStringConverter::toString(weaponType());
+}
+
 
 
 // --------- weapon properties usuage -----------
@@ -1021,10 +1057,25 @@ bool Aweapon::actorAlreadyAttached(AActor *actor){
  * 
  */
 void Aweapon::flagKickbackStart(){
-	verschlussKickBackStarted = true;
 	kickbackStarted = true;
 	recoilCopied = false;
+
+	flagKickbackStartVerschluss();
 }
+
+void Aweapon::flagKickbackStartVerschluss(){
+	int bullets = getBulletsInMag();
+	DebugHelper::logMessage("Aweapon::flagKickbackStartVerschluss bullets: ", bullets);
+
+	if(bullets > 0){
+		verschlussState = EVerschlussState::EDefaultKickback;
+	}else{
+		verschlussState = EVerschlussState::EEmptyMagKickback;
+	}
+}
+
+
+
 
 
 
@@ -1085,24 +1136,27 @@ void Aweapon::TickKickback(float DeltaTime){
  * -- verschluss animation --
  * 
  */
-void Aweapon::setupVerschlussAnimation(){
-	verschlussKickBackAnimation = KeyFrameAnimation(false);
-	verschlussKickBackAnimation.useHermiteSplineInterpolation(false); //linear default
 
+void Aweapon::setupVerschlussAnimations(){
 	FVector currentRelativeLocation;
-	if (verschlussSkeletonPointer != nullptr)
-	{
+	if (verschlussSkeletonPointer != nullptr){
 		currentRelativeLocation = verschlussSkeletonPointer->GetRelativeLocation();
 	}
-	
+	setupVerschlussAnimation(currentRelativeLocation);
+	setupVerschlussAnimationLastShot(currentRelativeLocation);
+	setupVerschlussKickBackAnimationLastShotEmptyReload(currentRelativeLocation);
+}
 
-	int kickBackDistance = 3;
+void Aweapon::setupVerschlussAnimation(const FVector &currentRelativeLocation){
+	verschlussKickBackAnimation = KeyFrameAnimation(false);
+	verschlussKickBackAnimation.useHermiteSplineInterpolation(false); //linear default
+	
 	verschlussKickBackAnimation.addFrame(
 		currentRelativeLocation + FVector(0, 0, 0),
 		0.0f, // time to prev frame
 		false);
 	verschlussKickBackAnimation.addFrame(
-		currentRelativeLocation + FVector(-kickBackDistance, 0, 0), //x forward
+		currentRelativeLocation + FVector(-VerschlussKickbackDistance, 0, 0), //x forward
 		cooldownTime() * 0.1f, //time to prev frame
 		false
 	);
@@ -1113,8 +1167,52 @@ void Aweapon::setupVerschlussAnimation(){
 	);
 }
 
+void Aweapon::setupVerschlussAnimationLastShot(const FVector &currentRelativeLocation){
+	verschlussKickBackAnimationLastShot = KeyFrameAnimation(false);
+	verschlussKickBackAnimationLastShot.useHermiteSplineInterpolation(false); //linear default
+
+	verschlussKickBackAnimationLastShot.addFrame(
+		currentRelativeLocation + FVector(0, 0, 0),
+		0.0f, // time to prev frame
+		false);
+	verschlussKickBackAnimationLastShot.addFrame(
+		currentRelativeLocation + FVector(-VerschlussKickbackDistance, 0, 0), //x forward
+		cooldownTime() * 0.1f, //time to prev frame
+		false
+	);
+}
+
+void Aweapon::setupVerschlussKickBackAnimationLastShotEmptyReload(const FVector &currentRelativeLocation){
+	verschlussKickBackAnimationLastShotEmptyReload = KeyFrameAnimation(false);
+	verschlussKickBackAnimationLastShotEmptyReload.useHermiteSplineInterpolation(false); //linear default
+	
+	verschlussKickBackAnimationLastShotEmptyReload.addFrame(
+		currentRelativeLocation + FVector(-VerschlussKickbackDistance, 0, 0), //x forward
+		0.0f, //time to prev frame
+		false
+	);
+	
+	verschlussKickBackAnimationLastShotEmptyReload.addFrame(
+		currentRelativeLocation + FVector(0, 0, 0),
+		cooldownTime() * 1.0f, // time to prev frame
+		false
+	);
+}
+
+
+
+
+
+
+
 
 void Aweapon::TickVerschlussKickBack(float DeltaTime){
+	if(!verschlussSkeletonPointer){
+		return;
+	}
+
+	//deprecated!
+	/*
 	if(verschlussKickBackStarted && verschlussSkeletonPointer != nullptr){
 
 		FVector interpolatedLocal = verschlussKickBackAnimation.interpolate(DeltaTime);
@@ -1123,10 +1221,68 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 		if(verschlussKickBackAnimation.reachedLastFrameOfAnimation()){
 			verschlussKickBackStarted = false;
 		}
+	}*/
+	
+	
+	
+	if(verschlussState == EVerschlussState::EEmptyMagKickback){
+	//if(verschlussKickBackLastShotStarted){
+		if(TickAnimationAndApplyLocation(
+			verschlussKickBackAnimationLastShot, 
+			verschlussSkeletonPointer,
+			DeltaTime
+		)){
+			verschlussState = EVerschlussState::ENone; //lock in place, no default reset
+			//verschlussKickBackAnimationLastShot.restart();
+		}
+		return;
 	}
+
+	if(verschlussState == EVerschlussState::EEmptyReloadRevert){
+		if(TickAnimationAndApplyLocation(
+			verschlussKickBackAnimationLastShotEmptyReload, 
+			verschlussSkeletonPointer,
+			DeltaTime
+		)){
+			verschlussState = EVerschlussState::ENone; //lock in place, shoot will set it
+			//to default kickback automatically!
+		}
+		return;
+	}
+
+	if(verschlussState == EVerschlussState::EDefaultKickback){
+		if(TickAnimationAndApplyLocation(
+			verschlussKickBackAnimation, 
+			verschlussSkeletonPointer,
+			DeltaTime
+		)){
+			//verschlussKickBackStarted = false;
+			verschlussState = EVerschlussState::ENone;
+		}
+		return;
+	}
+
+
 }
 
 
+bool Aweapon::TickAnimationAndApplyLocation(
+	KeyFrameAnimation &animation, 
+	USkeletalMeshComponent *component,
+	float DeltaTime
+){
+	if(component){
+		FVector interpolatedLocal = animation.interpolate(DeltaTime);
+		component->SetRelativeLocation(interpolatedLocal);
+
+		bool finished = false;
+		if(animation.reachedLastFrameOfAnimation()){
+			finished = true;
+		}
+		return finished;
+	}
+	return true; //finished
+}
 
 /**
  * weapon sway

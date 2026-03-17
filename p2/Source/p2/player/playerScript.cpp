@@ -51,18 +51,29 @@ void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
     EntityManager *entityMananger = AworldLevel::entityManager();
     Aweapon *weapon = nullptr;
     if(entityMananger != nullptr){
-        //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
+        entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
 
-        
+        //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
         weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(weapon != nullptr){
             weapon->applySight(weaponAttachmentEnum::reddot);
             pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
         }
 
-        entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
+        
+
+        weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::pistol);
+        if(weapon){
+            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
+        }
     }
 }
+
+
+
+
+
+
 
 
 
@@ -602,30 +613,34 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
 
     //get all new
     std::vector<Aweapon *> newWeapons = loadout.spawnAllWeaponsAndApplyAttachments(GetWorld());
-    
+    pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(newWeapons);
+
     //debug
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(TEXT("AplayerScript reload loadout weapons(%d)"), newWeapons.size())
-    );
+    );*/
 
     // push all to inventory
-    FVector playerLocation = GetActorLocation();
     if (newWeapons.size() > 0)
     {
-        for (int i = 0; i < newWeapons.size(); i++){
-            Aweapon *current = newWeapons[i]; 
-            if(current != nullptr){
-                current->SetActorLocation(playerLocation);
-                //MUST BE PICKED UP WITH PLAYER CAM TO INTERACT!
-                pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
-                //playerInventory.addWeaponIfNotInInventory(current);
-            }
-        }
-
         //select first for inventory and bone controller
         playerInventory.selectIndex(0);
         Aweapon *firstWeapon = playerInventory.getItemPointer();
         pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(firstWeapon);
+    }
+}
+
+void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
+    std::vector<Aweapon *> &newWeapons
+){
+    FVector playerLocation = GetActorLocation();
+    for (int i = 0; i < newWeapons.size(); i++){
+        Aweapon *current = newWeapons[i]; 
+        if(current != nullptr){
+            current->SetActorLocation(playerLocation);
+            //MUST BE PICKED UP WITH PLAYER CAM TO INTERACT!
+            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(current);
+        }
     }
 }
 

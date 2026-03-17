@@ -138,7 +138,7 @@ void KeyFrameAnimation::addFrame(const FKeyFrameAsset &frame){
 
 /// @brief total length time of the animation
 /// @return total length time of the animation
-float KeyFrameAnimation::totalLength(){
+float KeyFrameAnimation::totalLength() const {
     return totalLengthSave;
 }
 
@@ -639,3 +639,20 @@ FString KeyFrameAnimation::ToString(){
 }
 
 
+
+
+
+/// --- SCALING ---
+void KeyFrameAnimation::ScaleTimeWithScalar(float scalar){
+    if(scalar >= 1.0f && scalar <= 1.01f){
+        return;
+    }
+
+    for (int i = 0; i < frames.size(); i++){
+        KeyFrame &current = frames[i];
+        current.ScaleTimeToFrame(scalar);
+    }
+    totalLengthSave *= scalar;
+
+    //current interpolation can stay the same for now.
+}

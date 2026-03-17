@@ -31,25 +31,24 @@ public:
 
     virtual void dropWeapon() override;
 
-   
-
+    virtual void selectIndex(int index) override;
     TArray<InventorySlotBase *> GetItems() override;
-    
-private:
-	
+    void addToAmmunition(ammunitionEnum type, int amount);
 
-	/// @brief stored on heap because copy constructor must be const, NOT wanted here!
+    FString ToString();
+
+private:
+    /// @brief stored on heap because copy constructor must be const, NOT wanted here!
 	TArray<InventorySlot> weaponVector;
 	InventorySlot fallback;
 	int currentIndex;
 
 	int ammunition;
 
-	
-	
+    void reloadWeaponSlot(InventorySlotBase &slot);
+    void reloadWeapon(Aweapon *weapon);
 
-	void addToAmmunition(ammunitionEnum type, int amount);
-	int getFromAmmunition(ammunitionEnum type, int amount);
+    int getFromAmmunition(ammunitionEnum type, int amount);
 
 	std::map<ammunitionEnum, int> ammunitionMap;
 

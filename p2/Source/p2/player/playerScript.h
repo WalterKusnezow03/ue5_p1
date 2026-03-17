@@ -135,6 +135,9 @@ private:
 
 	//Loadout setup
 	void pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
+		std::vector<Aweapon *> &newWeapons
+	);
+	void pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
 		Aweapon *weapon
 	);
 

@@ -19,6 +19,7 @@ public:
 	bool mustBeGrounded();
 
 	void setTimeToFrame(float timeToFrameIn);
+	void ScaleTimeToFrame(float scalar);
 
 	float distanceTo(const KeyFrame &other);
 	bool IsSame(const KeyFrame &other);

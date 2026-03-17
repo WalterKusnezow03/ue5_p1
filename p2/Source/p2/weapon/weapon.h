@@ -20,6 +20,8 @@
 #include "GameCore/interfaces/DamageInterface/CustomHitResult.h"
 #include "GameCore/Niagara/NiagaraComponentCustom.h"
 
+#include "p2/weapon/animationEnum/EVerschlussState.h"
+
 #include "weapon.generated.h"
 
 
@@ -34,6 +36,15 @@ class P2_API Aweapon : public AcarriedItem
 {
 	GENERATED_BODY()
 	
+public:
+	// --- properties for liniear animations ---
+	UPROPERTY(EditAnywhere, Category="AnimationProperties")
+	float VerschlussKickbackDistance = 3.0f;
+
+
+
+
+
 public:
 
 	// Sets default values for this actor's properties (constructor)
@@ -92,6 +103,7 @@ public:
 	bool enoughBulletsInMag();
 	bool canShoot();
 	bool canReload();
+	bool canReload(FString &reason);
 	virtual bool isSoundSurpressed();
 
 	float recoilValue();
@@ -173,8 +185,8 @@ protected:
 	bool isAiming;
 	int bulletsInMag;
 	bool isReloading = false;
+	bool isEmptyReload = false;
 
-	
 	float cooldownTime();
 	float reloadTime();
 
@@ -290,7 +302,8 @@ private:
 	void hideAllAttachments();
 	void hideAllAttachments(std::map<weaponAttachmentEnum, AActor *> &map);
 
-
+public:
+	FString WeaponTypeToString();
 
 protected:
 	bool actorAlreadyAttached(AActor *actorpointer);
@@ -305,8 +318,17 @@ protected:
 	class KeyFrameAnimation actorKickBackAnim;
 	void flagKickbackStart();
 	bool kickbackStarted = false;
-	bool verschlussKickBackStarted = false;
+	//bool verschlussKickBackStarted = false;
 	bool recoilCopied = false;
+
+	void flagKickbackStartVerschluss();
+	
+	EVerschlussState verschlussState = EVerschlussState::EDefaultKickback;
+
+
+
+
+
 
 	//on shoot (will be replaced by placing animation in placable item)
 	virtual void setupKickBackAnimation();
@@ -316,8 +338,24 @@ protected:
 	void TickKickback(float DeltaTime);
 
 	class KeyFrameAnimation verschlussKickBackAnimation;
-	void setupVerschlussAnimation();
+	void setupVerschlussAnimations();
+	void setupVerschlussAnimation(const FVector &currentRelativeLocation);
+	void setupVerschlussAnimationLastShot(const FVector &currentRelativeLocation);
+	void setupVerschlussKickBackAnimationLastShotEmptyReload(const FVector &currentRelativeLocation);
+
 	void TickVerschlussKickBack(float DeltaTime);
+
+	class KeyFrameAnimation verschlussKickBackAnimationLastShot;
+	class KeyFrameAnimation verschlussKickBackAnimationLastShotEmptyReload;
+
+	bool TickAnimationAndApplyLocation(
+		class KeyFrameAnimation &animation, 
+		USkeletalMeshComponent *component,
+		float DeltaTime
+	);
+
+	void VerschlussToFrontAfterReloadEmpty();
+
 
 	//sway
 	SwayInterpolator swayInterpolator;

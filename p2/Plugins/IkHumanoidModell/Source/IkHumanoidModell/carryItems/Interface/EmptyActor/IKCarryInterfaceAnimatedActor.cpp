@@ -268,6 +268,35 @@ bool AIKCarryInterfaceAnimatedActor::IsAnimationActive(EArmAnimationEnum id){
     return false;
 }
 
+void AIKCarryInterfaceAnimatedActor::MotionTimeUpdateAnimation(
+    EArmAnimationEnum type, 
+    float newTime
+){
+    MotionTimeUpdateAnimationInAnimationMap(type, newTime);
+    MotionTimeUpdateAnimationIfActive(type, newTime);
+}
+
+void AIKCarryInterfaceAnimatedActor::MotionTimeUpdateAnimationInAnimationMap(
+    EArmAnimationEnum type, 
+    float newTime
+){
+    FArmAnimationPair &pair = FindAnimationPair(type);
+    pair.ScaleToTime(newTime);
+}
+
+void AIKCarryInterfaceAnimatedActor::MotionTimeUpdateAnimationIfActive(
+    EArmAnimationEnum type, 
+    float newTime
+){
+    if(IsAnimationActive(type)){
+        activeAnimation.ScaleToTime(newTime);
+    }
+}
+
+
+
+
+
 /// ----- PICKUP FLAG ------
 
 void AIKCarryInterfaceAnimatedActor::SetIsPickedUpFlag(bool flag){
@@ -309,6 +338,8 @@ void AIKCarryInterfaceAnimatedActor::Tick(float deltatime){
     if(isPickedUpFlag){
         TickAnimation(deltatime);
         TickUpdateAttachedItem();
+        DebugDrawHandLocation(EArmType::ELeft, deltatime, true);
+        DebugDrawHandLocation(EArmType::ERight, deltatime, true);
     }
 
     ScreenLogPickedUpState();
@@ -451,7 +482,6 @@ bool AIKCarryInterfaceAnimatedActor::TickAnimationFor(EArmType type, float delta
     bool finished = activeAnimation.Tick(
         type,
         deltatime,
-        internalTransform,
         outPosLocal
     );
     //Update component location
@@ -481,8 +511,8 @@ bool AIKCarryInterfaceAnimatedActor::TickAnimationFor(EArmType type, float delta
 
 
 
-void AIKCarryInterfaceAnimatedActor::DebugDrawHandLocation(EArmType type, float deltatime){
-    if(logEnabled){
+void AIKCarryInterfaceAnimatedActor::DebugDrawHandLocation(EArmType type, float deltatime, bool force){
+    if(logEnabled || force){
         if(USceneComponent *hand = FindHand(type)){
             DebugHelper::showLineBetween(
                 GetWorld(),

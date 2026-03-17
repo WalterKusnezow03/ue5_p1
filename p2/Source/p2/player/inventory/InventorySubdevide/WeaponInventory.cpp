@@ -25,9 +25,29 @@ TArray<InventorySlotBase *> WeaponInventory::GetItems(){
     return items;
 }
 
+void WeaponInventory::selectIndex(int index){
+    InventoryBase::selectIndex(index);
+    DebugHelper::logMessage(ToString());
+}
 
-
-
+FString WeaponInventory::ToString(){
+    if(IndexActive()){
+        FString message = TEXT("WeaponInventory");
+        InventorySlotBase &base = CurrentSlotRefBase();
+        if(Aweapon *w = base.weaponPointer){
+            message += FString::Printf(TEXT("[%s] | "), *w->WeaponTypeToString());
+        }else{
+            message += FString::Printf(TEXT("[-] | "));
+        }
+        for (int i = 0; i < weaponVector.Num(); i++){
+            if(Aweapon *w1 = weaponVector[i].weaponPointer){
+                message += FString::Printf(TEXT("[%s] "), *w1->WeaponTypeToString());
+            }
+        }
+        return message;
+    }
+    return TEXT("WeaponInventory NOT Active");
+}
 
 /// @brief adds a weapon to the inventory and selects it, if not contained yet
 /// @param weaponIn new weapon to pickup
@@ -71,13 +91,27 @@ bool WeaponInventory::alreadyInInventory(Aweapon *weaponIn, int &foundIndex){
 
 /// @brief reloads the current weapon if possible
 void WeaponInventory::reloadWeapon(){
-    if(currentIndexIsValid()){
+    if(!IndexActive()){
+        DebugHelper::logMessage("WeaponInventory::reloadWeapon inventory index not active!");
+        return;
+    }
+    DebugHelper::logMessage("WeaponInventory::reloadWeapon: ", ToString());
+    if (currentIndexIsValid())
+    {
+        InventorySlotBase &base = CurrentSlotRefBase();
+        reloadWeaponSlot(base);
+        
+        /*
+        //DebugHelper::logMessage("WeaponInventory::reloadWeapon B (indexValid)", currentIndex);
         InventorySlot &slot = weaponVector[currentIndex];
         Aweapon *weapon = slot.weaponPointer;
         if(weapon){
+            DebugHelper::logMessage("WeaponInventory::reloadWeapon weapon valid ptr");
 
             //reload if reload possible
-            if(weapon->canReload()){
+            FString reason;
+            if(weapon->canReload(reason)){
+                DebugHelper::logMessage("WeaponInventory::reloadWeapon reload allowed");
 
                 //new ---> testing needed with debug messages
                 ammunitionEnum type = weapon->getAmmunitionType();
@@ -88,13 +122,56 @@ void WeaponInventory::reloadWeapon(){
                 addToAmmunition(type, leftInMag);
 
                 //werden in waffe nicht entfernt, aufstocken auf voll
-                slot.reload(getFromAmmunition(type, magSize));
+                int amount = getFromAmmunition(type, magSize);
+                DebugHelper::logMessage("WeaponInventory::reloadWeapon E with amount ", amount);
+                slot.reload(amount);
 
 
+            }else{
+                DebugHelper::logMessage("WeaponInventory::reloadWeapon CANT RELOAD ", reason);
             }
+        }*/
+    }
+}
+
+void WeaponInventory::reloadWeaponSlot(InventorySlotBase &slot){
+    if (Aweapon *weapon = slot.weaponPointer){
+        DebugHelper::logMessage("WeaponInventory::reloadWeapon weapon valid ptr");
+        FString reason;
+        if(weapon->canReload(reason)){
+            DebugHelper::logMessage("WeaponInventory::reloadWeapon reload allowed");
+            reloadWeapon(weapon);
+        }else{
+            DebugHelper::logMessage("WeaponInventory::reloadWeapon CANT RELOAD ", reason);
         }
     }
 }
+
+void WeaponInventory::reloadWeapon(Aweapon *weapon){
+    if(weapon){
+        //new ---> testing needed with debug messages
+        ammunitionEnum type = weapon->getAmmunitionType();
+        int leftInMag = weapon->getBulletsInMag();
+        int magSize = weapon->getMagSize() - leftInMag;
+        
+        
+        addToAmmunition(type, leftInMag);
+
+        //werden in waffe nicht entfernt, aufstocken auf voll
+        int amount = getFromAmmunition(type, magSize);
+        DebugHelper::logMessage("WeaponInventory::reloadWeapon E with amount ", amount);
+        weapon->reload(amount);
+    }
+}
+
+
+
+
+
+
+
+
+
 
 /// @brief adds amuntion to the correct map index
 /// @param type ammunition type from the enum

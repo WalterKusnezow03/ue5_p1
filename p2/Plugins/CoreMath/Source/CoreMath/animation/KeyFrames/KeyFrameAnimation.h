@@ -58,7 +58,7 @@ public:
 	FVector readNextFrame();
 	
 	
-	float totalLength();
+	float totalLength() const;
 	bool nextFrameIsProjected();
 
 	/// @brief never true, if animation marked looping
@@ -158,4 +158,13 @@ protected:
 	// ---- TO STRING DEBUG ----
 public:
 	FString ToString();
+
+
+
+public:
+	// --- SCALING ---
+
+	//scales the animation with a given scalar
+	//and its current progress
+	void ScaleTimeWithScalar(float scalar);
 };

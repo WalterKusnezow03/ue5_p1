@@ -228,8 +228,11 @@ protected:
     AActor *topActor = nullptr;
     AActor *bottomActor = nullptr;
     void applyTransformToActors(MMatrix &world, MMatrix &top, MMatrix &bottom);
-    void applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix);
+    
+public:
+    static void applyTransform(AActor *ptr, FVector location, MMatrix &rotationMatrix);
 
+protected:
     ETwoBoneConstraint constraint = ETwoBoneConstraint::ENone;
 
 

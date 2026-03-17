@@ -21,8 +21,7 @@ public:
 
     bool Tick(
         EArmType type, 
-        float deltatime, 
-        MMatrix &transform,
+        float deltatime,
         FVector &outPosLocal
     );
 
@@ -49,6 +48,8 @@ public:
         return axisConstraint;
     }
 
+    void ScaleToTime(float time);
+
 private:
     EArmAnimationEnum typeSaved = EArmAnimationEnum::none;
 
@@ -64,11 +65,17 @@ private:
     //keyframe animation needs local velocity
     std::map<EArmType, KeyFrameAnimation> animationMap;
 
-
+   
 
     //rotation axis restraint for carried object / local animation
     FIKCarryInterfaceAxisConstraint axisConstraint;
 
     void CreateEmptyAnimation(EArmType type);
     void CreateEmptyAnimationsFor(const TArray<EArmType> &types);
+
+
+    // -- scale update --
+    bool HasAnimations();
+    float LongestAnimationTime();
+    void ScaleTimeWithScalar(float scalar);
 };

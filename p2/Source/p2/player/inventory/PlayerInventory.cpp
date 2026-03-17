@@ -10,6 +10,9 @@ PlayerInventory::PlayerInventory()
 {
     currentIndex = 0;
     
+    weaponInventory.addToAmmunition(ammunitionEnum::assaultrifle556, 200);
+    weaponInventory.addToAmmunition(ammunitionEnum::pistol9, 50);
+
 }
 
 PlayerInventory::~PlayerInventory()
@@ -43,10 +46,14 @@ int PlayerInventory::TotalSizeInventory(){
 /// @brief selects an index from the list 
 /// @param index 
 void PlayerInventory::selectIndex(int index){
-    if(weaponInventory.HasItems() || throwableInventory.HasItems()){
+    //DebugHelper::logMessage("PlayerInventory::selectIndex ", index);
+    //DebugHelper::showScreenMessage("PlayerInventory::selectIndex ", index, FColor::Red);
+    if (weaponInventory.HasItems() || throwableInventory.HasItems())
+    {
         int validated = ValidateIndex(index);
         if(validated != currentIndex){
             currentIndex = validated;
+            //DebugHelper::logMessage("PlayerInventory::validate selectIndex ", currentIndex);
             UpdateShowWeapon();
         }
     }
@@ -65,11 +72,13 @@ void PlayerInventory::UpdateShowWeapon(){
     throwableInventory.HideAll();
 
     if(currentIndex >= 0 && currentIndex < weaponInventory.SizeInventory()){
+        DebugHelper::logMessage("PlayerInventory::weaponInventory select index ", currentIndex);
         weaponInventory.selectIndex(currentIndex);
         return;
     }
     int indexThrowableInventory = IndexInThrowableInventory(currentIndex);
     if(indexThrowableInventory >= 0 && indexThrowableInventory < throwableInventory.SizeInventory()){
+        DebugHelper::logMessage("PlayerInventory::throwableInventory select index ", indexThrowableInventory);
         throwableInventory.selectIndex(currentIndex);
         return;
     }

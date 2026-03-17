@@ -8,6 +8,7 @@ FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AAct
     FHumanoidControllerSetupPackage newPackage(world);
     DefaultTorsoSetup(newPackage, widthMainBones);
     DefaultLegSetup(newPackage, widthMainBones);
+    DefaultHeadSetup(newPackage, widthMainBones);
     DefaultHandSetup(newPackage);
 
     return newPackage;
@@ -46,14 +47,27 @@ void FHumanoidControllerSetupPackage::DefaultLegSetup(
     locomotion.SetMaxVelocity(500.0f);
 }
 
+
+void FHumanoidControllerSetupPackage::DefaultHeadSetup(
+    FHumanoidControllerSetupPackage &newPackage,
+    int widthMainBones
+){
+    float width = widthMainBones * 2.0f;
+    float depth = widthMainBones * 2.3f;
+
+    FSingleLimbProperty &head = newPackage.GetHeadSize();
+    head.Setup(depth, width);
+
+    FSingleLimbProperty &neck = newPackage.GetNeckSize();
+    neck.Setup(depth * 1.1f, widthMainBones * 0.8f);
+}
+
 void FHumanoidControllerSetupPackage::DefaultHandSetup(FHumanoidControllerSetupPackage &newPackage){
     FHandProperty &hand = newPackage.GetHandSize();
     hand.SetupHandBody(6.0f, 6.0f, 3.0f);
     FTwoLimbProperty &handFinger = hand.GetFingerSize();
     handFinger.Setup(3.0f, 2.0f, 1.0f);
 }
-
-
 
 
 /// --- class methods ---
@@ -98,6 +112,8 @@ void FHumanoidControllerSetupPackage::SetActor(AActor *actor){
     torsoSize.SetActor(actor);
     torsoSpineSize.SetActor(actor);
     handSize.SetActor(actor);
+    headSize.SetActor(actor);
+    neckSize.SetActor(actor);
 }
 
 FTwoLimbProperty &FHumanoidControllerSetupPackage::GetArmSize(){
@@ -124,6 +140,13 @@ FLocomotionProperty &FHumanoidControllerSetupPackage::GetLocomotionProperty(){
     return locoMotionProperty;
 }
 
+FSingleLimbProperty &FHumanoidControllerSetupPackage::GetHeadSize(){
+    return headSize;
+}
+
+FSingleLimbProperty &FHumanoidControllerSetupPackage::GetNeckSize(){
+    return neckSize;
+}
 
 void FHumanoidControllerSetupPackage::MarkHandsWanted(){
     handWanted = true;

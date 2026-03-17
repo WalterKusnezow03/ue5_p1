@@ -121,10 +121,9 @@ protected:
     void UpdateEmptyArmTargetActorPickedUpFlag();
     void dropItemFromEmptyActorHand();
     bool TryInjectIntoEmptyIkCarryInterface(IIkCarryInterface *newItem);
-    //empty actor to pickup, attach hand carried items to
 
-
-
+    void UpdateArmMotionTimeBasedOnHipMotionTime();
+    // empty actor to pickup, attach hand carried items to
 
     //pluecker setup
     void AddTorsoControllerTopJointsToHipForPlueckerJoints();

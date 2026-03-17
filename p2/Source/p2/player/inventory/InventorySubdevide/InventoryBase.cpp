@@ -41,6 +41,12 @@ void InventoryBase::UpdateShowWeapon(int index){
 }
 
 void InventoryBase::UpdateShowWeapon(TArray<InventorySlotBase *> &items, int indexToShow){
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("InventoryBase::UpdateShowWeapon %d of %d"),
+            indexToShow, items.Num()
+        )
+    );
     for (int i = 0; i < items.Num(); i++){
         bool showFlag = i == indexToShow;
         if(InventorySlotBase *current = items[i]){

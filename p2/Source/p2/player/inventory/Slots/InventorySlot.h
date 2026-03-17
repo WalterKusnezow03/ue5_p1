@@ -14,4 +14,5 @@ public:
     virtual float recoilValue() override;
     bool IsSamePointer(Aweapon *weapon);
 
+    
 };

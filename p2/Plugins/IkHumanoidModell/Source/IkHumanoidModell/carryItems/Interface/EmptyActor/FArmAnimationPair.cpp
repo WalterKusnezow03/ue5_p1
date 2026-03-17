@@ -90,24 +90,13 @@ KeyFrameAnimation &FArmAnimationPair::KeyFrameAnimationReference(EArmType type){
 
 bool FArmAnimationPair::Tick(
     EArmType type, 
-    float deltatime, 
-    MMatrix &transform,
+    float deltatime,
     FVector &outPosLocal
 ){
     if(animationMap.find(type) != animationMap.end()){
         KeyFrameAnimation &current = animationMap[type];
         FVector local = current.interpolate(deltatime);
         outPosLocal = local;
-
-        //update attached actor at location
-        //rotation problem not solved yet!
-        FVector world = transform * local;
-
-        //TODO!
-        //update attached actors.
-
-
-
 
 
         /// @brief never true, if animation marked looping
@@ -128,9 +117,57 @@ bool FArmAnimationPair::IsType(EArmAnimationEnum typeIn){
 }
 
 
+void FArmAnimationPair::ScaleToTime(float targetTime){
+    if(HasAnimations()){
+        //find max time animation
+        float maxAnimationTime = LongestAnimationTime();
+        float scalar = targetTime / maxAnimationTime; // distTarget / distAll
+        ScaleTimeWithScalar(scalar);
+
+        //LOG
+        FString message = FString::Printf(
+            TEXT("FArmAnimationPair::ScaleToTime %.2f with %.2f from max %.2f"),
+            targetTime,
+            scalar, 
+            maxAnimationTime
+        );
+        DebugHelper::logMessage(message);
+        DebugHelper::showScreenMessage(message);
+        message = FString::Printf(
+            TEXT("FArmAnimationPair::ScaleToTime after %.2f"),
+            LongestAnimationTime()
+        );
+        DebugHelper::logMessage(message);
+        DebugHelper::showScreenMessage(message);
+        // LOG
 
 
+        
+    }
+}
 
+void FArmAnimationPair::ScaleTimeWithScalar(float scalar){
+    scalar = std::abs(scalar);
+    for (auto &pair : animationMap){
+        KeyFrameAnimation &currentAnimation = pair.second;
+        currentAnimation.ScaleTimeWithScalar(scalar);
+    }
+}
+
+float FArmAnimationPair::LongestAnimationTime(){
+    float maxTime = 0.0f;
+    for (auto &pair : animationMap)
+    {
+        const KeyFrameAnimation &currentAnimation = pair.second;
+        float compareTime = currentAnimation.totalLength();
+        maxTime = std::max(maxTime, compareTime);
+    }
+    return maxTime;
+}
+
+bool FArmAnimationPair::HasAnimations(){
+    return animationMap.size() > 0;
+}
 
 void FArmAnimationPair::LogInfo(){
     DebugHelper::logMessage(ToString());

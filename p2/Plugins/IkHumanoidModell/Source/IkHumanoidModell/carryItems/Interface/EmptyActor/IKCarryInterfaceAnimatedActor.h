@@ -68,6 +68,16 @@ public:
 	bool IsAnimationActive(EArmAnimationEnum id);
 	// animation fire
 
+	//animation time rescale
+public:
+	void MotionTimeUpdateAnimation(EArmAnimationEnum type, float newTime);
+protected:
+	void MotionTimeUpdateAnimationInAnimationMap(EArmAnimationEnum type, float newTime);
+	void MotionTimeUpdateAnimationIfActive(EArmAnimationEnum type, float newTime);
+
+	//animation time rescale
+
+public:
 	//hand attached items
 	IIkCarryInterface *CurrentAttachedItem();
 	void InjectCarryByHandItem(IIkCarryInterface *newItem);
@@ -88,7 +98,7 @@ protected:
 	bool isPickedUpFlag = false;
 	void ScreenLogPickedUpState();
 	bool isPickedUpByPlayerDebugFlag = false;
-	void DebugDrawHandLocation(EArmType type, float deltatime);
+	void DebugDrawHandLocation(EArmType type, float deltatime, bool force);
 	// picked up flag to animate or not
 
 	bool IsHandAttachedItem(IIkCarryInterface *newItem);
@@ -167,7 +177,7 @@ protected:
 
 
 
-	
+
 
 	//position data to update based on animation
 	CarriedItemHandComponentManager handAndFingerPositionManager;

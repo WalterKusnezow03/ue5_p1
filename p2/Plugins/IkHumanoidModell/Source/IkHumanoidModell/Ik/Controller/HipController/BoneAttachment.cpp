@@ -21,17 +21,6 @@ void BoneAttachment::setWorld(UWorld *worldIn){
 
 
 void BoneAttachment::setupBone(FTwoLimbHipProperty &hipLimb){
-    /*setWorld(hipLimb.GetWorld());
-    bone.setup(hipLimb);
-    setAsLeg();
-    SetupPluckerJoints(hipLimb.GetOffset(), hipLimb.GetWorld());
-    setInnerOffsetTranslation(hipLimb.GetOffset());
-
-    defaultExtendedTranslationBottomToUp = FVector(
-        0,
-        0,
-        hipLimb.GetFirstAndSecondSize()
-    );*/
     setupBoneBase(hipLimb, hipLimb.GetOffset());
     setAsLeg();
 }
@@ -63,68 +52,6 @@ FVector BoneAttachment::endEffectorWorldLocation(){
     return bone.EndEffectorLocation();
 }
 
-/*
-/// @brief setup bone
-/// @param a part a (upper) lenght
-/// @param b part b (lower) length
-/// @param worldIn world for drawing
-/// @param offset inner offset of bone attachment (hip offset for example)
-void BoneAttachment::setupBone(
-    float a, 
-    float b, 
-    UWorld *worldIn, 
-    FVector offset
-){
-    bone.setup(a, b, worldIn);
-    setWorld(worldIn);
-
-    setInnerOffsetTranslation(offset);
-
-    defaultExtendedTranslationBottomToUp = FVector(
-        0,
-        0,
-        (std::abs(a) + std::abs(b))
-    );
-
-}
-
-/// @brief setup bone
-/// @param a part a (upper) lenght
-/// @param b part b (lower) length
-/// @param worldIn world for drawing
-/// @param offset inner offset of bone attachment (hip offset for example)
-/// @param massOfParent mass of parent body to pre calculate slip data 
-/// @param defaultMotionTime default motion time of the stance phase
-void BoneAttachment::setupBone(
-    float a, 
-    float b, 
-    UWorld *worldIn, 
-    FVector offset,
-    float massOfParent,
-    float defaultMotionTime
-){
-    setupBone(
-        a, 
-        b, 
-        worldIn, 
-        offset
-    );
-
-}
-
-//player controller api width bone hand controller
-void BoneAttachment::setupBone(float a, float b, UWorld *worldIn, FVector offset, float widthBone){
-    bone.setup(a, b, worldIn, widthBone);
-    setWorld(worldIn);
-
-    setInnerOffsetTranslation(offset);
-
-    defaultExtendedTranslationBottomToUp = FVector(
-        0,
-        0,
-        (std::abs(a) + std::abs(b))
-    );
-}*/
 
 
 //set inner offset translation (attachment displacement of bone)

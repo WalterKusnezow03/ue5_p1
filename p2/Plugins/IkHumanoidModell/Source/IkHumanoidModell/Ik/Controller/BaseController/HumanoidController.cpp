@@ -90,6 +90,9 @@ void HumanoidController::Tick(float deltatime){
         deltatime
     );
     
+    if(!collapseEnabledPhysics){
+        UpdateArmMotionTimeBasedOnHipMotionTime();
+    }
 }
 
 void HumanoidController::TickMainCarriedItemSocket(float deltatime){
@@ -444,6 +447,23 @@ void HumanoidController::OnDropUpdateAnimation(){
 }
 
 
+//--- update running animation velocity ---
+void HumanoidController::UpdateArmMotionTimeBasedOnHipMotionTime(){
+    if(EmptyActorIsPickedUp() && emptyArmTargetActor){
+        float newTime = 0.0f;
+        if (hipController.HasMotionTimeUpdate(newTime)){
+            emptyArmTargetActor->MotionTimeUpdateAnimation(EArmAnimationEnum::running, newTime);
+
+            FString message =
+            FString::Printf(TEXT("HumanoidController::MotionTimeUpdate %.2f !"), newTime);
+            DebugHelper::showScreenMessage(message);
+            DebugHelper::logMessage(message);
+        }
+    }
+    
+    
+}
+
 
 
 
@@ -470,3 +490,7 @@ bool HumanoidController::IsPerformingThrowItem(){
     }
     return false;
 }
+
+
+
+

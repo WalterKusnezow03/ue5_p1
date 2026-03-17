@@ -4,6 +4,7 @@
 #include "LayeredTwoJointBone.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "PlueckerCore/Interface/IJointInterface.h"
+#include "IkHumanoidModell/Ik/Controller/TorsoController/HeadController/HeadController.h"
 
 class IIkCarryInterface;
 class AIKCarryInterfaceAnimatedActor;
@@ -70,7 +71,8 @@ private:
     LayeredTwoJointBone partLeft;
     LayeredTwoJointBone partRight;
 
-    
+    //head
+    HeadController headController;
 
     // ---- pluecker joints ----
 public:

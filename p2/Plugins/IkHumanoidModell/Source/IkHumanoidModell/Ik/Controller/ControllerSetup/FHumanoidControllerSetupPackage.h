@@ -13,6 +13,7 @@ public:
 protected:
     static void DefaultTorsoSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);
     static void DefaultLegSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);
+    static void DefaultHeadSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);
 
     static void DefaultHandSetup(FHumanoidControllerSetupPackage &newPackage);
 
@@ -38,6 +39,9 @@ public:
     bool HandsMarkedWanted();
     FHandProperty &GetHandSize();
 
+    FSingleLimbProperty &GetHeadSize();
+    FSingleLimbProperty &GetNeckSize();
+
 private:
     FLocomotionProperty locoMotionProperty;
 
@@ -51,6 +55,9 @@ private:
 
     //breast
     FTwoLimbProperty torsoSize;
+
+    FSingleLimbProperty headSize;
+    FSingleLimbProperty neckSize;
 
     bool handWanted = false;
     FHandProperty handSize;
