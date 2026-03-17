@@ -221,6 +221,8 @@ protected:
 	void findAllSkeletalAndSceneComponents();
 	void findAllSkeletalComponents();
 	void findAllNiagaraComponents();
+	void FindNiagaraMuzzleFlash();
+	void FindNiagaraHuelseEject();
 
 	//plays any anim
 	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
@@ -230,6 +232,7 @@ protected:
 	class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
 	class USkeletalMeshComponent *muzzleAttachmentSkelletonPointer;
 	class USkeletalMeshComponent *gripAttachmentSkelletonPointer;
+	class USkeletalMeshComponent *sightAttachmentSkeletonPointer;
 
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;
@@ -269,10 +272,12 @@ protected:
 	int damageForAmmunitionType();
 
 
-	// --- niagara components: ---
+	// --- NIAGARA COMPONENTS ---
 	class UNiagaraComponentCustom *niagaraMuzzleFlash = nullptr;
+	class UNiagaraComponentCustom *niagaraHuelseEject = nullptr;
 
 	void NiagaraTriggerMuzzleFlash();
+	void NiagaraTriggerHuelseEject();
 	void NiagaraTickAll(float deltatime);
 
 public:

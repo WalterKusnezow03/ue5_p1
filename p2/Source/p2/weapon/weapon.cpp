@@ -309,7 +309,8 @@ bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum
 			AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
 		}
 		NiagaraTriggerMuzzleFlash();
-
+		NiagaraTriggerHuelseEject();
+		
 
 
 		return bHit;
@@ -721,12 +722,21 @@ void Aweapon::findAllSkeletalComponents(){
 				muzzleAttachmentSkelletonPointer = Component;
 			}else if(name.Contains("grip")){
 				gripAttachmentSkelletonPointer = Component;
+			}else if(name.Contains("sight")){
+				sightAttachmentSkeletonPointer = Component;
 			}
 		}
 	}
 }
 
 void Aweapon::findAllNiagaraComponents(){
+	// --- MUZZLE FLASH ---
+	FindNiagaraMuzzleFlash();
+	FindNiagaraHuelseEject();
+}
+
+void Aweapon::FindNiagaraMuzzleFlash(){
+	// --- MUZZLE FLASH ---
 	TTryAssignByNameContains<UNiagaraComponentCustom>(
 		"niagaraMuzzleFlash",
 		niagaraMuzzleFlash
@@ -737,9 +747,27 @@ void Aweapon::findAllNiagaraComponents(){
 	}
 }
 
+void Aweapon::FindNiagaraHuelseEject(){
+	// --- HUELSE EJECT ---
+	TTryAssignByNameContains<UNiagaraComponentCustom>(
+		"niagaraHuelse",
+		niagaraHuelseEject
+	);
+	if(niagaraHuelseEject){
+		niagaraHuelseEject->timeOfEffect = 5.0f; 
+		niagaraHuelseEject->StopEffectImmediate();
+	}
+}
+
+
+
+
 void Aweapon::NiagaraTickAll(float deltatime){
 	if(niagaraMuzzleFlash){
 		niagaraMuzzleFlash->TickExternal(deltatime);
+	}
+	if(niagaraHuelseEject){
+		niagaraHuelseEject->TickExternal(deltatime);
 	}
 }
 
@@ -751,6 +779,14 @@ void Aweapon::NiagaraTriggerMuzzleFlash(){
 		niagaraMuzzleFlash->ResetAndRestart();
 	}
 }
+
+void Aweapon::NiagaraTriggerHuelseEject(){
+	if(niagaraHuelseEject){
+		niagaraHuelseEject->ResetAndRestart();
+	}
+}
+
+
 
 
 
@@ -1020,6 +1056,11 @@ USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
 	weaponAttachmentEnum EattachmentType
 ){	
 	if(WeaponAttachmentValidator::isASightAttachment(EattachmentType)){
+		//return explicit attachment pointer if valid.
+		if(sightAttachmentSkeletonPointer){
+			return sightAttachmentSkeletonPointer;
+		}
+		//default attachment to 0,0,0 of weapon.
 		return gehauseSkeletonPointer;
 	}
 	if(WeaponAttachmentValidator::isAMuzzleAttachment(EattachmentType)){
@@ -1191,7 +1232,7 @@ void Aweapon::setupVerschlussKickBackAnimationLastShotEmptyReload(const FVector 
 		0.0f, //time to prev frame
 		false
 	);
-	
+
 	verschlussKickBackAnimationLastShotEmptyReload.addFrame(
 		currentRelativeLocation + FVector(0, 0, 0),
 		cooldownTime() * 1.0f, // time to prev frame
