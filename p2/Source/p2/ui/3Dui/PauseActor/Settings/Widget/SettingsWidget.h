@@ -10,25 +10,25 @@
 
 #include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
 
-#include "PauseWidget.generated.h"
+#include "SettingsWidget.generated.h"
 
 class APauseRoomActor;
+class USettingsOptionWidget;
 
 UCLASS()
-class P2_API UPauseWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
+class P2_API USettingsWidget : public UUserUi3DBaseWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
     void Init();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
-    UWidget *GetLoadoutButton();
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetExitButton();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
-    UWidget *GetHomeButton();
+    UWidget *GetDebugOptionWidget();
+    
+
 
     void SetParentActor(APauseRoomActor *parent);
     void ResetParentActor();
@@ -47,12 +47,20 @@ public:
 protected:
 
 private:
-   
+    void InitAllOptions();
+
     APauseRoomActor *parentActor = nullptr;
 
     bool InBound(UWidget *widget, const FVector2D &screenPos);
 
-    BorderInterfaceUtilButton loadoutButtonUtil;
     BorderInterfaceUtilButton exitButtonUtil;
-    BorderInterfaceUtilButton homeButtonUtil;
+
+
+
+protected:
+    //derived hover
+
+    //doesnt have to be overriden but can be.
+    virtual TArray<IBaseUiInterface *> GetAllItemsForDispatch() override;
+    TArray<USettingsOptionWidget *> GetAllSettingsOptions();
 };

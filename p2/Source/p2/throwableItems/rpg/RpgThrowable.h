@@ -27,14 +27,16 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
-    void StartTimer();
-    bool TickTimer(float deltatime);
+    void StartDetonationTimer();
+    void StartMaxLifeTimeTimer();
+    bool TickTimers(float deltatime);
 
     virtual void release() override;
 
     //void AddImpulseUsingLatestThrowingDirection(float veloctiy);
 
     void UpdateVelocity(float deltatime);
+    void UpdateRotation(const FVector &location);
     void UpdateSphereCast();
     void Detonate();
 
@@ -50,4 +52,11 @@ protected:
     bool hitObject = false;
 
     float sphereCastRadius = 50.0f;
+
+    FVector prevTickLocation;
+
+
+
+    float maxLifeTime = 60.0f;
+    Timer maximumLifetimeTimer;
 };

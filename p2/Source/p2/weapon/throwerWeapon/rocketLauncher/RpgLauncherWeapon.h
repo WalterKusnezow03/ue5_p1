@@ -18,6 +18,10 @@ public:
 
 
 protected:
+    virtual void BeginPlay() override;
+
     virtual void RequestNewThrowableIfNeeded() override;
     ARpgThrowable *ThrowableCasted();
+
+    void setupReloadAnimationOnBeginPlay();
 };

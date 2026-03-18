@@ -5,11 +5,15 @@
 
 #include "p2/ui/3Dui/RoomBase/WidgetRoomActorBase.h"
 #include "p2/ui/3Dui/PauseActor/EPauseWidgetEvent.h"
+#include "p2/ui/3Dui/PauseActor/Settings/enum/ESettingsWidgetEvent.h"
 
 #include "PauseRoomActor.generated.h"
 
 class APauseWidgetActor;
 class UPauseWidget;
+
+class ASettingsWidgetActor;
+class USettingsWidget;
 
 //instead of entering the room, the room will be moved to the player
 UCLASS()
@@ -30,6 +34,7 @@ public:
     
 
     void Notify(EPauseWidgetEvent event);
+    void Notify(ESettingsWidgetEvent event);
 
 protected:
     virtual void BeginPlay() override;
@@ -40,11 +45,14 @@ protected:
     void NotifyExit();
     void NotifyOpenLoadoutRoom();
     void NotifyOpenGameStartRoom();
+    void ShowSettingsWidget(bool flag);
 
     void FindPauseMenuOnBeginPlay();
-    void SetParentReferenceForPauseWidget();
+    void FindSettingsMenuOnBeginPlay();
+    void SetParentReferenceForWidgets();
 
     UPauseWidget *GetPauseWidget();
+    USettingsWidget *GetSettingsWidget();
 
     virtual void ClearReferencesOnEndPlay() override;
 
@@ -54,4 +62,5 @@ protected:
 
 private:
     APauseWidgetActor *pauseWidgetActor = nullptr;
+    ASettingsWidgetActor *settingsWidgetActor = nullptr;
 };

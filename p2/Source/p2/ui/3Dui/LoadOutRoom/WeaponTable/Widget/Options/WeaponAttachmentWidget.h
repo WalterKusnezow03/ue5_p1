@@ -7,7 +7,7 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponOptionBaseWidget.h"
-
+#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
 
 #include "WeaponAttachmentWidget.generated.h"
 

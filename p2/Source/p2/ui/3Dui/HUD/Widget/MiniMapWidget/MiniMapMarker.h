@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
+#include "Blueprint/UserWidget.h"
 
 #include "MiniMapMarker.generated.h"
 

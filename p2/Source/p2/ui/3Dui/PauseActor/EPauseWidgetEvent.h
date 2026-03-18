@@ -8,4 +8,6 @@ enum class EPauseWidgetEvent
     EOpenLoadoutRoom,
     EOpenGameStartRoom,
     EExitPauseRoom,
+    EOpenSettingsWidget,
+    ECloseSettingsWidget
 };

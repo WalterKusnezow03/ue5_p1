@@ -9,7 +9,13 @@
  */
 class DEBUGPLUGIN_API DebugHelper
 {
+
+protected:
+	
+
 public:
+	static bool DebugToolsEnabled;
+
 	DebugHelper();
 	~DebugHelper();
 

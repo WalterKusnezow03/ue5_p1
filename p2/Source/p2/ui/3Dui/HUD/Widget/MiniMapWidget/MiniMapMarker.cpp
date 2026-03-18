@@ -2,6 +2,7 @@
 #include "customuipluginbase/baseInterface/WidgetHelper.h"
 #include "Components/CanvasPanelSlot.h"
 #include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+#include <map>
 
 
 //unklar ob das so bestehen bleibt - oder anders hinzugefüht wird

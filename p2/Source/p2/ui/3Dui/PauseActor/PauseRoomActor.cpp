@@ -1,9 +1,12 @@
 #include "PauseRoomActor.h"
 #include "p2/ui/3Dui/LoadOutRoom/LoadoutRoomActor.h"
 #include "p2/ui/3Dui/GameStartRoom/GameStartRoom.h"
-#include "p2/ui/3Dui/PauseActor/Widget/PauseWidgetActor.h"
-#include "p2/ui/3Dui/PauseActor/Widget/PauseWidget.h"
+#include "p2/ui/3Dui/PauseActor/Pause/Widget/PauseWidgetActor.h"
+#include "p2/ui/3Dui/PauseActor/Pause/Widget/PauseWidget.h"
+#include "p2/ui/3Dui/PauseActor/Settings/Widget/SettingsWidgetActor.h"
+#include "p2/ui/3Dui/PauseActor/Settings/Widget/SettingsWidget.h"
 
+#include "DebugPlugin/DebugHelper.h"
 
 APauseRoomActor *APauseRoomActor::instance = nullptr;
 
@@ -33,7 +36,8 @@ void APauseRoomActor::CreateInstanceIfNeeded(AActor *player){
 void APauseRoomActor::BeginPlay(){
     Super::BeginPlay();
     FindPauseMenuOnBeginPlay();
-    SetParentReferenceForPauseWidget();
+    FindSettingsMenuOnBeginPlay();
+    SetParentReferenceForWidgets();
 }
 
 void APauseRoomActor::Tick(float deltatime){
@@ -52,6 +56,12 @@ void APauseRoomActor::Notify(EPauseWidgetEvent event){
     if(event == EPauseWidgetEvent::EOpenGameStartRoom){
         NotifyOpenGameStartRoom();
         return;
+    }
+    if(event == EPauseWidgetEvent::EOpenSettingsWidget){
+        ShowSettingsWidget(true);
+    }
+    if(event == EPauseWidgetEvent::ECloseSettingsWidget){
+        ShowSettingsWidget(false);
     }
 }
 
@@ -73,6 +83,12 @@ void APauseRoomActor::NotifyOpenGameStartRoom(){
     AGameStartRoom::StaticEnter(copy);
 }
 
+void APauseRoomActor::ShowSettingsWidget(bool flag){
+    if(settingsWidgetActor){
+        settingsWidgetActor->UpdateVisibilityAndCollision(flag);
+    }
+}
+
 
 void APauseRoomActor::StaticEnter(AActor *player){
     CreateInstanceIfNeeded(player);
@@ -87,6 +103,7 @@ bool APauseRoomActor::Enter(AActor *player){
         SetActorHiddenInGame(false);
         LockPlayerMovement(true);
         SetToPlayerLocation();
+        ShowSettingsWidget(false);
         return true;
     }
     return false;
@@ -138,10 +155,29 @@ void APauseRoomActor::FindPauseMenuOnBeginPlay(){
     }
 }
 
-void APauseRoomActor::SetParentReferenceForPauseWidget(){
+void APauseRoomActor::FindSettingsMenuOnBeginPlay(){
+    if(!settingsWidgetActor){
+        AActor *actor = FindChildActorByName("SettingsWidgetActorBp");
+        if(actor){
+            if(ASettingsWidgetActor *casted = Cast<ASettingsWidgetActor>(actor)){
+                settingsWidgetActor = casted;
+            }
+        }
+    }
+}
+
+
+
+
+
+void APauseRoomActor::SetParentReferenceForWidgets(){
     if(UPauseWidget *widget = GetPauseWidget()){
         widget->SetParentActor(this);
     }
+    if(USettingsWidget *widget = GetSettingsWidget()){
+        widget->SetParentActor(this);
+    }
+
 }
 
 void APauseRoomActor::ClearReferencesOnEndPlay(){
@@ -158,4 +194,31 @@ UPauseWidget *APauseRoomActor::GetPauseWidget(){
         }
     }
     return nullptr;
+}
+
+
+USettingsWidget *APauseRoomActor::GetSettingsWidget(){
+    if(settingsWidgetActor){
+        if(USettingsWidget *internalPtr = settingsWidgetActor->GetWidget<USettingsWidget>()){
+            return internalPtr;
+        }
+    }
+    return nullptr;
+}
+
+
+
+
+
+
+void APauseRoomActor::Notify(ESettingsWidgetEvent event){
+    if(event == ESettingsWidgetEvent::EEnableDebugTools){
+        DebugHelper::DebugToolsEnabled = true;
+    }
+    if(event == ESettingsWidgetEvent::EDisbaleDebugTools){
+        DebugHelper::DebugToolsEnabled = false;
+    }
+    if(event == ESettingsWidgetEvent::EExitSettingsWidget){
+        Notify(EPauseWidgetEvent::ECloseSettingsWidget);
+    }
 }

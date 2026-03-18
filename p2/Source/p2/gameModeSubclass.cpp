@@ -50,6 +50,7 @@ AgameModeSubclass::AgameModeSubclass()
 void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
+    DebugHelper::DebugToolsEnabled = true;
 
     //DEBUG
     RunTests(); 

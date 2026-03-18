@@ -1,7 +1,7 @@
 #include "WeaponTableWidgetActor.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/WeaponTableActor.h"
-
+#include "AssetEnumCollection/assetEnums/Eui3DWidgetEnum.h"
 
 
 void AWeaponTableWidgetActor::BeginPlay(){

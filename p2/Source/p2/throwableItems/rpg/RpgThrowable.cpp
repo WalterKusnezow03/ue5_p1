@@ -15,22 +15,31 @@ void ARpgThrowable::BeginPlay(){
         10 * 100
     );
     resetIgnoredActors();
-    StartTimer();
+    
 }
 
 void ARpgThrowable::throwIntoDirection(FVector start, FVector direction){
     if (!isThrown){
-        StartTimer();
+        StartDetonationTimer();
+        StartMaxLifeTimeTimer();
+        prevTickLocation = start;
     }
     Super::throwIntoDirection(start, direction);
 }
 
-void ARpgThrowable::StartTimer(){
+
+void ARpgThrowable::StartDetonationTimer(){
     detonationTimer.Begin(minDetonationTimer, false);
     timerFinished = false;
 }
 
-bool ARpgThrowable::TickTimer(float deltatime){
+void ARpgThrowable::StartMaxLifeTimeTimer(){
+    maximumLifetimeTimer.Begin(maxLifeTime, false);
+}
+
+
+
+bool ARpgThrowable::TickTimers(float deltatime){
     if(!timerFinished){
         if(isThrown && !isDetonated){
             detonationTimer.Tick(deltatime);
@@ -38,9 +47,15 @@ bool ARpgThrowable::TickTimer(float deltatime){
                 timerFinished = true;
                 return true;
             }
+
+            maximumLifetimeTimer.Tick(deltatime);
+            if(maximumLifetimeTimer.timesUp()){
+                timerFinished = true;
+                Detonate();
+                return true;
+            }
         }
     }
-
     
 
     return false;
@@ -49,8 +64,9 @@ bool ARpgThrowable::TickTimer(float deltatime){
 void ARpgThrowable::Tick(float deltatime){
     Super::Tick(deltatime);
     UpdateSphereCast();
-    TickTimer(deltatime);
+    TickTimers(deltatime);
     UpdateVelocity(deltatime);
+    
 }
 
 void ARpgThrowable::UpdateVelocity(float deltatime){
@@ -67,9 +83,17 @@ void ARpgThrowable::UpdateVelocity(float deltatime){
     FVector x = GetActorLocation();
     FVector xt = x + vDir * deltatime + a * deltatime2; // + Fg
     SetActorLocation(xt);
+    UpdateRotation(xt);
 }
 
-
+void ARpgThrowable::UpdateRotation(const FVector &location){
+    if(!isThrown || hitObject || isDetonated){
+        return;
+    }
+    FVector dir = location - prevTickLocation; // AB = B - A
+    SetActorRotation(dir.Rotation());
+    prevTickLocation = location;
+}
 
 void ARpgThrowable::UpdateSphereCast(){
     if(!isThrown){

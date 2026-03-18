@@ -1,4 +1,5 @@
 #include "MiniMapData.h"
+#include "DebugPlugin/DebugHelper.h"
 
 MiniMapData::MiniMapData(){
 

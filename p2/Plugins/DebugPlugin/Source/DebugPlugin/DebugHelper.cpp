@@ -2,6 +2,8 @@
 
 #include "DebugHelper.h"
 
+bool DebugHelper::DebugToolsEnabled = true;
+
 DebugHelper::DebugHelper()
 {
 }
@@ -35,6 +37,9 @@ void DebugHelper::showScreenMessage(FString s, FColor color){
 
 	//debug
 	if(DisableScreenMessages()){
+		return;
+	}
+	if(!DebugToolsEnabled){
 		return;
 	}
 
@@ -210,6 +215,9 @@ void DebugHelper::showScreenMessage(FString sOut, FVector vec){
  * 
  */
 void DebugHelper::logMessage(FString printing){
+	if(!DebugToolsEnabled){
+		return;
+	}
 	UE_LOG(LogTemp, Log, TEXT("%s"), *printing); //for whatever reason the string must be dereferenced
 }
 
@@ -309,6 +317,9 @@ void DebugHelper::logMessage(
 
 
 void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End, FColor color){
+	if(!DebugToolsEnabled){
+		return;
+	}
 	if(world != nullptr){
 		DrawDebugLine(world, Start, End, color, false, 100.0f, 0, 1.0f);
 	}
@@ -316,6 +327,9 @@ void DebugHelper::showLineBetween(UWorld *world, FVector Start, FVector End, FCo
 
 
 void DebugHelper::showLineBetween(UWorld *worldin, FVector Start, FVector End, FColor color, float time){
+	if(!DebugToolsEnabled){
+		return;
+	}
 	if(worldin != nullptr){
 		DrawDebugLine(worldin, Start, End, color, false, time, 0, 1.0f);
 	}

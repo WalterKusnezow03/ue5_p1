@@ -9,6 +9,7 @@ void UPauseWidget::Tick(float DeltaTime){
     loadoutButtonUtil.Tick(DeltaTime);
     exitButtonUtil.Tick(DeltaTime);
     homeButtonUtil.Tick(DeltaTime);
+    settingsButtonUtil.Tick(DeltaTime);
 }
 
 
@@ -47,6 +48,10 @@ bool UPauseWidget::dispatchClick(const FVector2D &pos){
             parentActor->Notify(EPauseWidgetEvent::EExitPauseRoom);
             return true;
         }
+        if(settingsButtonUtil.dispatchClick(pos)){
+            parentActor->Notify(EPauseWidgetEvent::EOpenSettingsWidget);
+            return true;
+        }
     }
     return false;
 }
@@ -55,14 +60,16 @@ bool UPauseWidget::dispatchHover(const FVector2D &position){
     bool resultA = loadoutButtonUtil.dispatchHover(position);
     bool resultB = exitButtonUtil.dispatchHover(position);
     bool resultC = homeButtonUtil.dispatchHover(position);
+    bool resultD = settingsButtonUtil.dispatchHover(position);
 
-    return resultA || resultB || resultC;
+    return resultA || resultB || resultC || resultD;
 }
 
 void UPauseWidget::Init(){
     SetupFromDefaultColors(loadoutButtonUtil, GetLoadoutButton());
     SetupFromDefaultColors(exitButtonUtil, GetExitButton());
     SetupFromDefaultColors(homeButtonUtil, GetHomeButton());
+    SetupFromDefaultColors(settingsButtonUtil, GetSettingsButton());
 }
 
 //remove hover on widget left
@@ -70,6 +77,7 @@ void UPauseWidget::removeHover(){
     loadoutButtonUtil.removeHover();
     exitButtonUtil.removeHover();
     homeButtonUtil.removeHover();
+    settingsButtonUtil.removeHover();
 }
 
 

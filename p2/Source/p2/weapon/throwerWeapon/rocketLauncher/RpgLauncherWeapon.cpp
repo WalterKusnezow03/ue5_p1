@@ -8,6 +8,10 @@ ARpgLauncherWeapon::ARpgLauncherWeapon() : Super(){
 };
 
 
+void ARpgLauncherWeapon::BeginPlay(){
+    Super::BeginPlay();
+    
+}
 
 void ARpgLauncherWeapon::RequestNewThrowableIfNeeded(){
     if(!launchableActorPointer){
