@@ -1167,6 +1167,7 @@ void HipController::SetStateCollapse(bool flag){
     legLeft.SetStateCollapse(flag);
     legRight.SetStateCollapse(flag);
     
+    BeginAngularDampingTimerCollapsPhysics();
 }
 
 void HipController::UpdateRootJointOnCollapse(){
@@ -1183,12 +1184,26 @@ void HipController::TickCollapsePhysics(float deltatime){
     FCollisionQueryParams params = ASharedRaycastParamManager::getCollisonParams();
     rootJoint.UpdateIgnoreParamsRecursive(params);
     rootJoint.TickAndBuildRecursive(deltatime);
-    
+    TickAngularDampingTimerCollapsePhysics(deltatime);
+    TickAngularDampingTimerCollapsePhysics(deltatime);
+
     //rootJoint.logGroundedState("HipController::", FColor::Cyan);
 }
 
+void HipController::BeginAngularDampingTimerCollapsPhysics(){
+    angularDampingTimer.Begin(angularDampingTimeToFullDamp, false);
+}
 
+void HipController::TickAngularDampingTimerCollapsePhysics(float deltatime){
+    if(angularDampingTimer.timesUp()){
+        return;
+    }
 
+    angularDampingTimer.Tick(deltatime);
+    float scalar = angularDampingTimer.InvertedScalar(); //between 1 and 0, damp towards zero
+    DebugHelper::logMessage(FString::Printf(TEXT("HipController::AngularDamp %.2f"), scalar));
+    rootJoint.SetAngularDampingRecursive(scalar);
+}
 
 FVector HipController::GetVelocity(){
     return velocity;
@@ -1204,7 +1219,7 @@ FVector2D HipController::GetHorizontalVelocity(){
 void HipController::FlagUpdatedMotionTimeForArmAnimation(float dynamicMotionTimeInForward){
     //forward and backward is same right now
     float dynamicMotionTimeInForwardAndBackward = dynamicMotionTimeInForward * 2.0f;
-    
+
     updatedMotionTime = dynamicMotionTimeInForwardAndBackward;
     bMotionTimeUpdatedForArms = true;
 }

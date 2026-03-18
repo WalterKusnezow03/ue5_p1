@@ -11,6 +11,7 @@
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/LocoMotionProperty/FLocomotionProperty.h"
 
+#include "CoreMath/animation/timer/Timer.h"
 
 #include "PlueckerCore/Interface/IJointInterface.h"
 #include "PlueckerCore/Bone/Joint.h"
@@ -49,7 +50,7 @@ public:
 
     /// @brief tick to update based on locomotion, gravity etc.
     /// @param deltatime 
-    void Tick(float deltatime);
+    virtual void Tick(float deltatime);
 
 
     //do not modify
@@ -122,7 +123,7 @@ protected:
     void buildOnStart();
     void TickLocomotion(float deltatime);
     void TickFalling(float deltatime);
-    void applyLocomotion(float deltatime);
+    virtual void applyLocomotion(float deltatime);
     virtual void updateInterpolatorLocomotion(float deltatime);
 
     bool forwardMotion = true;
@@ -266,9 +267,13 @@ protected:
 
     void UpdateRootJointOnCollapse();
 
+    // --- plucker damp ---
+    float angularDampingTimeToFullDamp = 30.0f;
+    Timer angularDampingTimer;
+    void BeginAngularDampingTimerCollapsPhysics();
+    void TickAngularDampingTimerCollapsePhysics(float deltatime);
 
-
-    //ik carried item hands interface
+    // --- ik carried item hands interface ---
     float updatedMotionTime = 1.0f;
     bool bMotionTimeUpdatedForArms = false;
     void FlagUpdatedMotionTimeForArmAnimation(float time);

@@ -13,6 +13,9 @@ HumanoidPlayerController::~HumanoidPlayerController(){
 void HumanoidPlayerController::defaultSetup(AActor *actor){
     bool createHands = false;
     HumanoidController::defaultSetup(actor, createHands);
+    FHumanoidControllerSetupPackage package = FHumanoidControllerSetupPackage::GetDefault(actor);
+    playerHipController.setup(package);
+
     DebugDisableCollisionOnLimbs();
     MarkEmptyActorOwnedByPlayer();
 }
@@ -29,12 +32,14 @@ void HumanoidPlayerController::Tick(float deltatime){
     
     //not ticked for player for now.
     //hipController.Tick(deltatime);
-    
+    playerHipController.Tick(deltatime);
+
     torsoController.Tick(
         //hipTDebug,
         //hipRDebug,
-        hipController.getTranslation(), // MMatrix &actorTranslation,
-        hipController.getOrientation(), // MMatrix &actorRotation,
+        playerHipController.getTranslationModfied(),
+        //playerHipController.getTranslation(), // MMatrix &actorTranslation,
+        playerHipController.getOrientation(), // MMatrix &actorRotation,
         deltatime
     );
     TickMainCarriedItemSocket(deltatime);
@@ -48,8 +53,8 @@ void HumanoidPlayerController::OverrideTransformAndCamera(
     FVector &location,
     FRotator &rotation
 ){
-    hipController.forceOverrideRotation(rotation);
-    hipController.SetTranslation(location);
+    playerHipController.forceOverrideRotation(rotation);
+    playerHipController.SetTranslation(location);
 
     //debug manual matrix copy
     rotation.Pitch = 0.0f;
@@ -113,7 +118,7 @@ void HumanoidPlayerController::TickMainCarriedItemSocket(float deltatime){
 
     MMatrix &translation = TranslationMatrixForSocket();
 
-    MMatrix rHip = hipController.getOrientation();
+    MMatrix rHip = playerHipController.getOrientation();
     mainItemSocket.Tick(
         deltatime,
         translation, //cameraWorldLocation,
@@ -218,4 +223,11 @@ void HumanoidPlayerController::DebugDisableCollisionOnLimbs(){
             }*/
         }
     }
+}
+
+
+TArray<AActor *> HumanoidPlayerController::actorInChildrenArray(){
+    TArray<AActor *> base = HumanoidController::actorInChildrenArray();
+    playerHipController.getActors(base);
+    return base;
 }

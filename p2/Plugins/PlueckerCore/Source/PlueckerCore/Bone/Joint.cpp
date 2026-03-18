@@ -685,3 +685,25 @@ FVector Joint::CenterOfMassWorldRelativeTo(const FVector &pos) const {
 FVector Joint::CenterOfMassWorld() const {
     return GetSpatialTransformConst().centerOfMassWorld(centerOfMass);
 }
+
+
+
+
+
+
+// ---- manual fixes to stop rotation on collapsin skelletons ----
+void Joint::SetAngularDampingRecursive(float factor){
+    SetAngularDamping(factor);
+
+    TArray<Joint *> childs = AllChildren();
+    for (int i = 0; i < childs.Num(); i++){
+        if(Joint *current = childs[i]){
+            current->SetAngularDampingRecursive(factor);
+        }
+    }
+}
+
+void Joint::SetAngularDamping(float factor){
+    SpatialVector &velocity = GetSpatialTransform().GetSpatialVelocity();
+    velocity.SetAngularDampingFactor(factor);
+}

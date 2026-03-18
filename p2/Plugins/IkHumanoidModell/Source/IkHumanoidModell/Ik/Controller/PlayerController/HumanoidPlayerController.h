@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "IkHumanoidModell/Ik/Controller/BaseController/HumanoidController.h"
+#include "IkHumanoidModell/Ik/Controller/PlayerController/playerHipController/PlayerHipController.h"
 
 class UCameraComponent;
 
@@ -39,6 +40,10 @@ public:
     void weaponRaisedReadyPosition(bool raise);
     void weaponContactPosition();
 
+
+protected:
+    virtual TArray<AActor *> actorInChildrenArray() override;
+
 private:
     void DebugDisableCollisionOnLimbs();
 
@@ -61,4 +66,10 @@ private:
     MMatrix &TranslationMatrixForSocket();
 
     bool readyRaisedPositionFlagged = false;
+
+
+
+
+
+    PlayerHipController playerHipController;
 };

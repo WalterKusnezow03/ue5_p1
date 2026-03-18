@@ -232,4 +232,11 @@ protected:
     float MassOfSubTree();
     float GetTotalMassOfSubtree();
     void GetMassRecursive(float &massIn);
+
+    // external damping
+
+public:
+    void SetAngularDampingRecursive(float factor);
+protected:
+    void SetAngularDamping(float factor);
 };

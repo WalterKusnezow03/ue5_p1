@@ -102,8 +102,8 @@ protected:
 
     void addAllActorsInChildrenToRaycastExclude();
     // actor collect for set damaged owner and exclude from raycast here
-    TArray<AActor *> actorInChildrenArray();
-
+    virtual TArray<AActor *> actorInChildrenArray();
+    
 
     //CarriedItemSocket mainItemSocket;
     AnimCarriedItemSocket mainItemSocket;

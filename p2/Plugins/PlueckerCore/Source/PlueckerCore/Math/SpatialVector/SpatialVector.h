@@ -53,11 +53,12 @@ public:
         FVector &outF
     );
 
-
+    void SetAngularDampingFactor(float value);
 
 private:
     FVector w = FVector(0,0,0);
     FVector v = FVector(0,0,0);
+    float angularDampingFactor = 0.5f;
 
     float SafeDenominator(float value);
     void DebugKeepRange(FVector &vec, double limit);

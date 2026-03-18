@@ -14,6 +14,13 @@ void SpatialVector::Damp(float factor){
     }
 }
 
+void SpatialVector::SetAngularDampingFactor(float value){
+    float maxDamp = 0.5f; //TESTED VALUE, IS THE MOST STABLE, DO NOT CHANGE, is very good. Looks good.
+    value = std::max(maxDamp, value);
+    value = std::min(0.0f, value);
+    angularDampingFactor = value;
+}
+
 void SpatialVector::AddVelocity(const FVector &wIn, const FVector &vIn){
     w += wIn;
     v += vIn;
@@ -21,8 +28,8 @@ void SpatialVector::AddVelocity(const FVector &wIn, const FVector &vIn){
     /// --- DO NOT REMOVE --- -> 0.5 value looks good, is tested!
     /// @brief daming by 0.5 added, to ensure the joint doesnt spin forever
     /// adds certainly a good visual quality, is WANTED like this!
-    float factor = 0.5f;
-    Damp(factor);
+    //float factor = 0.5f;
+    Damp(angularDampingFactor);
 }
 
 
@@ -59,7 +66,8 @@ void SpatialVector::AddTorque(
     //debug
     DebugKeepRange(w, 1000.0f);
 
-    Damp(0.5f);
+    Damp(angularDampingFactor);
+    //Damp(0.5f);
 }
 
 void SpatialVector::DebugKeepRange(FVector &vec, double limit){
