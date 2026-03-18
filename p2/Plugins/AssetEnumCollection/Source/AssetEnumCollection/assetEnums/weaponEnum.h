@@ -12,7 +12,8 @@ enum class weaponEnum
 {
 	assaultRifle,
 	pistol,
-	thrower,
+	default_thrower,
 	C4,
 	grenade,
+	rpgLauncher,
 };

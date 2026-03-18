@@ -12,6 +12,7 @@ PlayerInventory::PlayerInventory()
     
     weaponInventory.addToAmmunition(ammunitionEnum::assaultrifle556, 200);
     weaponInventory.addToAmmunition(ammunitionEnum::pistol9, 50);
+    weaponInventory.addToAmmunition(ammunitionEnum::rpg_ammunition, 4);
 
 }
 

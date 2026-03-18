@@ -12,11 +12,11 @@
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "p2/throwableItems/throwableItem.h"
+#include "p2/throwableItems/base/LaunchableItemBase.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "PathFinder/pathFinding/PathFinder.h"
-#include "p2/weapon/throwerWeapon.h"
+#include "p2/weapon/throwerWeapon/base/throwableLauncherWeapon.h"
 
 #include "GcGameCore/Launcher/GcLauncher.h"
 
@@ -125,14 +125,14 @@ void EntityManager::add(Aweapon *weaponIn){
 
 /// @brief adds a throwable to the entity manager
 /// @param throwableItem 
-void EntityManager::add(AthrowableItem *throwableItem){
+void EntityManager::add(ALaunchableItemBase *throwableItem){
     if(throwableItem != nullptr){
-        throwableEnum type = throwableItem->getType();
+        EThrowableEnum type = throwableItem->getType();
 
         AGcLauncher *gc = AGcLauncher::Instance();
         if(gc){
             // gc->Add<E>(uobject*, e);
-            gc->collection.Add<throwableEnum>(throwableItem, type);
+            gc->collection.Add<EThrowableEnum>(throwableItem, type);
         }
     }
 }
@@ -416,7 +416,7 @@ Aweapon* EntityManager::spawnAweapon(UWorld *world, weaponSetupHelper *helper){
 /// @param location to spawn at
 /// @param type type to spawn
 /// @return pointer to the AthrowableItem (derived from aactor)
-AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location, throwableEnum type){
+ALaunchableItemBase* EntityManager::spawnAthrowable(UWorld *world, FVector &location, EThrowableEnum type){
 
     if(world != nullptr){
 
@@ -424,7 +424,7 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
         DebugHelper::showScreenMessage("EntityManager: Try Spawn Throwable");
         UClass *fromMap = nullptr;
         if(assetManager *a = assetManager::instance()){
-            fromMap = a->Find<throwableEnum, UClass>(type);
+            fromMap = a->Find<EThrowableEnum, UClass>(type);
             // a->findBp(type);
 
             if(!fromMap){
@@ -436,15 +436,15 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
         if(gc && fromMap){
             // gc->Add<E>(uobject*, e);
             // T* gc->Get<T, E>(UClass_T*, e);
-            AthrowableItem *item = gc->collection.Get<AthrowableItem,throwableEnum>(fromMap, type);
+            ALaunchableItemBase *item = gc->collection.Get<ALaunchableItemBase,EThrowableEnum>(fromMap, type);
             if(item != nullptr){
                 DebugHelper::logMessage("EntityManager: Found thrwable!");
                 DebugHelper::showScreenMessage("EntityManager: Found thrwable!");
 
                 addActorToIgnoreRaycastParams(item, teamEnum::neutralTeam);
-
-                item->SetActorLocation(location);
                 item->reset();
+                item->SetActorLocation(location);
+                
 
                 return item;
             }
@@ -458,11 +458,12 @@ AthrowableItem* EntityManager::spawnAthrowable(UWorld *world, FVector &location,
 
 
 
+/*
 /// @brief spawns a thrower weapon witht the desired throwable if possible
 /// @param world 
 /// @param typeToSpawn 
 /// @return 
-Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
+Aweapon *EntityManager::spawnAweapon(UWorld* world, EThrowableEnum typeToSpawn){
     DebugHelper::showScreenMessage("try get weapon");
     FVector Location = FVector(0, 0, 0);
 
@@ -482,7 +483,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
         // T* gc->Get<T, E>(UClass_T*, e); 
         Aweapon *base = gc->collection.Get<Aweapon,weaponEnum>(selectedBp, weaponEnum::thrower);
         if(base != nullptr){
-            AthrowerWeapon *casted = Cast<AthrowerWeapon>(base);
+            AthrowableLauncherWeapon *casted = Cast<AthrowableLauncherWeapon>(base);
             if(casted){
                 addActorToIgnoreRaycastParams(casted, teamEnum::neutralTeam);
                 
@@ -495,7 +496,7 @@ Aweapon *EntityManager::spawnAweapon(UWorld* world, throwableEnum typeToSpawn){
 
 
     return nullptr;
-}
+}*/
 
 /// @brief spawns a custom mesh actor at a given location without any mesh.
 /// @param world world to spawn in

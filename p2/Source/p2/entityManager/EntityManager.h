@@ -8,10 +8,11 @@
 #include "p2/entities/EntityScript.h"
 #include "p2/entities/HumanEntityScript.h"
 
-#include "p2/weapon/throwerWeapon.h"
+#include "p2/weapon/throwerWeapon/base/throwableLauncherWeapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "AssetEnumCollection/assetEnums/throwableEnum.h"
-#include "p2/throwableItems/throwableItem.h"
+#include "p2/weapon/throwerWeapon/enum/throwableEnum.h"
+
+#include "p2/throwableItems/base/LaunchableItemBase.h"
 
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
@@ -20,7 +21,7 @@
 #include "GameCore/EntityGC/EntityManagerGeneric.h"
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
-#include "AssetEnumCollection/assetEnums/throwableEnum.h"
+#include "p2/weapon/throwerWeapon/enum/throwableEnum.h"
 
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
@@ -80,7 +81,7 @@ public:
 	void add(AEntityScript *entity);
 	void add(AHumanEntityScript *humanEntity);
 	void add(Aweapon *weaponIn);
-	void add(AthrowableItem *throwableItem);
+	void add(ALaunchableItemBase *throwableItem);
 	
 	void add(AcustomMeshActor *meshActorIn);
 	void add(AWorldDynamicWidgetActor *actorIn);
@@ -92,10 +93,9 @@ public:
 
 	Aweapon *spawnAweapon(UWorld *world, weaponEnum typeToSpawn); //no attachments, only spawn by type
 	Aweapon *spawnAweapon(UWorld *world, weaponSetupHelper *helper); //spawn with helper object for attachments
-	//spawn a thrower weapon
-	Aweapon *spawnAweapon(UWorld *world, throwableEnum throwableType);
+	//DEPRECATED Aweapon *spawnAweapon(UWorld* world, EThrowableEnum typeToSpawn)
 
-	AthrowableItem *spawnAthrowable(UWorld *world, FVector &location, throwableEnum type); //spawns a throwable if existent
+	ALaunchableItemBase *spawnAthrowable(UWorld *world, FVector &location, EThrowableEnum type); //spawns a throwable if existent
 
 	AcustomMeshActor *spawnAcustomMeshActor(UWorld *world, FVector &location);
 

@@ -75,3 +75,47 @@ TArray<AActor *> SphereCaster::getAActorsInRadius(
     }
     return emptyArray;
 }
+
+
+
+
+
+bool SphereCaster::AnyHitInRadius(
+    UWorld *world,
+    const FVector &location,
+    float SphereRadius,
+    AActor *excludedActor
+){
+    TArray<AActor *> array;
+    if(excludedActor){
+        array.Add(excludedActor);
+    }
+    return AnyHitInRadius(world, location, SphereRadius, array);
+}
+
+bool SphereCaster::AnyHitInRadius(
+    UWorld *world,
+    const FVector &location,
+    float SphereRadius,
+    TArray<AActor*> &excludedActors
+){
+    if(!world){
+        return false;
+    }
+
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActors(excludedActors);
+
+    FCollisionObjectQueryParams ObjectParams;
+    ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+    ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
+    bool bHit = world->OverlapAnyTestByObjectType(
+        location,
+        FQuat::Identity,
+        ObjectParams,
+        FCollisionShape::MakeSphere(SphereRadius),
+        Params
+    );
+    return bHit;
+}

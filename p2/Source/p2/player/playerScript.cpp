@@ -53,7 +53,7 @@ void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
     if(entityMananger != nullptr){
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
 
-        //w = e->spawnAweapon(GetWorld(), throwableEnum::greneade_enum);
+        
         weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
         if(weapon != nullptr){
             weapon->applySight(weaponAttachmentEnum::reddot);

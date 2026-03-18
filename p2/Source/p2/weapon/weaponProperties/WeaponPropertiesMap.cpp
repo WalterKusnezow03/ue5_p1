@@ -41,7 +41,7 @@ void WeaponPropertiesMap::setup(weaponEnum type){
         ammunitionEnum ammunitionIn,
         int maxRangeCm, 
         int maxDamageIn,
-        float fireRpmIn,
+        float fireRpmIn, //rpm / recoil time
         bool isSingleFireIn,
         int magSize,
         float reloadtime,
@@ -54,7 +54,7 @@ void WeaponPropertiesMap::setup(weaponEnum type){
             ammunitionEnum::assaultrifle556,
             400 * meter, //max range
             35, //damage max
-            400, //fireRpmIn,
+            400, //rpm / recoil time
             false, //single fire mode
             30, //magSizeIn
             1.2f, //reload time
@@ -67,7 +67,7 @@ void WeaponPropertiesMap::setup(weaponEnum type){
             ammunitionEnum::pistol9,
             400 * meter,
             10, //damage
-            300,
+            300,//rpm / recoil time
             true,
             12,
             1.0f, //reload time
@@ -75,6 +75,21 @@ void WeaponPropertiesMap::setup(weaponEnum type){
         );
     }
 
+    if(type == weaponEnum::rpgLauncher){
+        refToSetup.setup(
+            type,
+            ammunitionEnum::rpg_ammunition,
+            400 * meter,
+            10, //damage
+            300, //rpm / recoil time
+            true, //single fire
+            1, //mag size
+            2.0f, //reload time
+            0.2f //recoil
+        );
+    }
+
+    /*
     if(type == weaponEnum::thrower){
         refToSetup.setup(
             type,
@@ -87,7 +102,7 @@ void WeaponPropertiesMap::setup(weaponEnum type){
             1.0f, //reload time
             0.0f //recoil
         );
-    }
+    }*/
 }
 
 

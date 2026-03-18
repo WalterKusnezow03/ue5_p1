@@ -65,7 +65,7 @@ bool WeaponAttachmentValidator::isAGripAttachment(weaponAttachmentEnum type){
 std::vector<weaponEnum> WeaponAttachmentValidator::WeaponAttachmentsNotAllowed(){
     std::vector<weaponEnum> outVec;
     outVec.push_back(weaponEnum::C4);
-    outVec.push_back(weaponEnum::thrower);
+    outVec.push_back(weaponEnum::rpgLauncher);
     outVec.push_back(weaponEnum::grenade);
     return outVec;
 }

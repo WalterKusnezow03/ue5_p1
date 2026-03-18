@@ -7,6 +7,24 @@ class COREMATH_API SphereCaster {
 
 public:
 
+    //simple
+    bool AnyHitInRadius(
+        UWorld *world,
+        const FVector &location,
+        float SphereRadius,
+        AActor *excludedActor
+    );
+    bool AnyHitInRadius(
+        UWorld *world,
+        const FVector &location,
+        float SphereRadius,
+        TArray<AActor*> &excludedActors
+    );
+    //simple
+
+
+
+
     //template 
     template <typename T>
     T *getClosestTActorInRadius(
@@ -86,6 +104,8 @@ public:
         TArray<AActor*> &excludedActors
     );
     //with excluded actors
+
+    
 
 private:
     //if the distance is lower, the passed distance is updated and true returned.

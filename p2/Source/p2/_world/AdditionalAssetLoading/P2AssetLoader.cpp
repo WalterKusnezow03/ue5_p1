@@ -6,7 +6,7 @@
 
 
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
-#include "AssetEnumCollection/assetEnums/throwableEnum.h"
+#include "p2/weapon/throwerWeapon/enum/throwableEnum.h"
 
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
@@ -171,13 +171,6 @@ void P2AssetLoader::loadWeapons(){
     );
 
 
-    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
-        weaponEnum::thrower,            // track in asset manager
-        "Game",                         // like "Game" for game or any other plugin name
-        "Prefabs/Throwables",           // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
-        "defaultthrower"                // Just the file name as displayed
-    );
-
     //
     //Users/walterk/Documents/UnrealProjects/p2/Content/Prefabs/Weapons/c4/c4BP.uasset
     AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
@@ -194,6 +187,16 @@ void P2AssetLoader::loadWeapons(){
         "Game", // like "Game" for game or any other plugin name
         "Prefabs/Weapons/grenade", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "throwableGrenadeBP"                // Just the file name as displayed
+    );
+
+
+
+    
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::rpgLauncher,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/rpg", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "RPGLauncherBP"                // Just the file name as displayed
     );
 }
 
@@ -262,13 +265,23 @@ void P2AssetLoader::loadWeaponAnimations(){
 /// @param entityManager entity manager
 void P2AssetLoader::loadThrowables(){
     
-    AssetLoader::LoadAndSaveAssetToManager<throwableEnum, UClass>(
-        throwableEnum::greneade_enum, // track in asset manager
+    /*
+    DEPRECATED!
+
+    AssetLoader::LoadAndSaveAssetToManager<EThrowableEnum, UClass>(
+        EThrowableEnum::greneade_enum, // track in asset manager
         "Game",                       // like "Game" for game or any other plugin name
         "Prefabs/Throwables",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "grenadeBp"                   // Just the file name as displayed
+    );*/
+
+
+    AssetLoader::LoadAndSaveAssetToManager<EThrowableEnum, UClass>(
+        EThrowableEnum::ERpg, // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/rpg", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "RPGHeadBP" // Just the file name as displayed
     );
-    
     
 }
 
