@@ -45,6 +45,9 @@ public:
     //connect hip
     Joint *GetTopJoint();
 
+
+    void SetHeadRotation(const FRotator &rotation);
+    
 private:
     //connect spine to layered bones.
     TArray<Joint *> GetTopJointsOfLayeredArms();

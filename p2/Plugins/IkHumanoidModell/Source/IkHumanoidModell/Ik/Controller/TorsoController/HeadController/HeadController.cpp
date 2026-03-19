@@ -151,5 +151,9 @@ void HeadController::ReactToDamage(
 
 
 
-
-
+void HeadController::SetHeadRotation(
+    const FRotator &rotation
+){
+    FRotator copy = rotation;
+    headRotation.setRotation(copy);
+}

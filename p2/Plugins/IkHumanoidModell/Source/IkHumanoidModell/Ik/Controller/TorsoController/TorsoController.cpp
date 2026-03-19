@@ -148,3 +148,8 @@ void TorsoController::SetStateCollapse(bool flag){
     partRight.SetStateCollapse(flag);
     headController.SetStateCollapse(flag);
 }
+
+
+void TorsoController::SetHeadRotation(const FRotator &rotation){
+    headController.SetHeadRotation(rotation);
+}

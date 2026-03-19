@@ -185,11 +185,17 @@ void P2AssetLoader::loadWeapons(){
     AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
         weaponEnum::grenade,       // track in asset manager
         "Game", // like "Game" for game or any other plugin name
-        "Prefabs/Weapons/grenade", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Prefabs/Weapons/Throwable/grenade", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "throwableGrenadeBP"                // Just the file name as displayed
     );
 
-
+    
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::smokeGrenade,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/Throwable/smokegrenade", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "smokeGrenadeBP"                // Just the file name as displayed
+    );
 
     
     AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(

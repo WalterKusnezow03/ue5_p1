@@ -33,6 +33,8 @@ public:
 
     bool IsFinished();
 
+    void StopEffect();
+
 protected:
     Timer timer;
     bool timerFinshed = true; //true on begin.

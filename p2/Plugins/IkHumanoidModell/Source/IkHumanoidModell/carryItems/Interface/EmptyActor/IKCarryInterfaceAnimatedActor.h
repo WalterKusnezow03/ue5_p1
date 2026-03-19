@@ -93,6 +93,10 @@ public:
 
 
 
+	//override throwing direction -- player only humanoid controller --
+	void OverrideThrowingDirectionOfItem(FVector direction);
+	//override throwing direction -- player only humanoid controller --
+
 protected:
 
 	bool isPickedUpFlag = false;
@@ -194,6 +198,8 @@ protected:
 	void UpdateHasMovedFlag(const FVector &location);
 
 
-	//not lösung!
+	// ---- throwing direction of items: can be overriden ----
 	FVector ThrowingDirectionOfItem();
+	bool bItemThrowingDirectionOverriden = false;
+    FVector itemThrowingDirection;
 };	

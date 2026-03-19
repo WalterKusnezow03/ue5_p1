@@ -70,6 +70,11 @@ private:
 
 
 
-
+    //needed for custom leg interpolation!
     PlayerHipController playerHipController;
+
+
+    //override throwing direction
+    void OverrideItemThrowingDirection(UCameraComponent &camera);
+   
 };

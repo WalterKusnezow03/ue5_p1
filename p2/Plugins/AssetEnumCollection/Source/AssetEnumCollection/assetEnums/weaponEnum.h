@@ -15,5 +15,6 @@ enum class weaponEnum
 	default_thrower,
 	C4,
 	grenade,
+	smokeGrenade,
 	rpgLauncher,
 };

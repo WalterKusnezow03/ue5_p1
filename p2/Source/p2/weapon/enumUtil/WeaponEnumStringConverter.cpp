@@ -14,9 +14,13 @@ FString WeaponEnumStringConverter::toString(weaponEnum type){
     if(type == weaponEnum::grenade){
         name = FString::Printf(TEXT("Grenade"));
     }
+    if(type == weaponEnum::smokeGrenade){
+        name = FString::Printf(TEXT("Smoke Grenade"));
+    }
     if(type == weaponEnum::rpgLauncher){
         name = FString::Printf(TEXT("RPG Launcher"));
     }
+    
 
     return name;
 }
@@ -27,7 +31,8 @@ std::vector<weaponEnum> WeaponEnumStringConverter::AllWeaponTypes(){
         weaponEnum::pistol,
         weaponEnum::rpgLauncher,
         weaponEnum::C4,
-        weaponEnum::grenade
+        weaponEnum::grenade,
+        weaponEnum::smokeGrenade
     };
     return output;
 }
@@ -50,6 +55,5 @@ FString WeaponEnumStringConverter::toString(weaponAttachmentEnum type){
     if(type == weaponAttachmentEnum::muzzle_SoundSurpressor){
         name = FString::Printf(TEXT("sound surpressor"));
     }
-    
     return name;
 } 

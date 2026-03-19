@@ -18,7 +18,8 @@ void UNiagaraComponentCustom::TickExternal(float DeltaTime){
         if(timer.timesUp()){
             // StopEffect();
             timerFinshed = true;
-            Reset();
+            //Reset();
+            StopEffect();
         }
     }
 }
@@ -37,10 +38,10 @@ void UNiagaraComponentCustom::StartEffect()
     }
 }
 
-/*void UNiagaraComponentCustom::StopEffect()
+void UNiagaraComponentCustom::StopEffect()
 {
     Deactivate();
-}*/
+}
 
 void UNiagaraComponentCustom::StopEffectImmediate()
 {

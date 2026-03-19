@@ -63,8 +63,8 @@ void HumanoidPlayerController::OverrideTransformAndCamera(
     hipRotationCopy.setRotation(rotation);
 
     UpdateAttachmentSockets(camera);
-
-    
+    OverrideItemThrowingDirection(camera);
+   
 }
 
 void HumanoidPlayerController::UpdateAttachmentSockets(
@@ -75,11 +75,10 @@ void HumanoidPlayerController::UpdateAttachmentSockets(
 }
 
 void HumanoidPlayerController::extractRotation(UCameraComponent &camera){
-    //-- Is tested, dont touch this code --
-    //copy relative (local) pitch rotation
-    //then accumulate with hip actor rotation
+    
     FRotator cameraRot = camera.GetRelativeRotation(); 
 
+    //PITCH ONLY COPY!
     FRotator camPitchCopy;
     camPitchCopy.Pitch = cameraRot.Pitch * -1.0f; //must be flipped for reasons but its true.
     cameraRotationLocalPitch = camPitchCopy;
@@ -88,12 +87,33 @@ void HumanoidPlayerController::extractRotation(UCameraComponent &camera){
 
     MMatrix rHip = hipController.getOrientation();
     cameraRotationMatrix = rHip * pitchMat;//..then accumulate with hip actor rotation*/
+
+    //also update head rotation!
+    torsoController.SetHeadRotation(cameraRotationLocalPitch);
 }
+
 
 void HumanoidPlayerController::extractTranslation(UCameraComponent &camera){
     FVector location = camera.GetComponentLocation(); // world space (?)
     cameraWorldLocation.setTranslation(location);
 }
+
+
+
+
+
+void HumanoidPlayerController::OverrideItemThrowingDirection(UCameraComponent &camera){
+    if(EmptyActorIsPickedUp() && emptyArmTargetActor){
+
+        FRotator cameraRot = camera.GetComponentRotation();
+        emptyArmTargetActor->OverrideThrowingDirectionOfItem(cameraRot.Vector());
+    }
+}
+
+
+
+
+
 
 
 // -- needed for diferentiating between carried weapons and empty, hand animation --

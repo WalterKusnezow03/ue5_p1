@@ -49,6 +49,8 @@ void AthrowableWeaponBase::ApplyMarkedImpulse(){
             return;
         }
 
+        DebugHelper::logMessage("AthrowableWeaponBase::throwDirection", throwDirection);
+
         if (rootMesh)
         {
             DebugHelper::logMessage("AthrowableWeaponBase::ApplyMarkedImpulse B");

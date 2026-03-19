@@ -67,6 +67,7 @@ std::vector<weaponEnum> WeaponAttachmentValidator::WeaponAttachmentsNotAllowed()
     outVec.push_back(weaponEnum::C4);
     outVec.push_back(weaponEnum::rpgLauncher);
     outVec.push_back(weaponEnum::grenade);
+    outVec.push_back(weaponEnum::smokeGrenade);
     return outVec;
 }
 

@@ -414,6 +414,22 @@ void AIKCarryInterfaceAnimatedActor::ApplyImpulseToCarriedItemIfThrowFinished(){
 
             // --- some camera rotation may be needed here ! ---
             FVector dir = ThrowingDirectionOfItem();
+
+            if(USceneComponent *hand = FindHand(EArmType::ERight)){
+
+                //update components 
+                FVector start = hand->GetComponentLocation();
+                DebugHelper::showLineBetween(
+                    GetWorld(),
+                    start,
+                    start + dir.GetSafeNormal() * 100.0f,
+                    FColor::Cyan,
+                    1.0f
+                );
+            }
+
+
+
             attachedHandCarriedItem->MarkForApplyImpulse(dir);
 
             EjectCarryByHandItem(); //remove thrown item
@@ -423,7 +439,16 @@ void AIKCarryInterfaceAnimatedActor::ApplyImpulseToCarriedItemIfThrowFinished(){
 
 //caution: dirty oslution, no camera look dir implemented here!!!!
 //may be head rotation?
+void AIKCarryInterfaceAnimatedActor::OverrideThrowingDirectionOfItem(FVector direction){
+    bItemThrowingDirectionOverriden = true;
+    itemThrowingDirection = direction;
+}
+
 FVector AIKCarryInterfaceAnimatedActor::ThrowingDirectionOfItem(){
+    if(bItemThrowingDirectionOverriden){
+        return itemThrowingDirection;
+    }
+
     //erstmal so
     FVector forward(1, 0, 0);
     FRotator rotator = GetActorRotation();

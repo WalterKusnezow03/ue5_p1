@@ -38,7 +38,8 @@ public:
 
     virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
-    
+    void SetHeadRotation(const FRotator &rotation);
+
 protected:
     MMatrix neckTranslation;
     MMatrix headTranslation;

@@ -37,11 +37,13 @@ void WeaponEnumAmmunitionConverter::SetupTranslationMap(){
     //translationMap[weaponEnum::thrower] = ammunitionEnum::; --- todo ---
     translationMap[weaponEnum::C4] = ammunitionEnum::c4_ammunition;
     translationMap[weaponEnum::grenade] = ammunitionEnum::grenade_ammunition;
+    translationMap[weaponEnum::smokeGrenade] = ammunitionEnum::smokegrenade_ammunition;
 }
 
 void WeaponEnumAmmunitionConverter::SetupThrowableAmmunitionTranslationMap(){
     throwableAmmunitionTranslationMap[ammunitionEnum::grenade_ammunition] = true;
     throwableAmmunitionTranslationMap[ammunitionEnum::molotov_ammunition] = true;
+    throwableAmmunitionTranslationMap[ammunitionEnum::smokegrenade_ammunition] = true;
 }
 
 
