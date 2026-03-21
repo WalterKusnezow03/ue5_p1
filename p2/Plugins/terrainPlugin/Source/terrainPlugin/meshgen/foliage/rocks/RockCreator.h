@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 /**
  * 
  */

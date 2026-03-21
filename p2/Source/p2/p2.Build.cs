@@ -17,7 +17,7 @@ public class p2 : ModuleRules
 			//debug: plucker bonechains
 			"PlueckerCore",
 
-			//game plugins
+			//game plugins,
 			"terrainPlugin",
 			"CoreMath",
 			"GameCore",
@@ -34,7 +34,9 @@ public class p2 : ModuleRules
 			"DebugPlugin",
 			"ComputerVisionPlugin",
 			"AssetEnumCollection",
-			"AeroDynamicPlugin"
+			"AeroDynamicPlugin",
+			"MeshDataPlugin",
+			"AnyMeshWidgetPlugin",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

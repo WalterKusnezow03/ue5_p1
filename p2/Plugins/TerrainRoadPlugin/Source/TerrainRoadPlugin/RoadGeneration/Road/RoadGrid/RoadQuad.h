@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "terrainPluginBase/BaseTerrainInterface/bezier/extendedVersion/TBSplinePosition.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadQuadMeshedSurface/RoadQuadMeshedSurface.h"
 
 class TERRAINROADPLUGIN_API RoadQuad {

@@ -30,6 +30,7 @@ public class IkHumanoidModell : ModuleRules
 				"GameCore",
 				"DebugPlugin",
 				"AssetEnumCollection",
+				"MeshDataPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -33,6 +33,8 @@ public class GameCore : ModuleRules
 				"DebugPlugin",
 				"AssetEnumCollection",
 				"Niagara",
+				"MeshDataPlugin",
+				"AnyMeshWidgetPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

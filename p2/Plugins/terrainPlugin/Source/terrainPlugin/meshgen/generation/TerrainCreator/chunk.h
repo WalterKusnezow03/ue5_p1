@@ -4,11 +4,11 @@
 #include "terrainHillSetup.h"
 #include <set>
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "GameCore/util/FVectorTouple.h"
 #include "GameCore/util/TVector.h"
 
-#include "GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h"
 
 /**
  * 

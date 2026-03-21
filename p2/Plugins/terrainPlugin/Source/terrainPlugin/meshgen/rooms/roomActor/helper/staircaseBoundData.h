@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "GameCore/util/TTouple.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 
 class TERRAINPLUGIN_API StaircaseBoundData{
 

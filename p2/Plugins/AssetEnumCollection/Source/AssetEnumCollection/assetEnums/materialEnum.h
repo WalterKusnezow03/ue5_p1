@@ -21,5 +21,5 @@ enum class materialEnum
     _texturedMaterial,
     wingMaterial,
     grassMaterialWithShader,
-    widgetMaterial
+    widgetMaterial,
 };

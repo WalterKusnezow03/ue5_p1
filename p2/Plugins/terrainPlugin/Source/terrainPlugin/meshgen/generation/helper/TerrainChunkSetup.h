@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/util/FVectorTouple.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 
 /// @brief set up package provided by terrain creator: chunk setup inside chunk parser
 class TERRAINPLUGIN_API TerrainChunkSetup{

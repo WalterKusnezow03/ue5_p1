@@ -3,7 +3,7 @@
 
 
 
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FSingleLimbProperty.h"
 
 int UBoneProceduralMeshComponent::staticId = 0;

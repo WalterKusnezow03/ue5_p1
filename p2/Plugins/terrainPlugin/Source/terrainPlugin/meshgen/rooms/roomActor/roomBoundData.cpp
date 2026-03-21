@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <map>
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "terrainPlugin/meshgen/foliage/helper/ParallellShapeMerger.h"
 #include "terrainPlugin/meshgen/rooms/roomActor/roomBoundData.h"
 

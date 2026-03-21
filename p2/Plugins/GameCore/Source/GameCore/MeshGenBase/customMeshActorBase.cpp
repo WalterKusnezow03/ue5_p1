@@ -8,7 +8,7 @@
 #include "KismetProceduralMeshLibrary.h"
 #include "ELod.h"
 #include "GameCore/MeshGenBase/lodHelper/LodCheckContainer.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "GameCore/util/FVectorUtil.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 #include "AssetPlugin/gameStart/assetManager.h"

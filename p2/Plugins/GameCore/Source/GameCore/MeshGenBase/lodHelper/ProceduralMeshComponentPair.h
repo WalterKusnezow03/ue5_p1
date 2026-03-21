@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h"
 
 
@@ -84,7 +84,8 @@ public:
 
     virtual void ClearAllMeshData() override;
 
-    virtual void appendMeshData(MeshDataMap &other) override;
+    virtual void appendMeshData(MeshDataMap &other);
+   // override;
     virtual void transformAllVertecies(MMatrix &other) override;
 
 private:

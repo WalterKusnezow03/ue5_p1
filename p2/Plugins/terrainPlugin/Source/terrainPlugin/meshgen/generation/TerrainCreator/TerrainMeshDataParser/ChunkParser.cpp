@@ -288,12 +288,14 @@ void ChunkParser::createFoliageAndPushNodesAroundFoliageToNavMesh(
 
 //new!
 
+#include "terrainPlugin/meshgen/foliage/meshdataDerived/TreeMeshData.h"
+
 void ChunkParser::createTreeAndSaveToMesh(FVector &location){
     
     tree.generate(thisTerrainType); 
     
-    MeshData &currentTreeStemMesh = tree.meshDataStemByReference();
-    MeshData &currentLeafMesh = tree.meshDataLeafByReference();
+    TreeMeshData &currentTreeStemMesh = tree.meshDataStemByReference();
+    TreeMeshData &currentLeafMesh = tree.meshDataLeafByReference();
 
     currentTreeStemMesh.offsetAllvertecies(location);
     currentLeafMesh.offsetAllvertecies(location);

@@ -19,7 +19,7 @@
 #include "terrainPlugin/meshgen/rooms/roomActor/roomProcedural.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "AssetPlugin/gamestart/assetManager.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/PlayerInfo/PlayerInfo.h"
 
  #include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"

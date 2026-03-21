@@ -9,11 +9,11 @@
 #include "HAL/PlatformTime.h"
 #include <algorithm>
 #include <set>
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "CoreMath/Matrix/MMatrix.h"
 
 #include "GameCore/EntityGC/EntityManagerBase.h"
-#include "GameCore/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingShapeXY.h"
 
 #include "terrainPlugin/meshgen/rooms/roomActor/roomProcedural.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"

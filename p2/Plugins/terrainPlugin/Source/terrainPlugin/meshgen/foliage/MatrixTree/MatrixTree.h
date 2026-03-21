@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
+#include "terrainPlugin/meshgen/foliage/meshdataDerived/TreeMeshData.h"
 #include "IndexChain.h"
 #include "TreeProperties.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
@@ -23,8 +24,8 @@ public:
 
 	void generate(ETerrainType type);
 
-	MeshData &meshDataStemByReference();
-	MeshData &meshDataLeafByReference();
+	TreeMeshData &meshDataStemByReference();
+	TreeMeshData &meshDataLeafByReference();
 
 private:
 	void clean();
@@ -37,8 +38,8 @@ private:
 	void generateLeaf(MMatrix &offset);
 	void generateCactusSpikes();
 
-	MeshData stemMeshData;
-	MeshData leafMeshData;
+	TreeMeshData stemMeshData;
+	TreeMeshData leafMeshData;
 
 	ETreeType treeType;
 

@@ -29,7 +29,8 @@ public class AeroDynamicPlugin : ModuleRules
 				"GameCore",
 				"CoreMath",
 				"AssetEnumCollection",
-				"DebugPlugin"
+				"DebugPlugin",
+				"MeshDataPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -29,7 +29,8 @@ TArray<std::pair<materialEnum, FString>> MaterialEnumHelper::GetMaterialPairs(){
     map.Add(MakePair(materialEnum::grassMaterialWithShader, "grassMaterialWithShader"));
 
     map.Add(MakePair(materialEnum::widgetMaterial, "widgetMaterial"));
-    
+
+
     return map;
 }
 

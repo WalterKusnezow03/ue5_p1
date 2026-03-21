@@ -6,7 +6,7 @@
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "AeroDynamicPlugin/MeshData/aeroDynamic/Util/ThreeKeyMap.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 
 class GAMECORE_API AeroMeshData : public MeshData {
 
@@ -19,12 +19,11 @@ public:
 	AeroMeshData &operator=(const AeroMeshData &other); //copy constructor
 
 protected:
+	materialEnum materialPreferred;
 
-
-
-/**
- * AERO DYNAMIC SECTION
- */
+	/**
+	 * AERO DYNAMIC SECTION
+	 */
 public:
 
 	/// @brief calculates the sum of off all normals

@@ -6,7 +6,7 @@
 #include "terrainHillSetup.h"
 #include <set>
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "GameCore/util/FVectorTouple.h"
 #include "chunk.h"
 #include "GameCore/util/TVector.h"

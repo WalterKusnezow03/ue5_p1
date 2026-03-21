@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
 
 struct TERRAINPLUGIN_API FMeshDataIdentifier {

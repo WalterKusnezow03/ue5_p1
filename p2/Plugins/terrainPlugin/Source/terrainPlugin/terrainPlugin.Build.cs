@@ -27,6 +27,7 @@ public class terrainPlugin : ModuleRules
 			{
 				"Core",
 				"GameCore",
+				"MeshDataPlugin",
 				"CoreMath",
 				"AssetPlugin",
 				"PathFinder",

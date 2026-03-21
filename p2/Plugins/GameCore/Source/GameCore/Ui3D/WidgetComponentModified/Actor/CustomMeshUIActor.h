@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 
 #include "GameCore/Ui3D/WidgetComponentModified/Component/AnyMeshWidgetComponent.h"
+#include "GameCore/util/ActorBase/ActorBase.h"
+
 
 #include "Blueprint/UserWidget.h"
 #include "Components/SceneComponent.h"
@@ -14,7 +16,7 @@
  * UI Actor that contains a Dynamic Mesh 3D Widget Component 
  */
 UCLASS()
-class GAMECORE_API ACustomMeshUIActor : public AActor 
+class GAMECORE_API ACustomMeshUIActor : public AActorBase 
 {
 	GENERATED_BODY()
 
@@ -54,6 +56,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Debug");
 	FString debugUiActorName;
 
+	//raycast wrapping enabled
+	UPROPERTY(EditAnywhere, Category = "Debug");
+	bool projectMeshOnMovement = false;
+
+
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void SetWidgetClassOnBeginPlay();
@@ -63,6 +71,7 @@ protected:
 	//needed because widgets are otherwise black.
 	virtual void CreateWidgetMeshData();
 	bool bMeshDataCreated = false;
+
 
 public:
 	void SetDrawSize(FVector2D size);

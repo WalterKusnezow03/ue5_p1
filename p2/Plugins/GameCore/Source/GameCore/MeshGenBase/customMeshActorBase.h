@@ -9,7 +9,7 @@
 
 #include "ELod.h"
 #include "GameCore/util/FVectorTouple.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 
 #include "GameCore/MeshGenBase/lodHelper/ProceduralMeshComponentPair.h"
 

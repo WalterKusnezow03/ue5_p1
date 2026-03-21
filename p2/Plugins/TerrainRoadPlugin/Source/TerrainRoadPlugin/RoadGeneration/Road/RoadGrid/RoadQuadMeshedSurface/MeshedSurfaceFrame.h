@@ -1,7 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameCore/MeshGenBase/MeshData/intersectCache/QuadIntersectFrame.h"
+
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/intersectCache/QuadIntersectFrame.h"
 
 class TerrainInterfaceBase;
 class MeshData;

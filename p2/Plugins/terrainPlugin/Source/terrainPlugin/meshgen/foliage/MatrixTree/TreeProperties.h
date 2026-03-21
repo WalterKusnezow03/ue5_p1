@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "ETreeType.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 
 /**
  * 

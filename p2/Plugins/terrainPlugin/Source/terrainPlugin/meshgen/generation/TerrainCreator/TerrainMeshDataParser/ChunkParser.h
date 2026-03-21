@@ -3,12 +3,12 @@
 
 #include "GameCore/util/FVectorTouple.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h"
 
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "GameCore/MeshGenBase/lodHelper/MeshDataPair/MeshDataMap.h"
 
 #include "GameCore/MeshGenBase/lodHelper/LodConstants.h"

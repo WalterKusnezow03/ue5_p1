@@ -9,8 +9,8 @@
 
 #include "Components/BoxComponent.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/generation/helper/TerrainChunkSetup.h"
 #include "terrainPlugin/meshgen/foliage/MatrixTree/MatrixTree.h"

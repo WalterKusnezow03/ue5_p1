@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GameCore/util/TTouple.h"
 #include "terrainPlugin/meshgen/rooms/roomActor/roomBoundData.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "roomProcedural.generated.h"
 
 UCLASS()

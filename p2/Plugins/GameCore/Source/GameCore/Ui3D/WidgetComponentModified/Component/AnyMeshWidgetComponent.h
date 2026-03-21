@@ -38,9 +38,14 @@
 #include "SceneInterface.h"
 
 //custom mesh data
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
-#include "GameCore/Ui3D/WidgetComponentModified/Component/FAnyMeshWidgetRayIntersectResult.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
+
+#include "MeshDataPlugin/Public/MeshGenBase/Projection/MeshDataProjectable.h"
+
+#include "AnyMeshWidgetPlugin/Public/Component/FAnyMeshWidgetRayIntersectResult.h"
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
+
+#include "AnyMeshWidgetPlugin/Public/Component/AnyMeshWidgetComponentBase.h"
 
 //#include "GameCore/MeshGenBase/WidgetComponentModified/CopiedSource/WidgetComponentCustom.h"
 
@@ -50,47 +55,30 @@
 /// and uv / screenpos hits, to dispatch to the widget.
 /// Allows any meshdata beyond default plane and cylinder !
 UCLASS(Blueprintable, ClassGroup="UserInterface", hidecategories=(Object,Activation,"Components|Activation",Sockets,Base,Lighting,LOD,Mesh), editinlinenew, meta=(BlueprintSpawnableComponent) )
-class GAMECORE_API UAnyMeshWidgetComponent : public UWidgetComponent
+class GAMECORE_API UAnyMeshWidgetComponent : public UAnyMeshWidgetComponentBase
 //UWidgetComponentCustom
 {
 	GENERATED_BODY()
 public:
-    UAnyMeshWidgetComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-    {
-        SetGeometryMode(EWidgetGeometryMode::Plane); //to force custom meshdata
-    }
-
+    
     virtual void BeginPlay() override;
     virtual void TickComponent(
         float DeltaTime,
         ELevelTick TickType,
-        FActorComponentTickFunction *ThisTickFunction) override;
-
-    //jeden frame, RENDER DATA ONLY
-    virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
-
-    //COLLISION DATA
-    virtual UBodySetup* GetBodySetup() override;
-    virtual FCollisionShape GetCollisionShape(float Inflation) const override;
+        FActorComponentTickFunction *ThisTickFunction
+    ) override;
 
 
-    /** Ensures the 3d window is created its size and content. */
-	virtual void UpdateWidget() override {
-        Super::UpdateWidget();
-    }
 
-    void OverrideMeshData(MeshData &data);
-
-    MeshData &GetMeshDataRef();
-
+    
     bool RayIntersect(
         const FVector &origin,
         const FVector &direction
-    );
+    ) override;
     bool RayIntersectHover(
         const FVector &origin,
         const FVector &direction
-    );
+    ) override;
 
 
 
@@ -100,26 +88,17 @@ public:
     bool IsMarkedHovered();
 
 protected:
-    MeshData assignedMeshData;
-    bool MeshDataWasModified = false;
+    
 
-    void FlagMeshDataDirty();
-
-    void CreateMaterial();
+    virtual void CreateMaterial() override;
 
     //hit helpers
-    FAnyMeshWidgetRayIntersectResult RayIntersectResult(
-        const FVector &origin, 
-        const FVector &direction
-    );
     FVector2D ToScreenUV(const FVector2D &other);
     FVector2D WidgetScreenPosition(
         FVector2D uv
     );
 
     IBaseUiInterface *GetWidgetAsIBaseUiInterface();
-
-    void UpdateBodySetupOverride(); //copied defintion from source
 
 
     //update hover state external on tick

@@ -3,7 +3,7 @@
 
 #include "MatrixTree.h"
 #include "ETreeType.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "IndexChain.h"
 #include "TreeProperties.h"
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
@@ -118,13 +118,13 @@ void MatrixTree::clean(){
 
 /// @brief returns the mesh data for the "wood"
 /// @return mesh data by reference
-MeshData &MatrixTree::meshDataStemByReference(){
+TreeMeshData &MatrixTree::meshDataStemByReference(){
     return stemMeshData;
 }
 
 /// @brief returns the mesh data for the "leaf"
 /// @return mesh data by reference
-MeshData &MatrixTree::meshDataLeafByReference(){
+TreeMeshData &MatrixTree::meshDataLeafByReference(){
     return leafMeshData;
 }
 

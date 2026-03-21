@@ -1,5 +1,5 @@
 #include "MeshedSurfaceGrid.h"
-#include "GameCore/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "terrainPluginBase/BaseTerrainInterface/TerrainInterfaceBase.h"
 
 FMeshedSurfaceGrid::FMeshedSurfaceGrid(){

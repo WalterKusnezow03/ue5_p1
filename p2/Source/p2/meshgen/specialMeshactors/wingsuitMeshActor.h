@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "wingMeshData.h"
 #include "wingsuitMeshActor.generated.h"
 

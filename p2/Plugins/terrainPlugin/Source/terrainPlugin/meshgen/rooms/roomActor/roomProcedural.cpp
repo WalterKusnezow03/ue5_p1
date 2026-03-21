@@ -9,7 +9,7 @@
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "GameCore/EntityGC/EntityManagerBase.h"
 #include "terrainPlugin/meshgen/rooms/roomActor/helper/staircaseBoundData.h"
-#include "GameCore/MeshGenBase/foliage/ETerrainType.h"
+#include "AssetEnumCollection/assetEnums/ETerrainType.h"
 #include "terrainPlugin/meshgen/rooms/doorLike/DoorBase.h"
 #include "terrainPlugin/meshgen/rooms/layoutCreator/layoutMaker.h"
 

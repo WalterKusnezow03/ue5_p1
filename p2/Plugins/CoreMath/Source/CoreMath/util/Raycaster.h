@@ -5,7 +5,7 @@
 class COREMATH_API Raycaster {
 
 public:
-
+    //with hit info
     bool performRaycast(
         UWorld *world, 
         const FVector &Start, 

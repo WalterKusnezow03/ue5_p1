@@ -1,7 +1,7 @@
 #include "CoreMinimal.h"
 
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/ELod.h"

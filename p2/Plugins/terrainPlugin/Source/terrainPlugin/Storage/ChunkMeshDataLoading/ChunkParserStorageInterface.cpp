@@ -1,6 +1,6 @@
 #include "ChunkParserStorageInterface.h"
 #include "GameCore/MeshGenBase/materialHelper/MaterialEnumHelper.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 
 
 

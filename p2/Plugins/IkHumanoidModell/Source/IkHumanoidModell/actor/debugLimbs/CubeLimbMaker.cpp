@@ -1,5 +1,5 @@
 #include "CubeLimbMaker.h"
-#include "GameCore/MeshGenBase/MeshData/MeshData.h"
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "AssetEnumCollection/assetEnums/materialEnum.h"
 
 
