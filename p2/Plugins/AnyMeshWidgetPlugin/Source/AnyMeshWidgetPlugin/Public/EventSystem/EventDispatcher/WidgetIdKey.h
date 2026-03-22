@@ -25,7 +25,7 @@ public:
         ActorName = actornameIn;
         WidgetName = widgetNameIn;
     }
-    
+
     bool IsValidKey() const {
         return ActorName.Len() > 0 && WidgetName.Len() > 0;
     }
@@ -35,6 +35,14 @@ public:
         if(array.Num() >= 2){
             Setup(array[0], array[1]);
         }
+    }
+
+    FString ToString() const {
+        return FString::Printf(
+            TEXT("WidgetIdKey: %s %s"),
+            *ActorName,
+            *WidgetName
+        );
     }
 
 protected:

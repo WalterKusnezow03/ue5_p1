@@ -19,4 +19,5 @@ protected:
 
 private:
     void HideAll();
+    void LogReceivedEvent(TArray<FString> &array);
 };

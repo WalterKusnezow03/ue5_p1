@@ -55,6 +55,13 @@ void AEventDispatcher::StaticReceiveEvent(FString message){
 
 void AEventDispatcher::ReceiveEvent(FString message){
 
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("AEventDispatcher::ReceiveEvent %s"),
+            *message
+        )
+    );
+
     //split up string
     StringParser parser;
     FString seperator = "_";
@@ -67,6 +74,14 @@ void AEventDispatcher::ReceiveEvent(FString message){
 }
 void AEventDispatcher::ReceiveEvent(TArray<FString> &messageFull, WidgetIdKey &key){
     if(key.IsValidKey()){
+        
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("AEventDispatcher::ReceiveEvent for %s"),
+                *key.ToString()
+            )
+        );
+        
         //remove id key from front of buffer
         if (messageFull.Num() >= 2){
             messageFull.RemoveAt(0, 2);
@@ -104,6 +119,7 @@ void AEventDispatcher::Register(const WidgetIdKey &key, UEventWidgetBase *widget
     if(!key.IsValidKey()){
         return;
     }
+    DebugHelper::logMessage("AEventDispatcher::Register Key ", key.ToString());
 
     registeredWidgets[key] = widget;
 }
