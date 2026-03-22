@@ -25,7 +25,9 @@ void UAnyMeshWidgetComponentBase::TickComponent(
 	FActorComponentTickFunction* ThisTickFunction
 ){
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if(MeshDataWasModified){
+	
+	if (MeshDataWasModified)
+	{
 		MarkRenderStateDirty(); //CreateSceneProxy will be called again.
 	}
 }
@@ -36,7 +38,10 @@ void UAnyMeshWidgetComponentBase::FlagMeshDataDirty(){
 	MeshDataWasModified = true;
 }
 
-
+void UAnyMeshWidgetComponentBase::OverrideMeshData(MeshData &dataIn){
+	assignedMeshData = dataIn;
+	FlagMeshDataDirty();
+}
 
 MeshData &UAnyMeshWidgetComponentBase::GetMeshDataRef(){
 	FlagMeshDataDirty();
@@ -178,10 +183,12 @@ FPrimitiveSceneProxy* UAnyMeshWidgetComponentBase::CreateSceneProxy()
 		RequestRenderUpdate();
 		LastWidgetRenderTime = 0;
 
+		MeshData copy = assignedMeshData;
 		return new FDynamicMeshWidgetSceneProxy(
-			this, 
+			this,
 			*WidgetRenderer->GetSlateRenderer(),
-			assignedMeshData //copy overhead (?)
+			copy, // copy overhead (?)
+			allowRender
 		);
 	}
     return Super::CreateSceneProxy();
@@ -258,6 +265,17 @@ FCollisionShape UAnyMeshWidgetComponentBase::GetCollisionShape(float Inflation) 
 	/*const FVector Extent = GetLocalBounds().BoxExtent + FVector(Inflation);
     return FCollisionShape::MakeBox(Extent);*/
 }
+
+
+
+#include "DebugPlugin/DebugHelper.h"
+void UAnyMeshWidgetComponentBase::SetResolution(FVector2D res){
+	//has to be flipped. Is correct like this for my use case.
+	SetDrawSize(FIntPoint(res.Y, res.X));
+}
+
+
+
 
 
 

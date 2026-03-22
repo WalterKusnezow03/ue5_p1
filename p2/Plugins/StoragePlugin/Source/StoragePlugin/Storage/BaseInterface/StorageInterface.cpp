@@ -1,10 +1,7 @@
 #include "StorageInterface.h"
 #include "Misc/FileHelper.h" //save load
 #include "HAL/FileManager.h" //remove
-#include "StoragePlugin/Storage/VertexData/TerrainVertex.h"
-#include "StoragePlugin/Storage/VertexData/TerrainNormal.h"
-#include "StoragePlugin/Storage/VertexData/TerrainUv.h"
-#include "StoragePlugin/Storage/VertexData/TerrainVertexIndex.h"
+
 #include "DebugPlugin/DebugHelper.h"
 
 
@@ -15,6 +12,7 @@ bool StorageInterface::SaveBinaryData(
     TArray<uint8> &Bytes
 ){
     // Load
+    DebugHelper::logMessage("StorageInterface::SaveBinaryData ", Path);
     return FFileHelper::SaveArrayToFile(Bytes, *Path);
 }
 
@@ -113,5 +111,10 @@ void StorageInterface::PrintBinary(TArray<uint8>&bytes, FString message){
         byteString += FString::FromInt((int32)bytes[i]);
     }
 
-    DebugHelper::logMessage(byteString);
+    //DEBUG ONLY
+    if(false){
+        DebugHelper::logMessage(byteString);
+    }
+
+    
 }

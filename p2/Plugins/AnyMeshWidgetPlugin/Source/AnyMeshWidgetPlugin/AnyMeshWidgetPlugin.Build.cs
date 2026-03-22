@@ -44,7 +44,8 @@ public class AnyMeshWidgetPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"StoragePlugin"
+				"StoragePlugin",
+				"CoreMath"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

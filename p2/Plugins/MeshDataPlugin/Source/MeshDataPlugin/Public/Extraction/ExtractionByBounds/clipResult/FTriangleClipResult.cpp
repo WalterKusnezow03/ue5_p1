@@ -10,15 +10,25 @@ bool FTriangleClipResult::BoundsTest(
     halfBoundsCopied = halfBound;
     fullBounds = halfBound * 2.0;
     planeBuffer = GenerateBoundingPlanes();
-    v0InBound = IsInBound(halfBound, vertex0);
-    v1InBound = IsInBound(halfBound, vertex1);
-    v2InBound = IsInBound(halfBound, vertex2);
+    v0InBound = IsInBoundAndDepth(halfBound, vertex0);
+    v1InBound = IsInBoundAndDepth(halfBound, vertex1);
+    v2InBound = IsInBoundAndDepth(halfBound, vertex2);
 
     v0 = vertex0;
     v1 = vertex1;
     v2 = vertex2;
 
     return v0InBound || v1InBound || v2InBound;
+}
+
+bool FTriangleClipResult::IsInBoundAndDepth(
+    const FVector2D &halfBound, 
+    const FVector &vertex
+){
+    if(vertex.Z >= depthMax || vertex.Z <= -depthMax){
+        return false;
+    }
+    return IsInBound(halfBound, vertex);
 }
 
 bool FTriangleClipResult::IsInBound(
@@ -300,5 +310,11 @@ FVector2D FTriangleClipResult::MakeUV(const FVector &vertex){
         vertex.Y / fullBounds.Y
     );
     uv += FVector2D(0.5, 0.5);
+
+    //debug
+    /*double backup = uv.Y;
+    uv.Y = uv.X;
+    uv.Y = backup;*/
+
     return uv;
 }

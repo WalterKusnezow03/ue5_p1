@@ -326,6 +326,7 @@ public:
 	void pushInwards(FVector &location, int radius, FVector scaleddirection);
 
 	void debugDrawMesh(MMatrix &transform, UWorld *world);
+	void debugDrawMesh(MMatrix &transform, UWorld *world, FColor color);
 
 	void flipAllTriangles();
 

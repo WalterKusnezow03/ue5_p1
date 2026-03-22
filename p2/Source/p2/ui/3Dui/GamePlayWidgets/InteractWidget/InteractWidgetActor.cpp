@@ -145,7 +145,7 @@ void AInteractWidgetActor::CreateWidgetMeshData(){
 
         data.calculateNormals();
         //data.flipNormals(); //shit happens
-        
+        data.flipWindingOrder();
 
         bMeshDataCreated = true;
 

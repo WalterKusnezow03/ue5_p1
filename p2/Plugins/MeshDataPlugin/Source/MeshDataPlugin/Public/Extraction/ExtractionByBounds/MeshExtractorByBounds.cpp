@@ -11,6 +11,7 @@ void MeshExtractorByBounds::ExtractSingleMeshDataByBounds(
     FVector offset
 ){
     ExtractSingleMeshDataByBounds(componentToExtractFrom, meshData, boundsComponent);
+    RotateOffset(boundsComponent, offset);
     MMatrix offsetMat(offset);
     meshData.transformAllVertecies(offsetMat); //move back to original position
 }
@@ -56,6 +57,9 @@ void MeshExtractorByBounds::ExtractSingleMeshDataByBounds(
         )
     );
 
+    FVector t = boundsComponent->GetComponentLocation();
+    MMatrix T(t);
+    extractedNotClipped.debugDrawMesh(T, boundsComponent->GetWorld(), FColor::Purple);
 
     //move back
     //extractedNotClipped.transformAllVertecies(m); //move back to original position
@@ -63,6 +67,16 @@ void MeshExtractorByBounds::ExtractSingleMeshDataByBounds(
     extractedNotClipped.transformAllVertecies(m);
     meshData = extractedNotClipped; //override
 }
+void MeshExtractorByBounds::RotateOffset(
+    UStaticMeshComponent *component,
+    FVector &offset
+){
+    FRotator Rotation = component->GetRelativeRotation();
+    MMatrix r(Rotation);
+    offset = r * offset;
+}
+
+
 
 MMatrix MeshExtractorByBounds::GenerateRelativeTransform(
     UStaticMeshComponent *component
@@ -79,6 +93,8 @@ MMatrix MeshExtractorByBounds::GenerateRelativeTransform(
     return m;
 }
 
+
+
 MMatrix MeshExtractorByBounds::GenerateInverseRelativeTransform(
     UStaticMeshComponent *component
 ){
@@ -94,6 +110,7 @@ MMatrix MeshExtractorByBounds::GenerateInverseRelativeTransform(
     MMatrix M1 = r * t1;
     return M1;
 }
+
 
 FVector2D MeshExtractorByBounds::ExtractBounds2D(UStaticMeshComponent *comp){
     FTransform Transform = comp->GetComponentTransform();
@@ -140,6 +157,7 @@ void MeshExtractorByBounds::CutAgainstBounds(const FVector2D &halfBound, MeshDat
             v0,
             v1,
             v2,
+            depthMax,
             cutData
         );
     }

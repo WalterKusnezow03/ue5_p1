@@ -6,9 +6,13 @@
 #include "MeshDataPlugin/Public/Extraction/StaticMeshCopy/MeshExtractorBase.h"
 
 class MESHDATAPLUGIN_API MeshExtractorByBounds {
+private:
+    float depthMax = 100.0f;
 
 public:
-
+    void SetMaxDepth(float depthIn){
+        depthMax = std::abs(depthMax);
+    }
 
     void ExtractSingleMeshDataByBounds(
         UStaticMeshComponent *componentToExtractFrom, 
@@ -23,7 +27,10 @@ public:
         FVector offset
     );
 private:
-    
+    void RotateOffset(
+        UStaticMeshComponent *component,
+        FVector &offset
+    );
 
     MMatrix GenerateRelativeTransform(
         UStaticMeshComponent *component

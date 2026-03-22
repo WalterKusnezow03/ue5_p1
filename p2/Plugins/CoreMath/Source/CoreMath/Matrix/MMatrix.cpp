@@ -55,6 +55,11 @@ MMatrix::MMatrix(FRotator &other){
     setRotation(other);
 }
 
+MMatrix::MMatrix(const FQuat &other){
+    makeIdentity();
+    setRotation(other);
+}
+
 /// @brief copy constructor
 /// @param other 
 MMatrix::MMatrix(const MMatrix &other){

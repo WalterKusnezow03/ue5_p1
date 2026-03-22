@@ -14,8 +14,10 @@ public:
         const FVector &vertex0,
         const FVector &vertex1,
         const FVector &vertex2,
+        float depthMaxIn,
         MeshData &dataAppendTo
     ){
+        depthMax = depthMaxIn;
         if(BoundsTest(halfBound, vertex0, vertex1, vertex2)){ //any on bound
             Clip(); //if needed
             AppendTo(dataAppendTo);
@@ -24,6 +26,7 @@ public:
     }
 
 private:
+    float depthMax = 50.0f;
 
     //append to a meshdata object
     //including UV generation
@@ -73,7 +76,10 @@ private:
 
     FVector2D MakeUV(const FVector &vertex);
 
-
+    bool IsInBoundAndDepth(
+        const FVector2D &halfBound,
+        const FVector &vertex
+    );
     bool IsInBound(
         const FVector2D &halfBound,
         const FVector &vertex

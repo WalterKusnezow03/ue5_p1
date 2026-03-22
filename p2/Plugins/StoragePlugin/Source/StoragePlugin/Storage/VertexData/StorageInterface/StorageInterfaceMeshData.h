@@ -30,7 +30,7 @@ public:
     );
 
     //loads a single mesh data as passed before
-    void LoadMeshData(
+    bool LoadMeshData(
         TArray<FVector> &Vertecies,
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
@@ -51,7 +51,7 @@ public:
         FString nameIn
     );
 
-    void LoadMeshData(
+    bool LoadMeshData(
         TArray<FVector> &Vertecies,
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
@@ -81,7 +81,7 @@ protected:
     //will load mesh data into buffers, EXPECTS INFO DATA AT POINTER, 
     //WILL INCREASE POINTER ALL THE WAY TO START OF NEXT BUFFER CHUNK / MESHDATA
     //MIGHT BE OUT OF BOUNCE BY THEN!
-    void LoadIntoMeshBuffers(
+    bool LoadIntoMeshBuffers(
         TArray<uint8> &Bytes, // buffer size is increased after append!
         uint8*& Ptr,           // is increased after append, must be at correct offset starting with header bytes!
         TArray<FVector> &Vertecies,

@@ -74,9 +74,9 @@ protected:
 		const FVector &normal0,
 		const FVector &normal1,
 		const FVector &normal2,
-		const FVector2D uv0,
-		const FVector2D uv1,
-		const FVector2D uv2
+		const FVector2D &uv0,
+		const FVector2D &uv1,
+		const FVector2D &uv2
 	) const;
 
 public:
@@ -90,7 +90,8 @@ public:
 	FDynamicMeshWidgetSceneProxy(
 		UAnyMeshWidgetComponentBase *InComponent, 
 		ISlate3DRenderer& InRenderer,
-		MeshData &meshData
+		MeshData &meshData,
+		bool allowRender
 	)
 		: FPrimitiveSceneProxy( InComponent )
 		, ArcAngle(FMath::DegreesToRadians(InComponent->GetCylinderArcAngle()))
@@ -103,13 +104,17 @@ public:
 		, BodySetup(InComponent->GetBodySetup())
 	{
 		bWillEverBeLit = false;
-		internalMeshData = meshData;
+		
+		if(allowRender){
+			internalMeshData = meshData;
+		}
+		
 		
 		//DO NOT REMOVE
 		//Fix broken triangles,
 		//text is black if winding order is not reversed
 		//DO NOT REMOVE
-		internalMeshData.flipWindingOrder();
+		//internalMeshData.flipWindingOrder();
 		
 		if(MaterialInstance){
 			if(false){

@@ -81,7 +81,7 @@ public:
     
 
     MeshData &GetMeshDataRef();
-    
+    void OverrideMeshData(MeshData &dataIn);
 
     virtual bool RayIntersect(
         const FVector &origin,
@@ -92,12 +92,13 @@ public:
         const FVector &direction
     );
 
-
+   
 
 protected:
-    
+
     MeshData assignedMeshData;
     bool MeshDataWasModified = false;
+    bool allowRender = true;
 
     void FlagMeshDataDirty();
 
@@ -119,5 +120,6 @@ protected:
 
 
 
+    void SetResolution(FVector2D res);
 
 };

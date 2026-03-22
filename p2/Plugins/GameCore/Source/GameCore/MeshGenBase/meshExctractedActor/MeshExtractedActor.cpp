@@ -18,7 +18,7 @@ void AMeshExtractedActor::ExtractMeshDataOnBeginPlay(){
     if(exterior && plane && Widget){
         bMeshDataCreated = true;
 
-        ELod lodMade = ELod::lodNear;
+        
 
         MeshData &meshData = Widget->GetMeshDataRef();
 

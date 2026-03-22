@@ -55,7 +55,7 @@ MeshData::MeshData(const MeshData &other){
 /// @return 
 MeshData& MeshData::operator=(const MeshData &other){
     if(&other != this){
-        clearMesh(); //clear mesh data before adding any data!
+        //clearMesh(); //clear mesh data before adding any data!
 
         
         //broken?
@@ -2105,6 +2105,10 @@ void MeshData::appendParalellLinesClosedAsQuads(
 
 // ---- debug -----
 void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
+    debugDrawMesh(transform, world, FColor::Red);
+}
+
+void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color){
     if(world != nullptr){
         //durch triangle buffer laufen, alle zeichnen
         for (int i = 2; i < triangles.Num(); i+=3){
@@ -2120,10 +2124,10 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
                 v1Vertex = transform * v1Vertex;
                 v2Vertex = transform * v2Vertex;
 
-                float time = 2.0f;
-                DebugHelper::showLineBetween(world, v0Vertex, v1Vertex, FColor::Red, time);
-                DebugHelper::showLineBetween(world, v1Vertex, v2Vertex, FColor::Red, time);
-                DebugHelper::showLineBetween(world, v2Vertex, v0Vertex, FColor::Red, time);
+                float time = 60.0f;
+                DebugHelper::showLineBetween(world, v0Vertex, v1Vertex, color, time);
+                DebugHelper::showLineBetween(world, v1Vertex, v2Vertex, color, time);
+                DebugHelper::showLineBetween(world, v2Vertex, v0Vertex, color, time);
             }
         }
     }

@@ -15,6 +15,7 @@ public:
 
 	MMatrix(const FVector &other);
 	MMatrix(FRotator &other);
+	MMatrix(const FQuat &other);
 	MMatrix(const MMatrix &other);
 	MMatrix& operator=(const MMatrix &other);
 

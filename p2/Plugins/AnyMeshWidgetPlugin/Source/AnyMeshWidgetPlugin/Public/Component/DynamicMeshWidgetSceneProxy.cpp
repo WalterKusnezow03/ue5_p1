@@ -255,7 +255,8 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
                 uv2
             );
         }else{
-            DebugHelper::logMessage("FDynamicMeshWidgetSceneProxy::MeshDataInvalid!");
+            DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::MeshDataInvalid!", FColor::Red);
+            return;
         }
     }
 
@@ -271,9 +272,9 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
     const FVector &normal0,
     const FVector &normal1,
     const FVector &normal2,
-    const FVector2D uv0,
-    const FVector2D uv1,
-    const FVector2D uv2
+    const FVector2D &uv0,
+    const FVector2D &uv1,
+    const FVector2D &uv2
 ) const {
 
     FVector tangentX3D;

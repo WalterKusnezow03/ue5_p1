@@ -1,10 +1,7 @@
 #include "StorageInterfaceMeshData.h"
 
 #include "Misc/FileHelper.h"
-#include "StoragePlugin/Storage/VertexData/TerrainVertex.h"
-#include "StoragePlugin/Storage/VertexData/TerrainNormal.h"
-#include "StoragePlugin/Storage/VertexData/TerrainUv.h"
-#include "StoragePlugin/Storage/VertexData/TerrainVertexIndex.h"
+
 #include "DebugPlugin/DebugHelper.h"
 
 
@@ -43,8 +40,12 @@ void StorageInterfaceMeshData::SaveMeshData(
     TArray<uint8> Bytes;
     AppendIntoByteBuffer(Bytes, Vertecies, Normals, UV0, Triangles, nameIn);
 
+    DebugHelper::logMessage(FString::Printf(
+    TEXT("StorageInterfaceMeshData::SaveMeshData: %s vertexCount=%d, normalCount=%d, uvCount=%d, triangleCount=%d, Bytes.Num()=%d"),
+    *path, Vertecies.Num(), Normals.Num(), UV0.Num(), Triangles.Num(), Bytes.Num()));
+
     //debug
-    PrintBinary(Bytes, "MeshData Saved");
+    //PrintBinary(Bytes, "MeshData Saved");
 
     // Save
     SaveBinaryData(
@@ -70,9 +71,17 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     int32 triangleCount = Triangles.Num();
 
     const TArray<TCHAR>& chars = nameIn.GetCharArray();
-    int32 charCount = chars.Num();
+    int32 charCount = nameIn.Len(); // chars.Num(); //no.
 
-    if(debugLog){
+
+    //const TArray<TCHAR>& chars = nameIn.GetCharArray();
+    //int32 charCount = chars.Num(); // inklusive Nullterminator
+   
+
+
+
+
+    if(false && debugLog){
         FString message = FString::Printf(
             TEXT("Storage Interface MeshData write buffer sizes (%d), (%d), (%d), (%d), (%d)"),
             vertexCount, normalCount, uvCount, triangleCount, charCount
@@ -99,7 +108,7 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
         charsByteSize;
 
     //write info and data size
-    int previousSize = Bytes.Num();
+    int32 previousSize = Bytes.Num();
     Bytes.SetNumUninitialized(previousSize + completeSize); // SET SIZE VERY IMPORTANT, previous data is NOT overriden.
     
     //pointer erst nach set num machen, da Array UMKOPIERT WIRD!
@@ -197,19 +206,19 @@ int StorageInterfaceMeshData::getInfoBytesSize(){
 }
 
 int StorageInterfaceMeshData::getVertexBytesSize(int count){
-    return sizeof(FTerrainVertex) * count;
+    return sizeof(FVector) * count;
 }
 
 int StorageInterfaceMeshData::getNormalsBytesSize(int count){
-    return sizeof(FTerrainNormal) * count;
+    return sizeof(FVector) * count;
 }
 
 int StorageInterfaceMeshData::getUVBytesSize(int count){
-    return sizeof(FTerrainUV) * count;
+    return sizeof(FVector2D) * count;
 }
 
 int StorageInterfaceMeshData::getTrianglesBytesSize(int count){
-    return sizeof(FTerrainVertexIndex) * count;
+    return sizeof(int32) * count;
 }
 
 
@@ -221,7 +230,7 @@ int StorageInterfaceMeshData::getCharsBytesSize(int count){
 
 //-------- LOADING --------
 
-void StorageInterfaceMeshData::LoadMeshData(
+bool StorageInterfaceMeshData::LoadMeshData(
     TArray<FVector> &Vertecies,
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
@@ -232,7 +241,7 @@ void StorageInterfaceMeshData::LoadMeshData(
     FString &outName
 ){
     FString path = makePath(chunkId, layer, lod);
-    LoadMeshData(
+    return LoadMeshData(
         Vertecies,
         Normals,
         UV0,
@@ -242,7 +251,7 @@ void StorageInterfaceMeshData::LoadMeshData(
     );
 }
 
-void StorageInterfaceMeshData::LoadMeshData(
+bool StorageInterfaceMeshData::LoadMeshData(
     TArray<FVector> &Vertecies,
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
@@ -260,16 +269,16 @@ void StorageInterfaceMeshData::LoadMeshData(
     TArray<uint8> Bytes;
     if(!LoadBinaryData(path, Bytes)){
         DebugHelper::logMessage("Storage Interface mesh data ERROR LOADING BIN DATA");
-        return;
+        return false;
     }
-    PrintBinary(Bytes, "MeshData Loaded");
+    //PrintBinary(Bytes, "MeshData Loaded");
     if(Bytes.Num() <= 0){
-        return;
+        return false;
     }
 
     bool endReachedIgnore = false;
     uint8 *Ptr = Bytes.GetData(); // at 0 offset.
-    LoadIntoMeshBuffers(
+    if(LoadIntoMeshBuffers(
         Bytes,
         Ptr,
         Vertecies,
@@ -278,11 +287,23 @@ void StorageInterfaceMeshData::LoadMeshData(
         Triangles,
         endReachedIgnore,
         outName
-    );
+    )){
+
+        int32 vertexCount = Vertecies.Num();
+        int32 normalCount = Normals.Num();
+        int32 uvCount = UV0.Num();
+        int32 triangleCount = Triangles.Num();
+
+        DebugHelper::logMessage(FString::Printf(
+        TEXT("StorageInterfaceMeshData::LoadMeshData: %s vertexCount=%d, normalCount=%d, uvCount=%d, triangleCount=%d, Bytes.Num()=%d"),
+        *path, vertexCount, normalCount, uvCount, triangleCount, Bytes.Num()));
+
+        return true;
+    }
+    return false;
 }
 
-
-void StorageInterfaceMeshData::LoadIntoMeshBuffers(
+bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     TArray<uint8> &Bytes, //buffer size is increased after append!
     uint8*& Ptr, //is increased after append, must be at correct offset starting with header bytes!
     TArray<FVector> &Vertecies,
@@ -297,7 +318,7 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     if (Ptr >= checkEnd){
         endReached = true;
         DebugHelper::logMessage(TEXT("StorageInterfaceMeshData Ptr already oob!"));
-        return;
+        return false;
     }
 
     // load info data
@@ -310,12 +331,12 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
 
     loadInfoData(Ptr, vertexCount, normalCount, uvCount, triangleCount, charCount);
 
-    if(vertexCount > Bytes.Num() / sizeof(FVector)){
-        return;
-    }
+    /*if(vertexCount > Bytes.Num() / sizeof(FVector)){
+        return false;
+    }*/
 
     //debug
-    if(debugLog){
+    if(false && debugLog){
         FString message = FString::Printf(
             TEXT("Storage Interface MeshData loaded buffer sizes (%d), (%d), (%d), (%d)"),
             vertexCount, normalCount, uvCount, triangleCount
@@ -355,11 +376,12 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     if(totalSize > sizeof(uint8) * Bytes.Num()){ //check if reaching out of bounds with Pointer.
         DebugHelper::logMessage("Storage Interface MeshData Exceeded byte size");
         endReached = true;
-        return;
+        return false;
     }
+    //end of data reached
     if(totalSize == sizeof(uint8) * Bytes.Num()){
         endReached = true;
-        return;
+        //DO NOT RETURN HERE !//return true;
     }
 
     /*
@@ -396,16 +418,8 @@ void StorageInterfaceMeshData::LoadIntoMeshBuffers(
     for (int i = 0; i < chars.Num(); i++){
         outName.AppendChar(chars[i]);
     }
+    return true;
 }
-
-
-
-
-
-
-
-
-
 
 void StorageInterfaceMeshData::loadInfoData(
     uint8 *& Ptr, //Ptr already at given offset

@@ -99,6 +99,11 @@ void ACustomMeshUIActor::CreateWidgetMeshData(){
     
 
         data.calculateNormals();
+        //DO NOT REMOVE
+		//Fix broken triangles,
+		//text is black if winding order is not reversed
+		//DO NOT REMOVE
+		data.flipWindingOrder();
         bMeshDataCreated = true;
     }
 }

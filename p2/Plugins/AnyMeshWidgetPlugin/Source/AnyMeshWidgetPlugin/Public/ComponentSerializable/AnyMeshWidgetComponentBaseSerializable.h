@@ -4,8 +4,7 @@
 
 #include "AnyMeshWidgetComponentBaseSerializable.generated.h"
 
-
-///  ---- NOT TESTED ----  
+/// @brief CAN SAVE MESH DATA TO STORAGE AND LOAD
 UCLASS()
 class ANYMESHWIDGETPLUGIN_API UAnyMeshWidgetComponentBaseSerializable : public UAnyMeshWidgetComponentBase {
     GENERATED_BODY()
@@ -28,6 +27,11 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "_SerializeOption")
     bool loadSerialized = true;
+
+    bool wasLoaded = false;
+    bool alreadySaved = false;
+
+    bool meshDataWasLoaded();
 
     void LoadMeshDataFromDisk();
     void SaveMeshDataToDisk();
