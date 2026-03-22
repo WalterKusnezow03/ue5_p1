@@ -102,7 +102,7 @@ bool UWorldListItem::dispatchClick(const FVector2D &position){
 }
 
 bool UWorldListItem::dispatchHover(const FVector2D &position){
-    DebugHelper::showScreenMessage("UWorldListItem::HOVER");
+    //DebugHelper::showScreenMessage("UWorldListItem::HOVER");
     if (markedVisible())
     {
         bool resultA = worldItem.dispatchHover(position);

@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,8 +26,12 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    void FireDebugEvent();
+    void FireDebugEventHaube();
+    void FireDebugEventHeck();
 
     Timer timer;
     float intervall = 2.0f;
+
+    int index = 0;
+    int ampelIndex = 0;
 };

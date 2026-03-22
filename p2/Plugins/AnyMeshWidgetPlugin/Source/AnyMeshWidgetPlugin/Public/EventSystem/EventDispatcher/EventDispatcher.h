@@ -1,9 +1,10 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #pragma once
 
 #include "CoreMinimal.h"
 
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/WidgetIdKey.h"
-#include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventWidgetBase.h"
+#include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventBaseDispatcherWidget/EventWidgetBase.h"
 #include <map>
 
 

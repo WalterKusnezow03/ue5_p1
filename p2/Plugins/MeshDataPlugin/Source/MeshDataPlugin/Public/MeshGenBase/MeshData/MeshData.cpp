@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Walter Kusnezow All Rights Reserved.
 
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 #include "CoreMath/Matrix/MMatrix.h"
@@ -2124,7 +2123,7 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color){
                 v1Vertex = transform * v1Vertex;
                 v2Vertex = transform * v2Vertex;
 
-                float time = 60.0f;
+                float time = 10.0f;
                 DebugHelper::showLineBetween(world, v0Vertex, v1Vertex, color, time);
                 DebugHelper::showLineBetween(world, v1Vertex, v2Vertex, color, time);
                 DebugHelper::showLineBetween(world, v2Vertex, v0Vertex, color, time);

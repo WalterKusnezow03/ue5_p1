@@ -1,3 +1,5 @@
+// Copyright Walter Kusnezow All Rights Reserved.
+
 #include "AnyMeshWidgetExtracted.h"
 #include "MeshDataPlugin/Public/Extraction/ExtractionByBounds/MeshExtractorByBounds.h"
 #include "DebugPlugin/DebugHelper.h"

@@ -278,9 +278,9 @@ void UAnyMeshWidgetComponentBase::SetResolution(FVector2D res){
 
 
 
-#include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventWidgetBase.h"
+#include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/WidgetBase/WidgetBase.h"
 void UAnyMeshWidgetComponentBase::TickWidgetIfPossible(float deltatime){
-	if(UEventWidgetBase *casted = TGetWidget<UEventWidgetBase>()){
+	if(UWidgetBase *casted = TGetWidget<UWidgetBase>()){
 		casted->TickExternal(deltatime);
 	}
 }

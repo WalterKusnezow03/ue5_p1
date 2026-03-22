@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "EventDispatcher.h"
 
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventEnum/StringConversion/StringParser.h"
@@ -122,6 +123,11 @@ void AEventDispatcher::Register(const WidgetIdKey &key, UEventWidgetBase *widget
     DebugHelper::logMessage("AEventDispatcher::Register Key ", key.ToString());
 
     registeredWidgets[key] = widget;
+
+    //init on register (load animation for example)
+    if(widget){
+        widget->Init();
+    }
 }
 
 void AEventDispatcher::UnRegister(const WidgetIdKey &key){

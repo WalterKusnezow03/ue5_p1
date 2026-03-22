@@ -1,4 +1,4 @@
-
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "baryCentricInterpolator.h"
 
 baryCentricInterpolator::baryCentricInterpolator(){

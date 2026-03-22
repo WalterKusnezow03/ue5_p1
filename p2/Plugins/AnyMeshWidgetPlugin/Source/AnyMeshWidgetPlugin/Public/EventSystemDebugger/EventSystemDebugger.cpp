@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "EventSystemDebugger.h"
 
 
@@ -44,7 +45,8 @@ void AEventSystemDebugger::BeginPlay(){
 
 void AEventSystemDebugger::Tick(float deltatime){
     if(timer.timesUp()){
-        FireDebugEvent();
+        FireDebugEventHaube();
+        FireDebugEventHeck();
         timer.Begin(intervall, true);
     }
     timer.Tick(deltatime);
@@ -53,8 +55,27 @@ void AEventSystemDebugger::Tick(float deltatime){
 
 
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/EventDispatcher.h"
-void AEventSystemDebugger::FireDebugEvent(){
+void AEventSystemDebugger::FireDebugEventHaube(){
+    if(false){
+        return;
+    }
 
-    FString message = "m4_heckWidget_someEvent47";
+    FString message = "m4_haubeWidget_";
+    FString event = FString::Printf(TEXT("event%d"), index + 1);
+    message += event;
+
+    index++;
+    index = index % 2; // 1 or 2
+
+    AEventDispatcher::StaticReceiveEvent(message);
+}
+
+
+void AEventSystemDebugger::FireDebugEventHeck(){
+    FString message = FString::Printf(TEXT("m4_heckWidget_eventAmpel_%d"), ampelIndex);
+
+    ampelIndex++;
+    ampelIndex = ampelIndex % 3; // 1 or 2
+
     AEventDispatcher::StaticReceiveEvent(message);
 }

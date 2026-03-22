@@ -203,7 +203,7 @@ bool UWorldListWidget::dispatchClickPanel(const FVector2D &position){
 /// --- Dispatch Hover ---
 
 bool UWorldListWidget::dispatchHover(const FVector2D &position){
-    DebugHelper::showScreenMessage("UWorldListWidget::Hover");
+    //DebugHelper::showScreenMessage("UWorldListWidget::Hover");
 
     //todo here: dispatch to all items!
     bool listResult = DispatchHoverToAllItemsForDispatch(position);
@@ -326,7 +326,7 @@ TArray<IBaseUiInterface *> UWorldListWidget::GetAllItemsForDispatch(){
         outArray.Add(widget);
     }
 
-    DebugHelper::showScreenMessage("UWorldListWidget::Hover Num Items", outArray.Num());
+    //DebugHelper::showScreenMessage("UWorldListWidget::Hover Num Items", outArray.Num());
 
     return outArray;
 }

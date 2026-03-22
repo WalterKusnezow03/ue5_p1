@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "UVMapper2D.h"
 #include "CoreMinimal.h"
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"

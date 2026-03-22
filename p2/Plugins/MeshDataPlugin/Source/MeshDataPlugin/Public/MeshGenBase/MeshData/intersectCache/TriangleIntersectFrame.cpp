@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "TriangleIntersectFrame.h"
 #include "DebugPlugin/DebugHelper.h"
 
