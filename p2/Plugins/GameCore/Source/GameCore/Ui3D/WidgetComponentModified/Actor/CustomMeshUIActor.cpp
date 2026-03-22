@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "CustomMeshUIActor.h" 
 
 #include "CoreMath/Matrix/MMatrix.h"

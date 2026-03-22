@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "AnyMeshWidgetInteractionComponent.h"
 #include "GameCore/Ui3D/WidgetComponentModified/Actor/CustomMeshUIActor.h"
 #include "GameCore/Ui3D/WidgetComponentModified/ActorCallbackSupported/CustomMeshUICallbackActor.h"

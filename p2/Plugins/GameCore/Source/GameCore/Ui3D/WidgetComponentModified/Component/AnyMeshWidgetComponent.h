@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #pragma once
 
 #include "Components/WidgetComponent.h"

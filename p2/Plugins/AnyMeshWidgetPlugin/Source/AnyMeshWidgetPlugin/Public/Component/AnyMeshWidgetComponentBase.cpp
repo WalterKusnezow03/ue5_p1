@@ -25,10 +25,11 @@ void UAnyMeshWidgetComponentBase::TickComponent(
 	FActorComponentTickFunction* ThisTickFunction
 ){
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+	TickWidgetIfPossible(DeltaTime);
 	if (MeshDataWasModified)
 	{
-		MarkRenderStateDirty(); //CreateSceneProxy will be called again.
+		MarkRenderStateDirty(); //CreateSceneProxy() will be called again.
+		MeshDataWasModified = false; //Reset flag since new proxy is created!
 	}
 }
 
@@ -275,6 +276,14 @@ void UAnyMeshWidgetComponentBase::SetResolution(FVector2D res){
 }
 
 
+
+
+#include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventWidgetBase.h"
+void UAnyMeshWidgetComponentBase::TickWidgetIfPossible(float deltatime){
+	if(UEventWidgetBase *casted = TGetWidget<UEventWidgetBase>()){
+		casted->TickExternal(deltatime);
+	}
+}
 
 
 

@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "MeshExtractorByBounds.h"
 #include "MeshDataPlugin/Public/Extraction/StaticMeshCopy/MeshExtractorBase.h"
 #include "MeshDataPlugin/Public/Extraction/ExtractionByBounds/clipResult/FTriangleClipResult.h"

@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "InteractionComponentHoveredCache.h"
 
 UInteractionComponentHoveredCache *UInteractionComponentHoveredCache::instancePtr = nullptr;

@@ -1,3 +1,4 @@
+// Copyright Walter Kusnezow All Rights Reserved.
 #include "MeshDataProjectable.h"
 #include "CoreMath/util/Raycaster.h"
 

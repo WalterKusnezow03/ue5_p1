@@ -1,3 +1,6 @@
+// Copyright Walter Kusnezow All Rights Reserved.
+
+
 #pragma once
 
 /// --- modified source code to support custom meshdata! ---

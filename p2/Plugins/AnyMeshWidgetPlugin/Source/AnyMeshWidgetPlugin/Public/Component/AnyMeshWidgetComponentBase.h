@@ -1,3 +1,5 @@
+// Copyright Walter Kusnezow All Rights Reserved.
+
 #pragma once
 
 #include "Components/WidgetComponent.h"
@@ -92,6 +94,14 @@ public:
         const FVector &direction
     );
 
+    template<typename T>
+	T* TGetWidget() const{
+		if (GetUserWidgetObject())
+		{
+			return Cast<T>(GetUserWidgetObject());
+		}
+		return nullptr;
+	}
    
 
 protected:
@@ -122,4 +132,7 @@ protected:
 
     void SetResolution(FVector2D res);
 
+
+    //ticks a ueventwidget if cast is sucessfull
+    void TickWidgetIfPossible(float deltatime);
 };
