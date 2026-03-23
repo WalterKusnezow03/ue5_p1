@@ -49,8 +49,11 @@ public:
 
 
 	// --- raycast alternative ---
-	virtual float getHeightFor(FVector &position) override;
-	float getHeightFor(FVector2D &pos);
+	virtual float getHeightFor(const FVector &position) override;
+	float getHeightFor(const FVector2D &pos);
+	bool getHeightForInBound(const FVector &position, float &outHeight) override;
+	bool IsInBound(const FVector &position) override;
+
 	void getHeightAndDistanceFromModVertex(
 		FVector2D &a,
 		float &height,
@@ -123,7 +126,7 @@ public:
 	TArray<chunk *> chunksAt(
 		TArray<FVector> &positionsWorld
 	);
-	chunk *chunkAtWorldPositon(FVector &worldPos);
+	chunk *chunkAtWorldPositon(const FVector &worldPos);
 	virtual std::pair<int, int> Index2DFromWorldPosition(
 		const FVector &worldPos
 	) override;

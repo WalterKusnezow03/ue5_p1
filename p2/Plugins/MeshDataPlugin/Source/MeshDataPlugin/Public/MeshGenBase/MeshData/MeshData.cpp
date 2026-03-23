@@ -424,6 +424,83 @@ void MeshData::appendUvsDoubleSided(
     appendUvsDoubleSided(a, c, d);
 }
 
+void MeshData::appendVerteciesAndUvs(
+    FVector &a,
+    FVector &b,
+    FVector &c,
+    FVector2D &uvA,
+    FVector2D &uvB,
+    FVector2D &uvC
+){
+    append(a, b, c);
+    appendUvs(uvA, uvB, uvC);
+}
+
+void MeshData::appendVerteciesAndUvsEfficent(
+    FVector &a, 
+    FVector &b, 
+    FVector &c,
+    FVector2D &uvA,
+    FVector2D &uvB,
+    FVector2D &uvC
+){
+    int indexA = findClosestIndexTo(a);
+    int indexB = findClosestIndexTo(b);
+    int indexC = findClosestIndexTo(c);
+
+    //add if not found correctly
+    if(!isCloseSame(a, indexA)){
+        vertecies.Add(a);
+        UV0.Add(uvA);
+        indexA = vertecies.Num() - 1; // 0
+    }
+    if(!isCloseSame(b, indexB)){
+        vertecies.Add(b);
+        UV0.Add(uvB);
+        indexB = vertecies.Num() - 1; //1
+    }
+    if(!isCloseSame(c, indexC)){
+        vertecies.Add(c);
+        UV0.Add(uvC);
+        indexC = vertecies.Num() - 1; //2
+    }
+    //add to triangle buffer
+    triangles.Add(indexA);
+    triangles.Add(indexB);
+    triangles.Add(indexC);
+
+    updateBoundsIfNeeded();
+}
+
+
+
+
+void MeshData::appendVerteciesAndUvsAndColors(
+    FVector &a,
+    FVector &b,
+    FVector &c,
+    FVector2D &uvA,
+    FVector2D &uvB,
+    FVector2D &uvC,
+    FColor &colorA,
+    FColor &colorB,
+    FColor &colorC
+){
+    append(a, b, c);
+    appendUvs(uvA, uvB, uvC);
+    appendColors(colorA, colorB, colorC);
+}
+
+void MeshData::appendColors(FColor &a, FColor &b, FColor &c){
+    int i0 = VertexColors.Num();
+    VertexColors.SetNum(VertexColors.Num() + 3);
+    VertexColors[i0] = a;
+    VertexColors[i0 + 1] = b;
+    VertexColors[i0 + 2] = c;
+}
+
+/// --- transformation ---
+
 /// @brief offsets all vertecies in a given direction
 /// @param offset 
 void MeshData::offsetAllvertecies(FVector &offset){
@@ -883,6 +960,10 @@ bool MeshData::isValidUVIndex(int i, int j, int k){
     return isValidUVIndex(i) && isValidUVIndex(j) && isValidUVIndex(k);
 }
 
+bool MeshData::isValidColorIndex(int i){
+    return i >= 0 && i < VertexColors.Num();
+}
+
 
 /**
  * --- Data references ---
@@ -931,6 +1012,10 @@ const TArray<FProcMeshTangent> &MeshData::getTangentsRefConst() const {
     return Tangents;
 }
 
+
+const TArray<FColor> &MeshData::getVertexColorsRefConst() const {
+    return VertexColors;
+}
 
 
 
@@ -1565,10 +1650,23 @@ void MeshData::removeVertex(int index, std::vector<int>& connectedvertecies){
         int oldEnd = vertecies.Num() - 1;
         vertecies[index] = vertecies[oldEnd]; //index der removed wird nach hinten tauschen
         vertecies.Pop(); // pop back end which is in new pos now
+        //pop normal
         if(isValidNormalIndex(index) && isValidNormalIndex(oldEnd)){
             normals[index] = normals[oldEnd];
             normals.Pop();
         }
+        //pop uv
+        if(isValidUVIndex(index) && isValidUVIndex(oldEnd)){
+            UV0[index] = UV0[oldEnd];
+            UV0.Pop();
+        }
+        //pop color
+        if(isValidColorIndex(index) && isValidColorIndex(oldEnd)){
+            VertexColors[index] = VertexColors[oldEnd];
+            VertexColors.Pop();
+        }
+
+
 
         //(update the indices in the triangle buffer because the vertex has changed)
         for (int i = 0; i < triangles.Num(); i++){

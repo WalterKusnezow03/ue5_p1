@@ -391,9 +391,22 @@ void terrainCreator::plotAllChunks(UWorld * world){
 /// @brief instead of raycasting the z height can be got from the generated mesh data
 /// @param position position to find (only x y important)
 /// @return return z for the x y position
-float terrainCreator::getHeightFor(FVector &position){
+float terrainCreator::getHeightFor(const FVector &position){
+    float result = position.Z;
+    bool ignored = getHeightForInBound(position, result);
+    return result;
+}
 
-    DebugHelper::logMessage("terrainCreator::getHeightFor ---- NEW TEST ----");
+
+bool terrainCreator::IsInBound(const FVector &position){
+    if(chunkAtWorldPositon(position)){
+        return true;
+    }
+    return false;
+}
+
+bool terrainCreator::getHeightForInBound(const FVector &position, float &outHeight){
+    //DebugHelper::logMessage("terrainCreator::getHeightFor ---- NEW TEST ----");
     //create pane at world vertecies and perform hittest with FMath.
     TArray<FVector> positionIndices = {
         FVector(position.X, position.Y, 0.0f),
@@ -412,7 +425,7 @@ float terrainCreator::getHeightFor(FVector &position){
             if(current->NextWorldVertexAt(positionIndices[i], newPos)){
                 worldVertecies.Add(newPos); //closest vertex added
 
-                DebugHelper::logMessage("terrainCreator::getHeightFor Potential ", newPos);
+                //DebugHelper::logMessage("terrainCreator::getHeightFor Potential ", newPos);
             }
         }
     }
@@ -449,22 +462,23 @@ float terrainCreator::getHeightFor(FVector &position){
         {
             //DebugHelper::showScreenMessage("plane test hit", FColor::Orange);
             //DebugHelper::showLineBetween(worldPointer, hit, hit + FVector(0, 0, 100), FColor::Red, 0.5f);
-            return hit.Z;
-        }else{
-            return (minZ + maxZ) / 2.0f; //fallback.
+            outHeight = hit.Z;
+            return true;
+        }
+        else{
+            outHeight = (minZ + maxZ) / 2.0f; //fallback.
+            return true;
         }
     }else{
-        DebugHelper::logMessage(
+        /*DebugHelper::logMessage(
             "terrainCreator::getHeight, not enough chunks found!", 
             worldVertecies.Num()
-        );
+        );*/
     }
 
     DebugHelper::logMessage("terrainCreator::getHeightFor resultFailed ", position);
-    return 0.0f;
-
+    return false;
 }
-
 
 float terrainCreator::MinZ(TArray<FVector> &array){
     double min = 0.0f;
@@ -765,7 +779,7 @@ chunk *terrainCreator::chunkAt(int x, int y){
     return nullptr;
 }
 
-chunk *terrainCreator::chunkAtWorldPositon(FVector &worldPos){
+chunk *terrainCreator::chunkAtWorldPositon(const FVector &worldPos){
     return chunkAt(
         cmToChunkIndex(worldPos.X),
         cmToChunkIndex(worldPos.Y)
@@ -814,7 +828,7 @@ void terrainCreator::applySpecialTerrainTypesByHeight(){
 
 
 
-float terrainCreator::getHeightFor(FVector2D &pos){
+float terrainCreator::getHeightFor(const FVector2D &pos){
     FVector pos3d(pos.X, pos.Y, 0.0f);
     return getHeightFor(pos3d);
     

@@ -48,20 +48,6 @@ void GameStateManager::UpdateGameState(EGameState state){
 
     OverrideGameState(state);
 
-
-    /*
-    UPlayerUi *instance = UPlayerUi::currentInstance();
-    if(instance){
-        if(state == EGameState::EGameLaunchScreen){    
-            instance->openGameLaunchScreen();
-        }
-        if(state == EGameState::EPauseScreen){
-            instance->openPauseScreen();
-        }
-        if(state == EGameState::EGamePlay){
-            instance->openGameScreen();
-        }
-    }*/
 }
 
 void GameStateManager::TryQuitPause(EGameState state){

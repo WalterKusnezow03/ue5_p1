@@ -12,6 +12,7 @@
 #include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserInterfaceBase.h"
 #include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserMapInterfaceBase.h"
 
+#include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadMakerPosition/RoadMakerPosition.h"
 #include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadQuadMeshedSurface/MeshedSurfaceGrid.h"
 
 #include "CoreMath/Matrix/MMatrix.h"
@@ -59,7 +60,7 @@ protected:
     // ----- Base Properties -----
 
     //raw mesh 
-    TArray<TArray<FVector>> mesh;
+    TArray<TArray<FRoadMakerPosition>> mesh;
     
     //helper properites for distortion
 
@@ -178,7 +179,7 @@ protected:
 
     void Build(float detail);
     void BuildAllPolygons();
-    void ApplyHeightOnRawMesh(TerrainInterfaceBase *creator);
+    void ApplyHeightOnRawMeshAndInBoundStatusOfPositions(TerrainInterfaceBase *creator);
     void ValidateSize(FVector2D &size, float &stepSize);
 
     /// --- update terrain and chunk parsers. ---
@@ -195,10 +196,14 @@ protected:
     void ApplyHeightOnRoadQuads(TerrainInterfaceBase *creator);
     void ApplyHeightForPostions(TArray<FVector> &array, TerrainInterfaceBase *creator);
 
-    void AddRoadQuadsMeshDataToChunks(ChunkParserMapInterfaceBase &map);
+    void AddRoadQuadsMeshDataToChunks(
+        ChunkParserMapInterfaceBase &map,
+        TerrainInterfaceBase *creator
+    );
     void AddRoadQuadsMeshDataToChunk(
         ChunkParserInterfaceBase &chunk,
-        RoadQuad &quad
+        RoadQuad &quad,
+        TerrainInterfaceBase *creator
     );
 
 

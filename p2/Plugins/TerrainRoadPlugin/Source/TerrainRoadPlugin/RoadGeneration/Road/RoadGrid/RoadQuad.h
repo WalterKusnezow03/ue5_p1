@@ -20,8 +20,8 @@ public:
 
 
     //meshdata generation
-    void AppendRoadMesh(MeshData &data, float width); //if not generated yet by width
-    void AppendRoadMesh(MeshData &data); //if inner circle already generated
+    //void AppendRoadMesh(MeshData &data, float width); //if not generated yet by width
+    void AppendRoadMesh(MeshData &data, TerrainInterfaceBase *creator); //if inner circle already generated
     void GenerateParalellRoad(
         TArray<FVector> &outerOut,
         TArray<FVector> &innerOut,

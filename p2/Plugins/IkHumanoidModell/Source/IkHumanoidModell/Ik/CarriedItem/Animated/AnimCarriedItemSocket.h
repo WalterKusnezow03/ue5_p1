@@ -1,3 +1,5 @@
+// Copyright Walter Kusnezow All Rights Reserved.
+
 #pragma once
 
 #include "IkHumanoidModell/Ik/CarriedItem/CarriedItemSocket.h"

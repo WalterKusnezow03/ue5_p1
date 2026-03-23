@@ -46,6 +46,7 @@ void ChunkParserStorageInterface::Save(
                 meshDataCurrent.getNormalsRef(),
                 meshDataCurrent.getUV0Ref(),
                 meshDataCurrent.getTrianglesRef(),
+                meshDataCurrent.getVertexColorsRef(),
                 currentIdentifier.name //saving mesh data with names to allow non existing partial buffers
             );
         }
@@ -262,6 +263,7 @@ bool ChunkParserStorageInterface::Load(
                     meshDataCurrent.getNormalsRef(),
                     meshDataCurrent.getUV0Ref(),
                     meshDataCurrent.getTrianglesRef(),
+                    meshDataCurrent.getVertexColorsRef(),
                     bEndReached,
                     name //saving mesh data with names to allow non existing partial buffers
                 );

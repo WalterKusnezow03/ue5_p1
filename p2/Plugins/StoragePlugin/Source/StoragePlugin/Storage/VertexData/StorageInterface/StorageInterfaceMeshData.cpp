@@ -13,6 +13,7 @@ void StorageInterfaceMeshData::SaveMeshData(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &Colors,
     int chunkId,
     int layer,
     int lod,
@@ -23,6 +24,7 @@ void StorageInterfaceMeshData::SaveMeshData(
         Normals,
         UV0,
         Triangles,
+        Colors,
         makePath(chunkId, layer, lod),
         nameIn
     );
@@ -33,12 +35,13 @@ void StorageInterfaceMeshData::SaveMeshData(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &Colors,
     FString path,
     FString nameIn
 ){
     
     TArray<uint8> Bytes;
-    AppendIntoByteBuffer(Bytes, Vertecies, Normals, UV0, Triangles, nameIn);
+    AppendIntoByteBuffer(Bytes, Vertecies, Normals, UV0, Triangles, Colors, nameIn);
 
     DebugHelper::logMessage(FString::Printf(
     TEXT("StorageInterfaceMeshData::SaveMeshData: %s vertexCount=%d, normalCount=%d, uvCount=%d, triangleCount=%d, Bytes.Num()=%d"),
@@ -62,6 +65,7 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &Colors,
     FString nameIn
 ){
 
@@ -69,6 +73,7 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     int32 normalCount = Normals.Num();
     int32 uvCount = UV0.Num();
     int32 triangleCount = Triangles.Num();
+    int32 colorCount = Colors.Num();
 
     const TArray<TCHAR>& chars = nameIn.GetCharArray();
     int32 charCount = nameIn.Len(); // chars.Num(); //no.
@@ -97,6 +102,7 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     int normalsByteSize = getNormalsBytesSize(Normals.Num());
     int uv0ByteSize = getUVBytesSize(UV0.Num());
     int trianglesByteSize = getTrianglesBytesSize(Triangles.Num());
+    int colorByteSize = getColorsBytesSize(colorCount);
     int charsByteSize = getCharsBytesSize(charCount);
 
     int completeSize =
@@ -105,7 +111,8 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
         normalsByteSize +
         uv0ByteSize +
         trianglesByteSize + 
-        charsByteSize;
+        charsByteSize +
+        colorByteSize;
 
     //write info and data size
     int32 previousSize = Bytes.Num();
@@ -121,6 +128,7 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
         Normals.Num(),
         UV0.Num(),
         Triangles.Num(),
+        Colors.Num(),
         charCount,
         Ptr //at offset of previous bytes but increased!
     ); 
@@ -148,8 +156,13 @@ void StorageInterfaceMeshData::AppendIntoByteBuffer(
     Ptr += trianglesByteSize; //increase pointer adress
 
 
+
+    FMemory::Memcpy(Ptr, (uint8 *)Colors.GetData(), colorByteSize); //copy
+    Ptr += colorByteSize; //increase pointer adress
+
+
     FMemory::Memcpy(Ptr, (uint8 *)chars.GetData(), charsByteSize); //copy
-    //Ptr += charsByteSize;//increase pointer adress not be needed, end of data!!
+    Ptr += charsByteSize;//increase pointer adress not be needed, end of data!!
     
 
 }
@@ -162,6 +175,7 @@ void StorageInterfaceMeshData::writeInfoData(
     int32 normalCount,
     int32 uvCount,
     int32 triangleCount,
+    int32 colorCount,
     int32 charCount,
     uint8*& Ptr
 ){
@@ -170,6 +184,7 @@ void StorageInterfaceMeshData::writeInfoData(
         normalCount,
         uvCount,
         triangleCount,
+        colorCount,
         charCount
     };
     for (int i = 0; i < info.Num(); i++){
@@ -226,7 +241,9 @@ int StorageInterfaceMeshData::getCharsBytesSize(int count){
     return sizeof(TCHAR) * count;
 }
 
-
+int StorageInterfaceMeshData::getColorsBytesSize(int count){
+    return sizeof(FColor) * count;
+}
 
 //-------- LOADING --------
 
@@ -235,6 +252,7 @@ bool StorageInterfaceMeshData::LoadMeshData(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &colors,
     int chunkId,
     int layer,
     int lod,
@@ -246,6 +264,7 @@ bool StorageInterfaceMeshData::LoadMeshData(
         Normals,
         UV0,
         Triangles,
+        colors,
         path,
         outName
     );
@@ -256,6 +275,7 @@ bool StorageInterfaceMeshData::LoadMeshData(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &Colors,
     FString path,
     FString &outName
 ){
@@ -285,6 +305,7 @@ bool StorageInterfaceMeshData::LoadMeshData(
         Normals,
         UV0,
         Triangles,
+        Colors,
         endReachedIgnore,
         outName
     )){
@@ -310,6 +331,7 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     TArray<FVector> &Normals,
     TArray<FVector2D> &UV0,
     TArray<int32> &Triangles,
+    TArray<FColor> &Colors,
     bool &endReached,
     FString &outName
 ){
@@ -326,10 +348,12 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     int32 normalCount = 0;
     int32 uvCount = 0;
     int32 triangleCount = 0;
+    int32 colorCount = 0;
     int32 charCount = 0;
+
     TArray<TCHAR> chars;
 
-    loadInfoData(Ptr, vertexCount, normalCount, uvCount, triangleCount, charCount);
+    loadInfoData(Ptr, vertexCount, normalCount, uvCount, triangleCount, colorCount, charCount);
 
     /*if(vertexCount > Bytes.Num() / sizeof(FVector)){
         return false;
@@ -350,6 +374,7 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     Normals.SetNumUninitialized(normalCount);
     UV0.SetNumUninitialized(uvCount);
     Triangles.SetNumUninitialized(triangleCount);
+    Colors.SetNumUninitialized(colorCount);
     chars.SetNum(charCount);
 
     //copy mesh data based on infoData
@@ -360,6 +385,7 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     int normalsBytesSize = getNormalsBytesSize(normalCount);
     int uvBytesSize = getUVBytesSize(uvCount);
     int trianglesByteSize = getTrianglesBytesSize(triangleCount);
+    int colorByteSize = getColorsBytesSize(colorCount);
     int charsByteSize = getCharsBytesSize(charCount);
 
     //verify size
@@ -369,6 +395,7 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
         normalsBytesSize +
         uvBytesSize +
         trianglesByteSize +
+        colorByteSize +
         charsByteSize;
 
     //if bytes exceeded, mesh data is broken.
@@ -412,6 +439,10 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     Ptr += trianglesByteSize; // increase pointer adress (if next data loading needed)
 
 
+    FMemory::Memcpy((uint8 *)Colors.GetData(), Ptr, colorByteSize); //copy
+    Ptr += colorByteSize; //increase pointer adress
+
+
     FMemory::Memcpy((uint8 *)chars.GetData(), Ptr, charsByteSize); //copy
     Ptr += charsByteSize;//increase pointer adress not be needed, end of data!!
 
@@ -427,6 +458,7 @@ void StorageInterfaceMeshData::loadInfoData(
     int32 &normalCount,
     int32 &uvCount,
     int32 &triangleCount,
+    int32 &colorCount,
     int32 &charCount
 ){
     TArray<int32 *> infoData = {
@@ -434,6 +466,7 @@ void StorageInterfaceMeshData::loadInfoData(
         &normalCount,
         &uvCount,
         &triangleCount,
+        &colorCount,
         &charCount
     };
 
@@ -495,6 +528,12 @@ void StorageInterfaceMeshData::Test(){
         0,2,1
     };
 
+    TArray<FColor> colorBuffer = {
+        FColor::Red,
+        FColor::Green,
+        FColor::Blue
+    };
+
     //before save
     FString nameA = TEXT("lol");
     PrintBuffers(vertexBuffer, normalBuffer, uvBuffer, triangleBuffer, nameA);
@@ -505,6 +544,7 @@ void StorageInterfaceMeshData::Test(){
         normalBuffer,
         uvBuffer,
         triangleBuffer,
+        colorBuffer,
         0,
         0,
         0,
@@ -516,6 +556,7 @@ void StorageInterfaceMeshData::Test(){
     normalBuffer.Empty();
     uvBuffer.Empty();
     triangleBuffer.Empty();
+    colorBuffer.Empty();
 
     //debug
     if(false){
@@ -529,6 +570,7 @@ void StorageInterfaceMeshData::Test(){
         normalBuffer,
         uvBuffer,
         triangleBuffer,
+        colorBuffer,
         0,
         0,
         0,

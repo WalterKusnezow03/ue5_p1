@@ -56,16 +56,19 @@ void FDynamicMeshWidgetSceneProxy::GetDynamicMeshElements(
         FTextureResource* TextureResource = RenderTarget->GetResource();
         if ( TextureResource )
         {
+            //DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::BuildMeshData");
+            BuildCustomMeshData(
+                Views,
+                ViewportLocalToWorld,
+                PreviousLocalToWorld,
+                ParentMaterialProxy, 
+                Collector,
+                VisibilityMap
+            );
+            /*
             if (GeometryMode == EWidgetGeometryMode::Plane)
             {
-                //DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::BuildMeshData");
-                BuildCustomMeshData(
-                    Views,
-                    ViewportLocalToWorld,
-                    PreviousLocalToWorld,
-                    ParentMaterialProxy,
-                    Collector,
-                    VisibilityMap);
+                
             }
             else
             {
@@ -148,10 +151,11 @@ void FDynamicMeshWidgetSceneProxy::GetDynamicMeshElements(
                         MeshBuilder.GetMesh(ViewportLocalToWorld, PreviousLocalToWorld, ParentMaterialProxy, SDPG_World, Settings, nullptr, ViewIndex, Collector, FHitProxyId());
                     }
                 }
-            }
+            }*/
         }
     }
 
+//copied src code
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
     for ( int32 ViewIndex = 0; ViewIndex < Views.Num(); ViewIndex++ )
     {
@@ -219,8 +223,14 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
     const TArray<FVector2D> &uvs = internalMeshData.getUV0RefConst();
     const TArray<FVector> &normals = internalMeshData.getNormalsRefConst();
 
+    const FColor colorWhite = FColor::White;
+    FColor color0 = colorWhite;
+    FColor color1 = colorWhite;
+    FColor color2 = colorWhite;
+    const TArray<FColor> &colorsOptional = internalMeshData.getVertexColorsRefConst();
+
     for (int32 t = 2; t < triangles.Num(); t += 3){
-        const int32 t0 = triangles[t - 2];
+        const int32 t0 = triangles[t - 2]; //vertex buffer indices
         const int32 t1 = triangles[t - 1];
         const int32 t2 = triangles[t];
 
@@ -241,6 +251,15 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
             const FVector2D &uv1 = uvs[t1];
             const FVector2D &uv2 = uvs[t2];
             
+            //colors are optional
+            
+            if(IndexInBound(colorsOptional, t0, t1, t2)){
+                color0 = colorsOptional[t0];
+                color1 = colorsOptional[t1];
+                color2 = colorsOptional[t2];
+            }
+            
+
 
             AddTriangle(
                 MeshBuilder,
@@ -252,7 +271,10 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
                 n2,
                 uv0,
                 uv1,
-                uv2
+                uv2,
+                color0,
+                color1,
+                color2
             );
         }else{
             DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::MeshDataInvalid!", FColor::Red);
@@ -274,7 +296,10 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
     const FVector &normal2,
     const FVector2D &uv0,
     const FVector2D &uv1,
-    const FVector2D &uv2
+    const FVector2D &uv2,
+    const FColor &color0,
+    const FColor &color1,
+    const FColor &color2
 ) const {
 
     FVector tangentX3D;
@@ -292,7 +317,7 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
         tangentX3f, //FVector3f(0, -1, 0), //tangetX
         tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal0), //normal
-        FColor::White
+        color0 //FColor::White
     );
     VertexIndices[1] = MeshBuilder.AddVertex(
         As3f(v1),
@@ -300,7 +325,7 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
         tangentX3f, //FVector3f(0, -1, 0), //tangetX
         tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal1), 
-        FColor::White
+        color1 //FColor::White
     );
     VertexIndices[2] = MeshBuilder.AddVertex(
         As3f(v2),
@@ -308,7 +333,7 @@ void FDynamicMeshWidgetSceneProxy::AddTriangle(
         tangentX3f, //FVector3f(0, -1, 0), //tangetX
         tangentY3f, //FVector3f(0, 0, -1), //tangetY
         As3f(normal2), 
-        FColor::White
+        color2 //FColor::White
     );
     MeshBuilder.AddTriangle(VertexIndices[0], VertexIndices[1], VertexIndices[2]);
 }

@@ -132,7 +132,41 @@ public:
 	);
 
 
+	//append combined
+	void appendVerteciesAndUvs(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector2D &uvA,
+		FVector2D &uvB,
+		FVector2D &uvC
+	);
 
+	void appendVerteciesAndUvsEfficent(
+		FVector &a, 
+		FVector &b, 
+		FVector &c,
+		FVector2D &uvA,
+		FVector2D &uvB,
+		FVector2D &uvC
+	);
+
+	void appendVerteciesAndUvsAndColors(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector2D &uvA,
+		FVector2D &uvB,
+		FVector2D &uvC,
+		FColor &colorA,
+		FColor &colorB,
+		FColor &colorC
+	);
+
+protected:
+	void appendColors(FColor &a, FColor &b, FColor &c);
+
+public:
 
 	void rebuild(TArray<FVector> &&verteciesIn, TArray<int> &&trianglesIn);
 
@@ -157,6 +191,7 @@ public:
 	const TArray<FVector> &getNormalsRefConst() const;
 	const TArray<FVector2D> &getUV0RefConst() const;
 	const TArray<FProcMeshTangent> &getTangentsRefConst() const;
+	const TArray<FColor> &getVertexColorsRefConst() const;
 
 	void offsetAllvertecies(FVector &offset);
 	
@@ -285,6 +320,7 @@ protected:
 	bool isValidNormalIndex(int i, int j, int k);
 	bool isValidUVIndex(int i);
 	bool isValidUVIndex(int i, int j, int k);
+	bool isValidColorIndex(int i);
 	FVector createNormal(int v0, int v1, int v2);
 
 	void findTrianglesInvolvedWith(int index, std::vector<int> &trianglesFound);

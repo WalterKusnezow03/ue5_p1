@@ -59,19 +59,19 @@ void RoadQuad::UpdateCenter(){
 }
 
 
-
+/*
 void RoadQuad::AppendRoadMesh(MeshData &data, float width){
-    /*
+    / *
     1->2
     |  |
     0<-3
     inner - outer
-    */
+    * /
     GenerateParalellRoad(width);
     AppendRoadMesh(data);
-}
+}*/
 
-void RoadQuad::AppendRoadMesh(MeshData &data){
+void RoadQuad::AppendRoadMesh(MeshData &data, TerrainInterfaceBase *creator){
     if(circle.Num() == innerCircle.Num()){
         for (int i = 1; i < circle.Num(); i++){
             FVector &v0 = innerCircle[i - 1];
@@ -80,7 +80,21 @@ void RoadQuad::AppendRoadMesh(MeshData &data){
             FVector &v2 = circle[i];
             FVector &v3 = circle[i - 1];
 
-            data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+            if(creator){
+                if(
+                    creator->IsInBound(v0) &&
+                    creator->IsInBound(v1) &&
+                    creator->IsInBound(v2) &&
+                    creator->IsInBound(v3)
+                ){
+                    data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+                }
+            }else{
+                data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+            }
+
+
+            //data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
             //data.appendEfficent(v0, v1, v2, v3); //wrong. expected winding order but wrong.
         }
     }

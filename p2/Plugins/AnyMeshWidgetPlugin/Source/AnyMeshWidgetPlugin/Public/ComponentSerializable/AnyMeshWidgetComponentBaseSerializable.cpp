@@ -32,6 +32,7 @@ void UAnyMeshWidgetComponentBaseSerializable::LoadMeshDataFromDisk(){
             loaded.getNormalsRef(),
             loaded.getUV0Ref(),
             loaded.getTrianglesRef(),
+            loaded.getVertexColorsRef(),
             makePath(), //FString path,
             nameIgnored //FString &outName
         )){
@@ -39,12 +40,13 @@ void UAnyMeshWidgetComponentBaseSerializable::LoadMeshDataFromDisk(){
                 loaded.RebuildBounds();
                 DebugHelper::logMessage(
                     FString::Printf(
-                        TEXT("UAnyMeshWidgetComponentBaseSerializable meshdata loaded: %s %d %d %d %d"),
+                        TEXT("UAnyMeshWidgetComponentBaseSerializable meshdata loaded: %s %d %d %d %d %d"),
                         *nameIgnored,
                         loaded.getVerteciesRef().Num(),
                         loaded.getNormalsRef().Num(),
                         loaded.getUV0Ref().Num(),
-                        loaded.getTrianglesRef().Num()
+                        loaded.getTrianglesRef().Num(),
+                        loaded.getVertexColorsRef().Num()
                     )
                 );
                 wasLoaded = true;
@@ -102,18 +104,20 @@ void UAnyMeshWidgetComponentBaseSerializable::SaveMeshDataToDisk(){
         copy.getNormalsRef(),
         copy.getUV0Ref(),
         copy.getTrianglesRef(),
+        copy.getVertexColorsRef(),
         makePath(),   // FString path,
         none // FString &outName
     );
 
     DebugHelper::logMessage(
         FString::Printf(
-            TEXT("UAnyMeshWidgetComponentBaseSerializable meshdata saved: %s %d %d %d %d"),
+            TEXT("UAnyMeshWidgetComponentBaseSerializable meshdata saved: %s %d %d %d %d %d"),
             *none,
             copy.getVerteciesRef().Num(),
             copy.getNormalsRef().Num(),
             copy.getUV0Ref().Num(),
-            copy.getTrianglesRef().Num()
+            copy.getTrianglesRef().Num(),
+            copy.getVertexColorsRef().Num()
         )
     );
 

@@ -565,10 +565,6 @@ bool AplayerScript::InteractionBlockedPauseAndAnimation(){
 }
 
 void AplayerScript::openPauseMenu(){
-    //Super::openPauseMenu();
-
-    //APauseRoomActor::StaticEnter(this);
-
     //enters pause room by default
     AworldLevel::gameStateManager.SwitchGameStatePausedAndChangeUi();
 }

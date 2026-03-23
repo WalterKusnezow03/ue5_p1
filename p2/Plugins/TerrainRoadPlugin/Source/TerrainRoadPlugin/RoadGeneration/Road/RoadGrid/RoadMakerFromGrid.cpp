@@ -32,9 +32,9 @@ void RoadMakerFromGrid::UpdateCenterOfMesh(){
         int num = mesh.Num() * mesh[0].Num(); //same size on all arrays
         FVector centerUpdate;
         for (int i = 0; i < mesh.Num(); i++){
-            TArray<FVector> &array = mesh[i];
+            TArray<FRoadMakerPosition> &array = mesh[i];
             for (int j = 0; j < array.Num(); j++){
-                centerUpdate += array[j];
+                centerUpdate += array[j].GetPosition();
             }
         }
         centerUpdate /= num;
@@ -76,15 +76,15 @@ void RoadMakerFromGrid::CreateGrid(FVector2D size, float StepSize){
     for (int i = 0; i < mesh.Num(); i++){
         float offsetX = i * StepSize;
 
-        TArray<FVector> &current = mesh[i];
-        current.SetNum(countNodesY);
+        TArray<FRoadMakerPosition> &currentGridPositions = mesh[i];
+        currentGridPositions.SetNum(countNodesY);
 
         TArray<RoadQuad> &buildedMeshCurrent = buildedMeshQuads[i];
         buildedMeshCurrent.SetNum(countNodesY);
 
-        for (int j = 0; j < current.Num(); j++){
+        for (int j = 0; j < currentGridPositions.Num(); j++){
             float offsetY = j * StepSize;
-            FVector &vec = current[j];
+            FVector &vec = currentGridPositions[j].GetPosition();
             vec.X = offsetX;
             vec.Y = offsetY;
             vec.Z = 0.0f;
@@ -144,10 +144,10 @@ bool RoadMakerFromGrid::RandomPosition(
         int randomI = FVectorUtil::randomNumber(iLower, iHigher);
         int randomJ = FVectorUtil::randomNumber(jLower, jHigher);
         if(randomI >= 0 && randomI < mesh.Num()){
-            TArray<FVector> &array = mesh[randomI];
+            TArray<FRoadMakerPosition> &array = mesh[randomI];
             if (randomJ >= 0 && randomJ < array.Num())
             {
-                outpos = array[randomJ];
+                outpos = array[randomJ].GetPosition();
                 return true;
             }
         }
@@ -210,11 +210,12 @@ void RoadMakerFromGrid::WarpCirlceByDistance(
 
     MMatrix M;
     for (int i = 0; i < mesh.Num(); i++){
-        TArray<FVector> &current = mesh[i];
+        TArray<FRoadMakerPosition> &current = mesh[i];
         for (int j = 0; j < current.Num(); j++){
-            FVector &currentPos = current[j];
+            FRoadMakerPosition &currenPosition = current[j];
+            FVector &currentPositionVector = currenPosition.GetPosition();
 
-            float currentDistance = FVector::DistSquared(currentPos, center);
+            float currentDistance = FVector::DistSquared(currentPositionVector, center);
             if(currentDistance <= maxDistance2){
                 float skalar = currentDistance / maxDistance2; // distTarget / distAll
                 float scaledAngle = skalar * angle;
@@ -224,7 +225,7 @@ void RoadMakerFromGrid::WarpCirlceByDistance(
                     M
                 );
                 
-                currentPos = M * currentPos;
+                currentPositionVector = M * currentPositionVector;
             }
         }
     }
@@ -250,28 +251,26 @@ void RoadMakerFromGrid::MakeRotationAroundPosition(
 
 
 
+
+
+
+
+
 // --- build --- (no warp allowed anymore)
 
-void RoadMakerFromGrid::ApplyHeightOnRawMesh(TerrainInterfaceBase *creator){
+void RoadMakerFromGrid::ApplyHeightOnRawMeshAndInBoundStatusOfPositions(TerrainInterfaceBase *creator){
     if(creator){
+        float heightOffset = 30.0f;
         for (int i = 0; i < mesh.Num(); i++){
-            TArray<FVector> &current = mesh[i];
-            ApplyHeightForPostions(current, creator);
+            TArray<FRoadMakerPosition> &current = mesh[i];
+            for (int j = 0; j < current.Num(); j++){
+                FRoadMakerPosition &currentPos = current[j];
+                currentPos.UpdateHeightAndMarkInBoundStatus(creator, heightOffset);
+            }
         }
     }
 }
 
-void RoadMakerFromGrid::ApplyHeightForPostions(TArray<FVector> &array, TerrainInterfaceBase *creator){
-    float heightOffset = 30.0f;
-    if (creator)
-    {
-        for (int j = 0; j < array.Num(); j++){
-            FVector &pos = array[j];
-            float zUpdate = creator->getHeightFor(pos);
-            pos.Z = zUpdate + heightOffset;
-        }
-    }
-}
 
 
 
@@ -282,7 +281,7 @@ void RoadMakerFromGrid::Build(
     float roadWidth,
     ChunkParserMapInterfaceBase &map
 ){
-    ApplyHeightOnRawMesh(creator);
+    ApplyHeightOnRawMeshAndInBoundStatusOfPositions(creator);
     Build(_einheitsValueForBsplineStepSize);
     LockTerrainFromGeneratedRoadQuads(creator, roadWidth);
     //ApplyHeightOnRoadQuads(creator); <-- moved down --
@@ -300,7 +299,7 @@ void RoadMakerFromGrid::Build(
 
     //move road quads to local space
     ApplyTerrain2DIndexToRoadQuadsAndRemoveTerrainOffset(creator);
-    AddRoadQuadsMeshDataToChunks(map);
+    AddRoadQuadsMeshDataToChunks(map, creator);
 
     
 
@@ -349,22 +348,37 @@ void RoadMakerFromGrid::ComputeAllXAxis(float _einheitsValue){
 
 void RoadMakerFromGrid::ComputeYAxis(int index, float _einheitsValue){
     if(index >= 0 && index < mesh.Num()){
-        TArray<FVector> &yAxis = mesh[index];
-        BSpline splineMaker;
-        TArray<FVectorBSplinePosition> &outArray = GetSection(index, ERoadKeyEnum::E_yaxis);
-        splineMaker.calculatecurve(
-            yAxis,
-            outArray,
-            _einheitsValue
-        );
+        TArray<FRoadMakerPosition> &yAxisRoadMakerPositions = mesh[index];
 
-        DebugHelper::logMessage(
-            FString::Printf(
-                TEXT("RoadMakerFromGrid::ComputeYAxis %d"),
-                outArray.Num()
-            )
-        );
+        //convert to raw FVector, needed here. 
+        //original mesh not needed anymore anyway after bspline build
+        TArray<FVector> yAxis;
+        for(int i = 0; i < yAxisRoadMakerPositions.Num(); i++){
+            FRoadMakerPosition &meshPosition = yAxisRoadMakerPositions[i];
+            
+            if(meshPosition.IsInsideTerrain()){
+                yAxis.Add(meshPosition.GetPosition());
+            }
+            //yAxis.Add(meshPosition.GetPosition());
+        }
 
+        //from 2 anchors generate
+        if(yAxis.Num() > 1){
+            BSpline splineMaker;
+            TArray<FVectorBSplinePosition> &outArray = GetSection(index, ERoadKeyEnum::E_yaxis);
+            splineMaker.calculatecurve(
+                yAxis,
+                outArray,
+                _einheitsValue
+            );
+
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("RoadMakerFromGrid::ComputeYAxis %d"),
+                    outArray.Num()
+                )
+            );
+        }
     }
 }
 
@@ -372,9 +386,15 @@ void RoadMakerFromGrid::ComputeXAxis(int index, float _einheitsValue){
     if(mesh.Num() > 0 && index >= 0){
         TArray<FVector> copiedXAxis;
         for (int j = 0; j < mesh.Num(); j++){
-            TArray<FVector> &yAxisArray = mesh[j];
+            TArray<FRoadMakerPosition> &yAxisArray = mesh[j];
             if(index < yAxisArray.Num()){
-                copiedXAxis.Add(yAxisArray[index]); //copy in x y-vertical the desired y value for x
+                FRoadMakerPosition &meshPosition = yAxisArray[index];
+                
+                if(meshPosition.IsInsideTerrain()){
+                    //copy in x y-vertical the desired y value for x
+                    copiedXAxis.Add(meshPosition.GetPosition());
+                }
+                //copiedXAxis.Add(meshPosition.GetPosition());
                 /*
                 0000
                 xxxx <--copy--
@@ -383,15 +403,16 @@ void RoadMakerFromGrid::ComputeXAxis(int index, float _einheitsValue){
                 */
             }
         }
-        BSpline splineMaker;
-        TArray<FVectorBSplinePosition> &outArray = GetSection(index, ERoadKeyEnum::E_xaxis);
-        splineMaker.calculatecurve(
-            copiedXAxis,
-            outArray,
-            _einheitsValue
-        );
-
-        DebugHelper::logMessage("RoadMakerFromGrid::ComputeXAxis ", outArray.Num());
+        if(copiedXAxis.Num() > 1){
+            BSpline splineMaker;
+            TArray<FVectorBSplinePosition> &outArray = GetSection(index, ERoadKeyEnum::E_xaxis);
+            splineMaker.calculatecurve(
+                copiedXAxis,
+                outArray,
+                _einheitsValue
+            );
+            DebugHelper::logMessage("RoadMakerFromGrid::ComputeXAxis ", outArray.Num());
+        }
     }
 }
 
@@ -639,6 +660,16 @@ void RoadMakerFromGrid::ApplyHeightOnRoadQuads(TerrainInterfaceBase *creator){
     }
 }
 
+void RoadMakerFromGrid::ApplyHeightForPostions(TArray<FVector> &array, TerrainInterfaceBase *creator){
+    if(creator){
+        for (int i = 0; i < array.Num(); i++){
+            FVector &current = array[i];
+            float height = creator->getHeightFor(current);
+            current.Z = height + 30.0f;
+        }
+    }
+}
+
 
 
 
@@ -690,7 +721,10 @@ void RoadMakerFromGrid::RemoveTerrainOffsetFromRoadQuads(
 
 
 
-void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunks(ChunkParserMapInterfaceBase &map){
+void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunks(
+    ChunkParserMapInterfaceBase &map,
+    TerrainInterfaceBase *creator
+){
     
     
     for (int i = 0; i < buildedMeshQuads.Num(); i++){
@@ -700,7 +734,7 @@ void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunks(ChunkParserMapInterfaceBase
             std::pair<int, int> &indexPair = current.GetChunkIndex();
 
             ChunkParserInterfaceBase &parser = map.findByIndexBase(indexPair.first, indexPair.second);
-            AddRoadQuadsMeshDataToChunk(parser, current);
+            AddRoadQuadsMeshDataToChunk(parser, current, creator);
         }
     }
 
@@ -710,7 +744,8 @@ void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunks(ChunkParserMapInterfaceBase
 
 void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunk(
     ChunkParserInterfaceBase &chunk,
-    RoadQuad &quad
+    RoadQuad &quad,
+    TerrainInterfaceBase *creator
 ){
     //used by meshdata saving, dont use manually if not needed
     //only public for RoadMakerFromGrid!
@@ -720,7 +755,7 @@ void RoadMakerFromGrid::AddRoadQuadsMeshDataToChunk(
         ELod::lodNear,
         raycastOnLayer
     );
-    quad.AppendRoadMesh(data);
+    quad.AppendRoadMesh(data, creator);
 }
 
 

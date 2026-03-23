@@ -25,6 +25,7 @@ public:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         FString path,
         FString nameIn
     );
@@ -35,6 +36,7 @@ public:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         FString path,
         FString &outName
     );
@@ -45,6 +47,7 @@ public:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         int chunkId,
         int layer,
         int lod,
@@ -56,6 +59,7 @@ public:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         int chunkId,
         int layer,
         int lod,
@@ -73,6 +77,7 @@ protected:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         FString nameIn
     );
 
@@ -88,6 +93,7 @@ protected:
         TArray<FVector> &Normals,
         TArray<FVector2D> &UV0,
         TArray<int32> &Triangles,
+        TArray<FColor> &Colors,
         bool &endReached,
         FString &outName
     );
@@ -102,6 +108,7 @@ private:
         int32 &normalCount,
         int32 &uvCount,
         int32 &triangleCount,
+        int32 &colorCount,
         int32 &charCount
     );
 
@@ -111,6 +118,7 @@ private:
         int32 normalCount,
         int32 uvCount,
         int32 triangleCount,
+        int32 colorCount,
         int32 charCount,
         uint8*& Ptr //immidiate byte offset for data Ptr, is increased!
     );
@@ -128,6 +136,7 @@ private:
     int getUVBytesSize(int count);
     int getTrianglesBytesSize(int count);
     int getCharsBytesSize(int count);
+    int getColorsBytesSize(int count);
 
     void PrintBuffers(
         TArray<FVector> &Vertecies,

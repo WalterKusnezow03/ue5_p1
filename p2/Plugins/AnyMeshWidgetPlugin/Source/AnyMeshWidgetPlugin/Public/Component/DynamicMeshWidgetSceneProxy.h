@@ -1,4 +1,3 @@
-// Copyright Walter Kusnezow All Rights Reserved.
 
 
 #pragma once
@@ -79,7 +78,10 @@ protected:
 		const FVector &normal2,
 		const FVector2D &uv0,
 		const FVector2D &uv1,
-		const FVector2D &uv2
+		const FVector2D &uv2,
+		const FColor &color0,
+		const FColor &color1,
+		const FColor &color2
 	) const;
 
 public:

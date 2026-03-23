@@ -1,4 +1,5 @@
 #pragma once
+// Copyright Walter Kusnezow All Rights Reserved.
 
 #include "CoreMinimal.h"
 #include "PlueckerCore/Interface/FJointKinematicPropagatePackage.h"
