@@ -20,9 +20,9 @@ void UWidgetBase::SetVisible(bool flag){
 
 TArray<UWidget*> UWidgetBase::GetDirectChildren(){
     TArray<UWidget *> outArray;
-    if(UPanelWidget *panel = Cast<UPanelWidget>(GetRootWidget())){
-        outArray = GetDirectChildren(panel);
-    }
+
+    //only this panel if function is aoverriden, is a child. Dont do any
+    //thing else.
     if(UPanelWidget *functionIsOverriden = FindPanelWidgetIfNotRoot()){
         TArray<UWidget *> outArrayB = GetDirectChildren(functionIsOverriden);
         for(UWidget *widget : outArrayB){
@@ -32,7 +32,14 @@ TArray<UWidget*> UWidgetBase::GetDirectChildren(){
                 }
             }
         }
+        return outArray;
     }
+
+    //get all since none is designed to be overriden!
+    if(UPanelWidget *panel = Cast<UPanelWidget>(GetRootWidget())){
+        outArray = GetDirectChildren(panel);
+    }
+    
 
     //OK
     //DebugHelper::logMessage("UWidgetBase::GetDirectChildren() ", outArray.Num());

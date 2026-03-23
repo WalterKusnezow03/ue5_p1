@@ -20,8 +20,14 @@ public:
     /// actor and widget part removed:  event_payload    
     virtual void ReceiveEvent(TArray<FString> &message);
 
+    //event name to force events on listeners!
+    static FString forceEventString() { return TEXT("FORCEEVENT"); };
+
+
 protected:
     virtual void BeginDestroy() override;
+
+    
 
 private:
     void LogReceivedEvent(TArray<FString> &array);

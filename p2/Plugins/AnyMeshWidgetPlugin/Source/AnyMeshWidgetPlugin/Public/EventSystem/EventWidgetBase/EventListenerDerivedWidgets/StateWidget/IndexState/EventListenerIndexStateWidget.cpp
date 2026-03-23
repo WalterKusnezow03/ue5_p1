@@ -11,6 +11,12 @@ void UEventListenerIndexStateWidget::Init(){
 void UEventListenerIndexStateWidget::LoadWidgetsOnInit(){
     widgets = GetDirectChildren(); //from panel.
     UpdateShownIndex(0);
+
+    DebugHelper::logMessage(
+        FString::Printf(TEXT("UEventListenerIndexStateWidget Event: %s Widgets %d"),
+            *EventName, widgets.Num()
+        )
+    );
 }
 
 void UEventListenerIndexStateWidget::TickExternal(float deltatime){
@@ -45,7 +51,7 @@ int UEventListenerIndexStateWidget::ExtractPayload(TArray<FString> &message){
 
 void UEventListenerIndexStateWidget::UpdateShownIndex(int index){
     if(currentindex == index){
-        return;
+        //return;
     }
     currentindex = index;
     for (int i = 0; i < widgets.Num(); i++){

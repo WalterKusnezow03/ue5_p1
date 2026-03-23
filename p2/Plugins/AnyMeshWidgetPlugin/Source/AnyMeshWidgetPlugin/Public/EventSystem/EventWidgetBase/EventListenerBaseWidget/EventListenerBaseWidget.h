@@ -33,4 +33,5 @@ protected:
 
     bool IsTargetedByEvent(TArray<FString> &message);
 
+    void logEventReceivalReconstructed(TArray<FString> &message);
 };

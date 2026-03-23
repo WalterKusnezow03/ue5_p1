@@ -7,7 +7,14 @@ void UAnimationWidget::Init(){
     Super::Init();
     LoadAnimationFramesOnInit();
 
-    DebugHelper::logMessage("UAnimationWidget::loaded frames ", CachedBrushes.Num()); //is called
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("UAnimationWidget::loaded frames %d (%s)(%s)"),
+            CachedBrushes.Num(),
+            *EventName, //optional but for debug!
+            *pathToAnimation
+        )
+    ); //is called
 
     reachedEnd = false;
     currentindex = 0;

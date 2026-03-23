@@ -34,4 +34,6 @@ protected:
 
     int index = 0;
     int ampelIndex = 0;
+
+    int indexHeck = 0;
 };

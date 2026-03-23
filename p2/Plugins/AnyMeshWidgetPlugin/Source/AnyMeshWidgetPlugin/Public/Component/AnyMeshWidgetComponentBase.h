@@ -47,6 +47,7 @@
 
 #include "AnyMeshWidgetComponentBase.generated.h"
 
+/// ----- BASE CLASS FOR CUSTOM MESH DATA WIDGET COMPONENTS -----
 /// @brief Will allow to have ANY meshdata on the widget, still with proper hit
 /// and uv / screenpos hits, to dispatch to the widget.
 /// Allows any meshdata beyond default plane and cylinder !

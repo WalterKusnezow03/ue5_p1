@@ -3,11 +3,12 @@
 
 #include "CoreMinimal.h"
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventListenerBaseWidget/EventListenerBaseWidget.h"
-#include "EventListenerIndexStateWidget.generated.h"
+#include "EventListenerNameComposedWidget.generated.h"
 
-/// @brief Will show a UWidget (for example a image) based on a index
+/// @brief Will dispatch the payload data
+/// to a row of children as (event_payload)->(event_p1_p2_p3_p4...p_n)
 UCLASS(Blueprintable, ClassGroup="UserInterface", hidecategories=(Object,Activation,"Components|Activation",Sockets,Base,Lighting,LOD,Mesh), editinlinenew, meta=(BlueprintSpawnableComponent) )
-class ANYMESHWIDGETPLUGIN_API UEventListenerIndexStateWidget : public UEventListenerBaseWidget {
+class ANYMESHWIDGETPLUGIN_API UEventListenerNameComposedWidget : public UEventListenerBaseWidget {
     GENERATED_BODY()
 
 public:
@@ -18,14 +19,18 @@ public:
     virtual void ReceiveEvent(TArray<FString> &message) override;
 
 protected:
-    void LoadWidgetsOnInit();
+    void LoadListenerChildsOnInit();
    
-
     UPROPERTY()
-    TArray<UWidget *> widgets;
+    TArray<UEventListenerBaseWidget *> eventListenerChilds;
 
-    int currentindex = -1;
 
     int ExtractPayload(TArray<FString> &message);
     void UpdateShownIndex(int index);
+
+    void MakeForcedEventMessage(
+        FString attachedPayload,
+        TArray<FString> &outmessage
+    );
+    void PushEventToChildAt(int index, TArray<FString> &message);
 };

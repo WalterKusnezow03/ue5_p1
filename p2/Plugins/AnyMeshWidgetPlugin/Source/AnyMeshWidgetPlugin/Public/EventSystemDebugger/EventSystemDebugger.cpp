@@ -72,10 +72,58 @@ void AEventSystemDebugger::FireDebugEventHaube(){
 
 
 void AEventSystemDebugger::FireDebugEventHeck(){
-    FString message = FString::Printf(TEXT("m4_heckWidget_eventAmpel_%d"), ampelIndex);
+    indexHeck++;
+    indexHeck = indexHeck % 3;
 
-    ampelIndex++;
-    ampelIndex = ampelIndex % 3; // 1 or 2
+    //random debug
+    if(indexHeck == 0){
+        FString message = FString::Printf(TEXT("m4_heckWidget_eventAmpel_%d"), ampelIndex);
+        ampelIndex++;
+        ampelIndex = ampelIndex % 3; // 1 or 2
+        AEventDispatcher::StaticReceiveEvent(message);
+        return;
+    }
+    
+    
+    
+    if(indexHeck == 1){
 
-    AEventDispatcher::StaticReceiveEvent(message);
+        //debug
+        TArray<FString> lanes = {
+            "empty",
+            "right",
+            "left",
+            "forward"
+        };
+
+        FString message = FString::Printf(TEXT("m4_heckWidget_eventNavlane"));
+        int countLanes = 5;
+        for (int i = 0; i < countLanes; i++){
+            int32 navlaneIndex = FMath::RandRange(0, lanes.Num() -1); // 0 including 3
+            FString nameLane = FString::Printf(TEXT("_%s"), *lanes[navlaneIndex]);
+            message += nameLane;
+        }
+        AEventDispatcher::StaticReceiveEvent(message);
+        return;
+    }
+
+    if(indexHeck == 2){
+        //debug
+        TArray<FString> states = {
+            "default",
+            "left",
+            "right"
+        };
+
+        FString message = FString::Printf(TEXT("m4_heckWidget_eventParking"));
+        int32 stateIndex = FMath::RandRange(0, states.Num()-1); // 0 including 3
+        FString nameState = FString::Printf(TEXT("_%s"), *states[stateIndex]);
+        message += nameState;
+
+
+        AEventDispatcher::StaticReceiveEvent(message);
+        return;
+    }
+
+
 }

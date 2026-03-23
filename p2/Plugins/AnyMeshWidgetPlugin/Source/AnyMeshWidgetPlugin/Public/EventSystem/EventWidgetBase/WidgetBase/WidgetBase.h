@@ -60,7 +60,7 @@ public:
                 }
             }
         }
-        DebugHelper::logMessage("UWidgetBase::TGetDirectChildren() ", outArray.Num());
+        //DebugHelper::logMessage("UWidgetBase::TGetDirectChildren() ", outArray.Num());
         return outArray;
     }
 
