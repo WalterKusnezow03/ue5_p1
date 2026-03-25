@@ -6,6 +6,7 @@
 
 void UAnyMeshWidgetComponentBase::BeginPlay(){
 	Super::BeginPlay();
+	//CreateMaterialFromPath();
 
 	//DebugHelper::logMessage("UAnyMeshWidgetComponent::BeginPlay");
 	UMaterialInterface *BaseMat = nullptr;
@@ -19,21 +20,36 @@ void UAnyMeshWidgetComponentBase::BeginPlay(){
 	SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); // dein Channel
 }
 
+
+
+
 void UAnyMeshWidgetComponentBase::TickComponent(
 	float DeltaTime,
 	ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction
 ){
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	//new
+	CreateMaterialFromPath();
+	//new
+
+
 	TickWidgetIfPossible(DeltaTime);
 	if (MeshDataWasModified)
 	{
-		MarkRenderStateDirty(); //CreateSceneProxy() will be called again.
+		assignedMeshData.RebuildBounds(); //unklar ob hier gebraucht
+		MarkRenderStateDirty();		 // CreateSceneProxy() will be called again.
 		MeshDataWasModified = false; //Reset flag since new proxy is created!
+
+
+		//recreated collision box since 
+		//mesh data was modified! (calls UBodySetup Override again!)
+		MeshDataWasModifiedRecreatePhysicsState = true;
+		RecreatePhysicsState();
 	}
+	
 }
-
-
 
 void UAnyMeshWidgetComponentBase::FlagMeshDataDirty(){
 	MeshDataWasModified = true;
@@ -86,28 +102,38 @@ FAnyMeshWidgetRayIntersectResult UAnyMeshWidgetComponentBase::RayIntersectResult
 	FVector localDirection = GetComponentTransform().InverseTransformVector(direction);
 
 	FIntersectHitResult meshDataOutIntersectHitResult;
-	if(assignedMeshData.RayIntersect(//RayIntersectDraw(
-		localOrigin,
-		localDirection,
-		meshDataOutIntersectHitResult
-		//,
-		//GetWorld(),
-		//GetComponentTransform().ToMatrixWithScale()
-	)){
-		/*DebugHelper::logMessage(
-			FString::Printf(
-				TEXT("UAnyMeshWidgetComponent::RayIntersect Mesh Hit!, %.2f %.2f"),
-				meshDataOutIntersectHitResult.hitUV.X,
-				meshDataOutIntersectHitResult.hitUV.Y
-			)
-		);*/
+	if(!DrawRayIntersectTest){
+		if(assignedMeshData.RayIntersect(
+			localOrigin,
+			localDirection,
+			meshDataOutIntersectHitResult
+		)){
+			//create screen coordinate from UV
+			FVector2D fixedUv = meshDataOutIntersectHitResult.hitUV; //= ToScreenUV(outIntersectHitResult.hitUV);
+			FVector2D screen = WidgetScreenPosition(fixedUv);
 
-		//create screen coordinate from UV
-		FVector2D fixedUv = meshDataOutIntersectHitResult.hitUV; //= ToScreenUV(outIntersectHitResult.hitUV);
-		FVector2D screen = WidgetScreenPosition(fixedUv);
+			widgetDispatchResult.SetResult(screen);
+		}
+	}else{
+		if(assignedMeshData.RayIntersectDraw(
+			localOrigin,
+			localDirection,
+			meshDataOutIntersectHitResult,
+			GetWorld(),
+			GetComponentTransform().ToMatrixWithScale()
+		)){
+			//create screen coordinate from UV
+			FVector2D fixedUv = meshDataOutIntersectHitResult.hitUV; //= ToScreenUV(outIntersectHitResult.hitUV);
+			FVector2D screen = WidgetScreenPosition(fixedUv);
 
-		widgetDispatchResult.SetResult(screen);
+			widgetDispatchResult.SetResult(screen);
+		}
 	}
+	
+	
+	
+	
+	
 
 	return widgetDispatchResult;
 }
@@ -183,12 +209,11 @@ FPrimitiveSceneProxy* UAnyMeshWidgetComponentBase::CreateSceneProxy()
 
 		RequestRenderUpdate();
 		LastWidgetRenderTime = 0;
-
-		MeshData copy = assignedMeshData;
+		
 		return new FDynamicMeshWidgetSceneProxy(
 			this,
 			*WidgetRenderer->GetSlateRenderer(),
-			copy, // copy overhead (?)
+			assignedMeshData, // copy overhead (?)
 			allowRender
 		);
 	}
@@ -209,6 +234,11 @@ void UAnyMeshWidgetComponentBase::CreateMaterial(){
 
 
 UBodySetup* UAnyMeshWidgetComponentBase::GetBodySetup(){
+	if(MeshDataWasModifiedRecreatePhysicsState){
+		MeshDataWasModifiedRecreatePhysicsState = false;
+		DebugHelper::logMessage("UAnyMeshWidgetComponentBase::GetBodySetup After recreate physics");
+	}
+
 	//custom override:
 	UpdateBodySetupOverride();
 	return BodySetup;
@@ -225,36 +255,21 @@ void UAnyMeshWidgetComponentBase::UpdateBodySetupOverride()
 	{
 		// We do not have a body setup in screen space
 		BodySetup = nullptr;
+		return;
 	}
-	else if ( !BodySetup || MeshDataWasModified)//bDrawSizeChanged )
-	{
+
+	//only create if still needed
+	if(!BodySetup){
 		BodySetup = NewObject<UBodySetup>(this);
 		BodySetup->CollisionTraceFlag = CTF_UseSimpleAsComplex;
-		BodySetup->AggGeom.BoxElems.Add(FKBoxElem());
-
-		
-		FKBoxElem* BoxElem = BodySetup->AggGeom.BoxElems.GetData();
-
-		assignedMeshData.Update(BoxElem);
-
-		//prints as expected and collision looks good.
-		//DebugHelper::logMessage("UAnyMeshWidgetComponent::UpdateBodySetupOverride");
-
-		/*
-		const float Width = ComputeComponentWidth();
-		const float Height = CurrentDrawSize.Y;
-		const FVector Origin = FVector(.5f,
-			-( Width * 0.5f ) + ( Width * Pivot.X ),
-			-( Height * 0.5f ) + ( Height * Pivot.Y ));
-			
-		BoxElem->X = 0.01f;
-		BoxElem->Y = Width;
-		BoxElem->Z = Height;
-
-		BoxElem->SetTransform(FTransform::Identity);
-		BoxElem->Center = Origin;
-		*/
+		//BodySetup->AggGeom.BoxElems.Add(FKBoxElem());
+		BodySetup->AggGeom.BoxElems.SetNum(1);
 	}
+
+	//update from mesh data
+	FKBoxElem* BoxElem = BodySetup->AggGeom.BoxElems.GetData();
+	assignedMeshData.Update(BoxElem);
+	
 }
 
 
@@ -273,6 +288,18 @@ FCollisionShape UAnyMeshWidgetComponentBase::GetCollisionShape(float Inflation) 
 void UAnyMeshWidgetComponentBase::SetResolution(FVector2D res){
 	//has to be flipped. Is correct like this for my use case.
 	SetDrawSize(FIntPoint(res.Y, res.X));
+
+
+	/*//if render target is wanted
+	if(WidgetRenderTarget){
+		// Alte GPU-Ressourcen freigeben und neue Größe setzen
+
+		WidgetRenderTarget->InitCustomFormat(FMath::RoundToInt(res.X), FMath::RoundToInt(res.Y), PF_FloatRGBA, false);
+	}*/
+        
+
+    
+
 }
 
 
@@ -287,4 +314,34 @@ void UAnyMeshWidgetComponentBase::TickWidgetIfPossible(float deltatime){
 
 
 
+
+
+
+
+
+
+
+//// ---- custom material ----
+
+void UAnyMeshWidgetComponentBase::CreateMaterialFromPath(){
+	if(bNeedsUpdateMaterial){
+		//return; //DEBUG
+		if (MaterialPath.Len() <= 0)
+		{
+			return;
+		}
+		if(UMaterialInterface* BaseMat = LoadObject<UMaterialInterface>(nullptr, *MaterialPath)){
+
+			//material instance wird
+			//intern erstellt und slate params zugewiesen!
+			SetMaterial(0, BaseMat);
+
+			bNeedsUpdateMaterial = false;
+			DebugHelper::logMessage("UAnyMeshWidgetComponentBase::loadedCustomMaterial");
+		}
+	}
+
+
+	
+}
 

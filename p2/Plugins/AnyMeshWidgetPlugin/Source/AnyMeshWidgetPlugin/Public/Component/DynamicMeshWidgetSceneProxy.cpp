@@ -277,7 +277,10 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
                 color2
             );
         }else{
-            DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::MeshDataInvalid!", FColor::Red);
+            if(logOnMeshDataInvalid){
+                DebugHelper::showScreenMessage("FDynamicMeshWidgetSceneProxy::MeshDataInvalid!", FColor::Red);
+            }
+           
             return;
         }
     }

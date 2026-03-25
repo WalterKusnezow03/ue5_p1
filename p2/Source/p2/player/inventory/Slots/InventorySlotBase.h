@@ -1,7 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "AssetEnumCollection/assetEnums/weaponEnum.h"
+#include "p2/weapon/weapon.h"
 
 class P2_API InventorySlotBase {
 
@@ -22,12 +23,18 @@ public:
     virtual int getMagSize();
     virtual int getBulletsInMag();
 
-    Aweapon *weaponPointer = nullptr;
+    Aweapon *GetWeaponPointer();
+    void ResetWeaponPointer();
+    void SetWeaponPointer(Aweapon *weaponIn);
 
     bool IsSamePointer(Aweapon *weapon);
     bool IsSameType(Aweapon *weapon);
 
+    //may be overriden
+    virtual bool GetWeaponType(weaponEnum &typeOut) const;
+
 protected:
 
+    Aweapon *weaponPointer = nullptr;
 
 };

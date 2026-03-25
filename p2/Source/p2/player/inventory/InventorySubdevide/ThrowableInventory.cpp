@@ -4,13 +4,14 @@
 
 
 
-TArray<InventorySlotBase *> ThrowableInventory::GetItems(){
+TArray<InventorySlotBase *> ThrowableInventory::GetItems() {
     TArray<InventorySlotBase *> items;
     for (int i = 0; i < slotVector.Num(); i++){
         items.Add(&slotVector[i]);
     }
     return items;
 }
+
 
 /*
 ThrowableInventory::ThrowableInventory()
@@ -58,7 +59,7 @@ void ThrowableInventory::addToAmmunition(ammunitionEnum type, int count){
                 slotVector.Add(InventorySlotThrowable(convertedFound, playerCamera));
 
                 //set player reference
-                if(Aweapon *inner = slotVector.Last().weaponPointer){
+                if(Aweapon *inner = slotVector.Last().GetWeaponPointer()){
                     //set player reference for shooting direction.
                     /*if(playerCamera){
                         inner->pickup(playerCamera);

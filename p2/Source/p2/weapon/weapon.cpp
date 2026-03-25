@@ -67,7 +67,7 @@ void Aweapon::resetFlags(){
 	isReloading = false;
 }
 
-weaponEnum Aweapon::weaponType(){
+weaponEnum Aweapon::weaponType() const {
 	return Type;
 }
 

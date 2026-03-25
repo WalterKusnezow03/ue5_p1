@@ -60,6 +60,8 @@ public:
 
     virtual void selectIndex(int index);
 
+    void AppendAllSlots(TArray<const InventorySlotBase *> &slotsOut);
+
 protected:
     InventorySlotBase fallback;
 

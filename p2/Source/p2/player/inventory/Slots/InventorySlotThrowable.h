@@ -30,7 +30,9 @@ public:
         return innerAmmunition;
     }
 
-private:
+    virtual bool GetWeaponType(weaponEnum &outType) const override;
+
+private: 
     int innerAmmunition = 4;
     weaponEnum typeThrowable = weaponEnum::grenade;
     void TryReloadOnReleaseShoot();

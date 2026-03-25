@@ -142,6 +142,17 @@ public:
 		FVector2D &uvC
 	);
 
+	void appendVerteciesAndUvs(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector &d,
+		FVector2D &uvA,
+		FVector2D &uvB,
+		FVector2D &uvC,
+		FVector2D &uvD
+	);
+
 	void appendVerteciesAndUvsEfficent(
 		FVector &a, 
 		FVector &b, 
@@ -362,6 +373,8 @@ public:
 
 	void debugDrawMesh(MMatrix &transform, UWorld *world);
 	void debugDrawMesh(MMatrix &transform, UWorld *world, FColor color);
+	void debugDrawMesh(MMatrix &transform, UWorld *world, FColor color, float time);
+	void debugDrawMeshBounds(MMatrix &transform, UWorld *world, FColor color, float time);
 
 	void flipAllTriangles();
 

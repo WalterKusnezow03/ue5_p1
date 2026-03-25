@@ -5,7 +5,10 @@
 
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 
-
+/// @brief clips a triangle against XY bounds
+/// it is expected that the triangle is in XY Projected Space
+/// UVs for textures (AnyMeshWidgetPlugin!) 
+/// and HeatMap Colors for Distorting metrics are calculated too.
 class MESHDATAPLUGIN_API FTriangleClipResult {
 
 public:
@@ -84,5 +87,19 @@ private:
     bool IsInBound(
         const FVector2D &halfBound,
         const FVector &vertex
+    );
+
+
+
+    //analytical Jacobian distortion metric
+
+    FColor DistortionColorFor(
+        const FVector &vertex,
+        const FVector &v1,
+        const FVector &v2,
+        const FVector2D &uvVertex,
+        const FVector2D &uv1,
+        const FVector2D &uv2,
+        const FColor distortColor
     );
 };

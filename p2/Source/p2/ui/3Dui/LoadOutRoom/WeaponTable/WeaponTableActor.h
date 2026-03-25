@@ -29,13 +29,14 @@ public:
     //must be called from loadoutroom on left room
     void UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index);
 
+    void UpdateWidgetDebugIndex(int index);
+
 protected:
     
     void SpawnWidgetActorOnBeginPlay();
 
 
 
-    int tableIndex = 0;
     weaponSetupHelper setupHelper;
     Aweapon *weaponSpawned = nullptr;
 

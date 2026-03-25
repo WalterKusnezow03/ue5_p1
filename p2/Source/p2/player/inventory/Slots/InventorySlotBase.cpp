@@ -77,3 +77,26 @@ int InventorySlotBase::getBulletsInMag(){
 void InventorySlotBase::reload(int amount){
     weaponPointer->reload(amount);
 }
+
+
+
+Aweapon *InventorySlotBase::GetWeaponPointer() {
+    return weaponPointer;
+}
+
+void InventorySlotBase::ResetWeaponPointer(){
+    weaponPointer = nullptr;
+}
+
+void InventorySlotBase::SetWeaponPointer(Aweapon *weaponIn){
+    weaponPointer = weaponIn;
+}
+
+
+bool InventorySlotBase::GetWeaponType(weaponEnum &outType) const {
+    if(weaponPointer){
+        outType = weaponPointer->weaponType();
+        return true;
+    }
+    return false;
+}

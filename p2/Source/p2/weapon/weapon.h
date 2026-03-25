@@ -50,7 +50,7 @@ public:
 	// Sets default values for this actor's properties (constructor)
 	Aweapon();
 
-	weaponEnum weaponType();
+	weaponEnum weaponType() const ;
 	virtual ammunitionEnum getAmmunitionType();
 
 	// Enum to specify the type of weapon -> is saved to create animation paths

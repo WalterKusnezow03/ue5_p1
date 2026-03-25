@@ -80,24 +80,52 @@ FVector BoundingBoxSimple::topRightFarVertex(){
 
 
 FString BoundingBoxSimple::ToString(){
+    FVector extentTmp = extent();
     FString message = FString::Printf(
-        TEXT("BoundingBoxSimple To String: (%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f)"),
+        TEXT("BoundingBoxSimple To String: (%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f) extent (%.2f %.2f %.2f)"),
         bottomLeftNear.X, bottomLeftNear.Y, bottomLeftNear.Z,
-        topRightFar.X, topRightFar.Y, topRightFar.Z
+        topRightFar.X, topRightFar.Y, topRightFar.Z,
+        extentTmp.X, extentTmp.Y, extentTmp.Z
     );
     return message;
 }
 
 
+void BoundingBoxSimple::GetAllCorners(
+    FVector &A0,
+    FVector &A1,
+    FVector &A2,
+    FVector &A3,
+    FVector &B0,
+    FVector &B1,
+    FVector &B2,
+    FVector &B3,
+    const MMatrix &mat
+){
+    GetAllCorners(A0, A1, A2, A3, B0, B1, B2, B3);
+    A0 = mat * A0;
+    A1 = mat * A1;
+    A2 = mat * A2;
+    A3 = mat * A3;
+    B0 = mat * B0;
+    B1 = mat * B1;
+    B2 = mat * B2;
+    B3 = mat * B3;
+}
 
-
-
-#include "MeshDataPlugin/Public/MeshGenBase/MeshData/intersectCache/QuadIntersectFrame.h"
-bool BoundingBoxSimple::DoesIntersect(const FVector &origin, const FVector &dir){
-    
+void BoundingBoxSimple::GetAllCorners(
+    FVector &A0,
+    FVector &A1,
+    FVector &A2,
+    FVector &A3,
+    FVector &B0,
+    FVector &B1,
+    FVector &B2,
+    FVector &B3
+){
     //plane intersect
-    FVector A0 = bottomLeftNearVertex();
-    FVector B2 = topRightFarVertex();
+    A0 = bottomLeftNearVertex();
+    B2 = topRightFarVertex();
 
     FVector connect = B2 - A0;
     float x = connect.X;
@@ -112,13 +140,25 @@ bool BoundingBoxSimple::DoesIntersect(const FVector &origin, const FVector &dir)
     0  3x
     */
 
-    FVector A1 = A0 + FVector(0.0f, y, 0.0f);
-    FVector A2 = A0 + FVector(x, y, 0.0f);
-    FVector A3 = A0 + FVector(x, 0.0f, 0.0f);
+    A1 = A0 + FVector(0.0f, y, 0.0f);
+    A2 = A0 + FVector(x, y, 0.0f);
+    A3 = A0 + FVector(x, 0.0f, 0.0f);
 
-    FVector B0 = A0 + FVector(0.0f, 0.0f, z);
-    FVector B1 = A1 + FVector(0.0f, 0.0f, z);
-    FVector B3 = A3 + FVector(0.0f, 0.0f, z);
+    B0 = A0 + FVector(0.0f, 0.0f, z);
+    B1 = A1 + FVector(0.0f, 0.0f, z);
+    B3 = A3 + FVector(0.0f, 0.0f, z);
+}
+
+
+
+
+
+#include "MeshDataPlugin/Public/MeshGenBase/MeshData/intersectCache/QuadIntersectFrame.h"
+bool BoundingBoxSimple::DoesIntersect(const FVector &origin, const FVector &dir){
+    
+    //plane intersect
+    FVector A0, A1, A2, A3, B0, B1, B2, B3;
+    GetAllCorners(A0, A1, A2, A3, B0, B1, B2, B3);
 
     FVector intersectPoint;
     FQuadIntersectFrame frame;
@@ -159,7 +199,7 @@ bool BoundingBoxSimple::DoesIntersect(const FVector &origin, const FVector &dir)
     }
 
     return false;
-
+    
 }
 
 
@@ -282,17 +322,12 @@ FVector BoundingBoxSimple::extent() const {
 void BoundingBoxSimple::Update(FKBoxElem *BoxElem) const {
     if(BoxElem){
         //copied from UWidgetComponent source.
-        /*
-        const float Width = WidthY();
-        const float Height = HeightZ();
-        const FVector Origin = FVector(.5f,
-            -( Width * 0.5f ) + ( Width * Pivot.X ),
-            -( Height * 0.5f ) + ( Height * Pivot.Y ));
-        */
-            
-        BoxElem->X = DepthX();
-        BoxElem->Y = WidthY();
-        BoxElem->Z = HeightZ();
+        
+        BoxElem->X = std::max(DepthX(), 10.0f);
+        BoxElem->Y = std::max(WidthY(), 10.0f);
+        BoxElem->Z = std::max(HeightZ(), 10.0f);
+
+
 
         BoxElem->SetTransform(FTransform::Identity);
         BoxElem->Center = center();
@@ -316,4 +351,32 @@ float BoundingBoxSimple::DepthX() const {
 
 FVector BoundingBoxSimple::center() const {
     return (topRightFar + bottomLeftNear) * 0.5f;
+}
+
+
+
+void BoundingBoxSimple::debugDrawBounds(const MMatrix &transform, UWorld *world, FColor color, float time){
+    if(world){
+        MMatrix mRaw = transform;
+        MMatrix scale;
+        scale.scaleUniform(1.1f);
+        MMatrix M = mRaw * scale; //<-- lese richtung --
+
+        FVector A0, A1, A2, A3, B0, B1, B2, B3;
+        GetAllCorners(A0, A1, A2, A3, B0, B1, B2, B3, M);
+        DebugHelper::showLineBetween(world, A0, A1, color, time);
+        DebugHelper::showLineBetween(world, A1, A2, color, time);
+        DebugHelper::showLineBetween(world, A2, A3, color, time);
+        DebugHelper::showLineBetween(world, A3, A0, color, time);
+
+        DebugHelper::showLineBetween(world, B0, B1, color, time);
+        DebugHelper::showLineBetween(world, B1, B2, color, time);
+        DebugHelper::showLineBetween(world, B2, B3, color, time);
+        DebugHelper::showLineBetween(world, B3, B0, color, time);
+
+        DebugHelper::showLineBetween(world, A0, B0, color, time);
+        DebugHelper::showLineBetween(world, A1, B1, color, time);
+        DebugHelper::showLineBetween(world, A2, B2, color, time);
+        DebugHelper::showLineBetween(world, A3, B3, color, time);
+    }
 }

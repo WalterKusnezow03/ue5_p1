@@ -23,7 +23,7 @@ TArray<IBaseUiInterface *> UWeaponTableWidget::GetAllItemsForDispatch(){
 }
 
 bool UWeaponTableWidget::dispatchHover(const FVector2D &position){
-
+    DebugHelper::showScreenMessage("UWeaponTableWidget::dispatchHover!");
     return DispatchHoverToAllItemsForDispatch(position);
 }
 

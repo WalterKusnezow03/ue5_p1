@@ -76,6 +76,7 @@ void ALoadoutRoomActor::ProcessFoundActors(TArray<AActor*> &actors){
             if(AWeaponTableActor *castedcurrent = Cast<AWeaponTableActor>(current)){
                 if(!weaponTables.Contains(castedcurrent)){
                     weaponTables.Add(castedcurrent);
+                    castedcurrent->UpdateWidgetDebugIndex(weaponTables.Num() - 1);
                 }
             }
 

@@ -4,6 +4,8 @@
 
 #include "p2/_world/PlayerStatManager/PlayerStatus.h"
 
+class PlayerInventory;
+
 class P2_API PlayerStatusManager {
 
 public:
@@ -14,6 +16,7 @@ public:
     void updateAmmunition(int ammoCurrentIn, int ammoMaxIn);
     void updateHealth(int health);
     void updateHealthMax(int health);
+    void updateInventory(PlayerInventory &inventory);
 
     //-- UI API --
     

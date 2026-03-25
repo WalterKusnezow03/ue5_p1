@@ -111,3 +111,13 @@ float InventorySlotThrowable::recoilValue(){
 }
 
 
+
+
+bool InventorySlotThrowable::GetWeaponType(weaponEnum &outType) const {
+    if(InventorySlotBase::GetWeaponType(outType)){
+        return true;
+    }
+
+    outType = typeThrowable;
+    return true;
+}

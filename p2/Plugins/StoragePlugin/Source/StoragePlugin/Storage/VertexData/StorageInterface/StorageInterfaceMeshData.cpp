@@ -217,7 +217,7 @@ void StorageInterfaceMeshData::writeInfoData(
 
 //------- SIZE OF HELPER ---------
 int StorageInterfaceMeshData::getInfoBytesSize(){
-    return sizeof(int32) * 5;
+    return sizeof(int32) * 6; //infos, 6 functions.
 }
 
 int StorageInterfaceMeshData::getVertexBytesSize(int count){
@@ -362,8 +362,8 @@ bool StorageInterfaceMeshData::LoadIntoMeshBuffers(
     //debug
     if(false && debugLog){
         FString message = FString::Printf(
-            TEXT("Storage Interface MeshData loaded buffer sizes (%d), (%d), (%d), (%d)"),
-            vertexCount, normalCount, uvCount, triangleCount
+            TEXT("Storage Interface MeshData loaded buffer sizes (%d), (%d), (%d), (%d), (%d)"),
+            vertexCount, normalCount, uvCount, triangleCount, colorCount
         );
         DebugHelper::logMessage(message);
     }

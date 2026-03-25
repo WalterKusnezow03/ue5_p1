@@ -235,6 +235,10 @@ bool ChunkParserStorageInterface::Load(
         DebugHelper::logMessage(message);
         return false;
     }
+    else{
+        FString message = FString::Printf(TEXT("Storage Interface chunk parser SUCCESS LOADING BIN HEADER DATA (%s)"), *path);
+        DebugHelper::logMessage(message);
+    }
 
     uint8 *Ptr = Bytes.GetData(); //global pointer for loading, because meshdata is concatenated
 

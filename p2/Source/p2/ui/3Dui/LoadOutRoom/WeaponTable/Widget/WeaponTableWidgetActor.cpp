@@ -12,6 +12,14 @@ void AWeaponTableWidgetActor::BeginPlay(){
     if(UWeaponTableWidget *inner = GetInnerWidget()){
         inner->InitWidgets();
     }
+
+    if(Widget){
+        Widget->SetDrawRayIntersect(true);
+    }
+}
+
+void AWeaponTableWidgetActor::UpdateDebugNameFromIndex(int index){
+    debugUiActorName = FString::Printf(TEXT("AWeaponTableWidgetActor %d"), index);
 }
 
 AWeaponTableWidgetActor *AWeaponTableWidgetActor::MakeInstance(

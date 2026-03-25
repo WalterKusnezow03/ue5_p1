@@ -130,8 +130,7 @@ private:
 	void updateUi();
 	void updateAmmunitionUi();
 	void updateHealthUi();
-
-
+	void updateInventoryUi();
 
 	//Loadout setup
 	void pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(

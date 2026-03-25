@@ -1,13 +1,15 @@
 #include "HudUiWidget.h"
 #include "Components/TextBlock.h"
 #include "p2/ui/3Dui/HUD/Widget/MiniMapWidget/MiniMapWidget.h"
+#include "p2/_world/PlayerStatManager/Inventory/PlayerStatusInventorySlot.h"
+#include "p2/ui/3Dui/HUD/Widget/InventorySlotWidget/InventorySlotPanelWidget.h"
 
 
 void UHudUiWidget::UpdateWidget(FPlayerStatus &playerStatus){
 
     UpdateHealthText(playerStatus.HealthString());
     UpdateAmmunitionText(playerStatus.AmmunitionString());
-
+    UpdateInventorySlots(playerStatus.GetInventorySlots());
 }
 
 void UHudUiWidget::UpdateHealthText(FString text){
@@ -33,6 +35,20 @@ void UHudUiWidget::UpdateAmmunitionText(FText text){
         }
     }
 }
+
+
+
+void UHudUiWidget::UpdateInventorySlots(TArray<FPlayerStatusInventorySlot> &slots){
+    if(UWidget *panel = GetInventorySlotPanel()){
+        if(UInventorySlotPanelWidget *casted = Cast<UInventorySlotPanelWidget>(panel)){
+            casted->UpdateInventorySlots(slots);
+        }
+    }
+}
+
+
+
+
 
 
 

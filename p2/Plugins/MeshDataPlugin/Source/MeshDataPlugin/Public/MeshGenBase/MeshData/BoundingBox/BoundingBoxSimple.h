@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PhysicsEngine/BoxElem.h"
+#include "CoreMath/Matrix/MMatrix.h"
 
 /**
  * Boudning box checker withoutout rotation, only min and max (x,y,z)
@@ -42,6 +43,8 @@ public:
 
     void Clear();
 
+    void debugDrawBounds(const MMatrix &transform, UWorld *world, FColor color, float time);
+
 private:
     FVector bottomLeftNear;
     FVector topRightFar;
@@ -53,4 +56,28 @@ private:
     FVector center() const;
 
     bool InRange(float t, float lower, float higher);
+
+
+        
+    void GetAllCorners(
+        FVector &A0,
+        FVector &A1,
+        FVector &A2,
+        FVector &A3,
+        FVector &B0,
+        FVector &B1,
+        FVector &B2,
+        FVector &B3,
+        const MMatrix &mat
+    );
+    void GetAllCorners(
+        FVector &A0,
+        FVector &A1,
+        FVector &A2,
+        FVector &A3,
+        FVector &B0,
+        FVector &B1,
+        FVector &B2,
+        FVector &B3
+    );
 };

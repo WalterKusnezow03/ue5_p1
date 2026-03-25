@@ -64,11 +64,16 @@ public:
 	
 
 	///@brief current index in inventory selected
-	int currentIndexNum(){
+	int currentIndexNum() const{
 		return currentIndex;
 	}
 
 	void Collect(UWidgetEntityLootPayload *payload);
+
+
+	//player hud update, const inventory 
+	//to read data
+	TArray<const InventorySlotBase *> GetAllInventorySlots();
 
 private:
 	void logMessage();

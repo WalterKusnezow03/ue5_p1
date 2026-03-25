@@ -2,7 +2,7 @@
 
 #include "TriangleIntersectFrame.h"
 
-class MESHDATAPLUGIN_API FQuadIntersectFrame : public FTriangleIntersectFrame {
+class MESHDATAPLUGIN_API FQuadIntersectFrame {
 
 public:
     FQuadIntersectFrame();
@@ -21,10 +21,9 @@ public:
         const FVector &start,
         const FVector &dir,
         FVector &outIntersectionPoint
-    ) override;
+    );
 
 protected:
-    virtual void CalculateNormals() override;
-    FVector v3Projected;
-    FVector v3Normal;
+    FTriangleIntersectFrame frame0;
+    FTriangleIntersectFrame frame1;
 };

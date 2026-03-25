@@ -1,13 +1,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/_world/PlayerStatManager/Inventory/PlayerStatusInventorySlot.h"
+
+class PlayerInventory;
 
 /// @brief struct storing player info for HUD
-struct P2_API FPlayerStatus {
+class P2_API FPlayerStatus {
 
+public:
     FPlayerStatus(){};
     ~FPlayerStatus(){};
 
+private:
     int health = 0;
     int maxHealth = 0;
 
@@ -16,20 +21,28 @@ struct P2_API FPlayerStatus {
 
     int mags = 0;
 
+    int selectedSlotIndex = -1;
+    TArray<FPlayerStatusInventorySlot> slots;
 
-
+public:
     ///@brief update and return if anything changed
     bool UpdateHealth(int number);
     bool UpdateHealthMax(int number);
     bool UpdateAmmunition(int number);
     bool UpdateAmmunitionMax(int number);
-
-
+    bool UpdatePlayerInventory(PlayerInventory &inventory);
 
     //api for HUD
     FString HealthString();
     FString AmmunitionString();
+    TArray<FPlayerStatusInventorySlot> &GetInventorySlots(){
+        return slots;
+    }
 
     /// @brief value between [0,1] if maxhealth is a valid number.
     float healthAsScalar();
+
+private:
+    bool UpdatePlayerInventorySlotsChanged(PlayerInventory &inventory);
+    
 };

@@ -23,23 +23,23 @@ void APauseWidgetActor::CreateWidgetMeshData(){
         FVector v2(0, xMax, yMax);
         FVector v3(0, xMax, 0);
 
+        FVector2D uv0(0, 1);
+        FVector2D uv1(0, 0);
+        FVector2D uv2(1, 0);
+        FVector2D uv3(1, 1);
+
         MeshData &data = Widget->GetMeshDataRef();
-        data.append(v0,v1,v2);
-        data.append(v0,v2,v3);
+        data.appendVerteciesAndUvs(
+            v0, v1, v2, v3, 
+            uv0, uv1, uv2, uv3
+        );
+
         data.centerMesh();
 
         MMatrix scale;
         float factor = 0.1f;
         scale.scale(factor, factor, factor);
         data.transformAllVertecies(scale);
-
-        FVector2D uv0(0, 1);
-        FVector2D uv1(0, 0);
-        FVector2D uv2(1, 0);
-        FVector2D uv3(1, 1);
-        data.appendUvs(uv0, uv1, uv2);
-        data.appendUvs(uv0, uv2, uv3);
-
         data.calculateNormals();
         //data.flipNormals(); //shit happens
         data.flipWindingOrder();

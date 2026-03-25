@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
 
+#include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 
 #include "TextBoxWidget.generated.h"

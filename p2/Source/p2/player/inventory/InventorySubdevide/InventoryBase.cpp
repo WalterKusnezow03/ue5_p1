@@ -149,7 +149,7 @@ Aweapon *InventoryBase::getItemPointer(){
 Aweapon *InventoryBase::getItemPointerAtIndex(int index){
     if(indexIsValid(index)){
         if(InventorySlotBase *slot = SlotBaseAt(index)){
-            return slot->weaponPointer;
+            return slot->GetWeaponPointer();
         }
     }
     return nullptr;
@@ -184,11 +184,11 @@ void InventoryBase::dropAllWeaponsToObjectPool(){
     TArray<InventorySlotBase *> allItems = GetItems();
     for (int i = 0; i < allItems.Num(); i++){
         if(InventorySlotBase *current = allItems[i]){
-            Aweapon *weaponPtr = current->weaponPointer;
+            Aweapon *weaponPtr = current->GetWeaponPointer();
             if(weaponPtr){
                 weaponPtr->dropToObjectPool();
             }
-            current->weaponPointer = nullptr;
+            current->ResetWeaponPointer(); // weaponPointer = nullptr;
         }
     }
 }
@@ -214,3 +214,12 @@ InventorySlotBase *InventoryBase::SlotBaseAt(int index){
     return nullptr;
 }
 
+
+void InventoryBase::AppendAllSlots(TArray<const InventorySlotBase *> &slotsOut){
+    TArray<InventorySlotBase *> items = GetItems();
+    for (int i = 0; i < items.Num(); i++){
+        if(InventorySlotBase *ptr = items[i]){
+            slotsOut.Add(ptr);
+        }
+    }
+}

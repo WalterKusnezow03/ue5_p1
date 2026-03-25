@@ -68,6 +68,11 @@ bool UAnyMeshWidgetComponent::RayIntersectHover(
 ){
 	FAnyMeshWidgetRayIntersectResult result = RayIntersectResult(origin, direction);
 	if(result.IsResultValid()){
+		/*DebugHelper::showScreenMessage(
+			"UAnyMeshWidgetComponent::RayIntersectHover VALID", 
+			FColor::Yellow
+		);*/
+
 		//cast or click dispatcher
 		if(IBaseUiInterface *casted = GetWidgetAsIBaseUiInterface()){
 			casted->dispatchHover(result.constScreenPositionReference());	

@@ -156,6 +156,10 @@ bool ACustomMeshUIActor::RayIntersectHover(
     const FVector &direction
 ){
     if(Widget && AllowRayIntersectInteraction()){
+        /*DebugHelper::showScreenMessage(
+            "ACustomMeshUIActor::Hover ", 
+            GetDebugName()
+        );*/
         return Widget->RayIntersectHover(origin, direction);
     }
     return false;

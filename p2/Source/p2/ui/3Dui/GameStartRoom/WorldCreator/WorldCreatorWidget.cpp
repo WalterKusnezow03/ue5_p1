@@ -1,6 +1,6 @@
 #include "WorldCreatorWidget.h"
 #include "customuipluginbase/Dispatcher/ClickDispatcher.h"
-
+#include "p2/ui/3Dui/GameStartRoom/GameStartRoom.h"
 
 void UWorldCreatorWidget::SetParent(AGameStartRoom *parentIn){
     parent = parentIn;

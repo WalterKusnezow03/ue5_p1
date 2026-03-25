@@ -234,7 +234,7 @@ bool PlayerInventory::CurrentItemIsThrowable(){
 Aweapon *PlayerInventory::GetCurrenThrowablePointer(){
     if(CurrentItemIsThrowable()){
         InventorySlotBase &slot = throwableInventory.CurrentSlotRefBase();
-        return slot.weaponPointer;
+        return slot.GetWeaponPointer();
     }
     return nullptr;
 }
@@ -282,3 +282,13 @@ void PlayerInventory::Collect(UWidgetEntityLootPayload *payload){
     }
 }
 
+
+
+
+TArray<const InventorySlotBase *> PlayerInventory::GetAllInventorySlots(){
+    TArray<const InventorySlotBase *> outarray;
+    weaponInventory.AppendAllSlots(outarray);
+    throwableInventory.AppendAllSlots(outarray);
+
+    return outarray;
+}

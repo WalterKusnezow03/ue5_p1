@@ -17,7 +17,7 @@ WeaponInventory::WeaponInventory()
     ammunitionMap[ammunitionEnum::heavy762] = 200;
 }*/
 
-TArray<InventorySlotBase *> WeaponInventory::GetItems(){
+TArray<InventorySlotBase *> WeaponInventory::GetItems() {
     TArray<InventorySlotBase *> items;
     for (int i = 0; i < weaponVector.Num(); i++){
         items.Add(&weaponVector[i]);
@@ -34,13 +34,13 @@ FString WeaponInventory::ToString(){
     if(IndexActive()){
         FString message = TEXT("WeaponInventory");
         InventorySlotBase &base = CurrentSlotRefBase();
-        if(Aweapon *w = base.weaponPointer){
+        if(Aweapon *w = base.GetWeaponPointer()){
             message += FString::Printf(TEXT("[%s] | "), *w->WeaponTypeToString());
         }else{
             message += FString::Printf(TEXT("[-] | "));
         }
         for (int i = 0; i < weaponVector.Num(); i++){
-            if(Aweapon *w1 = weaponVector[i].weaponPointer){
+            if(Aweapon *w1 = weaponVector[i].GetWeaponPointer()){
                 message += FString::Printf(TEXT("[%s] "), *w1->WeaponTypeToString());
             }
         }
@@ -61,7 +61,7 @@ bool WeaponInventory::addWeaponIfNotInInventory(Aweapon *weaponIn){
         if (!alreadyInInventory(weaponIn, foundIndexToSelect))
         {
             InventorySlot newSlot;
-            newSlot.weaponPointer = weaponIn;
+            newSlot.SetWeaponPointer(weaponIn); // weaponPointer = weaponIn;
             weaponVector.Add(newSlot);
             currentIndex = weaponVector.Num() - 1;
             selectIndex(currentIndex);
@@ -135,7 +135,7 @@ void WeaponInventory::reloadWeapon(){
 }
 
 void WeaponInventory::reloadWeaponSlot(InventorySlotBase &slot){
-    if (Aweapon *weapon = slot.weaponPointer){
+    if (Aweapon *weapon = slot.GetWeaponPointer()){
         DebugHelper::logMessage("WeaponInventory::reloadWeapon weapon valid ptr");
         FString reason;
         if(weapon->canReload(reason)){

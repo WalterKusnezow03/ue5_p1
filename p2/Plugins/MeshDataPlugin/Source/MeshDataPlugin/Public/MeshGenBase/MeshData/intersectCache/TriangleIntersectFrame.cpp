@@ -36,6 +36,8 @@ FTriangleIntersectFrame &FTriangleIntersectFrame::operator=(
         v0Index = frame.v0Index;
         v1Index = frame.v1Index;
         v2Index = frame.v2Index;
+
+        frameValid = frame.frameValid;
     }
     return *this;
 }
@@ -47,6 +49,10 @@ void FTriangleIntersectFrame::Setup(
 ){
     FVector normal = FVector::CrossProduct((v1 - v0), (v2 - v0));
     normal = normal.GetSafeNormal();
+    if(normal.Size() == 0.0f){
+        frameValid = false;
+        return;
+    }
 
     //default:
     FVector2D XAxis(1,0); //forward
@@ -61,16 +67,16 @@ void FTriangleIntersectFrame::Setup(
     rotationInverse = rotationInverse.transposedRotation();//R^T = R^-1
     //rotationInverse.pitchRadAdd(MMatrix::degToRadian(90)); // pitch up look up from x(1,0,0) to (0,0,1)
 
-    DebugHelper::logMessage(TEXT("FTriangleIntersectFrame --- log start ---"));
+    //DebugHelper::logMessage(TEXT("FTriangleIntersectFrame --- log start ---"));
     FVector normalDebug = rotationInverse * normal;
     //inverse ok.
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(
             TEXT("FTriangleIntersectFrame check rotator (%s) normal Deprojected (%s)"),
             *rotationInverse.extractRotator().ToString(),
             *normalDebug.ToString()
         )
-    );
+    );*/
 
 
 
@@ -83,7 +89,7 @@ void FTriangleIntersectFrame::Setup(
     v2Projected = rotationInverse * v2;
 
     //log
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(
             TEXT("FTriangleIntersectFrame original (%s) projected (%s)"),
             *v0.ToString(),
@@ -103,7 +109,7 @@ void FTriangleIntersectFrame::Setup(
             *v2.ToString(),
             *v2Projected.ToString()
         )
-    );
+    );*/
 
 
     v0Projected.Z = 0.0f;
@@ -134,6 +140,10 @@ bool FTriangleIntersectFrame::DoesIntersect(
     const FVector &dir,
     FVector &outIntersectionPoint
 ){
+    if(!frameValid){
+        return false;
+    }
+
     /*
     FMath::RayPlaneIntersection
     static TVector<T> RayPlaneIntersection(
@@ -142,26 +152,29 @@ bool FTriangleIntersectFrame::DoesIntersect(
         const TPlane<T>& Plane
     );
     */
+    //mesh data space inetrsction
     FVector Intersection = FMath::RayPlaneIntersection(start, dir, plane);
-    FVector IntersectionProjected = rotationInverse * Intersection;
-    //IntersectionProjected.Z = 0.0f; //only interested in projected 2D pure.
 
-    DebugHelper::logMessage(
+    //projected space right left test
+    FVector IntersectionProjected = rotationInverse * Intersection;
+    IntersectionProjected.Z = 0.0f; //only interested in projected 2D pure.
+
+    /*DebugHelper::logMessage(
         FString::Printf(
             TEXT("FTriangleIntersectFrame intersection original (%s) projected (%s)"),
             *Intersection.ToString(),
             *IntersectionProjected.ToString()
         )
-    );
+    );*/
 
     //check right left test triangle
     FVector relativeToV0 = IntersectionProjected - v0Projected; // AB = B - A
     FVector relativeToV1 = IntersectionProjected - v1Projected;
     FVector relativeToV2 = IntersectionProjected - v2Projected;
 
-    bool signv0 = FVector::DotProduct(v0Normal, relativeToV0) >= 0.0f;
-    bool signv1 = FVector::DotProduct(v1Normal, relativeToV1) >= 0.0f;
-    bool signv2 = FVector::DotProduct(v2Normal, relativeToV2) >= 0.0f;
+    bool signv0 = FVector::DotProduct(v0Normal, relativeToV0) >= -0.000001f;
+    bool signv1 = FVector::DotProduct(v1Normal, relativeToV1) >= -0.000001f;
+    bool signv2 = FVector::DotProduct(v2Normal, relativeToV2) >= -0.000001f;
     bool result = signv0 == signv1 && signv1 == signv2; //inside triangle by right left test (should be correct.)
     if(result){
         outIntersectionPoint = Intersection;

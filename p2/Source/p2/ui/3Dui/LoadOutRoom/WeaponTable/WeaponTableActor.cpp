@@ -38,11 +38,15 @@ void AWeaponTableActor::DropAndRespawnWeapon(){
 }
 
 
+void AWeaponTableActor::UpdateWidgetDebugIndex(int index){
+    if(tableWidgetActor){
+        tableWidgetActor->UpdateDebugNameFromIndex(index);
+    }
+}
 
 void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index){
     ref.replace(index, setupHelper);
 }
-
 
 void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){
     tableWidgetActor = AWeaponTableWidgetActor::MakeInstance(

@@ -82,7 +82,8 @@ public:
     }
 
     
-
+    /// @brief only call if you want to modfiy the mesh data,
+    /// scene proxy and physics state will be recreated!
     MeshData &GetMeshDataRef();
     void OverrideMeshData(MeshData &dataIn);
 
@@ -103,13 +104,23 @@ public:
 		}
 		return nullptr;
 	}
-   
+    
+
+
+    void SetDrawRayIntersect(bool flag){
+        DrawRayIntersectTest = flag;
+    }
 
 protected:
+    UPROPERTY(EditAnywhere, Category = "_MaterialOption")
+    FString MaterialPath;
+    void CreateMaterialFromPath();
 
     MeshData assignedMeshData;
     bool MeshDataWasModified = false;
     bool allowRender = true;
+    bool DrawRayIntersectTest = false;
+    bool MeshDataWasModifiedRecreatePhysicsState = false;
 
     void FlagMeshDataDirty();
 
@@ -136,4 +147,10 @@ protected:
 
     //ticks a ueventwidget if cast is sucessfull
     void TickWidgetIfPossible(float deltatime);
+
+
+
+
+    // --- render target for lit material ---
+    bool bNeedsUpdateMaterial = true;
 };

@@ -328,6 +328,8 @@ void AplayerScript::drop(){
         //boneController.attachCarriedItem(otherWeaponNow);
         boneController.attachOrReplaceCarriedItem(otherWeaponNow);
     }
+
+    updateInventoryUi();
 }
 
 void AplayerScript::reload(){
@@ -455,6 +457,7 @@ void AplayerScript::switchToIndex(int index){
                 targetedWeapon
             );
         }*/
+        updateInventoryUi();
     }
 }
 
@@ -573,6 +576,7 @@ void AplayerScript::openPauseMenu(){
 void AplayerScript::updateUi(){
     updateAmmunitionUi();
     updateHealthUi();
+    //updateInventoryUi();
 }
 
 void AplayerScript::updateAmmunitionUi(){
@@ -591,9 +595,9 @@ void AplayerScript::updateHealthUi(){
     AworldLevel::playerStatusManager.updateHealth(health);
 }
 
-
-
-
+void AplayerScript::updateInventoryUi(){
+    AworldLevel::playerStatusManager.updateInventory(playerInventory);
+}
 
 /**
  * public Api: player ui reload loadout api
@@ -651,6 +655,8 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
         boneController.attachOrReplaceCarriedItem(weapon);
         // boneController.dropWeapon(); //drop old weapon(?)
         // boneController.attachCarriedItem(weapon);
+
+        updateInventoryUi();
     }
 }
 
@@ -662,6 +668,7 @@ void AplayerScript::ReceiveCallback(UWidgetInteractPayload *payload){
     if(payload && IsValid(payload)){
         if(UWidgetEntityLootPayload *entityPayload = Cast<UWidgetEntityLootPayload>(payload)){
             playerInventory.Collect(entityPayload);
+            updateInventoryUi();
         }
     }
 }

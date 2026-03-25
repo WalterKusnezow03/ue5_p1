@@ -103,13 +103,14 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
         bool bHit = world->LineTraceSingleByChannel(HitResult, start, end, ECC_GameTraceChannel1, Params);
 
         
-
+        FVector originCopy = origin;
+        originCopy.Z -= 20.0f;
         // If the raycast hit something, save hitresult and return positive
         if (bHit){
             if(AActor *actor = HitResult.GetActor()){
                 if(ACustomMeshUIActor *casted = Cast<ACustomMeshUIActor>(actor)){
                     if(bDrawDebugLine){
-                        DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Red);
+                        DebugHelper::showLineBetween(GetWorld(), originCopy, HitResult.ImpactPoint, FColor::Red, 0.1f);
                     }
                     TryInjectInteractCallbakInterfaceTo(casted);
 
@@ -117,7 +118,7 @@ ACustomMeshUIActor *UAnyMeshWidgetInteractionComponent::RayIntersectFound(
 
                 }else{
                     if(bDrawDebugLine){
-                        DebugHelper::showLineBetween(GetWorld(), origin, HitResult.ImpactPoint, FColor::Blue);
+                        DebugHelper::showLineBetween(GetWorld(), originCopy, HitResult.ImpactPoint, FColor::Blue, 0.1f);
                     }
                     
                 }
@@ -175,6 +176,16 @@ void UAnyMeshWidgetInteractionComponent::TickHovered(
         if (ACustomMeshUIActor *found = RayIntersectFound(origin, direction))
         {
             found->RayIntersectHover(origin, direction);
+
+            if(bDrawDebugLine){
+                DebugHelper::showScreenMessage(
+                    "UAnyMeshWidgetInteractionComponent::Hover ", 
+                    found->GetDebugName()
+                );
+            }
+            
+
+
         }else{
             //update cache even if none found: none is hovered, must be updated
             //too for "cursor leave"

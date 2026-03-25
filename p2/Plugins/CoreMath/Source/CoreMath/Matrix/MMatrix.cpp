@@ -60,6 +60,15 @@ MMatrix::MMatrix(const FQuat &other){
     setRotation(other);
 }
 
+MMatrix::MMatrix(const FMatrix &other){
+    makeIdentity();
+    FVector location = other.GetOrigin(); 
+    FMatrix rotationMatrix = other.RemoveTranslation(); // optional, nur 3x3 Rotation
+    FRotator rotator = rotationMatrix.Rotator();
+    setRotation(rotator);
+    setTranslation(location);
+}
+
 /// @brief copy constructor
 /// @param other 
 MMatrix::MMatrix(const MMatrix &other){

@@ -17,7 +17,8 @@ public:
 	MMatrix(FRotator &other);
 	MMatrix(const FQuat &other);
 	MMatrix(const MMatrix &other);
-	MMatrix& operator=(const MMatrix &other);
+	MMatrix(const FMatrix &mat);
+	MMatrix &operator=(const MMatrix &other);
 
 	void setTranslation(const MMatrix &other);
 	void setTranslation(const FVector &pos);

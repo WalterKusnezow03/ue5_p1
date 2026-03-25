@@ -48,6 +48,7 @@ public:
 
 protected:
 	MeshData internalMeshData;
+	bool logOnMeshDataInvalid = false;
 
 	void BuildCustomMeshData(
 		const TArray<const FSceneView *> &Views,

@@ -1,6 +1,7 @@
 #include "PlayerStatusManager.h"
 
 #include "p2/ui/3Dui/HUD/HudUiActor.h"
+#include "p2/player/inventory/PlayerInventory.h"
 
 PlayerStatusManager::PlayerStatusManager(){
 
@@ -59,6 +60,14 @@ void PlayerStatusManager::updateHealth(int number){
 
 void PlayerStatusManager::updateHealthMax(int number){
     if(playerStatusData.UpdateHealthMax(number)){
+        FlagModifiedTrue();
+        UpdatePlayerHud();
+    }
+}
+
+
+void PlayerStatusManager::updateInventory(PlayerInventory &inventory){
+    if(playerStatusData.UpdatePlayerInventory(inventory)){
         FlagModifiedTrue();
         UpdatePlayerHud();
     }

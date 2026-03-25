@@ -38,6 +38,8 @@ public:
     UPROPERTY(EditAnywhere, Category = "WidgetScaleSetup")
     float scaleCmMeshDataTargeted = 300.0f;
 
+    void UpdateDebugNameFromIndex(int index);
+
 protected:
     void ScaleMeshDataToDesiredScale();
 

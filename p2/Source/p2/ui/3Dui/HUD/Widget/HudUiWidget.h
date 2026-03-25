@@ -9,7 +9,9 @@
 
 #include "HudUiWidget.generated.h"
 
+class FPlayerStatusInventorySlot;
 class UMiniMapWidget;
+class UInventorySlotWidget;
 
 UCLASS()
 class P2_API UHudUiWidget : public UUserWidget, public IBaseUiInterface{
@@ -30,6 +32,9 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetMiniMap();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetInventorySlotPanel();
 
     // update widget elements
     void UpdateWidget(FPlayerStatus &playerStatusStruct);
@@ -59,4 +64,6 @@ protected:
 
     void UpdateAmmunitionText(FString text);
     void UpdateAmmunitionText(FText text);
+
+    void UpdateInventorySlots(TArray<FPlayerStatusInventorySlot> &slots);
 };

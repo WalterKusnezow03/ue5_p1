@@ -52,4 +52,6 @@ protected:
     int32 v0Index = 0;
     int32 v1Index = 0;
     int32 v2Index = 0;
+
+    bool frameValid = true;
 };

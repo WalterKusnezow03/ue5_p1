@@ -436,6 +436,24 @@ void MeshData::appendVerteciesAndUvs(
     appendUvs(uvA, uvB, uvC);
 }
 
+void MeshData::appendVerteciesAndUvs(
+    FVector &a,
+    FVector &b,
+    FVector &c,
+    FVector &d,
+    FVector2D &uvA,
+    FVector2D &uvB,
+    FVector2D &uvC,
+    FVector2D &uvD
+){
+    /*
+    1   2
+    0   3
+    */
+    appendVerteciesAndUvs(a, b, c, uvA, uvB, uvC);
+    appendVerteciesAndUvs(a, c, d, uvA, uvC, uvD);
+}
+
 void MeshData::appendVerteciesAndUvsEfficent(
     FVector &a, 
     FVector &b, 
@@ -508,7 +526,7 @@ void MeshData::offsetAllvertecies(FVector &offset){
         vertecies[i] += offset;
     }
 
-    updateBoundsIfNeeded();
+    RebuildBounds();
 }
 
 /// @brief transforms all vertecies with a given matrix
@@ -2206,6 +2224,11 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world){
 }
 
 void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color){
+    float time = 10.0f;
+    debugDrawMesh(transform, world, color, time);
+}
+
+void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color, float time){
     if(world != nullptr){
         //durch triangle buffer laufen, alle zeichnen
         for (int i = 2; i < triangles.Num(); i+=3){
@@ -2221,7 +2244,6 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color){
                 v1Vertex = transform * v1Vertex;
                 v2Vertex = transform * v2Vertex;
 
-                float time = 10.0f;
                 DebugHelper::showLineBetween(world, v0Vertex, v1Vertex, color, time);
                 DebugHelper::showLineBetween(world, v1Vertex, v2Vertex, color, time);
                 DebugHelper::showLineBetween(world, v2Vertex, v0Vertex, color, time);
@@ -2230,8 +2252,9 @@ void MeshData::debugDrawMesh(MMatrix &transform, UWorld *world, FColor color){
     }
 }
 
-
-
+void MeshData::debugDrawMeshBounds(MMatrix &transform, UWorld *world, FColor color, float time){
+    bounds.debugDrawBounds(transform, world, color, time);
+}
 
 void MeshData::VerticalRangeOfBounds(float &a, float &b){
 
@@ -2287,7 +2310,12 @@ bool MeshData::RayIntersectDraw(
     UWorld *world,
     FMatrix transform
 ){
-    if(RayIntersect(origin, direction, outIntersectHitResult)){
+    
+    MMatrix m(transform);
+    debugDrawMesh(m, world, FColor::Cyan, 0.1f);
+    debugDrawMeshBounds(m, world, FColor::Cyan, 0.1f);
+    if (RayIntersect(origin, direction, outIntersectHitResult))
+    {
         if(world){
             FVector hit = outIntersectHitResult.hitPoint;
             hit = transform.TransformPosition(hit);
@@ -2304,6 +2332,8 @@ bool MeshData::RayIntersectDraw(
 }
 
 
+
+
 /// @brief IS TESTED
 bool MeshData::RayIntersect(
     const FVector &origin,
@@ -2311,13 +2341,18 @@ bool MeshData::RayIntersect(
     FIntersectHitResult &outIntersectHitResult
 ){
     if(RayIntersectBounds(origin, direction)){
-
+        /*DebugHelper::showScreenMessage(
+            "MeshData::RayIntersect BOUNDS SUCESS", 
+            FColor::Green
+        );*/
         if(intersectFrames.Num() <= 0){
             //DebugHelper::logMessage("MeshData::RayIntersect Failed, no intersect frames");
             RebuildAllIntersectFrames();
         }
 
         ///// ---- TODO: PARALLEL THREADS HERE -----
+
+        
         
         //go through all intersect triangle frames, if flagged ok, return true
         for (int i = 0; i < intersectFrames.Num(); i++){
@@ -2327,10 +2362,16 @@ bool MeshData::RayIntersect(
                 FVector2D uv = FindAverageUVFrom(outIntersectionPoint, current);
                 outIntersectHitResult.hitPoint = outIntersectionPoint;
                 outIntersectHitResult.hitUV = uv;
-                DebugHelper::logMessage("MeshData::RayIntersect Result found!");
+                //DebugHelper::logMessage("MeshData::RayIntersect Result found!");
                 return true;
             }
         }
+    }else{
+        /*DebugHelper::showScreenMessage(
+            "MeshData::RayIntersect BOUNDS FAILED", 
+            bounds.ToString(),
+            FColor::Red
+        );*/
     }
     return false;
 }
