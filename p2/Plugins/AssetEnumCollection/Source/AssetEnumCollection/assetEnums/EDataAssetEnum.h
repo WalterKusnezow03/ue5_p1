@@ -6,4 +6,5 @@ UENUM()
 enum class EDataAssetEnum
 {
     EUiColorAsset,
+    WeaponDataAssetPack,
 };

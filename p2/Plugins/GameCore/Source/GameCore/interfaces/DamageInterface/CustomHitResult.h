@@ -1,19 +1,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameCore/interfaces/DamageInterface/CustomHitResultBase/CustomHitResultBase.h"
 
 
-class GAMECORE_API FCustomHitResult {
+class GAMECORE_API FCustomHitResult : public FCustomHitResultBase{
 
 public:
-    void SetupHitResult(int damageIn);
-
-    void SetupHitResult(
-        int inDamage,
-        bool inSurpressed,
-        float deltaTimeIn = 0.0f
-    );
-
+    
+    using FCustomHitResultBase::SetupHitResult;
+    
     void SetupHitResult(
         FHitResult &inResult,
         int inDamage,
@@ -42,34 +38,25 @@ public:
         float deltaTimeIn = 0.0f
     );
 
-    int Damage() const;
-    bool IsSurpressed() const;
+    bool HasHitPoint() const ;
     FVector &HitPoint();
     const FVector &Direction() const;
     float Distance() const;
-    bool HasHitPoint() const;
-    float DeltaTime() const;
+    
 
     //debug
     void LogMessage(FString messagePrefix);
     void SetMessage(FString s);
 
-    AActor *GetActor() const;
+    
 
 private:
-    int damage = 0;
     
-    FVector direction;
-    bool surpressed = false;
-    FHitResult result;
+    
     float distance = 0.0f;
-
-    float savedDeltaTime = 0.0f;
 
     FVector hitPoint;
     bool hitPointSetup = false;
-
-    void SetDeltaTime(float deltaTimeIn);
 
     void UpdateDirectionAndDistance(FVector &startRaycastLocation);
     void SetDefaultMessageIfNeeded();

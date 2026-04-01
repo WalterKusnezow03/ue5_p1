@@ -33,7 +33,8 @@ protected:
     void SetPhysicsEnabled(bool flag);
 
     FVector PhysicsMeshLocation();
-
+    FVector PhysicsMeshVelocityDirection();
+    
 public:
    
 
@@ -70,4 +71,8 @@ protected:
     FVector throwDirection;
 
     void DrawLocation(float deltatime);
+
+
+
+   
 };

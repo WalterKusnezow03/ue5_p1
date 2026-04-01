@@ -258,8 +258,7 @@ private:
 	EWidgetGeometryMode GeometryMode;
 	UBodySetup* BodySetup;
 
-
-
+	bool UVColorsEnabled()const;
 
 	template <typename T>
 	bool IndexInBound(const TArray<T> &array, const int32 index) const {

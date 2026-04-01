@@ -116,12 +116,10 @@ void HeadController::Tick(
     MMatrix MheadWorld = MneckWorld * Mhead;
 
     applyTransformToActors(MWorld, MneckWorld, MheadWorld);
+
+    //head world staring cache right at neck end!
+    headWorldCache = MneckWorld;
 }
-
-
-
-
-
 
 //connect to spine
 Joint *HeadController::GetTopJoint(){
@@ -156,4 +154,22 @@ void HeadController::SetHeadRotation(
 ){
     FRotator copy = rotation;
     headRotation.setRotation(copy);
+}
+
+
+void HeadController::SetHeadRotationLookAt(const FVector &lookAt){
+    FRotator r = headWorldCache.extractRotator();
+    FVector t =  headWorldCache.getTranslation();
+    //M = T * R
+    //M^-1 = R^-1 * T^-1 = R^T * T
+    MMatrix R1(r);
+    R1.transposeRotation(); //R^T = R^-1
+
+    t *= -1.0f;
+    MMatrix T1(t);
+    MMatrix M1 = R1 * T1;
+
+    FVector localVec = M1 * lookAt;
+    FRotator rLookAt = localVec.Rotation();
+    SetHeadRotation(rLookAt);
 }

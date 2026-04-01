@@ -17,9 +17,6 @@ void USettingsOptionWidget::SetText(FString textIn){
 void USettingsOptionWidget::Init(){
     UpdatePadding();
     InitBorderInterface();
-
-    //copy static state
-    SetChecked(DebugHelper::DebugToolsEnabled);
 }
 
 void USettingsOptionWidget::UpdatePadding(){

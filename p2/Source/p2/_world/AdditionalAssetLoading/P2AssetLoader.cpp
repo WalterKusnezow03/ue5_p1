@@ -41,6 +41,8 @@ void P2AssetLoader::LoadGameAssets(){
 
     loadMaterials(); //materials need to be loaded first to not have any issues
     loadEntities();
+
+    loadWeaponDataAssetPack();
     loadWeapons();
     loadWeaponAnimations();
     loadWeaponAttachments();
@@ -373,6 +375,8 @@ void P2AssetLoader::loadMaterials(){
 
 void P2AssetLoader::loadTextures(){
     
+    //DEPPRECATED, not using canvas render target but UWidget only!
+
     //icons directory
     std::map<textureEnum, FString> assetNames;
     assetNames[textureEnum::patroneIcon] = "patroneIcon";
@@ -394,7 +398,15 @@ void P2AssetLoader::loadTextures(){
 }
 
 
-
+void P2AssetLoader::loadWeaponDataAssetPack(){
+    AssetLoader::LoadAndSavePrimaryDataAssetToAssetToManager<EDataAssetEnum, UPrimaryDataAsset>(
+        EDataAssetEnum::WeaponDataAssetPack, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/AssetPack/",         // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "WeaponAssetPackBP"                   // Just the file name as displayed
+    );
+    WeaponEnumAssetPackProxy::ValidatePropertiesOnInit();
+}
 
 
 
@@ -457,11 +469,14 @@ void P2AssetLoader::load3DWidgetData(){
 
 //might not be needed (removing the material.)
 void P2AssetLoader::loadWidgetMaterial(){
+    //default widget material rendering slate UI but with 
+    //lighting, non emissive! default lit!
+    /// /Game/Prefabs/ui3D/materials/widgetMaterialCustomParent.uasset
     AssetLoader::LoadAndSaveAssetToManager<materialEnum, UMaterial>(
         materialEnum::widgetMaterial, 
         "Game", //plugin name or "Game" 
-        "Prefabs/ui3D", //inner path, not trailing slash
-        "widgetMaterial" //asset name just as displayed
+        "Prefabs/ui3D/materials", //inner path, not trailing slash
+        "widgetMaterialCustomParent" //asset name just as displayed
     );
 }
 

@@ -1,5 +1,5 @@
 #include "InventorySlotBase.h"
-
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 bool InventorySlotBase::IsSamePointer(Aweapon *weapon){
     if(weapon != nullptr && weaponPointer != nullptr){
@@ -99,4 +99,15 @@ bool InventorySlotBase::GetWeaponType(weaponEnum &outType) const {
         return true;
     }
     return false;
+}
+
+
+void InventorySlotBase::AppendToString(FString &outMessage) const {
+    weaponEnum type;
+    if (GetWeaponType(type)){
+        FString weaponString = WeaponEnumAssetPackProxy::toString(type);
+        outMessage += FString::Printf(TEXT("[%s]"), *weaponString);
+    }else{
+        outMessage += FString::Printf(TEXT("[failed get weapontype]"));
+    }
 }

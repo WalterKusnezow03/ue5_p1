@@ -5,14 +5,17 @@ void UAnyMeshWidgetComponent::BeginPlay(){
 	Super::BeginPlay();
 
 	DebugHelper::logMessage("UAnyMeshWidgetComponent::BeginPlay");
-	if(assetManager *a = assetManager::instance()){
+	
+	//Material insance is handeld by base class begin play. None needed here!
+	//although having none causes instant crash.
+	/*if(assetManager *a = assetManager::instance()){
 		DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial");
 		UMaterialInterface *BaseMat = a->Find<materialEnum, UMaterial>(materialEnum::widgetMaterial);
 		if (BaseMat){
 			DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial Success");
 			MaterialInstance = UMaterialInstanceDynamic::Create(BaseMat, this);
 		}
-	}
+	}*/
 
 	//WidgetComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); // dein Channel
 	SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block); // dein Channel
@@ -94,24 +97,6 @@ IBaseUiInterface* UAnyMeshWidgetComponent::GetWidgetAsIBaseUiInterface(){
 	}
 	return nullptr;
 }
-
-void UAnyMeshWidgetComponent::CreateMaterial(){
-	if(!GetMaterialInstance()){
-
-		UMaterialInterface *BaseMat = nullptr;
-		if(assetManager *a = assetManager::instance()){
-			DebugHelper::logMessage("UAnyMeshWidgetComponent::TryFindMaterial");
-			BaseMat = a->Find<materialEnum, UMaterial>(materialEnum::widgetMaterial);
-		}
-		if(!BaseMat){
-			BaseMat = UMaterial::GetDefaultMaterial(MD_Surface);
-		}
-		if (BaseMat){
-			MaterialInstance = UMaterialInstanceDynamic::Create(BaseMat, this);
-		}
-	}
-}
-
 
 
 

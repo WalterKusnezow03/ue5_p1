@@ -4,6 +4,7 @@
 #include "p2/_world/PlayerStatManager/Inventory/PlayerStatusInventorySlot.h"
 
 class PlayerInventory;
+class InventorySlotBase;
 
 /// @brief struct storing player info for HUD
 class P2_API FPlayerStatus {
@@ -44,5 +45,11 @@ public:
 
 private:
     bool UpdatePlayerInventorySlotsChanged(PlayerInventory &inventory);
-    
+    bool UpdateOrAppendPlayerInventorySlot(
+        const InventorySlotBase *updateFromPtr,
+        int index,
+        int selectedIndex,
+        int sizeCurrent
+    );
+    bool ShrinkInventory(int32 sizeIn);
 };

@@ -4,8 +4,8 @@
 #include "p2/weapon/weapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 
-#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
 
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 weaponSetupHelper::weaponSetupHelper()
 {
@@ -52,19 +52,19 @@ void weaponSetupHelper::setWeaponTypeToCreate(weaponEnum typeIn){
 /// @brief sets the targeted sight to set to a value
 /// @param sightIn 
 void weaponSetupHelper::setSightAttachment(weaponAttachmentEnum sightIn){
-    if(WeaponAttachmentValidator::isASightAttachment(sightIn)){
+    if(WeaponEnumAssetPackProxy::isASightAttachment(sightIn)){
         sightToSet = sightIn;
     }
 }
 
 void weaponSetupHelper::setMuzzleAttachment(weaponAttachmentEnum typein){
-    if(WeaponAttachmentValidator::isAMuzzleAttachment(typein)){
+    if(WeaponEnumAssetPackProxy::isAMuzzleAttachment(typein)){
         muzzleToSet = typein;
     }
 }
 
 void weaponSetupHelper::setGripAttachment(weaponAttachmentEnum typein){
-    if(WeaponAttachmentValidator::isAGripAttachment(typein)){
+    if(WeaponEnumAssetPackProxy::isAGripAttachment(typein)){
         gripToSet = typein;
     }
 }

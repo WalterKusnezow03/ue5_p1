@@ -98,6 +98,13 @@ FVector AthrowableWeaponBase::PhysicsMeshLocation(){
     return GetActorLocation();
 }
 
+FVector AthrowableWeaponBase::PhysicsMeshVelocityDirection(){
+    if(rootMesh){
+        return rootMesh->GetPhysicsLinearVelocity().GetSafeNormal();
+    }
+    return throwDirection;
+}
+
 void AthrowableWeaponBase::Tick(float Deltatime){
     Super::Tick(Deltatime);
     ApplyMarkedImpulse();
@@ -106,6 +113,10 @@ void AthrowableWeaponBase::Tick(float Deltatime){
     //do not.
     //SetActorLocation(PhysicsMeshLocation());
 }
+
+
+
+
 
 /// --- keep empty for now ---
 

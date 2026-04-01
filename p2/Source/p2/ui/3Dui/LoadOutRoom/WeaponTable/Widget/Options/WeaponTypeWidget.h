@@ -8,7 +8,7 @@
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 
 #include "p2/ui/3Dui/LoadOutRoom/WeaponTable/Widget/Options/WeaponOptionBaseWidget.h"
-#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 #include "WeaponTypeWidget.generated.h"
 
@@ -25,6 +25,6 @@ public:
     weaponEnum type;
 
     virtual void UpdateTextFromType() override {
-        SetText(WeaponEnumStringConverter::toString(type));
+        SetText(WeaponEnumAssetPackProxy::toString(type));
     }
 };

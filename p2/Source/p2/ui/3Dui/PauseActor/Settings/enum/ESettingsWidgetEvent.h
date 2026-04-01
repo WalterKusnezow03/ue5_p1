@@ -9,4 +9,6 @@ enum class ESettingsWidgetEvent
     EExitSettingsWidget,
     EEnableDebugTools,
     EDisbaleDebugTools,
+    EEnableDebugAnyMeshWidgetUVTools,
+    EDisbaleDebugAnyMeshWidgetUVTools,
 };

@@ -39,12 +39,15 @@ public:
     virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
 
     void SetHeadRotation(const FRotator &rotation);
+    void SetHeadRotationLookAt(const FVector &lookAt);
 
 protected:
     MMatrix neckTranslation;
     MMatrix headTranslation;
     MMatrix headRotation;
     MMatrix neckRotation;
+
+    MMatrix headWorldCache;
 
     Joint p1; //neck
     Joint p2; //head

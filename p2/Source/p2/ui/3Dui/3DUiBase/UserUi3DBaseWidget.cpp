@@ -2,6 +2,7 @@
 #include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
 #include "customuipluginbase/DataAsset/ColorAsset/ColorAsset.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 
 void UUserUi3DBaseWidget::LoadDefaultColors(
     FLinearColor &colorBaseOut,

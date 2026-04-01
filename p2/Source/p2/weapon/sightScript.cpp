@@ -4,7 +4,8 @@
 
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
-#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
+
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 // Sets default values
 AsightScript::AsightScript()
@@ -36,7 +37,7 @@ FVector AsightScript::getSightCenter(){
 
 
 void AsightScript::setType(weaponAttachmentEnum type){
-	if(WeaponAttachmentValidator::isASightAttachment(type)){
+	if(WeaponEnumAssetPackProxy::isASightAttachment(type)){
 		sightType = type;
 	}
 }

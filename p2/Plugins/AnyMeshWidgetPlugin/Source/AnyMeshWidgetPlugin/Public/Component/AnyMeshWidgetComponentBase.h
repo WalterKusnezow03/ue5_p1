@@ -112,9 +112,14 @@ public:
     }
 
 protected:
+    /// @brief make a material just like the default widget material
+    /// but paste the color into base and make it lit transculent
+    /// to have real looking stickers.
     UPROPERTY(EditAnywhere, Category = "_MaterialOption")
     FString MaterialPath;
     void CreateMaterialFromPath();
+    bool bNeedsUpdateMaterial = true;
+
 
     MeshData assignedMeshData;
     bool MeshDataWasModified = false;
@@ -151,6 +156,4 @@ protected:
 
 
 
-    // --- render target for lit material ---
-    bool bNeedsUpdateMaterial = true;
 };

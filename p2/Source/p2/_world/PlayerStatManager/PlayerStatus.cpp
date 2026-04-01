@@ -70,20 +70,49 @@ bool FPlayerStatus::UpdatePlayerInventorySlotsChanged(PlayerInventory &inventory
     TArray<const InventorySlotBase *> inventoryTemp = inventory.GetAllInventorySlots();
     for (int i = 0; i < inventoryTemp.Num(); i++){
         if(const InventorySlotBase* updateFromPtr = inventoryTemp[i]){
-            bool isSelectedIndex = i == selectedIndex;
-            if(i >= 0 && i < sizeCurrent){
-                FPlayerStatusInventorySlot &slotToUpdate = slots[i];
-                //returns true if type or selected index flag changed.
-                if(slotToUpdate.Update(updateFromPtr, isSelectedIndex)){
-                    anySlotChanged = true;
-                }
-            }else{
-                //new slots added.
-                anySlotChanged = true; //added new slot.
-                slots.Add(FPlayerStatusInventorySlot(updateFromPtr, isSelectedIndex));
-                
+            if(UpdateOrAppendPlayerInventorySlot(
+                updateFromPtr, 
+                i, 
+                selectedIndex,
+                sizeCurrent
+            )){
+                anySlotChanged = true;
             }
         }
     }
+    if(ShrinkInventory(inventoryTemp.Num())){
+        anySlotChanged = true;
+    }
+
     return anySlotChanged;
+}
+
+bool FPlayerStatus::UpdateOrAppendPlayerInventorySlot(
+    const InventorySlotBase *updateFromPtr,
+    int index,
+    int selectedIndex,
+    int sizeCurrent
+)
+{
+    bool isSelectedIndex = index == selectedIndex;
+    if(index >= 0 && index < sizeCurrent){
+        FPlayerStatusInventorySlot &slotToUpdate = slots[index];
+        //returns true if type or selected index flag changed.
+        if(slotToUpdate.Update(updateFromPtr, isSelectedIndex)){
+            return true;
+        }
+    }else{
+        //new slots added.
+        slots.Add(FPlayerStatusInventorySlot(updateFromPtr, isSelectedIndex));
+        return true;
+    }
+    return false;
+}
+
+bool FPlayerStatus::ShrinkInventory(int32 sizeIn){
+    if (sizeIn >= 0 && sizeIn <= slots.Num()){
+        slots.SetNum(sizeIn);
+        return true;
+    }
+    return false;
 }

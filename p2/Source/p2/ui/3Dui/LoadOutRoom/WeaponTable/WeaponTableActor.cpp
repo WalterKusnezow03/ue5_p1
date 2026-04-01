@@ -8,6 +8,7 @@ AWeaponTableActor::AWeaponTableActor() : Super() {
 void AWeaponTableActor::BeginPlay(){
     FindSocketOnBeginPlay();
     SpawnWidgetActorOnBeginPlay();
+    UpdateHasWeaponFlag();
 }
 
 void AWeaponTableActor::Tick(float deltatime){
@@ -24,18 +25,36 @@ void AWeaponTableActor::NotifyWeaponSetupChange(){
 
 void AWeaponTableActor::DropAndRespawnWeapon(){
     //replace weapon
+    DropCurrentWeaponFromTable();
+    SpawnWeaponFromSetupHelper();
+    UpdateHasWeaponFlag();
+}
+
+void AWeaponTableActor::DropCurrentWeaponFromTable(){
     if(weaponSpawned){
         weaponSpawned->SetActorEnableCollision(true);
         weaponSpawned->dropToObjectPool();
     }
+    weaponSpawned = nullptr;
+}
+
+void AWeaponTableActor::SpawnWeaponFromSetupHelper(){
     weaponSpawned = LoadoutHelper::SpawnWeaponWithAttachments(
         &setupHelper,
-        GetWorld()
-    );
+        GetWorld());
     if(weaponSpawned){
         weaponSpawned->SetActorEnableCollision(false);
     }
 }
+
+void AWeaponTableActor::UpdateHasWeaponFlag(){
+    bHasAWeaponForSetup = false;
+    if(weaponSpawned){
+        bHasAWeaponForSetup = true;
+    }
+}
+
+
 
 
 void AWeaponTableActor::UpdateWidgetDebugIndex(int index){
@@ -45,7 +64,9 @@ void AWeaponTableActor::UpdateWidgetDebugIndex(int index){
 }
 
 void AWeaponTableActor::UpdateLoadoutWithInternalSetup(LoadoutHelper &ref, int index){
-    ref.replace(index, setupHelper);
+    if(bHasAWeaponForSetup){
+        ref.replace(index, setupHelper);
+    }
 }
 
 void AWeaponTableActor::SpawnWidgetActorOnBeginPlay(){

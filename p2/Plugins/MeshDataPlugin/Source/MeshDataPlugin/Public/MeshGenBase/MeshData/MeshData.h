@@ -174,8 +174,9 @@ public:
 		FColor &colorC
 	);
 
-protected:
 	void appendColors(FColor &a, FColor &b, FColor &c);
+protected:
+	
 
 public:
 

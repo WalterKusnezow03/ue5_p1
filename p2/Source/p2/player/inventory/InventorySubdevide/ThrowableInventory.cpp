@@ -1,5 +1,6 @@
 #include "ThrowableInventory.h"
-#include "p2/weapon/enumUtil/WeaponEnumAmmunitionConverter.h"
+
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 #include "p2/weapon/throwableItem/throwableWeaponBase.h"
 
 
@@ -47,10 +48,10 @@ InventorySlotThrowable &ThrowableInventory::CurrentSlotRefThrowable(){
 
 void ThrowableInventory::addToAmmunition(ammunitionEnum type, int count){
     //find or create slot.
-    WeaponEnumAmmunitionConverter converter;
-    if(converter.IsThrowable(type)){
+    
+    if(WeaponEnumAssetPackProxy::IsThrowable(type)){
         weaponEnum convertedFound;
-        if(converter.Convert(type,convertedFound)){
+        if(WeaponEnumAssetPackProxy::Convert(type, convertedFound)){
             if(InventorySlotBase *slot = FindSlotByType(convertedFound)){
                 slot->reload(count);
             }else{

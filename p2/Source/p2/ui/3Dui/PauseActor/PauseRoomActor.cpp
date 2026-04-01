@@ -210,6 +210,7 @@ USettingsWidget *APauseRoomActor::GetSettingsWidget(){
 
 
 
+#include "AnyMeshWidgetPlugin/Public/ComponentSettings/SharedAnyMeshWidgetComponentSettings.h"
 
 void APauseRoomActor::Notify(ESettingsWidgetEvent event){
     if(event == ESettingsWidgetEvent::EEnableDebugTools){
@@ -218,6 +219,22 @@ void APauseRoomActor::Notify(ESettingsWidgetEvent event){
     if(event == ESettingsWidgetEvent::EDisbaleDebugTools){
         DebugHelper::DebugToolsEnabled = false;
     }
+
+    if(event == ESettingsWidgetEvent::EEnableDebugAnyMeshWidgetUVTools){
+        ASharedAnyMeshWidgetComponentSettings::MakeInstanceIfNeeded(GetWorld());
+        ASharedAnyMeshWidgetComponentSettings::SetShowColorMap(true);
+    }
+    if(event == ESettingsWidgetEvent::EDisbaleDebugAnyMeshWidgetUVTools){
+        ASharedAnyMeshWidgetComponentSettings::MakeInstanceIfNeeded(GetWorld());
+        ASharedAnyMeshWidgetComponentSettings::SetShowColorMap(false);
+    }
+
+
+            
+
+
+
+
     if(event == ESettingsWidgetEvent::EExitSettingsWidget){
         Notify(EPauseWidgetEvent::ECloseSettingsWidget);
     }

@@ -281,8 +281,22 @@ bool FTriangleClipResult::AnyInBound(){
 
 void FTriangleClipResult::AppendTo(MeshData &data){
     MakeUVBuffer();
+    MakeColorBuffer();
 
     for (int i = 2; i < generatedTriangleShapedVertexBuffer.Num(); i+= 3){
+        data.appendVerteciesAndUvsAndColors(
+            generatedTriangleShapedVertexBuffer[i - 2],
+            generatedTriangleShapedVertexBuffer[i - 1],
+            generatedTriangleShapedVertexBuffer[i],
+            generatedTriangleShapedUVBuffer[i - 2],
+            generatedTriangleShapedUVBuffer[i - 1],
+            generatedTriangleShapedUVBuffer[i],
+            generatedTriangleShapedColorBuffer[i - 2],
+            generatedTriangleShapedColorBuffer[i - 1],
+            generatedTriangleShapedColorBuffer[i]
+        );
+
+        /*
         data.append(
             generatedTriangleShapedVertexBuffer[i - 2],
             generatedTriangleShapedVertexBuffer[i - 1],
@@ -293,6 +307,11 @@ void FTriangleClipResult::AppendTo(MeshData &data){
             generatedTriangleShapedUVBuffer[i - 1],
             generatedTriangleShapedUVBuffer[i]
         );
+        data.appendColors(
+            generatedTriangleShapedColorBuffer[i - 2],
+            generatedTriangleShapedColorBuffer[i - 1],
+            generatedTriangleShapedColorBuffer[i]
+        );*/
     }
 }
 
@@ -303,6 +322,49 @@ void FTriangleClipResult::MakeUVBuffer(){
         generatedTriangleShapedUVBuffer[i] = MakeUV(vertex);
     }
 }
+
+void FTriangleClipResult::MakeColorBuffer(){
+    FColor distort = FColor::Red;
+    generatedTriangleShapedColorBuffer.SetNum(generatedTriangleShapedVertexBuffer.Num());
+    if(VertexAndUVBufferValid()){
+        for (int i = 2; i < generatedTriangleShapedVertexBuffer.Num(); i+=3){
+            const FVector &_v0 = generatedTriangleShapedVertexBuffer[i-2];
+            const FVector &_v1 = generatedTriangleShapedVertexBuffer[i-1];
+            const FVector &_v2 = generatedTriangleShapedVertexBuffer[i];
+
+            const FVector2D &uv0 = generatedTriangleShapedUVBuffer[i-2];
+            const FVector2D &uv1 = generatedTriangleShapedUVBuffer[i-1];
+            const FVector2D &uv2 = generatedTriangleShapedUVBuffer[i];
+
+            FColor colorV0 = jacobianAnalyticTool.DistortionColorFor(
+                _v0, //const FVector &vertex,
+                _v1, //const FVector &v1In,
+                _v2,
+                uv0,
+                uv1,
+                uv2,
+                distort
+            );
+
+            generatedTriangleShapedColorBuffer[i - 2] = colorV0;
+            generatedTriangleShapedColorBuffer[i - 1] = FColor::White;
+            generatedTriangleShapedColorBuffer[i - 0] = FColor::White;
+        }
+    }
+    
+    
+}
+
+bool FTriangleClipResult::VertexAndUVBufferValid(){
+    return generatedTriangleShapedVertexBuffer.Num() == generatedTriangleShapedUVBuffer.Num();
+}
+
+
+
+
+
+
+
 
 FVector2D FTriangleClipResult::MakeUV(const FVector &vertex){
     //scalar = distTarget / distAll
@@ -320,130 +382,3 @@ FVector2D FTriangleClipResult::MakeUV(const FVector &vertex){
     return uv;
 }
 
-
-
-FColor FTriangleClipResult::DistortionColorFor(
-    const FVector &vertex,
-    const FVector &v1In,
-    const FVector &v2In,
-    const FVector2D &uvVertex,
-    const FVector2D &uv1,
-    const FVector2D &uv2,
-    const FColor distortColor
-){
-
-    //beschreibt wie gross ein dreieck auf eine UV fläche verteilt ist.
-    //hat auch grössen verzerrung.
-    
-    //aus ableitung der position und uv mit
-    /*
-    \begin{equation}
-    e_1 = p_1 - p_0, \qquad e_2 = p_2 - p_0
-    \end{equation}
-
-    sowie die UV-Kanten
-
-    \begin{equation}
-    t_1 = uv_1 - uv_0, \qquad t_2 = uv_2 - uv_0,
-    \end{equation}.
-
-    ...
-    $$
-    p(\alpha, \beta) = p_0 + 
-    \begin{bmatrix}
-        e_1 & e_2
-    \end{bmatrix} \cdot
-    \begin{bmatrix}
-        t_{1x} & t_{2x} \\
-        t_{1y} & t_{2y}
-    \end{bmatrix}^{-1}
-    \cdot 
-    (uv_{out} - uv_0)
-    $$
-
-    Mit 
-    $$
-    \frac{\partial p}{\partial uv} =
-    \begin{bmatrix}
-        e_1 & e_2
-    \end{bmatrix} \cdot
-    \begin{bmatrix}
-        t_{1x} & t_{2x} \\
-        t_{1y} & t_{2y}
-    \end{bmatrix}^{-1} = J 
-    $$
-    ...
-    
-    wird
-    $$
-    A = \sqrt{det(J^TJ)} = ||u||\cdot ||v|| \cdot sin(\theta)
-    $$
-    */
-
-    FVector e1 = v1In - vertex;
-    FVector e2 = v2In - vertex;
-    FVector2D t1 = uv1 - uvVertex;
-    FVector2D t2 = uv2 - uvVertex;
-
-    //mit
-    /*
-    J = 
-    \begin{bmatrix}
-        e_1 & e_2
-    \end{bmatrix} \cdot
-    \begin{bmatrix}
-        t_{1x} & t_{2x} \\
-        t_{1y} & t_{2y}
-    \end{bmatrix}^{-1}
-    =
-    e1x e2x   t1x t2x
-    e1y e2y * t1y t2y
-    e1z e2z
-    */
-
-    /*
-    J =\begin{pmatrix}
-        \frac{\partial x}{\partial u} & \frac{\partial x}{\partial v} \\
-        \frac{\partial y}{\partial u} & \frac{\partial y}{\partial v} \\
-        \frac{\partial z}{\partial u} & \frac{\partial z}{\partial v}
-    \end{pmatrix}
-    = [dp/du,dp/dv]
-    
-    */
-
-
-    //A = \sqrt{det(J^TJ)} = ||u||\cdot ||v|| \cdot sin(\theta)
-    FVector JacobianU(
-        e1.X * t1.X + e2.X * t1.Y,
-        e1.Y * t1.X + e2.Y * t1.Y,
-        e1.Z * t1.X + e2.Z * t1.Y
-    );
-
-    FVector JacobianV(
-        e1.X * t2.X + e2.X * t2.Y,
-        e1.Y * t2.X + e2.Y * t2.Y,
-        e1.Z * t2.X + e2.Z * t2.Y
-    );
-
-    //sin(\theta) = cos^-1(JacobianUNormalized * JacobianVNormalized)
-    float theta = std::acos(FVector::DotProduct(
-        JacobianU.GetSafeNormal(),
-        JacobianV.GetSafeNormal()
-    ));
-    float sinTheta = std::sin(theta);
-
-    float A = JacobianU.Size() * JacobianV.Size() * sinTheta;
-
-    //1 keine verzerrung, darunter darüber hat verzerrung.
-    
-    FColor base = FColor::White;
-    float scalar = FMath::Clamp(A - 1.0f, -1.0f, 1.0f);
-
-    FColor result;
-    result.R = FMath::Clamp<int32>(base.R + distortColor.R * scalar, 0, 255);
-    result.G = FMath::Clamp<int32>(base.G + distortColor.G * scalar, 0, 255);
-    result.B = FMath::Clamp<int32>(base.B + distortColor.B * scalar, 0, 255);
-    result.A = base.A; // Alpha unverändert
-
-    return base;
-}

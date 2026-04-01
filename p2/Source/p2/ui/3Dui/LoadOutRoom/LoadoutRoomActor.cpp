@@ -140,6 +140,10 @@ bool ALoadoutRoomActor::Enter(AActor *player){
     }*/
 }
 
+
+
+
+
 void ALoadoutRoomActor::Leave(){
     if(playerEntered){
         UpdatePlayerInventory();
@@ -174,16 +178,6 @@ void ALoadoutRoomActor::logMessage(FString message, FVector pos){
 
 
 void ALoadoutRoomActor::UpdatePlayerInventory(){
-    /*
-    
-    for (int i = 0; i < weaponTables.Num(); i++){
-        if(AWeaponTableActor *current = weaponTables[i]){
-            current-> //get setup
-
-            //paste to loadout
-        }
-    }
-    */
    if(playerEntered){
         if(AplayerScript *casted = Cast<AplayerScript>(playerEntered)){
             UpdateLoadoutWithTableActors();

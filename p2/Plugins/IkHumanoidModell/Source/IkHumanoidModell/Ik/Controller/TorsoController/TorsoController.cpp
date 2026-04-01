@@ -153,3 +153,7 @@ void TorsoController::SetStateCollapse(bool flag){
 void TorsoController::SetHeadRotation(const FRotator &rotation){
     headController.SetHeadRotation(rotation);
 }
+
+void TorsoController::SetHeadRotationLookAt(const FVector &lookAt){
+    headController.SetHeadRotationLookAt(lookAt);
+}

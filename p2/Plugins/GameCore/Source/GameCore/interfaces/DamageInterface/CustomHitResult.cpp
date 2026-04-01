@@ -1,19 +1,5 @@
 #include "CustomHitResult.h"
 
-void FCustomHitResult::SetupHitResult(int damageIn){
-    SetupHitResult(damageIn, false);
-}
-
-void FCustomHitResult::SetupHitResult(
-    int inDamage,
-    bool inSurpressed,
-    float deltaTimeIn
-){
-    damage = std::abs(inDamage);
-    surpressed = inSurpressed;
-    SetDefaultMessageIfNeeded();
-    SetDeltaTime(deltaTimeIn);
-}
 
 void FCustomHitResult::SetupHitResult(
     FVector &customHitPoint,
@@ -21,9 +7,10 @@ void FCustomHitResult::SetupHitResult(
     bool inSurpressed,
     float deltaTimeIn
 ){
-    SetupHitResult(inDamage, inSurpressed, deltaTimeIn);
+    FCustomHitResultBase::SetupHitResult(inDamage, inSurpressed, deltaTimeIn);
     hitPoint = customHitPoint;
     hitPointSetup = true;
+    SetDefaultMessageIfNeeded();
 }
 
 void FCustomHitResult::SetupHitResult(
@@ -40,7 +27,7 @@ void FCustomHitResult::SetupHitResult(
     bool inSurpressed,
     float deltaTimeIn
 ){
-    result = inResult;
+    actorResult = inResult.GetActor();
     SetupHitResult(inResult.ImpactPoint, inDamage, inSurpressed, deltaTimeIn);
 }
 
@@ -61,20 +48,6 @@ void FCustomHitResult::UpdateDirectionAndDistance(FVector &startingLocation){
     direction = direction.GetSafeNormal();
 }
 
-void FCustomHitResult::SetDeltaTime(float deltaTimeIn){
-    savedDeltaTime = deltaTimeIn;
-}
-
-float FCustomHitResult::DeltaTime() const {
-    return savedDeltaTime;
-}
-
-int FCustomHitResult::Damage() const {
-    return damage;
-}
-bool FCustomHitResult::IsSurpressed() const {
-    return surpressed;
-}
 
 FVector &FCustomHitResult::HitPoint(){
     return hitPoint;
@@ -82,10 +55,6 @@ FVector &FCustomHitResult::HitPoint(){
 
 const FVector &FCustomHitResult::Direction() const {
     return direction;
-}
-
-AActor *FCustomHitResult::GetActor() const {
-    return result.GetActor();
 }
 
 float FCustomHitResult::Distance() const {

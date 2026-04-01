@@ -6,6 +6,8 @@
 #include "p2/weapon/weapon.h"
 #include "p2/weapon/ammunitionEnum.h"
 
+
+
 /// @brief different behaiviour for throwable weapon items
 class P2_API InventorySlotThrowable : public InventorySlotBase {
 

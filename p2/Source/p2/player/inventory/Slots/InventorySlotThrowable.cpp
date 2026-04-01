@@ -1,9 +1,10 @@
 #include "InventorySlotThrowable.h"
-#include "p2/weapon/enumUtil/WeaponEnumAmmunitionConverter.h"
 
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 #include "p2/entityManager/EntityManager.h"
 #include "p2/_world/worldLevel.h"
+#include "p2/weapon/throwableItem/throwableWeaponBase.h"
 
 #include "DebugPlugin/DebugHelper.h"
 
@@ -38,9 +39,8 @@ bool InventorySlotThrowable::IsSameType(weaponEnum typeWeaponEnum){
 }
 
 bool InventorySlotThrowable::IsSameType(ammunitionEnum typeAmmunition){
-    WeaponEnumAmmunitionConverter converter;
     weaponEnum typeFound;
-    if (converter.Convert(typeAmmunition, typeFound)){
+    if (WeaponEnumAssetPackProxy::Convert(typeAmmunition, typeFound)){
         return IsSameType(typeFound);
     }
     return false;

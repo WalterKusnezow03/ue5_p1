@@ -21,14 +21,6 @@ PlayerInventory::~PlayerInventory()
     
 }
 
-void PlayerInventory::logMessage(){
-    FString message = FString::Printf(
-        TEXT("PlayerInventory weapons(%d) throwables(%d)"),
-        weaponInventory.SizeInventory(),
-        throwableInventory.SizeInventory()
-    );
-    DebugHelper::logMessage(message);
-}
 
 void PlayerInventory::Setup(UCameraComponent *cameraIn){
     weaponInventory.Setup(cameraIn);
@@ -46,9 +38,10 @@ int PlayerInventory::TotalSizeInventory(){
 
 /// @brief selects an index from the list 
 /// @param index 
-void PlayerInventory::selectIndex(int index){
+bool PlayerInventory::selectIndex(int index){
     //DebugHelper::logMessage("PlayerInventory::selectIndex ", index);
     //DebugHelper::showScreenMessage("PlayerInventory::selectIndex ", index, FColor::Red);
+    logMessage();
     if (weaponInventory.HasItems() || throwableInventory.HasItems())
     {
         int validated = ValidateIndex(index);
@@ -56,9 +49,10 @@ void PlayerInventory::selectIndex(int index){
             currentIndex = validated;
             //DebugHelper::logMessage("PlayerInventory::validate selectIndex ", currentIndex);
             UpdateShowWeapon();
+            return true;
         }
     }
-    logMessage();
+    return false;
 }
 
 int PlayerInventory::ValidateIndex(int index){
@@ -291,4 +285,34 @@ TArray<const InventorySlotBase *> PlayerInventory::GetAllInventorySlots(){
     throwableInventory.AppendAllSlots(outarray);
 
     return outarray;
+}
+
+
+
+
+
+/// ---- DEBUG ----
+
+void PlayerInventory::logMessage(){
+    DebugHelper::logMessage(SizeInventoryToString());
+}
+
+FString PlayerInventory::SizeInventoryToString(){
+    FString message = FString::Printf(
+        TEXT("PlayerInventory weapons(%d) throwables(%d)"),
+        weaponInventory.SizeInventory(),
+        throwableInventory.SizeInventory()
+    );
+    return message;
+}
+
+FString PlayerInventory::ToString(){
+    TArray<const InventorySlotBase *> slots = GetAllInventorySlots();
+    FString message = SizeInventoryToString();
+    for (int i = 0; i < slots.Num(); i++){
+        if(const InventorySlotBase *current = slots[i]){
+            current->AppendToString(message);
+        }
+    }
+    return message;
 }

@@ -91,8 +91,6 @@ public:
 protected:
     
 
-    virtual void CreateMaterial() override;
-
     //hit helpers
     FVector2D ToScreenUV(const FVector2D &other);
     FVector2D WidgetScreenPosition(

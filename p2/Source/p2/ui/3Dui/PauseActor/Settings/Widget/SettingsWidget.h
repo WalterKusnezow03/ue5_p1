@@ -27,6 +27,9 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetDebugOptionWidget();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetDebugWidgetUVOptionWidget();
     
 
 
@@ -45,6 +48,7 @@ public:
 
 
 protected:
+    bool dispatchClickToSettingsOption(const FVector2D &pos, UWidget *widget, bool &checkedResult);
 
 private:
     void InitAllOptions();
@@ -62,5 +66,5 @@ protected:
 
     //doesnt have to be overriden but can be.
     virtual TArray<IBaseUiInterface *> GetAllItemsForDispatch() override;
-    TArray<USettingsOptionWidget *> GetAllSettingsOptions();
+    
 };

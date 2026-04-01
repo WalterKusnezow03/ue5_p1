@@ -437,26 +437,18 @@ void AplayerScript::switchToIndex(int index){
     if(InteractionBlockedPauseAndAnimation()){
         return;
     }
+
+
+
+
     if(playerInventory.currentIndexNum() != index){
         //find index weapon in inventory, pickup
-        playerInventory.selectIndex(index);
-        
-        //even if null, it must be collected
-        //empty arms will be selected in this case.
-
-        Aweapon *targetedWeapon = playerInventory.getItemPointerAtIndex(index);
-        boneController.attachOrReplaceCarriedItem(targetedWeapon);
-        
-        
-        
-        
-        
-        /*if(targetedWeapon != nullptr){
-            //bone controller pickup
-            pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
-                targetedWeapon
-            );
-        }*/
+        if(playerInventory.selectIndex(index)){
+            //even if null, it must be collected
+            //empty arms will be selected in this case.
+            Aweapon *targetedWeapon = playerInventory.getItemPointerAtIndex(index);
+            boneController.attachOrReplaceCarriedItem(targetedWeapon);
+        }
         updateInventoryUi();
     }
 }
@@ -596,6 +588,9 @@ void AplayerScript::updateHealthUi(){
 }
 
 void AplayerScript::updateInventoryUi(){
+    //Debug
+
+    DebugHelper::logMessage(playerInventory.ToString());
     AworldLevel::playerStatusManager.updateInventory(playerInventory);
 }
 
@@ -608,8 +603,13 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
     //boneController.dropWeapon();
     boneController.dropCarriedItem();
 
+
+
+
     //clear inventory
+    DebugHelper::logMessage("AplayerScript::reloadLoadout Before Clear ", playerInventory.ToString());
     playerInventory.dropAllWeaponsToObjectPool();
+    DebugHelper::logMessage("AplayerScript::reloadLoadout After Clear ", playerInventory.ToString());
 
     //get all new
     std::vector<Aweapon *> newWeapons = loadout.spawnAllWeaponsAndApplyAttachments(GetWorld());
@@ -628,6 +628,7 @@ void AplayerScript::reloadLoadout(LoadoutHelper &loadout){
         Aweapon *firstWeapon = playerInventory.getItemPointer();
         pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(firstWeapon);
     }
+    DebugHelper::logMessage("AplayerScript::reloadLoadout After Fill ", playerInventory.ToString());
 }
 
 void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(

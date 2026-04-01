@@ -21,9 +21,8 @@
 
 #include "CoreMath/util/Raycaster.h"
 
-#include "p2/weapon/enumUtil/WeaponAttachmentValidator.h"
-#include "p2/weapon/weaponProperties/WeaponPropertiesMap.h"
-#include "p2/weapon/weaponProperties/WeaponProperties.h"
+
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 
 // Sets default values
@@ -378,7 +377,7 @@ FCustomHitResult Aweapon::MakeHitResult(
 	FVector &start
 ){
 	FVector hitpoint = HitResult.ImpactPoint;
-	float damage = WeaponPropertiesMap::damageFor(Type, start, hitpoint);
+	float damage = WeaponEnumAssetPackProxy::damageFor(Type, start, hitpoint);
 
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	FCustomHitResult hitResultPackage;
@@ -497,7 +496,7 @@ bool Aweapon::canReload(FString &reason){
 /**
  * reload the weapon with an amount of ammunition. negative numbers are ignored
  */
-#include "p2/weapon/enumUtil/WeaponEnumStringConverter.h"
+
 void Aweapon::reload(int amount){
 	if(amount > 0){
 		isEmptyReload = (bulletsInMag <= 0);
@@ -535,17 +534,15 @@ void Aweapon::reload(int amount){
 }
 
 FString Aweapon::WeaponTypeToString(){
-	return WeaponEnumStringConverter::toString(weaponType());
+	return WeaponEnumAssetPackProxy::toString(weaponType());
 }
-
 
 
 // --------- weapon properties usuage -----------
 
 
 int Aweapon::getMagSize(){
-	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-	return ref.getMagSize();
+	return WeaponEnumAssetPackProxy::getMagSize(weaponType());
 }
 
 int Aweapon::getBulletsInMag(){
@@ -561,36 +558,49 @@ float Aweapon::recoilValue(){
 	if(!recoilCopied){
 		//must be a negative value to properly flip up the camera!
 		recoilCopied = true;
-		const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-		return ref.recoilValue();
+		
+		return WeaponEnumAssetPackProxy::recoilValue(weaponType());
+		
+		//const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+		//return ref.recoilValue();
 	}
 	return 0.0f;
 
 }
 
 float Aweapon::cooldownTime(){
-	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-	return ref.CooldownTimeBasedOnRpm();
+	//const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	//return ref.CooldownTimeBasedOnRpm();
+
+	return WeaponEnumAssetPackProxy::CooldownTimeBasedOnRpm(weaponType());
 }
 
 float Aweapon::reloadTime(){
-	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-	return ref.reloadTime();
+	//const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	//return ref.reloadTime();
+
+	return WeaponEnumAssetPackProxy::reloadTime(weaponType());
 }
 
 /// @brief used for player inventory reloading
 /// @return type
 ammunitionEnum Aweapon::getAmmunitionType(){
-	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-	return ref.getAmmunitionType();
+	//const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	//return ref.getAmmunitionType();
+
+	return WeaponEnumAssetPackProxy::getAmmunitionType(weaponType());
 }
 
 /// @brief will say if single fire is on or default always on
 /// @return true false
 bool Aweapon::singleFireMode(){
 	//given single fire mode
-	const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
-	if(ref.isSingleFireOnly()){
+	//const WeaponProperties &ref = WeaponPropertiesMap::findProperty(weaponType());
+	//if(ref.isSingleFireOnly()){
+	//	return true;
+	//}
+
+	if(WeaponEnumAssetPackProxy::isSingleFireOnly(weaponType())){
 		return true;
 	}
 
@@ -899,13 +909,13 @@ void Aweapon::loadAndSaveAttachment(weaponAttachmentEnum EattachmentType){
 			if(actor != nullptr){
 				
 				attachNewItem(actor, EattachmentType);
-				if(WeaponAttachmentValidator::isASightAttachment(EattachmentType)){
+				if(WeaponEnumAssetPackProxy::isASightAttachment(EattachmentType)){
 					sightMap[EattachmentType] = actor; //save pointer to map for enable disable
 				}
-				if(WeaponAttachmentValidator::isAMuzzleAttachment(EattachmentType)){
+				if(WeaponEnumAssetPackProxy::isAMuzzleAttachment(EattachmentType)){
 					muzzleMap[EattachmentType] = actor;
 				}
-				if(WeaponAttachmentValidator::isAGripAttachment(EattachmentType)){
+				if(WeaponEnumAssetPackProxy::isAGripAttachment(EattachmentType)){
 					gripMap[EattachmentType] = actor;
 				}
 				
@@ -1054,8 +1064,8 @@ void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
 ///@brief returns the skeletal mesh component pointer for an given attachment 
 USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
 	weaponAttachmentEnum EattachmentType
-){	
-	if(WeaponAttachmentValidator::isASightAttachment(EattachmentType)){
+){
+	if(WeaponEnumAssetPackProxy::isASightAttachment(EattachmentType)){
 		//return explicit attachment pointer if valid.
 		if(sightAttachmentSkeletonPointer){
 			return sightAttachmentSkeletonPointer;
@@ -1063,10 +1073,10 @@ USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
 		//default attachment to 0,0,0 of weapon.
 		return gehauseSkeletonPointer;
 	}
-	if(WeaponAttachmentValidator::isAMuzzleAttachment(EattachmentType)){
+	if(WeaponEnumAssetPackProxy::isAMuzzleAttachment(EattachmentType)){
 		return muzzleAttachmentSkelletonPointer;
 	}
-	if(WeaponAttachmentValidator::isAGripAttachment(EattachmentType)){
+	if(WeaponEnumAssetPackProxy::isAGripAttachment(EattachmentType)){
 		return gripAttachmentSkelletonPointer;
 	}
 	return gehauseSkeletonPointer;

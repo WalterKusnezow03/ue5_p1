@@ -30,9 +30,8 @@ void UAnyMeshWidgetComponentBase::TickComponent(
 ){
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//new
+	//must happen here
 	CreateMaterialFromPath();
-	//new
 
 
 	TickWidgetIfPossible(DeltaTime);
@@ -236,7 +235,7 @@ void UAnyMeshWidgetComponentBase::CreateMaterial(){
 UBodySetup* UAnyMeshWidgetComponentBase::GetBodySetup(){
 	if(MeshDataWasModifiedRecreatePhysicsState){
 		MeshDataWasModifiedRecreatePhysicsState = false;
-		DebugHelper::logMessage("UAnyMeshWidgetComponentBase::GetBodySetup After recreate physics");
+		//DebugHelper::logMessage("UAnyMeshWidgetComponentBase::GetBodySetup After recreate physics");
 	}
 
 	//custom override:
@@ -321,7 +320,7 @@ void UAnyMeshWidgetComponentBase::TickWidgetIfPossible(float deltatime){
 
 
 
-//// ---- custom material ----
+//// ---- custom material , lit materials ----
 
 void UAnyMeshWidgetComponentBase::CreateMaterialFromPath(){
 	if(bNeedsUpdateMaterial){
@@ -332,8 +331,10 @@ void UAnyMeshWidgetComponentBase::CreateMaterialFromPath(){
 		}
 		if(UMaterialInterface* BaseMat = LoadObject<UMaterialInterface>(nullptr, *MaterialPath)){
 
+			//ACHTUNG!:
 			//material instance wird
 			//intern erstellt und slate params zugewiesen!
+			//nicht hier machen!!
 			SetMaterial(0, BaseMat);
 
 			bNeedsUpdateMaterial = false;

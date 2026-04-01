@@ -42,7 +42,8 @@ bool USettingsWidget::dispatchClick(const FVector2D &pos){
             parentActor->Notify(EPauseWidgetEvent::ECloseSettingsWidget);
             return true;
         }
-        if(UWidget *widget = GetDebugOptionWidget()){
+        //debug tools enable / disable
+        /*if(UWidget *widget = GetDebugOptionWidget()){
             if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
                 if(casted->dispatchClick(pos)){
                     bool enabled = casted->IsChecked();
@@ -52,6 +53,41 @@ bool USettingsWidget::dispatchClick(const FVector2D &pos){
                     ESettingsWidgetEvent::EDisbaleDebugTools;
                     parentActor->Notify(event);
                 }
+            }
+        }*/
+
+        bool checkedDebugOption = false;
+        if(dispatchClickToSettingsOption(pos, GetDebugOptionWidget(), checkedDebugOption)){
+            ESettingsWidgetEvent event = checkedDebugOption ? 
+            ESettingsWidgetEvent::EEnableDebugTools : 
+            ESettingsWidgetEvent::EDisbaleDebugTools;
+            parentActor->Notify(event);
+        }
+
+        bool checkedUVsOnWidgetsDebug = false;
+        if(dispatchClickToSettingsOption(pos, GetDebugWidgetUVOptionWidget(), checkedUVsOnWidgetsDebug)){
+            ESettingsWidgetEvent event = checkedUVsOnWidgetsDebug ? 
+            ESettingsWidgetEvent::EEnableDebugAnyMeshWidgetUVTools : 
+            ESettingsWidgetEvent::EDisbaleDebugAnyMeshWidgetUVTools;
+            parentActor->Notify(event);
+        }
+
+
+
+
+
+    }
+    return false;
+}
+
+///dispatches click to a usettings option widget and returns the checked state, if dispatch was
+/// sucessfull.
+bool USettingsWidget::dispatchClickToSettingsOption(const FVector2D &pos, UWidget *widget, bool &checkedResult){
+    if(widget){
+        if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
+            if(casted->dispatchClick(pos)){
+                checkedResult = casted->IsChecked();
+                return true;
             }
         }
     }
@@ -72,10 +108,17 @@ void USettingsWidget::Init(){
 }
 
 void USettingsWidget::InitAllOptions(){
-    TArray<USettingsOptionWidget *> items = GetAllSettingsOptions();
-    for (int i = 0; i < items.Num(); i++){
-        if(USettingsOptionWidget *current = items[i]){
-            current->Init();
+
+    if(UWidget *widget = GetDebugOptionWidget()){
+        if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
+            casted->Init();
+            casted->SetChecked(DebugHelper::DebugToolsEnabled);
+        }
+    }
+    if(UWidget *widget = GetDebugWidgetUVOptionWidget()){
+        if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
+            casted->Init();
+            casted->SetChecked(ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap());
         }
     }
 }
@@ -94,13 +137,8 @@ TArray<IBaseUiInterface *> USettingsWidget::GetAllItemsForDispatch(){
             array.Add(casted);
         }
     }
-    return array;
-}
-
-TArray<USettingsOptionWidget *> USettingsWidget::GetAllSettingsOptions(){
-    TArray<USettingsOptionWidget *> array;
-    if(UWidget *widget = GetDebugOptionWidget()){
-        if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
+    if(UWidget *widget = GetDebugWidgetUVOptionWidget()){
+        if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(widget)){
             array.Add(casted);
         }
     }

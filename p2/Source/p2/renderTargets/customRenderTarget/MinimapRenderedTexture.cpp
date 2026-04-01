@@ -1,6 +1,6 @@
 #include "MinimapRenderedTexture.h"
-
-
+#include "Engine/Canvas.h"
+#include "AssetPlugin/gamestart/assetManager.h"
 
 
 UMinimapRenderedTexture* UMinimapRenderedTexture::ConstructMinimapTexture(AActor *owner){

@@ -29,6 +29,8 @@ protected:
     void ShowIndex(int indexIn);
     void SetAsHighlightedIndex(bool active);
 
+    void LogIndex(weaponEnum payload);
+
     UPROPERTY(EditAnywhere, Category = "_WidgetSetting")
     TMap<weaponEnum, int32> TranslationMap;
 

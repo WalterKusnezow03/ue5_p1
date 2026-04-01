@@ -20,6 +20,7 @@ private:
     void loadWeapons();
     void loadWeaponAttachments();
     void loadWeaponAnimations();
+    void loadWeaponDataAssetPack();
 
     void loadThrowables();
     void loadVFX();

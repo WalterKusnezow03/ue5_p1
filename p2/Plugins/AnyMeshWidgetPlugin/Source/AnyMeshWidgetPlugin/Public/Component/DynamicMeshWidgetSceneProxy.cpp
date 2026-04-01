@@ -228,6 +228,7 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
     FColor color1 = colorWhite;
     FColor color2 = colorWhite;
     const TArray<FColor> &colorsOptional = internalMeshData.getVertexColorsRefConst();
+    bool colorsEnabledByGlobalSetting = UVColorsEnabled();
 
     for (int32 t = 2; t < triangles.Num(); t += 3){
         const int32 t0 = triangles[t - 2]; //vertex buffer indices
@@ -253,7 +254,7 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
             
             //colors are optional
             
-            if(IndexInBound(colorsOptional, t0, t1, t2)){
+            if(colorsEnabledByGlobalSetting && IndexInBound(colorsOptional, t0, t1, t2)){
                 color0 = colorsOptional[t0];
                 color1 = colorsOptional[t1];
                 color2 = colorsOptional[t2];
@@ -288,6 +289,16 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
         
 
 }
+
+#include "AnyMeshWidgetPlugin/Public/ComponentSettings/SharedAnyMeshWidgetComponentSettings.h"
+bool FDynamicMeshWidgetSceneProxy::UVColorsEnabled() const {
+    return ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap();
+}
+
+
+
+
+
 
 void FDynamicMeshWidgetSceneProxy::AddTriangle(
     FDynamicMeshBuilder &MeshBuilder,

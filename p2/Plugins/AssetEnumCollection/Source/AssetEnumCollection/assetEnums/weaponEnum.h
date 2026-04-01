@@ -17,4 +17,5 @@ enum class weaponEnum
 	grenade,
 	smokeGrenade,
 	rpgLauncher,
+	baseballBat,
 };

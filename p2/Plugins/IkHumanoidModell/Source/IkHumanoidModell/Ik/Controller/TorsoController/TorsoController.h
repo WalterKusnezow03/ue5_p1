@@ -47,7 +47,8 @@ public:
 
 
     void SetHeadRotation(const FRotator &rotation);
-    
+    void SetHeadRotationLookAt(const FVector &lookAt);
+
 private:
     //connect spine to layered bones.
     TArray<Joint *> GetTopJointsOfLayeredArms();

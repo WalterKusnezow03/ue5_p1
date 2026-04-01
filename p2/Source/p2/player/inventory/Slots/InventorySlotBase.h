@@ -33,6 +33,8 @@ public:
     //may be overriden
     virtual bool GetWeaponType(weaponEnum &typeOut) const;
 
+    void AppendToString(FString &outMessage) const;
+
 protected:
 
     Aweapon *weaponPointer = nullptr;

@@ -494,3 +494,7 @@ bool HumanoidController::IsPerformingThrowItem(){
 
 
 
+//not tested yet!
+void HumanoidController::SetHeadRotationLookAt(const FVector &lookAt){
+    torsoController.SetHeadRotationLookAt(lookAt);
+}

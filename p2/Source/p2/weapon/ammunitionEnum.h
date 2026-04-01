@@ -16,4 +16,5 @@ enum class ammunitionEnum
     c4_ammunition,
     molotov_ammunition,
     smokegrenade_ammunition,
+    baseBallBat_ammunition,
 };

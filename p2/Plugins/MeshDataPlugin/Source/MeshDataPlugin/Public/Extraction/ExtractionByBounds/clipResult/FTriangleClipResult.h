@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 
+#include "MeshDataPlugin/Public/Extraction/ExtractionByBounds/clipResult/TriangleJacobianColorizer.h"
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
 
 /// @brief clips a triangle against XY bounds
@@ -70,6 +71,7 @@ private:
 
     TArray<FVector> generatedTriangleShapedVertexBuffer;
     TArray<FVector2D> generatedTriangleShapedUVBuffer;
+    TArray<FColor> generatedTriangleShapedColorBuffer;
     void MakeUVBuffer();
 
     TArray<FPlane> GenerateBoundingPlanes();
@@ -92,14 +94,7 @@ private:
 
 
     //analytical Jacobian distortion metric
-
-    FColor DistortionColorFor(
-        const FVector &vertex,
-        const FVector &v1,
-        const FVector &v2,
-        const FVector2D &uvVertex,
-        const FVector2D &uv1,
-        const FVector2D &uv2,
-        const FColor distortColor
-    );
+    TriangleJacobianColorizer jacobianAnalyticTool;
+    bool VertexAndUVBufferValid();
+    void MakeColorBuffer();
 };

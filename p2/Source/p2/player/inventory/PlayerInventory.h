@@ -43,7 +43,7 @@ public:
 
 	/// @brief swicthes to an index, hides the current weapon
 	/// @param index 
-	void selectIndex(int index);
+	bool selectIndex(int index);
 
 	void dropAllWeaponsToObjectPool();
 
@@ -93,4 +93,9 @@ private:
 	int IndexInThrowableInventory(int index);
 
 	bool alreadyInInventory(Aweapon *weaponIn, int &foundindex);
+
+public:
+	FString SizeInventoryToString();
+	FString ToString();
+
 };

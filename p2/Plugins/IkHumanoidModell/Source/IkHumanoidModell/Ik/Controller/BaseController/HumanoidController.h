@@ -72,6 +72,9 @@ public:
     //throwing a item (by player for now.)
     void NotifyThrowItem(IIkCarryInterface *nextItem);
 
+    //look at for bot?
+    void SetHeadRotationLookAt(const FVector &lookAt);
+
 public:
     //enable collapse physics
     void SetStateCollapse(bool flag);

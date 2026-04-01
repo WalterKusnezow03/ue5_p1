@@ -2,7 +2,8 @@
 #include "p2/_world/PlayerStatManager/Inventory/PlayerStatusInventorySlot.h"
 #include "customuipluginbase/baseInterface/WidgetHelper.h"
 #include "customuipluginbase/Dispatcher/Filter/WidgetFilter.h"
-
+#include "DebugPlugin/DebugHelper.h"
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 
 void UInventorySlotWidget::SetVisible(bool flag){
     WidgetHelper::SetVisible(this, flag);
@@ -32,9 +33,22 @@ int UInventorySlotWidget::ConvertToIndex(weaponEnum payload){
 }
 
 void UInventorySlotWidget::ShowIndex(weaponEnum payload){
-    int index = ConvertToIndex(payload);
-    ShowIndex(index);
+    LogIndex(payload);
+    ShowIndex(ConvertToIndex(payload));
 }
+
+void UInventorySlotWidget::LogIndex(weaponEnum payload){
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("UInventorySlotWidget::Index %d %s"),
+            ConvertToIndex(payload),
+            *WeaponEnumAssetPackProxy::toString(payload)
+        )
+    );
+}
+
+
+
 
 void UInventorySlotWidget::ShowIndex(int indexIn){
     if(currentIndex != indexIn){

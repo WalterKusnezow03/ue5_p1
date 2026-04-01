@@ -35,10 +35,11 @@ protected:
     
     void SpawnWidgetActorOnBeginPlay();
 
-
+    //it might be the case that no weapon was setup at all at this table.
+    bool bHasAWeaponForSetup = false;
 
     weaponSetupHelper setupHelper;
-    Aweapon *weaponSpawned = nullptr;
+    Aweapon *weaponSpawned = nullptr; //preview weapon
 
     AWeaponTableWidgetActor *tableWidgetActor = nullptr;
 
@@ -50,6 +51,10 @@ protected:
     void FindSocketOnBeginPlay();
     void ApplyWeaponLocation();
     void DropAndRespawnWeapon();
+
+    void DropCurrentWeaponFromTable();
+    void SpawnWeaponFromSetupHelper();
+    void UpdateHasWeaponFlag();
 
     //not known if has to be here 
     //Aweapon *attachedWeaponForPreview = nullptr;
