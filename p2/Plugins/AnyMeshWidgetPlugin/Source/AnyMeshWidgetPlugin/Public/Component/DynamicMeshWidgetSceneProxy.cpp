@@ -258,9 +258,10 @@ void FDynamicMeshWidgetSceneProxy::BuildCustomMeshData(
                 color0 = colorsOptional[t0];
                 color1 = colorsOptional[t1];
                 color2 = colorsOptional[t2];
-            }
-            
 
+                //ok(?)
+                //DebugHelper::logMessage("FDynamicMeshWidgetSceneProxy::Colors Copied");
+            }
 
             AddTriangle(
                 MeshBuilder,

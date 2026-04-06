@@ -18,6 +18,11 @@ void AExplosiveDamagableBase::SetupExplosiveHelperOnBeginPlay(){
 }
 
 
+void AExplosiveDamagableBase::ResetFlagsAndProperties(){
+    Super::ResetFlagsAndProperties();
+    isDetonated = false;
+}
+
 //to be overriden if needed!
 void AExplosiveDamagableBase::Detonate(){
     if(isDetonated){

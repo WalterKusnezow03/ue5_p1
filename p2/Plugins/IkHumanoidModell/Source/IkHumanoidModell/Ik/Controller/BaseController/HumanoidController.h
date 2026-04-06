@@ -75,6 +75,9 @@ public:
     //look at for bot?
     void SetHeadRotationLookAt(const FVector &lookAt);
 
+    //foot positions for p2 game interaction
+    void AppendFootPositions(TArray<FVector> &outPositions);
+
 public:
     //enable collapse physics
     void SetStateCollapse(bool flag);

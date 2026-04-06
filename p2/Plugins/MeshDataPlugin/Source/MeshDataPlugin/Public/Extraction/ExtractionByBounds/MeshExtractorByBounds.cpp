@@ -67,6 +67,8 @@ void MeshExtractorByBounds::ExtractSingleMeshDataByBounds(
 
     extractedNotClipped.transformAllVertecies(m);
     meshData = extractedNotClipped; //override
+
+    meshData.RebuildBounds();
 }
 void MeshExtractorByBounds::RotateOffset(
     UStaticMeshComponent *component,

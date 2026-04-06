@@ -83,12 +83,21 @@ public:
 	static void showLine(UWorld *world, TArray<FVector> &vec, FColor color);
 
 
-
 	//Fvector 2D
 	static void showLineBetween(UWorld *world, FVector2D Start, FVector2D End);
 	static void showLineBetween(UWorld *world, FVector2D Start, FVector2D End, int zOffset);
 	static void showLineBetween(UWorld *world, FVector2D Start, FVector2D End, int zOffset, FColor color);
 
+	static void showBox(UWorld *world, FVector &origin, FVector &extent, FColor color, float time);
+	static void showQuad(
+		UWorld *world,
+		const FVector &v0, 
+		const FVector &v1, 
+		const FVector &v2, 
+		const FVector &v3,
+		FColor color,
+		float time
+	);
 private:
 	static FString connect(int a, int b);
 

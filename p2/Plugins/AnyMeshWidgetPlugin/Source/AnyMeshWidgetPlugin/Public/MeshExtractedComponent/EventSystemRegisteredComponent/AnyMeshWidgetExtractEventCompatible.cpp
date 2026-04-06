@@ -9,7 +9,7 @@ void UAnyMeshWidgetExtractEventCompatible::BeginPlay(){
 
 void UAnyMeshWidgetExtractEventCompatible::RegisterWidgetToEventDispatcherOnBeginPlay(){
     WidgetIdKey key = MakeKey();
-    AEventDispatcher::StaticRegister(key, TGetWidget<UEventWidgetBase>(), GetWorld());
+    AEventDispatcher::StaticRegister(key, this, TGetWidget<UEventWidgetBase>(), GetWorld());
 }
 
 void UAnyMeshWidgetExtractEventCompatible::EndPlay(const EEndPlayReason::Type EndPlayReason){

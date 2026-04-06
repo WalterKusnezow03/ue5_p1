@@ -190,7 +190,7 @@ protected:
 	FIKCarryInterfaceAxisConstraint axisConstraintNone;
 
 	MMatrix internalTransform;
-
+	MMatrix internalRotationMatrixInverse;
 
 	//flag for ticking running animation or not
 	bool hasMovedFlag = false;

@@ -55,14 +55,6 @@ void AC4Item::SpawnItemAtLocation(FVector &location, FVector &normal){
     }
 }
 
-void AC4Item::SetLocationAndLookDir(FVector &location, FVector &normal){
-    if(!isPickedUp()){
-        SetActorLocation(location);
-        FRotator r = normal.Rotation(); //x is forward, but wanted z, -90
-        r.Pitch -= 90.0f;
-        SetActorRotation(r);
-    }
-}
 
 
 
@@ -226,10 +218,6 @@ void AC4Item::Detonate(){
     DetonateChildren(); //detonate children (safety)
 }
 
-void AC4Item::ResetFlagsAndProperties(){
-    Super::ResetFlagsAndProperties();
-    isDetonated = false;
-}
 
 
 void AC4Item::takedamage(FCustomHitResult &result){

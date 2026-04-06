@@ -1,20 +1,25 @@
 #include "TripWire.h"
 #include "p2/entityManager/AlertManager.h"
+#include "DebugPlugin/DebugHelper.h"
 
-
-ATripWire::ATripWire() : Super(){
-    rootScene = CreateDefaultSubobject<USceneComponent>(TEXT("USceneRoot"));
-    RootComponent = rootScene;
-
-    // Create the ProceduralMeshComponent
-    Mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
-    Mesh->SetupAttachment(RootComponent);
-}
 
 void ATripWire::BeginPlay(){
     Super::BeginPlay();
+    FindPCMComponent();
+    FindWireStartingComponent();
     SetupWire();
 }
+
+
+void ATripWire::FindPCMComponent(){
+    TTryAssignByNameContains(PCMSceneComponentName, Mesh);
+}
+
+
+void ATripWire::FindWireStartingComponent(){
+    TTryAssignByNameContains(wireStartSceneComponentName, wireStart);
+}
+
 
 
 void ATripWire::Tick(float deltatime){
@@ -24,36 +29,56 @@ void ATripWire::Tick(float deltatime){
 }
 
 void ATripWire::TickUpdateBound(){
+    if(isDetonated){
+        return;
+    }
 
     FVector ownLocation = GetActorLocation();
     TArray<FVector> positions;
 
-    AlertManager::EntitiesInRadius(
+    AlertManager::EntitiesInRadiusFootPositions(
 		ownLocation,
 		TriggerDistance,
 		positions
 	);
-    if(AnyIntersectWithWire(positions)){
+    if(AnyIntersectWithWireWorld(positions)){
         Detonate();
     }
 }
 
-bool ATripWire::AnyIntersectWithWire(TArray<FVector> &positions){
+bool ATripWire::AnyIntersectWithWireWorld(TArray<FVector> &positions){
     for (int i = 0; i < positions.Num(); i++){
-        if(AnyIntersectWithWire(positions[i])){
+        if(AnyIntersectWithWireWorld(positions[i])){
             return true;
         }
     }
     return false;
 }
 
+bool ATripWire::AnyIntersectWithWireWorld(FVector &position){
+    FVector Origin;
+    FVector BoxExtent;
+
+    GetActorBounds(
+        false,      //bOnlyCollidingComponents
+        Origin,     //center of the bounds
+        BoxExtent   //half-size of the bounds
+    );
+    BoxExtent *= 1.5f;
+
+    DebugHelper::showBox(GetWorld(), Origin, BoxExtent, FColor::Red, 0.1f);
+
+    FBox Box = FBox::BuildAABB(Origin, BoxExtent);
+    return Box.IsInside(position); //world
+}
+
+
 bool ATripWire::AnyIntersectWithWire(FVector &position){
     //TO BE IMPLEMENTED
-    
-
-
-
-
+    MeshData &meshdata = TripWireMeshData();
+    if(meshdata.isInsideBoundingbox(position)){
+        return true;
+    }
     return false;
 }
 
@@ -94,11 +119,21 @@ void ATripWire::generateVertexBuffer(TArray<FVector> &vertecies){
     |   |
     0 <-3
     */
-    
-    vertecies.Add(FVector(0, -5, 0));
-    vertecies.Add(FVector(100, -5, 0));
-    vertecies.Add(FVector(100, 5, 0));
-    vertecies.Add(FVector(0, 5, 0));
+    FVector start = WireStartLocation();
+
+    vertecies.Add(start + FVector(0, -5, 0)); //start
+    vertecies.Add(start + FVector(100, -5, 0)); //end
+    vertecies.Add(start + FVector(100, 5, 0)); //end
+    vertecies.Add(start + FVector(0, 5, 0)); //start
+}
+
+FVector ATripWire::WireStartLocation(){
+    FVector start(0, 0, 0);
+    if (wireStart)
+    {
+        start = wireStart->GetRelativeLocation();
+    }
+    return start;
 }
 
 void ATripWire::UpdateWireLocations(){
@@ -110,6 +145,18 @@ void ATripWire::UpdateWireLocations(){
         wireMesh.refreshMeshRaycast(meshMaterial());
     }
 }
+
+void ATripWire::OnPickup(){
+    Super::OnPickup();
+    ShowWire(false);
+}
+
+void ATripWire::ShowWire(bool flag){
+    if(Mesh){
+        Mesh->SetHiddenInGame(!flag);
+    }
+}
+
 
 void ATripWire::UpdateWireLocations(TArray<FVector> &rawMeshData){
     //erste 4 sind lower, die anderen upper.
@@ -135,11 +182,12 @@ void ATripWire::UpdateWireLocationStartingQuad(
     FVector &v2,
     FVector &v3
 ){
+    FVector wireStartCopy = WireStartLocation();
     float halfWidth = std::abs(widthWire / 2.0f);
-    v0 = FVector(0, -halfWidth, -halfWidth);
-    v1 = FVector(0, -halfWidth, halfWidth);
-    v2 = FVector(0, halfWidth, halfWidth);
-    v3 = FVector(0, halfWidth, -halfWidth);
+    v0 = FVector(0, -halfWidth, -halfWidth) + wireStartCopy;
+    v1 = FVector(0, -halfWidth, halfWidth) + wireStartCopy;
+    v2 = FVector(0, halfWidth, halfWidth) + wireStartCopy;
+    v3 = FVector(0, halfWidth, -halfWidth) + wireStartCopy;
 }
 
 void ATripWire::UpdateWireLocationEndingQuad(
@@ -153,6 +201,15 @@ void ATripWire::UpdateWireLocationEndingQuad(
 
     //move quad
     FVector endingLocationCenter;
+    if(RaycastForwardAndDownLocal(endingLocationCenter)){
+        v0 += endingLocationCenter;
+        v1 += endingLocationCenter;
+        v2 += endingLocationCenter;
+        v3 += endingLocationCenter;
+        return;
+    }
+
+
     if(RaycastForwardLocal(endingLocationCenter)){
         v0 += endingLocationCenter;
         v1 += endingLocationCenter;
@@ -161,13 +218,6 @@ void ATripWire::UpdateWireLocationEndingQuad(
         return;
     }
 
-    if(RaycastDownLocal(endingLocationCenter)){
-        v0 += endingLocationCenter;
-        v1 += endingLocationCenter;
-        v2 += endingLocationCenter;
-        v3 += endingLocationCenter;
-        return;
-    }
 }
 
 
@@ -181,9 +231,23 @@ materialEnum ATripWire::meshMaterial(){
 }
 
 
+bool ATripWire::RaycastForwardAndDownLocal(FVector &outposition){
+    
+    //update needed here
+    FVector forwardUp(lengthWire, 0, 50);
+    FVector forwardDown(lengthWire, 0, -50);
+
+    //rotate / transform into world space
+    FTransform TR = GetActorTransform();
+    FVector start = TR.TransformPosition(forwardUp);
+    FVector end = TR.TransformPosition(forwardDown); //transformed position is end.
+
+    return PerformRaycastLocalHit(start, end, outposition);
+}
+
 bool ATripWire::RaycastForwardLocal(FVector &outposition){
     FVector start = GetActorLocation();
-    FVector forward(100, 0, 0);
+    FVector forward(lengthWire, 0, 0);
     
     //rotate
     FTransform TR = GetActorTransform();
@@ -192,16 +256,6 @@ bool ATripWire::RaycastForwardLocal(FVector &outposition){
     return PerformRaycastLocalHit(start, end, outposition);
 }
 
-bool ATripWire::RaycastDownLocal(FVector &outposition){
-    FVector start(100, 0, 0);
-
-    //transform to world space
-    FTransform TR = GetActorTransform();
-    start = TR.TransformPosition(start);
-
-    FVector down = start + FVector(0, 0, -100);
-    return PerformRaycastLocalHit(start, down, outposition);
-}
 
 bool ATripWire::PerformRaycastLocalHit(FVector &start, FVector &end, FVector &outposition){
     if(PerformRaycast(start, end, outposition)){
@@ -233,4 +287,42 @@ bool ATripWire::PerformRaycast(FVector &start, FVector &end, FVector &outpositio
         return true;
     }
     return false;
+}
+
+
+
+USceneComponent *ATripWire::FindHandCarriedScene(EArmType type){
+    if(type == EArmType::ELeft){
+        return nullptr;
+    }
+    if(type == EArmType::ERight){
+        return rootScene;
+    }
+    return nullptr;
+}
+
+
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
+void ATripWire::SpawnItemAtLocation(FVector &location, FVector &normal){
+    //spawn c4 here at location
+    //add to children!
+    if(EntityManager *e = AworldLevel::entityManager()){
+        Aweapon *weapon = e->spawnAweapon(GetWorld(), weaponEnum::tripWire);
+        if(weapon != nullptr){
+            if(ATripWire *casted = Cast<ATripWire>(weapon)){
+                casted->Type = weaponEnum::tripWire;
+                casted->ResetFlagsAndProperties();
+                casted->drop(); // remove from any owner.
+                
+                casted->setTeam(teamEnum::neutralTeam);    
+                casted->showWeapon(true);
+
+                casted->SetLocationAndLookDir(location, normal);
+
+                casted->ShowWire(true);
+                casted->UpdateWireLocations();
+            }
+        }   
+    }
 }

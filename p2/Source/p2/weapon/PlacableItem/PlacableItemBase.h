@@ -31,6 +31,8 @@ public:
 
     //virtual FIKCarryInterfaceAxisConstraint &getAxisConstraint() override;
 
+    void SetLocationAndLookDir(FVector &location, FVector &normal);
+
 protected:
     //scene to change location and rotation from UpdateActorTransformCarriedByHand
     virtual USceneComponent *FindHandCarriedScene(EArmType type){

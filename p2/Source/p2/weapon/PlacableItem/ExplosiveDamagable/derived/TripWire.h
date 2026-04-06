@@ -14,22 +14,41 @@ class P2_API ATripWire : public AExplosiveDamagableBase {
     GENERATED_BODY()
 
 public:
-    ATripWire();
+    
+
+    void ShowWire(bool flag);
 
 protected:
+    USceneComponent *FindHandCarriedScene(EArmType type) override;
+
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
     //should detonate by line intersect test instead!
     float TriggerDistance = 100.0f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="_tripWireSetup")
+    FString wireStartSceneComponentName = "wireStartSceneComponent";
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="_tripWireSetup")
+    FString PCMSceneComponentName = "PCMSceneComponent";
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="_tripWireSetup")
+    float widthWire = 2.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="_tripWireSetup")
+    float lengthWire = 300.0f;
+
+    
+    virtual void OnPickup() override;
 
 private:
+    void FindPCMComponent();
+    void FindWireStartingComponent();
     void TickUpdateBound();
 
-
-
-    bool AnyIntersectWithWire(TArray<FVector> &positions);
+    bool AnyIntersectWithWireWorld(TArray<FVector> &positions);
+    bool AnyIntersectWithWireWorld(FVector &position);
     bool AnyIntersectWithWire(FVector &position);
 
     ProceduralMeshComponentPair wireMesh;
@@ -40,8 +59,12 @@ private:
     UPROPERTY()
     UProceduralMeshComponent *Mesh = nullptr;
 
+    UPROPERTY()
+    USceneComponent *wireStart = nullptr;
+
     materialEnum meshMaterial();
-    float widthWire = 10;
+
+    FVector WireStartLocation();
 
     void SetupWire();
     void generateVertexBuffer(TArray<FVector> &vertecies);
@@ -64,7 +87,9 @@ private:
     MeshData &TripWireMeshData();
 
     bool RaycastForwardLocal(FVector &outpostion);
-    bool RaycastDownLocal(FVector &outpostion);
+    bool RaycastForwardAndDownLocal(FVector &outpostion);
     bool PerformRaycast(FVector &start, FVector &end, FVector &outposition);
     bool PerformRaycastLocalHit(FVector &start, FVector &end, FVector &outposition);
+
+    virtual void SpawnItemAtLocation(FVector &location, FVector &normal) override;
 };

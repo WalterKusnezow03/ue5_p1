@@ -517,6 +517,64 @@ void MeshData::appendColors(FColor &a, FColor &b, FColor &c){
     VertexColors[i0 + 2] = c;
 }
 
+
+void MeshData::appendVerteciesAndUvsAndColorsEfficent(
+    FVector &a,
+    FVector &b,
+    FVector &c,
+    FVector2D &uvA,
+    FVector2D &uvB,
+    FVector2D &uvC,
+    FColor &colorA,
+    FColor &colorB,
+    FColor &colorC,
+    float distEpsilon
+){
+    int indexA = findClosestIndexTo(a);
+    int indexB = findClosestIndexTo(b);
+    int indexC = findClosestIndexTo(c);
+
+    //add if not found correctly
+    if(!isCloseSame(a, indexA, distEpsilon)){
+        vertecies.Add(a);
+        UV0.Add(uvA);
+        VertexColors.Add(colorA);
+        indexA = vertecies.Num() - 1; // 0
+    }
+    if(!isCloseSame(b, indexB, distEpsilon)){
+        vertecies.Add(b);
+        UV0.Add(uvB);
+        VertexColors.Add(colorB);
+        indexB = vertecies.Num() - 1; //1
+    }
+    if(!isCloseSame(c, indexC, distEpsilon)){
+        vertecies.Add(c);
+        UV0.Add(uvC);
+        VertexColors.Add(colorC);
+        indexC = vertecies.Num() - 1; //2
+    }
+    //add to triangle buffer
+    triangles.Add(indexA);
+    triangles.Add(indexB);
+    triangles.Add(indexC);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /// --- transformation ---
 
 /// @brief offsets all vertecies in a given direction
@@ -768,18 +826,29 @@ int MeshData::findClosestIndexTo(FVector &vertex){
     return closestIndex;
 }
 
+
+
+
 bool MeshData::isCloseSame(FVector &a, int index){
+    return isCloseSame(a, vertecies[index], EPSILON);
+}
+
+
+
+bool MeshData::isCloseSame(FVector &a, int index, float dist){
     if(index < 0 || index >= vertecies.Num()){
         return false;
     }
-    return isCloseSame(a, vertecies[index]);
+    return isCloseSame(a, vertecies[index], dist);
 }
 
-bool MeshData::isCloseSame(FVector &a, FVector &b){
-    return std::abs(a.X - b.X) <= EPSILON &&
-           std::abs(a.Y - b.Y) <= EPSILON &&
-           std::abs(a.Z - b.Z) <= EPSILON;
+bool MeshData::isCloseSame(FVector &a, FVector &b, float dist){
+    return std::abs(a.X - b.X) <= dist &&
+           std::abs(a.Y - b.Y) <= dist &&
+           std::abs(a.Z - b.Z) <= dist;
 }
+
+
 
 
 
@@ -841,6 +910,11 @@ void MeshData::appendEfficent(
     FVector &b, 
     FVector &c
 ){
+    if(vertecies.Num() == 0){
+        append(a, b, c);
+        return;
+    }
+
     int indexA = findClosestIndexTo(a);
     int indexB = findClosestIndexTo(b);
     int indexC = findClosestIndexTo(c);

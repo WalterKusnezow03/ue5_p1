@@ -188,7 +188,8 @@ void AEntityScript::takedamage(FCustomHitResult &result){
 		health = 0;
 		die();
 	}
-	if(result.IsSurpressed()){
+	
+	if(!result.IsSurpressed()){
 		updateToReducedSpottingTimeIfNotSpottedYet();
 	}
 	//updateToReducedSpottingTimeIfNotSpottedYet();
@@ -521,17 +522,13 @@ void AEntityScript::followpath(float deltaTime){
 		DebugHelper::showScreenMessage("Following path.");
 
 		FVector currentLocation = humanoidPluginController.GetLocation(); 
-
 		FVector nextPos = path.front();
 
 		if(reachedPosition(nextPos)){
 			path.erase(path.begin() + 0); //first node pop
-			
 			if(!hasNodesInPathLeft()){
-				
 				humanoidPluginController.stopLocomotion();
 			}
-			
 			return;
 		}else{
 			//try to switch to walking state if needed
@@ -793,12 +790,9 @@ void AEntityScript::CopyHumanoidControllerTransform(){
 	SetActorLocation(location);
 }
 
-
-
-
-
-
-
+void AEntityScript::AppendFootPositions(TArray<FVector> &outPositions){
+	humanoidPluginController.AppendFootPositions(outPositions);
+}
 
 
 

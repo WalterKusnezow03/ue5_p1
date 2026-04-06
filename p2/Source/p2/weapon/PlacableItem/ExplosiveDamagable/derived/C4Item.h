@@ -29,9 +29,8 @@ public:
 
     virtual void showWeapon(bool show) override;
 
-    void SetLocationAndLookDir(FVector &location, FVector &normal);
 
-    virtual void ResetFlagsAndProperties() override;
+    
 
     virtual bool HasAimingDisplacement() override {
 		return false;

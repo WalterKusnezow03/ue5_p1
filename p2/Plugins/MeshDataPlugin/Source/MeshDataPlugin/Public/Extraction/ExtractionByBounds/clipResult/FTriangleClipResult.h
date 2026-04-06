@@ -69,6 +69,8 @@ private:
     void CaseOneVertexInBound();
     void CaseTwoInBound();
 
+    void ClipBestCut(const FVector &inBound, FVector &v1In);
+
     TArray<FVector> generatedTriangleShapedVertexBuffer;
     TArray<FVector2D> generatedTriangleShapedUVBuffer;
     TArray<FColor> generatedTriangleShapedColorBuffer;

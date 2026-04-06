@@ -12,6 +12,7 @@ public:
     static void MakeInstanceIfNeeded(UWorld *world);
     static ASharedAnyMeshWidgetComponentSettings *MakeInstance(UWorld *world);
 
+    
     static bool BShowColoredUVMap();
     static void SetShowColorMap(bool flag);
 

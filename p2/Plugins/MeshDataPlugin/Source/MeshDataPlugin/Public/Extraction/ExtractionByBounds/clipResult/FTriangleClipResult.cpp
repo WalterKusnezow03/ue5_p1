@@ -119,6 +119,12 @@ void FTriangleClipResult::CaseOneVertexInBound(){
 
 void FTriangleClipResult::ClipOne(const FVector &inBound, const FVector &v1In, const FVector &v2In){
     FVector v1Cut = v1In;
+    FVector v2Cut = v2In;
+    ClipBestCut(inBound, v1Cut);
+    ClipBestCut(inBound, v2Cut);
+
+    /*
+    FVector v1Cut = v1In;
     for (int i = 0; i < planeBuffer.Num(); i++){
         FVector Intersection;
         if(FMath::SegmentPlaneIntersection(
@@ -144,7 +150,7 @@ void FTriangleClipResult::ClipOne(const FVector &inBound, const FVector &v1In, c
             v2Cut = Intersection;
             break;
         }
-    }
+    }*/
 
     /*
     1--->2
@@ -155,6 +161,49 @@ void FTriangleClipResult::ClipOne(const FVector &inBound, const FVector &v1In, c
     generatedTriangleShapedVertexBuffer.Add(v1Cut);
     generatedTriangleShapedVertexBuffer.Add(v2Cut);
 }
+
+
+void FTriangleClipResult::ClipBestCut(
+    const FVector &inBound, FVector &v1In
+){
+    //best cut plane
+    bool found = false;
+    float bestDist = FLT_MAX;
+    FVector bestIntersection;
+    for (int i = 0; i < planeBuffer.Num(); i++){
+        FVector Intersection;
+        if(FMath::SegmentPlaneIntersection(
+            inBound,
+            v1In,
+            planeBuffer[i],
+            Intersection
+        ))
+        {
+            if(IsInBound(halfBoundsCopied, Intersection)){
+                float dist = (Intersection - inBound).SizeSquared();
+                if(dist < bestDist){
+                    bestDist = dist;
+                    bestIntersection = Intersection;
+                    found = true;
+                }
+            }
+        }
+    }
+
+    if(found){
+        v1In = bestIntersection;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 void FTriangleClipResult::CaseTwoInBound(){
     if(v0InBound && v1InBound){
@@ -193,6 +242,13 @@ void FTriangleClipResult::CaseTwoInBound(){
 
 
 void FTriangleClipResult::ClipTwo(const FVector &inBoundV0, const FVector &inBoundV1, const FVector &v2In){
+    FVector v0v2Cut = v2In;
+    FVector v1v2Cut = v2In;
+    ClipBestCut(inBoundV0, v0v2Cut);
+    ClipBestCut(inBoundV1, v1v2Cut);
+    
+    /*
+    //First cut is wrong here, best cut needed!
     FVector v0v2Cut = inBoundV0;
     for (int i = 0; i < planeBuffer.Num(); i++){
         FVector Intersection;
@@ -219,18 +275,10 @@ void FTriangleClipResult::ClipTwo(const FVector &inBoundV0, const FVector &inBou
             v1v2Cut = Intersection;
             break;
         }
-    }
+    }*/
 
     //quad is generated from 2 cut points
 
-    //richtig drehen
-    /*FVector normal = FVector::CrossProduct(v0v2Cut - inBoundV0, inBoundV1 - inBoundV0);
-    if(FVector::DotProduct(normal, FVector(0,0,1)) < 0){
-        //std::swap(v0v2Cut, inBoundV1);
-        FVector copy = v0v2Cut;
-        v0v2Cut = inBoundV1;
-        inBoundV1 = copy;
-    }*/
 
     //triangle A
     generatedTriangleShapedVertexBuffer.Add(inBoundV0);
@@ -283,8 +331,11 @@ void FTriangleClipResult::AppendTo(MeshData &data){
     MakeUVBuffer();
     MakeColorBuffer();
 
-    for (int i = 2; i < generatedTriangleShapedVertexBuffer.Num(); i+= 3){
-        data.appendVerteciesAndUvsAndColors(
+    float epsilon = 0.001f;
+    for (int i = 2; i < generatedTriangleShapedVertexBuffer.Num(); i += 3)
+    {
+        //data.appendVerteciesAndUvsAndColors(
+        data.appendVerteciesAndUvsAndColorsEfficent(
             generatedTriangleShapedVertexBuffer[i - 2],
             generatedTriangleShapedVertexBuffer[i - 1],
             generatedTriangleShapedVertexBuffer[i],
@@ -293,7 +344,8 @@ void FTriangleClipResult::AppendTo(MeshData &data){
             generatedTriangleShapedUVBuffer[i],
             generatedTriangleShapedColorBuffer[i - 2],
             generatedTriangleShapedColorBuffer[i - 1],
-            generatedTriangleShapedColorBuffer[i]
+            generatedTriangleShapedColorBuffer[i],
+            epsilon
         );
 
         /*
@@ -324,7 +376,8 @@ void FTriangleClipResult::MakeUVBuffer(){
 }
 
 void FTriangleClipResult::MakeColorBuffer(){
-    FColor distort = FColor::Red;
+    FColor distortNone = FColor::Green;
+    FColor distortFull = FColor::Red;
     generatedTriangleShapedColorBuffer.SetNum(generatedTriangleShapedVertexBuffer.Num());
     if(VertexAndUVBufferValid()){
         for (int i = 2; i < generatedTriangleShapedVertexBuffer.Num(); i+=3){
@@ -343,7 +396,8 @@ void FTriangleClipResult::MakeColorBuffer(){
                 uv0,
                 uv1,
                 uv2,
-                distort
+                distortNone,
+                distortFull
             );
 
             generatedTriangleShapedColorBuffer[i - 2] = colorV0;
@@ -358,11 +412,6 @@ void FTriangleClipResult::MakeColorBuffer(){
 bool FTriangleClipResult::VertexAndUVBufferValid(){
     return generatedTriangleShapedVertexBuffer.Num() == generatedTriangleShapedUVBuffer.Num();
 }
-
-
-
-
-
 
 
 

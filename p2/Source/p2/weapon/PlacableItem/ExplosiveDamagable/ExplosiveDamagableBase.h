@@ -42,6 +42,7 @@ protected:
     bool isDetonated = false;
     void ResetDenonatedStatus();
 
+    virtual void ResetFlagsAndProperties() override;
 
 public:
     //damage interface derived

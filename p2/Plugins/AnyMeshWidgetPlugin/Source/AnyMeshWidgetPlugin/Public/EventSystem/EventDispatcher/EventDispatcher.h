@@ -6,7 +6,8 @@
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/WidgetIdKey.h"
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventWidgetBase/EventBaseDispatcherWidget/EventWidgetBase.h"
 #include <map>
-
+//#include "AnyMeshWidgetPlugin/Public/Component/AnyMeshWidgetComponentBase.h"
+#include "AnyMeshWidgetPlugin/Public/MeshExtractedComponent/EventSystemRegisteredComponent/AnyMeshWidgetExtractEventCompatible.h"
 
 #include "EventDispatcher.generated.h"
 
@@ -25,8 +26,15 @@ public:
 
     static void StaticReceiveEvent(FString message);
 
-    static void StaticRegister(const WidgetIdKey &key, UEventWidgetBase *widget, UWorld *world);
+    static void StaticRegister(
+        const WidgetIdKey &key, 
+        UAnyMeshWidgetExtractEventCompatible *widgetComponent,
+        UEventWidgetBase *widget, 
+        UWorld *world
+    );
     static void StaticUnRegister(const WidgetIdKey &key);
+
+    static void StaticFireColoredUVMapEvent(bool flag);
 
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -35,6 +43,11 @@ protected:
     void ReceiveEvent(TArray<FString> &messageFull, WidgetIdKey &key);
 
     void Register(const WidgetIdKey &key, UEventWidgetBase *widget);
+    void Register(
+        const WidgetIdKey &key, 
+        UAnyMeshWidgetExtractEventCompatible *widgetComponent, 
+        UEventWidgetBase *widget
+    );
     void UnRegister(const WidgetIdKey &key);
 
     std::map<WidgetIdKey, UEventWidgetBase *> registeredWidgets;
@@ -42,8 +55,10 @@ protected:
     UEventWidgetBase *FindWidget(WidgetIdKey &key);
 
     // -- event receiver --
-    
 
-
+    bool uvColorCacheFlag = false;
+    void FireColoredUVMapEvent(bool flag);
+    std::map<WidgetIdKey, UAnyMeshWidgetExtractEventCompatible *> registeredWidgetComponents;
+    void RebuildWidgetMeshData();
 };
 

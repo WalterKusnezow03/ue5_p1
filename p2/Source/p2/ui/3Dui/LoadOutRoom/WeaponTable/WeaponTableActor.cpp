@@ -1,5 +1,6 @@
 #include "WeaponTableActor.h"
 #include "p2/weapon/setupHelper/LoadoutHelper.h"
+#include "p2/weapon/PlacableItem/ExplosiveDamagable/derived/TripWire.h"
 
 AWeaponTableActor::AWeaponTableActor() : Super() {
     
@@ -44,6 +45,11 @@ void AWeaponTableActor::SpawnWeaponFromSetupHelper(){
         GetWorld());
     if(weaponSpawned){
         weaponSpawned->SetActorEnableCollision(false);
+
+        //hide wire mesh.
+        if(ATripWire *casted = Cast<ATripWire>(weaponSpawned)){
+            casted->ShowWire(false);
+        }
     }
 }
 

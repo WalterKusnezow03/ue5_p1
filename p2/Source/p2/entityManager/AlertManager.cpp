@@ -328,17 +328,49 @@ void AlertManager::EntitiesInRadius(
     float radius,
     TArray<FVector> &outputPositions
 ){
+    TArray<AEntityScript *> inRadius = EntitiesInRadiusProtected(pos, radius);
+    for(int i = 0; i < inRadius.Num(); i++){
+        AEntityScript *ptr = inRadius[i];
+        if(ptr != nullptr){
+            outputPositions.Add(ptr->GetActorLocation());
+        }
+    }
+}
+
+TArray<AEntityScript*> AlertManager::EntitiesInRadiusProtected(
+    FVector &pos,
+    float radius
+){
+    TArray<AEntityScript *> outArray;
+    float radius2 = radius * radius;
     for(int i = 0; i < subscribedToAlert.size(); i++){
         AEntityScript *ptr = subscribedToAlert[i];
         if(ptr != nullptr){
             FVector comparePos = ptr->GetActorLocation();
-            float distance = FVector::Dist(comparePos, pos);
-            if(distance < radius){
-                outputPositions.Add(comparePos);
+            float distance = FVector::DistSquared(comparePos, pos);
+            if(distance < radius2){
+                outArray.Add(ptr);
             }
         }
     }
+    return outArray;
 }
+
+void AlertManager::EntitiesInRadiusFootPositions(
+    FVector &pos,
+    float radius,
+    TArray<FVector> &outputPositions
+){
+    TArray<AEntityScript *> inRadius = EntitiesInRadiusProtected(pos, radius);
+    for(int i = 0; i < inRadius.Num(); i++){
+        AEntityScript *ptr = inRadius[i];
+        if(ptr != nullptr){
+            ptr->AppendFootPositions(outputPositions);
+        }
+    }
+}
+
+
 
 bool AlertManager::AnyEntitesInRadius(
     FVector &pos,

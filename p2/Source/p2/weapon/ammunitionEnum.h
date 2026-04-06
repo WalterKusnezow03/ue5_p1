@@ -17,4 +17,5 @@ enum class ammunitionEnum
     molotov_ammunition,
     smokegrenade_ammunition,
     baseBallBat_ammunition,
+    tripWire_ammunition,
 };

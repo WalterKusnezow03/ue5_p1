@@ -498,3 +498,8 @@ bool HumanoidController::IsPerformingThrowItem(){
 void HumanoidController::SetHeadRotationLookAt(const FVector &lookAt){
     torsoController.SetHeadRotationLookAt(lookAt);
 }
+
+
+void HumanoidController::AppendFootPositions(TArray<FVector> &outPositions){
+    hipController.AppendFootPositions(outPositions);
+}

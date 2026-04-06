@@ -18,4 +18,5 @@ enum class weaponEnum
 	smokeGrenade,
 	rpgLauncher,
 	baseballBat,
+	tripWire,
 };

@@ -629,43 +629,6 @@ void Aweapon::showWeapon(bool show){
 }
 
 
-////p2/Content/Prefabs/Weapons/pistol/pistolAnimated/verschlussAnim.uasset
-/*
-/// @brief will set the paths to the animations based on weapon enum type
-/// to not create subclasses! DO NOT REMOVE
-void Aweapon::animationPathSet(){
-	//TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim")
-
-	FString verschluss_anim_path = "";
-	FString mag_anim_path = "";
-
-	//differentiate between the types to set the paths properly for each weapon (type)
-	if (Type == weaponEnum::pistol){
-		//pistol
-		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/pistol/pistolNew/verschlussAnim");
-		mag_anim_path = TEXT("/Game/Prefabs/weapons/pistol/pistolMag/magAnim");
-	}
-	if(Type == weaponEnum::assaultRifle){
-		//assault rifle
-		//verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle/verschlussAnim");
-		//mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle/magAnim");
-		verschluss_anim_path = TEXT("/Game/Prefabs/weapons/rifle2/verschlussAnim");
-		mag_anim_path = TEXT("/Game/Prefabs/weapons/rifle2/magAnim");
-		gehauseAnimPath = TEXT("/Game/Prefabs/weapons/rifle2/gehauseAnim");
-
-		magShootAnimpath = TEXT("/Game/Prefabs/weapons/rifle2/magAnimShoot");
-	}
-
-	
-
-
-	//pre load the animations
-	verschlussAnimationSquence = LoadObject<UAnimSequence>(nullptr, *verschluss_anim_path);
-	magAnimationSequence = LoadObject<UAnimSequence>(nullptr, *mag_anim_path);
-	gehauseAnimSequence = LoadObject<UAnimSequence>(nullptr, *gehauseAnimPath);
-	magAnimationShootSequence = LoadObject<UAnimSequence>(nullptr, *magShootAnimpath);
-}
-*/
 
 #include "p2/weapon/animationEnum/EweaponAnimation.h"
 void Aweapon::LoadAnimationsFromAssetManager(){

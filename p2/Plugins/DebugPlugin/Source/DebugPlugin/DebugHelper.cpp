@@ -405,6 +405,47 @@ void DebugHelper::showLine(UWorld *world, std::vector<FVector> &vec, FColor colo
 	}
 }
 
+void DebugHelper::showQuad(
+	UWorld *world,
+	const FVector &v0, 
+	const FVector &v1, 
+	const FVector &v2, 
+	const FVector &v3,
+	FColor color,
+	float time
+){
+	showLineBetween(world, v0, v1, color, time);
+	showLineBetween(world, v1, v2, color, time);
+	showLineBetween(world, v2, v3, color, time);
+	showLineBetween(world, v3, v0, color, time);
+}
+
+void DebugHelper::showBox(UWorld *world, FVector &origin, FVector &extent, FColor color, float time){
+	if(world != nullptr){
+		FVector bl = origin - extent;
+		FVector tr = origin + extent;
+
+		TArray<FVector> corners;
+		corners.SetNum(8);
+
+		corners[0] = origin + FVector(-extent.X, -extent.Y, -extent.Z);
+		corners[1] = origin + FVector( extent.X, -extent.Y, -extent.Z);
+		corners[2] = origin + FVector(-extent.X,  extent.Y, -extent.Z);
+		corners[3] = origin + FVector( extent.X,  extent.Y, -extent.Z);
+
+		corners[4] = origin + FVector(-extent.X, -extent.Y,  extent.Z);
+		corners[5] = origin + FVector( extent.X, -extent.Y,  extent.Z);
+		corners[6] = origin + FVector(-extent.X,  extent.Y,  extent.Z);
+		corners[7] = origin + FVector( extent.X,  extent.Y,  extent.Z);
+		
+		showQuad(world, corners[0], corners[1], corners[2], corners[3], color, time);
+		showQuad(world, corners[4], corners[5], corners[6], corners[7], color, time);
+		showQuad(world, corners[0], corners[1], corners[4], corners[5], color, time);
+		showQuad(world, corners[2], corners[3], corners[6], corners[7], color, time);
+
+
+	}
+}
 
 
 

@@ -34,7 +34,10 @@ protected:
 
     FVector PhysicsMeshLocation();
     FVector PhysicsMeshVelocityDirection();
-    
+    float PhysicsMeshVelocity();
+
+    void ResetPhysicsAndActorLocationToMeshLocation();
+
 public:
    
 
@@ -60,6 +63,7 @@ public:
 protected:
     virtual USceneComponent *FindHandCarriedScene(EArmType type);
     void ResetPhysics();
+    void ResetAndDisablePhysicsAndActorLocationToMeshLocation();
 
     virtual void BeginPlay() override;
     void FindThrowableMeshOnBeginPlay();
@@ -69,6 +73,7 @@ protected:
 
     bool wasMarkedForThrow = false;
     FVector throwDirection;
+    bool bPhysicsEnabled = false;
 
     void DrawLocation(float deltatime);
 

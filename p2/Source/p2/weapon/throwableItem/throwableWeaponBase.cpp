@@ -31,30 +31,30 @@ void AthrowableWeaponBase::FindThrowableMeshOnBeginPlay(){
 
 void AthrowableWeaponBase::MarkForApplyImpulse(FVector &direction){
     wasMarkedForThrow = true;
-    throwDirection = direction;
+    throwDirection = direction.GetSafeNormal();
     SetPhysicsEnabled(true);
 }
 
 void AthrowableWeaponBase::ApplyMarkedImpulse(){
     if(wasMarkedForThrow){
-        DebugHelper::logMessage("AthrowableWeaponBase::ApplyMarkedImpulse A");
+        /*DebugHelper::logMessage("AthrowableWeaponBase::ApplyMarkedImpulse A");
         if(rootMesh){
             UE_LOG(LogTemp, Warning, TEXT("AthrowableWeaponBase::CollisionEnabled=%d SimulatePhysics=%d"), 
                 (int)rootMesh->GetCollisionEnabled(),
                 (int)rootMesh->IsSimulatingPhysics());
-        }
+        }*/
         
 
         if(throwDirection.Size() <= 0.0f){
             return;
         }
 
-        DebugHelper::logMessage("AthrowableWeaponBase::throwDirection", throwDirection);
+        //DebugHelper::logMessage("AthrowableWeaponBase::throwDirection", throwDirection);
 
         if (rootMesh)
         {
             DebugHelper::logMessage("AthrowableWeaponBase::ApplyMarkedImpulse B");
-            rootMesh->AddImpulse(throwDirection.GetSafeNormal() * throwableVelocity);
+            rootMesh->AddImpulse(throwDirection * throwableVelocity);
         }
     }
     wasMarkedForThrow = false;
@@ -75,6 +75,9 @@ void AthrowableWeaponBase::SetPhysicsEnabled(bool flag){
             rootMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             rootMesh->SetSimulatePhysics(false);
         }
+
+        //copy flag
+        bPhysicsEnabled = flag;
     }
 }
 
@@ -83,13 +86,16 @@ void AthrowableWeaponBase::ResetPhysics(){
     {
         rootMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
         rootMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-
-        
         rootMesh->SetRelativeLocation(FVector::ZeroVector);
     }
 }
 
-
+void AthrowableWeaponBase::ResetAndDisablePhysicsAndActorLocationToMeshLocation(){
+    FVector physicsLocation = PhysicsMeshLocation();
+    ResetPhysics();
+    SetPhysicsEnabled(false);
+    SetActorLocation(physicsLocation);
+}
 
 FVector AthrowableWeaponBase::PhysicsMeshLocation(){
     if(rootMesh){
@@ -103,6 +109,13 @@ FVector AthrowableWeaponBase::PhysicsMeshVelocityDirection(){
         return rootMesh->GetPhysicsLinearVelocity().GetSafeNormal();
     }
     return throwDirection;
+}
+
+float AthrowableWeaponBase::PhysicsMeshVelocity(){
+    if(rootMesh){
+        return rootMesh->GetPhysicsLinearVelocity().Size();
+    }
+    return 0.0f;
 }
 
 void AthrowableWeaponBase::Tick(float Deltatime){
@@ -155,13 +168,15 @@ void AthrowableWeaponBase::UpdateLocalSceneTransformCarriedByHand(
     }
 }
 
+
+
+
+
 USceneComponent *AthrowableWeaponBase::FindHandCarriedScene(EArmType type){
-    return nullptr;
+    USceneComponent *found = handAndFingerPositionManager.findPermanentTargetComponent(type);
+    return found;
+    // return nullptr;
 }
-
-
-
-
 
 void AthrowableWeaponBase::DrawLocation(float deltatime){
     DebugHelper::showLineBetween(

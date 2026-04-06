@@ -174,6 +174,19 @@ public:
 		FColor &colorC
 	);
 
+	void appendVerteciesAndUvsAndColorsEfficent(
+		FVector &a,
+		FVector &b,
+		FVector &c,
+		FVector2D &uvA,
+		FVector2D &uvB,
+		FVector2D &uvC,
+		FColor &colorA,
+		FColor &colorB,
+		FColor &colorC,
+		float distEpsilon
+	);
+
 	void appendColors(FColor &a, FColor &b, FColor &c);
 protected:
 	
@@ -295,8 +308,9 @@ protected:
 	void SplitTriangleShapedBufferOverride(TArray<FVector> &buffer);
 
 	float EPSILON = 5.0f;
-	bool isCloseSame(FVector &a, FVector &b);
 	bool isCloseSame(FVector &a, int index);
+	bool isCloseSame(FVector &a, FVector &b, float dist);
+	bool isCloseSame(FVector &a, int index, float dist);
 
 	void fillUpMissingVertecies(int count);
 

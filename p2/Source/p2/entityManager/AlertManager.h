@@ -34,6 +34,13 @@ public:
 		TArray<FVector> &outputPositions
 	);
 
+
+	static void EntitiesInRadiusFootPositions(
+		FVector &pos,
+		float radius,
+		TArray<FVector> &outputPositions
+	);
+
 	static bool AnyEntitesInRadius(
 		FVector &pos,
 		float radius
@@ -71,5 +78,14 @@ private:
 		const FVector &location, 
 		float SphereRadius,
 		TArray<IDamageinterface*> &outArray
+	);
+
+
+
+
+
+	static TArray<AEntityScript*> EntitiesInRadiusProtected(
+		FVector &pos,
+		float radius
 	);
 };

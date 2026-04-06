@@ -182,7 +182,8 @@ protected:
 	void TickHumanoidController(float deltatime);
 	void CopyHumanoidControllerTransform();
 
-
+public:
+	virtual void AppendFootPositions(TArray<FVector> &outPositions);
 
 	//-- interaction widget on death --
 public:
@@ -196,7 +197,7 @@ protected:
 
 	UPROPERTY()
 	UWidgetEntityLootPayload *deathLootPayload = nullptr;
-	
+
 	void SetupLootDeathPayloadAndRequestInteractWidget();
 	virtual void SetupLootDeathPayload();
 	void CreatePayloadIfNeeded();

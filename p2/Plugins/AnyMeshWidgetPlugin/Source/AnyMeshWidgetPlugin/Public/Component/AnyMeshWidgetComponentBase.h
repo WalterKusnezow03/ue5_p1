@@ -111,6 +111,10 @@ public:
         DrawRayIntersectTest = flag;
     }
 
+
+    //call for uv colors enabled tool
+    void FlagMeshDataDirty();
+
 protected:
     /// @brief make a material just like the default widget material
     /// but paste the color into base and make it lit transculent
@@ -127,7 +131,7 @@ protected:
     bool DrawRayIntersectTest = false;
     bool MeshDataWasModifiedRecreatePhysicsState = false;
 
-    void FlagMeshDataDirty();
+    
 
     virtual void CreateMaterial();
 

@@ -177,16 +177,20 @@ void AIKCarryInterfaceAnimatedActor::UpdateActorTransform(FVector &location, FRo
     internalTransform.setTranslation(location);
     internalTransform.setRotation(rotation);
 
+    //local rotation for arm direction local rotationspace 
+    internalRotationMatrixInverse.setRotation(rotation);
+    internalRotationMatrixInverse.transposeRotation();
 
+    
 
-    ///// ---- BUG HERE ! ---- ROTATION GOES INTO VERY RANDOM DIRECTIONS ! ----
-
-    //debug show rotation
-    FVector forward(100, 0, 0);
-    MMatrix r(rotation);
-    forward = r * forward;
+    
 
     if(drawLineOnTransformUpdate){
+        //debug show rotation
+        FVector forward(100, 0, 0);
+        MMatrix r(rotation);
+        forward = r * forward;
+
         DebugHelper::showLineBetween(
             GetWorld(),
             location,
@@ -212,7 +216,11 @@ void AIKCarryInterfaceAnimatedActor::UpdateHasMovedFlag(const FVector &location)
 
 //updates for attached item rotation
 void AIKCarryInterfaceAnimatedActor::UpdateLowerArm(EArmType typeArm, const FVector &direction){
-    FVector upVectorRelative = OrthogonalLocalUpFor(direction);
+    FVector upVectorWorld = OrthogonalLocalUpFor(direction);
+
+    //move to local actor space rotation, to have the correct
+    //component rotation on hand carried items
+    FVector upVectorRelative = internalRotationMatrixInverse * upVectorWorld; 
 
     // TESTING NEEDED
     UpdateHandComponentRotation(typeArm, upVectorRelative);
@@ -338,8 +346,8 @@ void AIKCarryInterfaceAnimatedActor::Tick(float deltatime){
     if(isPickedUpFlag){
         TickAnimation(deltatime);
         TickUpdateAttachedItem();
-        DebugDrawHandLocation(EArmType::ELeft, deltatime, true);
-        DebugDrawHandLocation(EArmType::ERight, deltatime, true);
+        DebugDrawHandLocation(EArmType::ELeft, deltatime, false);
+        DebugDrawHandLocation(EArmType::ERight, deltatime, false);
     }
 
     ScreenLogPickedUpState();
@@ -419,13 +427,16 @@ void AIKCarryInterfaceAnimatedActor::ApplyImpulseToCarriedItemIfThrowFinished(){
 
                 //update components 
                 FVector start = hand->GetComponentLocation();
-                DebugHelper::showLineBetween(
-                    GetWorld(),
-                    start,
-                    start + dir.GetSafeNormal() * 100.0f,
-                    FColor::Cyan,
-                    1.0f
-                );
+                if(logEnabled){
+                    DebugHelper::showLineBetween(
+                        GetWorld(),
+                        start,
+                        start + dir.GetSafeNormal() * 100.0f,
+                        FColor::Cyan,
+                        1.0f
+                    );
+                }
+                
             }
 
 
@@ -569,7 +580,7 @@ void AIKCarryInterfaceAnimatedActor::TickUpdateAttachedItemGlobalTransform(){
         FVector location = GetActorLocation();
         FRotator rotation = GetActorRotation();
         attachedHandCarriedItem->UpdateActorTransform(location, rotation);
-        
+
         //draw
         /*DebugHelper::showLineBetween(
             GetWorld(),

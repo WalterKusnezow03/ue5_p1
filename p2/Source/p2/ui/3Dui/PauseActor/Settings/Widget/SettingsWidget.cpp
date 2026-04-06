@@ -62,6 +62,7 @@ bool USettingsWidget::dispatchClick(const FVector2D &pos){
             ESettingsWidgetEvent::EEnableDebugTools : 
             ESettingsWidgetEvent::EDisbaleDebugTools;
             parentActor->Notify(event);
+            return true;
         }
 
         bool checkedUVsOnWidgetsDebug = false;
@@ -70,6 +71,16 @@ bool USettingsWidget::dispatchClick(const FVector2D &pos){
             ESettingsWidgetEvent::EEnableDebugAnyMeshWidgetUVTools : 
             ESettingsWidgetEvent::EDisbaleDebugAnyMeshWidgetUVTools;
             parentActor->Notify(event);
+
+            /*FString enabled = checkedUVsOnWidgetsDebug ? TEXT("Enabled") : TEXT("Disabled");
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("USettingsWidget::dispatchClick::UV Widget %s"),
+                    *enabled
+                )
+            );*/
+
+            return true;
         }
 
 
@@ -116,9 +127,12 @@ void USettingsWidget::InitAllOptions(){
         }
     }
     if(UWidget *widget = GetDebugWidgetUVOptionWidget()){
+        //DebugHelper::logMessage("USettingsWidget::InitAllOptions::UV Widget A");
         if(USettingsOptionWidget *casted = Cast<USettingsOptionWidget>(widget)){
             casted->Init();
             casted->SetChecked(ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap());
+            //DebugHelper::logMessage("USettingsWidget::InitAllOptions::UV Widget B");
+            //as expected
         }
     }
 }
@@ -140,6 +154,8 @@ TArray<IBaseUiInterface *> USettingsWidget::GetAllItemsForDispatch(){
     if(UWidget *widget = GetDebugWidgetUVOptionWidget()){
         if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(widget)){
             array.Add(casted);
+            //DebugHelper::logMessage("USettingsWidget::GetAllItemsForDispatch::UV Widget ");
+            //ok
         }
     }
     return array;

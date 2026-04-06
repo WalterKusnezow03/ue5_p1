@@ -1232,3 +1232,11 @@ bool HipController::HasMotionTimeUpdate(float &outMotionTime){
     }
     return copy;
 }
+
+
+
+
+void HipController::AppendFootPositions(TArray<FVector> &outPositions){
+    outPositions.Add(legLeft.endEffectorWorldLocation());
+    outPositions.Add(legRight.endEffectorWorldLocation());
+}

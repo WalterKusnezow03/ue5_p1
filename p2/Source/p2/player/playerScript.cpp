@@ -67,13 +67,8 @@ void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
             pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
         }
     }
+    switchToIndex(0); //update hud, select first weapon
 }
-
-
-
-
-
-
 
 
 

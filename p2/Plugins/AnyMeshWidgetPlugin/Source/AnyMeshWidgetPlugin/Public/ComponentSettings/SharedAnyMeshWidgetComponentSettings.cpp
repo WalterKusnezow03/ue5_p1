@@ -1,4 +1,5 @@
 #include "SharedAnyMeshWidgetComponentSettings.h"
+#include "DebugPlugin/DebugHelper.h"
 
 ASharedAnyMeshWidgetComponentSettings *ASharedAnyMeshWidgetComponentSettings::instancePtr = nullptr;
 
@@ -27,6 +28,7 @@ bool ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap(){
 void ASharedAnyMeshWidgetComponentSettings::SetShowColorMap(bool flag){
     if(instancePtr){
         instancePtr->bShowColoredUVMap = flag;
+        //DebugHelper::logMessage("ASharedAnyMeshWidgetComponentSettings::SetShowColorMap call");
     }
 }
 

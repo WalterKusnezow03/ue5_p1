@@ -18,7 +18,8 @@ FColor TriangleJacobianColorizer::DistortionColorFor(
     const FVector2D &uvVertex,
     const FVector2D &uv1,
     const FVector2D &uv2,
-    const FColor &distortColor
+    const FColor &distortColorNone,
+    const FColor &distortColorFull
     //distortion Color All, distort color none!
 ){
 
@@ -124,16 +125,40 @@ FColor TriangleJacobianColorizer::DistortionColorFor(
 
     float A = JacobianU.Size() * JacobianV.Size() * sinTheta;
 
-    //1 keine verzerrung, darunter darüber hat verzerrung.
-    
-    FColor base = FColor::White;
-    float scalar = FMath::Clamp(A - 1.0f, -1.0f, 1.0f);
+    //--- todo: metrik mit A und sin Theta ---
+    //sin theta ggf hinreichend!
 
-    FColor result;
-    result.R = FMath::Clamp<int32>(base.R + distortColor.R * scalar, 0, 255);
-    result.G = FMath::Clamp<int32>(base.G + distortColor.G * scalar, 0, 255);
-    result.B = FMath::Clamp<int32>(base.B + distortColor.B * scalar, 0, 255);
-    result.A = base.A; // Alpha unverändert
+    bool fromArea = false;
+    float scalar = 0.0f;
+    if(fromArea){
+        scalar = FMath::Clamp(A - 1.0f, -1.0f, 1.0f);
+    }else{
+        scalar = FMath::Clamp(sinTheta, -1.0f, 1.0f);
+    }
+    scalar = std::abs(scalar);
 
-    return base;
+    /*
+    const FColor &distortColorNone,
+    const FColor &distortColorFull
+    */
+    return MetrikColor(distortColorNone, distortColorFull, scalar);
 }
+
+FColor TriangleJacobianColorizer::MetrikColor(
+    const FColor &distortColorNone,
+    const FColor &distortColorFull,
+    float scalar
+){
+    scalar = std::abs(scalar);
+    FColor result;
+    result.R = FMath::Clamp<int32>(distortColorNone.R + distortColorFull.R * scalar, 0, 255);
+    result.G = FMath::Clamp<int32>(distortColorNone.G + distortColorFull.G * scalar, 0, 255);
+    result.B = FMath::Clamp<int32>(distortColorNone.B + distortColorFull.B * scalar, 0, 255);
+    result.A = 255; // Alpha unverändert, 1.0f
+
+    return result;
+}
+
+
+
+

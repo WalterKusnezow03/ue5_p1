@@ -105,3 +105,13 @@ void APlacableItemBase::SetupCarriedItemAxisContraints(){
     carryInterfaceAxisConstraint.SetupNone();
     carryInterfaceAxisConstraint.LockPositionConstraint();
 }
+
+
+void APlacableItemBase::SetLocationAndLookDir(FVector &location, FVector &normal){
+    if(!isPickedUp()){
+        SetActorLocation(location);
+        FRotator r = normal.Rotation(); //x is forward, but wanted z, -90
+        r.Pitch -= 90.0f;
+        SetActorRotation(r);
+    }
+}

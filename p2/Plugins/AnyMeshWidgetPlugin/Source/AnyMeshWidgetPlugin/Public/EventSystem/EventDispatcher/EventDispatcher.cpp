@@ -85,7 +85,7 @@ void AEventDispatcher::ReceiveEvent(TArray<FString> &messageFull, WidgetIdKey &k
         
         //remove id key from front of buffer
         if (messageFull.Num() >= 2){
-            messageFull.RemoveAt(0, 2);
+            messageFull.RemoveAt(0, 2); //actorId_widgetId_(event)
             if(UEventWidgetBase *widget = FindWidget(key)){
                 widget->ReceiveEvent(messageFull);
             }
@@ -101,9 +101,14 @@ UEventWidgetBase *AEventDispatcher::FindWidget(WidgetIdKey &key){
     return nullptr;
 }
 
-void AEventDispatcher::StaticRegister(const WidgetIdKey &key, UEventWidgetBase *widget, UWorld *world){
+void AEventDispatcher::StaticRegister(
+    const WidgetIdKey &key, 
+    UAnyMeshWidgetExtractEventCompatible *widgetComponent,
+    UEventWidgetBase *widget, 
+    UWorld *world
+){
     if(AEventDispatcher* i = MakeInstance(world)){
-        i->Register(key, widget);
+        i->Register(key, widgetComponent, widget);
     }
 }
 
@@ -113,8 +118,12 @@ void AEventDispatcher::StaticUnRegister(const WidgetIdKey &key){
     }
 }
 
-void AEventDispatcher::Register(const WidgetIdKey &key, UEventWidgetBase *widget){
-    if(!widget){
+void AEventDispatcher::Register(
+    const WidgetIdKey &key, 
+    UAnyMeshWidgetExtractEventCompatible *widgetComponent, 
+    UEventWidgetBase *widget
+){
+    if(!widget || !widgetComponent){
         return;
     }
     if(!key.IsValidKey()){
@@ -123,6 +132,7 @@ void AEventDispatcher::Register(const WidgetIdKey &key, UEventWidgetBase *widget
     DebugHelper::logMessage("AEventDispatcher::Register Key ", key.ToString());
 
     registeredWidgets[key] = widget;
+    registeredWidgetComponents[key] = widgetComponent;
 
     //init on register (load animation for example)
     if(widget){
@@ -135,4 +145,38 @@ void AEventDispatcher::UnRegister(const WidgetIdKey &key){
         return;
     }
     registeredWidgets[key] = nullptr;
+    registeredWidgetComponents[key] = nullptr;
+}
+
+void AEventDispatcher::StaticFireColoredUVMapEvent(bool newFlag){
+    if(AEventDispatcher *current = Instance()){
+        current->FireColoredUVMapEvent(newFlag);
+    }
+}
+
+
+void AEventDispatcher::FireColoredUVMapEvent(bool newFlag){
+    if(newFlag != uvColorCacheFlag){
+        uvColorCacheFlag = newFlag;
+        RebuildWidgetMeshData();
+
+        FString event = "UVEvent";
+        FString enabled = uvColorCacheFlag ? "Enabled" : "Disabled";
+
+        TArray<FString> splitMessage = {event, enabled};
+
+        for(auto &pair : registeredWidgets){
+            if(UEventWidgetBase *widget = pair.second){
+                widget->ReceiveEvent(splitMessage);
+            }
+        }
+    }
+}
+
+void AEventDispatcher::RebuildWidgetMeshData(){
+    for(auto &pair : registeredWidgetComponents){
+        if(UAnyMeshWidgetExtractEventCompatible *widgetComponent = pair.second){
+            widgetComponent->FlagMeshDataDirty();
+        }
+    }
 }

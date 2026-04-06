@@ -1,5 +1,6 @@
 // Copyright Walter Kusnezow All Rights Reserved.
 #include "EventSystemDebugger.h"
+#include "AnyMeshWidgetPlugin/Public/ComponentSettings/SharedAnyMeshWidgetComponentSettings.h"
 
 
 AEventSystemDebugger *AEventSystemDebugger::instancePtr = nullptr;
@@ -50,9 +51,12 @@ void AEventSystemDebugger::Tick(float deltatime){
         timer.Begin(intervall, true);
     }
     timer.Tick(deltatime);
-
+    FireColoredUVMapEvent();
 }
 
+void AEventSystemDebugger::FireColoredUVMapEvent(){
+    AEventDispatcher::StaticFireColoredUVMapEvent(ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap());
+}
 
 #include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/EventDispatcher.h"
 void AEventSystemDebugger::FireDebugEventHaube(){

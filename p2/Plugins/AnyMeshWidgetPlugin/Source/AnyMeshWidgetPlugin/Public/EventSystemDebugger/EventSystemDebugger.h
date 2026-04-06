@@ -28,6 +28,7 @@ protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     void FireDebugEventHaube();
     void FireDebugEventHeck();
+    void FireColoredUVMapEvent();
 
     Timer timer;
     float intervall = 2.0f;
@@ -36,4 +37,6 @@ protected:
     int ampelIndex = 0;
 
     int indexHeck = 0;
+
+  
 };

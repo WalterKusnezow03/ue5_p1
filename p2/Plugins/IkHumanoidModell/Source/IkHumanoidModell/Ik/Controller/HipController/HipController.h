@@ -281,4 +281,9 @@ protected:
 public:
     //ik carried item hands interface
     bool HasMotionTimeUpdate(float &outMotionTime);
+
+
+
+    //leg poisitions
+    void AppendFootPositions(TArray<FVector> &outPositions);
 };

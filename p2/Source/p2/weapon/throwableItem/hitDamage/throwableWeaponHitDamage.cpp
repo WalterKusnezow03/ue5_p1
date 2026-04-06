@@ -5,9 +5,20 @@
 void AthrowableWeaponHitDamage::Tick(float deltatime){
     Super::Tick(deltatime);
     TickCheckHit(deltatime);
+    TickCheckVelocityToDisablePhysics();
+}
+
+void AthrowableWeaponHitDamage::OnPickup(){
+    Super::OnPickup();
+
+    ResetAndDisablePhysicsAndActorLocationToMeshLocation();
 }
 
 void AthrowableWeaponHitDamage::TickCheckHit(float DeltaTime){
+    if(!bPhysicsEnabled){
+        return;
+    }
+
     float SphereRadius = 50.0f;
     TArray<AActor *> excludedActors;
     excludedActors.Add(this);
@@ -19,10 +30,24 @@ void AthrowableWeaponHitDamage::TickCheckHit(float DeltaTime){
         SphereRadius,
         excludedActors
     );
-    ProcessHit(array, DeltaTime);    
+    if(ProcessHit(array, DeltaTime)){
+        DebugHelper::logMessage("AthrowableWeaponHitDamage HIT ANY ACTOR");
+    }
 }
 
-void AthrowableWeaponHitDamage::ProcessHit(
+//checks if physics are enabled and disable for minimal velocity,
+//including actor location application to physics location
+void AthrowableWeaponHitDamage::TickCheckVelocityToDisablePhysics(){
+    if(bPhysicsEnabled){
+
+        float minVelocity = 1.0f;
+        if (PhysicsMeshVelocity() < minVelocity){
+            ResetAndDisablePhysicsAndActorLocationToMeshLocation(); //disables physics too
+        }     
+    }
+}
+
+bool AthrowableWeaponHitDamage::ProcessHit(
     TArray<AActor *> &castedActors,
     float DeltaTime
 ){
@@ -39,15 +64,12 @@ void AthrowableWeaponHitDamage::ProcessHit(
                 interfaceFound->damageOnHit
 
                 ownTeam = h->getTeam();*/
-                return;
+                return true;
             }
         }
     }
+    return false;
 }
-
-
-
-
 
 FCustomHitResult AthrowableWeaponHitDamage::MakeHitResultByFoundActor(
 	AActor *hitActor,

@@ -206,6 +206,28 @@ void P2AssetLoader::loadWeapons(){
         "Prefabs/Weapons/rpg", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "RPGLauncherBP"                // Just the file name as displayed
     );
+
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::baseballBat,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/Throwable/baseballBat", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "baseballBatBP"                // Just the file name as displayed
+    );
+
+
+    
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::tripWire,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/tripwire", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "tripWireBp"                // Just the file name as displayed
+    );
+
+
+
+    
+
+    
 }
 
 void P2AssetLoader::loadWeaponAnimations(){

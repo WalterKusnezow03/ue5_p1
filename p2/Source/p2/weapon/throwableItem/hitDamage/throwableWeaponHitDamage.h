@@ -15,12 +15,15 @@ public:
     int throwableDamage = 25;
 
 protected:
-    
-    
+    bool HasVelocity();
+
+    virtual void OnPickup() override;
+
     virtual void Tick(float deltatime) override;
     void TickCheckHit(float DeltaTime);
+    void TickCheckVelocityToDisablePhysics();
 
-    void ProcessHit(
+    bool ProcessHit(
         TArray<AActor *> &castedActors,
         float DeltaTime
     );
