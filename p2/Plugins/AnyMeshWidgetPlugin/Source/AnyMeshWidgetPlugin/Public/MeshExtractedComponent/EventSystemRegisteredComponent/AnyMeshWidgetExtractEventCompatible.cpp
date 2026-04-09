@@ -2,6 +2,7 @@
 #include "AnyMeshWidgetExtractEventCompatible.h"
 
 
+
 void UAnyMeshWidgetExtractEventCompatible::BeginPlay(){
     Super::BeginPlay();
     RegisterWidgetToEventDispatcherOnBeginPlay();
@@ -9,7 +10,14 @@ void UAnyMeshWidgetExtractEventCompatible::BeginPlay(){
 
 void UAnyMeshWidgetExtractEventCompatible::RegisterWidgetToEventDispatcherOnBeginPlay(){
     WidgetIdKey key = MakeKey();
-    AEventDispatcher::StaticRegister(key, this, TGetWidget<UEventWidgetBase>(), GetWorld());
+
+    if(AEventDispatcher *instance = AEventDispatcher::MakeInstanceDerived(GetWorld())){
+        AEventDispatcher::StaticRegister(key, TGetWidget<UEventWidgetBase>());
+        AEventDispatcher::StaticRegisterComponent(key, this);
+    }
+
+
+    
 }
 
 void UAnyMeshWidgetExtractEventCompatible::EndPlay(const EEndPlayReason::Type EndPlayReason){

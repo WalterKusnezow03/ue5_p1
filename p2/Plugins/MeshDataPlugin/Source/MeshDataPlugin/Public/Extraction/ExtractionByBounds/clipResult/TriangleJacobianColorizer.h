@@ -32,4 +32,26 @@ private:
         float scalar
     );
 
+    //computed values
+    float DetJTJ = 0.0f;
+    float sinTheta = 0.0f;
+
+    float Area = 0.0f;
+
+    float singularValueLamda1 = 0.0f;
+    float singularValueLamda2 = 0.0f;
+
+
+    void FindDeterminantJTJ(
+        const FVector &JacobianU,
+        const FVector &JacobianV
+    );
+    void FindArea(
+        const FVector &JacobianU,
+        const FVector &JacobianV
+    );
+    void BuildSingularValues(
+        const FVector &JacobianU,
+        const FVector &JacobianV
+    );
 };

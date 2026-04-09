@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include <map>
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
+
 #include "PathFinder.generated.h"
 
 class raycastTask;
@@ -60,7 +62,11 @@ private:
 	static int countNodes;
 
 public:
-
+	void CollectNodePositions(
+		const FVector &pos, 
+		float radius,
+		TArray<FVector> &outArray
+	);
 
 
 	static const bool debugDrawNodes = true; //false
@@ -83,10 +89,12 @@ public:
 	void clear(); //clears ALL NODES
 
 	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
-	void addNewNodeVector(std::vector<FVector> &vec, std::vector<FVector> &offsets);
 	void addNewNodeVector(std::vector<FVector> &vec);
+	
+protected:
 	void addNewNode(FVector a);
 
+public:
 	void addConvexHull(std::vector<FVector> &vec);
 
 	std::vector<FVector> getPath(FVector a, FVector b);

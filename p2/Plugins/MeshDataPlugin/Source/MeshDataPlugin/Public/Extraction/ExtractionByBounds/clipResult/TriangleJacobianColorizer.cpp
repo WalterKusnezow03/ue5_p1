@@ -116,14 +116,9 @@ FColor TriangleJacobianColorizer::DistortionColorFor(
         e1.Z * t2.X + e2.Z * t2.Y
     );
 
-    //sin(\theta) = cos^-1(JacobianUNormalized * JacobianVNormalized)
-    float theta = std::acos(FVector::DotProduct(
-        JacobianU.GetSafeNormal(),
-        JacobianV.GetSafeNormal()
-    ));
-    float sinTheta = std::sin(theta);
-
-    float A = JacobianU.Size() * JacobianV.Size() * sinTheta;
+    FindDeterminantJTJ(JacobianU, JacobianV);
+    FindArea(JacobianU, JacobianV);
+    BuildSingularValues(JacobianU, JacobianV);
 
     //--- todo: metrik mit A und sin Theta ---
     //sin theta ggf hinreichend!
@@ -131,18 +126,76 @@ FColor TriangleJacobianColorizer::DistortionColorFor(
     bool fromArea = false;
     float scalar = 0.0f;
     if(fromArea){
-        scalar = FMath::Clamp(A - 1.0f, -1.0f, 1.0f);
+        scalar = FMath::Clamp(Area - 1.0f, -1.0f, 1.0f);
     }else{
         scalar = FMath::Clamp(sinTheta, -1.0f, 1.0f);
     }
     scalar = std::abs(scalar);
 
-    /*
-    const FColor &distortColorNone,
-    const FColor &distortColorFull
-    */
+    
     return MetrikColor(distortColorNone, distortColorFull, scalar);
 }
+
+
+void TriangleJacobianColorizer::FindDeterminantJTJ(
+    const FVector &JacobianU,
+    const FVector &JacobianV
+){
+    //det(J^TJ) = (||u||^2)(||v||^2) \cdot (sin(\theta)^2)
+    //A = \sqrt{det(J^TJ)} = ||u||\cdot ||v|| \cdot sin(\theta)
+    float u2 = JacobianU.SizeSquared();
+    float v2 = JacobianV.SizeSquared();
+
+    float theta = std::acos(FVector::DotProduct(
+        JacobianU.GetSafeNormal(),
+        JacobianV.GetSafeNormal()
+    ));
+    sinTheta = std::sin(theta);
+
+    DetJTJ = u2 * v2 * sinTheta * sinTheta;
+}
+
+void TriangleJacobianColorizer::FindArea(
+    const FVector &JacobianU,
+    const FVector &JacobianV
+){
+    //A = \sqrt{det(J^TJ)} = ||u||\cdot ||v|| \cdot sin(\theta)
+    Area = JacobianU.Size() * JacobianV.Size() * sinTheta;
+}
+
+void TriangleJacobianColorizer::BuildSingularValues(
+    const FVector &JacobianU,
+    const FVector &JacobianV
+){
+    /*
+    $$
+    \lambda_{1} = 
+    -\frac{-(u^2+v^2)}{2} +
+    \sqrt{(\frac{(u^2+v^2)}{2})^2 - det(J^TJ)}
+    $$
+
+    $$
+    \lambda_{2} = 
+    -\frac{-(u^2+v^2)}{2} -
+    \sqrt{(\frac{(u^2+v^2)}{2})^2 - det(J^TJ)}
+    $$
+    */
+    float u2 = FVector::DotProduct(JacobianU, JacobianU);
+    float v2 = FVector::DotProduct(JacobianV, JacobianV);
+    float u2v2 = u2 + v2;
+    float frac = u2v2 / 2.0f;
+
+    float innerSqrt = frac * frac - DetJTJ;
+    if(innerSqrt > 0.0f){
+        float sqrt = std::sqrt(innerSqrt);
+        singularValueLamda1 = frac + sqrt;
+        singularValueLamda2 = frac - sqrt;
+    }
+}
+
+
+
+
 
 FColor TriangleJacobianColorizer::MetrikColor(
     const FColor &distortColorNone,

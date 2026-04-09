@@ -6,11 +6,13 @@
 #include "SocketSubsystem.h"
 #include "Networking.h"
 
+#include "NNCommunicationPlugin/Communication/Connection/base/PythonSocketBase.h"
+
 #include "NNSocket.generated.h"
 
 
 UCLASS()
-class NNCOMMUNICATIONPLUGIN_API ANNSocket : public AActor{
+class NNCOMMUNICATIONPLUGIN_API ANNSocket : public APythonSocketBase {
     GENERATED_BODY()
 
 
@@ -25,44 +27,14 @@ public:
     }
 
 private:
-    void OpenSocket(float deltatime);
-    void SetupSocketIfNeeded();
-    void CloseSocketOnEndPlay();
-    void LaunchPythonProcess();
-
-    float connectIntervall = 1.0f;
-    float integratedDT = 0.0f;
-
-    //debug
-    int32 typeDataRandomNum = 0;
-
-    //process related
-    FProcHandle ProcHandle;
-    void* ReadPipe = nullptr;
-    void LogPythonMessages();
-
-    FSocket *Socket = nullptr;
+    
     static ANNSocket *instancePtr;
-
-    bool serverRunning = false;
-    bool connected = false;
 
 public:
 
     ANNSocket();
     virtual void Tick(float deltatime) override;
     virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    
 
-private:
-    void LogMessage(FString msg);
-
-    void SendDataToPython();
-
-    void Send(int32 typeData, TArray<float> &data);
-    void Send(TArray<uint8> &bin);
-    void SendShutdown();
-
-    void Receive(TArray<float> &data, int32 numFloats);
-    void Receive(TArray<uint8> &data, int32 numBytes, int32 &bytesread);
 };

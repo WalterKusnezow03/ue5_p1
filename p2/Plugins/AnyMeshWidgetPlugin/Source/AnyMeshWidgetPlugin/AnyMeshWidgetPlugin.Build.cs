@@ -28,10 +28,11 @@ public class AnyMeshWidgetPlugin : ModuleRules
 				"Core",
 				"MeshDataPlugin",
 				"DebugPlugin",
-				
+
 				"CoreUObject",
 				"Engine",
-				"UMG"
+				"UMG",
+				"EventWidgetSystemPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -11,10 +11,12 @@
 #include "CoreMinimal.h"
 #include <limits>
 #include "DebugPlugin/DebugHelper.h"
-#include "priorityList.h"
+
 #include "PathFinder/pathFinding/priorityQueue.h"
 #include "PathFinder/pathFinding/raycastTasks/raycastTask.h"
 #include "PathFinder/storageInterface/PathFinderStorageInterface.h"
+
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
 //---- STATIC VARS ----
 APathFinder* APathFinder::pathFinderInstance = nullptr; //very imporntant, do not delete!
@@ -312,13 +314,6 @@ void APathFinder::addNewNodeVector(std::vector<FVector> &vec, FVector &offset){
     }
 }
 
-
-void APathFinder::addNewNodeVector(std::vector<FVector> &vec, std::vector<FVector> &offsets){
-    for (int i = 0; i < offsets.size(); i++){
-        FVector current = offsets[i];
-        addNewNodeVector(vec, current);
-    }
-}
 
 
 
@@ -2145,4 +2140,29 @@ void APathFinder::addActorToIgnoreRaycastParams(AActor *actor){
 
 FCollisionQueryParams APathFinder::getIgnoredRaycastParams(){
     return collisionIgnoreParams;
+}
+
+
+
+
+
+void APathFinder::CollectNodePositions(
+    const FVector &pos, 
+    float radius,
+    TArray<FVector> &outArray
+){
+    radius *= 0.5f;
+    FVector halfDir(radius, radius, 0.0f);
+
+    FVector posBottom = pos - halfDir;
+    FVector posTop = pos + halfDir;
+
+    std::vector<APathFinder::Node *> partial = getSubGraph(posBottom, posTop);
+    outArray.Empty();
+    outArray.SetNumUninitialized(partial.size());
+    for (int i = 0; i < partial.size(); i++){
+        if(APathFinder::Node *current = partial[i]){
+            outArray[i] = current->pos;
+        }
+    }
 }

@@ -5,7 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "AnyMeshWidgetPlugin/Public/MeshExtractedComponent/AnyMeshWidgetExtracted.h"
-#include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/WidgetIdKey.h"
+#include "EventWidgetSystemPlugin/Public/EventSystem/EventDispatcher/WidgetIdKey.h"
+
 
 #include "AnyMeshWidgetExtractEventCompatible.generated.h"
 

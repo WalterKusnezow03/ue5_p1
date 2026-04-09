@@ -28,7 +28,8 @@ public class PathFinder : ModuleRules
 				"Core",
 				"GameCore",
 				"StoragePlugin",
-				"DebugPlugin"
+				"DebugPlugin",
+				"PolygonPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

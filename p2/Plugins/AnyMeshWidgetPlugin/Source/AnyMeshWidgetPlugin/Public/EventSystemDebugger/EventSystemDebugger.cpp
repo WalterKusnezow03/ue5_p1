@@ -1,7 +1,8 @@
 // Copyright Walter Kusnezow All Rights Reserved.
 #include "EventSystemDebugger.h"
 #include "AnyMeshWidgetPlugin/Public/ComponentSettings/SharedAnyMeshWidgetComponentSettings.h"
-
+#include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher.h"
+#include "EventWidgetSystemPlugin/Public/EventSystem/EventDispatcher/EventDispatcherBase.h"
 
 AEventSystemDebugger *AEventSystemDebugger::instancePtr = nullptr;
 
@@ -58,7 +59,7 @@ void AEventSystemDebugger::FireColoredUVMapEvent(){
     AEventDispatcher::StaticFireColoredUVMapEvent(ASharedAnyMeshWidgetComponentSettings::BShowColoredUVMap());
 }
 
-#include "AnyMeshWidgetPlugin/Public/EventSystem/EventDispatcher/EventDispatcher.h"
+
 void AEventSystemDebugger::FireDebugEventHaube(){
     if(false){
         return;
@@ -71,7 +72,7 @@ void AEventSystemDebugger::FireDebugEventHaube(){
     index++;
     index = index % 2; // 1 or 2
 
-    AEventDispatcher::StaticReceiveEvent(message);
+    AEventDispatcherBase::StaticReceiveEvent(message);
 }
 
 
@@ -84,7 +85,7 @@ void AEventSystemDebugger::FireDebugEventHeck(){
         FString message = FString::Printf(TEXT("m4_heckWidget_eventAmpel_%d"), ampelIndex);
         ampelIndex++;
         ampelIndex = ampelIndex % 3; // 1 or 2
-        AEventDispatcher::StaticReceiveEvent(message);
+        AEventDispatcherBase::StaticReceiveEvent(message);
         return;
     }
     
@@ -107,7 +108,7 @@ void AEventSystemDebugger::FireDebugEventHeck(){
             FString nameLane = FString::Printf(TEXT("_%s"), *lanes[navlaneIndex]);
             message += nameLane;
         }
-        AEventDispatcher::StaticReceiveEvent(message);
+        AEventDispatcherBase::StaticReceiveEvent(message);
         return;
     }
 
@@ -125,7 +126,7 @@ void AEventSystemDebugger::FireDebugEventHeck(){
         message += nameState;
 
 
-        AEventDispatcher::StaticReceiveEvent(message);
+        AEventDispatcherBase::StaticReceiveEvent(message);
         return;
     }
 
