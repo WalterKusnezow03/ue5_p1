@@ -1,70 +1,72 @@
 #pragma once
 
-/*
-class Node
-	{
-		public:
-			static const int noneFx = -1;
 
-			/// @brief will tell if the node is closed (on the closed list) or not
-			bool closedFlag;
-			/// @brief came from neighbor
-			APathFinder::Node *camefrom = nullptr;
-			float fx;
-			float gx;
-			FVector pos;
+#include "CoreMinimal.h"
 
-			
-			
+class PATHFINDER_API PathFinderNode{
+public:
+    static const int noneFx = -1;
 
-			Node(FVector posIn); //no id: setup needed
-			Node(int id, FVector posIn); //id from storage
+    /// @brief will tell if the node is closed (on the closed list) or not
+    bool closedFlag;
+    /// @brief came from neighbor
+    PathFinderNode *camefrom = nullptr;
+    float fx;
+    float gx;
+    FVector pos;
 
-			Node(Node &other);
-			Node &operator=(Node &other);
+    
+    
 
-			~Node();
-			void reset();
-			void updateCameFrom(float gxIn, float hxEnd, Node &came);
-			void close();
-			bool isClosed();
+    PathFinderNode(FVector posIn); //no id: setup needed
+    PathFinderNode(int id, FVector posIn); //id from storage
 
-			float oldfx;
+    PathFinderNode(PathFinderNode &other);
+    PathFinderNode &operator=(PathFinderNode &other);
 
-			void setConvexNeighborA(Node *n);
-			void setConvexNeighborB(Node *n);
-			void addTangentialNeighbor(Node *n);
+    ~PathFinderNode();
+    void reset();
+    void updateCameFrom(float gxIn, float hxEnd, PathFinderNode &came);
+    void close();
+    bool isClosed();
 
-			//convex neighbors A and B
-			APathFinder::Node *nA = nullptr;
-			APathFinder::Node *nB = nullptr;
+    float oldfx;
 
-			bool hasNeighbors(); //convex hull neighbors
-			bool hasAnyNeighbors(); //any visible neighbors 
+    void setConvexNeighborA(PathFinderNode *n);
+    void setConvexNeighborB(PathFinderNode *n);
+    void addTangentialNeighbor(PathFinderNode *n);
 
-			std::vector<Node *> visible_tangential_Neighbors;
+    //convex neighbors A and B
+    PathFinderNode *nA = nullptr;
+    PathFinderNode *nB = nullptr;
 
-			// new: hull index
-			int hullindex = -1;
-			bool sameHull(Node *other);
+    bool hasNeighbors(); //convex hull neighbors
+    bool hasAnyNeighbors(); //any visible neighbors 
 
-			void show(UWorld *world);
+    std::vector<PathFinderNode *> visible_tangential_Neighbors;
 
-			//storage interface helpers
-			void setId(int id);
-			int getId();
+    // new: hull index
+    int hullindex = -1;
+    bool sameHull(PathFinderNode *other);
 
-			//only returns valid ids
-			TArray<int> NeighborsById();
+    void show(UWorld *world);
 
-			//returns -1 if not valid
-			int IdConvexNeighborA();
-			int IdConvexNeighborB();
+    //storage interface helpers
+    void setId(int id);
+    int getId();
 
-		private:
-			FCriticalSection CriticalSection;
+    //only returns valid ids
+    TArray<int> NeighborsById();
 
-			//id system for saving
-			int id = -1; //is invalid by default, not tracked in storage.
-	};
-    */
+    //returns -1 if not valid
+    int IdConvexNeighborA();
+    int IdConvexNeighborB();
+
+    float Dist(const FVector &posOther);
+
+private:
+    FCriticalSection CriticalSection;
+
+    //id system for saving
+    int id = -1; //is invalid by default, not tracked in storage.
+};

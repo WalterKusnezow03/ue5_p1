@@ -61,7 +61,7 @@ int PathFinderStorageInterface::ReadCountNodes(
 //appends node in array. Data from before is kept.
 void PathFinderStorageInterface::AppendNode(
     TArray<uint8> &Bytes,
-    APathFinder::Node *node
+    PathFinderNode*node
 ){
     if(node){
         int idToWrite = node->getId();
@@ -140,7 +140,7 @@ void PathFinderStorageInterface::LoadNode(
 // ----- READ / WRITE NEIGHBORHOOD SECTION -----
 void PathFinderStorageInterface::AppendConvexAndNeighborHood(
     TArray<uint8> &Bytes,
-    APathFinder::Node *node
+    PathFinderNode*node
 ){
     if(!node){
         return;
@@ -283,7 +283,7 @@ void PathFinderStorageInterface::Save(FString worldName, APathFinder *pathFinder
     TArray<uint8> Bytes;
     WriteCountNodes(Bytes, nodesCount);
 
-    const std::map<int, APathFinder::Node *> &IdMappedNodesReference = pathFinder->IdMapReference();
+    const std::map<int, PathFinderNode*> &IdMappedNodesReference = pathFinder->IdMapReference();
     //write all graph nodes first!
     for(auto &pair : IdMappedNodesReference){
         AppendNode(Bytes, pair.second);

@@ -321,7 +321,11 @@ void AOutpost::releaseAll(){
 		while(vec.size() > 0){
 			AHumanEntityScript *human = vec.back();
 			vec.pop_back();
-			human->despawn();
+
+			if(human){
+				human->despawn();
+			}
+			
 			// releaseEntity(human); //will find and release the targeted entity
 		}
 	}

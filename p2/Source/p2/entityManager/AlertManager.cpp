@@ -261,10 +261,8 @@ TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location,
  */
 std::vector<int> AlertManager::subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius){
     std::vector<int> entitiesInAreaByIndex;
-    for (int i = 0; i < subscribedToAlert.size(); i++)
-    {
-        AEntityScript *ptr = subscribedToAlert[i];
-        if(ptr){
+    for (int i = 0; i < subscribedToAlert.size(); i++){
+        if(AEntityScript *ptr = subscribedToAlert[i]){
             float dist = FVector::Dist(location, ptr->GetActorLocation());
             if(dist <= SphereRadius){
                 entitiesInAreaByIndex.push_back(i);

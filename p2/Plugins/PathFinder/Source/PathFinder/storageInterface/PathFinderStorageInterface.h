@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StoragePlugin/Storage/BaseInterface/StorageInterface.h"
+#include "PathFinder/pathFinding/structure/PathFinderNode.h"
 
 class APathFinder;
 
@@ -24,7 +25,7 @@ private:
     //appends a node by id and position into array, no neighborhood
     void AppendNode(
         TArray<uint8> &Bytes,
-        APathFinder::Node *node
+        PathFinderNode*node
     );
 
     ///loads a node by id and position, pointer increased, node added to graph
@@ -43,7 +44,7 @@ private:
     //appends node data: by id, added: convex a & b, neighbors
     void AppendConvexAndNeighborHood(
         TArray<uint8> &Bytes,
-        APathFinder::Node *node
+        PathFinderNode*node
     );
 
     //reads node data: by id, added: convex a & b, neighbors

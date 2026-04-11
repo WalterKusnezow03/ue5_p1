@@ -33,8 +33,8 @@ raycastTask &raycastTask::operator=(const raycastTask &other){
 
 void raycastTask::setup(
     UWorld *world,
-    APathFinder::Node *aIn,
-    APathFinder::Node *bIn
+    PathFinderNode *aIn,
+    PathFinderNode *bIn
 ){
     worldPointer = world;
     a = aIn;

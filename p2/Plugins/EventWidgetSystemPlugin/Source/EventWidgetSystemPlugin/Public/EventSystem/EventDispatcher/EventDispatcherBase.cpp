@@ -151,7 +151,9 @@ void AEventDispatcherBase::UnRegister(const WidgetIdKey &key){
 void AEventDispatcherBase::Tick(float deltatime){
     Super::Tick(deltatime);
     TickAllWidgets(deltatime);
-    DebugHelper::showScreenMessage("AEventDispatcherBase::TICK", FColor::Red);
+    if(false){
+        DebugHelper::showScreenMessage("AEventDispatcherBase::TICK", FColor::Red);
+    }
 }
 
 void AEventDispatcherBase::TickAllWidgets(float deltatime){

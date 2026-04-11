@@ -18,9 +18,11 @@
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
+#include "EdgeCollector.h"
+
 //---- STATIC VARS ----
 APathFinder* APathFinder::pathFinderInstance = nullptr; //very imporntant, do not delete!
-int APathFinder::countNodes = 0;
+
 
 void APathFinder::resetPathFinderPointer(){
     APathFinder::pathFinderInstance = nullptr;
@@ -60,10 +62,9 @@ void APathFinder::makeInstance(UWorld *world, FString worldLevelName){
 
 void APathFinder::Setup(FString worldname){
     worldLevelNameSaved = worldname;
-    TopRight = new APathFinder::Quadrant(1, 1);
-    BottomRight = new APathFinder::Quadrant(1,-1);
-	TopLeft = new APathFinder::Quadrant(-1,1);
-	BottomLeft = new APathFinder::Quadrant(-1,-1);
+
+    quadrantMap = new PathFinderQuadrantMap(this);
+    
 
     DebugHelper::logMessage("PATHFINDER LAUNCHED");
 
@@ -76,6 +77,11 @@ void APathFinder::Setup(FString worldname){
         DebugHelper::logMessage(message);
     }else{
         DebugHelper::logMessage("Storage Interface PathFinder failed load from storage");
+
+        //collect all edges from world if pathfinder wasnt inited yet!
+        EdgeCollector c = EdgeCollector();
+        c.getAllEdges(GetWorld()); //pushes them to the navmesh on its own
+	
     }
     wasLoaded = true;
 }
@@ -92,15 +98,9 @@ void APathFinder::KillInstance(){
     //reset pointer
     resetPathFinderPointer();
 
-    //delete all
-    delete (TopRight); 
-    delete (BottomRight); 
-    delete (BottomLeft); 
-    delete (TopLeft);
-    TopRight = nullptr;
-    TopLeft = nullptr;
-    BottomRight = nullptr;
-    BottomLeft = nullptr;
+    delete quadrantMap;
+    quadrantMap = nullptr; //no double deletion
+
 
 
 
@@ -143,81 +143,14 @@ void APathFinder::Tick(float deltatime){
 
 
 
-APathFinder::Node::Node(FVector posIn){
-    gx = std::numeric_limits<float>::max(); //set to max for unknown status by default
-    fx = gx;
-    pos = posIn;
-    camefrom = nullptr;
-    closedFlag = false;
-    nA = nullptr;
-    nB = nullptr;
-
-
-    if(APathFinder *ptr = APathFinder::instance()){
-        id = ptr->staticId++; //copy id and post increment.
-        ptr->TrackNodeInIdMap(this); //track in id map for later save
-    }
-}
-APathFinder::Node::Node(int idIn, FVector posIn){
-    gx = std::numeric_limits<float>::max(); //set to max for unknown status by default
-    fx = gx;
-    pos = posIn;
-    camefrom = nullptr;
-    closedFlag = false;
-    nA = nullptr;
-    nB = nullptr;
-
-    //Save Id!
-    id = idIn; 
+int APathFinder::getNextStaticId(){
+    int copy = staticId;
+    staticId++;
+    return copy;
 }
 
-APathFinder::Node::Node(Node &other){
-    *this = other;
-}
-APathFinder::Node &APathFinder::Node::operator=(Node &other){
-    if(this != &other){
-        gx = other.gx; //set to max for unknown status by default
-        fx = other.fx;
-        pos = other.pos;
-        camefrom = other.camefrom;
-        closedFlag = other.closedFlag;
-        nA = other.nA;
-        nB = other.nB;
-    }
-    return *this;
-}
 
-APathFinder::Node::~Node(){
-    camefrom = nullptr;
-    visible_tangential_Neighbors.clear();
-}
 
-APathFinder::Quadrant::Quadrant(int xSampleIn, int ySampleIn){
-    xSample = xSampleIn;
-    ySample = ySampleIn;
-}
-
-APathFinder::Quadrant::~Quadrant(){
-    for (int i = 0; i < map.size(); i++){
-        for (int j = 0; j < map.at(i).size(); j++){
-            APathFinder::Chunk *c = map.at(i).at(j);
-            if(c != nullptr){
-                delete (c);
-                map.at(i).at(j) = nullptr;
-            }
-        }
-    }
-}
-
-APathFinder::Chunk::Chunk(){}
-APathFinder::Chunk::~Chunk(){
-    for (int i = 0; i < nodes.size(); i++){
-        if(nodes.at(i) != nullptr){
-            delete (nodes.at(i));
-            nodes.at(i) = nullptr;
-        }
-    }
-}
 
 //constructors end
 
@@ -225,35 +158,14 @@ APathFinder::Chunk::~Chunk(){
 
 /// @brief clears all nodes from the whole navmesh but doesnt delete the chunks
 void APathFinder::clear(){
-    TArray<APathFinder::Quadrant*> array = {TopLeft, BottomLeft, TopRight, BottomRight};
-    for (int i = 0; i < array.Num(); i++){
-        if(array[i] != nullptr){
-            array[i]->clear();
-        }
+    if(quadrantMap){
+        quadrantMap->clear();
     }
     clearDelegates();
 }
 
-void APathFinder::Quadrant::clear(){
-    for (int i = 0; i < map.size(); i++){
-        for (int j = 0; j < map.at(i).size(); j++){
-            APathFinder::Chunk *c = map.at(i).at(j);
-            if(c != nullptr){
-                c->clear();
-            }
-        }
-    }
-}
 
-void APathFinder::Chunk::clear(){
-    for (int i = 0; i < nodes.size(); i++){
-        if(nodes.at(i) != nullptr){
-            delete (nodes.at(i));
-            nodes.at(i) = nullptr;
-        }
-    }
-    nodes.clear(); //finally clear the nodes
-}
+
 
 
 void APathFinder::clearDelegates(){
@@ -333,17 +245,17 @@ void APathFinder::addNewNodeVector(std::vector<FVector>& vec){
 void APathFinder::addConvexHull(std::vector<FVector> &vec){
     
     //create all nodes
-    std::vector<Node *> outNodes;
+    std::vector<PathFinderNode *> outNodes;
     for (int i = 0; i < vec.size(); i++){
-        APathFinder::Node *n = new APathFinder::Node(vec.at(i));
+        PathFinderNode *n = new PathFinderNode(vec.at(i));
         outNodes.push_back(n);
     }
 
     // add the konvex neighbors
     for (int i = 0; i < vec.size(); i++)
     {
-        APathFinder::Node *prev = nullptr;
-        APathFinder::Node *next = nullptr;
+        PathFinderNode *prev = nullptr;
+        PathFinderNode *next = nullptr;
 
         if (i == 0)
         {
@@ -361,7 +273,7 @@ void APathFinder::addConvexHull(std::vector<FVector> &vec){
         }
 
 
-        APathFinder::Node *current = outNodes.at(i);
+        PathFinderNode *current = outNodes.at(i);
         if(prev != nullptr && current != nullptr && next != nullptr){
             //current->nA = prev;
             //current->nB = next;
@@ -390,20 +302,15 @@ void APathFinder::addConvexHull(std::vector<FVector> &vec){
 /// @brief adds a single node to the graph
 /// @param a node to add
 void APathFinder::addNewNode(FVector a){
-    APathFinder::Quadrant *q = askforQuadrant(a.X, a.Y);
-    if(q != nullptr){
-        //FScopeLock Lock(&delegate_CriticalSection_a); //new lock added
-        q->add(a);
+    if(quadrantMap){
+        quadrantMap->addNewNode(a);
     }
 }
 
-void APathFinder::addNode(Node * node){
+void APathFinder::addNode(PathFinderNode * node){
     if(node != nullptr){
-        FVector posCopy = node->pos;
-        APathFinder::Quadrant *q = askforQuadrant(posCopy.X, posCopy.Y);
-        if(q != nullptr){
-            //FScopeLock Lock(&delegate_CriticalSection_a); //new lock added
-            q->add(node);
+        if(quadrantMap){
+            quadrantMap->addNode(node);
         }
     }
 }
@@ -412,7 +319,7 @@ void APathFinder::addNode(Node * node){
 
 // --- STORAGE INTERFACE METHODS ---
 
-const std::map<int, APathFinder::Node *> &APathFinder::IdMapReference(){
+const std::map<int, PathFinderNode *> &APathFinder::IdMapReference(){
     return idMappedNodes;
 }
 
@@ -426,14 +333,12 @@ void APathFinder::addNodeFromStorageInterfaceNoConnection(
     if(NodeIsTrackedInIdMap(id)){
         return;
     }
-
-    APathFinder::Quadrant *q = askforQuadrant(position.X, position.Y);
-    if(q != nullptr){
-
-        APathFinder::Node *nodeNew = new Node(id, position);
-        q->addNoConnect(nodeNew);
+    if(quadrantMap){
+        PathFinderNode *nodeNew = new PathFinderNode(id, position);
+        quadrantMap->addNoConnect(nodeNew);
         TrackNodeInIdMap(nodeNew);
     }
+
 }
 
 void APathFinder::addConnectionsFromStorageInterfaceForNodeById(
@@ -444,7 +349,7 @@ void APathFinder::addConnectionsFromStorageInterfaceForNodeById(
 ){
     //connect to all neighbors if possible!
     if(NodeIsTrackedInIdMap(id)){
-        Node *current = idMappedNodes[id];
+        PathFinderNode *current = idMappedNodes[id];
         if(current){
 
             //add connected neighbors
@@ -453,7 +358,7 @@ void APathFinder::addConnectionsFromStorageInterfaceForNodeById(
                 if(NodeIsTrackedInIdMap(neighborId)){
         
                     //special convex hull ignored for now. / is not used at all.
-                    Node *other = idMappedNodes[neighborId];
+                    PathFinderNode *other = idMappedNodes[neighborId];
         
                     other->addTangentialNeighbor(current);
                     current->addTangentialNeighbor(other);
@@ -474,7 +379,7 @@ void APathFinder::addConnectionsFromStorageInterfaceForNodeById(
 
 
 
-void APathFinder::TrackNodeInIdMap(APathFinder::Node *node){
+void APathFinder::TrackNodeInIdMap(PathFinderNode *node){
     if(node){
         int idRead = node->getId();
         if(idMappedNodes.find(idRead) == idMappedNodes.end()){
@@ -497,62 +402,24 @@ int APathFinder::countNodesTrackedInIdMap(){
 
 
 
-APathFinder::Quadrant* APathFinder::askforQuadrant(int xIndex, int yIndex){
-    //top left
-    if(xIndex < 0 && yIndex >= 0){
-        return this->TopLeft;
-    }
-    //top right
-    if(xIndex >= 0 && yIndex >= 0){
-        return this->TopRight; 
-    }
-    //bottom left
-    if(xIndex < 0 && yIndex < 0){
-        return this->BottomLeft;
-    }
-    //bottom right
-    if(xIndex >= 0 && yIndex < 0){
-        return this->BottomRight;
-    }
-    return nullptr;
-}
-
 
 
 /// @brief finds a node from the correct quadrant
 /// @param node 
 /// @return 
-APathFinder::Node* APathFinder::findNode(FVector node){
-    int x = (int) node.X;
-    int y = (int) node.Y;
-    APathFinder::Quadrant *q = askforQuadrant(x, y);
-    if(q != nullptr){
-        APathFinder::Node *nodeFound = q->findNode(node);
-        if(nodeFound != nullptr){
-            DebugHelper::showScreenMessage("node found path finder", FColor::Green);
-            return nodeFound;
-        }
-    }else{
-        DebugHelper::showScreenMessage("QUADRANT IS NULL!!!!!", FColor::Red);
+PathFinderNode* APathFinder::findNode(FVector node){
+    if(quadrantMap){
+        return quadrantMap->findNode(node);
     }
-    
+
     return nullptr;
 }
 
-APathFinder::Node* APathFinder::findNodeInDirection(FVector &node, FVector &dir){
-    int x = (int) node.X;
-    int y = (int) node.Y;
-    APathFinder::Quadrant *q = askforQuadrant(x, y);
-    if(q != nullptr){
-        APathFinder::Node *nodeFound = q->findNodeInDirection(node, dir);
-        if(nodeFound != nullptr){
-            DebugHelper::showScreenMessage("node found path finder", FColor::Green);
-            return nodeFound;
-        }
-    }else{
-        DebugHelper::showScreenMessage("QUADRANT IS NULL!!!!!", FColor::Red);
+PathFinderNode* APathFinder::findNodeInDirection(FVector &node, FVector &dir){
+    if(quadrantMap){
+        return quadrantMap->findNodeInDirection(node, dir);
     }
-    
+
     return nullptr;
 }
 
@@ -560,28 +427,10 @@ APathFinder::Node* APathFinder::findNodeInDirection(FVector &node, FVector &dir)
 
 
 
-std::vector<APathFinder::Node *> APathFinder::getSubGraph(FVector a, FVector b){
-
-    std::vector<APathFinder::Node *> nodes;
-    std::vector<APathFinder::Node *> asked;
-
-    //why is this just iterating over all quadrants:
-    //the "askForArea(a,b)" method is clamping the coordinates by it self
-    //to the correct values to properly get all nodes in the correct area.
-    TArray<APathFinder::Quadrant*> array = {TopLeft, BottomLeft, TopRight, BottomRight};
-    
-    
-    
-    for (int i = 0; i < array.Num(); i++){
-        if(array[i] != nullptr){
-
-            asked = array[i]->askForArea(a, b);
-            if(asked.size() > 0){
-                nodes.insert(nodes.end(), asked.begin(), asked.end());
-            }
-
-            
-        }
+std::vector<PathFinderNode *> APathFinder::getSubGraph(FVector a, FVector b){
+    std::vector<PathFinderNode *> nodes;
+    if(quadrantMap){
+        return quadrantMap->getSubGraph(a, b);
     }
     return nodes;
 }
@@ -592,14 +441,13 @@ void APathFinder::debugCountNodes(){
     FVector a = FVector(-99999999999, 0, -99999999999);
     FVector b = FVector(99999999999, 0, 99999999999);
 
-    std::vector<APathFinder::Node *> nodes = getSubGraph(a, b);
+    std::vector<PathFinderNode *> nodes = getSubGraph(a, b);
 
-    FString string = FString::Printf(TEXT("collected COUNT %d"), APathFinder::countNodes);
+    
     FString string2 = FString::Printf(TEXT("collected SUBGRAPH %d"), nodes.size());
 
     if (GEngine && false)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, string);
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, string2);
     }
 
@@ -608,11 +456,11 @@ void APathFinder::debugCountNodes(){
     //draw nodes
     for (int i = 0; i < nodes.size(); i++){
         //each neighbor, draw line
-        APathFinder::Node *current = nodes.at(i);
+        PathFinderNode *current = nodes.at(i);
         if (current != nullptr)
         {
             for (int j = 0; j < current->visible_tangential_Neighbors.size(); j++){
-                APathFinder::Node *currNeighbor = current->visible_tangential_Neighbors.at(j);
+                PathFinderNode *currNeighbor = current->visible_tangential_Neighbors.at(j);
                 if(currNeighbor != nullptr){
                     DebugHelper::showLineBetween(
                         GetWorld(),
@@ -648,8 +496,8 @@ std::vector<FVector> APathFinder::getPath(FVector a, FVector b){
         }
     }
 
-    APathFinder::Node *start = nullptr;
-    APathFinder::Node *end = nullptr;
+    PathFinderNode *start = nullptr;
+    PathFinderNode *end = nullptr;
 
     FVector dir = b - a;
     start = findNodeInDirection(a, dir);
@@ -668,7 +516,7 @@ std::vector<FVector> APathFinder::getPath(FVector a, FVector b){
     if(start != nullptr && end != nullptr){
         
         //PREBUILD EDGES
-        if(PREBUILD_EDGES_ENABLED){
+        if(GetPrebuildEdgesEnabled()){
             if(false){
                 showPos(start->pos, FColor::Blue);
             }
@@ -680,7 +528,7 @@ std::vector<FVector> APathFinder::getPath(FVector a, FVector b){
         //LIVE CREATED EGDES
 
         //find path
-        std::vector<APathFinder::Node *> graph = getSubGraph(a, b);
+        std::vector<PathFinderNode *> graph = getSubGraph(a, b);
         
         if(debugDrawNodes && false){
             showPos(start->pos, FColor::Blue);
@@ -701,7 +549,7 @@ std::vector<FVector> APathFinder::getPath(FVector a, FVector b){
 /// @param A 
 /// @param B 
 /// @return 
-float APathFinder::distance(APathFinder::Node* A, APathFinder::Node *B){
+float APathFinder::distance(PathFinderNode* A, PathFinderNode *B){
     if(A != nullptr && B != nullptr){
         float d = FVector::Dist(A->pos, B->pos);
         return d;
@@ -722,15 +570,15 @@ float APathFinder::distance(FVector A, FVector B){
 /// @param subgraph graph enclosed by start and end node. Use Subgraph method
 /// @return vector of positions: path
 std::vector<FVector> APathFinder::findPath(
-    Node *start, 
-    Node *end, 
-    std::vector<APathFinder::Node*> &subgraph
+    PathFinderNode *start, 
+    PathFinderNode *end, 
+    std::vector<PathFinderNode*> &subgraph
 ){
     //screenMessage(FString::Printf(TEXT("subgraph size %d"), subgraph.size()));
     
 
     for (int i = 0; i < subgraph.size(); i++){
-        APathFinder::Node *n = subgraph.at(i);
+        PathFinderNode *n = subgraph.at(i);
         if(n != nullptr){
             n->reset();
             n->closedFlag = false;
@@ -745,7 +593,7 @@ std::vector<FVector> APathFinder::findPath(
     end->camefrom = nullptr;
     end->closedFlag = false;
 
-    std::vector<APathFinder::Node*> openList;
+    std::vector<PathFinderNode*> openList;
 
     
     priorityQueue openList_;
@@ -753,7 +601,7 @@ std::vector<FVector> APathFinder::findPath(
 
     while(openList_.hasNodes()){
     
-        APathFinder::Node *current = openList_.popLowestFx();
+        PathFinderNode *current = openList_.popLowestFx();
 
         if (current != nullptr)
         {
@@ -772,7 +620,7 @@ std::vector<FVector> APathFinder::findPath(
             current->close();
             for (int i = 0; i < subgraph.size(); i++)
             {
-                APathFinder::Node *n = subgraph.at(i);
+                PathFinderNode *n = subgraph.at(i);
                 if(n != nullptr){
                     //bool wasClosed = n->closedFlag;
                     if(!n->isClosed()){
@@ -816,7 +664,7 @@ std::vector<FVector> APathFinder::findPath(
 }
 
 
-bool APathFinder::reached(Node *a, Node *b){
+bool APathFinder::reached(PathFinderNode *a, PathFinderNode *b){
     if(a == nullptr || b == nullptr){
         return false;
     }
@@ -831,7 +679,7 @@ bool APathFinder::reached(Node *a, Node *b){
     }
 
     //can see
-    if (PREBUILD_EDGES_ENABLED == false && canSee(a->pos, b->pos)){
+    if (GetPrebuildEdgesEnabled() == false && canSee(a->pos, b->pos)){
         return true;
     }
     return false;
@@ -857,7 +705,7 @@ void APathFinder::screenMessage(FString s) {
 /// @param A position A
 /// @param B position B
 /// @return can see without interrupt
-bool APathFinder::canSeeTangential(APathFinder::Node *A, APathFinder::Node*B){
+bool APathFinder::canSeeTangential(PathFinderNode *A, PathFinderNode*B){
     if(A && B){
 
         // if edge is too vertical and to high: ignore, cant climb walls.
@@ -883,8 +731,8 @@ bool APathFinder::canSeeTangential(APathFinder::Node *A, APathFinder::Node*B){
 
 
         //adjustments if any entity might be in way
-        Start.Z += ONE_METER * 1.7f;
-        End.Z += ONE_METER * 1.7f;
+        Start.Z += GetOneMeter() * 1.7f;
+        End.Z += GetOneMeter() * 1.7f;
         if (canSee(Start, End)){
             return true;
         }
@@ -918,7 +766,7 @@ bool APathFinder::canSee(FVector &Start, FVector &End){
     return false;
 }
 
-std::vector<FVector> APathFinder::constructPath(APathFinder::Node *end){
+std::vector<FVector> APathFinder::constructPath(PathFinderNode *end){
     std::vector<FVector> list;
     if (end != nullptr)
     {
@@ -937,7 +785,7 @@ std::vector<FVector> APathFinder::constructPath(APathFinder::Node *end){
 /// @param a node a 
 /// @param b node b
 /// @return too close and vertical true or false
-bool APathFinder::isCloseAndTooVertical(Node *a, Node *b){
+bool APathFinder::isCloseAndTooVertical(PathFinderNode *a, PathFinderNode *b){
 
     if(a != nullptr && b != nullptr){
         // AB = B - A;
@@ -947,7 +795,7 @@ bool APathFinder::isCloseAndTooVertical(Node *a, Node *b){
         if (upZ > 0.8f)
         {
             // skalarproduct up is near one / paralell to z axis
-            if (AB.Z > ONE_METER)
+            if (AB.Z > GetOneMeter())
             {
                 return true;
             }
@@ -965,566 +813,21 @@ bool APathFinder::isCloseAndTooVertical(Node *a, Node *b){
 
 
 
-/***
- * ---- QUADRANT METHODS ----
- */
-
-/// @brief adds a node to the quadrant
-/// @param n position to add
-void APathFinder::Quadrant::add(FVector n){
-    //std::abs for flipping negatives obviosuly
-    int x = std::abs(n.X / CHUNKSIZE); //create new chunks?
-    int y = std::abs(n.Y / CHUNKSIZE);
-    
-
-    fillMapTo(x, y);
-
-    // Add the node to the appropriate chunk
-    map[x][y]->add(n);   
-}
-
-
-/// @brief adds a node to the quadrant (node node)
-/// @param n position to add
-void APathFinder::Quadrant::add(Node *n){
-    if(n != nullptr){
-        //std::abs for flipping negatives obviosuly
-        int x = std::abs(n->pos.X / CHUNKSIZE); //create new chunks?
-        int y = std::abs(n->pos.Y / CHUNKSIZE);
-        
-        fillMapTo(x, y);
-
-        // Add the node to the appropriate chunk
-        map[x][y]->add(n);
-    }   
-}
-
-
-void APathFinder::Quadrant::addNoConnect(Node *node){
-    if(node){
-        int x = std::abs(node->pos.X / CHUNKSIZE); //create new chunks?
-        int y = std::abs(node->pos.Y / CHUNKSIZE);
-        
-        fillMapTo(x, y);
-
-        // Add the node to the appropriate chunk
-        map[x][y]->addNoConnect(node);
-    }
-}
-
-
-
-
-void APathFinder::Quadrant::fillMapTo(int xIndex, int yIndex){
-    APathFinder *instance = APathFinder::instance();
-    if(instance != nullptr){
-        FScopeLock Lock(&instance->delegate_CriticalSection_a); //new lock added from oath finder instance 
-        while(map.size() <= xIndex) {
-            map.push_back(std::vector<APathFinder::Chunk * >());
-        }
-
-        // Ensure all lists up to map.Count have enough chunks
-        for (int i = 0; i < map.size(); i++) {
-            while (map[i].size() <= yIndex) {
-                map[i].push_back(new APathFinder::Chunk());
-            }
-        }
-    }
-}
-
-
-
 
 void APathFinder::draw(FVector &pos){
     FVector up = pos + FVector(0, 0, 10000);
     DebugHelper::showLineBetween(GetWorld(), pos, up, FColor::Red, 5.0f);
 }
 
-//finds a node from a quadrant
-APathFinder::Node* APathFinder::Quadrant::findNode(FVector pos){
-    int x1 = std::abs(pos.X / CHUNKSIZE);
-    int y1 = std::abs(pos.Y / CHUNKSIZE);
 
-    if(map.size() > x1 && map.at(x1).size() > y1){
-        if(map.at(x1).at(y1) != nullptr){
-            APathFinder::Node* n = map.at(x1).at(y1)->findNode(pos);
-            if(n != nullptr){
-                //DebugHelper::showScreenMessage("quadrant found node return!", FColor::Green);
-                return n;
-            }
-        }
-    }
-    //DebugHelper::showScreenMessage("quadrant not found node return!", FColor::Red);
-    return nullptr;
-}
 
 
 
-APathFinder::Node *APathFinder::Quadrant::findNodeInDirection(FVector &pos, FVector &dir){
-    int x1 = std::abs(pos.X / CHUNKSIZE);
-    int y1 = std::abs(pos.Y / CHUNKSIZE);
 
-    if(map.size() > x1 && map.at(x1).size() > y1){
-        if(map.at(x1).at(y1) != nullptr){
-            APathFinder::Node* n = map.at(x1).at(y1)->findNodeInDirection(pos, dir);
-            if(n != nullptr){
-                //DebugHelper::showScreenMessage("quadrant found node return!", FColor::Green);
-                return n;
-            }
-        }
-    }
-    //DebugHelper::showScreenMessage("quadrant not found node return!", FColor::Red);
-    return nullptr;
-}
 
 
 
 
-/// @brief returns all lists from all chunks enclosed by an area
-/// @param xA x value of first pos
-/// @param yA z value of first pos
-/// @param xB x value of second pos
-/// @param zB z value of second pos
-/// @return 
-std::vector<APathFinder::Node*> APathFinder::Quadrant::nodesEnClosedBy(
-    float xA, float yA, float xB, float yB
-){
-    std::vector<APathFinder::Node *> nodes;
-
-    //abs for flipping neg values for the quadrants
-    int x1 = std::abs(xA / CHUNKSIZE); //implicit conversion is allowed
-    int y1 = std::abs(yA / CHUNKSIZE);
-    int x2 = std::abs(xB / CHUNKSIZE); //implicit conversion is allowed
-    int y2 = std::abs(yB / CHUNKSIZE);
-
-    int fromX = std::min(x1, x2);
-    int toX = std::max(x1, x2);
-    //toX = std::min(tg btoX, map.size());
-    
-
-    int fromY = std::min(y1, y2);
-    int toY = std::max(y1, y2);
-    //toY = std::min(toY, map.at(0).size());
-
-    for(int i = fromX; i <= toX; i++){
-        for(int j = fromY; j <= toY; j++){
-            if(map.size() > i && map.at(i).size() > j){ //hier mit punkt weil call by value
-                std::vector<APathFinder::Node *> &read = map.at(i).at(j)->getNodes();
-                if(read.size() > 0){
-                    nodes.insert(nodes.end(), read.begin(), read.end());
-                }
-
-                FString string = FString::Printf(TEXT("read enclosed num size %d"), read.size());
-                if(GEngine){
-                    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
-                }
-            }
-        }
-    }
-
-    return nodes;
-}
-
-
-
-std::vector<APathFinder::Node*> APathFinder::Quadrant::askForArea(FVector a, FVector b){
-    
-    float lowerX = 0;
-    float lowerY = 0;
-    float higherX = 0;
-    float higherY = 0;
-    lowerX = std::min(a.X, b.X); //-CHUNKSIZE; //+ extension
-    lowerY = std::min(a.Y, b.Y); //- CHUNKSIZE;
-    higherX = std::max(a.X, b.X); //+ CHUNKSIZE;
-    higherY = std::max(a.Y, b.Y); //+ CHUNKSIZE;
-
-    bool extendBounds = false;
-    if(extendBounds){
-        lowerX += - CHUNKSIZE; //+ extension
-        lowerY += - CHUNKSIZE;
-        higherX += CHUNKSIZE;
-        higherY += CHUNKSIZE;
-    }
-
-    float inf = std::numeric_limits<float>::infinity();
-
-    if(xSample == 1 && ySample == 1){
-        // Bottom-left quadrant
-        lowerX = std::clamp(lowerX, 0.0f, inf); //(val, lowerclamp, higherclamp)
-        lowerY = std::clamp(lowerY, 0.0f, inf);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
-    }
-
-    if(xSample == -1 && ySample == -1){
-        // Top-right quadrant
-        higherX = std::clamp(higherX, -inf, 0.0f); 
-        higherY = std::clamp(higherY, -inf, 0.0f);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
-    }
-
-    if(xSample == -1 && ySample == 1){
-        // Bottom-right quadrant
-        higherX = std::clamp(higherX, -inf, 0.0f);
-        lowerY = std::clamp(lowerY, 0.0f, inf);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
-    }
-
-    if(xSample == 1 && ySample == -1){
-        // Top-left quadrant
-        lowerX = std::clamp(lowerX, 0.0f, inf);
-        higherY = std::clamp(higherY, -inf, 0.0f);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
-    }
-
-    std::vector<APathFinder::Node*> vec;
-    // returns an empty list if none found
-    return vec;
-}
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * 
- * ---- CHUNK METHODS -----
- * 
- * 
- */
-
-/// @brief adds a new node to the vector with a position
-/// @param vec position of the node to be added
-void APathFinder::Chunk::add(FVector vec){
-    //find closest node near by
-    
-
-    if(!hasNode(vec)){
-        Node *node = new Node(vec);
-        nodes.push_back(node);
-        //connects to all nodes if enabled in header
-        if(APathFinder *p = APathFinder::instance()){
-            p->connect(node);
-        }
-
-        APathFinder::countNodes += 1;
-    }
-}
-
-/// @brief adds a new node to the node with a position
-/// @param vec position of the node to be added
-void APathFinder::Chunk::add(Node *node){
-    if(node != nullptr){
-
-        addNoConnect(node);
-        // connects to all nodes if enabled in header
-        if(PREBUILD_EDGES_ENABLED){
-            if(APathFinder *p = APathFinder::instance()){
-                p->connect(node);
-            }
-        }
-        
-    }
-}
-
-void APathFinder::Chunk::addNoConnect(Node *node){
-    if(node){
-        //will only check for duplicate nodes by adress
-        for (int i = 0; i < nodes.size(); i++){
-            if(nodes.at(i) == node){
-                return;
-            }
-        }
-        nodes.push_back(node);
-    }
-}
-
-
-
-
-
-
-/// @brief returns the chunk nodes as reference
-/// @return vector<Node> nodes as &ref
-std::vector<APathFinder::Node*> &APathFinder::Chunk::getNodes(){
-    return nodes;
-}
-
-/// @brief tries to find a node from a chunk, if not found: created
-/// @param pos position of the targetet node
-/// @return returns the closest node near by
-APathFinder::Node* APathFinder::Chunk::findNode(FVector pos){
-    FVector dir(0.0f, 0.0f, 0.0f); //none
-    return findNodeInDirection(pos, dir); //will be ignored
-}
-
-APathFinder::Node* APathFinder::Chunk::findNodeInDirection(FVector &pos, FVector &dir){
-    dir.Z = 0.0f;
-    dir = dir.GetSafeNormal();
-
-    bool checkDirNone = dir.X == 0.0f && dir.Y == 0.0f;
-    bool checkDir = !checkDirNone;
-
-    //add node if didnt had any yet
-    if(nodes.size() <= 0){
-        DebugHelper::showScreenMessage("RETURNED ASYNC CONNECT NODE ", FColor::Yellow);
-        return lateadd(pos);
-    }
-
-    //find the closest node 
-    float closest = std::numeric_limits<float>::max();
-    APathFinder::Node *closestNode = nullptr;
-    float prevDotProduct = -2.0f; //worst is -1.0f
-
-    for (int i = 0; i < nodes.size(); i++)
-    {
-        APathFinder::Node *current = nodes.at(i);
-        if (current != nullptr)
-        {
-            if(current->hasAnyNeighbors()){ //no neighbors makes no sense.
-                float Difference = FVector::Dist(pos, current->pos);
-
-                if(Difference < closest){
-
-                    //direction check
-                    if(checkDir){
-                        FVector dirFromBotLocation = current->pos - pos; // AB = B - A
-                        dirFromBotLocation.Z = 0.0f;
-                        dirFromBotLocation = dirFromBotLocation.GetSafeNormal();
-
-                        //dot product similar: ok
-                        float dotProduct = FVector::DotProduct(dir, dirFromBotLocation);
-                        //wenn das skalarprodukt zweier normalisierter
-                        //vektoren 1 ergibt sind sie paralell zu einander
-                        if(dotProduct > prevDotProduct){
-                            closest = Difference;
-                            closestNode = current;
-                            prevDotProduct = dotProduct;
-                        }
-                    }else{
-                        closest = Difference;
-                        closestNode = current;
-                    }
-
-                    
-                }
-            }
-            
-        }
-    }
-
-    //connect node or not.
-    if(APathFinder::PREBUILD_EDGES_ENABLED && closestNode == nullptr){
-        DebugHelper::showScreenMessage("ASYNC LATE CONNECT NODE ", FColor::Yellow);
-        return lateadd(pos);
-    }
-
-    return closestNode;
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-/// @brief will add a new node to the chunk and connect the edges if the prebuild mode is enabled / forced
-/// @param pos position to create the new node at
-/// @return created node, may not be fully connected yet if operation is async.
-APathFinder::Node* APathFinder::Chunk::lateadd(FVector pos){
-    APathFinder::Node *s = new APathFinder::Node(pos);
-    nodes.push_back(s);
-    if(APathFinder::PREBUILD_EDGES_ENABLED){
-        APathFinder *p = APathFinder::instance();
-        if(s != nullptr && p != nullptr){
-            p->connect(s);
-        }
-    }
-    return s;
-}
-
-
-
-
-
-/// @brief tries to find a node from a chunk as BOOL
-/// @param pos position of the targetet node
-/// @return returns the closest node near by
-bool APathFinder::Chunk::hasNode(FVector pos){
-    if(nodes.size() <= 0){
-        return false;
-    }
-
-    float closest = ONE_METER * 2.0f;
-    APathFinder::Node *closestNode = nodes.at(0);
-
-    for (int i = 0; i < nodes.size(); i++)
-    {
-        APathFinder::Node *current = nodes.at(i);
-        if (current != nullptr)
-        {
-
-            float Difference = FVector::Dist(pos, current->pos);
-
-            if(Difference < closest){
-                closest = Difference;
-                closestNode = current;
-            }
-        }
-    }
-    if(closest <= (ONE_METER / 3.0f)){
-        return true;
-    }
-    return false;
-}
-
-
-
-
-/**
- * 
- * --- NODE METHODS ---
- * 
- */
-void APathFinder::Node::setId(int inId){
-    id = inId;
-}
-
-int APathFinder::Node::getId(){
-    return id;
-}
-
-TArray<int> APathFinder::Node::NeighborsById(){
-    TArray<int> outIds;
-    for (int i = 0; i < visible_tangential_Neighbors.size(); i++){
-        APathFinder::Node *current = visible_tangential_Neighbors[i];
-        if(current){
-            int currentId = current->getId();
-            if(APathFinder::IdIsValid(currentId)){
-                outIds.Add(currentId);
-            }
-        }
-    }
-    return outIds;
-}
-
-int APathFinder::Node::IdConvexNeighborA(){
-    if(nA){
-        return nA->getId();
-    }
-    return -1;
-}
-
-int APathFinder::Node::IdConvexNeighborB(){
-    if(nB){
-        return nB->getId();
-    }
-    return -1;
-}
-
-
-
-
-/// @brief resets the nodes: gx, fx, camefrom neighbor and the closed flag
-void APathFinder::Node::reset(){
-    camefrom = nullptr;
-    gx = std::numeric_limits<float>::max(); //is set to max for unknown status
-    fx = gx;
-    closedFlag = false;
-}
-
-/// @brief will update the came from node and gx, and fx value for this node
-/// @param gxIn 
-/// @param hxEnd 
-/// @param came 
-void APathFinder::Node::updateCameFrom(float gxIn, float hxEnd, APathFinder::Node &came){
-    this->camefrom = &came;
-
-    oldfx = fx; //copy for no reason
-
-    gx = gxIn;
-    fx = gxIn + hxEnd;
-}
-
-
-void APathFinder::Node::close(){
-    this->closedFlag = true;
-}
-
-
-bool APathFinder::Node::isClosed(){
-    return closedFlag;
-}
-
-/// @brief returns if has convex hull neighbors
-/// @return 
-bool APathFinder::Node::hasNeighbors(){
-    return nA != nullptr && nB != nullptr;
-}
-
-bool APathFinder::Node::hasAnyNeighbors(){
-    bool hasN = hasNeighbors();
-    return hasN || visible_tangential_Neighbors.size() > 0;
-}
-
-/// @brief will set the a neighbor and also add the other convex node to tangential neighbors
-/// because IT IS CONVEX!
-/// @param n node 
-void APathFinder::Node::setConvexNeighborA(Node *n){
-    if(n != nullptr){
-        nA = n;
-        addTangentialNeighbor(n);
-    }
-}
-/// @brief will set the a neighbor and also add the other convex node to tangential neighbors
-/// because IT IS CONVEX!
-/// @param n node 
-void APathFinder::Node::setConvexNeighborB(Node *n){
-    if(n != nullptr){
-        nB = n;
-        addTangentialNeighbor(n);
-    }
-}
-
-/// @brief adds a node to the tangential connected neighbors, will allow duplicate add. Node is closed means
-/// its closed. No need for searching in O(n) when adding. 
-/// will add thread safely
-/// @param n must not be nullptr
-void APathFinder::Node::addTangentialNeighbor(Node *n){
-    if(n != nullptr){
-        if(n->getId() == getId()){
-            return;
-        }
-
-        FScopeLock Lock(&CriticalSection); //lock because of async raycasting
-
-        for (int i = 0; i < visible_tangential_Neighbors.size(); i++){
-            Node *current = visible_tangential_Neighbors[i];
-            if(current){
-                if(current->getId() == n->getId()){
-                    return;
-                }
-            }
-        }
-
-        visible_tangential_Neighbors.push_back(n);
-    }
-}
 
 
 
@@ -1552,8 +855,8 @@ void APathFinder::Node::addTangentialNeighbor(Node *n){
 /// all points, which is also already greatly reduced by limiting a max distance and 
 /// the subgraph functionality.
 /// @param node node to connect
-void APathFinder::connect(Node *node){
-    if(node != nullptr && APathFinder::PREBUILD_EDGES_ENABLED){
+void APathFinder::connect(PathFinderNode *node){
+    if(node != nullptr && GetPrebuildEdgesEnabled()){
 
         //find min max x and y for distance
     
@@ -1565,12 +868,12 @@ void APathFinder::connect(Node *node){
         FVector a(lowerX, lowerY, 0);
         FVector b(higherX, higherY, 0);
 
-        std::vector<Node *> enclosedByMaxDistance = getSubGraph(a, b);
+        std::vector<PathFinderNode *> enclosedByMaxDistance = getSubGraph(a, b);
 
 
 
         for (int i = 0; i < enclosedByMaxDistance.size(); i++){
-            Node *compare = enclosedByMaxDistance.at(i);
+            PathFinderNode *compare = enclosedByMaxDistance.at(i);
             if(compare != nullptr && compare != node){
                 // includes tangential check if possible!
                 if(APathFinder *p = APathFinder::instance()){
@@ -1609,7 +912,7 @@ void APathFinder::connect(Node *node){
 /// @param b node b
 /// both nodes must not be nullptr,
 /// dont delete the nodes, they are passed into the lambda!
-void APathFinder::asyncCanSee(Node *a, Node *b){
+void APathFinder::asyncCanSee(PathFinderNode *a, PathFinderNode *b){
     if(a != nullptr && b != nullptr){
 
         //needs still to pass the tangential check. Remember: if no convex hull, automaically passes the test
@@ -1620,7 +923,7 @@ void APathFinder::asyncCanSee(Node *a, Node *b){
         if(UWorld *worldPointer = GetWorld()){
 
             //async cast if prebuild
-            if(PREBUILD_EDGES_ENABLED){
+            if(GetPrebuildEdgesEnabled()){
 
                 FHitResult HitResult;
                 FCollisionQueryParams Params = collsionParamsLowDetailAndFast();
@@ -1672,7 +975,7 @@ void APathFinder::asyncCanSee(Node *a, Node *b){
 /// @param a 
 /// @param b 
 /// @return 
-FTraceDelegate *APathFinder::requestDelegate(Node *a, Node *b){
+FTraceDelegate *APathFinder::requestDelegate(PathFinderNode *a, PathFinderNode *b){
 
     if(a != nullptr && b != nullptr){
         FScopeLock Lock(&delegate_CriticalSection_a);
@@ -1760,8 +1063,8 @@ void APathFinder::freeDelegate(FTraceDelegate *d){
 /// @param end end node
 /// @return the path if the minimal one found
 std::vector<FVector> APathFinder::findPath_prebuildEdges(
-    Node *start,
-	Node *end
+    PathFinderNode *start,
+	PathFinderNode *end
 ){
     if(start == nullptr || end == nullptr){
         std::vector<FVector> o;
@@ -1795,18 +1098,18 @@ std::vector<FVector> APathFinder::findPath_prebuildEdges(
 
 
 
-    std::vector<Node *> markedForCleanUp; //must be cleaned before returning path
+    std::vector<PathFinderNode *> markedForCleanUp; //must be cleaned before returning path
     priorityQueue open;
     open.add(start);
 
     while(open.hasNodes()){
-        APathFinder::Node *current = open.popLowestFx();
+        PathFinderNode *current = open.popLowestFx();
         
 
         if (current != nullptr)
         {
             //debugDraw
-            APathFinder::Node *prevNode = current->camefrom;
+            PathFinderNode *prevNode = current->camefrom;
             if(prevNode != nullptr && false){
                 DebugHelper::showLineBetween(
                     GetWorld(),
@@ -1844,7 +1147,7 @@ std::vector<FVector> APathFinder::findPath_prebuildEdges(
                 // clean all status to prevent issues, everything must be cleared
                 for (int i = 0; i < markedForCleanUp.size(); i++)
                 {
-                    Node *n = markedForCleanUp.at(i);
+                    PathFinderNode *n = markedForCleanUp.at(i);
                     if (n != nullptr)
                     {
                         n->reset();
@@ -1861,7 +1164,7 @@ std::vector<FVector> APathFinder::findPath_prebuildEdges(
             
             //traverse NOT opened neighbors and add to open if not added yet (will be handeld by queue automatically)
             for (int i = 0; i < current->visible_tangential_Neighbors.size(); i++){
-                Node *neighbor = current->visible_tangential_Neighbors[i];
+                PathFinderNode *neighbor = current->visible_tangential_Neighbors[i];
                 if(neighbor != nullptr){
                     if(!neighbor->isClosed()){ //open only if not closed
 
@@ -1891,7 +1194,7 @@ std::vector<FVector> APathFinder::findPath_prebuildEdges(
 
     //no path found, make sure to reset all nodes flag status
     for (int i = 0; i < markedForCleanUp.size(); i++){
-        Node *n = markedForCleanUp.at(i);
+        PathFinderNode *n = markedForCleanUp.at(i);
         if(n != nullptr){
             n->reset();
         }
@@ -1910,7 +1213,7 @@ std::vector<FVector> APathFinder::findPath_prebuildEdges(
 /// @param b pos b
 /// @param check node to check, must not be nullptr
 /// @return within box or not. If no node provided, default is false
-bool APathFinder::isInBounds(FVector &a, FVector &b, APathFinder::Node *check){
+bool APathFinder::isInBounds(FVector &a, FVector &b, PathFinderNode *check){
     if(check != nullptr){
         FVector c = check->pos;
         return (a.X <= c.X && a.Y <= c.Y && c.X <= b.X && c.Y <= b.Y);
@@ -1932,7 +1235,7 @@ bool APathFinder::isInBounds(FVector &a, FVector &b, APathFinder::Node *check){
 /// @param a node a
 /// @param b node b
 /// @return is tangential: no intersection of polygons or not
-bool APathFinder::passTangentailCheck(Node *a, Node *b){
+bool APathFinder::passTangentailCheck(PathFinderNode *a, PathFinderNode *b){
     if(a != nullptr && b != nullptr)
     {
         //must be tangential no intersect on both sides to be an connection of intersect
@@ -1999,12 +1302,12 @@ FCollisionQueryParams APathFinder::collsionParamsLowDetailAndFast(){
 
 // ------ bot helper -------
 FVector APathFinder::findFurthestConnectedNodeFrom(FVector &other){
-    Node *foundTargetNode = findNode(other);
+    PathFinderNode *foundTargetNode = findNode(other);
     if(foundTargetNode != nullptr){
-        std::vector<Node *> &neighborRef = foundTargetNode->visible_tangential_Neighbors;
+        std::vector<PathFinderNode *> &neighborRef = foundTargetNode->visible_tangential_Neighbors;
         if (neighborRef.size() > 0)
         {
-            Node *farthest = neighborRef[0];
+            PathFinderNode *farthest = neighborRef[0];
             FVector farthestPos;
             float dist = 99999999;
             if(farthest != nullptr){
@@ -2012,7 +1315,7 @@ FVector APathFinder::findFurthestConnectedNodeFrom(FVector &other){
                 farthestPos = farthest->pos;
             }
             for (int i = 1; i < neighborRef.size(); i++){
-                Node *current = neighborRef[i];
+                PathFinderNode *current = neighborRef[i];
                 if(current != nullptr){
                     float newdist = FVector::Dist(current->pos, farthestPos);
                     if(newdist > dist){
@@ -2047,7 +1350,7 @@ FVector APathFinder::findFurthestConnectedNodeFrom(FVector &other){
  */
 
 
-void APathFinder::addNewRaytask(Node *a, Node *b){
+void APathFinder::addNewRaytask(PathFinderNode *a, PathFinderNode *b){
     
     if(a != nullptr && b != nullptr){
         raycastTask newTask;
@@ -2062,71 +1365,13 @@ void APathFinder::addNewRaytask(Node *a, Node *b){
 
 //debug
 void APathFinder::debugShowAllNodes(UWorld *world){
-    int count = 0;
-    if (TopRight)
-    {
-        TopRight->debugShowAllNodes(world);
-        count += TopRight->chunkCount();
-    }
-    if(BottomRight){
-        BottomRight->debugShowAllNodes(world);
-        count += TopRight->chunkCount();
-    }
-    if(TopLeft){
-        TopLeft->debugShowAllNodes(world);
-        count += TopRight->chunkCount();
-    }
-    if(BottomLeft){
-        BottomLeft->debugShowAllNodes(world);
-        count += TopRight->chunkCount();
-    }
-
-    DebugHelper::logMessage("debugPathfinder chunk count", count);
-}
-
-void APathFinder::Quadrant::debugShowAllNodes(UWorld *world){
-    for (int i = 0; i < map.size(); i++){
-        std::vector<Chunk *> &current = map[i];
-        for (int j = 0; j < current.size(); j++){
-            Chunk *currentChunk = current[j];
-            if(currentChunk){
-                currentChunk->debugShowAllNodes(world);
-            }
-        }
+    if(quadrantMap){
+        quadrantMap->debugShowAllNodes(world);
     }
 }
 
-int APathFinder::Quadrant::chunkCount(){
-    int count = 0;
-    for (int i = 0; i < map.size(); i++)
-    {
-        std::vector<Chunk *> &current = map[i];
-        for (int j = 0; j < current.size(); j++){
-            Chunk *currentChunk = current[j];
-            if(currentChunk){
-                count++;
-            }
-        }
-    }
-    return count;
-}
 
-void APathFinder::Chunk::debugShowAllNodes(UWorld *world){
-    for (int i = 0; i < nodes.size(); i++){
-        APathFinder::Node *node = nodes[i];
-        if(node){
-            node->show(world);
-        }
-    }
-}
 
-void APathFinder::Node::show(UWorld *world){
-    if(world){
-        FVector posCopy = pos;
-        FVector offset = posCopy + FVector(0, 0, 10000);
-        DebugHelper::showLineBetween(world, posCopy, offset, FColor::Red, 100.0f);
-    }
-}
 
 
 
@@ -2157,11 +1402,11 @@ void APathFinder::CollectNodePositions(
     FVector posBottom = pos - halfDir;
     FVector posTop = pos + halfDir;
 
-    std::vector<APathFinder::Node *> partial = getSubGraph(posBottom, posTop);
+    std::vector<PathFinderNode *> partial = getSubGraph(posBottom, posTop);
     outArray.Empty();
     outArray.SetNumUninitialized(partial.size());
     for (int i = 0; i < partial.size(); i++){
-        if(APathFinder::Node *current = partial[i]){
+        if(PathFinderNode *current = partial[i]){
             outArray[i] = current->pos;
         }
     }

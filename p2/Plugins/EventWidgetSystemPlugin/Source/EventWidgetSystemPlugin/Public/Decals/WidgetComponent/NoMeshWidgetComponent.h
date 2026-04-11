@@ -59,12 +59,15 @@ public:
     }
 
 private:
+
+    // -- id for event dispatcher --
     UPROPERTY(EditAnywhere, Category = "_EventOption")
     FString widgetName = "HeckWidget";
 
     UPROPERTY(EditAnywhere, Category = "_EventOption")
     FString actorName = "Actor47";
-
+    // -- id for event dispatcher --
+    
 public:
 
 

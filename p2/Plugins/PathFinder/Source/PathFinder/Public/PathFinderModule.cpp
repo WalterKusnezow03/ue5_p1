@@ -26,9 +26,6 @@ void FPathFinderModule::StartPathFinder(UWorld *world, FString worldName){
 	}
 	APathFinder::makeInstance(world, worldName);
 
-	EdgeCollector c = EdgeCollector();
-	c.getAllEdges(world); //pushes them to the navmesh on its own
-	
 }
 
 void FPathFinderModule::EndPathFinder(){
