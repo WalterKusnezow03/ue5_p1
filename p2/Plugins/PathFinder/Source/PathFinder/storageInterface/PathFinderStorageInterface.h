@@ -52,4 +52,17 @@ private:
         uint8 *&Ptr, // will modified to next offset!
         APathFinder *pathFinder
     );
+
+
+    //FMeshed polygon append
+
+    void AppendPolygons(
+        APathFinder *finder,
+        TArray<uint8> &Bytes
+    );
+    void ReadPolygons(
+        APathFinder *finder,
+        uint8 *ptr,
+        TArray<uint8> &Bytes
+    );
 };

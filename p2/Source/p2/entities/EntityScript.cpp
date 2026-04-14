@@ -59,7 +59,10 @@ void AEntityScript::init(FVector &location){
 
 	//DebugHelper::showScreenMessage("entity init");
 	enableActiveStatus(true);
-	AlertManager::subscribeToAlert(this);
+	if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+        instance->subscribeToAlert(this);
+    }
+	
 
 	health = 100;
 	spottedPlayer = false;
@@ -643,7 +646,9 @@ void AEntityScript::enableCollider(bool enable){
 
 /// @brief will release the entity to the entity manager
 void AEntityScript::die(){
-	AlertManager::unSubscribeFromAlert(this);
+	if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+        instance->unSubscribeFromAlert(this);
+    }
 	humanoidPluginController.SetStateCollapseTrue();
 	RequestInteractWidget();
 

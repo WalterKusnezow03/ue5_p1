@@ -305,7 +305,9 @@ bool Aweapon::shootProtected(FVector Start, FVector dir, float sizeRay, teamEnum
 
 		if(!isSoundSurpressed()){
 			float distance = 50000; //50 * 100cm = 50m
-			AlertManager::alertInArea(GetWorld(), GetActorLocation(), distance);
+			if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+				instance->alertInArea(GetActorLocation(), distance);
+			}
 		}
 		NiagaraTriggerMuzzleFlash();
 		NiagaraTriggerHuelseEject();

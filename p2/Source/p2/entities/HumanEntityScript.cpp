@@ -212,7 +212,9 @@ bool AHumanEntityScript::isWithinMaxRange(FVector vec){
 /// @brief release own instance to entity manager
 void AHumanEntityScript::die(){
     Super::resetpath();
-    AlertManager::unSubscribeFromAlert(this);
+    if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+        instance->unSubscribeFromAlert(this);
+    }
     enableActiveStatus(false); //disable?
     UnRegisterFromMiniMap();
     RequestInteractWidget(); //also setups payload for death

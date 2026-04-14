@@ -38,58 +38,90 @@ void PathFinderQuadrant::clear(){
 /// @brief adds a node to the quadrant
 /// @param n position to add
 void PathFinderQuadrant::add(FVector n){
-    if(parent){
-        int chunksize = parent->GetChunkSize();
-        //std::abs for flipping negatives obviosuly
-        int x = std::abs(n.X / chunksize); //create new chunks?
-        int y = std::abs(n.Y / chunksize);
-        
-
+    int x = 0;
+    int y = 0;
+    if(MakeIndex(n, x, y)){
         fillMapTo(x, y);
 
         // Add the node to the appropriate chunk
-        map[x][y]->add(n);   
+        map[x][y]->add(n);
     }
 }
 
+bool PathFinderQuadrant::MakeIndex(const FVector &pos, int &x, int &y){
+    if(parent){
+        int chunksize = parent->GetChunkSize();
+        //std::abs for flipping negatives obviosuly
+        x = std::abs(pos.X / chunksize); //create new chunks?
+        y = std::abs(pos.Y / chunksize);
+        return true;
+    }
+    return false;
+}
 
 /// @brief adds a node to the quadrant (node node)
 /// @param n position to add
 void PathFinderQuadrant::add(PathFinderNode *n){
     if(n != nullptr && parent != nullptr){
 
+        fillMapToPosition(n);
 
-
-        int chunksize = parent->GetChunkSize();
-
-        //std::abs for flipping negatives obviosuly
-        int x = std::abs(n->pos.X / chunksize); //create new chunks?
-        int y = std::abs(n->pos.Y / chunksize);
-        
-        fillMapTo(x, y);
-
-        // Add the node to the appropriate chunk
-        map[x][y]->add(n);
+        int x = 0;
+        int y = 0;
+        if (MakeIndex(n->pos, x, y))
+        {
+            // Add the node to the appropriate chunk
+            map[x][y]->add(n);
+        }
     }   
 }
 
-
-void PathFinderQuadrant::addNoConnect(PathFinderNode *node){
-    if(node && parent){
-        int chunksize = parent->GetChunkSize();
-
-        int x = std::abs(node->pos.X / chunksize); //create new chunks?
-        int y = std::abs(node->pos.Y / chunksize);
-        
-        fillMapTo(x, y);
-
-        // Add the node to the appropriate chunk
-        map[x][y]->addNoConnect(node);
+void PathFinderQuadrant::add(FMeshedPolygon *polygon){
+    if(polygon){
+        FVector BottomLeft = polygon->BottomLeft();
+        fillMapToPosition(BottomLeft);
+        int x = 0;
+        int y = 0;
+        if (MakeIndex(BottomLeft, x, y))
+        {
+            map[x][y]->add(polygon);
+        }
     }
 }
 
 
 
+void PathFinderQuadrant::addNoConnect(PathFinderNode *node){
+    if(node && parent){
+        fillMapToPosition(node);
+        int x = 0;
+        int y = 0;
+        if (MakeIndex(node->pos, x, y))
+        {
+            // Add the node to the appropriate chunk
+            map[x][y]->addNoConnect(node);
+        }
+    }
+}
+
+void PathFinderQuadrant::fillMapToPosition(PathFinderNode *node){
+    if(node){
+        fillMapToPosition(node->pos);
+    }
+}
+
+void PathFinderQuadrant::fillMapToPosition(const FVector &pos){
+    if(parent){
+        int chunksize = parent->GetChunkSize();
+
+        //std::abs for flipping negatives obviosuly
+        int x = std::abs(pos.X / chunksize); //create new chunks?
+        int y = std::abs(pos.Y / chunksize);
+        
+        fillMapTo(x, y);
+    }
+    
+}
 
 void PathFinderQuadrant::fillMapTo(int xIndex, int yIndex){
     
@@ -177,7 +209,38 @@ std::vector<PathFinderNode*> PathFinderQuadrant::nodesEnClosedBy(
     float xA, float yA, float xB, float yB
 ){
     std::vector<PathFinderNode *> nodes;
+    TArray<PathFinderChunk *> chunksCollected = ChunksEnclosedBy(xA, yA, xB, yB);
+    for (int i = 0; i < chunksCollected.Num(); i++){
+        if(PathFinderChunk *currentChunk = chunksCollected[i]){
+            std::vector<PathFinderNode *> &read = currentChunk->getNodes();
+            if (read.size() > 0){
+                nodes.insert(nodes.end(), read.begin(), read.end());
+            }
+        }
+    }
+    return nodes;
+}
 
+std::vector<FMeshedPolygon *> PathFinderQuadrant::polygonsEnClosedBy(
+    float xA, float yA, float xB, float yB
+){
+    std::vector<FMeshedPolygon *> polygons;
+    TArray<PathFinderChunk *> chunksCollected = ChunksEnclosedBy(xA, yA, xB, yB);
+    for (int i = 0; i < chunksCollected.Num(); i++){
+        if(PathFinderChunk *currentChunk = chunksCollected[i]){
+            std::vector<FMeshedPolygon *> &read = currentChunk->getPolygons();
+            if (read.size() > 0){
+                polygons.insert(polygons.end(), read.begin(), read.end());
+            }
+        }
+    }
+    return polygons;
+}
+
+TArray<PathFinderChunk*> PathFinderQuadrant::ChunksEnclosedBy(
+    float xA, float yA, float xB, float yB
+){
+    TArray<PathFinderChunk *> outChunks;
     if(parent){
         int chunksize = parent->GetChunkSize();
         //abs for flipping neg values for the quadrants
@@ -198,39 +261,33 @@ std::vector<PathFinderNode*> PathFinderQuadrant::nodesEnClosedBy(
         for(int i = fromX; i <= toX; i++){
             for(int j = fromY; j <= toY; j++){
                 if(map.size() > i && map.at(i).size() > j){ //hier mit punkt weil call by value
-                    std::vector<PathFinderNode *> &read = map.at(i).at(j)->getNodes();
-                    if(read.size() > 0){
-                        nodes.insert(nodes.end(), read.begin(), read.end());
-                    }
-
-                    FString string = FString::Printf(TEXT("read enclosed num size %d"), read.size());
-                    if(GEngine){
-                        //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, string);
+                    if(PathFinderChunk *chunk = map.at(i).at(j)){
+                        if(outChunks.Contains(chunk) == false){
+                            outChunks.Add(chunk);
+                        }
                     }
                 }
             }
         }
     }
-
-
-    
-
-    return nodes;
+    return outChunks;
 }
 
-
-
-std::vector<PathFinderNode*> PathFinderQuadrant::askForArea(FVector a, FVector b){
-    
-    float lowerX = 0;
-    float lowerY = 0;
-    float higherX = 0;
-    float higherY = 0;
+void PathFinderQuadrant::MakeCollectBoundingBoxClamped(
+    const FVector &a, 
+    const FVector &b,
+    float &lowerX,
+    float &lowerY,
+    float &higherX,
+    float &higherY
+){
+    //generate BottomLeft and TopRight
     lowerX = std::min(a.X, b.X); //-CHUNKSIZE; //+ extension
     lowerY = std::min(a.Y, b.Y); //- CHUNKSIZE;
     higherX = std::max(a.X, b.X); //+ CHUNKSIZE;
     higherY = std::max(a.Y, b.Y); //+ CHUNKSIZE;
 
+    //extend if needed
     bool extendBounds = false;
     if(extendBounds && parent){
         int chunksize = parent->GetChunkSize();
@@ -241,43 +298,51 @@ std::vector<PathFinderNode*> PathFinderQuadrant::askForArea(FVector a, FVector b
         higherY += chunksize;
     }
 
+    //clamp against axis regions
     float inf = std::numeric_limits<float>::infinity();
-
     if(xSample == 1 && ySample == 1){
         // Bottom-left quadrant
         lowerX = std::clamp(lowerX, 0.0f, inf); //(val, lowerclamp, higherclamp)
         lowerY = std::clamp(lowerY, 0.0f, inf);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
+        return;
     }
-
     if(xSample == -1 && ySample == -1){
         // Top-right quadrant
         higherX = std::clamp(higherX, -inf, 0.0f); 
         higherY = std::clamp(higherY, -inf, 0.0f);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
+        return;
     }
-
     if(xSample == -1 && ySample == 1){
         // Bottom-right quadrant
         higherX = std::clamp(higherX, -inf, 0.0f);
         lowerY = std::clamp(lowerY, 0.0f, inf);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
+        return;
     }
-
     if(xSample == 1 && ySample == -1){
         // Top-left quadrant
         lowerX = std::clamp(lowerX, 0.0f, inf);
         higherY = std::clamp(higherY, -inf, 0.0f);
-        return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
+        return;
     }
-
-    std::vector<PathFinderNode*> vec;
-    // returns an empty list if none found
-    return vec;
 }
 
+std::vector<PathFinderNode*> PathFinderQuadrant::askForArea(FVector a, FVector b){
+    float lowerX = 0;
+    float lowerY = 0;
+    float higherX = 0;
+    float higherY = 0;
+    MakeCollectBoundingBoxClamped(a, b, lowerX, lowerY, higherX, higherY);
+    return nodesEnClosedBy(lowerX, lowerY, higherX, higherY);
+}
 
-
+std::vector<FMeshedPolygon *> PathFinderQuadrant::getPolygonsInArea(FVector a, FVector b){
+    float lowerX = 0;
+    float lowerY = 0;
+    float higherX = 0;
+    float higherY = 0;
+    MakeCollectBoundingBoxClamped(a, b, lowerX, lowerY, higherX, higherY);
+    return polygonsEnClosedBy(lowerX, lowerY, higherX, higherY);
+}
 
 void PathFinderQuadrant::debugShowAllNodes(UWorld *world){
     for (int i = 0; i < map.size(); i++){
@@ -306,3 +371,16 @@ int PathFinderQuadrant::chunkCount(){
     return count;
 }
 
+
+void PathFinderQuadrant::AppendAllPolygons(std::vector<FMeshedPolygon *> &polygonsOut){
+    for (int i = 0; i < map.size(); i++)
+    {
+        std::vector<PathFinderChunk *> &current = map[i];
+        for (int j = 0; j < current.size(); j++){
+            PathFinderChunk *currentChunk = current[j];
+            if(currentChunk){
+                currentChunk->AppendAllPolygons(polygonsOut);
+            }
+        }
+    }
+}

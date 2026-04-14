@@ -75,8 +75,15 @@ void UNoMeshWidgetComponent::UpdateDecalMaterial()
 	if(materialUpdated)
 		return;
 
-	if(!decal || !decalBaseMaterialRef)
+	if(!decal){
+		//DebugHelper::logMessage("UNoMeshWidgetComponent::no decal");
 		return;
+	}
+
+	if(!decalBaseMaterialRef.Get()){
+		DebugHelper::logMessage("UNoMeshWidgetComponent::no decal material");
+		return;
+	}
 
 	if(!GetWidget())
 		InitWidget();
@@ -125,8 +132,13 @@ void UNoMeshWidgetComponent::SetResolutionFromComponent(){
 	//TransformScale *= 50.0f;
 	FVector2D TransformScale2D(TransformScale.Y, TransformScale.Z);
 
-	PixelSize.X *= TransformScale.X;
-	PixelSize.Y *= TransformScale.Y;
+	//ok aber falsch
+	//PixelSize.X *= TransformScale.X;
+	//PixelSize.Y *= TransformScale.Y;
+
+	//besser aber leicht stretch
+	PixelSize.X *= TransformScale.Y;
+	PixelSize.Y *= TransformScale.X;
 
 	SetResolution(PixelSize);
 
@@ -143,7 +155,10 @@ void UNoMeshWidgetComponent::SetResolutionFromComponent(){
 
 void UNoMeshWidgetComponent::SetResolution(FVector2D res){
 	//has to be flipped. Is correct like this for my use case.
-	SetDrawSize(FIntPoint(res.Y, res.X));
+	
+	SetDrawSize(FIntPoint(res.Y, res.X)); //wrong (?)
+
+	//SetDrawSize(FIntPoint(res.X, res.Y)); //correct (?)
 }
 
 

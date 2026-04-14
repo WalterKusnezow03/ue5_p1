@@ -118,12 +118,14 @@ public:
 
 	void addNewNodeVector(std::vector<FVector> &vec, FVector &offset);
 	void addNewNodeVector(std::vector<FVector> &vec);
-	
+
+	void addAllPolygons(std::vector<FMeshedPolygon *> &polygons);
+
 protected:
 	void addNewNode(FVector a);
 
 public:
-	void addConvexHull(std::vector<FVector> &vec);
+	void addConvexHull(TArray<FVector> &vec);
 
 	std::vector<FVector> getPath(FVector a, FVector b);
 
@@ -137,8 +139,7 @@ public:
 	};
 
 
-	void addNode(PathFinderNode *node);
-	
+
 	void debugCountNodes();
 
 	void draw(FVector &pos);
@@ -291,7 +292,15 @@ public:
 
 	const std::map<int, PathFinderNode *> &IdMapReference();
 
+	std::vector<FMeshedPolygon *> GetAllPolygons();
+
 	// --- STORAGE INTERFACE Section End ---
 
+	// --- CNN getter image data ---
+	bool TryGetSubGraphPolygonMesh(
+		FMeshedPolygon &outData,
+		FVector center, 
+		float sizeSquare
+	);
 
 };

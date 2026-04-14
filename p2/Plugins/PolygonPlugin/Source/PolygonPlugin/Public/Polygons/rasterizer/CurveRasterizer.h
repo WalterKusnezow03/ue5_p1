@@ -13,6 +13,7 @@ public:
         float widthOfInsideStep
     );
 
+
 private:
 
     FVector ToModCoordinate(FVector &pos, int mod, int dir);

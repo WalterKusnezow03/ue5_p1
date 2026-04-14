@@ -117,7 +117,7 @@ private:
 
 
     std::vector<FVector> navmeshNodes;
-    std::vector< std::vector<FVector>> navmeshConvexHulls;
+    TArray<TArray<FVector>> navmeshConvexHulls;
     ETerrainType thisTerrainType;
     MatrixTree tree;
 

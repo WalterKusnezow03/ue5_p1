@@ -26,6 +26,7 @@ FMeshedPolygon &FMeshedPolygon::operator=(const FMeshedPolygon &other){
 
         minSaved = other.minSaved;
         maxSaved = other.maxSaved;
+
         stepSizeSaved = other.stepSizeSaved;
         
     }   
@@ -43,7 +44,19 @@ FVector FMeshedPolygon::BottomLeft(){
     return FVector(0, 0, 0);
 }
 
-bool FMeshedPolygon::GridValid(){
+FVector FMeshedPolygon::TopRight(){
+    if(GridValid()){
+        TArray<FVector> &maxCol = positionGrid.Last();
+        FVector &last = maxCol.Last();
+        return last;
+    }
+    return FVector(0, 0, 0);
+}
+
+
+
+
+bool FMeshedPolygon::GridValid() const{
     if(flagGrid.Num() == positionGrid.Num()){
         if(flagGrid.Num() > 0){
             return flagGrid[0].Num() == positionGrid[0].Num();
@@ -53,6 +66,9 @@ bool FMeshedPolygon::GridValid(){
 }
 
 void FMeshedPolygon::Init(TArray<FVector> &polygon, float widthOfInsideStep){
+    if(polygon.Num() <= 0){
+        return;
+    }
     TArray<FVector> polygonRasterized = polygon;
 
     CurveRasterizer rasterizer;
@@ -63,17 +79,65 @@ void FMeshedPolygon::Init(TArray<FVector> &polygon, float widthOfInsideStep){
     stepSizeSaved = widthOfInsideStep;
     FindBounds(polygonRasterized);
     GenerateGrid();
-    FlagTrue(polygonRasterized);
-    FlagBetweenSpaceTrue();
+
+    if(IsValid()){
+        FlagTrue(polygonRasterized);
+        FlagBetweenSpaceTrue();
+    }
+}
+
+void FMeshedPolygon::InitForceSizeMin(TArray<FVector> &polygon, float widthOfInsideStep){
+    if(!InitAsSinglePixel(polygon, widthOfInsideStep)){
+        Init(polygon, widthOfInsideStep);
+    }
+}
+
+bool FMeshedPolygon::InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep){
+    if(polygon.Num() <= 0){
+        return true;
+    }
+
+    BoundingBoxSimple box(polygon);
+    float size = FVector::Dist(box.bottomLeftNearVertex(), box.topRightFarVertex());
+    //force one pixel size
+    if(size <= widthOfInsideStep){
+        stepSizeSaved = widthOfInsideStep;
+
+        flagGrid.SetNum(1);
+        flagGrid[0].SetNum(1);
+        flagGrid[0][0] = true;
+
+        positionGrid.SetNum(1);
+        positionGrid[0].SetNum(1);
+        positionGrid[0][0] = box.bottomLeftNearVertex();
+
+        minSaved = box.bottomLeftNearVertex();
+        maxSaved = box.bottomLeftNearVertex() + FVector(0, widthOfInsideStep, widthOfInsideStep);
+
+        DebugHelper::logMessage("FMeshedPolygon::Inited As Single Pixel");
+
+        return true;
+    }
+    return false;
+}
+
+FVector FMeshedPolygon::center(TArray<FVector> &polygon){
+    FVector sum(0,0,0);
+    int count = polygon.Num(); 
+    if(count > 0){
+        for(const FVector &vertex : polygon){
+            sum += vertex;
+        }
+        sum /= count;
+    }
+    return sum;
 }
 
 void FMeshedPolygon::FindBounds(
     TArray<FVector> &polygon
 ){
     BoundingBoxSimple box(polygon);
-
-    minSaved = box.bottomLeftNearVertex();
-    maxSaved = box.topRightFarVertex();
+    FindBounds(box.bottomLeftNearVertex(), box.topRightFarVertex(), false);
 
     //debug size grid (looks ok, bool flags bricked)
     int x, y = 0;
@@ -84,6 +148,23 @@ void FMeshedPolygon::FindBounds(
         )
     );
 }
+
+void FMeshedPolygon::FindBounds(FVector bottomLeft, FVector topRight, bool safeCheck){
+    //safe bounds
+    if(safeCheck){
+        BoundingBoxSimple box;
+        box.updateBoundsIfNeeded(bottomLeft);
+        box.updateBoundsIfNeeded(topRight);
+
+        minSaved = box.bottomLeftNearVertex();
+        maxSaved = box.topRightFarVertex();
+        return;
+    }
+    minSaved = bottomLeft;
+    maxSaved = topRight;
+}
+
+
 
 void FMeshedPolygon::GenerateGrid(){
     int x = -1;
@@ -122,8 +203,16 @@ void FMeshedPolygon::GetSizeGrid(int &x, int &y, float widthOfInsideStep){
     y = (maxSaved.Y - minSaved.Y) / widthOfInsideStep;
 }
 
+int FMeshedPolygon::sizeX(){
+    return flagGrid.Num();
+}
 
-
+int FMeshedPolygon::sizeY(){
+    if(sizeX() > 0){
+        return flagGrid[0].Num();
+    }
+    return 0;
+}
 
 void FMeshedPolygon::FlagTrue(const TArray<FVector> &polygon){
     for (int i = 0; i < polygon.Num(); i++){
@@ -204,6 +293,10 @@ void FMeshedPolygon::FlagTrue(const FVector &pos){
 }
 
 void FMeshedPolygon::FlagTruePolygonEdge(const FVector &pos){
+    if(!IsValid()){
+        return;
+    }
+
     int x, y = 0;
     ToIndexBounded(pos, x, y);
     flagGrid[x][y] = true;
@@ -262,9 +355,7 @@ void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<bool> &flagBuffer, int i, int j
 //bounded is needed since true flag is sometimes bricked otherwise
 //because of floating point prescision errors, leading to polygon edges being OOB
 void FMeshedPolygon::ToIndexBounded(const FVector &pos, int &x, int &y){
-    FVector relative = pos - minSaved; //AB = B - A
-    x = FMath::RoundToInt(relative.X / stepSizeSaved);
-    y = FMath::RoundToInt(relative.Y / stepSizeSaved);
+    ToIndexRaw(pos, x, y);
 
     x = std::max(0, x);
     y = std::max(0, y);
@@ -275,8 +366,27 @@ void FMeshedPolygon::ToIndexBounded(const FVector &pos, int &x, int &y){
     }
 }
 
+void FMeshedPolygon::ToIndexRaw(const FVector &pos, int &x, int &y){
+    FVector relative = pos - minSaved; //AB = B - A
+    x = FMath::RoundToInt(relative.X / stepSizeSaved);
+    y = FMath::RoundToInt(relative.Y / stepSizeSaved);
+}
 
+bool FMeshedPolygon::IsInBound(const FVector &pos){
+    int x = -1;
+    int y = -1;
+    return IsInBound(pos, x, y);
+}
 
+bool FMeshedPolygon::IsInBound(const FVector &pos, int &x, int &y){
+    ToIndexRaw(pos, x, y);
+    if(x >= 0 && x < flagGrid.Num()){
+        if (y >= 0 && y < flagGrid[x].Num()){
+            return true;
+        }
+    }
+    return false;
+}
 
 
 bool FMeshedPolygon::FlagAt(int x, int y){
@@ -375,6 +485,16 @@ TArray<FVector> FMeshedPolygon::GetQuadOrTriangleAt(int i, int j){
 
 
 
+void FMeshedPolygon::SetFlag(
+    const FVector &pos,
+    bool flagIn
+){
+    int x = 0;
+    int y = 0;
+    ToIndexBounded(pos, x, y);
+    SetFlag(x, y, flagIn);
+}
+
 
 
 void FMeshedPolygon::SetFlag(
@@ -391,8 +511,10 @@ void FMeshedPolygon::SetFlag(
     const std::pair<int, int> &indexPos, 
     bool flag
 ){
-    int x = indexPos.first;
-    int y = indexPos.second;
+    SetFlag(indexPos.first, indexPos.second, flag);
+}
+
+void FMeshedPolygon::SetFlag(int x, int y, bool flag){
     if (x >= 0 && x < flagGrid.Num())
     {
         if (y >= 0 && y < flagGrid[x].Num()){
@@ -400,4 +522,113 @@ void FMeshedPolygon::SetFlag(
         }
     }
 }
+
+void FMeshedPolygon::SetPosition(int x, int y, const FVector &pos){
+    if (x >= 0 && x < positionGrid.Num())
+    {
+        if (y >= 0 && y < positionGrid[x].Num()){
+            positionGrid[x][y] = pos;
+        }
+    }
+}
+
+
+
+
+
+/// polygon join from polygon set
+
+void FMeshedPolygon::GenerateFrom(
+    const std::vector<FMeshedPolygon *> &polygons,
+    const FVector &capA, 
+    const FVector &capB,
+    float stepSizeIn
+){
+    if(polygons.size() == 0){
+        return;
+    }
+
+    if(polygons.size() == 1){
+        if(const FMeshedPolygon *first = polygons[0]){
+            *this = *first;
+            return;
+        }
+    }
+    OverrideStepSize(stepSizeIn);
+
+    //make grid
+    FindBounds(capA, capB, true);
+    GenerateGrid();
+
+    //flag from ingoing polygon data true
+    if(polygons.size() > 1){
+        for (int i = 0; i < polygons.size(); i++){
+            if(const FMeshedPolygon *current = polygons[i]){
+                FlagTrueFrom(*current);
+            }
+        }
+    }
+}
+
+void FMeshedPolygon::FlagTrueFrom(const FMeshedPolygon &other){
+    if(other.GridValid()){
+        for (int x = 0; x < other.flagGrid.Num(); x++){
+            const TArray<bool> &gridFlagColumn = other.flagGrid[x];
+            for (int y = 0; y < gridFlagColumn.Num(); y++){
+                if(x < other.positionGrid.Num()){
+                    const TArray<FVector> &gridPositionColumn = other.positionGrid[x];
+                    FlagTrueFromBuffer(
+                        gridFlagColumn,
+                        gridPositionColumn
+                    );
+                }
+            }
+        }
+    }
+}
+
+void FMeshedPolygon::FlagTrueFromBuffer(
+    const TArray<bool> &flagBuffer,
+    const TArray<FVector> &positions
+){
+    if(flagBuffer.Num() == positions.Num()){
+        for (int i = 0; i < flagBuffer.Num(); i++){
+            const FVector &pos = positions[i];
+            //if flagged true and in bound: flag in this bitmap as true
+            if(flagBuffer[i]){
+                int x = -1;
+                int y = -1;
+                if (IsInBound(pos, x, y)){
+                    SetFlag(x, y, true);
+                    SetPosition(x, y, pos);
+                }
+            }
+        }
+    }
+}
+
+void FMeshedPolygon::OverrideStepSize(float sizeIn){
+    stepSizeSaved = sizeIn;
+}
+
+void FMeshedPolygon::OverrideMinMax(FVector &minIn, FVector &maxIn){
+    minSaved = minIn;
+    maxSaved = maxIn;
+}
+
+void FMeshedPolygon::GetMinMax(FVector &minOut, FVector &maxOut){
+    minOut = minSaved;
+    maxOut = maxSaved;
+}
+
+TArray<TArray<bool>> &FMeshedPolygon::GetFlagGrid(){
+    return flagGrid;
+}
+TArray<TArray<FVector>> &FMeshedPolygon::GetPositionGrid(){
+    return positionGrid;
+} 
+float FMeshedPolygon::GetStepSizeSaved(){
+    return stepSizeSaved;
+}
+
 

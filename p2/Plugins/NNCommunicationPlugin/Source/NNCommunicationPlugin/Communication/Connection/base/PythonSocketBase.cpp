@@ -4,17 +4,24 @@
 
 void APythonSocketBase::BeginPlay(){
     Super::BeginPlay();
-    serverRunning = false;
     connected = false;
     
 }
 
 //must be called on begin play in derived class
-void APythonSocketBase::LaunchPythonProcess(FString name){
+void APythonSocketBase::LaunchPythonProcess(FString pyName){
     if(serverRunning){
         return;
     }
 
+    FPythonSetup package;
+    package.Setup(
+        "NNCommunicationPlugin",
+        pyName
+    );
+    LaunchPythonProcess(package);
+
+    /*
     // Absoluter Pfad zum Plugin
     FString PluginDir = FPaths::ConvertRelativePathToFull(
         FPaths::ProjectPluginsDir() / 
@@ -33,11 +40,11 @@ void APythonSocketBase::LaunchPythonProcess(FString name){
     FString Args = FString::Printf(TEXT("\"%s\""), *PythonScript);
 
     // Python-Prozess starten
-    /*FProcHandle ProcHandle = FPlatformProcess::CreateProc(*PythonExe, *Args,
+    / *FProcHandle ProcHandle = FPlatformProcess::CreateProc(*PythonExe, *Args,
         true,  // bLaunchDetached
         false, // bLaunchHidden
         false, // bLaunchReallyHidden
-        nullptr, 0, nullptr, WritePipe);*/
+        nullptr, 0, nullptr, WritePipe);* /
     ProcHandle = FPlatformProcess::CreateProc(
         *PythonExe,
         *Args,
@@ -58,7 +65,7 @@ void APythonSocketBase::LaunchPythonProcess(FString name){
     else{
         UE_LOG(LogTemp, Error, TEXT("ANNSocket::Failed to start Python server"));
     }
-        
+    */
 }
 
 
@@ -82,15 +89,6 @@ void APythonSocketBase::EndPlay(const EEndPlayReason::Type EndPlayReason){
     
     SendShutdown();
     CloseSocketOnEndPlay();
-
-    //close python process
-    if (ProcHandle.IsValid())
-    {
-        FPlatformProcess::TerminateProc(ProcHandle, true); // true = force kill
-        FPlatformProcess::CloseProc(ProcHandle);           // Handle freigeben
-    }
-
-
     Super::EndPlay(EndPlayReason);
 }
 
@@ -160,18 +158,6 @@ void APythonSocketBase::OpenSocket(float deltatime){
 
 bool APythonSocketBase::IsConnected(){
     return serverRunning && connected;
-}
-
-void APythonSocketBase::LogPythonMessages(){
-    if(ReadPipe){
-        if(serverRunning){
-            FString Output = FPlatformProcess::ReadPipe(ReadPipe);
-            if (!Output.IsEmpty())
-            {
-                DebugHelper::logMessage("ANNSocket::PythonPrint: ", Output);
-            }
-        }
-    }
 }
 
 

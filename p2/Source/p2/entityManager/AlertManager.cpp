@@ -11,17 +11,34 @@
 #include "DebugPlugin/DebugHelper.h"
 #include "CoreMath/util/SphereCaster.h"
 
-std::vector<AEntityScript *> AlertManager::subscribedToAlert;
 
-AlertManager::AlertManager()
+AAlertManager *AAlertManager::instancePtr = nullptr;
+
+AAlertManager* AAlertManager::Instance(UWorld* World)
 {
+    if(instancePtr){
+        return instancePtr;
+    }
+    if (World){
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Name = TEXT("ASharedAnyMeshWidgetComponentSettings");
+        FVector Location = FVector::ZeroVector;
+        FRotator Rotation = FRotator::ZeroRotator;
+        AAlertManager* Spawned = World->SpawnActor<AAlertManager>(
+            AAlertManager::StaticClass(), Location, Rotation, SpawnParams
+        );   
+        instancePtr = Spawned;
+        return Spawned;
+    }
+    return nullptr;
+}
+void AAlertManager::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    instancePtr = nullptr;
+    EndPlayClear();
+    Super::EndPlay(EndPlayReason);
 }
 
-AlertManager::~AlertManager()
-{
-}
-
-void AlertManager::EndPlay(){
+void AAlertManager::EndPlayClear(){
     subscribedToAlert.clear();
 }
 
@@ -29,7 +46,7 @@ void AlertManager::EndPlay(){
 ///@param world world to get from
 ///@param location center of radius
 ///@param SphereRadius collect in radius
-void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadius){
+void AAlertManager::alertInArea(FVector location, float SphereRadius){
     
     std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
     //DebugHelper::showScreenMessage("ALERT MANAGER: ", indexArray.size(), FColor::Orange);
@@ -76,7 +93,7 @@ void AlertManager::alertInArea(UWorld *world, FVector location, float SphereRadi
 ///@param world world to get from
 ///@param location center of radius
 ///@param SphereRadius collect in radius
-void AlertManager::damageAndAlertInArea(
+void AAlertManager::damageAndAlertInArea(
     UWorld *world, 
     FVector location, 
     float SphereRadius, 
@@ -146,7 +163,7 @@ void AlertManager::damageAndAlertInArea(
     }*/
 }
 
-void AlertManager::getDamagableActorsInAreaBySphereCast(
+void AAlertManager::getDamagableActorsInAreaBySphereCast(
     UWorld *world, 
     const FVector &location, 
     float SphereRadius,
@@ -189,7 +206,7 @@ void AlertManager::getDamagableActorsInAreaBySphereCast(
 
 }
 
-void AlertManager::AlertSubscribedActorsInRange(
+void AAlertManager::AlertSubscribedActorsInRange(
     const FVector &location, float SphereRadius
 ){
     std::vector<int> indexArray = subscribedActorsInAreaByIndex(location, SphereRadius);
@@ -219,10 +236,8 @@ void AlertManager::AlertSubscribedActorsInRange(
 
 ///@param location center of radius
 ///@param SphereRadius collect in radius
-TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location, float SphereRadius){
+TArray<AActor *> AAlertManager::getAActorsInArea(UWorld *world, FVector location, float SphereRadius){
     if(world != nullptr){
-
-        float delta = AlertManager::deltaTime(world);
 
 
         // Array to store overlapping actors
@@ -259,7 +274,7 @@ TArray<AActor *> AlertManager::getAActorsInArea(UWorld *world, FVector location,
 /**
  * subscription
  */
-std::vector<int> AlertManager::subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius){
+std::vector<int> AAlertManager::subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius){
     std::vector<int> entitiesInAreaByIndex;
     for (int i = 0; i < subscribedToAlert.size(); i++){
         if(AEntityScript *ptr = subscribedToAlert[i]){
@@ -273,7 +288,7 @@ std::vector<int> AlertManager::subscribedActorsInAreaByIndex(const FVector &loca
 }
 
 
-void AlertManager::subscribeToAlert(AEntityScript *pointer){
+void AAlertManager::subscribeToAlert(AEntityScript *pointer){
     if(pointer != nullptr){
         if(findIndex(pointer) == -1){
             subscribedToAlert.push_back(pointer);
@@ -282,7 +297,7 @@ void AlertManager::subscribeToAlert(AEntityScript *pointer){
 }
 
 
-void AlertManager::unSubscribeFromAlert(AEntityScript *pointer){
+void AAlertManager::unSubscribeFromAlert(AEntityScript *pointer){
     if(subscribedToAlert.size() > 0){
         int index = findIndex(pointer);
         if(index != -1){
@@ -294,7 +309,7 @@ void AlertManager::unSubscribeFromAlert(AEntityScript *pointer){
     
 }
 
-int AlertManager::findIndex(AEntityScript *pointer){
+int AAlertManager::findIndex(AEntityScript *pointer){
     int index = -1;
     if(pointer){
         for (int i = 0; i < subscribedToAlert.size(); i++){
@@ -306,22 +321,12 @@ int AlertManager::findIndex(AEntityScript *pointer){
     return index;
 }
 
-/**
- * returns the world delta time
- */
-float AlertManager::deltaTime(UWorld * world){
-    if(world){
-        return world->GetDeltaSeconds();
-    }
-    return 0.0f;
-}
-
 
 
 /**
  * api for minimap
  */
-void AlertManager::EntitiesInRadius(
+void AAlertManager::EntitiesInRadius(
     FVector &pos,
     float radius,
     TArray<FVector> &outputPositions
@@ -335,7 +340,7 @@ void AlertManager::EntitiesInRadius(
     }
 }
 
-TArray<AEntityScript*> AlertManager::EntitiesInRadiusProtected(
+TArray<AEntityScript*> AAlertManager::EntitiesInRadiusProtected(
     FVector &pos,
     float radius
 ){
@@ -354,7 +359,7 @@ TArray<AEntityScript*> AlertManager::EntitiesInRadiusProtected(
     return outArray;
 }
 
-void AlertManager::EntitiesInRadiusFootPositions(
+void AAlertManager::EntitiesInRadiusFootPositions(
     FVector &pos,
     float radius,
     TArray<FVector> &outputPositions
@@ -370,7 +375,7 @@ void AlertManager::EntitiesInRadiusFootPositions(
 
 
 
-bool AlertManager::AnyEntitesInRadius(
+bool AAlertManager::AnyEntitesInRadius(
     FVector &pos,
     float radius
 ){
@@ -388,7 +393,7 @@ bool AlertManager::AnyEntitesInRadius(
     return false;
 }
 
-void AlertManager::EntitiesInRadiusAsTransform(
+void AAlertManager::EntitiesInRadiusAsTransform(
     FVector &pos,
     float radius,
     TArray<MMatrix> &outputMatrices

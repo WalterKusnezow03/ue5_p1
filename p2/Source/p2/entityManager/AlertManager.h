@@ -6,47 +6,53 @@
 #include "p2/entities/EntityScript.h"
 #include "CoreMath/Matrix/MMatrix.h"
 
+#include "AlertManager.generated.h"
+
 /**
  * 
  */
 
-
-class P2_API AlertManager
+UCLASS()
+class P2_API AAlertManager : public AActor
 {
+	GENERATED_BODY()
 private:
-	AlertManager();
-	~AlertManager();
+	static AAlertManager *instancePtr;
 
 public:
-	static void EndPlay();
+	static AAlertManager *Instance(UWorld *world);
 
-	static void alertInArea(UWorld *world, FVector location, float radius);
+public:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void EndPlayClear();
 
-	static void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage, float damageRadius);
+	void alertInArea(FVector location, float radius);
 
-	static void subscribeToAlert(AEntityScript *pointer);
-	static void unSubscribeFromAlert(AEntityScript *pointer);
+	void damageAndAlertInArea(UWorld *world, FVector location, float SphereRadius, int damage, float damageRadius);
+
+	void subscribeToAlert(AEntityScript *pointer);
+	void unSubscribeFromAlert(AEntityScript *pointer);
 
 
-	static void EntitiesInRadius(
+	void EntitiesInRadius(
 		FVector &pos,
 		float radius,
 		TArray<FVector> &outputPositions
 	);
 
 
-	static void EntitiesInRadiusFootPositions(
+	void EntitiesInRadiusFootPositions(
 		FVector &pos,
 		float radius,
 		TArray<FVector> &outputPositions
 	);
 
-	static bool AnyEntitesInRadius(
+	bool AnyEntitesInRadius(
 		FVector &pos,
 		float radius
 	);
 
-	static void EntitiesInRadiusAsTransform(
+	void EntitiesInRadiusAsTransform(
 		FVector &pos,
 		float radius,
 		TArray<MMatrix> &outputMatrices
@@ -54,7 +60,7 @@ public:
 
 
 private:
-	static float deltaTime(UWorld *world);
+	
 
 	
 	/// @brief gets all entities in area, subscribed to alert manager
@@ -62,18 +68,18 @@ private:
 	/// @param location 
 	/// @param radius 
 	/// @return 
-	static TArray<AActor *> getAActorsInArea(UWorld *world, FVector location, float radius);
+ 	TArray<AActor *> getAActorsInArea(UWorld *world, FVector location, float radius);
 
 
 	//subrciption
-	static std::vector<int> subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius);
-	static int findIndex(AEntityScript *pointer);
-	static std::vector<AEntityScript *> subscribedToAlert;
+	std::vector<int> subscribedActorsInAreaByIndex(const FVector &location, float SphereRadius);
+	int findIndex(AEntityScript *pointer);
+	std::vector<AEntityScript *> subscribedToAlert;
 
 
 	//alert by subscription
-	static void AlertSubscribedActorsInRange(const FVector &location, float SphereRadius);
-	static void getDamagableActorsInAreaBySphereCast(
+	void AlertSubscribedActorsInRange(const FVector &location, float SphereRadius);
+	void getDamagableActorsInAreaBySphereCast(
 		UWorld *world, 
 		const FVector &location, 
 		float SphereRadius,
@@ -84,7 +90,7 @@ private:
 
 
 
-	static TArray<AEntityScript*> EntitiesInRadiusProtected(
+	TArray<AEntityScript*> EntitiesInRadiusProtected(
 		FVector &pos,
 		float radius
 	);

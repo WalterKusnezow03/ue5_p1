@@ -1,6 +1,8 @@
 #include "PathFinderStorageInterface.h"
 #include "PathFinder/pathFinding/PathFinder.h"
 
+#include "PathFinder/storageInterface/MeshedPolygonStorageInterface.h"
+
 PathFinderStorageInterface::PathFinderStorageInterface(){
 
 }
@@ -260,6 +262,49 @@ void PathFinderStorageInterface::ReadConvexAndNeighborHood(
 
 }
 
+
+// ----- POLYGON SECTION -------
+
+void PathFinderStorageInterface::AppendPolygons(
+    APathFinder *finder,
+    TArray<uint8> &Bytes
+){
+    if(!finder){
+        return;
+    }
+
+    //write all polygons
+    MeshedPolygonStorageInterface interface;
+    interface.AppendPolygons(Bytes, finder);
+}
+
+void PathFinderStorageInterface::ReadPolygons(
+    APathFinder *finder,
+    uint8 *ptr,
+    TArray<uint8> &Bytes
+){
+    if(!finder){
+        return;
+    }
+    //read count polygons
+
+    //read all polygons
+    MeshedPolygonStorageInterface interface;
+    interface.LoadPolygons(Bytes, ptr, finder);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ----- SAVE SECTION ------
 
 void PathFinderStorageInterface::Save(FString worldName, APathFinder *pathFinder){
@@ -294,6 +339,9 @@ void PathFinderStorageInterface::Save(FString worldName, APathFinder *pathFinder
         AppendConvexAndNeighborHood(Bytes, pair.second);
     }
 
+    //new
+    AppendPolygons(pathFinder, Bytes);
+
     FString path = makePath(worldName);
     SaveBinaryData(path, Bytes);
 }
@@ -312,7 +360,6 @@ bool PathFinderStorageInterface::Load(FString worldName, APathFinder *pathFinder
     }
 
     uint8 *Ptr = Bytes.GetData();
-    uint8 *PtrEndData = Ptr + Bytes.Num();
 
     //return;
 
@@ -322,16 +369,19 @@ bool PathFinderStorageInterface::Load(FString worldName, APathFinder *pathFinder
         LoadNode(Ptr, pathFinder);
     }
 
-    /*
-    while(Ptr < PtrEndData){
-        //Ptr will modified to next offset!
-        ReadConvexAndNeighborHood(Ptr, pathFinder);
-    }*/
-
     //es gibt genauso viele convex data + neighbor hoods wie nodes.
     for (int i = 0; i < countNodes; i++){
         ReadConvexAndNeighborHood(Ptr, pathFinder);
     }
+
+    //new
+    ReadPolygons(
+        pathFinder,
+        Ptr,
+        Bytes
+    );
+
+
 
     return true;
 }

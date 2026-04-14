@@ -40,6 +40,8 @@ void PathFinderChunk::add(PathFinderNode *node){
     }
 }
 
+
+
 void PathFinderChunk::addNoConnect(PathFinderNode *node){
     if(node){
         //will only check for duplicate nodes by adress
@@ -52,6 +54,17 @@ void PathFinderChunk::addNoConnect(PathFinderNode *node){
     }
 }
 
+void PathFinderChunk::add(FMeshedPolygon *polygon){
+    if(polygon){
+        //will only check for duplicate nodes by adress
+        for (int i = 0; i < polygons.size(); i++){
+            if(polygons.at(i) == polygon){
+                return;
+            }
+        }
+        polygons.push_back(polygon);
+    }
+}
 
 
 
@@ -61,6 +74,16 @@ void PathFinderChunk::addNoConnect(PathFinderNode *node){
 /// @return vector<Node> nodes as &ref
 std::vector<PathFinderNode*> &PathFinderChunk::getNodes(){
     return nodes;
+}
+
+std::vector<FMeshedPolygon *> &PathFinderChunk::getPolygons(){
+    return polygons;
+}
+
+void PathFinderChunk::AppendAllPolygons(std::vector<FMeshedPolygon *> &polygonsOut){
+    if(polygons.size() > 0){
+        polygonsOut.insert(polygonsOut.end(), polygons.begin(), polygons.end());
+    }
 }
 
 /// @brief tries to find a node from a chunk, if not found: created
@@ -226,4 +249,13 @@ void PathFinderChunk::clear(){
         }
     }
     nodes.clear(); //finally clear the nodes
+
+
+    for (int i = 0; i < polygons.size(); i++){
+        if(polygons.at(i) != nullptr){
+            delete (polygons.at(i));
+            polygons.at(i) = nullptr;
+        }
+    }
+    polygons.clear();
 }

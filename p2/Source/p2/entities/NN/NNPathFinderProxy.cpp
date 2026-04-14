@@ -1,6 +1,6 @@
 #include "NNPathFinderProxy.h"
 #include "PathFinder/pathFinding/PathFinder.h"
-
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
 
 bool NNPathFinderProxy::PredictNode(
@@ -10,11 +10,25 @@ bool NNPathFinderProxy::PredictNode(
     FVector ownPositon,
     FRotator ownRotation,
     float radius,
-    FVector &outPrediction
+    FVector &outPrediction,
+    int botId
 ){
-    TArray<FVector> localNet;
-    CollectNodePositionsLocalSpace(playerPos, radius, localNet, ownPositon, ownRotation);
+    if(APathFinder *instance = APathFinder::instance()){
 
+        /// --- MAKE ASNCY ? ---
+
+        // --- Returns for bot with id ---
+
+
+        FMeshedPolygon outData;
+        if(instance->TryGetSubGraphPolygonMesh(
+            outData,
+            playerPos,
+            radius
+        )){
+
+        }
+    }
 
 
     return false;

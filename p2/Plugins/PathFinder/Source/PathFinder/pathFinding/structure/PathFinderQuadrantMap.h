@@ -15,16 +15,31 @@ public:
     void clear();
 
     std::vector<PathFinderNode *> getSubGraph(FVector a, FVector b);
+    
+    FMeshedPolygon GetSubGraphPolygonMesh(const FVector &center, float sizeSquare);
+    FMeshedPolygon GetSubGraphPolygonMesh(const FVector &a, const FVector &b);
 
     void debugShowAllNodes(UWorld *world);
 
+    //with connect
     void addNode(PathFinderNode *node);
+    void addAllNodes(std::vector<PathFinderNode *> &nodes);
+
+    //from storage polygons
+    void addAllPolygons(std::vector<FMeshedPolygon *> &polygon);
+    void addPolygon(FMeshedPolygon *polygon);
+
+    //adds new nodes based on hull and creates a tracked gridded polygon
+    void addConvexHull(TArray<FVector> &vec);
+
     void addNewNode(FVector a);
 
     void addNoConnect(PathFinderNode *node);
 
     PathFinderNode *findNode(FVector node);
     PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
+
+    std::vector<FMeshedPolygon *> GetAllPolygons();
 
 protected:
     APathFinder *parent = nullptr;
@@ -36,4 +51,10 @@ protected:
 
 	PathFinderQuadrant *askforQuadrant(int xIndex, int zIndex);
     PathFinderQuadrant *askforQuadrant(PathFinderNode *node);
+    PathFinderQuadrant *askforQuadrant(const FVector &pos);
+
+    TArray<PathFinderQuadrant *> allQuadrants();
+
+    void GenerateRasterizedConvexHull(TArray<FVector> &polygon);
+    float PolygonStepSize();
 };

@@ -14,7 +14,8 @@ public:
         FVector ownPositon,
         FRotator ownRotation,
         float radius,
-        FVector &outPrediction
+        FVector &outPrediction,
+        int botId
     );
         
 

@@ -6,18 +6,20 @@
 #include "SocketSubsystem.h"
 #include "Networking.h"
 
+#include "PythonPlugin/Public/base/PythonLauncher.h"
+
 
 #include "PythonSocketBase.generated.h"
 
 
 UCLASS()
-class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public AActor{
+class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public APythonLauncher {
     GENERATED_BODY()
 
 public:
     //must be called on begin play in derived class
+    using APythonLauncher::LaunchPythonProcess;
     void LaunchPythonProcess(FString name);
-
 
 protected:
     void OpenSocket(float deltatime);
@@ -32,14 +34,11 @@ protected:
     //debug
     int32 typeDataRandomNum = 0;
 
-    //process related
-    FProcHandle ProcHandle;
-    void* ReadPipe = nullptr;
-    void LogPythonMessages();
+    
 
     FSocket *Socket = nullptr;
 
-    bool serverRunning = false;
+    //bool serverRunning = false;
     bool connected = false;
 
 

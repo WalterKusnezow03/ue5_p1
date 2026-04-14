@@ -19,6 +19,9 @@ protected:
     FVector maxSaved;
     float stepSizeSaved;
 
+public:
+
+
 
 public:
     FMeshedPolygon();
@@ -27,28 +30,60 @@ public:
     FMeshedPolygon(const FMeshedPolygon &other);
     FMeshedPolygon &operator=(const FMeshedPolygon &other);
 
-    //init from rasterized curve
+    //init from rasterized curve, to raster of mod "widthOfInsideStep"
     void Init(TArray<FVector> &polygon, float widthOfInsideStep);
-    
+
+    //init from rasterized curve, to raster of mod "widthOfInsideStep"
+    //forces a min size of one if bounds to small for pixel step "widthOfInsideStep"
+    void InitForceSizeMin(TArray<FVector> &polygon, float widthOfInsideStep);
 
     //debug
     void AppendMeshedSurface(MeshData &data);
 
     bool IsValid();
     FVector BottomLeft();
+    FVector TopRight();
+
+
+    //joined bit map from poylgons
+    void GenerateFrom(
+        const std::vector<FMeshedPolygon *> &polygons,
+        const FVector &capA, 
+        const FVector &capB,
+        float stepSizeIn
+    );
+
+    int sizeX();
+    int sizeY();
+
+    // --- storage interface ---
+
+    TArray<TArray<bool>> &GetFlagGrid();
+    TArray<TArray<FVector>> &GetPositionGrid();
+    float GetStepSizeSaved();
+    void GetMinMax(FVector &minOut, FVector &maxOut);
+
+    void OverrideStepSize(float sizeIn);
+
+    void OverrideMinMax(FVector &minIn, FVector &maxIn);
+
+    // --- storage interface ---
 
 protected:
+    //forces a min size of one if bounds to small for pixel step "widthOfInsideStep"
+    bool InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep);
+    FVector center(TArray<FVector> &polygon);
 
-
-    
     void FindBounds(TArray<FVector> &polygon);
+    void FindBounds(FVector bottomLeft, FVector topRight, bool safeCheck);
     void GetSizeGrid(int &x, int &y);
     void GetSizeGrid(int &x, int &y, float widthOfInsideStep);
 
+    bool IsInBound(const FVector &pos);
+    bool IsInBound(const FVector &pos, int &xOut, int &yOut);
     
-
     void GenerateGrid();
-    bool GridValid();
+    bool GridValid() const;
 
     void FlagTrue(const TArray<FVector> &polygon);
 
@@ -68,6 +103,7 @@ protected:
     void FlagTrue(const FVector &pos);
     void FlagTruePolygonEdge(const FVector &pos);
     void ToIndexBounded(const FVector &pos, int &x, int &y);
+    void ToIndexRaw(const FVector &pos, int &x, int &y);
     bool FlagAtPosition(const FVector &pos);
 
     bool FlagAt(int x, int y);
@@ -76,7 +112,10 @@ protected:
     //override flags by batch
     void SetFlag(const TArray<std::pair<int, int>> &indexPositions, bool flag);
     void SetFlag(const std::pair<int, int> &indexPos, bool flag);
+    void SetFlag(int x, int y, bool flag);
+    void SetFlag(const FVector &pos, bool flagIn);
 
+    void SetPosition(int x, int y, const FVector &pos);
 
     bool PositionAt(int x, int y, FVector &outPos);
     bool PositionAt(const std::pair<int, int> &pair, FVector &outPos);
@@ -94,6 +133,13 @@ protected:
     //debug
     void AppendAt(int i, int j, MeshData &data);
     TArray<FVector> GetQuadOrTriangleAt(int i, int j);
+
+
+    void FlagTrueFrom(const FMeshedPolygon &other);
+    void FlagTrueFromBuffer(
+        const TArray<bool> &flagBuffer,
+        const TArray<FVector> &positions
+    );
 
 
 };

@@ -100,7 +100,9 @@ void AworldLevel::EndPlay(const EEndPlayReason::Type EndPlayReason){
     //EndCurrentWorld();
 
     EntityManager::EndPlay(); // very important
-    AlertManager::EndPlay();
+    if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+        instance->EndPlayClear();
+    }
 
     if(outpostManagerPointer != nullptr){
         delete outpostManagerPointer;
@@ -143,14 +145,14 @@ void AworldLevel::initWorld(FString WorldName){
 
     EntityManager::BeginPlay(); //very important
 
+    instancePtr->createPathFinder(WorldName);
 
     instancePtr->createTerrain(WorldName);
 
     //create rooms
     instancePtr->DebugCreateRooms();
 
-    //edge collector must be added here later
-    instancePtr->createPathFinder(WorldName);
+    
 
     //creates one bot, BUT 5 humans will spawn if one outpost is created!
     int count = 1;

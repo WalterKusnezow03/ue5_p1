@@ -282,12 +282,12 @@ void EdgeCollector::getEdgesFromSingleMesh(
     showEdges(currentEdges, worldIn); //debug
 
     //feed to nav mesh
-    std::vector<FVector> toPosVec;
+    TArray<FVector> toPosVec;
     for (int i = 0; i < currentEdges.size(); i++){
-        toPosVec.push_back(currentEdges.at(i).bottom);
+        toPosVec.Add(currentEdges.at(i).bottom);
     }
-    if(APathFinder *f = APathFinder::instance()){
-        f->addConvexHull(toPosVec);
+    if(APathFinder *finder = APathFinder::instance()){
+        finder->addConvexHull(toPosVec);
     }
     return;
 

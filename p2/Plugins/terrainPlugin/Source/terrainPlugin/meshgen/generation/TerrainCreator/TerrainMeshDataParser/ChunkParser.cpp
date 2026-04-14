@@ -269,13 +269,13 @@ void ChunkParser::createFoliageAndPushNodesAroundFoliageToNavMesh(
     FVector ownLocationOffset = GetActorLocation();
     for (int i = 0; i < pickedLocationsForNavmesh.size(); i++)
     {
-        std::vector<FVector> convexHull;
+        TArray<FVector> convexHull;
         FVector &currentLocation = pickedLocationsForNavmesh[i];
         for (int j = 0; j < offsets.size(); j++)
         {
-            convexHull.push_back(offsets[j] + currentLocation + ownLocationOffset);
+            convexHull.Add(offsets[j] + currentLocation + ownLocationOffset);
         }
-        navmeshConvexHulls.push_back(convexHull);
+        navmeshConvexHulls.Add(convexHull);
     }
 
     DebugHelper::logMessage("debugPathfinder added nodes to mesh", pickedLocationsForNavmesh.size() * 4);    
@@ -383,6 +383,7 @@ void ChunkParser::addNodesToNavMeshIfNeeded(UWorld *world){
         return;
     }
 
+    DebugHelper::logMessage("ChunkParser::Add Nodes");
     // add all normal centers to navmesh to allow the bots to move over the terrain
     if (APathFinder *f = APathFinder::instance())
     {
@@ -394,8 +395,9 @@ void ChunkParser::addNodesToNavMeshIfNeeded(UWorld *world){
 
 
         //convex hulls
-        for (int i = 0; i < navmeshConvexHulls.size(); i++){
+        for (int i = 0; i < navmeshConvexHulls.Num(); i++){
             f->addConvexHull(navmeshConvexHulls[i]);
+            DebugHelper::logMessage("ChunkParser::Added Convex Hull");
         }
     }
 }

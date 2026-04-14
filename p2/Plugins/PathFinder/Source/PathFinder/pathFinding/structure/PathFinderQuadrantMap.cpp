@@ -1,6 +1,8 @@
 #include "PathFinderQuadrantMap.h"
 
 #include "DebugPlugin/DebugHelper.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
+
 
 PathFinderQuadrantMap::PathFinderQuadrantMap(APathFinder *finder){
     parent = finder;
@@ -28,8 +30,9 @@ PathFinderQuadrantMap::~PathFinderQuadrantMap(){
 
 
 void PathFinderQuadrantMap::clear(){
-    TArray<PathFinderQuadrant*> array = {TopLeft, BottomLeft, TopRight, BottomRight};
-    for (int i = 0; i < array.Num(); i++){
+    TArray<PathFinderQuadrant *> array = allQuadrants();
+    for (int i = 0; i < array.Num(); i++)
+    {
         if(array[i] != nullptr){
             array[i]->clear();
         }
@@ -47,10 +50,8 @@ std::vector<PathFinderNode *> PathFinderQuadrantMap::getSubGraph(FVector a, FVec
     //why is this just iterating over all quadrants:
     //the "askForArea(a,b)" method is clamping the coordinates by it self
     //to the correct values to properly get all nodes in the correct area.
-    TArray<PathFinderQuadrant*> array = {TopLeft, BottomLeft, TopRight, BottomRight};
-    
-    
-    
+    TArray<PathFinderQuadrant *> array = allQuadrants();
+
     for (int i = 0; i < array.Num(); i++){
         if(array[i] != nullptr){
 
@@ -68,11 +69,15 @@ std::vector<PathFinderNode *> PathFinderQuadrantMap::getSubGraph(FVector a, FVec
 
 PathFinderQuadrant* PathFinderQuadrantMap::askforQuadrant(PathFinderNode *node){
     if(node){
-        FVector pos = node->pos;
-        return askforQuadrant(pos.X, pos.Y);
+        return askforQuadrant(node->pos);
     }
     return nullptr;
 }
+
+PathFinderQuadrant* PathFinderQuadrantMap::askforQuadrant(const FVector &pos){
+    return askforQuadrant(pos.X, pos.Y);
+}
+
 
 PathFinderQuadrant* PathFinderQuadrantMap::askforQuadrant(int xIndex, int yIndex){
     //top left
@@ -176,5 +181,182 @@ void PathFinderQuadrantMap::addNoConnect(PathFinderNode *node){
     PathFinderQuadrant *q = askforQuadrant(node);
     if(q != nullptr){
         q->addNoConnect(node);
+    }
+}
+
+
+
+
+
+
+void PathFinderQuadrantMap::addAllNodes(std::vector<PathFinderNode*> &nodes){
+    for (int i = 0; i < nodes.size(); i++){
+        if(nodes.at(i) != nullptr){
+            addNode(nodes.at(i));
+        }
+    }
+}
+
+
+
+
+/// @brief expects the vector to be a convex hull of an object / grounded nodes! Do not ignore!
+/// @param vector vector of positions, convex hull!
+void PathFinderQuadrantMap::addConvexHull(TArray<FVector> &vec){
+    if(vec.Num() <= 0){
+        return;
+    }
+
+    //create all nodes
+    std::vector<PathFinderNode *> outNodes;
+    for (int i = 0; i < vec.Num(); i++){
+        PathFinderNode *n = new PathFinderNode(vec[i]);
+        outNodes.push_back(n);
+    }
+
+    // add the konvex neighbors
+    for (int i = 0; i < vec.Num(); i++)
+    {
+        PathFinderNode *prev = nullptr;
+        PathFinderNode *next = nullptr;
+
+        if (i == 0)
+        {
+            prev = outNodes.at(outNodes.size() - 1);
+        }else{
+            prev = outNodes.at(i - 1);
+        }
+
+
+        if(i == outNodes.size() - 1){
+            next = outNodes.at(0);
+        }
+        else{
+            next = outNodes.at(i + 1);
+        }
+
+
+        PathFinderNode *current = outNodes.at(i);
+        if(prev != nullptr && current != nullptr && next != nullptr){
+            //current->nA = prev;
+            //current->nB = next;
+            current->setConvexNeighborA(prev); //es wird davon ausgegangen das sich nodes auf der hülle sehen
+            current->setConvexNeighborB(next);
+        }
+
+    }
+
+
+
+    //alle sofort in graphen ballern
+    addAllNodes(outNodes);
+    GenerateRasterizedConvexHull(vec);
+}
+
+void PathFinderQuadrantMap::GenerateRasterizedConvexHull(TArray<FVector> &polygon){
+    if(polygon.Num() <= 0){
+        return;
+    }
+
+    if(parent){
+        float step = PolygonStepSize();
+        TArray<FVector> copy = polygon;
+
+        FMeshedPolygon *meshedPolygon = new FMeshedPolygon();
+        if(meshedPolygon){
+            //meshedPolygon->Init(copy, step);
+
+            //force mine size
+            meshedPolygon->InitForceSizeMin(copy, step);
+
+            //add shape if valid
+            if(meshedPolygon->IsValid()){
+                if(PathFinderQuadrant *quadrant = askforQuadrant(meshedPolygon->BottomLeft())){
+                    quadrant->add(meshedPolygon);
+                    return;
+                }
+            }
+            //delete otherwise
+            delete meshedPolygon;
+            meshedPolygon = nullptr;
+        }
+        
+    }
+}
+
+float PathFinderQuadrantMap::PolygonStepSize(){
+    if(parent){
+        return parent->GetOneMeter();
+    }
+    return 100.0f;
+}
+
+///// POLYGON BITMAP GENERATION FOR CONVOLUTIONAL NN
+FMeshedPolygon PathFinderQuadrantMap::GetSubGraphPolygonMesh(const FVector &center, float sizeSquare){
+    sizeSquare = std::abs(sizeSquare);
+    float halfSize = sizeSquare / 2.0f;
+    FVector dir(0.0f, halfSize, halfSize);
+
+    FVector a = center - dir;
+    FVector b = center + dir;
+    return GetSubGraphPolygonMesh(a, b);
+}
+
+FMeshedPolygon PathFinderQuadrantMap::GetSubGraphPolygonMesh(const FVector &a, const FVector &b){
+    //get all
+    std::vector<FMeshedPolygon *> collected;
+    TArray<PathFinderQuadrant *> all = allQuadrants();
+    for (int i = 0; i < all.Num(); i++){
+        if(PathFinderQuadrant *current = all[i]){
+            std::vector<FMeshedPolygon *> collectedCurrent = current->getPolygonsInArea(a, b);
+            if(collectedCurrent.size() > 0){
+                collected.insert(collected.end(), collectedCurrent.begin(), collectedCurrent.end());
+            }
+        }
+    }
+
+    //join into single meshed polygon 2.5 D,
+    //clamped against edges!
+    float step = PolygonStepSize();
+    FMeshedPolygon polygon;
+    polygon.GenerateFrom(collected, a, b, step);
+
+    
+    //return
+    return polygon;
+}
+
+TArray<PathFinderQuadrant *> PathFinderQuadrantMap::allQuadrants(){
+    TArray<PathFinderQuadrant *> array = {TopRight, BottomRight, TopLeft, BottomLeft};
+    return array;
+}
+
+
+
+std::vector<FMeshedPolygon *> PathFinderQuadrantMap::GetAllPolygons(){
+    std::vector<FMeshedPolygon *> outVector;
+    TArray<PathFinderQuadrant *> quadrants = allQuadrants();
+    for (int i = 0; i < quadrants.Num(); i++){
+        if(PathFinderQuadrant *current = quadrants[i]){
+            current->AppendAllPolygons(outVector);
+        }
+    }
+
+    return outVector;
+}
+
+
+void PathFinderQuadrantMap::addAllPolygons(std::vector<FMeshedPolygon *> &polygons){
+    for (int i = 0; i < polygons.size(); i++){
+        addPolygon(polygons[i]);
+    }
+}
+
+void PathFinderQuadrantMap::addPolygon(FMeshedPolygon *polygon){
+    if(polygon){
+        //add shape.
+        if(PathFinderQuadrant *quadrant = askforQuadrant(polygon->BottomLeft())){
+            quadrant->add(polygon);
+        }
     }
 }

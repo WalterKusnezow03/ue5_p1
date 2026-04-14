@@ -95,6 +95,9 @@ void APathFinder::KillInstance(){
         worldLevelNameSaved = TEXT("NONE");
     }
 
+    //reset id map
+    idMappedNodes.clear();
+
     //reset pointer
     resetPathFinderPointer();
 
@@ -242,58 +245,9 @@ void APathFinder::addNewNodeVector(std::vector<FVector>& vec){
 
 /// @brief expects the vector to be a convex hull of an object / grounded nodes! Do not ignore!
 /// @param vector vector of positions, convex hull!
-void APathFinder::addConvexHull(std::vector<FVector> &vec){
-    
-    //create all nodes
-    std::vector<PathFinderNode *> outNodes;
-    for (int i = 0; i < vec.size(); i++){
-        PathFinderNode *n = new PathFinderNode(vec.at(i));
-        outNodes.push_back(n);
-    }
-
-    // add the konvex neighbors
-    for (int i = 0; i < vec.size(); i++)
-    {
-        PathFinderNode *prev = nullptr;
-        PathFinderNode *next = nullptr;
-
-        if (i == 0)
-        {
-            prev = outNodes.at(outNodes.size() - 1);
-        }else{
-            prev = outNodes.at(i - 1);
-        }
-
-
-        if(i == outNodes.size() - 1){
-            next = outNodes.at(0);
-        }
-        else{
-            next = outNodes.at(i + 1);
-        }
-
-
-        PathFinderNode *current = outNodes.at(i);
-        if(prev != nullptr && current != nullptr && next != nullptr){
-            //current->nA = prev;
-            //current->nB = next;
-            current->setConvexNeighborA(prev); //es wird davon ausgegangen das sich nodes auf der hülle sehen
-            current->setConvexNeighborB(next);
-        }
-
-    }
-
-
-
-    //alle sofort in graphen ballern
-    for (int i = 0; i < outNodes.size(); i++){
-        if(outNodes.at(i) != nullptr){
-            addNode(outNodes.at(i));
-
-            //NEW:
-            //convex hull index setzten für faster path on hull
-            //outNodes.at(i)->hullindex = i;
-        }
+void APathFinder::addConvexHull(TArray<FVector> &vec){
+    if(quadrantMap){
+        quadrantMap->addConvexHull(vec);
     }
 }
 
@@ -307,13 +261,15 @@ void APathFinder::addNewNode(FVector a){
     }
 }
 
-void APathFinder::addNode(PathFinderNode * node){
-    if(node != nullptr){
-        if(quadrantMap){
-            quadrantMap->addNode(node);
-        }
-    }
-}
+
+
+
+
+
+// --- POLYGON TRACKING ---
+
+
+
 
 
 
@@ -1410,4 +1366,35 @@ void APathFinder::CollectNodePositions(
             outArray[i] = current->pos;
         }
     }
+}
+
+
+
+std::vector<FMeshedPolygon *> APathFinder::GetAllPolygons(){
+    if(quadrantMap){
+        return quadrantMap->GetAllPolygons();
+    }
+    return std::vector<FMeshedPolygon *>();
+}
+
+void APathFinder::addAllPolygons(std::vector<FMeshedPolygon *> &polygons){
+    if(quadrantMap){
+        quadrantMap->addAllPolygons(polygons);
+    }
+}
+
+
+
+
+
+bool APathFinder::TryGetSubGraphPolygonMesh(
+    FMeshedPolygon &outData,
+    FVector center, 
+    float sizeSquare
+){
+    if(quadrantMap){
+        outData = quadrantMap->GetSubGraphPolygonMesh(center, sizeSquare);
+        return true;
+    }
+    return false;
 }

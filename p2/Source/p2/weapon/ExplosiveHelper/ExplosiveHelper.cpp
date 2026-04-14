@@ -40,7 +40,9 @@ void ExplosiveHelper::detonate(
 /// @brief detonates the grenade
 void ExplosiveHelper::detonate(FVector &location, UWorld *world){
     if(world){
-        AlertManager::damageAndAlertInArea(world, location, EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
+        if(AAlertManager *instance = AAlertManager::Instance(world)){
+            instance->damageAndAlertInArea(world, location, EXPLOSION_RADIUS, DAMAGE, DAMAGE_RADIUS);
+        }
         DebugHelper::showScreenMessage("explosive detonate"); //works as expected
 
         //visual explosion

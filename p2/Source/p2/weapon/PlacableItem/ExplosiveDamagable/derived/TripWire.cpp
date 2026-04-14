@@ -36,11 +36,13 @@ void ATripWire::TickUpdateBound(){
     FVector ownLocation = GetActorLocation();
     TArray<FVector> positions;
 
-    AlertManager::EntitiesInRadiusFootPositions(
-		ownLocation,
-		TriggerDistance,
-		positions
-	);
+    if(AAlertManager *instance = AAlertManager::Instance(GetWorld())){
+        instance->EntitiesInRadiusFootPositions(
+            ownLocation,
+            TriggerDistance,
+            positions
+        );
+    }
     if(AnyIntersectWithWireWorld(positions)){
         Detonate();
     }

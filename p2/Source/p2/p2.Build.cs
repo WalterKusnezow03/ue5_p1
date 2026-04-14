@@ -37,6 +37,7 @@ public class p2 : ModuleRules
 			"AeroDynamicPlugin",
 			"MeshDataPlugin",
 			"AnyMeshWidgetPlugin",
+			"PolygonPlugin"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });
