@@ -29,24 +29,42 @@ void ANNSocket::MakeInstance(UWorld* World)
 
 void ANNSocket::BeginPlay(){
     Super::BeginPlay();
-    LaunchPythonProcess("nn_server.py");
-    
+    frameNameSend = true; //none at start
+    LaunchPythonProcess("nn_server.py"); // finds working dir automatically
+
+}
+
+void ANNSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    CloseSharedMemory();
+    Super::EndPlay(EndPlayReason);
+}
+
+
+void ANNSocket::OpenSharedMemory(int bytes){
+    CloseSharedMemory();
+    sharedMemory.Open(frameName, bytes);
+    frameNameSend = false;
+    // void WriteData(const TArray<uint8> &bytes);
+}
+
+void ANNSocket::CloseSharedMemory(){
+    sharedMemory.CleanFrame();
 }
 
 
 
-void ANNSocket::Tick(float deltatime){
-    Super::Tick(deltatime);
-    
+//Tick:
+//if (serverRunning && connected)
+void ANNSocket::TickSocketConnected(float deltatime){
+    Super::TickSocketConnected(deltatime);
 
-    if(IsConnected()){
-        //debug some data
-        TArray<float> data = {8, 4, 3, 1};
-        typeDataRandomNum++;
-        typeDataRandomNum %= 3;
+    // is connected: Tick
+    if(!frameNameSend){
 
-        Send(typeDataRandomNum, data);
+        //setup shared memory page inside python (if page changed)
+        //message as: FrameName_bytes
+        FString message = sharedMemory.SharedFrameIdentifierMessage("FRAMEID-");
+        Send(message);
+        frameNameSend = true;
     }
-    LogPythonMessages();
 }
-

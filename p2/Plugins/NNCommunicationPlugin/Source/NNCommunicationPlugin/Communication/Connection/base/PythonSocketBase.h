@@ -47,14 +47,20 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    
+    //to be overriden: called on tick if socket is connected
+    virtual void TickSocketConnected(float deltatime);
+
     void LogMessage(FString msg);
 
-    void Send(int32 typeData, TArray<float> &data);
+    //send via socket connection
+    void Send(FString message);
     void Send(TArray<uint8> &bin);
-    void SendShutdown();
 
-    void Receive(TArray<float> &data, int32 numFloats);
     void Receive(TArray<uint8> &data, int32 numBytes, int32 &bytesread);
 
+
+
+    // ---- debug messages on tick to python----
+    bool debugMessageEnabled = false;
+    void DebugSocketMessage(); //works
 };

@@ -8,7 +8,6 @@
 #include "ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/BlurredImage.h"
 #include "ComputerVisionPlugin/Public/ComputerVision/SiftFeatureExtraction/ImageFeatureFinder.h"
 
-#include "ComputerVisionPlugin/Public/ComputerVision/Communication/Connection/PythonSocket.h"
 #include "DebugPlugin/DebugHelper.h"
 
 AComputerVisionActor::AComputerVisionActor()
@@ -21,7 +20,7 @@ AComputerVisionActor::AComputerVisionActor()
 void AComputerVisionActor::BeginPlay()
 {
     Super::BeginPlay();
-    APythonSocket::MakeInstance(GetWorld());
+    
 
     // Erstelle ein RenderTarget für das Bot-Bild
     RenderTarget = NewObject<UTextureRenderTarget2D>(this);

@@ -9,7 +9,7 @@ def receive(connection):
 
     #make payload
     payload = recv_exact(connection, numBytes)
-    print("received payload", payload, " from numbytes", numBytes)
+    print("received payload ", payload, " from numbytes", numBytes)
 
     return payload
 
@@ -24,21 +24,26 @@ def recv_exact(connection, n):
 
 
 
-def unpackCommandType(data):
-    if len(data) < 4:
-        print("payload command type too short")
-        return -1
-
-
-    ##type: int, 4 bytes
-    ##command = struct.unpack("i", data[:4])[0] ##struct.unpack("i", data)[0] ##one signed integer
-    command = extractFromBinary(data, 0, 4)
-    print("payload command extracted ", command)
-    return command
-
-
-
 
 def extractFromBinary(data, startIndex, toCopyBytes):
     dataOut = struct.unpack("i", data[startIndex:startIndex+toCopyBytes])[0]
     return dataOut
+
+
+
+def unpackMessageToString(data):
+    return data.decode("utf-8")
+
+
+def unpackMessageToStringSplit(data, separator):
+    asString = unpackMessageToString(data)
+    
+    if asString is None:
+        return []
+
+    if isinstance(asString, str):
+        text = asString
+    else:
+        text = asString.decode("utf-8", errors="ignore")
+
+    return text.split(separator)

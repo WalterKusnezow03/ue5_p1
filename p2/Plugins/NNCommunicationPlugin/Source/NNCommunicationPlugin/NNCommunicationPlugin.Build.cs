@@ -27,7 +27,8 @@ public class NNCommunicationPlugin : ModuleRules
 			{
 				"Core",
 				"DebugPlugin",
-				"PythonPlugin"
+				"PythonPlugin",
+				"SharedMemoryPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

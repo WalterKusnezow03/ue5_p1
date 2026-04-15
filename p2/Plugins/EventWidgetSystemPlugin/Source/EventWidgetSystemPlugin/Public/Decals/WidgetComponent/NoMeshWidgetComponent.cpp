@@ -85,8 +85,11 @@ void UNoMeshWidgetComponent::UpdateDecalMaterial()
 		return;
 	}
 
-	if(!GetWidget())
+	if(!GetWidget()){
 		InitWidget();
+		DebugHelper::logMessage("UNoMeshWidgetComponent::no widget");
+		return;
+	}
 
 	UTextureRenderTarget2D* RT = GetRenderTarget();
 

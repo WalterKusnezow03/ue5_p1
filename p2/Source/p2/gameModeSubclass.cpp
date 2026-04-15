@@ -106,5 +106,5 @@ void AgameModeSubclass::RunTests(){
     //AssetPathMaker::Test();
     //TestAlgorithm::Test();
     //BoundingBoxSimple::Test();
-    //ANNSocket::MakeInstance(GetWorld());
+    ANNSocket::MakeInstance(GetWorld());
 }

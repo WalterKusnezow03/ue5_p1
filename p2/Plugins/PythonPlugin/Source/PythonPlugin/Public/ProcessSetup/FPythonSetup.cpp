@@ -1,5 +1,6 @@
 #include "FPythonSetup.h"
 
+#include "DebugPlugin/DebugHelper.h"
 
 /*
 FString PluginDir = FPaths::ConvertRelativePathToFull(
@@ -18,6 +19,7 @@ void FPythonSetup::Setup(
     FString pluginName,
     FString pyName
 ){
+    debugScriptName = pyName;
     pythonPathInPlugin = PythonPath(pluginName, pyName);
 }
 
@@ -26,6 +28,8 @@ FString FPythonSetup::PythonPath(FString pluginName, FString pyName){
 
     pluginDirSaved = PluginDir(pluginName);
     FString PythonScript = FPaths::Combine(pluginDirSaved, innerPath);
+
+    DebugHelper::logMessage("FPythonSetup::PythonPath --> ", PythonScript);
     return PythonScript;
 }
 
@@ -35,6 +39,7 @@ FString FPythonSetup::PluginDir(FString pluginName){
         FPaths::ProjectPluginsDir() / 
         *inner
     );
+    DebugHelper::logMessage("FPythonSetup::PluginDir --> ", pluginDir);
     return pluginDir;
 }
     

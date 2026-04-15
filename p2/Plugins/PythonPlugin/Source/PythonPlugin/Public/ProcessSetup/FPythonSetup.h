@@ -2,13 +2,15 @@
 
 #include "CoreMinimal.h"
 
+/// @brief finds a python script from:
+/// pluginName/Source/pluginName/Python/some.py
 class PYTHONPLUGIN_API FPythonSetup {
 
-    //plugin dir
 public:
+    //setups like in class description
     void Setup(
-        FString pluginName,
-        FString pyName
+        FString pluginName, //pluginName
+        FString pyName //some.py
     );
 
     FString getPath() const {
@@ -16,6 +18,10 @@ public:
     }
     FString PluginDir() const {
         return pluginDirSaved;
+    }
+
+    FString PythonScriptName() const {
+        return debugScriptName;
     }
 
 private:
@@ -26,4 +32,6 @@ private:
     // pluginName/Source/pluginName/Python
     FString pythonPathInPlugin;
     FString pluginDirSaved;
+
+    FString debugScriptName;
 };

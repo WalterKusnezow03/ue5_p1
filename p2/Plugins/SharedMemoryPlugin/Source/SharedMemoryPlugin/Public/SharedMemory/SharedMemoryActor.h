@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "SharedMemoryPlugin/Public/SharedMemory/FSharedFrame.h"
+#include <map>
 
 #include "SharedMemoryActor.generated.h"
 
@@ -19,12 +20,10 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+
+    void Open(FString pageName, int bytes);
 private:
-    void Open();
-    void CleanFrame();
-    void WriteFrame(const unsigned char *Data);
+    bool HasFrame(FString pageName);
 
-    FSharedFrame *Shared = nullptr;
-
-    int sharedFrameId = -1;
+    std::map<FString, FSharedFrame> frames;
 };

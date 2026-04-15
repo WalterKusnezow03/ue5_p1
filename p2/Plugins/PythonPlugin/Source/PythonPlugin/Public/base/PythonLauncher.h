@@ -18,6 +18,9 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float deltatime) override;
+
+    FString pyNameSavedDebug;
 
     //process related
     FProcHandle ProcHandle;
