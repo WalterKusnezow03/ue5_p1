@@ -29,18 +29,34 @@ void ANNSocket::MakeInstance(UWorld* World)
 
 void ANNSocket::BeginPlay(){
     Super::BeginPlay();
-    frameNameSend = true; //none at start
-    LaunchPythonProcess("nn_server.py"); // finds working dir automatically
-
+    
+    //launch only if not blocked
+    if(false){
+        LaunchPythonProcess("NNCommunicationPlugin", "nn_server.py"); // finds working dir automatically
+        frameName = "ANNSocketFrame";
+    }
 }
 
+void ANNSocket::SetFlagsOnBeginPlay(){
+    Super::SetFlagsOnBeginPlay();
+    frameNameSend = true;
+}
+
+
+
+
 void ANNSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    instancePtr = nullptr;
     CloseSharedMemory();
     Super::EndPlay(EndPlayReason);
 }
 
 
 void ANNSocket::OpenSharedMemory(int bytes){
+    if(frameName.Len() <= 0){
+        return;
+    }
+
     CloseSharedMemory();
     sharedMemory.Open(frameName, bytes);
     frameNameSend = false;
@@ -50,6 +66,20 @@ void ANNSocket::OpenSharedMemory(int bytes){
 void ANNSocket::CloseSharedMemory(){
     sharedMemory.CleanFrame();
 }
+
+
+void ANNSocket::WriteData(const TArray<uint8> &data){
+    //size changed: new page!
+
+    if(sharedMemory.SizeChanged(data.Num())){
+        CloseSharedMemory();
+        OpenSharedMemory(data.Num());
+    }
+    sharedMemory.WriteData(data);
+}
+
+
+
 
 
 

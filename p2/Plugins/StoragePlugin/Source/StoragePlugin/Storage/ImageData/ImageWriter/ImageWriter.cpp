@@ -4,7 +4,6 @@
 #include "Misc/FileHelper.h"
 #include "HAL/PlatformFilemanager.h"
 
-#include "ImageWriter.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Modules/ModuleManager.h"
@@ -16,33 +15,25 @@ void ImageWriter::SaveColorBufferAsPngFromName(
     uint8 *ColorData, 
     int32 Width, 
     int32 Height, 
+    FString pluginName,
     FString imageNameIn
 ){
-    FString path = FPaths::ProjectSavedDir() // has "/" at end
-                   + TEXT("ComputerVisionPlugin/") + imageNameIn + TEXT(".png");
-    SaveColorBufferAsPng(ColorData, Width, Height, path);
-}
-
-void ImageWriter::SaveColorBufferAsPng(uint8* ColorData, int32 Width, int32 Height, int32 id){
-    if(id > MaxImages()){
-        return;
-    }
-    SaveColorBufferAsPngFromName(
-        ColorData,
-        Width,
-        Height,
-        imageName(id)
+    FString path = FString::Printf(
+        TEXT("%s%s/%s.png"),
+        *FPaths::ProjectSavedDir(),
+        *pluginName,
+        *imageNameIn
     );
+    
+
+    //FString path = FPaths::ProjectSavedDir() // has "/" at end
+    //               + TEXT("ComputerVisionPlugin/") + imageNameIn + TEXT(".png");
+    SaveColorBufferAsPngFromPath(ColorData, Width, Height, path);
 }
 
-FString ImageWriter::imageName(int32 id){
-    return FString::Printf(TEXT("CV_%d.png"), id);
-}
 
-void ImageWriter::SaveColorBufferAsPng(uint8* ColorData, int32 Width, int32 Height, const FString& FilePath)
+void ImageWriter::SaveColorBufferAsPngFromPath(uint8* ColorData, int32 Width, int32 Height, const FString& FilePath)
 {
-    //DEBUG
-    return;
 
 
     /*TArray<FColor> ColorArray;

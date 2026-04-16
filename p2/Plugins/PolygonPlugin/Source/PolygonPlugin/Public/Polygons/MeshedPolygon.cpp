@@ -171,28 +171,49 @@ void FMeshedPolygon::GenerateGrid(){
     int y = -1;
     GetSizeGrid(x, y);
     if(x > 0 && y > 0){
-        flagGrid.SetNum(x);
-        positionGrid.SetNum(x);
-        for (int i = 0; i < x; i++){
-            TArray<bool> &currentFlagBuffer = flagGrid[i];
-            TArray<FVector> &currentPositionBuffer = positionGrid[i];
-            currentFlagBuffer.SetNum(y);
-            currentPositionBuffer.SetNum(y);
+        if(
+            TGridIsSize<bool>(x,y, flagGrid) &&
+            TGridIsSize<FVector>(x,y, positionGrid)
+        ){
+            ClearFlags();
+            return;
+        }
 
-            for (int j = 0; j < y; j++){
+        TGenerateGrid<bool>(x, y, flagGrid);
+        TGenerateGrid<FVector>(x, y, positionGrid);
+        ClearFlags();
+        MakePositionGrid();
+    }
+}
 
-                FVector posGenerated = minSaved + FVector(
-                    i * stepSizeSaved,
-                    j * stepSizeSaved,
-                    0
-                );
-
-                currentFlagBuffer[j] = false;
-                currentPositionBuffer[j] = posGenerated;
-            }
+void FMeshedPolygon::ClearFlags(){
+    for (int i = 0; i < flagGrid.Num(); i++){
+        TArray<bool> &col = flagGrid[i];
+        for (int j = 0; j < col.Num(); j++){
+            col[j] = false;
         }
     }
 }
+
+void FMeshedPolygon::MakePositionGrid(){
+    for (int i = 0; i < positionGrid.Num(); i++){
+        TArray<FVector> &currentPositionBuffer = positionGrid[i];
+        for (int j = 0; j < currentPositionBuffer.Num(); j++){
+            FVector posGenerated = minSaved + FVector(
+                i * stepSizeSaved,
+                j * stepSizeSaved,
+                0
+            );
+            currentPositionBuffer[j] = posGenerated;
+        }
+    }
+}
+
+
+
+
+
+
 
 void FMeshedPolygon::GetSizeGrid(int &x, int &y){
     GetSizeGrid(x, y, stepSizeSaved);
@@ -544,21 +565,34 @@ void FMeshedPolygon::GenerateFrom(
     const FVector &capB,
     float stepSizeIn
 ){
+    FVector relative = capB - capA; // AB = B - A
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("FMeshedPolygon::GenerateFrom size %.2f %.2f"),
+            relative.X,
+            relative.Y
+        )
+    );
+
+
     if(polygons.size() == 0){
         return;
-    }
-
-    if(polygons.size() == 1){
-        if(const FMeshedPolygon *first = polygons[0]){
-            *this = *first;
-            return;
-        }
     }
     OverrideStepSize(stepSizeIn);
 
     //make grid
     FindBounds(capA, capB, true);
     GenerateGrid();
+
+    if(IsValid()){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("FMeshedPolygon::GenerateFrom %d %d"),
+                flagGrid.Num(),
+                flagGrid[0].Num()
+            )
+        );
+    }
 
     //flag from ingoing polygon data true
     if(polygons.size() > 1){
@@ -632,3 +666,29 @@ float FMeshedPolygon::GetStepSizeSaved(){
 }
 
 
+
+
+
+
+void FMeshedPolygon::GenerateColorBitmap(
+    TArray<FColor> &outBuffer,
+    FColor &free,
+    FColor &blocked,
+    int &resXOut,
+    int &resYOut
+){
+    if(IsValid()){
+        for (int i = 0; i < flagGrid.Num(); i++){
+            TArray<bool> &currentBuffer = flagGrid[i];
+            int offset = outBuffer.Num();
+            outBuffer.SetNum(outBuffer.Num() + currentBuffer.Num());
+            for (int j = 0; j < currentBuffer.Num(); j++){
+                FColor made = currentBuffer[j] ? free : blocked;
+                outBuffer[offset + j] = made;
+            }
+        }
+
+        resXOut = flagGrid.Num();
+        resYOut = flagGrid[0].Num();
+    }
+}

@@ -3,6 +3,10 @@
 
 void APythonLauncher::BeginPlay(){
     Super::BeginPlay();
+    SetFlagsOnBeginPlay();
+}
+
+void APythonLauncher::SetFlagsOnBeginPlay(){
     serverRunning = false; 
 }
 

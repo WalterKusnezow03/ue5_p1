@@ -124,7 +124,7 @@ FRHITexture2D *AComputerVisionActor::GpuRhiTexture(){
 
 
 
-#include "ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.h"
+#include "ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/IDImageWriter.h"
 bool AComputerVisionActor::TickCheckBufferCompleted(){
     //debug
     if(bufferPackage.refFlagCompleted()){
@@ -180,7 +180,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                 uint8 *ptr = (uint8 *)color.GetData(); // bufferPackage.DataPtrAsUint8()
                 imageId++;
                 //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageRaw");
-                ImageWriter::SaveColorBufferAsPng(ptr, ResolutionX, ResolutionY, imageId);
+                IDImageWriter::SaveColorBufferAsPng(ptr, ResolutionX, ResolutionY, imageId);
 
                 // debug blur all
                 if (false)
@@ -202,7 +202,7 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                         if (saveImages && false)
                         {
                             //DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageBlurred");
-                            ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
+                            IDImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
                         }
                     }
                 }
@@ -225,10 +225,11 @@ bool AComputerVisionActor::TickCheckBufferCompleted(){
                         //ImageWriter::SaveColorBufferAsPng(ptrB, ResolutionX, ResolutionY, imageId);
                         
                         //single image overriden
-                        ImageWriter::SaveColorBufferAsPngFromName(
+                        IDImageWriter::SaveColorBufferAsPngFromName(
                             ptrB,
                             256,
                             256,
+                            "ComputerVisionPlugin",
                             FString::Printf(TEXT("DOGImage")) //single image only.
                         );
                         DebugHelper::logMessage("AComputerVisionActor::Image::WriteImageDOG");

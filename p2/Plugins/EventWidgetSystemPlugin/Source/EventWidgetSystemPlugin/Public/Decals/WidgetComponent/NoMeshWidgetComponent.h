@@ -46,7 +46,7 @@
 
 class UWidgetDecalComponent;
 
-/// ----- BASE CLASS FOR NO MESH : DECAL UWIDGETS -----
+/// ----- BASE CLASS FOR NO MESH : DECAL UWIDGETS, without a mesh but PROJECTED UWIDGETS -----
 UCLASS(Blueprintable, ClassGroup="UserInterface", hidecategories=(Object,Activation,"Components|Activation",Sockets,Base,Lighting,LOD,Mesh), editinlinenew, meta=(BlueprintSpawnableComponent) )
 class EVENTWIDGETSYSTEMPLUGIN_API UNoMeshWidgetComponent : public UWidgetComponent
 //UWidgetComponentCustom
@@ -67,7 +67,7 @@ private:
     UPROPERTY(EditAnywhere, Category = "_EventOption")
     FString actorName = "Actor47";
     // -- id for event dispatcher --
-    
+
 public:
 
 

@@ -26,6 +26,8 @@
 
 #include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
 
+#include "p2/entities/NN/NNPathFinderProxy.h"
+
 #include "playerScript.generated.h"
 
 UCLASS()
@@ -141,4 +143,10 @@ private:
 	);
 
 
+
+
+	//DEBUG
+	
+	NNPathFinderProxy proxy;
+	void DebugPathFinderPolygonExtraction(float deltatime);
 };

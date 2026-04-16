@@ -172,7 +172,7 @@ void AplayerScript::Tick(float DeltaTime)
     updateUi();
     //TickMiniMap();
 
-
+    DebugPathFinderPolygonExtraction(DeltaTime);
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -671,3 +671,14 @@ void AplayerScript::ReceiveCallback(UWidgetInteractPayload *payload){
 
 
 
+
+void AplayerScript::DebugPathFinderPolygonExtraction(float deltatime){
+    
+    float meter = 100.0f;
+    float centimeters = meter * 100.0f;
+    proxy.DebugSaveImage(
+        GetActorLocation(),
+        centimeters,
+        deltatime
+    );
+}

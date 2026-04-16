@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PolygonPlugin/Public/GridBase/GridBase.h"
 
 
 class MeshData;
@@ -8,7 +9,8 @@ class MeshData;
 /// grid from generated b spline
 ///data is transfered to position grid and boolean grid for location being
 ///present inside the polygon
-class POLYGONPLUGIN_API FMeshedPolygon {
+// true: blocked, false: free
+class POLYGONPLUGIN_API FMeshedPolygon : public GridBase{
 
 protected:
     TArray<TArray<bool>> flagGrid;
@@ -141,5 +143,15 @@ protected:
         const TArray<FVector> &positions
     );
 
+    void ClearFlags();
+    void MakePositionGrid();
 
+public:
+    void GenerateColorBitmap(
+        TArray<FColor> &outBuffer,
+        FColor &free,
+        FColor &blocked,
+        int &resXOut,
+        int &resYOut
+    );
 };

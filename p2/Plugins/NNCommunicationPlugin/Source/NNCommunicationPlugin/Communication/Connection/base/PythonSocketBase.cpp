@@ -4,11 +4,18 @@
 
 void APythonSocketBase::BeginPlay(){
     Super::BeginPlay();
+}
+
+
+void APythonSocketBase::SetFlagsOnBeginPlay(){
+    Super::SetFlagsOnBeginPlay();
     connected = false;
 }
 
+
+
 //must be called on begin play in derived class
-void APythonSocketBase::LaunchPythonProcess(FString pyName){
+void APythonSocketBase::LaunchPythonProcess(FString pluginName, FString pyName){
     if(serverRunning){
         return;
     }
@@ -16,7 +23,7 @@ void APythonSocketBase::LaunchPythonProcess(FString pyName){
     //launch process by plugin name and py name 
     FPythonSetup package;
     package.Setup(
-        "NNCommunicationPlugin",
+        pluginName,
         pyName
     );
     LaunchPythonProcess(package);
@@ -47,7 +54,12 @@ void APythonSocketBase::EndPlay(const EEndPlayReason::Type EndPlayReason){
 }
 
 void APythonSocketBase::CloseSocketOnEndPlay(){
-    if(Socket){
+    for (int i = 0; i < 10; i++){
+        Send("SHUTDOWN");
+    }
+
+    if (Socket)
+    {
         Socket->Close();
         ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(Socket);
     }
@@ -176,7 +188,7 @@ void APythonSocketBase::Send(TArray<uint8> &bin){
 
         if (!success || bytesSent <= 0)
         {
-            UE_LOG(LogTemp, Warning, TEXT("APythonSocketBase::Socket send failed"));
+            DebugHelper::logMessage("APythonSocketBase::SendBytes send finished");
             break;
         }
 

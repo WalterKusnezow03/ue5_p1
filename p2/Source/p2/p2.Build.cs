@@ -31,6 +31,7 @@ public class p2 : ModuleRules
 			"CustomMaterialPlugin",
 			"AssetMakerEditorPlugin",
 			"NNCommunicationPlugin",
+			"PathfinderNNExtension",
 			"DebugPlugin",
 			"ComputerVisionPlugin",
 			"AssetEnumCollection",

@@ -1,5 +1,5 @@
 #include "ImagePatch.h"
-#include "ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/ImageWriter.h"
+#include "ComputerVisionPlugin/Public/ComputerVision/Actor/Storage/IDImageWriter.h"
 
 ImagePatch::ImagePatch(){
 
@@ -62,10 +62,11 @@ void ImagePatch::SaveToStorage(){
     }
 
     uint8 *ptr = (uint8*) colorSaved.GetData();
-    ImageWriter::SaveColorBufferAsPngFromName(
+    IDImageWriter::SaveColorBufferAsPngFromName(
         ptr,
         sizeXSaved,
         sizeYSaved,
+        "ComputerVisionPlugin",
         FString::Printf(TEXT("Patches/patch_%d.png"), id)
     );
 }

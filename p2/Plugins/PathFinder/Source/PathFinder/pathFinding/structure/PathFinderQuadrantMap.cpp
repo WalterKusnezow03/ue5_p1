@@ -292,17 +292,25 @@ float PathFinderQuadrantMap::PolygonStepSize(){
 }
 
 ///// POLYGON BITMAP GENERATION FOR CONVOLUTIONAL NN
-FMeshedPolygon PathFinderQuadrantMap::GetSubGraphPolygonMesh(const FVector &center, float sizeSquare){
+void PathFinderQuadrantMap::GetSubGraphPolygonMesh(
+    const FVector &center, 
+    float sizeSquare,
+    FMeshedPolygon &polygon
+){
     sizeSquare = std::abs(sizeSquare);
     float halfSize = sizeSquare / 2.0f;
-    FVector dir(0.0f, halfSize, halfSize);
+    FVector dir(halfSize, halfSize, 0.0f);
 
     FVector a = center - dir;
     FVector b = center + dir;
-    return GetSubGraphPolygonMesh(a, b);
+    return GetSubGraphPolygonMesh(a, b, polygon);
 }
 
-FMeshedPolygon PathFinderQuadrantMap::GetSubGraphPolygonMesh(const FVector &a, const FVector &b){
+void PathFinderQuadrantMap::GetSubGraphPolygonMesh(
+    const FVector &a, 
+    const FVector &b,
+    FMeshedPolygon &polygon
+){
     //get all
     std::vector<FMeshedPolygon *> collected;
     TArray<PathFinderQuadrant *> all = allQuadrants();
@@ -318,12 +326,8 @@ FMeshedPolygon PathFinderQuadrantMap::GetSubGraphPolygonMesh(const FVector &a, c
     //join into single meshed polygon 2.5 D,
     //clamped against edges!
     float step = PolygonStepSize();
-    FMeshedPolygon polygon;
+    //FMeshedPolygon polygon;
     polygon.GenerateFrom(collected, a, b, step);
-
-    
-    //return
-    return polygon;
 }
 
 TArray<PathFinderQuadrant *> PathFinderQuadrantMap::allQuadrants(){

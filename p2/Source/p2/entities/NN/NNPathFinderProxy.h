@@ -1,12 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CoreMath/animation/timer/Timer.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
 
 class P2_API NNPathFinderProxy {
 
 public:
-        
+    NNPathFinderProxy();
+
+
     bool PredictNode(
         FVector playerPos,
         FVector playerDirection,
@@ -17,7 +21,17 @@ public:
         FVector &outPrediction,
         int botId
     );
-        
+
+    void DebugSaveImage(
+        FVector playerPos,
+        float radius
+    );
+
+    void DebugSaveImage(
+        FVector playerPos,
+        float radius,
+        float deltatime
+    );
 
 private:
     void CollectNodePositionsLocalSpace(
@@ -35,4 +49,11 @@ private:
         MMatrix &MInverse
     );
 
+    Timer timer;
+    FMeshedPolygon meshedPolygonStatic;
+
+    void DebugSaveMeshedPolygonToStorage(
+        FMeshedPolygon &polygon,
+        FString nameImage
+    );
 };

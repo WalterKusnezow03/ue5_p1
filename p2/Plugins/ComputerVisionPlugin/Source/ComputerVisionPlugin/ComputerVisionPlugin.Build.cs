@@ -48,7 +48,8 @@ public class ComputerVisionPlugin : ModuleRules
 				"MetalRHI",
 				"ImageWrapper",
 				"Sockets",
-    			"Networking"
+				"Networking",
+				"StoragePlugin",
 				//new
 				//"ComputeShaderPlugin"
 			}

@@ -1,53 +1,98 @@
 # nn_server.py
 import socket, struct
 
-from InputOutput import receiver 
+from InputOutput import receiver
+from SharedMemory.sharedMemory import UnrealSharedFrame
 
 
+print("NN_SERVER MODULE LOADED")
+
+### import globally into other plugins ###
+class NNServer:
+    def __init__(self):
+        self.openedconnection = True
+        self.sharedMemoryObj = None
+
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ## -- setup socket --
+        self.s.bind(("127.0.0.1", 5050))
+        self.s.listen(1)
+        print("NNServer Python server ready") ###printed in unreal pipe ANNSocket::Python: Python server ready
+        self.connection, self.addr = self.s.accept()
+        print("NNServer Connection from", self.addr)
+
+        
+        
+    def Tick(self):
+        if(self.openedconnection):
+            self.ReceiveSocketMessage()
+            self.ProcessSharedMemory()
+
+    def ReceiveSocketMessage(self):
+        data = receiver.receive(self.connection)
+        if data:
+            print("NNServer received data")
+            ##message = receiver.unpackMessageToString(data)
+            message = receiver.unpackMessageToStringSplit(data, "_") #unpackMessageToString(data)
+            print("NNServer received data as string: ", message)
+
+            self.ProcessMessage(message)
 
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def ProcessMessage(self, message):
+        if(len(message) > 0):
+            prefix = message[0]
+            if(prefix == "SHUTDOWN"):
+                self.closeConnect()
 
-## -- setup socket --
-s.bind(("127.0.0.1", 5050))
-s.listen(1)
-print("Python server ready") ###printed in unreal pipe ANNSocket::Python: Python server ready
-connection, addr = s.accept()
-print("Connection from", addr)
+            if(prefix == "FRAMEID"):
+                print("NNServer received data as string: FRAME ID DATA: ", message)
+                self.CloseAndReopenSharedMemoryCommand(message)
+                
 
+    def closeConnect(self):
+        self.connection.close()
+        self.s.close()
+        self.openedconnection = False
+        print("SHUTDOWN_CONFIRMED")
 
-## -- TICK --
-def Tick():
-    ReceiveSocketMessage()
+    ##### not tested ! #####
+    def CloseAndReopenSharedMemoryCommand(self, message):
+        if(len(message) >= 3):
+            prefix = message[0]
+            if(prefix == "FRAMEID"):
+                if(self.sharedMemoryObj):
+                    self.sharedMemoryObj.close()
+                
+                tagname, size = message[1], int(message[2])
+                self.sharedMemoryObj = UnrealSharedFrame(tagname, size)
 
-def ReceiveSocketMessage():
-    data = receiver.receive(connection)
-    if data:
-        print("received data")
-        message = receiver.unpackMessageToString(data)
-        ##receiver.unpackMessageToStringSplit(data, "_") #unpackMessageToString(data)
-        print("received data as string: ", message)
-
-        ProcessMessage(message)
-
-
-def ProcessMessage(message):
-    if(len(message) > 0):
-        prefix = message[0]
-        if(prefix == "FRAMEID"):
-            print("received data as string: FRAME ID DATA: ", message)
-
-
-
-
-
-## run until process finished
-while True:
-    Tick()
-            
     
 
-   
-#### close connection after loop
+    def ProcessSharedMemory(self):
+        if(self.sharedMemoryObj):
+            return 
+            ##print("tick")
 
-connection.close()
+
+
+def Run():
+    ## run until process finished
+    serverVar = NNServer()
+    while True:
+        serverVar.Tick()
+    serverVar.closeConnect()
+
+##Run()
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1393,7 +1393,7 @@ bool APathFinder::TryGetSubGraphPolygonMesh(
     float sizeSquare
 ){
     if(quadrantMap){
-        outData = quadrantMap->GetSubGraphPolygonMesh(center, sizeSquare);
+        quadrantMap->GetSubGraphPolygonMesh(center, sizeSquare, outData);
         return true;
     }
     return false;

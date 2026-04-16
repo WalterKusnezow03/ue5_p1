@@ -14,7 +14,9 @@ public:
 
     //returns: SharedFrameName_bytes
     FString SharedFrameIdentifier();
-    FString SharedFrameIdentifierMessage(FString prefix);
+    virtual FString SharedFrameIdentifierMessage(FString prefix);
+
+    bool SizeChanged(int sizeIn);
 
 private:
     //frame ptr

@@ -16,6 +16,10 @@ FString FSharedFrame::SharedFrameIdentifierMessage(FString prefix){
     return FString::Printf(TEXT("%s-%s"), *prefix, *SharedFrameIdentifier());
 }
 
+bool FSharedFrame::SizeChanged(int sizeIn){
+    return (sizeIn + readyFlagSize()) != bytesAllocated;
+}
+
 void FSharedFrame::Open(FString name, int bytes){
     if(Shared){
         return;

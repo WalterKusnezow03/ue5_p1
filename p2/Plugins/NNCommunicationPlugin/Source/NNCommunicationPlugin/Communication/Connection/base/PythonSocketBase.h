@@ -19,7 +19,7 @@ class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public APythonLauncher {
 public:
     //must be called on begin play in derived class
     using APythonLauncher::LaunchPythonProcess;
-    void LaunchPythonProcess(FString name);
+    void LaunchPythonProcess(FString pluginName, FString name);
 
 protected:
     void OpenSocket(float deltatime);
@@ -27,6 +27,8 @@ protected:
     void CloseSocketOnEndPlay();
     void ConnectIfNeeded(float deltatime);
     bool IsConnected();
+
+    void SetFlagsOnBeginPlay() override;
 
     float connectIntervall = 1.0f;
     float integratedDT = 0.0f;
@@ -61,6 +63,6 @@ protected:
 
 
     // ---- debug messages on tick to python----
-    bool debugMessageEnabled = false;
+    bool debugMessageEnabled = true;
     void DebugSocketMessage(); //works
 };

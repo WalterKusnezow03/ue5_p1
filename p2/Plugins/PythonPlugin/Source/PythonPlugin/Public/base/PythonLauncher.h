@@ -20,6 +20,8 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
+    virtual void SetFlagsOnBeginPlay();
+
     FString pyNameSavedDebug;
 
     //process related

@@ -16,8 +16,8 @@ public:
 
     std::vector<PathFinderNode *> getSubGraph(FVector a, FVector b);
     
-    FMeshedPolygon GetSubGraphPolygonMesh(const FVector &center, float sizeSquare);
-    FMeshedPolygon GetSubGraphPolygonMesh(const FVector &a, const FVector &b);
+    void GetSubGraphPolygonMesh(const FVector &center, float sizeSquare, FMeshedPolygon &polygon);
+    void GetSubGraphPolygonMesh(const FVector &a, const FVector &b, FMeshedPolygon &polygon);
 
     void debugShowAllNodes(UWorld *world);
 
