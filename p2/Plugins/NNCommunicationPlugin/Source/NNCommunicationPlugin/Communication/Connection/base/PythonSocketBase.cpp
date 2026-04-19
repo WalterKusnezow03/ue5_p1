@@ -15,6 +15,26 @@ void APythonSocketBase::SetFlagsOnBeginPlay(){
 
 
 //must be called on begin play in derived class
+void APythonSocketBase::LaunchPythonProcess(
+    FString pluginName, 
+    FString pyName, 
+    FString pluginNamePython,
+    FString pythonExePath
+){
+    if(serverRunning){
+        return;
+    }
+
+    FPythonSetup package;
+    package.Setup(
+        pluginName,
+        pyName,
+        pluginNamePython,
+        pythonExePath //pluginname/source/pluginname/Python/path/to/python.bin
+    );
+    LaunchPythonProcess(package);
+}
+
 void APythonSocketBase::LaunchPythonProcess(FString pluginName, FString pyName){
     if(serverRunning){
         return;

@@ -13,7 +13,7 @@ class MeshData;
 class POLYGONPLUGIN_API FMeshedPolygon : public GridBase{
 
 protected:
-    TArray<TArray<bool>> flagGrid;
+    TArray<TArray<uint8>> flagGrid;
     TArray<TArray<FVector>> positionGrid;
     TArray<std::pair<int, int>> edgeIndices;
 
@@ -21,16 +21,23 @@ protected:
     FVector maxSaved;
     float stepSizeSaved;
 
+
+    //not saved to storage, debug only!
+    FString name;
+    //not saved to storage, debug only!
 public:
 
+    FString GetName(){
+        return name;
+    }
+
+    void SetName(FString nameIn){
+        name = nameIn;
+    }
 
 
 public:
-    FMeshedPolygon();
-    virtual ~FMeshedPolygon();
-
-    FMeshedPolygon(const FMeshedPolygon &other);
-    FMeshedPolygon &operator=(const FMeshedPolygon &other);
+    
 
     //init from rasterized curve, to raster of mod "widthOfInsideStep"
     void Init(TArray<FVector> &polygon, float widthOfInsideStep);
@@ -42,7 +49,8 @@ public:
     //debug
     void AppendMeshedSurface(MeshData &data);
 
-    bool IsValid();
+    bool IsValid() const;
+    bool FlagGridIsValid() const;
     FVector BottomLeft();
     FVector TopRight();
 
@@ -60,14 +68,18 @@ public:
 
     // --- storage interface ---
 
-    TArray<TArray<bool>> &GetFlagGrid();
+    TArray<TArray<uint8>> &GetFlagGrid();
     TArray<TArray<FVector>> &GetPositionGrid();
-    float GetStepSizeSaved();
+    float GetStepSizeSaved() const;
     void GetMinMax(FVector &minOut, FVector &maxOut);
 
     void OverrideStepSize(float sizeIn);
 
     void OverrideMinMax(FVector &minIn, FVector &maxIn);
+
+
+    const TArray<TArray<uint8>> &GetFlagGridConst() const;
+    const TArray<TArray<FVector>> &GetPositionGrid() const;
 
     // --- storage interface ---
 
@@ -83,7 +95,9 @@ protected:
 
     bool IsInBound(const FVector &pos);
     bool IsInBound(const FVector &pos, int &xOut, int &yOut);
-    
+
+    bool FlagIndexInBound(const int x, const int y);
+
     void GenerateGrid();
     bool GridValid() const;
 
@@ -115,6 +129,7 @@ protected:
     void SetFlag(const TArray<std::pair<int, int>> &indexPositions, bool flag);
     void SetFlag(const std::pair<int, int> &indexPos, bool flag);
     void SetFlag(int x, int y, bool flag);
+    void SetFlagInt(int x, int y, uint8 flag);
     void SetFlag(const FVector &pos, bool flagIn);
 
     void SetPosition(int x, int y, const FVector &pos);
@@ -128,30 +143,53 @@ protected:
     );
 
     void FlagBetweenSpaceTrue();
-    void FlagBetweenSpaceTrue(TArray<bool> &flagBuffer);
-    void FlagBetweenSpaceTrue(TArray<bool> &flagBuffer, int i, int j);
+    void FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer);
+    void FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer, int i, int j);
 
-
+    
     //debug
     void AppendAt(int i, int j, MeshData &data);
     TArray<FVector> GetQuadOrTriangleAt(int i, int j);
 
 
-    void FlagTrueFrom(const FMeshedPolygon &other);
-    void FlagTrueFromBuffer(
-        const TArray<bool> &flagBuffer,
-        const TArray<FVector> &positions
+    
+
+    void FlagTrueFromFast(const FMeshedPolygon &other);
+    void FlagTrueFromFast(
+        const int xStart,
+        const int yStart,
+        const TArray<TArray<uint8>> &flagGridIn
+    );
+    void FlagTrueFromFast(
+        const int xStart,
+        const int yStart,
+        const int xOffset,
+        const TArray<uint8> &flagBuffer // column
     );
 
     void ClearFlags();
     void MakePositionGrid();
 
+    void GetResolution(int &xOut, int &yOut) const;
+
+    uint8 FlagAsInt8(bool flag);
+
 public:
-    void GenerateColorBitmap(
+    virtual void GenerateColorBitmap(
         TArray<FColor> &outBuffer,
         FColor &free,
         FColor &blocked,
         int &resXOut,
         int &resYOut
-    );
+    ) const ;
+
+
+
+    //binary extraction
+    void AppendFlagMap(
+        TArray<uint8> &buffer
+    ) const;
+
+
+
 };

@@ -20,39 +20,54 @@ import struct
 
 import mmap
 import struct
+import posix_ipc
+
 
 class UnrealSharedFrame:
     def __init__(self, tagname, size):
         self.size = size
         self.tagname = tagname
+        self.closed = False
 
-        self.shm = mmap.mmap(
-            -1,
-            size,
-            tagname=tagname
-        )
+        self.shm = posix_ipc.SharedMemory(tagname)
+        self.map = mmap.mmap(self.shm.fd, size)
+        self.shm.close_fd()
+
+        print("UnrealSharedFrame Opened", tagname)
 
     def isReady(self):
-        self.shm.seek(0)
-        ##(inFShared memory, unreal plugin)
-        flag = struct.unpack("i", self.shm.read(4))[0] ##first flag for 1 ready, 0 non ready
+        self.map.seek(0)
+        flag = struct.unpack("i", self.map.read(4))[0]
         return flag == 1
-    
-    def writeReadyFalse(self):
-        self.shm.seek(0)
-        self.shm.write(struct.pack("i", 0))
 
-   
+    def writeReadyFalse(self):
+        self.map.seek(0)
+        self.map.write(struct.pack("i", 0))
+
     def read_data_only(self):
-        self.shm.seek(4)
-        return self.shm.read(self.size - 4)
-    
-    ##diconnect from shared memory: managed by unreal!!!
+        self.map.seek(4)
+        return self.map.read(self.size - 4)
+
     def close(self):
-        if self.shm:
-            self.shm.close()
-            self.shm = None
+        if self.closed:
+            return
+        self.closed = True
+
+        try:
+            if hasattr(self, "map") and self.map:
+                self.map.close()
+                self.map = None
+        except:
+            pass
+
+        try:
+            if hasattr(self, "shm") and self.shm:
+                self.shm.close_fd()
+                self.shm = None
+        except:
+            pass
 
     def __del__(self):
         self.close()
+
 

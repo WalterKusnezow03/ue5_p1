@@ -39,6 +39,8 @@ private:
 
     bool readyStatus = true;
     uint8 *pointerAfterReadyFlag();
+
+    void MakeFrameName(FString name);
 };
 
 /*

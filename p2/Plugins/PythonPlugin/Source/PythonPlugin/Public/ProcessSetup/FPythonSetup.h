@@ -13,6 +13,13 @@ public:
         FString pyName //some.py
     );
 
+    void Setup(
+        FString pluginName,
+        FString pyname,
+        FString pluginNameToPython,
+        FString pythonExePath //pluginname/source/pluginname/Python/path/to/python.bin
+    );
+
     FString getPath() const {
         return pythonPathInPlugin;
     }
@@ -24,14 +31,27 @@ public:
         return debugScriptName;
     }
 
+    FString PythonExe() const {
+        return pythonExe;
+    }
+
 private:
     FString PluginDir(FString pluginName);
     FString PythonPath(FString pluginName, FString pyName);
+    FString PluginPythonDir(FString pluginDir);
+
+    void SetupPythonScript(FString pluginName, FString pyname);
+    void SetupPythonDir(FString pluginNameToPython, FString pythonExePath);
 
     //something like 
     // pluginName/Source/pluginName/Python
     FString pythonPathInPlugin;
     FString pluginDirSaved;
+    FString pluginPythonDirSaved;
+
+    FString pythonExe = TEXT("/opt/homebrew/bin/python3");
+    
+    
 
     FString debugScriptName;
 };

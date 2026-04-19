@@ -26,7 +26,9 @@ class NNServer:
     def Tick(self):
         if(self.openedconnection):
             self.ReceiveSocketMessage()
+            print("NNServer receive finish")
             self.ProcessSharedMemory()
+            print("NNServer receive finish process shared mem")
 
     def ReceiveSocketMessage(self):
         data = receiver.receive(self.connection)
@@ -61,18 +63,35 @@ class NNServer:
         if(len(message) >= 3):
             prefix = message[0]
             if(prefix == "FRAMEID"):
+                tagname, size = message[1], int(message[2])
+                if(len(tagname) < 2):
+                    return
+                if(int(size) < 1):
+                    return
+
                 if(self.sharedMemoryObj):
                     self.sharedMemoryObj.close()
+                    self.sharedMemoryObj = None
                 
                 tagname, size = message[1], int(message[2])
+                print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
                 self.sharedMemoryObj = UnrealSharedFrame(tagname, size)
 
     
 
     def ProcessSharedMemory(self):
+        print("NNServer receive -> ProcessSharedMemory")
         if(self.sharedMemoryObj):
+            if(self.sharedMemoryObj.isReady()):
+                print("NNServer Shared Mem is ready")
+            
+            data = self.sharedMemoryObj.read_data_only()
+            print("NNServer shared mem Data ", data)
+            
             return 
             ##print("tick")
+        else:
+            print("NNServer NO memory Object! ")
 
 
 

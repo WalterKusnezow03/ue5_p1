@@ -37,15 +37,18 @@ class NNServerPathfinder(nn_server.NNServer):
             print("NNServerPathfinder Ticked")
 
     def ProcessSharedMemory(self):
+        print("NNServerPathfinder receive -> ProcessSharedMemory")
         if(self.sharedMemoryObj):
             if(self.sharedMemoryObj.isReady()):
-                self.sharedMemoryObj.writeReadyFalse()
-                
-                sharedMemoryData = self.sharedMemoryObj.read_data_only();
-                
-                ##process
-
-                return
+                print("NNServerPathfinder Shared Mem is ready")
+            
+            data = self.sharedMemoryObj.read_data_only()
+            print("NNServerPathfinder shared mem Data ", data)
+            
+            return 
+            ##print("tick")
+        else:
+            print("NNServerPathfinder NO memory Object! ")
 
 
         return

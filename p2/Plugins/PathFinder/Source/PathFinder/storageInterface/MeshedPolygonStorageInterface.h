@@ -72,11 +72,11 @@ protected:
         TArray<T> &data,
         TArray<uint8> &bytes
     ){
-        int oldSize = bytes.Num();
+        int32 oldSize = bytes.Num();
 
-        int count = data.Num(); //count data
-        int bytesSize = sizeof(T) * count; //siez for data
-        bytes.SetNumUninitialized(bytes.Num() + bytesSize + sizeof(int)); //appended bytes and single count 
+        int32 count = data.Num(); //count data
+        int32 bytesSize = sizeof(T) * count; //siez for data
+        bytes.SetNumUninitialized(bytes.Num() + bytesSize + sizeof(int32)); //appended bytes and single count 
         uint8 *Ptr = bytes.GetData() + oldSize;
         /*
         FMemory::Memcpy( 
@@ -86,8 +86,8 @@ protected:
         )
         */
         //[count][buffer]
-        FMemory::Memcpy(Ptr, &count, sizeof(int));
-        Ptr += sizeof(int);
+        FMemory::Memcpy(Ptr, &count, sizeof(int32));
+        Ptr += sizeof(int32);
         if(count > 0){
             /*FMemory::Memcpy( 
                 void* Dest,
@@ -105,14 +105,14 @@ protected:
         TArray<T> &data,
         uint8 *& Ptr
     ){
-        int count = 0;
+        int32 count = 0;
         //[count][buffer]
-        FMemory::Memcpy(&count, Ptr, sizeof(int));
-        Ptr += sizeof(int);
+        FMemory::Memcpy(&count, Ptr, sizeof(int32));
+        Ptr += sizeof(int32);
 
         if(count > 0){
             //increase buffer size
-            int oldSize = data.Num() * sizeof(T);
+            int32 oldSize = data.Num() * sizeof(T);
             data.SetNumUninitialized(data.Num() + count);
 
             uint8 *ptrData = (uint8 *)data.GetData() + oldSize;
@@ -122,7 +122,7 @@ protected:
                 const void* Src,
                 SIZE_T Count
             )*/
-            int bytesCopied = count * sizeof(T);
+            int32 bytesCopied = count * sizeof(T);
             FMemory::Memcpy(ptrData, Ptr, bytesCopied); // append data = count * sizeT
             Ptr += bytesCopied;
         }

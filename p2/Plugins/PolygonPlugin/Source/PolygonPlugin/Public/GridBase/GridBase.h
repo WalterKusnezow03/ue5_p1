@@ -9,11 +9,14 @@ public:
 
     template<typename T>
     bool TGridIsSize(int x, int y, TArray<TArray<T>> &grid){
-        if(grid.Num() == x){
-            if(grid[0].Num() == y){
-                return true;
+        if(x > 0 && y > 0){
+            if(grid.Num() == x){
+                if(grid[0].Num() == y){
+                    return true;
+                }
             }
         }
+        
         return false;
     }
 

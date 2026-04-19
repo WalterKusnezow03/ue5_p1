@@ -15,8 +15,10 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
     if(serverRunning){
         return;
     }
+
+    FString PythonExe = setup.PythonExe(); // TEXT("/opt/homebrew/bin/python3");
+    //PythonExe = TEXT("/opt/homebrew/bin/python3");
     
-    FString PythonExe = TEXT("/opt/homebrew/bin/python3");
 
     FString PluginDir = setup.PluginDir();
     FPlatformProcess::CreatePipe(ReadPipe, WritePipe); // create pipe for output python print to unreal log.
@@ -79,7 +81,7 @@ void APythonLauncher::LogPythonMessages(){
     //DebugHelper::showScreenMessage("APythonLauncher::LogPythonMessages", FColor::Red);
     if (ReadPipe){
         if(serverRunning){
-            DebugHelper::showScreenMessage("APythonLauncher::LogPythonMessages Try", FColor::Red);
+            //DebugHelper::showScreenMessage("APythonLauncher::LogPythonMessages Try", FColor::Red);
             FString Output = FPlatformProcess::ReadPipe(ReadPipe);
             if (!Output.IsEmpty()){
                 DebugHelper::logMessage(

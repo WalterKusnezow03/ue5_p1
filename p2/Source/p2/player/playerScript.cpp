@@ -45,6 +45,8 @@ void AplayerScript::BeginPlay()
     PickupDefaultWeaponOnBeginPlay();
     CreateUiHudActorOnBeginPlay();
     //createMiniMap();
+
+    debugTimer.Begin(3.0f);
 }
 
 void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
@@ -172,7 +174,7 @@ void AplayerScript::Tick(float DeltaTime)
     updateUi();
     //TickMiniMap();
 
-    DebugPathFinderPolygonExtraction(DeltaTime);
+    DebugTickPathfinderNN(DeltaTime);
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -672,13 +674,27 @@ void AplayerScript::ReceiveCallback(UWidgetInteractPayload *payload){
 
 
 
-void AplayerScript::DebugPathFinderPolygonExtraction(float deltatime){
+
+void AplayerScript::EndPlay(const EEndPlayReason::Type EndPlayReason){
     
-    float meter = 100.0f;
-    float centimeters = meter * 100.0f;
-    proxy.DebugSaveImage(
-        GetActorLocation(),
-        centimeters,
-        deltatime
-    );
+    Super::EndPlay(EndPlayReason);
 }
+
+
+
+
+
+//debug
+#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
+void AplayerScript::DebugTickPathfinderNN(float deltatime){
+    debugTimer.Tick(deltatime);
+    if(debugTimer.timesUp()){
+        if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
+            float meters = 100.0f;
+            instance->PredictNode(GetActorLocation(), meters * 100.0f);
+        }
+        debugTimer.Begin(1.0f);
+    }
+}
+
+

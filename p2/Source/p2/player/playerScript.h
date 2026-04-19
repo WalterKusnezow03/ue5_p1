@@ -24,9 +24,12 @@
 //#include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 #include "GameCore/PlayerControllerBase/WidgetInteractionIncluded/PlayerControllerWidgetInteractiveBase.h"
 
+
 #include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
 
-#include "p2/entities/NN/NNPathFinderProxy.h"
+#include "CoreMath/animation/timer/Timer.h"
+
+#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
 
 #include "playerScript.generated.h"
 
@@ -71,7 +74,7 @@ public:
 	//receive payloads from widgets
 	virtual void ReceiveCallback(UWidgetInteractPayload *payload) override;
 
-private:
+protected:
 	bool isCamInPlayer = true;
 	void switchCamera();
 	FVector cameraReltiveLocationOriginal;
@@ -146,7 +149,9 @@ private:
 
 
 	//DEBUG
-	
-	NNPathFinderProxy proxy;
-	void DebugPathFinderPolygonExtraction(float deltatime);
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	Timer debugTimer;
+	void DebugTickPathfinderNN(float deltatime);
 };

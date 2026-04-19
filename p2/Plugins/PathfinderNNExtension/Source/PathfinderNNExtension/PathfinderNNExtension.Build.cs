@@ -29,6 +29,9 @@ public class PathfinderNNExtension : ModuleRules
 				"NNCommunicationPlugin",
 				"PathFinder",
 				"DebugPlugin",
+				"CoreMath",
+				"StoragePlugin",
+				"PolygonPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

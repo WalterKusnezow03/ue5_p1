@@ -82,7 +82,7 @@ void MeshedPolygonStorageInterface::AppendPolygon(
 ){
     if(polygon){
         if(polygon->IsValid()){
-            TArray<TArray<bool>> &flags = polygon->GetFlagGrid();
+            TArray<TArray<uint8>> &flags = polygon->GetFlagGrid();
             TArray<TArray<FVector>> &positions = polygon->GetPositionGrid();
             float stepSize = polygon->GetStepSizeSaved();
 
@@ -100,8 +100,8 @@ void MeshedPolygonStorageInterface::AppendPolygon(
             //append buffers
             AppendCount(flags.Num(), bytes);
             for (int i = 0; i < flags.Num(); i++){
-                TArray<bool> &flagBuffer = flags[i];
-                TAppendBuffer<bool>(flagBuffer, bytes);
+                TArray<uint8> &flagBuffer = flags[i];
+                TAppendBuffer<uint8>(flagBuffer, bytes);
             }
 
 
@@ -125,8 +125,8 @@ void MeshedPolygonStorageInterface::AppendStepSize(
     float stepSize,
     TArray<uint8> &bytes
 ){
-    int oldSize = bytes.Num();
-    int bytesFloat = sizeof(float);
+    int32 oldSize = bytes.Num();
+    int32 bytesFloat = sizeof(float);
     bytes.SetNumUninitialized(bytes.Num() + bytesFloat);
 
     uint8 *Ptr = bytes.GetData() + oldSize; //if array reallocatde, mak new ptr
@@ -147,7 +147,7 @@ void MeshedPolygonStorageInterface::LoadStepSize(
     float &stepSize,
     uint8 *& Ptr
 ){
-    int bytesFloat = sizeof(float);
+    int32 bytesFloat = sizeof(float);
     /*
     FMemory::Memcpy( 
         void* Dest,
@@ -180,11 +180,11 @@ void MeshedPolygonStorageInterface::LoadMinMax(FVector &min, FVector &max, uint8
 }
 
 void MeshedPolygonStorageInterface::AppendCount(
-    int someCount,
+    int32 someCount,
     TArray<uint8> &bytes
 ){
-    int oldSize = bytes.Num();
-    bytes.SetNumUninitialized(bytes.Num() + sizeof(int));
+    int32 oldSize = bytes.Num();
+    bytes.SetNumUninitialized(bytes.Num() + sizeof(int32));
     uint8 *Ptr = bytes.GetData() + oldSize;
     /*
     FMemory::Memcpy( 
@@ -193,14 +193,14 @@ void MeshedPolygonStorageInterface::AppendCount(
         SIZE_T Count
     )
     */
-    FMemory::Memcpy(Ptr, &someCount, sizeof(int));
-    Ptr += sizeof(int);
+    FMemory::Memcpy(Ptr, &someCount, sizeof(int32));
+    Ptr += sizeof(int32);
 }
 
 
 
 void MeshedPolygonStorageInterface::LoadCount(
-    int &someCount,
+    int32 &someCount,
     uint8 *& Ptr
 ){ 
     /*
@@ -210,8 +210,8 @@ void MeshedPolygonStorageInterface::LoadCount(
         SIZE_T Count
     )
     */
-    FMemory::Memcpy(&someCount, Ptr, sizeof(int));
-    Ptr += sizeof(int);
+    FMemory::Memcpy(&someCount, Ptr, sizeof(int32));
+    Ptr += sizeof(int32);
 }
 
 
@@ -254,25 +254,25 @@ bool MeshedPolygonStorageInterface::LoadPolygon(
 
 
     //flags
-    TArray<TArray<bool>> &flags = polygon.GetFlagGrid();
+    TArray<TArray<uint8>> &flags = polygon.GetFlagGrid();
 
 
     //load flag count buffers
-    int countFlagBuffers = 0;
+    int32 countFlagBuffers = 0;
     LoadCount(countFlagBuffers, Ptr);
     if(countFlagBuffers > 0){
         flags.SetNum(countFlagBuffers);
         // load flags
         for (int i = 0; i < countFlagBuffers; i++){
-            TArray<bool> &flagsColumn = flags[i];
-            TLoadBuffer<bool>(flagsColumn, Ptr);
+            TArray<uint8> &flagsColumn = flags[i];
+            TLoadBuffer<uint8>(flagsColumn, Ptr);
         }
     }
     
 
     TArray<TArray<FVector>> &positions = polygon.GetPositionGrid();
     //load pos count buffers
-    int countPosBuffers = 0;
+    int32 countPosBuffers = 0;
     LoadCount(countPosBuffers, Ptr);
     if(countPosBuffers > 0){
         positions.SetNum(countPosBuffers);

@@ -19,7 +19,13 @@ class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public APythonLauncher {
 public:
     //must be called on begin play in derived class
     using APythonLauncher::LaunchPythonProcess;
-    void LaunchPythonProcess(FString pluginName, FString name);
+    void LaunchPythonProcess(
+        FString pluginName, 
+        FString pyName, 
+        FString pluginNamePython,
+        FString pythonExePath
+    );
+    void LaunchPythonProcess(FString pluginName, FString pyName);
 
 protected:
     void OpenSocket(float deltatime);

@@ -40,7 +40,7 @@ void FMeshedSurfaceGrid::UpdateHeights(TerrainInterfaceBase *creator){
     float offset = 30.0f;
     for (int i = 0; i < flagGrid.Num(); i++)
     {
-        TArray<bool> &buffer = flagGrid[i];
+        TArray<uint8> &buffer = flagGrid[i];
         for (int j = 0; j < buffer.Num(); j++){
             if(buffer[j]){
                 UpdateHeight(creator, positionGrid[i][j], offset);

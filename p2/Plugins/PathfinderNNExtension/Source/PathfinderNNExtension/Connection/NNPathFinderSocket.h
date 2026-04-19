@@ -2,6 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
+#include "CoreMath/animation/timer/Timer.h"
+
+#include "PathfinderNNExtension/PolygonCollection/NNPathFinderProxy.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
+
 #include "NNPathFinderSocket.generated.h"
 
 /// @brief Python socket with Shared Memory Support for Python Script!
@@ -21,11 +26,24 @@ public:
         return nullptr;
     }
 
+    void PredictNode(
+        FVector playerPos,
+        float radius
+    );
+
 protected:
+    using ANNSocket::WriteData;
+    void WriteData(FMeshedPolygon &polygon);
+
     //using ANNSocket::WriteData;
     //void WriteData(const TArray<uint8> &array);
 
     virtual void TickSocketConnected(float deltatime) override;
     virtual void BeginPlay() override;
+    
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+    NNPathFinderProxy proxy;
+
     
 };

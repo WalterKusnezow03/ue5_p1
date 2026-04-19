@@ -32,7 +32,12 @@ void ANNSocket::BeginPlay(){
     
     //launch only if not blocked
     if(false){
-        LaunchPythonProcess("NNCommunicationPlugin", "nn_server.py"); // finds working dir automatically
+        LaunchPythonProcess(
+            "NNCommunicationPlugin", 
+            "nn_server.py",
+            "NNCommunicationPlugin",
+            "venv/bin/python"
+        ); // finds working dir automatically
         frameName = "ANNSocketFrame";
     }
 }
@@ -61,6 +66,8 @@ void ANNSocket::OpenSharedMemory(int bytes){
     sharedMemory.Open(frameName, bytes);
     frameNameSend = false;
     // void WriteData(const TArray<uint8> &bytes);
+
+    DebugHelper::logMessage("ANNSocket::OpenSharedMemory ", bytes);
 }
 
 void ANNSocket::CloseSharedMemory(){
@@ -70,8 +77,9 @@ void ANNSocket::CloseSharedMemory(){
 
 void ANNSocket::WriteData(const TArray<uint8> &data){
     //size changed: new page!
+    DebugHelper::logMessage("ANNSocket::WriteData ", data.Num());
 
-    if(sharedMemory.SizeChanged(data.Num())){
+    if(sharedMemory.SizeChanged(data.Num() * sizeof(uint8))){
         CloseSharedMemory();
         OpenSharedMemory(data.Num());
     }
@@ -93,8 +101,10 @@ void ANNSocket::TickSocketConnected(float deltatime){
 
         //setup shared memory page inside python (if page changed)
         //message as: FrameName_bytes
-        FString message = sharedMemory.SharedFrameIdentifierMessage("FRAMEID-");
+        FString message = sharedMemory.SharedFrameIdentifierMessage("FRAMEID");
         Send(message);
         frameNameSend = true;
+
+        DebugHelper::logMessage("ANNSocket:: Send frame name: ", message);
     }
 }

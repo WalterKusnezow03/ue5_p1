@@ -29,7 +29,14 @@ void ANNPathFinderSocket::BeginPlay(){
     // /NNCommunicationPlugin/Python/nn_server.py
     //LaunchPythonProcess("NNCommunicationPlugin", "nn_server.py");
 
-    LaunchPythonProcess("PathFinderNNExtension", "nnpathfinder_server.py"); // finds working dir automatically
+
+    //Plugins/NNCommunicationPlugin/Source/NNCommunicationPlugin/Python/venv/bin/python
+    LaunchPythonProcess(
+        "PathFinderNNExtension", 
+        "nnpathfinder_server.py",
+        "NNCommunicationPlugin",
+        "venv/bin/python"
+    ); // finds working dir automatically
 }
 
 
@@ -37,3 +44,42 @@ void ANNPathFinderSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
     // --- nothing needed here for now ---
 }
+
+
+void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    proxy.EndSave(); //save images (debug)
+    Super::EndPlay(EndPlayReason);
+}
+
+
+
+
+
+//// ---- interaction ----
+
+void ANNPathFinderSocket::PredictNode(
+    FVector playerPos,
+    float radius
+){
+    FMeshedPolygon polygonData;
+    proxy.CollectPolygon(
+        playerPos,
+        radius,
+        polygonData
+    );
+    WriteData(polygonData);
+}
+
+void ANNPathFinderSocket::WriteData(FMeshedPolygon &polygon){
+    TArray<uint8> buffer;
+    polygon.AppendFlagMap(buffer);
+
+    WriteData(buffer);
+}
+
+
+
+
+
+
+

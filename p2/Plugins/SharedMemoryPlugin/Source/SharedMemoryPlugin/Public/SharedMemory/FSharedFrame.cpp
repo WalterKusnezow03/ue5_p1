@@ -1,5 +1,9 @@
 #include "FSharedFrame.h"
 
+#include "DebugPlugin/DebugHelper.h"
+#include <errno.h>
+#include <string.h>
+
 FSharedFrame::FSharedFrame(){
 
 }
@@ -9,11 +13,11 @@ FSharedFrame::~FSharedFrame(){
 }
 
 FString FSharedFrame::SharedFrameIdentifier(){
-    return FString::Printf(TEXT("%s-%d"), *pageName, bytesAllocated);
+    return FString::Printf(TEXT("%s_%d"), *pageName, bytesAllocated);
 }
 
 FString FSharedFrame::SharedFrameIdentifierMessage(FString prefix){
-    return FString::Printf(TEXT("%s-%s"), *prefix, *SharedFrameIdentifier());
+    return FString::Printf(TEXT("%s_%s"), *prefix, *SharedFrameIdentifier());
 }
 
 bool FSharedFrame::SizeChanged(int sizeIn){
@@ -31,24 +35,33 @@ void FSharedFrame::Open(FString name, int bytes){
         return;
     }
 
+    DebugHelper::logMessage("FSharedFrame::Open Try", bytes);
+
     //copy bytes allocated for later free page
     bytesAllocated = bytes + readyFlagSize(); // add ready flag at front
 
-    pageName = FString::Printf(TEXT("/unreal_shared_page_%s"), *name);
+    MakeFrameName(name);
+    DebugHelper::logMessage("FSharedFrame::Open Try: ", pageName);
     sharedFrameId = shm_open(TCHAR_TO_ANSI(*pageName), O_CREAT | O_RDWR, 0666);
     //sharedFrameId = shm_open("/unreal_nn_shared", O_CREAT | O_RDWR, 0666);
 
+    //fixed.
     if (sharedFrameId < 0){
         // error
+        
+        DebugHelper::logMessage("FSharedFrame::Open shm_open failed errno", errno);
+        DebugHelper::logMessage("FSharedFrame::Open shm_open failed reason", strerror(errno));
+        DebugHelper::logMessage("FSharedFrame::Open ID Failed", sharedFrameId);
         Shared = nullptr;
         return;
     }
 
-    ftruncate(sharedFrameId, bytes);
+    ftruncate(sharedFrameId, bytesAllocated);
 
+    //POSIX Api
     Shared = (uint8*)mmap(
         nullptr,
-        sizeof(FSharedFrame),
+        bytesAllocated, //sizeof(FSharedFrame),
         PROT_READ | PROT_WRITE,
         MAP_SHARED,
         sharedFrameId,
@@ -57,11 +70,27 @@ void FSharedFrame::Open(FString name, int bytes){
 
     if (Shared == MAP_FAILED)
     {
+        DebugHelper::logMessage("FSharedFrame::Open FAILED");
         // error
         Shared = nullptr; //(?)
         sharedFrameId = -1;
+    }else{
+        DebugHelper::logMessage("FSharedFrame::Open SUCESS", bytes);
     }
 }
+
+void FSharedFrame::MakeFrameName(FString name){
+    const int MAX_SHM_NAME = 30; // sicher unter Limit bleiben
+    pageName = FString::Printf(TEXT("/ueshm%s"), *name);
+    if (pageName.Len() > MAX_SHM_NAME)
+    {
+        DebugHelper::logMessage("Shared memory name too long, truncating");
+
+        pageName = pageName.Left(MAX_SHM_NAME);
+    }
+}
+
+
 
 
 
@@ -86,8 +115,11 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
     )
     */
     MarkReady(false);
-    FMemory::Memcpy(Dest, ptr, sizeof(bytesAllocated)); //copy without offset size
+    int copy = bytesAllocated - readyFlagSize();
+    FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); //copy without offset size
     MarkReady(true);
+
+    DebugHelper::logMessage("FSharedFrame::WriteData ", copy);
 }
 
 uint8 *FSharedFrame::pointerAfterReadyFlag(){
