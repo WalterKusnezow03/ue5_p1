@@ -339,12 +339,27 @@ void PathFinderStorageInterface::Save(FString worldName, APathFinder *pathFinder
         AppendConvexAndNeighborHood(Bytes, pair.second);
     }
 
+    int prevSize = Bytes.Num();
+    DebugHelper::logMessage("PathFinderStorageInterface::MB graph", ByteToMbAsString(Bytes.Num()));
+
     //new
     AppendPolygons(pathFinder, Bytes);
+    DebugHelper::logMessage("PathFinderStorageInterface::MB polygons", ByteToMbAsString(Bytes.Num() - prevSize));
 
     FString path = makePath(worldName);
     SaveBinaryData(path, Bytes);
 }
+
+
+FString PathFinderStorageInterface::ByteToMbAsString(int size){
+    return FString::Printf(TEXT(" MB: (%.2f)"), ByteToMb(size));
+}
+
+float PathFinderStorageInterface::ByteToMb(int size){
+    float asDouble = size;
+    return asDouble / (1024.0f * 1024.0f);
+}
+
 
 // ----- LOAD SECTION ------
 

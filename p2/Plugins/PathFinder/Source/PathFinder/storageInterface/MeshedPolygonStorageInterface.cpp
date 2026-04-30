@@ -83,7 +83,7 @@ void MeshedPolygonStorageInterface::AppendPolygon(
     if(polygon){
         if(polygon->IsValid()){
             TArray<TArray<uint8>> &flags = polygon->GetFlagGrid();
-            TArray<TArray<FVector>> &positions = polygon->GetPositionGrid();
+            
             float stepSize = polygon->GetStepSizeSaved();
 
             FVector min, max;
@@ -106,11 +106,12 @@ void MeshedPolygonStorageInterface::AppendPolygon(
 
 
             //append coutn buffers
+            /*TArray<TArray<FVector>> &positions = polygon->GetPositionGrid();
             AppendCount(positions.Num(), bytes);
             for (int i = 0; i < positions.Num(); i++){
                 TArray<FVector> &posBuffer = positions[i];
                 TAppendBuffer<FVector>(posBuffer, bytes);
-            }
+            }*/
         }
     }
 }
@@ -269,7 +270,7 @@ bool MeshedPolygonStorageInterface::LoadPolygon(
         }
     }
     
-
+    /*
     TArray<TArray<FVector>> &positions = polygon.GetPositionGrid();
     //load pos count buffers
     int32 countPosBuffers = 0;
@@ -281,6 +282,6 @@ bool MeshedPolygonStorageInterface::LoadPolygon(
             TArray<FVector> &posColumn = positions[i];
             TLoadBuffer<FVector>(posColumn, Ptr);
         }
-    }
+    }*/
     return true;
 }

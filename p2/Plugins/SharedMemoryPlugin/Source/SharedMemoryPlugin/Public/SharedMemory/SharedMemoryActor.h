@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "SharedMemoryPlugin/Public/SharedMemory/FSharedFrame.h"
 #include <map>
+#include "SharedMemoryPlugin/Public/SharedMemory/FSharedFrameManager.h"
 
 #include "SharedMemoryActor.generated.h"
 
@@ -25,5 +26,5 @@ protected:
 private:
     bool HasFrame(FString pageName);
 
-    std::map<FString, FSharedFrame> frames;
+    FSharedFrameManager manager;
 };

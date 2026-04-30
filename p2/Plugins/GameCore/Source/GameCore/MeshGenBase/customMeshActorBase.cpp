@@ -81,7 +81,7 @@ void AcustomMeshActorBase::disableLodListening(){
 }
 
 void AcustomMeshActorBase::ClearAllMeshData(){
-    DebugHelper::logMessage("AcustomMeshActorBase::ClearAllMeshData");
+    //DebugHelper::logMessage("AcustomMeshActorBase::ClearAllMeshData");
     for(auto &pair : meshLodContainers){
         ProceduralMeshComponentPair &current = pair.second;
         current.ClearAllMeshData();

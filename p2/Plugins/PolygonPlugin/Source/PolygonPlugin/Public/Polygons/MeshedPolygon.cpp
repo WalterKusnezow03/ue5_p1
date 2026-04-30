@@ -10,6 +10,7 @@ bool FMeshedPolygon::IsValid() const {
     return GridValid();
 }
 
+/*
 FVector FMeshedPolygon::BottomLeft(){
     if(GridValid()){
         return positionGrid[0][0];
@@ -25,17 +26,18 @@ FVector FMeshedPolygon::TopRight(){
     }
     return FVector(0, 0, 0);
 }
-
+*/
 
 
 
 bool FMeshedPolygon::GridValid() const{
-    if(flagGrid.Num() == positionGrid.Num()){
+    /*if(flagGrid.Num() == positionGrid.Num()){
         if(flagGrid.Num() > 0){
             return flagGrid[0].Num() == positionGrid[0].Num();
         }
     }
-    return false;
+    return false;*/
+    return FlagGridIsValid();
 }
 
 bool FMeshedPolygon::FlagGridIsValid() const {
@@ -70,6 +72,7 @@ void FMeshedPolygon::Init(TArray<FVector> &polygon, float widthOfInsideStep){
     }
 }
 
+
 void FMeshedPolygon::InitForceSizeMin(TArray<FVector> &polygon, float widthOfInsideStep){
     if(!InitAsSinglePixel(polygon, widthOfInsideStep)){
         Init(polygon, widthOfInsideStep);
@@ -90,10 +93,6 @@ bool FMeshedPolygon::InitAsSinglePixel(TArray<FVector> &polygon, float widthOfIn
         flagGrid.SetNum(1);
         flagGrid[0].SetNum(1);
         flagGrid[0][0] = FlagAsInt8(true); //(uint8)1; // true;
-
-        positionGrid.SetNum(1);
-        positionGrid[0].SetNum(1);
-        positionGrid[0][0] = box.bottomLeftNearVertex();
 
         minSaved = box.bottomLeftNearVertex();
         maxSaved = box.bottomLeftNearVertex() + FVector(0, widthOfInsideStep, widthOfInsideStep);
@@ -151,6 +150,10 @@ void FMeshedPolygon::FindBounds(FVector bottomLeft, FVector topRight, bool safeC
 
 
 void FMeshedPolygon::GenerateGrid(){
+    TCreateOrClearGrid<uint8>(flagGrid, FlagAsInt8(false));
+    ClearFlags();
+    
+    /*
     int x = -1;
     int y = -1;
     GetSizeGrid(x, y);
@@ -168,19 +171,20 @@ void FMeshedPolygon::GenerateGrid(){
         TGenerateGrid<FVector>(x, y, positionGrid);
         ClearFlags();
         MakePositionGrid();
-    }
+    }*/
 }
 
 void FMeshedPolygon::ClearFlags(){
-    for (int i = 0; i < flagGrid.Num(); i++){
+    /*for (int i = 0; i < flagGrid.Num(); i++){
         TArray<uint8> &col = flagGrid[i];
         for (int j = 0; j < col.Num(); j++){
             col[j] = FlagAsInt8(false); //(uint8)0; // false;
         }
-    }
+    }*/
+    TClearGrid<uint8>(flagGrid, FlagAsInt8(false));
 }
 
-void FMeshedPolygon::MakePositionGrid(){
+/*void FMeshedPolygon::MakePositionGrid(){
     for (int i = 0; i < positionGrid.Num(); i++){
         TArray<FVector> &currentPositionBuffer = positionGrid[i];
         for (int j = 0; j < currentPositionBuffer.Num(); j++){
@@ -192,7 +196,7 @@ void FMeshedPolygon::MakePositionGrid(){
             currentPositionBuffer[j] = posGenerated;
         }
     }
-}
+}*/
 
 
 
@@ -417,6 +421,7 @@ bool FMeshedPolygon::FlagAtPosition(const FVector &pos){
     return FlagAt(x, y);
 }
 
+/*
 bool FMeshedPolygon::PositionAtFlag(int x, int y, FVector &outPos){
     if(FlagAt(x,y)){
         return PositionAt(x, y, outPos);
@@ -444,12 +449,12 @@ FVector FMeshedPolygon::GetPositionAt(const std::pair<int,int> &pair){
     PositionAt(pair, returned);
     return returned;
 }
-
+*/
 
 // ------ DEBUG APPEND MESH DATA -------
 
 
-
+/*
 void FMeshedPolygon::AppendMeshedSurface(MeshData &data){
     if(!GridValid()){
         return;
@@ -474,11 +479,11 @@ void FMeshedPolygon::AppendAt(int i, int j, MeshData &data){
 TArray<FVector> FMeshedPolygon::GetQuadOrTriangleAt(int i, int j){
     TArray<FVector> outBuffer;
     //append quad
-    /*
+    / *
     1->2
     |  |
     0<-3
-    */
+    * /
     FVector pos;
     if (PositionAtFlag(i, j, pos)){
         outBuffer.Add(pos);
@@ -494,7 +499,7 @@ TArray<FVector> FMeshedPolygon::GetQuadOrTriangleAt(int i, int j){
     }
     return outBuffer;
 }
-
+*/
 
 
 void FMeshedPolygon::SetFlag(
@@ -544,7 +549,7 @@ void FMeshedPolygon::SetFlagInt(int x, int y, uint8 flag){
     }
 }
 
-
+/*
 void FMeshedPolygon::SetPosition(int x, int y, const FVector &pos){
     if (x >= 0 && x < positionGrid.Num())
     {
@@ -552,7 +557,7 @@ void FMeshedPolygon::SetPosition(int x, int y, const FVector &pos){
             positionGrid[x][y] = pos;
         }
     }
-}
+}*/
 
 
 
@@ -694,9 +699,7 @@ void FMeshedPolygon::GetMinMax(FVector &minOut, FVector &maxOut){
 TArray<TArray<uint8>> &FMeshedPolygon::GetFlagGrid(){
     return flagGrid;
 }
-TArray<TArray<FVector>> &FMeshedPolygon::GetPositionGrid(){
-    return positionGrid;
-} 
+
 float FMeshedPolygon::GetStepSizeSaved() const{
     return stepSizeSaved;
 }
@@ -705,9 +708,14 @@ const TArray<TArray<uint8>> &FMeshedPolygon::GetFlagGridConst() const {
     return flagGrid;
 }
 
+/*
 const TArray<TArray<FVector>> &FMeshedPolygon::GetPositionGrid() const {
     return positionGrid;
 }
+
+TArray<TArray<FVector>> &FMeshedPolygon::GetPositionGrid(){
+    return positionGrid;
+} */
 
 
 

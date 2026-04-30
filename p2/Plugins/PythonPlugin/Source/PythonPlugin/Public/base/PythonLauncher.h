@@ -33,4 +33,5 @@ protected:
 
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+    void ShutDownPython();
 };

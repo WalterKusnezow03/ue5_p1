@@ -3,15 +3,18 @@ import socket, struct
 
 from InputOutput import receiver
 from SharedMemory.sharedMemory import UnrealSharedFrame
+from SharedMemory.sharedMemoryMap import UnrealSharedMemoryMap
+from NNBase import CNNBase
 
-
-print("NN_SERVER MODULE LOADED")
+print("NNServer NN_SERVER MODULE LOADED")
 
 ### import globally into other plugins ###
 class NNServer:
     def __init__(self):
         self.openedconnection = True
-        self.sharedMemoryObj = None
+        ##self.sharedMemoryObj = None
+
+        self.sharedMemoryMap = UnrealSharedMemoryMap()
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ## -- setup socket --
@@ -21,6 +24,11 @@ class NNServer:
         self.connection, self.addr = self.s.accept()
         print("NNServer Connection from", self.addr)
 
+        CNNBase.debugTorch()
+        self.SHUTDOWNFLAG = False
+
+    def ShutDownTriggered(self):
+        return self.SHUTDOWNFLAG == True
         
         
     def Tick(self):
@@ -46,6 +54,7 @@ class NNServer:
             prefix = message[0]
             if(prefix == "SHUTDOWN"):
                 self.closeConnect()
+                self.SHUTDOWNFLAG = True
 
             if(prefix == "FRAMEID"):
                 print("NNServer received data as string: FRAME ID DATA: ", message)
@@ -60,45 +69,52 @@ class NNServer:
 
     ##### not tested ! #####
     def CloseAndReopenSharedMemoryCommand(self, message):
-        if(len(message) >= 3):
+        if(len(message) >= 4):
             prefix = message[0]
             if(prefix == "FRAMEID"):
-                tagname, size = message[1], int(message[2])
+                tagname, size, shortTag = message[1], int(message[2]), message[3]
                 if(len(tagname) < 2):
                     return
                 if(int(size) < 1):
                     return
-
-                if(self.sharedMemoryObj):
-                    self.sharedMemoryObj.close()
-                    self.sharedMemoryObj = None
                 
-                tagname, size = message[1], int(message[2])
-                print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
-                self.sharedMemoryObj = UnrealSharedFrame(tagname, size)
+
+                if(self.sharedMemoryMap):
+                    self.sharedMemoryMap.CloseAndReopenPage(tagname, size, shortTag)
+                    print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
 
     
 
     def ProcessSharedMemory(self):
         print("NNServer receive -> ProcessSharedMemory")
-        if(self.sharedMemoryObj):
-            if(self.sharedMemoryObj.isReady()):
-                print("NNServer Shared Mem is ready")
-            
-            data = self.sharedMemoryObj.read_data_only()
-            print("NNServer shared mem Data ", data)
-            
+        if(self.sharedMemoryMap):
+            ##read
             return 
-            ##print("tick")
         else:
             print("NNServer NO memory Object! ")
+
+
+    def __del__(self):
+        try:
+            if self.connection:
+                self.connection.close()
+        except:
+            pass
+
+        try:
+            if self.s:
+                self.s.close()
+        except:
+            pass
+
+        print("NNServer sockets closed on delete")
 
 
 
 def Run():
     ## run until process finished
     serverVar = NNServer()
-    while True:
+    while True and (serverVar.SHUTDOWNFLAG != True):
         serverVar.Tick()
     serverVar.closeConnect()
 

@@ -42,24 +42,21 @@ void NNPathFinderProxy::CollectPolygon(
 
 
 
-void NNPathFinderProxy::DebugSaveImage(
-    FVector playerPos,
-    float radius
-){
-    //FMeshedPolygon polygon;
-    CollectPolygon(playerPos, radius, meshedPolygonStatic);
-}
 
 
 void NNPathFinderProxy::EndSave(){
-    for(int i = 0; i < cachedImages.Num(); i++){
-        FMeshedPolygon &current = cachedImages[i];
-        FString name = current.GetName();
-        DebugSaveMeshedPolygonToStorage(current, name);
+    if(saveOnEnd){
+        for(int i = 0; i < cachedImages.Num(); i++){
+            FMeshedPolygon &current = cachedImages[i];
+            FString name = current.GetName();
+            DebugSaveMeshedPolygonToStorage(current, name);
 
-        //DebugHelper::logMessage(current.ToString());
+            //DebugHelper::logMessage(current.ToString());
+        }
+        DebugHelper::logMessage("NNPathFinderProxy::Saved ", cachedImages.Num());
+    }else{
+        DebugHelper::logMessage("NNPathFinderProxy::Save on End Disabled");
     }
-    DebugHelper::logMessage("NNPathFinderProxy::Saved ", cachedImages.Num());
 }
 
 
@@ -71,7 +68,7 @@ void NNPathFinderProxy::DebugSaveMeshedPolygonToStorage(
 ){
     if(polygon.IsValid()){
         TArray<FColor> colors;
-        FColor locked = FColor::White;
+        FColor locked = FColor::Green;
         FColor free = FColor::Red;
 
         int x, y;

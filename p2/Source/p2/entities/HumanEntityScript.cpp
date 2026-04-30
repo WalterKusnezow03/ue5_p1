@@ -21,6 +21,8 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
 
+#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
+
 
 // Sets default values
 AHumanEntityScript::AHumanEntityScript() : AEntityScript()
@@ -134,12 +136,15 @@ void AHumanEntityScript::reloadOwnWeaponIfNeeded(){
 void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer){
         //DebugHelper::showScreenMessage("can see", FColor::Red);
+
+        //any bot can share memory whether player was seen
+        FlagPlayerVisibleToNNInterface();
     }
 
     if(canSeePlayer && spottedPlayer){
+
         
-        
-        
+
         humanoidPluginController.changeCarriedItemSocket(ECarriedItemPosition::EAimDownSightPosition);
         humanoidPluginController.stopLocomotionOnceRotationHasFinished();
         attackPlayer();
@@ -155,6 +160,26 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
         }
     }
 }
+
+
+void AHumanEntityScript::FlagPlayerVisibleToNNInterface(){
+    if(playerPointer){
+        FlagActorVisibleToNNInterface(playerPointer);
+    }
+}
+
+void AHumanEntityScript::FlagActorVisibleToNNInterface(AActor *actor){
+    if(actor){
+        if(ANNPathFinderSocket *nnSocket = ANNPathFinderSocket::PathFinderNNinstance()){
+            nnSocket->FlagVisible(actor);
+        }
+    }
+}
+
+        
+
+
+
 
 
 

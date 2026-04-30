@@ -60,7 +60,7 @@ void AcustomMeshActor::BeginPlay()
 
 void AcustomMeshActor::ClearAllMeshData(){
     Super::ClearAllMeshData();
-    DebugHelper::logMessage("AcustomMeshActor::ClearAllMeshData");
+    //DebugHelper::logMessage("AcustomMeshActor::ClearAllMeshData");
     releaseChunkParserPointer();
 }
 

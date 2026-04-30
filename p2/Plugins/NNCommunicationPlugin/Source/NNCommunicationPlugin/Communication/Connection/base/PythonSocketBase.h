@@ -61,7 +61,9 @@ protected:
     void LogMessage(FString msg);
 
     //send via socket connection
+public:
     void Send(FString message);
+protected:
     void Send(TArray<uint8> &bin);
 
     void Receive(TArray<uint8> &data, int32 numBytes, int32 &bytesread);

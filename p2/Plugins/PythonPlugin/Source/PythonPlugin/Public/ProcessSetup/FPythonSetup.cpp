@@ -64,7 +64,7 @@ FString FPythonSetup::PluginPythonDir(FString pluginDir){
 }
 
 FString FPythonSetup::PluginDir(FString pluginName){
-    FString inner = FString::Printf(TEXT("%s/Source/%s"), *pluginName, *pluginName);
+    FString inner = pluginName; //refactured. // FString::Printf(TEXT("%s/Source/%s"), *pluginName, *pluginName);
     FString pluginDir = FPaths::ConvertRelativePathToFull(
         FPaths::ProjectPluginsDir() / 
         *inner

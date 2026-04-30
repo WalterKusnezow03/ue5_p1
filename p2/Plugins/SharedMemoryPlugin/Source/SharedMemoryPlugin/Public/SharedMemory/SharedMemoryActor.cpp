@@ -35,24 +35,18 @@ void ASharedMemoryActor::BeginPlay(){
 }
 
 void ASharedMemoryActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    frames.clear();
+    manager.ClearAllFrames();
     instance = nullptr;
     Super::EndPlay(EndPlayReason);
 }
 
 
 void ASharedMemoryActor::Open(FString name, int bytes){
-    if(bytes > 0 && name.Len() > 0){
-        if(!HasFrame(name)){
-            frames[name] = FSharedFrame();
-            FSharedFrame &ref = frames[name];
-            ref.Open(name, bytes);
-        }
-    }
-}   
+    manager.Open(name, bytes);
+}
 
 bool ASharedMemoryActor::HasFrame(FString pageName){
-    return frames.find(pageName) != frames.end();
+    return manager.HasFrame(pageName);
 }
 
 /*

@@ -6,6 +6,7 @@ class SHAREDMEMORYPLUGIN_API FSharedFrame{
 
 public:
     FSharedFrame();
+    FSharedFrame(bool closeOnDestroyFlag);
     ~FSharedFrame();
 
     void Open(FString name, int bytes);
@@ -15,10 +16,13 @@ public:
     //returns: SharedFrameName_bytes
     FString SharedFrameIdentifier();
     virtual FString SharedFrameIdentifierMessage(FString prefix);
+    virtual FString SharedFrameIdentifierMessage(FString prefix, FString postFixTag);
 
     bool SizeChanged(int sizeIn);
 
 private:
+    bool closeOnDestroy = false;
+
     //frame ptr
     uint8 *Shared = nullptr;
 
@@ -41,6 +45,9 @@ private:
     uint8 *pointerAfterReadyFlag();
 
     void MakeFrameName(FString name);
+
+
+
 };
 
 /*

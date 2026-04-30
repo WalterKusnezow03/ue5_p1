@@ -1,6 +1,8 @@
 #include "NNPathFinderSocket.h"
 
 #include "DebugPlugin/DebugHelper.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+
 
 void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 {
@@ -24,7 +26,11 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 void ANNPathFinderSocket::BeginPlay(){
     Super::BeginPlay();
     DebugHelper::logMessage("ANNPathFinderSocket BeginPlay - python");
-    frameName = "ANNPathFinderSocketFrame";
+
+    frameNameRequest = "ANNPathFinderSFIN";
+    frameNameResult = "ANNPathFinderSFRES";
+    frameNameGroundThruth = "ANNPathFinderSFGT";
+    
     
     // /NNCommunicationPlugin/Python/nn_server.py
     //LaunchPythonProcess("NNCommunicationPlugin", "nn_server.py");
@@ -39,6 +45,10 @@ void ANNPathFinderSocket::BeginPlay(){
     ); // finds working dir automatically
 }
 
+void ANNPathFinderSocket::Tick(float deltatime){
+    Super::Tick(deltatime);
+    actorTracker.Tick(deltatime);
+}
 
 void ANNPathFinderSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
@@ -57,24 +67,79 @@ void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 //// ---- interaction ----
 
-void ANNPathFinderSocket::PredictNode(
-    FVector playerPos,
-    float radius
-){
-    FMeshedPolygon polygonData;
-    proxy.CollectPolygon(
-        playerPos,
-        radius,
-        polygonData
-    );
-    WriteData(polygonData);
+
+//flags a aactor as spotted
+void ANNPathFinderSocket::FlagVisible(AActor *actor){
+    if(actor){
+        actorTracker.AddTrackedActorIfNeeded(actor);
+        actorTracker.FlagVisible(actor);
+    }
 }
 
-void ANNPathFinderSocket::WriteData(FMeshedPolygon &polygon){
-    TArray<uint8> buffer;
-    polygon.AppendFlagMap(buffer);
 
-    WriteData(buffer);
+void ANNPathFinderSocket::PredictNode(
+    AActor *actor,
+    float radius
+){
+    PredictNodeDebug(actor, radius);
+    return;
+    if (actor)
+    {
+        //add if needed (filled with self location with default size buffer)
+        actorTracker.AddTrackedActorIfNeeded(actor);
+    }
+}
+
+
+
+
+
+
+
+/// ------ DEBUG ------
+void ANNPathFinderSocket::PredictNodeDebug(
+    AActor *actor,
+    float radius
+){
+    if(actor){
+        //add if needed (filled with self location with default size buffer)
+        actorTracker.AddTrackedActorIfNeeded(actor);
+        
+
+
+
+        FVector location = actor->GetActorLocation();
+        //FMeshedPolygon polygonData;
+
+        FMeshedPolygonTrajectoryLayered polygonData;
+        proxy.CollectPolygon(
+            location,
+            radius,
+            polygonData
+        );
+
+        TArray<Trajectory> trajectories = actorTracker.LocalTrajectories(actor);
+        polygonData.EmbedTrajectories(trajectories);
+
+        WriteDataRequest(polygonData);
+
+
+    }
+}
+
+
+
+
+
+void ANNPathFinderSocket::WriteDataRequest(
+    FMeshedPolygonTrajectoryLayered &polygon
+){
+    TArray<uint8> buffer;
+    //polygon.AppendFlagMap(buffer); //deprecated!
+    polygon.AppendFlagMapAsFloat(buffer);
+    polygon.AppendTimeMap(buffer);
+
+    WriteData(frameNameRequest, buffer);
 }
 
 

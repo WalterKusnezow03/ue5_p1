@@ -5,16 +5,13 @@
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 #include "PolygonPlugin/Public/Polygons/MeshedPolygonExtension/MeshedPolygonDistanceField.h"
 
-class NNCOMMUNICATIONPLUGIN_API NNPathFinderProxy {
+
+class PATHFINDERNNEXTENSION_API NNPathFinderProxy {
 
 public:
     NNPathFinderProxy();
 
 
-    void DebugSaveImage(
-        FVector playerPos,
-        float radius
-    );
     
     void CollectPolygon(
         FVector playerPos,
@@ -25,10 +22,8 @@ public:
     void EndSave();
 
 private:
-    
+    bool saveOnEnd = true;
 
-    //FMeshedPolygon meshedPolygonStatic;
-    FMeshedPolygon meshedPolygonStatic;
     TArray<FMeshedPolygon> cachedImages;
 
     void DebugSaveMeshedPolygonToStorage(

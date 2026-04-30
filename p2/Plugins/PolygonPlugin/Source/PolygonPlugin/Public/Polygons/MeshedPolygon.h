@@ -14,7 +14,7 @@ class POLYGONPLUGIN_API FMeshedPolygon : public GridBase{
 
 protected:
     TArray<TArray<uint8>> flagGrid;
-    TArray<TArray<FVector>> positionGrid;
+    
     TArray<std::pair<int, int>> edgeIndices;
 
     FVector minSaved;
@@ -36,6 +36,18 @@ public:
     }
 
 
+
+    virtual FVector BottomLeft(){
+        return minSaved;
+    }
+
+    virtual FVector TopRight(){
+        return maxSaved;
+    }
+
+
+
+
 public:
     
 
@@ -51,9 +63,7 @@ public:
 
     bool IsValid() const;
     bool FlagGridIsValid() const;
-    FVector BottomLeft();
-    FVector TopRight();
-
+    
 
     //joined bit map from poylgons
     void GenerateFrom(
@@ -69,7 +79,7 @@ public:
     // --- storage interface ---
 
     TArray<TArray<uint8>> &GetFlagGrid();
-    TArray<TArray<FVector>> &GetPositionGrid();
+   
     float GetStepSizeSaved() const;
     void GetMinMax(FVector &minOut, FVector &maxOut);
 
@@ -79,13 +89,13 @@ public:
 
 
     const TArray<TArray<uint8>> &GetFlagGridConst() const;
-    const TArray<TArray<FVector>> &GetPositionGrid() const;
+    
 
     // --- storage interface ---
 
 protected:
     //forces a min size of one if bounds to small for pixel step "widthOfInsideStep"
-    bool InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep);
+    virtual bool InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep);
     FVector center(TArray<FVector> &polygon);
 
     void FindBounds(TArray<FVector> &polygon);
@@ -98,8 +108,8 @@ protected:
 
     bool FlagIndexInBound(const int x, const int y);
 
-    void GenerateGrid();
-    bool GridValid() const;
+    virtual void GenerateGrid();
+    virtual bool GridValid() const;
 
     void FlagTrue(const TArray<FVector> &polygon);
 
@@ -123,7 +133,7 @@ protected:
     bool FlagAtPosition(const FVector &pos);
 
     bool FlagAt(int x, int y);
-    bool PositionAtFlag(int x, int y, FVector &outPos);
+    //bool PositionAtFlag(int x, int y, FVector &outPos);
 
     //override flags by batch
     void SetFlag(const TArray<std::pair<int, int>> &indexPositions, bool flag);
@@ -132,11 +142,11 @@ protected:
     void SetFlagInt(int x, int y, uint8 flag);
     void SetFlag(const FVector &pos, bool flagIn);
 
-    void SetPosition(int x, int y, const FVector &pos);
+    //void SetPosition(int x, int y, const FVector &pos);
 
-    bool PositionAt(int x, int y, FVector &outPos);
-    bool PositionAt(const std::pair<int, int> &pair, FVector &outPos);
-    FVector GetPositionAt(const std::pair<int, int> &pair);
+    //bool PositionAt(int x, int y, FVector &outPos);
+    //bool PositionAt(const std::pair<int, int> &pair, FVector &outPos);
+    //FVector GetPositionAt(const std::pair<int, int> &pair);
     FVector Rotation(
         const std::pair<int, int> &posAPair,
         const std::pair<int, int> &posBPair
@@ -148,8 +158,8 @@ protected:
 
     
     //debug
-    void AppendAt(int i, int j, MeshData &data);
-    TArray<FVector> GetQuadOrTriangleAt(int i, int j);
+    //void AppendAt(int i, int j, MeshData &data);
+    //TArray<FVector> GetQuadOrTriangleAt(int i, int j);
 
 
     
@@ -167,14 +177,16 @@ protected:
         const TArray<uint8> &flagBuffer // column
     );
 
-    void ClearFlags();
-    void MakePositionGrid();
+    
+    //void MakePositionGrid();
 
     void GetResolution(int &xOut, int &yOut) const;
 
     uint8 FlagAsInt8(bool flag);
 
 public:
+    void ClearFlags();
+
     virtual void GenerateColorBitmap(
         TArray<FColor> &outBuffer,
         FColor &free,
@@ -189,6 +201,54 @@ public:
     void AppendFlagMap(
         TArray<uint8> &buffer
     ) const;
+
+
+
+protected:
+    //template grid fill
+    template <typename T>
+    void TClearGrid(TArray<TArray<T>> &grid, T valueNone){
+        for (int i = 0; i < grid.Num(); i++){
+            TArray<T> &col = grid[i];
+            for (int j = 0; j < col.Num(); j++){
+                col[j] = valueNone;
+            }
+        }
+    }
+
+    template <typename T>
+    void TOverrideValue(TArray<TArray<T>> &grid, int i, int j, T value){
+        if(i >= 0 && j >= 0 && i < grid.Num() && j < grid[i].Num()){
+            grid[i][j] = value;
+        }
+    }
+
+    //creates grid with same size as flag grid
+    template <typename T>
+    void TCreateOrClearGrid(TArray<TArray<T>> &grid, T defaultNoneValue){
+        //grid size from bool grid
+        int x = sizeX();
+        int y = sizeY();
+
+        //get size from bounds if failed.
+        if(x <= 0 && y <= 0){
+            GetSizeGrid(x, y);
+        }
+
+
+        if(x > 0 && y > 0){
+            if (TGridIsSize<T>(x, y, grid)){
+                TClearGrid<T>(grid, defaultNoneValue);
+                return;
+            }
+            TGenerateGrid<T>(x, y, grid);
+            TClearGrid<T>(grid, defaultNoneValue);
+        }
+    }
+
+
+
+
 
 
 

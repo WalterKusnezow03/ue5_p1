@@ -38,13 +38,13 @@ void ANNSocket::BeginPlay(){
             "NNCommunicationPlugin",
             "venv/bin/python"
         ); // finds working dir automatically
-        frameName = "ANNSocketFrame";
+        //frameNames.Add("ANNSocketFrame");
     }
 }
 
 void ANNSocket::SetFlagsOnBeginPlay(){
     Super::SetFlagsOnBeginPlay();
-    frameNameSend = true;
+    
 }
 
 
@@ -57,33 +57,13 @@ void ANNSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
 }
 
 
-void ANNSocket::OpenSharedMemory(int bytes){
-    if(frameName.Len() <= 0){
-        return;
-    }
-
-    CloseSharedMemory();
-    sharedMemory.Open(frameName, bytes);
-    frameNameSend = false;
-    // void WriteData(const TArray<uint8> &bytes);
-
-    DebugHelper::logMessage("ANNSocket::OpenSharedMemory ", bytes);
-}
-
 void ANNSocket::CloseSharedMemory(){
-    sharedMemory.CleanFrame();
+    frameManager.ClearAllFrames();
 }
 
-
-void ANNSocket::WriteData(const TArray<uint8> &data){
-    //size changed: new page!
+void ANNSocket::WriteData(FString name, const TArray<uint8> &data){
     DebugHelper::logMessage("ANNSocket::WriteData ", data.Num());
-
-    if(sharedMemory.SizeChanged(data.Num() * sizeof(uint8))){
-        CloseSharedMemory();
-        OpenSharedMemory(data.Num());
-    }
-    sharedMemory.WriteData(data);
+    frameManager.WriteData(name, data);
 }
 
 
@@ -96,15 +76,7 @@ void ANNSocket::WriteData(const TArray<uint8> &data){
 void ANNSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
 
-    // is connected: Tick
-    if(!frameNameSend){
+    frameManager.NotifyChangedFrames(this);
 
-        //setup shared memory page inside python (if page changed)
-        //message as: FrameName_bytes
-        FString message = sharedMemory.SharedFrameIdentifierMessage("FRAMEID");
-        Send(message);
-        frameNameSend = true;
-
-        DebugHelper::logMessage("ANNSocket:: Send frame name: ", message);
-    }
+    DebugHelper::showScreenMessage("ANNSocket::TickSocketConnected", FColor::Cyan);
 }

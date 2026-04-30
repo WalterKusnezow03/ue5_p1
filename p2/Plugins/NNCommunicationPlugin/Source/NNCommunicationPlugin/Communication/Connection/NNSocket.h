@@ -9,6 +9,7 @@
 #include "NNCommunicationPlugin/Communication/Connection/base/PythonSocketBase.h"
 
 #include "SharedMemoryPlugin/Public/SharedMemory/FSharedFrame.h"
+#include "NNCommunicationPlugin/Communication/SharedFrames/FCommunicationSharedFrameManager.h"
 
 #include "NNSocket.generated.h"
 
@@ -33,21 +34,18 @@ protected:
     virtual void SetFlagsOnBeginPlay() override;
 
     static ANNSocket *instancePtr;
-    FSharedFrame sharedMemory;
 
-    bool frameNameSend = false;
-    FString frameName = TEXT("DEFAULTFRAMENAME"); //set on BeginPlay
+    FCommunicationSharedFrameManager frameManager;
 
 public:
     ANNSocket();
 
-    void WriteData(const TArray<uint8> &data);
+    void WriteData(FString name, const TArray<uint8> &data);
 
 protected:
     virtual void TickSocketConnected(float deltatime) override;
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    void OpenSharedMemory(int bytes); //frameName MUST BE SETUP
     void CloseSharedMemory();
 };

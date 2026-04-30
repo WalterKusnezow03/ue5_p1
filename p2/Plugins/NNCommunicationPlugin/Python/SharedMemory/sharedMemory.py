@@ -44,9 +44,18 @@ class UnrealSharedFrame:
         self.map.seek(0)
         self.map.write(struct.pack("i", 0))
 
+    ##read as uint8
     def read_data_only(self):
         self.map.seek(4)
         return self.map.read(self.size - 4)
+    
+    ##read as float 
+    def read_data_only_float_array(self):
+        self.map.seek(4)  # nach dem Ready-Flag
+        raw = self.map.read(self.size - 4)
+
+        float_count = len(raw) // 4
+        return struct.unpack(f"{float_count}f", raw[:float_count * 4])
 
     def close(self):
         if self.closed:

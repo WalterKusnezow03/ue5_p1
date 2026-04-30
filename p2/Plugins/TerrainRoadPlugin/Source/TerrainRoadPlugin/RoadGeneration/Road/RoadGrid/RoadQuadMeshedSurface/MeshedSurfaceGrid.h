@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygonExtension/MeshedPolygonPositionField.h"
 
 class TerrainInterfaceBase;
 class MeshData;
@@ -10,7 +11,7 @@ class MeshData;
 /// grid from generated b spline
 ///data is transfered to position grid and boolean grid for location being
 ///present inside the polygon
-class TERRAINROADPLUGIN_API FMeshedSurfaceGrid : public FMeshedPolygon{
+class TERRAINROADPLUGIN_API FMeshedSurfaceGrid : public FMeshedPolygonPositionField {//FMeshedPolygon{
 
 public:
     FMeshedSurfaceGrid();

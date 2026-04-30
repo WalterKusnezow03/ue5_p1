@@ -10,9 +10,8 @@ void APythonSocketBase::BeginPlay(){
 void APythonSocketBase::SetFlagsOnBeginPlay(){
     Super::SetFlagsOnBeginPlay();
     connected = false;
+    serverRunning = false;
 }
-
-
 
 //must be called on begin play in derived class
 void APythonSocketBase::LaunchPythonProcess(
@@ -140,11 +139,11 @@ void APythonSocketBase::OpenSocket(float deltatime){
 
     if (!Socket->Connect(*Address))
     {
-        DebugHelper::logMessage("APythonSocketBase::Socket connect failed");
+        DebugHelper::logMessage("APythonSocketBase::SocketConnect connect failed");
         connected = false;
         return;
     }else{
-        DebugHelper::logMessage("APythonSocketBase::Socket Connected!");
+        DebugHelper::logMessage("APythonSocketBase::SocketConnect Connected!");
         connected = true;
     }
 }

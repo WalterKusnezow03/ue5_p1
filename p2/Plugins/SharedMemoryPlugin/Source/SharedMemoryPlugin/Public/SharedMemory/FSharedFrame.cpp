@@ -5,15 +5,26 @@
 #include <string.h>
 
 FSharedFrame::FSharedFrame(){
+    closeOnDestroy = true;
+}
 
+FSharedFrame::FSharedFrame(bool closeOnDestroyFlag){
+    closeOnDestroy = closeOnDestroyFlag;
 }
 
 FSharedFrame::~FSharedFrame(){
-    CleanFrame();
+    if(closeOnDestroy){ //only if allowed: can be disallowed in constructor!
+        //CleanFrame(); //Cant happen here! - manual call needed if copy constructor called!
+    }
+    
 }
 
 FString FSharedFrame::SharedFrameIdentifier(){
     return FString::Printf(TEXT("%s_%d"), *pageName, bytesAllocated);
+}
+
+FString FSharedFrame::SharedFrameIdentifierMessage(FString prefix, FString postFixTag){
+    return FString::Printf(TEXT("%s_%s"), *SharedFrameIdentifierMessage(prefix), *postFixTag);
 }
 
 FString FSharedFrame::SharedFrameIdentifierMessage(FString prefix){
@@ -80,7 +91,7 @@ void FSharedFrame::Open(FString name, int bytes){
 }
 
 void FSharedFrame::MakeFrameName(FString name){
-    const int MAX_SHM_NAME = 30; // sicher unter Limit bleiben
+    const int MAX_SHM_NAME = 30; // sicher unter Limit bleiben!! //DO NOT REMOVE
     pageName = FString::Printf(TEXT("/ueshm%s"), *name);
     if (pageName.Len() > MAX_SHM_NAME)
     {

@@ -65,4 +65,11 @@ private:
         uint8 *ptr,
         TArray<uint8> &Bytes
     );
+
+
+
+
+    //debug
+    FString ByteToMbAsString(int size);
+    float ByteToMb(int size);
 };

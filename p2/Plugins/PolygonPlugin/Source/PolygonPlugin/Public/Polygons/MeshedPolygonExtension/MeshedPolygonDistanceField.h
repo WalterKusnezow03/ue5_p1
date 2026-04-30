@@ -1,9 +1,10 @@
 #pragma once
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
+#include "MeshedPolygonPositionField.h"
 #include "PolygonPlugin/Public/GridBase/GridBase.h"
 
-class POLYGONPLUGIN_API FMeshedPolygonDistanceField : public FMeshedPolygon{
+class POLYGONPLUGIN_API FMeshedPolygonDistanceField : public FMeshedPolygonPositionField{
 
 public:
     //void InitFrom(FMeshedPolygon &polygon);

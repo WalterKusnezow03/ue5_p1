@@ -61,16 +61,33 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
 
 void APythonLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
     //close python process
-    if (ProcHandle.IsValid()){
+    /*if (ProcHandle.IsValid()){
         FPlatformProcess::TerminateProc(ProcHandle, true); // true = force kill
         FPlatformProcess::CloseProc(ProcHandle);           // Handle freigeben
         serverRunning = false;
-    }
+    }*/
+    ShutDownPython();
     Super::EndPlay(EndPlayReason);
 }
 
+void APythonLauncher::ShutDownPython(){
+    if (ProcHandle.IsValid()){
+        FPlatformProcess::TerminateProc(ProcHandle, true);
+        for (int i = 0; i < 20; i++){
+            if (!FPlatformProcess::IsProcRunning(ProcHandle))
+                break;
 
-
+            FPlatformProcess::Sleep(0.1f);
+        }
+        FPlatformProcess::CloseProc(ProcHandle);
+    }
+    if (ReadPipe || WritePipe){
+        FPlatformProcess::ClosePipe(ReadPipe, WritePipe);
+        ReadPipe = nullptr;
+        WritePipe = nullptr;
+    }
+    serverRunning = false;
+}
 
 void APythonLauncher::Tick(float deltatime){
     Super::Tick(deltatime);
