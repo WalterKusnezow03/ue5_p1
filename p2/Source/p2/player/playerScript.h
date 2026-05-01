@@ -152,6 +152,6 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	Timer debugTimer;
+	
 	void DebugTickPathfinderNN(float deltatime);
 };

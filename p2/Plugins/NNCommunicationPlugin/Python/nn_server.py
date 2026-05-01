@@ -8,6 +8,9 @@ from NNBase import CNNBase
 
 print("NNServer NN_SERVER MODULE LOADED")
 
+########## always send empty messages if nothing happens: otherwise TCP will be blocking! ##########
+########## Fixing attempts not sucessfull yet, is a workaround! ##########
+
 ### import globally into other plugins ###
 class NNServer:
     def __init__(self):
@@ -26,6 +29,9 @@ class NNServer:
 
         CNNBase.debugTorch()
         self.SHUTDOWNFLAG = False
+
+        ##NEW
+        ##self.connection.settimeout(0.01)
 
     def ShutDownTriggered(self):
         return self.SHUTDOWNFLAG == True
@@ -48,11 +54,14 @@ class NNServer:
 
             self.ProcessMessage(message)
 
+    def OnShutDown(self):
+        return
 
     def ProcessMessage(self, message):
         if(len(message) > 0):
             prefix = message[0]
             if(prefix == "SHUTDOWN"):
+                self.OnShutDown()
                 self.closeConnect()
                 self.SHUTDOWNFLAG = True
 

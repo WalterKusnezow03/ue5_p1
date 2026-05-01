@@ -17,6 +17,7 @@ import sys
 import communicationPluginParent
 import nn_server
 from NNBase import CNNBase
+import NetA
 
 ##print("IMPORT OK \n")
 
@@ -34,31 +35,87 @@ class NNServerPathfinder(nn_server.NNServer):
         self.frameNameRequest = "ANNPathFinderSFIN"
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
+        self.Net = NetA.NetA()
+
+        self.bWaitingForGroundTruth = False
+        self.resultData = None
 
 
-    def Tick(self):
-        super().Tick()
-        self.count = self.count + 1
-        if(self.count > 1000):
-            self.count = 0
-            print("NNServerPathfinder Ticked")
 
     
     def ProcessSharedMemoryByTag(self, shortTag):
-         if(self.sharedMemoryMap):
+        if(self.sharedMemoryMap):
             page = self.sharedMemoryMap.findPage(shortTag)
             if(page != None):
-                data = page.read_data_only_float_array()
-                print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
+                ##if data ready: read, flag read / false
+                    ##process data, wait for result.
+                
+                ##isReady()
+                ##writeReadyFalse()
+                if(page.isReady()):
+                    data = page.read_data_only_float_array()
+                    ##print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
+                    page.writeReadyFalse()
+                    self.ProcessDataByMemoryTag(data, shortTag)
             else:
                 print("NNServerPathfinder shared mem Page not found", shortTag)
 
+    def ProcessDataByMemoryTag(self, data, shortTag):
+        print("NNServerPathfinder Data Process, Len of (",shortTag, "): ", len(data))
 
+        if(shortTag == self.frameNameRequest):
+            if(self.bWaitingForGroundTruth):
+                print("NNServerPathfinder_RUN_NN_RETURNED: WAIT GT")
+                return
+            print("NNServerPathfinder_RUN_NN")
+            ##run net
+            self.resultData = self.Net.forwardTwoChannelData(data)
+            self.bWaitingForGroundTruth = True
+            self.bResultDataWritten = False
+
+            ##write result
+            print("NNServerPathfinder_RUN_NN_Finish_A", len(self.resultData))
+            ##self.WriteResultDataIfPending()
+
+            return
+
+        if(shortTag == self.frameNameGroundThruth):
+            if(self.bWaitingForGroundTruth):
+                print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
+                self.Net.learnData(data)
+                self.bWaitingForGroundTruth = False ##ready for a new request
+                print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))
+                return
+
+    def WriteResultDataIfPending(self):
+        if(self.resultData != None and self.bResultDataWritten == False):
+            print("NNServerPathfinder_RequestFinishAvailable Start")
+            resultPage = self.sharedMemoryMap.findPage(self.frameNameResult)
+            if(resultPage != None):
+                resultPage.write_data_only_float_array(self.resultData)
+                resultPage.writeReadyTrue()
+                print("NNServerPathfinder_RequestFinishAvailable Write! float:", len(self.resultData), " uint8 ", len(self.resultData) * 4)
+                self.resultData = None
+                self.bResultDataWritten == True
+                return
+            else:
+                print("NNServerPathfinder_RequestFinishAvailable BUT RESULT PAGE NOT SETUP")
+            
+        return
+
+    ##override
     def ProcessSharedMemory(self):
-        print("NNServerPathfinder receive -> ProcessSharedMemory")
+        self.sharedMemoryMap.ShowMap()
+        self.WriteResultDataIfPending()
+        
+        if(self.bWaitingForGroundTruth):
+            self.ProcessSharedMemoryByTag(self.frameNameGroundThruth)
+            return
+    
+
         self.ProcessSharedMemoryByTag(self.frameNameRequest)
-        self.ProcessSharedMemoryByTag(self.frameNameResult)
-        self.ProcessSharedMemoryByTag(self.frameNameGroundThruth)
+        
+        
         return
         ##    print("hallo")
 
@@ -67,7 +124,18 @@ class NNServerPathfinder(nn_server.NNServer):
         print("NNServerPathfinder receive message ", message) ## works as expected
         super().ProcessMessage(message)
 
+    def SaveNet(self):
+        if(self.Net != None):
+            self.Net.saveCheckpoint()
+            return
 
+    def OnShutDown(self):
+        print("NNServerPathfinder OnShutDown Save net")
+        self.SaveNet()
+        print("NNServerPathfinder OnShutDown FINISHED")
+        print("PYTHON_SAFE_TO_EXIT")
+        super().OnShutDown()
+        return
 
 
 
@@ -79,10 +147,20 @@ server = NNServerPathfinder()
 
 def RunHere():
     print("NNServerPathfinder RUN NOW")
-    while True and (server.ShutDownTriggered() == False):
+    while True:
         server.Tick()
-    
-RunHere()
+        print("NNServerPathfinder Tick NOW")
+        if(server.ShutDownTriggered() == True):
+            print("NNServerPathfinder Tick NOW - SHUT DOWN")
+            break
 
+RunHere()
+##server.SaveNet()
 
 print("NNServerPathfinder FINISHED")
+
+print("PYTHON_SAFE_TO_EXIT")
+print("PYTHON_SAFE_TO_EXIT")
+print("PYTHON_SAFE_TO_EXIT")
+print("PYTHON_SAFE_TO_EXIT")
+print("PYTHON_SAFE_TO_EXIT")

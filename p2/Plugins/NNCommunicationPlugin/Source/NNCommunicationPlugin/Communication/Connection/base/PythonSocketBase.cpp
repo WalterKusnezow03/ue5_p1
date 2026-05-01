@@ -10,7 +10,7 @@ void APythonSocketBase::BeginPlay(){
 void APythonSocketBase::SetFlagsOnBeginPlay(){
     Super::SetFlagsOnBeginPlay();
     connected = false;
-    serverRunning = false;
+    //serverRunning = false;
 }
 
 //must be called on begin play in derived class
@@ -271,6 +271,6 @@ void APythonSocketBase::Receive(TArray<uint8> &data, int32 numBytes, int32 &byte
 void APythonSocketBase::DebugSocketMessage(){
     //works as expected
     if(debugMessageEnabled){
-        Send(TEXT("APythonSocketBase Debug Python Message!"));
+        Send(TEXT("Echo Python Debug"));
     }
 }

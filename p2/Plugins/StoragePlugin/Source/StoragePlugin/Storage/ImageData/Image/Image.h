@@ -10,11 +10,17 @@ public:
     bool LoadFromPath(FString localPath);
     bool IsValid();
 
-    int widthX();
-    int heightY();
-    bool SizeValid();
+    int widthX()const;
+    int heightY()const;
+    bool SizeValid()const;
 
     const TArray<TArray<FColor>> &GetData();
+
+    //manual fill
+    void Setup(int x, int y);
+    void SetPixel(int x, int y, FColor color);
+
+    bool GetColorBuffer(TArray<FColor> &buffer) const;
 
 protected:
     bool wasLoaded = false;

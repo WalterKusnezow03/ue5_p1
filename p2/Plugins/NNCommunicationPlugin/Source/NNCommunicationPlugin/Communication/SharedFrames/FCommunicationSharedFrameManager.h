@@ -9,6 +9,12 @@ class NNCOMMUNICATIONPLUGIN_API FCommunicationSharedFrameManager : public FShare
 
 public:
     void WriteData(FString name, const TArray<uint8> &data);
+    void ReadData(
+        FString pageName,
+        TArray<uint8> &data,
+        int bytesToRead
+    );
+    void MakeSureExists(FString pageName, int bytes);
 
     //call on tick if socket connected
     void NotifyChangedFrames(APythonSocketBase *socket);

@@ -71,6 +71,9 @@ void APythonLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
 }
 
 void APythonLauncher::ShutDownPython(){
+
+    ShutDownPython(5.0f);
+
     if (ProcHandle.IsValid()){
         FPlatformProcess::TerminateProc(ProcHandle, true);
         for (int i = 0; i < 20; i++){
@@ -89,6 +92,20 @@ void APythonLauncher::ShutDownPython(){
     serverRunning = false;
 }
 
+void APythonLauncher::ShutDownPython(float timeOut){
+    const double Timeout = std::abs(timeOut);
+    const double StartTime = FPlatformTime::Seconds();
+    bool bSafeToExit = false;
+    while (FPlatformTime::Seconds() - StartTime < Timeout){
+        FString Output = FPlatformProcess::ReadPipe(ReadPipe);
+        if (Output.Contains(TEXT("PYTHON_SAFE_TO_EXIT"))){
+            bSafeToExit = true;
+            break;
+        }
+        FPlatformProcess::Sleep(0.1f);
+    }
+}
+
 void APythonLauncher::Tick(float deltatime){
     Super::Tick(deltatime);
     LogPythonMessages();
@@ -101,14 +118,20 @@ void APythonLauncher::LogPythonMessages(){
             //DebugHelper::showScreenMessage("APythonLauncher::LogPythonMessages Try", FColor::Red);
             FString Output = FPlatformProcess::ReadPipe(ReadPipe);
             if (!Output.IsEmpty()){
-                DebugHelper::logMessage(
-                    FString::Printf(
-                        TEXT("APythonLauncher::PythonPrint( %s ) %s"),
-                        *pyNameSavedDebug,
-                        *Output
-                    )
-                );
+                OnReceivePythonPrint(Output);
             }
         }
     }
 }
+
+void APythonLauncher::OnReceivePythonPrint(FString Output){
+    DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("APythonLauncher::PythonPrint( %s ) %s"),
+            *pyNameSavedDebug,
+            *Output
+        )
+    );
+}
+
+

@@ -27,8 +27,8 @@ float AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
     float tEpsilonHigher = 1.0f;
     time = std::min(tEpsilonHigher, time);
 
-    DebugHelper::showScreenMessage("hipcontroller dynamic time backward ", (float)time);
-    DebugHelper::logMessage(FString::Printf(TEXT("hipcontroller dynamic time backward %.2f"), time));
+    //DebugHelper::showScreenMessage("hipcontroller dynamic time backward ", (float)time);
+    //DebugHelper::logMessage(FString::Printf(TEXT("hipcontroller dynamic time backward %.2f"), time));
     return time;
 }
 

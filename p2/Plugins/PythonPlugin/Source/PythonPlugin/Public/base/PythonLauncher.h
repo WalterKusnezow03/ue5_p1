@@ -14,9 +14,17 @@ class PYTHONPLUGIN_API APythonLauncher : public AActor{
 public:
     //must be called on begin play in derived class
     void LaunchPythonProcess(const FPythonSetup &package);
-    void LogPythonMessages();
+    
+
+    
 
 protected:
+    void LogPythonMessages();
+
+    //override this function to receive python print("data").
+    virtual void OnReceivePythonPrint(FString printed);
+
+
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;
 
@@ -34,4 +42,5 @@ protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     void ShutDownPython();
+    void ShutDownPython(float timeOut);
 };

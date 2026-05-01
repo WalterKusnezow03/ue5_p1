@@ -22,6 +22,8 @@ import mmap
 import struct
 import posix_ipc
 
+##isReady()
+##writeReadyFalse()
 
 class UnrealSharedFrame:
     def __init__(self, tagname, size):
@@ -38,11 +40,18 @@ class UnrealSharedFrame:
     def isReady(self):
         self.map.seek(0)
         flag = struct.unpack("i", self.map.read(4))[0]
+        print("UnrealSharedFrame PAGE READY", flag)
         return flag == 1
 
     def writeReadyFalse(self):
         self.map.seek(0)
         self.map.write(struct.pack("i", 0))
+        print("Write Ready False: -> ", self.isReady())
+
+    def writeReadyTrue(self):    
+        self.map.seek(0)
+        self.map.write(struct.pack("i", 1))
+        print("Write Ready True: -> ", self.isReady())
 
     ##read as uint8
     def read_data_only(self):
@@ -56,6 +65,26 @@ class UnrealSharedFrame:
 
         float_count = len(raw) // 4
         return struct.unpack(f"{float_count}f", raw[:float_count * 4])
+
+    def write_data_only_float_array(self, values):
+        self.map.seek(4)  # nach dem Ready-Flag
+
+        packed = struct.pack(f"{len(values)}f", *values)
+
+        max_bytes = self.size - 4
+        if len(packed) > max_bytes:
+            raise ValueError("write_data_only_float_array DATA TOO LARGE!")
+
+        self.map.write(packed)
+
+        print("NNServerPathfinder_RequestFinishAvailable shared memory page: write finish")
+
+        # Optional: restlichen Bereich mit Nullen füllen
+        remaining = max_bytes - len(packed)
+        if remaining > 0:
+            self.map.write(b"\x00" * remaining)
+
+
 
     def close(self):
         if self.closed:

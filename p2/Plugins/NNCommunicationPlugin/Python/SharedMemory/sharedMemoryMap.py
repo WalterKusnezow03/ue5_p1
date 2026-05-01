@@ -22,3 +22,7 @@ class UnrealSharedMemoryMap:
     def CloseAndReopenPage(self, tagname, size, shortTag):
         self.closePage(shortTag)
         self.openPage(tagname, size, shortTag)
+
+    def ShowMap(self):
+        for key, value in self.pagesMap.items():
+            print("UnrealSharedMemoryMap: ", key)

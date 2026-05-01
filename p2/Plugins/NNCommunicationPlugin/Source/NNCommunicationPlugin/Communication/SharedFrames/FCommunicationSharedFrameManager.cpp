@@ -24,6 +24,27 @@ void FCommunicationSharedFrameManager::WriteData(
     }
 }
 
+void FCommunicationSharedFrameManager::ReadData(
+    FString pageName, 
+    TArray<uint8> &data,
+    int bytesToRead
+){
+    bool frameChanged = false;
+    FSharedFrameManager::ReadData(pageName, data, bytesToRead, frameChanged);
+    if(frameChanged){
+        frameNameSendMap[pageName] = false;
+    }
+}
+
+
+void FCommunicationSharedFrameManager::MakeSureExists(FString pageName, int bytes){
+    bool changed = false;
+    FSharedFrameManager::MakeSureExists(pageName, bytes, changed);
+    if (changed)
+    {
+        frameNameSendMap[pageName] = false;
+    }
+}
 
 
 

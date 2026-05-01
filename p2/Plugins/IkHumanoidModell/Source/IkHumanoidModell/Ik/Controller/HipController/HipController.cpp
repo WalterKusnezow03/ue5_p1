@@ -888,9 +888,12 @@ void HipController::TickHipRotation(float deltatime){
         }
 
         FRotator rTicked = hipRotationInterpolator.interpolate(deltatime);
-        MMatrix newRotation(rTicked);
+
+        forceOverrideRotation(rTicked);
+
+        /*MMatrix newRotation(rTicked);
         orientation = rTicked;
-        UpdatePlueckerJointRotation();
+        UpdatePlueckerJointRotation();*/
 
         //DebugHelper::logMessage("hipRotation yaw: ", (float) rTicked.Yaw);
     }

@@ -1,24 +1,34 @@
 #### receiver class ####
 import socket, struct
 
+########## always send empty messages if nothing happens: otherwise TCP will be blocking! ##########
+########## Fixing attempts not sucessfull yet, is a workaround! ##########
+
 
 def receive(connection):
     #4 Bytes from header (one int)
     numBytesHeaderData = recv_exact(connection, 4)
-    numBytes = struct.unpack("i", numBytesHeaderData)[0] ##one signed integer
+    if(numBytesHeaderData):
+        numBytes = struct.unpack("i", numBytesHeaderData)[0] ##one signed integer
 
-    #make payload
-    payload = recv_exact(connection, numBytes)
-    print("received payload ", payload, " from numbytes", numBytes)
+        #make payload
+        payload = recv_exact(connection, numBytes)
+        print("received payload ", payload, " from numbytes", numBytes)
 
-    return payload
+        return payload
+    else:
+        print("received NO payload ")
+        return None
 
 def recv_exact(connection, n):
+    attempts = 0
     data = b""              # 1) Anfangszustand: leeres Bytearray
     while len(data) < n:    # 2) Solange wir noch nicht genug Bytes haben
+        attempts = attempts + 1
         packet = connection.recv(n - len(data))  # 3) Fordere den Rest an
         if not packet:      # 4) Verbindung wurde geschlossen (recv gibt b'' zurück)
-            raise ConnectionError("Verbindung geschlossen")
+            return None
+            ##raise ConnectionError("Verbindung geschlossen")
         data += packet      # 5) Hänge die neuen Bytes an
     return data             # 6) Wenn genug gesammelt, gib alles zurück
 

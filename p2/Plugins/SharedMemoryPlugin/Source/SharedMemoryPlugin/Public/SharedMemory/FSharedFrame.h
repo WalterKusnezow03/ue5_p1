@@ -11,7 +11,10 @@ public:
 
     void Open(FString name, int bytes);
     void CleanFrame();
+
+    //access unristricted, write immidiate, flagged as ready true, 1, if written
     void WriteData(const TArray<uint8> &bytes);
+    void ReadData(TArray<uint8> &data);
 
     //returns: SharedFrameName_bytes
     FString SharedFrameIdentifier();
@@ -19,6 +22,9 @@ public:
     virtual FString SharedFrameIdentifierMessage(FString prefix, FString postFixTag);
 
     bool SizeChanged(int sizeIn);
+
+    bool TryReadReadyFlag();
+    void MarkReadyFalse();
 
 private:
     bool closeOnDestroy = false;
@@ -41,7 +47,8 @@ private:
     void MarkReady(bool flag);
     bool IsReady();
 
-    bool readyStatus = true;
+    int BytesWithoutReadyFlag();
+
     uint8 *pointerAfterReadyFlag();
 
     void MakeFrameName(FString name);

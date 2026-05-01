@@ -78,5 +78,13 @@ void ANNSocket::TickSocketConnected(float deltatime){
 
     frameManager.NotifyChangedFrames(this);
 
-    DebugHelper::showScreenMessage("ANNSocket::TickSocketConnected", FColor::Cyan);
+    /**
+    ########## always send empty messages if nothing happens: otherwise TCP will be blocking in python! ##########
+    ########## Fixing attempts not sucessfull yet, is a workaround! ##########
+     */
+
+    /// ----- DO NOT REMOVE -----
+    Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
+    /// the python code will be stuck!!!
+    /// ----- DO NOT REMOVE -----
 }

@@ -39,8 +39,7 @@ protected:
     float connectIntervall = 1.0f;
     float integratedDT = 0.0f;
 
-    //debug
-    int32 typeDataRandomNum = 0;
+    
 
     
 

@@ -33,8 +33,11 @@ void NNPathFinderProxy::CollectPolygon(
             outData.SetName(
                 FString::Printf(TEXT("extracted_%d_%d"), (int) playerPos.X, (int) playerPos.Y)
             );
+
+            if(saveOnEnd){
+                cachedImages.Add(outData);
+            }
             
-            cachedImages.Add(outData);
         }
     }
 } 

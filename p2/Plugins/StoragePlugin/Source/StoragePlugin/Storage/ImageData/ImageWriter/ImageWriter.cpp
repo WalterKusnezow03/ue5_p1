@@ -9,7 +9,43 @@
 #include "Modules/ModuleManager.h"
 #include "Misc/FileHelper.h"
 
+#include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
+#include "DebugPlugin/DebugHelper.h"
+
+void ImageWriter::SaveImagesAsPngFromName(
+    const TArray<Image> &images,
+    FString pluginName,
+    FString imageNameIn
+){
+    for (int i = 0; i < images.Num(); i++){
+        FString genaratedName = FString::Printf(TEXT("%s_%d"), *imageNameIn, i);
+        SaveImageAsPngFromName(images[i], pluginName, genaratedName);
+    }
+}
+   
+
+void ImageWriter::SaveImageAsPngFromName(
+    const Image &image,
+    FString pluginName,
+    FString imageNameIn
+){
+    TArray<FColor> colors;
+    if(image.GetColorBuffer(colors)){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("ImageWriter Save Buffer %s %s %d"),
+                *pluginName,
+                *imageNameIn,
+                colors.Num()
+            )
+        );
+        uint8 *ptr = (uint8 *)colors.GetData();
+        int32 width = image.widthX();
+        int32 height = image.heightY();
+        SaveColorBufferAsPngFromName(ptr, width, height, pluginName, imageNameIn);
+    }
+}
 
 void ImageWriter::SaveColorBufferAsPngFromName(
     uint8 *ColorData, 

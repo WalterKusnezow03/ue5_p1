@@ -28,11 +28,14 @@ public:
     //trajectories are only collected if the player is visible
     void FlagVisible(AActor *actor);
 
+
+    ActorTrajectoryTracker *FindIfTracked(AActor *actor);
+
 protected:
     float intervallShared = 1.0f;
     int listMaxSizeShared = 10;
 
     std::map<FString, ActorTrajectoryTracker> trackerMap;
     bool HasTracked(FString name);
-    ActorTrajectoryTracker *FindIfTracked(AActor *actor);
+    
 };

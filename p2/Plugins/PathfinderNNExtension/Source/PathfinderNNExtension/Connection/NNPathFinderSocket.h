@@ -11,6 +11,8 @@
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
 
+#include "StoragePlugin/Storage/ImageData/Image/Image.h"
+
 #include "NNPathFinderSocket.generated.h"
 
 /// @brief Python socket with Shared Memory Support for Python Script!
@@ -25,6 +27,8 @@ protected:
     FString frameNameResult = "DEFAULT_OUT";
     FString frameNameGroundThruth = "DEFAULT_GT";
 
+    virtual void OnReceivePythonPrint(FString message) override;
+
 public:
     static void MakePathFinderSocketInstance(UWorld *world);
 
@@ -37,24 +41,20 @@ public:
 
     //predicts a node if task not qeued
     void PredictNode(
-        AActor *actor,
-        float radius
+        AActor *actor
     );
 
     //notified by all entites whether the player
     //is visible or not
     void FlagVisible(AActor *actor);
 
-    //debug function, no result, instant write data.
-    void PredictNodeDebug(
-        AActor *actor,
-        float radius
-    );
-
+    
 protected:
     using ANNSocket::WriteData;
-    //void WriteData(FMeshedPolygon &polygon);
-    void WriteDataRequest(FMeshedPolygonTrajectoryLayered &polygon);
+    void WriteDataRequest(TArray<uint8> &data, int resultBytes);
+    void WriteDataGroundTruth(TArray<uint8> &buffer);
+    void ReadDataResult();
+    void TickReadDataResult();
 
     //using ANNSocket::WriteData;
     //void WriteData(const TArray<uint8> &array);
@@ -69,7 +69,11 @@ protected:
 
     NActorTrajectoryTracker actorTracker;
 
+    PredictionTask task;
+    void TickTask();
 
+    TArray<Image> heatMaps;
+    void SaveHeatMapsOnEndPlay();
 
-    TArray<PredictionTask> tasks;
+    //TArray<PredictionTask> tasks;
 };

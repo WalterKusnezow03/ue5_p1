@@ -46,7 +46,6 @@ void AplayerScript::BeginPlay()
     CreateUiHudActorOnBeginPlay();
     //createMiniMap();
 
-    debugTimer.Begin(3.0f);
 }
 
 void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
@@ -687,13 +686,8 @@ void AplayerScript::EndPlay(const EEndPlayReason::Type EndPlayReason){
 //debug
 #include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
 void AplayerScript::DebugTickPathfinderNN(float deltatime){
-    debugTimer.Tick(deltatime);
-    if(debugTimer.timesUp()){
-        if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
-            float meters = 100.0f;
-            instance->PredictNode(this, meters * 100.0f);
-        }
-        debugTimer.Begin(1.0f);
+    if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
+        instance->PredictNode(this);
     }
 }
 

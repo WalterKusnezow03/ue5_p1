@@ -115,6 +115,12 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
         return;
     }
 
+    int copy = BytesWithoutReadyFlag();
+    if(bytes.Num() != copy){
+        DebugHelper::logMessage("FSharedFrame::WriteData Cant Write Data", bytes.Num());
+        return;
+    }
+
     const uint8 *ptr = bytes.GetData();
     uint8 *Dest = pointerAfterReadyFlag();
 
@@ -126,11 +132,29 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
     )
     */
     MarkReady(false);
-    int copy = bytesAllocated - readyFlagSize();
-    FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); //copy without offset size
+    
+    FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); // copy without offset size
     MarkReady(true);
 
     DebugHelper::logMessage("FSharedFrame::WriteData ", copy);
+}
+
+void FSharedFrame::ReadData(TArray<uint8> &data){
+    data.Empty();
+    if(!Shared){
+        return;
+    }
+
+    int copy = BytesWithoutReadyFlag();
+    data.SetNumUninitialized(copy);
+
+    uint8 *ptr = pointerAfterReadyFlag();
+    void *Dest = data.GetData();
+
+    FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); //copy without offset size
+
+    ptr = nullptr;
+    Dest = nullptr;
 }
 
 uint8 *FSharedFrame::pointerAfterReadyFlag(){
@@ -144,6 +168,9 @@ int FSharedFrame::readyFlagSize(){
     return sizeof(int);
 }
 
+int FSharedFrame::BytesWithoutReadyFlag(){
+    return bytesAllocated - readyFlagSize();
+}
 
 void FSharedFrame::MarkReady(bool ready){
     if(!Shared){
@@ -153,7 +180,6 @@ void FSharedFrame::MarkReady(bool ready){
     //dest, src, size T
     int flag = ready ? 1 : 0;
     FMemory::Memcpy(Shared, &flag, sizeof(int)); // copy casted data
-    readyStatus = ready;
 }
 
 void FSharedFrame::CleanFrame(){
@@ -170,3 +196,22 @@ void FSharedFrame::CleanFrame(){
         Shared = nullptr;
     }
 }
+
+
+
+bool FSharedFrame::TryReadReadyFlag(){
+    if(!Shared){
+        return false;
+    }
+
+    int flag = 0;
+    // FMemory::Memcpy(dest, src, sizeof(T))
+    FMemory::Memcpy(&flag, Shared, sizeof(int)); // copy casted data
+    return flag == 1; //ready.
+}
+
+void FSharedFrame::MarkReadyFalse(){
+    MarkReady(false);
+}
+
+//void MarkReady(bool flag);
