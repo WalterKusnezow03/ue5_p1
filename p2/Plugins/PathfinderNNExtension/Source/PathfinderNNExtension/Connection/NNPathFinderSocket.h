@@ -4,12 +4,16 @@
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
 #include "CoreMath/animation/timer/Timer.h"
 
-#include "PathfinderNNExtension/DataCollection/PolygonCollection/NNPathFinderProxy.h"
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/NActorTrajectoryTracker.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
+
+#include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
+#include "PathfinderNNExtension/Request/FPathFinderNNRequestQueue.h"
+#include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
+#include "PathfinderNNExtension/Storage/FPathFinderNNSampleSet.h"
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
@@ -27,6 +31,8 @@ protected:
     FString frameNameResult = "DEFAULT_OUT";
     FString frameNameGroundThruth = "DEFAULT_GT";
 
+    FString frameNameBatch = "DEFAULT_BATCH";
+
     virtual void OnReceivePythonPrint(FString message) override;
 
 public:
@@ -41,8 +47,11 @@ public:
 
     //predicts a node if task not qeued
     void PredictNode(
+        IPathfinderNNInterface *interfaceNotify,
         AActor *actor
     );
+
+    
 
     //notified by all entites whether the player
     //is visible or not
@@ -56,6 +65,8 @@ protected:
     void ReadDataResult();
     void TickReadDataResult();
 
+
+
     //using ANNSocket::WriteData;
     //void WriteData(const TArray<uint8> &array);
     virtual void Tick(float deltatime) override;
@@ -65,15 +76,31 @@ protected:
     
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    NNPathFinderProxy proxy;
+
+
+    
 
     NActorTrajectoryTracker actorTracker;
 
     PredictionTask task;
     void TickTask();
 
+    //request queue for tasks
+    FPathFinderNNRequestQueue requests;
+    void PredictNextTask();
+
+    void PredictNode(
+        AActor *actor
+    );
+    
+
     TArray<Image> heatMaps;
     void SaveHeatMapsOnEndPlay();
+
+
+
+    FPathFinderNNSampleSet batchTask;
+    void LoadBatchIfNotDoneYet();
 
     //TArray<PredictionTask> tasks;
 };

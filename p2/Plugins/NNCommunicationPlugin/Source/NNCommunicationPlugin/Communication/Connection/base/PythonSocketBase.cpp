@@ -141,6 +141,7 @@ void APythonSocketBase::OpenSocket(float deltatime){
     {
         DebugHelper::logMessage("APythonSocketBase::SocketConnect connect failed");
         connected = false;
+        //Restart();
         return;
     }else{
         DebugHelper::logMessage("APythonSocketBase::SocketConnect Connected!");
@@ -162,6 +163,7 @@ void APythonSocketBase::Send(FString message){
     TArray<uint8> Bytes;
     Bytes.Append((uint8*)Converter.Get(), Converter.Length());
 
+    DebugHelper::logMessage("APythonSocketBase::SendMessage ", message);
     Send(Bytes);
 }
 
@@ -207,7 +209,7 @@ void APythonSocketBase::Send(TArray<uint8> &bin){
 
         if (!success || bytesSent <= 0)
         {
-            DebugHelper::logMessage("APythonSocketBase::SendBytes send finished");
+            //DebugHelper::logMessage("APythonSocketBase::SendBytes send finished");
             break;
         }
 

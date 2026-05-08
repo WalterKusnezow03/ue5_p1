@@ -71,6 +71,22 @@ TArray<Trajectory> TrajectoryCollection::ToArray()const{
     return outArray;
 }
 
+TArray<Trajectory> TrajectoryCollection::ToArrayNormalizedTime() const {
+    TArray<Trajectory> data = ToArray();
+    NormalizeTime(data);
+    return data;
+}
+
+void TrajectoryCollection::NormalizeTime(TArray<Trajectory> &data) const {
+    float max = 0.0f;
+    for (int i = 0; i < data.Num(); i++){
+        max = data[i].AbsMaxTime(max);
+    }
+    for (int i = 0; i < data.Num(); i++){
+        data[i] /= max;
+    }
+}
+
 void TrajectoryCollection::MoveToLocalTime(TArray<Trajectory> &outArray) const {
     float timeNow = FPlatformTime::Seconds();
     for (int i = 0; i < outArray.Num(); i++)

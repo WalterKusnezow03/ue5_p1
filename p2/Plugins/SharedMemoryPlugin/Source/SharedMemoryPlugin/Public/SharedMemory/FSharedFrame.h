@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 
+#include <semaphore.h>
+
+
 class SHAREDMEMORYPLUGIN_API FSharedFrame{
 
 public:
@@ -32,7 +35,16 @@ private:
     //frame ptr
     uint8 *Shared = nullptr;
 
+    //interprocess sync, prevent race conditions
+    sem_t* semaphoreMutex = nullptr; 
+
     FString pageName;
+    FString semaphoreMutexName;
+
+
+
+
+
     int bytesAllocated = 0;
     int sharedFrameId = -1;
 
@@ -52,9 +64,12 @@ private:
     uint8 *pointerAfterReadyFlag();
 
     void MakeFrameName(FString name);
+    void MakeSemaphoreName(FString name);
+    void InitSemaphore();
+    void Down();
+    void Up();
 
-
-
+    bool bUseMutex = false;
 };
 
 /*

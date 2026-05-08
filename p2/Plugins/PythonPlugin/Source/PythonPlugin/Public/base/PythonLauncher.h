@@ -30,6 +30,12 @@ protected:
 
     virtual void SetFlagsOnBeginPlay();
 
+
+    //setup copy for restart
+    FPythonSetup setupCopy;
+    void Restart();
+    void ShutDownPythonForce();
+
     FString pyNameSavedDebug;
 
     //process related

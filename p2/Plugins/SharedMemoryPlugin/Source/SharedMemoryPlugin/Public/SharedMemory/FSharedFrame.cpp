@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <string.h>
 
+
+
 FSharedFrame::FSharedFrame(){
     closeOnDestroy = true;
 }
@@ -20,7 +22,19 @@ FSharedFrame::~FSharedFrame(){
 }
 
 FString FSharedFrame::SharedFrameIdentifier(){
-    return FString::Printf(TEXT("%s_%d"), *pageName, bytesAllocated);
+    if(bUseMutex){
+        return FString::Printf(
+            TEXT("%s_%d_%s"), 
+            *pageName, 
+            bytesAllocated,
+            *semaphoreMutexName
+        );
+    }
+    return FString::Printf(
+        TEXT("%s_%d"), 
+        *pageName, 
+        bytesAllocated
+    );
 }
 
 FString FSharedFrame::SharedFrameIdentifierMessage(FString prefix, FString postFixTag){
@@ -52,10 +66,13 @@ void FSharedFrame::Open(FString name, int bytes){
     bytesAllocated = bytes + readyFlagSize(); // add ready flag at front
 
     MakeFrameName(name);
+    MakeSemaphoreName(name);
     DebugHelper::logMessage("FSharedFrame::Open Try: ", pageName);
-    sharedFrameId = shm_open(TCHAR_TO_ANSI(*pageName), O_CREAT | O_RDWR, 0666);
-    //sharedFrameId = shm_open("/unreal_nn_shared", O_CREAT | O_RDWR, 0666);
 
+    //std::string base = TCHAR_TO_ANSI(*pageName);
+    sharedFrameId = shm_open(TCHAR_TO_ANSI(*pageName), O_CREAT | O_RDWR, 0666);
+    //shm_open(TCHAR_TO_ANSI(*pageName), O_CREAT | O_RDWR, 0666);
+   
     //fixed.
     if (sharedFrameId < 0){
         // error
@@ -84,11 +101,24 @@ void FSharedFrame::Open(FString name, int bytes){
         DebugHelper::logMessage("FSharedFrame::Open FAILED");
         // error
         Shared = nullptr; //(?)
+        semaphoreMutex = nullptr;
         sharedFrameId = -1;
     }else{
         DebugHelper::logMessage("FSharedFrame::Open SUCESS", bytes);
+
+
+        InitSemaphore();
     }
 }
+
+void FSharedFrame::InitSemaphore(){
+    if(bUseMutex){
+        semaphoreMutex = sem_open(TCHAR_TO_ANSI(*semaphoreMutexName), O_CREAT, 0666, 1);
+    }
+   
+}
+
+
 
 void FSharedFrame::MakeFrameName(FString name){
     const int MAX_SHM_NAME = 30; // sicher unter Limit bleiben!! //DO NOT REMOVE
@@ -101,6 +131,14 @@ void FSharedFrame::MakeFrameName(FString name){
     }
 }
 
+void FSharedFrame::MakeSemaphoreName(FString name){
+    const int MAX_NAME = 30; // sicher unter Limit bleiben!! //DO NOT REMOVE
+
+    semaphoreMutexName = FString::Printf(TEXT("/semW%s"), *name);
+    if (semaphoreMutexName.Len() > MAX_NAME){
+        semaphoreMutexName = semaphoreMutexName.Left(MAX_NAME);
+    }
+}
 
 
 
@@ -131,13 +169,32 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
         SIZE_T Count
     )
     */
+    Down();
     MarkReady(false);
-    
     FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); // copy without offset size
     MarkReady(true);
+    Up();
 
     DebugHelper::logMessage("FSharedFrame::WriteData ", copy);
 }
+
+
+void FSharedFrame::Down(){
+    if(semaphoreMutex && bUseMutex){
+        sem_wait(semaphoreMutex);
+    }
+}
+
+
+void FSharedFrame::Up(){
+    if(semaphoreMutex && bUseMutex){
+        sem_post(semaphoreMutex);
+    }
+}
+
+
+
+
 
 void FSharedFrame::ReadData(TArray<uint8> &data){
     data.Empty();
@@ -151,7 +208,9 @@ void FSharedFrame::ReadData(TArray<uint8> &data){
     uint8 *ptr = pointerAfterReadyFlag();
     void *Dest = data.GetData();
 
+    Down();
     FMemory::Memcpy(Dest, ptr, copy * sizeof(uint8)); //copy without offset size
+    Up();
 
     ptr = nullptr;
     Dest = nullptr;
@@ -195,6 +254,15 @@ void FSharedFrame::CleanFrame(){
         // shm_unlink("/unreal_nn_shared");
         Shared = nullptr;
     }
+
+    // --- SEMAPHORE CLEANUP ---
+
+    if (semaphoreMutex){
+        sem_close(semaphoreMutex);
+        sem_unlink(TCHAR_TO_ANSI(*semaphoreMutexName));
+        semaphoreMutex = nullptr;
+    }
+    
 }
 
 
@@ -206,12 +274,16 @@ bool FSharedFrame::TryReadReadyFlag(){
 
     int flag = 0;
     // FMemory::Memcpy(dest, src, sizeof(T))
+    Down();
     FMemory::Memcpy(&flag, Shared, sizeof(int)); // copy casted data
+    Up();
     return flag == 1; //ready.
 }
 
 void FSharedFrame::MarkReadyFalse(){
+    Down();
     MarkReady(false);
+    Up();
 }
 
 //void MarkReady(bool flag);

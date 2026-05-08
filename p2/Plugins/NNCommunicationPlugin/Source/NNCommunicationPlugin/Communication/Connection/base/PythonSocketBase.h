@@ -70,6 +70,10 @@ protected:
 
 
     // ---- debug messages on tick to python----
-    bool debugMessageEnabled = true;
+    
     void DebugSocketMessage(); //works
+
+private:
+    bool debugMessageEnabled = true; //do not change, is needed
+
 };

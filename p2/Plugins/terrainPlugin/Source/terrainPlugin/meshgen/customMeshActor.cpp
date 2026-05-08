@@ -183,13 +183,16 @@ void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
     SetActorLocation(copy);
 
     //check needed.
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("AcustomMeshActor::UpdateMeshDataAndPosition Location %.2f %.2f"),
-            copy.X,
-            copy.Y
-        )
-    );
+    if(false){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("AcustomMeshActor::UpdateMeshDataAndPosition Location %.2f %.2f"),
+                copy.X,
+                copy.Y
+            )
+        );
+    }
+    
 
 
 

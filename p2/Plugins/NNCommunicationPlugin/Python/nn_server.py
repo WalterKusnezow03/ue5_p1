@@ -71,8 +71,24 @@ class NNServer:
                 
 
     def closeConnect(self):
-        self.connection.close()
-        self.s.close()
+
+        try:
+            self.connection.shutdown(socket.SHUT_RDWR)
+        except:
+            pass
+
+        try:
+            self.connection.close()
+        except:
+            pass
+
+        try:
+            self.s.close()
+        except:
+            pass
+
+        ##self.connection.close()
+        ##self.s.close()
         self.openedconnection = False
         print("SHUTDOWN_CONFIRMED")
 
@@ -81,16 +97,32 @@ class NNServer:
         if(len(message) >= 4):
             prefix = message[0]
             if(prefix == "FRAMEID"):
-                tagname, size, shortTag = message[1], int(message[2]), message[3]
-                if(len(tagname) < 2):
-                    return
-                if(int(size) < 1):
-                    return
+                
+                if(len(message) == 4):
+                    tagname, size, shortTag = message[1], int(message[2]), message[3]
+                    if(len(tagname) < 2):
+                        return
+                    if(int(size) < 1):
+                        return
+                    if(self.sharedMemoryMap):
+                        self.sharedMemoryMap.CloseAndReopenPage(tagname, size, shortTag)
+                        print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
+                
+                if(len(message) == 5):
+                    tagname, size, semMutexName, shortTag = message[1], int(message[2]), message[3], message[4]
+                    if(len(tagname) < 2):
+                        return
+                    if(int(size) < 1):
+                        return
+                    if(self.sharedMemoryMap):
+                        self.sharedMemoryMap.CloseAndReopenPageSemaphore(tagname, size, semMutexName, shortTag)
+                        print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size, " ", semMutexName)
+                
+                
+                
                 
 
-                if(self.sharedMemoryMap):
-                    self.sharedMemoryMap.CloseAndReopenPage(tagname, size, shortTag)
-                    print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
+                
 
     
 

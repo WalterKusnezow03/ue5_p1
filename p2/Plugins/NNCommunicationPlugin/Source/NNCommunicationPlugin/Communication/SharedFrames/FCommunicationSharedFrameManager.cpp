@@ -12,15 +12,15 @@ void FCommunicationSharedFrameManager::WriteData(
     const TArray<uint8> &data, 
     bool &frameChanged
 ){
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(TEXT("FCommunicationSharedFrameManager page %s write"), *pageName)
-    );
+    );*/
     FSharedFrameManager::WriteData(pageName, data, frameChanged);
     if(frameChanged){
         frameNameSendMap[pageName] = false;
-        DebugHelper::logMessage(
+        /*DebugHelper::logMessage(
             FString::Printf(TEXT("FCommunicationSharedFrameManager page %s changed"), *pageName)
-        );
+        );*/
     }
 }
 
@@ -70,7 +70,7 @@ void FCommunicationSharedFrameManager::NotifyChangedFrame(
             FString message = frame->SharedFrameIdentifierMessage("FRAMEID", name); //name as post fix tag
 
             socket->Send(message);
-            DebugHelper::logMessage("ANNSocket::FCommunicationSharedFrameManager:: Send frame name: ", message);
+            //DebugHelper::logMessage("ANNSocket::FCommunicationSharedFrameManager:: Send frame name: ", message);
         }
 
         //did send.

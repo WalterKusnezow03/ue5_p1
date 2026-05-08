@@ -12,6 +12,10 @@ class UnrealSharedMemoryMap:
         self.pagesMap[shortTag] = (UnrealSharedFrame(tagname, size))
         print("UnrealSharedMemoryMap open page", tagname, " ", shortTag)
 
+    def openPageSempaphore(self, tagname, size, semWriteName, semReadName, shortTag):
+        self.pagesMap[shortTag] = (UnrealSharedFrame(tagname, size, semWriteName, semReadName))
+        print("UnrealSharedMemoryMap open page", tagname, " ", shortTag)
+
     def closePage(self, shortTag):
         page = self.findPage(shortTag)
         
@@ -22,6 +26,10 @@ class UnrealSharedMemoryMap:
     def CloseAndReopenPage(self, tagname, size, shortTag):
         self.closePage(shortTag)
         self.openPage(tagname, size, shortTag)
+
+    def CloseAndReopenPageSemaphore(self, tagname, size, semMutexName, shortTag):
+        self.closePage(shortTag)
+        self.openPageSempaphore(tagname, size, semMutexName, shortTag)
 
     def ShowMap(self):
         for key, value in self.pagesMap.items():

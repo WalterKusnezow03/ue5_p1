@@ -686,9 +686,9 @@ void AplayerScript::EndPlay(const EEndPlayReason::Type EndPlayReason){
 //debug
 #include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
 void AplayerScript::DebugTickPathfinderNN(float deltatime){
-    if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
+    /*if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
         instance->PredictNode(this);
-    }
+    }*/
 }
 
 

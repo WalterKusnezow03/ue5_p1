@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
+
+/// ----> move into FMeshedPolygonClass !
+
 /// @brief Appends and loads FMeshedPolygons data to and from byte arrays.
 class PATHFINDER_API MeshedPolygonStorageInterface {
 

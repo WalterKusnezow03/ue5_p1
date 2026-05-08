@@ -27,17 +27,12 @@ void ANNPathFinderSocket::BeginPlay(){
     Super::BeginPlay();
     actorTracker.Setup(0.5f, 20);
 
-    debugMessageEnabled = false;
     DebugHelper::logMessage("ANNPathFinderSocket BeginPlay - python");
 
     frameNameRequest = "ANNPathFinderSFIN";
     frameNameResult = "ANNPathFinderSFRES";
     frameNameGroundThruth = "ANNPathFinderSFGT";
-    
-    
-    // /NNCommunicationPlugin/Python/nn_server.py
-    //LaunchPythonProcess("NNCommunicationPlugin", "nn_server.py");
-
+    frameNameBatch = "ANNPathFinderSFB";
 
     //Plugins/NNCommunicationPlugin/Source/NNCommunicationPlugin/Python/venv/bin/python
     LaunchPythonProcess(
@@ -46,28 +41,59 @@ void ANNPathFinderSocket::BeginPlay(){
         "NNCommunicationPlugin",
         "venv/bin/python"
     ); // finds working dir automatically
+
+    task.Reset();
+    batchTask.Load();
 }
 
 void ANNPathFinderSocket::Tick(float deltatime){
     Super::Tick(deltatime);
+    LoadBatchIfNotDoneYet();
+
     actorTracker.Tick(deltatime);
-    //TickTask();
+    
+    //tick in connected? samples can be collected without.
+    TickTask();
+    
+    
     TickReadDataResult();
     //DebugHelper::showScreenMessage("ANNPathFinderSocket::Tick", FColor::Cyan);
+
+
+    //if a task will be completed: reload next task automatically.
+    PredictNextTask();
 }
+
+void ANNPathFinderSocket::LoadBatchIfNotDoneYet(){
+    if(!batchTask.BatchPrepared()){
+
+        TArray<uint8> buffer;
+        batchTask.PrepareBinary(buffer);
+        if (buffer.Num() > 0)
+        {
+            WriteData(frameNameBatch, buffer);
+        }
+    }
+}
+
+
 
 void ANNPathFinderSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
     // --- nothing needed here for now ---
-    TickTask();
+    //TickTask();
     DebugHelper::showScreenMessage("ANNPathFinderSocket::TickSocketConnected", FColor::Cyan);
 }
 
 void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    proxy.EndSave(); //save images (debug)
+    task.EndSave();
     SaveHeatMapsOnEndPlay();
+    batchTask.EndSave();
     Super::EndPlay(EndPlayReason);
 }
+
+
+
 
 
 
@@ -85,14 +111,31 @@ void ANNPathFinderSocket::FlagVisible(AActor *actor){
 }
 
 
+
+void ANNPathFinderSocket::PredictNode(
+    IPathfinderNNInterface *interfaceNotify,
+    AActor *actor
+){
+    if(actor){
+        actorTracker.AddTrackedActorIfNeeded(actor);
+    }
+    if(interfaceNotify && actor){
+        requests.Subscribe(interfaceNotify, actor);
+    }
+}
+
 void ANNPathFinderSocket::PredictNode(
     AActor *actor
 ){
+    //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY A");
     //one task at a time for now.
-    if(!task.TaskCompleted()){
-        return;
+    if(task.IsValid()){
+        if(!task.TaskCompleted()){
+            return;
+        }
     }
-    //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION");
+
+    DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY B");
 
     if (actor){
         //add if needed (filled with self location with default size buffer)
@@ -100,7 +143,7 @@ void ANNPathFinderSocket::PredictNode(
         task.Setup(actorTracker.FindIfTracked(actor));
         if(task.IsValid()){
             //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION");
-            DebugHelper::showScreenMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION", FColor::Red);
+            //DebugHelper::showScreenMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION", FColor::Red);
             TArray<uint8> requestBinary;
             task.PrepareRequestBinary(requestBinary);
 
@@ -109,37 +152,43 @@ void ANNPathFinderSocket::PredictNode(
                 WriteDataRequest(requestBinary, task.ResultGridSizeBytes());
             }
         }
-        
-        // FMeshedPolygonTrajectoryLayered &data = GetPolygonData();
     }
+}
 
-    //PredictNodeDebug(actor, radius);
-    //return;
 
+//call this once a task is completed
+void ANNPathFinderSocket::PredictNextTask(){
+    if(requests.HasTasks()){
+        //get next prediction actor
+        if(AActor *front = requests.frontActor()){
+            PredictNode(front); //if a task is still running right now, it will be discared.
+            //the list stays the same.
+        }
+    }
 }
 
 void ANNPathFinderSocket::TickTask(){
     if(task.IsValid() == false){
+        DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask NOT VALID", FColor::Red);
         return;
     }
     if(!task.WaitingForGroundTruth()){
         return;
     }
 
+    //DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask", FColor::Red);
+
     TArray<uint8> groundTruthBinary;
     task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary);
     if(groundTruthBinary.Num() > 0){
+        DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask OK", FColor::Orange);
+
+        //since data and ground truth are ready:
+        //add to batch
+        batchTask.AddSample(task.GetPolygonData());
+
         WriteDataGroundTruth(groundTruthBinary);
     }
-
-    //if(task.WaitingForGroundTruth()){
-    /*if(task.TaskCompleted() == false){
-        TArray<uint8> groundTruthBinary;
-        task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary);
-        if(groundTruthBinary.Num() > 0){
-            WriteDataGroundTruth(groundTruthBinary);
-        }
-    }*/
 }
 
 
@@ -150,7 +199,7 @@ void ANNPathFinderSocket::WriteDataRequest(TArray<uint8> &buffer, int resultByte
         buffer.Num(),
         resultBytes
     );
-    //DebugHelper::logMessage(message);
+    DebugHelper::logMessage(message);
     //DebugHelper::showScreenMessage(message, FColor::Red);
     if(buffer.Num() > 0 && resultBytes > 0){
         
@@ -166,9 +215,9 @@ void ANNPathFinderSocket::WriteDataGroundTruth(
     TArray<uint8> &buffer
 ){
     if(buffer.Num() > 0){
-        //FString message = FString::Printf(TEXT("ANNPathFinderSocket::WriteDataGroundTruth %d"),buffer.Num());
+        FString message = FString::Printf(TEXT("ANNPathFinderSocket::WriteDataGroundTruth %d"),buffer.Num());
         //DebugHelper::showScreenMessage(message, FColor::Red);
-        //DebugHelper::logMessage(message);
+        DebugHelper::logMessage(message);
         WriteData(frameNameGroundThruth, buffer);
     }
     
@@ -177,21 +226,12 @@ void ANNPathFinderSocket::WriteDataGroundTruth(
 
 void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
     //Super::OnReceivePythonPrint(Output);
-    DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
-    if(false){
+   
+    if(true){
+        //DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
         DebugHelper::logMessage("ANNPathFinderSocket::PYTHON ", Output);
         return;
     }
-
-    /*if(Output.Contains("RequestFinish")){
-        //waiting for ground truth must be flagged true
-        FString message = "ANNPathFinderSocket::REQUEST FINISH Arrived! ReceivePythonPrint";
-        DebugHelper::logMessage(message);
-        DebugHelper::showScreenMessage(message, FColor::Red);
-
-        ReadDataResult();   
-        task.Reset();
-    }*/
 }
 
 
@@ -205,21 +245,30 @@ void ANNPathFinderSocket::ReadDataResult(){
     //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST FINISH Arrived! ResulDataSize", buffer.Num());
 
     task.GenerateMapFromResultBytes(buffer);
+    
+    //create result for queue ------> TODO!
+    TArray<FVector> positions;
+    task.GenerateResultPositions(positions);
+    requests.NotifyPopFront(positions);
+
+
+
     Image image;
     task.ColoredHeatMap(
         image, //Image &image,
         FColor(0, 0, 255, 255), //FColor colorMin,
         FColor(255, 0, 0, 255), //FColor colorMax,
         FColor(255,255,255,255), //FColor colorPolygonFlagged,
-        FColor(255,0,255,255), //FColor colorTrjacetory,
+        FColor(FColor::Yellow), //FColor colorTrjacetory,
         FColor(0,255,0,255) //FColor playerPosResult
     );
+    
     heatMaps.Add(image);
 }
 
 void ANNPathFinderSocket::TickReadDataResult(){
     if(task.TaskCompleted() == false){
-        DebugHelper::showScreenMessage("ANNPathFinderSocket::Tick Wait for Result", FColor::Cyan);
+        //DebugHelper::showScreenMessage("ANNPathFinderSocket::Tick Wait for Result", FColor::Cyan);
         //--> prevent python message:
         //if marked ready:
             //copy result:
@@ -230,7 +279,8 @@ void ANNPathFinderSocket::TickReadDataResult(){
 
             FString message = "ANNPathFinderSocket::REQUEST FINISH Arrived IMPLICIT!";
             DebugHelper::logMessage(message);
-            DebugHelper::showScreenMessage(message, FColor::Red);
+
+            //DebugHelper::showScreenMessage(message, FColor::Red);
             task.Reset();
         }
     }

@@ -7,6 +7,9 @@
 #include "EntityScript.h"
 #include "p2/weapon/weapon.h"
 #include "p2/entities/botActionHelper/EAttackType.h"
+
+#include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
+
 #include "HumanEntityScript.generated.h"
 
 
@@ -18,7 +21,7 @@ class AOutpost;
  * attacking the player with their weapon
  */
 UCLASS()
-class P2_API AHumanEntityScript : public AEntityScript
+class P2_API AHumanEntityScript : public AEntityScript, public IPathfinderNNInterface
 {
 	GENERATED_BODY()
 
@@ -43,6 +46,7 @@ private:
 	//weapon
 	class Aweapon *weaponPointer;
 
+	void PerformActionsBasedOnPlayerVisibility();
 	void adaptWeaponToCurrentPlayerVisibilty();
 
 	void attackPlayer();
@@ -87,4 +91,10 @@ protected:
 	// NN Interface
 	void FlagPlayerVisibleToNNInterface();
 	void FlagActorVisibleToNNInterface(AActor *actor);
+
+	void RequestPlayerPredictionFromNNInterface();
+
+public:
+	virtual void ResponseNNPositions(const TArray<FVector> &positions) override;
+	// NN Interface
 };

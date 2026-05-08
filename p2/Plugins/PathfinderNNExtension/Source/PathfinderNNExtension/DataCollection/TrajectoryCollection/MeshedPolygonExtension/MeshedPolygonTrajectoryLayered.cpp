@@ -1,6 +1,8 @@
 #include "MeshedPolygonTrajectoryLayered.h"
 #include "DebugPlugin/DebugHelper.h"
 
+#include "StoragePlugin/Storage/Template/TemplateBufferStorageInterface.h"
+
 
 void FMeshedPolygonTrajectoryLayered::Reset(){
     CreateOrClearResultGrid();
@@ -15,10 +17,8 @@ bool FMeshedPolygonTrajectoryLayered::FlagAndTimeDataValid() const {
 void FMeshedPolygonTrajectoryLayered::EmbedTrajectories(TArray<Trajectory> &trajectories){
     if(IsValid()){
         CreateOrClearTrajectoryGrid();
-        DebugHelper::logMessage(
-            "FMeshedPolygonTrajectoryLayered::TimeMap Setup",
-            timeGrid.Num()
-        );
+        
+        //zeiten normalisieren von 0 bis 1
 
         for (int i = 0; i < trajectories.Num(); i++){
             OverrideTime(trajectories[i]);
@@ -33,12 +33,60 @@ void FMeshedPolygonTrajectoryLayered::EmbedResultPosition(FVector &position){
         CreateOrClearResultGrid();
         int outX, outY = 1;
         if(IsInBound(position, outX, outY)){
-            //OverrideTime(outX, outY, time);
-            TOverrideValue<uint8>(resultGrid, outX, outY, 100);
+            //where player is: 1, else: 0
+            GaussianResultGrid(outX, outY, 4, 2.0f);
+            TOverrideValue<float>(resultGrid, outX, outY, 1.0f);
         }
     }
 }
 
+void FMeshedPolygonTrajectoryLayered::GaussianResultGrid(int x, int y, int size, float sigma){
+    GaussianOnGrid(x, y, size, sigma, resultGrid);
+}
+
+void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
+    int x, 
+    int y, 
+    int size, 
+    float sigma, 
+    TArray<TArray<float>> &grid
+){
+    //conv operator
+    const float twoSigma2 = 2.0f * sigma * sigma;
+    for (int i = x - size; i < x + size; i++){
+        for (int j = y - size; j < y + size; j++){
+            //if not flagged - polygon - but: inverted
+            //bool flagged = !FlagAt(i, j); //flags are inverted on collection (in prediction task.). Do not change.
+            bool flagged = FlagAt(i, j);
+
+            /*if(flagsInverted){
+                flagged = !flagged;
+            }*/
+
+            if(flagged){
+                float dx = float(i - x); //AB = B - A
+                float dy = float(j - y);
+                float dist2 = dx * dx + dy * dy; //size(dx,dy)^2
+                float value = expf(-dist2 / twoSigma2);
+                TOverrideValue<float>(grid, i, j, value);
+            }
+        }
+    }
+}
+
+float FMeshedPolygonTrajectoryLayered::Gaussian(
+    int i, 
+    int j, 
+    int xCenter, 
+    int yCenter, 
+    float twoSigma2
+){
+    float dx = float(i - xCenter); //AB = B - A
+    float dy = float(j - yCenter);
+    float dist2 = dx * dx + dy * dy; //size(dx,dy)^2
+    float value = expf(-dist2 / twoSigma2);
+    return value;
+}
 
 void FMeshedPolygonTrajectoryLayered::OverrideTime(Trajectory &current){
     FVector pos = current.GetPosition();
@@ -51,10 +99,6 @@ void FMeshedPolygonTrajectoryLayered::OverrideTime(Trajectory &current){
 }
 
 void FMeshedPolygonTrajectoryLayered::OverrideTime(int i, int j, float time){
-    /*if(i >= 0 && j >= 0 && i < timeGrid.Num() && j < timeGrid[i].Num()){
-        timeGrid[i][j] = time;
-    }
-    */
     TOverrideValue<float>(timeGrid, i, j, time);
     if(false){
         DebugHelper::logMessage(
@@ -64,6 +108,13 @@ void FMeshedPolygonTrajectoryLayered::OverrideTime(int i, int j, float time){
         );
     }
 }
+
+
+// TODO!
+//void FMeshedPolygonTrajectoryLayered::OverrideTimeGaussian(int i, int j, float time, )
+
+
+
 
 void FMeshedPolygonTrajectoryLayered::CreateOrClearTrajectoryGrid(){
     TCreateOrClearGrid<float>(timeGrid, 0.0f);
@@ -95,7 +146,8 @@ bool FMeshedPolygonTrajectoryLayered::TimeGridIsValid() const {
 
 
 void FMeshedPolygonTrajectoryLayered::CreateOrClearResultGrid(){
-    TCreateOrClearGrid<uint8>(resultGrid, 0);
+    float clearedValue = -1.0f;
+    TCreateOrClearGrid<float>(resultGrid, 0.0f);
 
     /*//grid size from bool grid
     int x = sizeX();
@@ -112,7 +164,7 @@ void FMeshedPolygonTrajectoryLayered::CreateOrClearResultGrid(){
 
 
 void FMeshedPolygonTrajectoryLayered::ClearResultGrid(){
-    TClearGrid<uint8>(resultGrid, 0);
+    TClearGrid<float>(resultGrid, 0.0f);
 }
 
 
@@ -153,10 +205,7 @@ void FMeshedPolygonTrajectoryLayered::AppendFlagMapAsFloat(TArray<uint8> &buffer
 
 
 void FMeshedPolygonTrajectoryLayered::AppendResultMapAsFloat(TArray<uint8> &buffer) const{
-    const TArray<TArray<uint8>> &refMap = resultGrid;
-    TArray<TArray<float>> converted;
-    Uint8FlagMapToFloat(refMap, converted);
-    AppendFloatMapToBuffer(buffer, converted);
+    AppendFloatMapToBuffer(buffer, resultGrid);
 }
 
 
@@ -249,8 +298,9 @@ void FMeshedPolygonTrajectoryLayered::GenerateMapFromResultBytes(const TArray<ui
             Ptr += bytesToCopy;
         }
         //LogHeatMap("HeatMapRaw: ");
-        NormalizeHeatMap();
-        //LogHeatMap("HeatMapNormalized: ");
+        //NormalizeHeatMap();
+        NormalizeHeatMapThroshold(0.1f);
+        // LogHeatMap("HeatMapNormalized: ");
     }
 }
 
@@ -291,9 +341,30 @@ void FMeshedPolygonTrajectoryLayered::NormalizeHeatMap(){
     }
 }
 
-
-
+void FMeshedPolygonTrajectoryLayered::NormalizeHeatMapThroshold(float capZero){
+    NormalizeHeatMap();
+    //debugging pruposes
+    for (int i = 0; i < heatMap.Num(); i++){
         
+        TArray<float> &column = heatMap[i];
+        for (int j = 0; j < column.Num(); j++){
+            if(column[j] < capZero){
+                column[j] = 0.0f;
+            }
+        }
+    }
+}
+
+void FMeshedPolygonTrajectoryLayered::GenerateResultPositions(
+    TArray<FVector> &positions
+){
+    //// ---- TODO ----
+}
+
+
+
+
+
 
 
 void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
@@ -307,11 +378,16 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     //heat map
     ColoredHeatMap(image, colorMin, colorMax);
 
-    //polygon override
+    //polygon override, inverted 
     for (int i = 0; i < flagGrid.Num(); i++){
         const TArray<uint8> &currentBuffer = flagGrid[i];
         for (int j = 0; j < currentBuffer.Num(); j++){
-            if(currentBuffer[j]){
+            bool flag = currentBuffer[j];
+            if(flagsInverted){
+                flag = !flag;
+            }
+
+            if(flag){
                 image.SetPixel(i, j, colorPolygonFlagged);
             }
         }
@@ -329,19 +405,25 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
 
     //player pos override
     for (int i = 0; i < resultGrid.Num(); i++){
-        const TArray<uint8> &currentBuffer = resultGrid[i];
+        const TArray<float> &currentBuffer = resultGrid[i];
         for (int j = 0; j < currentBuffer.Num(); j++){
-            if(currentBuffer[j] > 0){
+            float scalar = currentBuffer[j];
+            if(scalar > 0.0f){
                 image.SetPixel(i, j, playerPosResult);
-                image.SetPixel(i+1, j, playerPosResult);
-                image.SetPixel(i, j+1, playerPosResult);
-                image.SetPixel(i-1, j, playerPosResult);
-                image.SetPixel(i, j-1, playerPosResult);
+                /*FColor copy = playerPosResult;
+                copy.R *= scalar;
+                copy.G *= scalar;
+                copy.B *= scalar;
+                image.AddPixel(i, j, copy);*/
             }
         }
     }
-}
 
+    //needed.
+    image.Transpose();
+    image.FlipX();
+    image.SetAlpha(255);
+}
 
 void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     Image &image,
@@ -408,3 +490,69 @@ FColor FMeshedPolygonTrajectoryLayered::LerpColor(
     result.A = 255;
     return result;
 }
+
+
+
+
+// --- binary generation for sample save retrain model ---
+
+void FMeshedPolygonTrajectoryLayered::AppendAsBinary(
+    TArray<uint8> &buffer
+){
+    if(IsValid()){
+        FMeshedPolygon::AppendAsBinary(buffer);
+
+        //append other data here
+        TemplateBufferStorageInterface::TAppendGrid<float>(timeGrid, buffer);
+        TemplateBufferStorageInterface::TAppendGrid<float>(resultGrid, buffer);
+    }
+
+}
+
+
+
+bool FMeshedPolygonTrajectoryLayered::LoadFromBinary(
+    TArray<uint8> &buffer,
+    uint8 *& Ptr //reference to a pointer. Pointer by reference.
+){
+
+    if(FMeshedPolygon::LoadFromBinary(buffer, Ptr)){
+        if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
+            TemplateBufferStorageInterface::TLoadGrid<float>(timeGrid, Ptr);
+        }
+        if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
+            TemplateBufferStorageInterface::TLoadGrid<float>(resultGrid, Ptr);
+        }
+        return true;
+    }
+    return false;
+
+}
+
+
+
+
+
+///// ------ SIMPLIFIED ACCESS FOR NN BATCH PREPERATION -------
+//request data only.
+bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &buffer){
+    if(FlagAndTimeDataValid()){
+        AppendFlagMapAsFloat(buffer);
+        AppendTimeMap(buffer);
+        return true;
+    }
+    return false;
+}
+
+bool FMeshedPolygonTrajectoryLayered::PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer){
+    //sample and ground truth valid
+    if(FlagAndTimeDataValid() && ResultGridIsValid()){
+        if(PrepareAppendRequestBinary(buffer)){
+            AppendResultMapAsFloat(buffer);
+            return true;
+        }
+    }
+    return false;
+}
+
+// polygonDataCache.AppendResultMapAsFloat(resultbytes);

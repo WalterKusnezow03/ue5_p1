@@ -21,8 +21,11 @@ public:
 
     void EndSave();
 
+    
+
 private:
-    bool saveOnEnd = false;
+    bool saveOnEnd = true;
+   
 
     TArray<FMeshedPolygon> cachedImages;
 

@@ -4,6 +4,8 @@
 #include "DebugPlugin/DebugHelper.h"
 
 #include "PolygonPlugin/Public/Polygons/rasterizer/CurveRasterizer.h"
+#include "StoragePlugin/Storage/Template/TemplateBufferStorageInterface.h"
+
 
 
 bool FMeshedPolygon::IsValid() const {
@@ -182,21 +184,8 @@ void FMeshedPolygon::ClearFlags(){
         }
     }*/
     TClearGrid<uint8>(flagGrid, FlagAsInt8(false));
+    flagsInverted = false;
 }
-
-/*void FMeshedPolygon::MakePositionGrid(){
-    for (int i = 0; i < positionGrid.Num(); i++){
-        TArray<FVector> &currentPositionBuffer = positionGrid[i];
-        for (int j = 0; j < currentPositionBuffer.Num(); j++){
-            FVector posGenerated = minSaved + FVector(
-                i * stepSizeSaved,
-                j * stepSizeSaved,
-                0
-            );
-            currentPositionBuffer[j] = posGenerated;
-        }
-    }
-}*/
 
 
 
@@ -421,85 +410,31 @@ bool FMeshedPolygon::FlagAtPosition(const FVector &pos){
     return FlagAt(x, y);
 }
 
-/*
-bool FMeshedPolygon::PositionAtFlag(int x, int y, FVector &outPos){
-    if(FlagAt(x,y)){
-        return PositionAt(x, y, outPos);
-    }
-    return false;
-}
 
-bool FMeshedPolygon::PositionAt(const std::pair<int,int> &pair, FVector &outPos){
-    return PositionAt(pair.first, pair.second, outPos);
-}
-
-bool FMeshedPolygon::PositionAt(int x, int y, FVector &outPos){
-    if(x >= 0 && x < positionGrid.Num()){
-        if (y >= 0 &&y < positionGrid[x].Num()){
-            outPos = positionGrid[x][y];
-            return true;
+void FMeshedPolygon::InvertFlagMap(){
+    for (int i = 0; i < flagGrid.Num(); i++){
+        TArray<uint8> &column = flagGrid[i];
+        for (int j = 0; j < column.Num(); j++){
+            InvertFlag(column[j]);
         }
     }
-    return false;
+    flagsInverted = !flagsInverted; //track inversion state
 }
 
-FVector FMeshedPolygon::GetPositionAt(const std::pair<int,int> &pair){
-    //copy
-    FVector returned(0, 0, 0);
-    PositionAt(pair, returned);
-    return returned;
-}
-*/
-
-// ------ DEBUG APPEND MESH DATA -------
-
-
-/*
-void FMeshedPolygon::AppendMeshedSurface(MeshData &data){
-    if(!GridValid()){
+void FMeshedPolygon::InvertFlag(uint8 &flagCurrent){
+    if(flagCurrent == FlagAsInt8(true)){
+        flagCurrent = FlagAsInt8(false);
         return;
     }
-    for (int i = 0; i < flagGrid.Num() - 1; i++){
-        for(int j = 0; j < flagGrid[i].Num(); j++){
-            AppendAt(i, j, data);
-        }
+    if(flagCurrent == FlagAsInt8(false)){
+        flagCurrent = FlagAsInt8(true);
+        return;
     }
 }
 
-void FMeshedPolygon::AppendAt(int i, int j, MeshData &data){
-    TArray<FVector> buffer = GetQuadOrTriangleAt(i, j);
-    if(buffer.Num() == 3){
-        data.appendEfficent(buffer[0], buffer[1], buffer[2]);
-    }
-    if(buffer.Num() == 4){
-        data.appendEfficent(buffer[0], buffer[1], buffer[2], buffer[3]);
-    }
-}
 
-TArray<FVector> FMeshedPolygon::GetQuadOrTriangleAt(int i, int j){
-    TArray<FVector> outBuffer;
-    //append quad
-    / *
-    1->2
-    |  |
-    0<-3
-    * /
-    FVector pos;
-    if (PositionAtFlag(i, j, pos)){
-        outBuffer.Add(pos);
-    }
-    if (PositionAtFlag(i, j+1, pos)){
-        outBuffer.Add(pos);
-    }
-    if (PositionAtFlag(i+1, j+1, pos)){
-        outBuffer.Add(pos);
-    }
-    if (PositionAtFlag(i+1, j, pos)){
-        outBuffer.Add(pos);
-    }
-    return outBuffer;
-}
-*/
+
+
 
 
 void FMeshedPolygon::SetFlag(
@@ -783,3 +718,50 @@ void FMeshedPolygon::AppendFlagMap(
     }
 }
 
+
+
+
+
+
+
+
+/// append as binary
+
+void FMeshedPolygon::AppendAsBinary(
+    TArray<uint8> &buffer
+){
+    if(IsValid()){
+        TArray<TArray<uint8>> &flags = GetFlagGrid();
+        FVector min, max;
+        GetMinMax(min, max);
+        
+        //save polygon binary as
+        //[stepSize][min,max][boolFlags][positions]
+        TemplateBufferStorageInterface::TAppendSingleValue<float>(stepSizeSaved, buffer);
+        TemplateBufferStorageInterface::TAppendSingleValue<FVector>(min, buffer);
+        TemplateBufferStorageInterface::TAppendSingleValue<FVector>(max, buffer);
+        TemplateBufferStorageInterface::TAppendGrid<uint8>(flags, buffer);
+    }
+
+}
+
+
+
+bool FMeshedPolygon::LoadFromBinary(
+    TArray<uint8> &buffer,
+    uint8 *& Ptr //reference to a pointer. Pointer by reference.
+){
+
+    if(TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
+        return false;
+    }
+
+    TArray<TArray<uint8>> &flags = GetFlagGrid();
+    TemplateBufferStorageInterface::TLoadSingleValue<float>(stepSizeSaved, Ptr);
+    TemplateBufferStorageInterface::TLoadSingleValue<FVector>(minSaved, Ptr);
+    TemplateBufferStorageInterface::TLoadSingleValue<FVector>(maxSaved, Ptr);
+
+    TemplateBufferStorageInterface::TLoadGrid<uint8>(flags, Ptr);
+    return true;
+
+}

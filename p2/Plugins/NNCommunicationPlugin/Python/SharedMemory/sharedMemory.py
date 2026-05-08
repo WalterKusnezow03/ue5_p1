@@ -26,7 +26,7 @@ import posix_ipc
 ##writeReadyFalse()
 
 class UnrealSharedFrame:
-    def __init__(self, tagname, size):
+    def __init__(self, tagname, size, semMutexName = None):
         self.size = size
         self.tagname = tagname
         self.closed = False
@@ -37,42 +37,67 @@ class UnrealSharedFrame:
 
         print("UnrealSharedFrame Opened", tagname)
 
+        # semaphores (optional)
+
+        self.sem_Mutex = None
+        self.hasMutex = False
+        if semMutexName:
+            self.sem_Mutex = posix_ipc.Semaphore(semMutexName)
+            self.hasMutex = True
+
+    
+
+
+
     def isReady(self):
+        ##self.DownRead()
         self.map.seek(0)
         flag = struct.unpack("i", self.map.read(4))[0]
         print("UnrealSharedFrame PAGE READY", flag)
+        ##self.UpWrite()
         return flag == 1
 
     def writeReadyFalse(self):
+        self.DownMutex()
         self.map.seek(0)
         self.map.write(struct.pack("i", 0))
+        self.UpMutex()
         print("Write Ready False: -> ", self.isReady())
 
-    def writeReadyTrue(self):    
+    def writeReadyTrue(self):
+        self.DownMutex()
         self.map.seek(0)
         self.map.write(struct.pack("i", 1))
+        self.UpMutex()
         print("Write Ready True: -> ", self.isReady())
 
     ##read as uint8
     def read_data_only(self):
+        self.DownMutex()
         self.map.seek(4)
-        return self.map.read(self.size - 4)
+        data = self.map.read(self.size - 4)
+        self.UpMutex()
+        return data
     
     ##read as float 
     def read_data_only_float_array(self):
+        self.DownMutex()
         self.map.seek(4)  # nach dem Ready-Flag
         raw = self.map.read(self.size - 4)
+        self.UpMutex()
 
         float_count = len(raw) // 4
         return struct.unpack(f"{float_count}f", raw[:float_count * 4])
 
     def write_data_only_float_array(self, values):
+        self.DownMutex()
         self.map.seek(4)  # nach dem Ready-Flag
 
         packed = struct.pack(f"{len(values)}f", *values)
 
         max_bytes = self.size - 4
         if len(packed) > max_bytes:
+            self.UpMutex()
             raise ValueError("write_data_only_float_array DATA TOO LARGE!")
 
         self.map.write(packed)
@@ -83,6 +108,7 @@ class UnrealSharedFrame:
         remaining = max_bytes - len(packed)
         if remaining > 0:
             self.map.write(b"\x00" * remaining)
+        self.UpMutex()
 
 
 
@@ -90,6 +116,7 @@ class UnrealSharedFrame:
         if self.closed:
             return
         self.closed = True
+        self.UpMutex()
 
         try:
             if hasattr(self, "map") and self.map:
@@ -105,7 +132,29 @@ class UnrealSharedFrame:
         except:
             pass
 
+
+        try:
+            # semaphore
+            if self.hasMutex and self.sem_Mutex:
+                self.sem_Mutex.close()
+                self.sem_Mutex = None
+                self.hasMutex = False
+        except:
+            pass
+
+
+        
+
     def __del__(self):
         self.close()
 
+
+
+    def DownMutex(self):
+        if self.sem_Mutex:
+            self.sem_Mutex.acquire()   # wartet bis C++ fertig ist
+
+    def UpMutex(self):
+        if self.sem_Mutex:
+            self.sem_Mutex.release()
 

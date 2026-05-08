@@ -28,6 +28,7 @@ public class PolygonPlugin : ModuleRules
 				"Core",
 				"MeshDataPlugin",
 				"DebugPlugin",
+				"StoragePlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -93,7 +93,14 @@ public:
 
     // --- storage interface ---
 
+    //swaps 0 and 1 flags
+    void InvertFlagMap();
+
 protected:
+    void InvertFlag(uint8 &flagCurrent);
+    bool flagsInverted = false; //track inversion state
+
+
     //forces a min size of one if bounds to small for pixel step "widthOfInsideStep"
     virtual bool InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep);
     FVector center(TArray<FVector> &polygon);
@@ -249,7 +256,12 @@ protected:
 
 
 
-
-
-
+public:
+    virtual void AppendAsBinary(
+        TArray<uint8> &buffer
+    );
+    virtual bool LoadFromBinary(
+        TArray<uint8> &buffer,
+        uint8 *& Ptr
+    );
 };

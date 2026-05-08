@@ -62,8 +62,8 @@ void AcustomWaterActor::createWaterPane(
 
     int offsetOnAxis = MAX_VERTEXCOUNT * DEFAULT_DISTANCE_BETWEEN_VERTECIES;
 
-    DebugHelper::logMessage("DEBUGSIZE OF WATER VERTEXCOUNT", vertexCount);
-    DebugHelper::logMessage("DEBUGSIZE OF WATER PANECOUNT", paneCount);
+    //DebugHelper::logMessage("DEBUGSIZE OF WATER VERTEXCOUNT", vertexCount);
+    //DebugHelper::logMessage("DEBUGSIZE OF WATER PANECOUNT", paneCount);
 
     FVector offsetVector(0,0,100);
     offsetVector += location;

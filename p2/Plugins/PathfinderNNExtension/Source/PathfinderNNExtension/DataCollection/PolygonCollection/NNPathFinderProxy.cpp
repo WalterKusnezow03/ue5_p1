@@ -39,6 +39,10 @@ void NNPathFinderProxy::CollectPolygon(
             }
             
         }
+
+
+        //debug
+        //DebugSaveCompleteMap();
     }
 } 
 

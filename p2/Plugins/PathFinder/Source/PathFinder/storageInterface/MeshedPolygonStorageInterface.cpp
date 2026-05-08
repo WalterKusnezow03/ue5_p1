@@ -3,6 +3,8 @@
 
 #include "DebugPlugin/DebugHelper.h"
 
+#include "StoragePlugin/Storage/Template/TemplateBufferStorageInterface.h"
+
 void MeshedPolygonStorageInterface::AppendPolygons(
     TArray<uint8> &bytes,
     APathFinder *pathFinder
@@ -23,10 +25,20 @@ void MeshedPolygonStorageInterface::AppendPolygons(
         return;
     }
 
+    //new
+    TemplateBufferStorageInterface::AppendCount(countPolygons, bytes);
+    for (int i = 0; i < polygons.size(); i++){
+        if(FMeshedPolygon *current = polygons[i]){
+            current->AppendAsBinary(bytes);
+        }
+    }
+
+
+    /*
     AppendCount(countPolygons, bytes);
     for (int i = 0; i < countPolygons; i++){
         AppendPolygon(bytes, polygons[i]);
-    }
+    }*/
 }
 
 
@@ -48,7 +60,37 @@ void MeshedPolygonStorageInterface::LoadPolygons(
     uint8 *&Ptr,
     std::vector<FMeshedPolygon *> &polygonsOut
 ){
-    if(EndReached(Ptr, bytes)){
+    if(TemplateBufferStorageInterface::EndReached(Ptr, bytes)){
+        return;
+    }
+    int32 countPolygons = 0;
+    TemplateBufferStorageInterface::LoadCount(countPolygons, Ptr);
+    for (int i = 0; i < countPolygons; i++){
+        FMeshedPolygon *newPolygon = new FMeshedPolygon();
+        if(newPolygon->LoadFromBinary(bytes, Ptr)){
+            polygonsOut.push_back(newPolygon);
+        }else{
+            //exceed size
+            delete newPolygon;
+            newPolygon = nullptr;
+        }
+    }
+
+    /*
+    virtual void AppendAsBinary(
+        TArray<uint8> &buffer
+    );
+    virtual bool LoadFromBinary(
+        TArray<uint8> &buffer,
+        uint8 *& Ptr
+    );
+
+    */
+
+
+
+
+    /*if(EndReached(Ptr, bytes)){
         //doesnt have polygons
         return;
     }
@@ -64,7 +106,7 @@ void MeshedPolygonStorageInterface::LoadPolygons(
             delete newPolygon;
             newPolygon = nullptr;
         }
-    }
+    }*/
 }
 
 
@@ -75,7 +117,7 @@ void MeshedPolygonStorageInterface::LoadPolygons(
 
 
 
-
+//deprecated
 void MeshedPolygonStorageInterface::AppendPolygon(
     TArray<uint8> &bytes,
     FMeshedPolygon *polygon

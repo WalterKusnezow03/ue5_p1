@@ -38,16 +38,30 @@ void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
 
     PrepareRequestMap(polygonDataCache);
 
+    if(!polygonDataCache.PrepareAppendRequestBinary(buffer)){
+        buffer.Empty();
+        Reset();
+        return;
+    }
+
+
+
+
+
+    // --- deprecated ---
+
+    /*
     //WRITE BINARY
     //polygon.AppendFlagMap(buffer); //deprecated!
     polygonDataCache.AppendFlagMapAsFloat(buffer);
     polygonDataCache.AppendTimeMap(buffer);
 
+    //reset if data not valid!
     if(!polygonDataCache.FlagAndTimeDataValid()){
         buffer.Empty();
         Reset();
         return;
-    }
+    }*/
 
     //WriteData(buffer);
 }
@@ -73,23 +87,36 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonD
             polygonData
         );
 
-        TArray<Trajectory> trajectories = trackedActorPtr->worldTrajectories();
+        //invert flag map for 1 possible position and 0 not possible
+        //might be better for training
+        polygonData.InvertFlagMap();// ---> lags.
+
+        //move trajectory times to space of -1..1 to be similar to binary occupancy map of polygons!
+        TArray<Trajectory> trajectories = trackedActorPtr->worldTrajectoriesNormalizedTime(); 
+        // trackedActorPtr->worldTrajectories();
         polygonData.EmbedTrajectories(trajectories);
     }
 }
 
 
-
+void PredictionTask::GenerateResultPositions(
+    TArray<FVector> &positions
+){
+    polygonDataCache.GenerateResultPositions(positions);
+}
 
 //prepares result binary!
 bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes){
+    
     if(IsValid()){
+        DebugHelper::showScreenMessage("PredictionTask::TickTask Z", FColor::Blue);
         //if(taskStarted && !taskCompleted){ //new condition
         if(taskStarted){ //new condition
-            if(trackedActorPtr->IsFlaggedVisible()){
+            DebugHelper::showScreenMessage("PredictionTask::TickTask A", FColor::Blue);
+            if(trackedActorPtr->IsFlaggedVisibleReset()){
                 //task is finished now, prepare bin for NN python / shared mem
                 resultbytes.Empty();
-
+                DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
                 
 
                 //embed player position into a other flag grid, same size as polygon data grid
@@ -112,7 +139,7 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
     return false;
 }
       
-
+//Heat map prediction embedding
 void PredictionTask::GenerateMapFromResultBytes(const TArray<uint8> &buffer){
     polygonDataCache.GenerateMapFromResultBytes(buffer);
 }

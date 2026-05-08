@@ -20,12 +20,15 @@ public:
     TArray<Trajectory> ToArray() const;
     TArray<Trajectory> ToArrayLocalSpace(const FVector &worldLocation) const;
 
+    TArray<Trajectory> ToArrayNormalizedTime() const;
+
 private:
     int maxElements = 1;
     int num = 0;
     TDoubleLinkedList<Trajectory> trajectories;
 
     void MoveToLocalTime(TArray<Trajectory> &outArray) const;
+    void NormalizeTime(TArray<Trajectory> &data) const;
 
     void PopFront();
     void CopyList(const TrajectoryCollection &other);

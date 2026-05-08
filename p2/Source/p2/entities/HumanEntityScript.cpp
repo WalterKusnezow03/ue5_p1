@@ -109,7 +109,8 @@ void AHumanEntityScript::Tick(float DeltaTime){
         reloadOwnWeaponIfNeeded();
 
         //addition to the base entity: attack the player if in vision
-        adaptWeaponToCurrentPlayerVisibilty();
+        //adaptWeaponToCurrentPlayerVisibilty();
+        PerformActionsBasedOnPlayerVisibility();
 
         //if needed one is found
         findOutPostNearby();
@@ -132,15 +133,15 @@ void AHumanEntityScript::reloadOwnWeaponIfNeeded(){
     }
 }
 
+void AHumanEntityScript::PerformActionsBasedOnPlayerVisibility(){
+    adaptWeaponToCurrentPlayerVisibilty(); 
+
+    //any bot can share memory whether player was seen
+    FlagPlayerVisibleToNNInterface();
+    RequestPlayerPredictionFromNNInterface();
+}
 
 void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
-    if(canSeePlayer){
-        //DebugHelper::showScreenMessage("can see", FColor::Red);
-
-        //any bot can share memory whether player was seen
-        FlagPlayerVisibleToNNInterface();
-    }
-
     if(canSeePlayer && spottedPlayer){
 
         
@@ -163,7 +164,7 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
 
 
 void AHumanEntityScript::FlagPlayerVisibleToNNInterface(){
-    if(playerPointer){
+    if(playerPointer && canSeePlayer){
         FlagActorVisibleToNNInterface(playerPointer);
     }
 }
@@ -176,7 +177,22 @@ void AHumanEntityScript::FlagActorVisibleToNNInterface(AActor *actor){
     }
 }
 
-        
+void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
+    if(!canSeePlayer && playerPointer){
+        if(ANNPathFinderSocket *nnSocket = ANNPathFinderSocket::PathFinderNNinstance()){
+            nnSocket->PredictNode(this, playerPointer);
+        }
+    }
+}
+
+
+
+
+//process requested positions
+void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
+    DebugHelper::showScreenMessage("AHumanEntityScript::ResponseNNPositions Receive Response", FColor::Orange);
+}
+
 
 
 

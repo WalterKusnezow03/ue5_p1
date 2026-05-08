@@ -40,6 +40,9 @@ class NNServerPathfinder(nn_server.NNServer):
         self.bWaitingForGroundTruth = False
         self.resultData = None
 
+        self.frameNameBatch = "ANNPathFinderSFB"
+        self.bWaitingForBatch = True
+
 
 
     
@@ -103,9 +106,15 @@ class NNServerPathfinder(nn_server.NNServer):
             
         return
 
+
+    
+
+
+
     ##override
     def ProcessSharedMemory(self):
-        self.sharedMemoryMap.ShowMap()
+        self.sharedMemoryMap.ShowMap() ##debug
+        self.ProcessBatchOnce()
         self.WriteResultDataIfPending()
         
         if(self.bWaitingForGroundTruth):
@@ -136,6 +145,36 @@ class NNServerPathfinder(nn_server.NNServer):
         print("PYTHON_SAFE_TO_EXIT")
         super().OnShutDown()
         return
+    
+
+
+    ##### batch process only once! #####
+    ##batch process single time
+    def ProcessBatchOnce(self):
+        if self.bWaitingForBatch:
+            print("NNServerPathfinder_ProcessBatch_Waiting")
+            if(self.sharedMemoryMap):
+                page = self.sharedMemoryMap.findPage(self.frameNameBatch)
+                if(page != None):
+                    if(page.isReady()):
+                        print("NNServerPathfinder_ProcessBatch")
+                        print("ANNServerPathfinder_ProcessBatch")
+                        data = page.read_data_only_float_array()
+                        ##print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
+                        page.writeReadyFalse()
+                    
+                        ##feed
+                        self.Net.TrainFromBatchBinary(data)
+
+                        self.bWaitingForBatch = False
+
+        
+                
+
+        return
+
+
+
 
 
 

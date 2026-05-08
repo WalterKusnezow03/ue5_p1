@@ -16,10 +16,11 @@ public:
 
     TArray<Trajectory> localTrajectories() const;
     TArray<Trajectory> worldTrajectories() const;
+    TArray<Trajectory> worldTrajectoriesNormalizedTime() const;
 
     //spotted by any bot or player
     void FlagVisible();
-    bool IsFlaggedVisible();
+    bool IsFlaggedVisibleReset();
 
     FVector ActorLocation();
 

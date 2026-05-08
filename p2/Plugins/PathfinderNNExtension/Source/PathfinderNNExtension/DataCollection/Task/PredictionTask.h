@@ -51,6 +51,14 @@ public:
         FColor playerPosResult
     );
 
+    void GenerateResultPositions(
+        TArray<FVector> &positions
+    );
+
+    void EndSave(){
+        polygonProxy.EndSave();
+    }
+
 private:
     bool taskStarted = false;
     bool taskCompleted = true;

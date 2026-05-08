@@ -32,7 +32,7 @@ void ActorTrajectoryTracker::Tick(float deltatime){
     if(trackedActor){
         if(isVisible){
             //track
-            isVisible = false;
+            //isVisible = false;
         }
 
         if(timer.TickWithTimesUpReset(deltatime)){
@@ -45,8 +45,10 @@ void ActorTrajectoryTracker::Tick(float deltatime){
     }
 }
 
-bool ActorTrajectoryTracker::IsFlaggedVisible(){
-    return isVisible;
+bool ActorTrajectoryTracker::IsFlaggedVisibleReset(){
+    bool copy = isVisible;
+    isVisible = false;
+    return copy;
 }
 
 FVector ActorTrajectoryTracker::ActorLocation(){
@@ -70,6 +72,15 @@ TArray<Trajectory> ActorTrajectoryTracker::worldTrajectories() const {
     TArray<Trajectory> outArray;
     if(trackedActor){
         outArray = collection.ToArray();
+    }
+    return outArray;
+}
+
+
+TArray<Trajectory> ActorTrajectoryTracker::worldTrajectoriesNormalizedTime() const {
+    TArray<Trajectory> outArray;
+    if(trackedActor){
+        outArray = collection.ToArrayNormalizedTime();
     }
     return outArray;
 }

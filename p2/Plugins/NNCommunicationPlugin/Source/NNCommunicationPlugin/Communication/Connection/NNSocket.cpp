@@ -62,7 +62,7 @@ void ANNSocket::CloseSharedMemory(){
 }
 
 void ANNSocket::WriteData(FString name, const TArray<uint8> &data){
-    DebugHelper::logMessage("ANNSocket::WriteData ", data.Num());
+    DebugHelper::logMessage(FString::Printf(TEXT("ANNSocket::WriteData %s %d"), *name, data.Num()));
     frameManager.WriteData(name, data);
 }
 
@@ -84,7 +84,7 @@ void ANNSocket::TickSocketConnected(float deltatime){
      */
 
     /// ----- DO NOT REMOVE -----
-    Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
+    //Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
     /// the python code will be stuck!!!
     /// ----- DO NOT REMOVE -----
 }

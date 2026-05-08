@@ -15,6 +15,7 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
     if(serverRunning){
         return;
     }
+    setupCopy = setup;
 
     FString PythonExe = setup.PythonExe(); // TEXT("/opt/homebrew/bin/python3");
     //PythonExe = TEXT("/opt/homebrew/bin/python3");
@@ -59,6 +60,15 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
     pyNameSavedDebug = setup.PythonScriptName();
 }
 
+void APythonLauncher::Restart(){
+
+    ShutDownPythonForce();
+    LaunchPythonProcess(setupCopy);
+}
+
+
+
+
 void APythonLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
     //close python process
     /*if (ProcHandle.IsValid()){
@@ -73,7 +83,10 @@ void APythonLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
 void APythonLauncher::ShutDownPython(){
 
     ShutDownPython(5.0f);
+    ShutDownPythonForce();
+}
 
+void APythonLauncher::ShutDownPythonForce(){
     if (ProcHandle.IsValid()){
         FPlatformProcess::TerminateProc(ProcHandle, true);
         for (int i = 0; i < 20; i++){
@@ -91,6 +104,7 @@ void APythonLauncher::ShutDownPython(){
     }
     serverRunning = false;
 }
+
 
 void APythonLauncher::ShutDownPython(float timeOut){
     const double Timeout = std::abs(timeOut);

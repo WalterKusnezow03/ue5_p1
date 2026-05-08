@@ -212,3 +212,15 @@ void FTriangleIntersectFrame::IncreaseIdentifierBy(int32 offset){
     v1Index += offset;
     v2Index += offset;
 }
+
+
+
+
+
+
+
+
+
+
+
+
