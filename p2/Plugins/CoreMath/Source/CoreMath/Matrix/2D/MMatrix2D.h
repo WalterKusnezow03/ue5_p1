@@ -51,7 +51,7 @@ public:
 	void SetRotation(const FVector2D &axis, const FVector2D &other);
 
 private:
-	//16 langes array für die 4x4 matrix
+	//9 langes array für die 3x3 matrix
 	static constexpr int size = 9;
 	float array[9];
 

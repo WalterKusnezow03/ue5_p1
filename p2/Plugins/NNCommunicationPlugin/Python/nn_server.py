@@ -19,19 +19,36 @@ class NNServer:
 
         self.sharedMemoryMap = UnrealSharedMemoryMap()
 
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ##self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ## -- setup socket --
-        self.s.bind(("127.0.0.1", 5050))
-        self.s.listen(1)
-        print("NNServer Python server ready") ###printed in unreal pipe ANNSocket::Python: Python server ready
-        self.connection, self.addr = self.s.accept()
-        print("NNServer Connection from", self.addr)
+        ##self.s.bind(("127.0.0.1", 5050))
+        ##self.s.listen(1)
+        ##print("NNServer Python server ready") ###printed in unreal pipe ANNSocket::Python: Python server ready
+        ##self.connection, self.addr = self.s.accept()
+        ##print("NNServer Connection from", self.addr)
 
         CNNBase.debugTorch()
         self.SHUTDOWNFLAG = False
 
         ##NEW
         ##self.connection.settimeout(0.01)
+
+
+        ##new
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.s.bind(("127.0.0.1", 5050))
+        self.s.listen(1)
+        print("NNServer Python server ready")
+        print("Waiting for connection...")
+        self.connection, self.addr = self.s.accept()
+        print("NNServer Connection from", self.addr)
+
+
+
+
+
+
 
     def ShutDownTriggered(self):
         return self.SHUTDOWNFLAG == True
@@ -40,17 +57,17 @@ class NNServer:
     def Tick(self):
         if(self.openedconnection):
             self.ReceiveSocketMessage()
-            print("NNServer receive finish")
+            ##print("NNServer receive finish")
             self.ProcessSharedMemory()
-            print("NNServer receive finish process shared mem")
+            ##print("NNServer receive finish process shared mem")
 
     def ReceiveSocketMessage(self):
         data = receiver.receive(self.connection)
         if data:
-            print("NNServer received data")
+            ##print("NNServer received data")
             ##message = receiver.unpackMessageToString(data)
             message = receiver.unpackMessageToStringSplit(data, "_") #unpackMessageToString(data)
-            print("NNServer received data as string: ", message)
+            ##print("NNServer received data as string: ", message)
 
             self.ProcessMessage(message)
 

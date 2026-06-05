@@ -32,8 +32,9 @@ BoundingBoxSimple::~BoundingBoxSimple(){
 }
 
 void BoundingBoxSimple::Clear(){
-    bottomLeftNear = FVector(0, 0, 0);
-    topRightFar = FVector(0, 0, 0);
+    //nicht 0,0, NEIN
+    bottomLeftNear = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
+    topRightFar = FVector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 }
 
 void BoundingBoxSimple::RebuildBounds(const TArray<FVector> &vertecies){

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DebugPlugin/DebugHelper.h"
 
 
 //appends and reads data by template type from a 
@@ -129,6 +130,7 @@ public:
         int32 sizeGrid = 0;
         TLoadSingleValue<int32>(sizeGrid, Ptr);
         if(sizeGrid > 0){
+            //DebugHelper::logMessage("TLoadGrid Size Buffer ", sizeGrid);
             data.SetNum(sizeGrid);
             for (int32 i = 0; i < data.Num(); i++){
                 TArray<T> &current = data[i];

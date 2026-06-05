@@ -19,7 +19,7 @@ FMeshedSurfaceGrid &FMeshedSurfaceGrid::operator=(const FMeshedSurfaceGrid &othe
     if(this != &other){
         flagGrid = other.flagGrid;
         positionGrid = other.positionGrid;
-        edgeIndices = other.edgeIndices;
+        edgeSet = other.edgeSet;
 
         minSaved = other.minSaved;
         maxSaved = other.maxSaved;
@@ -79,7 +79,9 @@ bool FMeshedSurfaceGrid::FindShape(
 ){
     //align rotation included, y is always depth, x side
 
-    for (int i = 0; i < edgeIndices.Num(); i++){
+    FMeshedPolygonHullIndices &edgeIndices = GetEdgeIndices();
+    for (int i = 0; i < edgeIndices.Num(); i++)
+    {
         int j = (i + 1) % edgeIndices.Num();
 
         const std::pair<int, int> &posA = edgeIndices[i];

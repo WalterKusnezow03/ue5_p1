@@ -2,7 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "PolygonPlugin/Public/GridBase/GridBase.h"
-
+#include "PolygonPlugin/Public/Polygons/MeshedPolygonUtil/MeshedPolygonHullIndices.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygonUtil/MeshedPolygonHullSet.h"
 
 class MeshData;
 
@@ -15,7 +16,18 @@ class POLYGONPLUGIN_API FMeshedPolygon : public GridBase{
 protected:
     TArray<TArray<uint8>> flagGrid;
     
-    TArray<std::pair<int, int>> edgeIndices;
+    //edge indices of polygon
+    //TArray<std::pair<int, int>> edgeIndices;
+
+    //edge indices of polygon
+    //FMeshedPolygonHullIndices edgeIndices;
+
+    FMeshedPolygonHullSet edgeSet;
+
+    FMeshedPolygonHullIndices &GetEdgeIndices(){
+        //return at 0
+        return edgeSet[0];
+    }
 
     FVector minSaved;
     FVector maxSaved;
@@ -45,10 +57,10 @@ public:
         return maxSaved;
     }
 
-
-
+    int NumEdges();
 
 public:
+    
     
 
     //init from rasterized curve, to raster of mod "widthOfInsideStep"
@@ -75,6 +87,11 @@ public:
 
     int sizeX();
     int sizeY();
+
+
+    // --- index hull ---
+    void AppendIndexHull(const TArray<FVector> &polygon);
+    void AppendIndexHull(const TArray<FVector> &polygon, FMeshedPolygonHullIndices &hull);
 
     // --- storage interface ---
 
@@ -137,6 +154,7 @@ protected:
     void FlagTruePolygonEdge(const FVector &pos);
     void ToIndexBounded(const FVector &pos, int &x, int &y);
     void ToIndexRaw(const FVector &pos, int &x, int &y);
+    void ToIndexRaw(const FMeshedPolygon &other, int &x, int &y);
     bool FlagAtPosition(const FVector &pos);
 
     bool FlagAt(int x, int y);
@@ -168,10 +186,20 @@ protected:
     //void AppendAt(int i, int j, MeshData &data);
     //TArray<FVector> GetQuadOrTriangleAt(int i, int j);
 
+    void FlagTrueFromFastAndAppendLocalHulls(
+        const FMeshedPolygon &other
+    );
+    void AppendLocalHulls(
+        const int xStart,
+        const int yStart,
+        const FMeshedPolygon &other
+    );
 
-    
-
-    void FlagTrueFromFast(const FMeshedPolygon &other);
+    void FlagTrueFromFast(
+        const int xStart,
+        const int yStart,
+        const FMeshedPolygon &other
+    );
     void FlagTrueFromFast(
         const int xStart,
         const int yStart,
@@ -193,6 +221,8 @@ protected:
 
 public:
     void ClearFlags();
+    void ClearFlagsAndEdgeSet();
+    void ClearEdgeSet();
 
     virtual void GenerateColorBitmap(
         TArray<FColor> &outBuffer,

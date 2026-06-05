@@ -303,6 +303,7 @@ void PathFinderQuadrantMap::GetSubGraphPolygonMesh(
 
     FVector a = center - dir;
     FVector b = center + dir;
+
     return GetSubGraphPolygonMesh(a, b, polygon);
 }
 

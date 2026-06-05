@@ -1,4 +1,5 @@
 #include "InventoryBase.h"
+#include "p2/entities/widgetPayloads/WidgetEntityLootPayload.h"
 
 void InventoryBase::Setup(UCameraComponent *cameraIn){
     playerCamera = cameraIn;

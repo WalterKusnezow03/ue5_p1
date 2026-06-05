@@ -5,6 +5,8 @@
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/ActorTrajectoryTracker.h"
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
+class FPathFinderNNRequestPackage;
+
 /// Will store task information about the tracked actor
 /// and 
 /// store the map once the player reappears in the
@@ -39,7 +41,7 @@ public:
     int ResultGridSizeBytes();
 
     // heat map generation from result
-    void GenerateMapFromResultBytes(const TArray<uint8> &buffer);
+    void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
     
 
     void ColoredHeatMap(
@@ -47,6 +49,7 @@ public:
         FColor colorMin,
         FColor colorMax,
         FColor colorPolygonFlagged,
+        FColor colorViewGrid,
         FColor colorTrjacetory,
         FColor playerPosResult
     );
@@ -59,6 +62,15 @@ public:
         polygonProxy.EndSave();
     }
 
+
+    // --- erstmal so ---
+    //embed enemy positions who
+    //are listening for the given actor
+
+
+    void EmbedEnemyPositions(const TArray<FVisionCone*> &enemies);
+    void EmbedEnemyPositions(FPathFinderNNRequestPackage &queue);
+
 private:
     bool taskStarted = false;
     bool taskCompleted = true;
@@ -67,6 +79,8 @@ private:
     void PrepareResultMap();
 
     NNPathFinderProxy polygonProxy;
+
+    //targeted actor
     ActorTrajectoryTracker *trackedActorPtr = nullptr;
 
     FVector locationOfRequest;

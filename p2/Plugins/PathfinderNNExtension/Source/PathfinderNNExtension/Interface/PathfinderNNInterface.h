@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "VisionCone.h"
 #include "PathfinderNNInterface.generated.h"
 
 UINTERFACE(MinimalAPI)
@@ -19,4 +20,8 @@ class PATHFINDERNNEXTENSION_API IPathfinderNNInterface
 
 public:
     virtual void ResponseNNPositions(const TArray<FVector> &positions) = 0;
+    virtual FVector GetWorldLocation() = 0;
+
+    //todo
+    virtual FVisionCone &GetVisionCone() = 0;
 };

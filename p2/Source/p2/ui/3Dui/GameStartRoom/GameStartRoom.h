@@ -13,6 +13,7 @@
 
 class UWorldCreatorWidget;
 class UWorldListWidget;
+class UNNTrainWidget;
 
 UCLASS()
 class P2_API AGameStartRoom : public AWidgetRoomActorBase {
@@ -44,6 +45,8 @@ public:
 
     void NotifyOnClickDispatch();
 
+    void NotifyNNTrainLaunch();
+
 protected:
     static void CreateInstanceIfNeeded(AActor *actor);
     static void CreateInstanceIfNeeded(UWorld *world);
@@ -62,10 +65,12 @@ protected:
     //helper to get from inside of ACustomMeshUIActor
     UWorldCreatorWidget *GetWorldCreatorWidget();
     UWorldListWidget *GetWorldListWidget();
+    UNNTrainWidget *GetNNWidget();
 
     //saved as raw ui actor to prevent additional subclasses
     ACustomMeshUIActor *uiActorWorldCreator = nullptr;
     ACustomMeshUIActor *uiActorWorldList = nullptr;
+    ACustomMeshUIActor *uiActorNNTrain = nullptr;
 
     bool AnyTextFieldSelected();
     void ChangeLockPlayerMovementBasedOnSeletedTextField();

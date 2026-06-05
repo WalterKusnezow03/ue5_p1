@@ -63,3 +63,22 @@ void FPathFinderNNRequestPackage::NotifyAll(const TArray<FVector> &predictedPosi
 AActor *FPathFinderNNRequestPackage::GetActor(){
     return setupActor;
 }
+
+
+
+
+
+void FPathFinderNNRequestPackage::GetRequesterVisionCones(TArray<FVisionCone*> &outPositions){
+    if(subscribed.Num() > 0){
+        int prevSize = outPositions.Num();
+        outPositions.SetNum(prevSize + subscribed.Num());
+
+        for (int i = 0; i < subscribed.Num(); i++)
+        {
+            if(IPathfinderNNInterface *interface = subscribed[i]){
+                outPositions[i + prevSize] = &interface->GetVisionCone(); // GetWorldLocation();
+            }
+        }
+    }
+}
+

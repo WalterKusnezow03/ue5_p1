@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
+#include "PathfinderNNExtension/Interface/VisionCone.h"
 
 /// @brief package for task queue
 class PATHFINDERNNEXTENSION_API FPathFinderNNRequestPackage {
@@ -22,6 +23,9 @@ public:
     void NotifyAll(const TArray<FVector> &predictedPositions);
 
     AActor *GetActor();
+
+    void GetRequesterVisionCones(TArray<FVisionCone *> &outPositions);
+
 
 private:
     TArray<IPathfinderNNInterface *> subscribed;

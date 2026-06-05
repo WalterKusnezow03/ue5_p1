@@ -1,5 +1,5 @@
 #include "CurveRasterizer.h"
-
+#include "Brensenham.h"
 
 CurveRasterizer::CurveRasterizer(){
 
@@ -8,6 +8,68 @@ CurveRasterizer::CurveRasterizer(){
 CurveRasterizer::~CurveRasterizer(){
 
 }
+
+
+void CurveRasterizer::RasterizeVerteciesIntBrensenham(
+    TArray<FIntPoint> &polygon
+){
+    Brensenham::BrensenhamLineFill(polygon);
+}
+
+void CurveRasterizer::RasterizeVerteciesInt(
+    TArray<FIntPoint> &polygon
+){
+    RasterizeVerteciesToInt(polygon, 1);
+}
+
+void CurveRasterizer::RasterizeVerteciesToInt(
+    TArray<FIntPoint> &polygon,
+    int widthOfStep
+){
+    float asFloat = widthOfStep;
+    TArray<FVector> converted;
+    Convert(polygon, converted);
+    RasterizeVerteciesTo(converted, asFloat); //since int 1 step.
+    Convert(converted, polygon);
+}
+
+void CurveRasterizer::Convert(
+    const TArray<FIntPoint> &raw, 
+    TArray<FVector> &outData
+){
+    if(raw.Num() > 0){
+        outData.SetNum(raw.Num());
+        for (int i = 0; i < raw.Num(); i++){
+            const FIntPoint &current = raw[i];
+            FVector &currentOut = outData[i];
+            currentOut.X = current.X;
+            currentOut.Y = current.Y;
+            currentOut.Z = 0.0f;
+        }
+    }
+}
+
+void CurveRasterizer::Convert(
+    const TArray<FVector> &raw, 
+    TArray<FIntPoint> &outData
+){
+    if(raw.Num() > 0){
+        outData.SetNum(raw.Num());
+        for (int i = 0; i < raw.Num(); i++){
+            const FVector &current = raw[i];
+            FIntPoint &currentOut = outData[i];
+
+            currentOut.X = FMath::FloorToInt(current.X);
+            currentOut.Y = FMath::FloorToInt(current.Y);
+           
+        }
+    }
+}
+
+
+
+
+
 
 
 void CurveRasterizer::RasterizeVerteciesTo(
@@ -55,3 +117,8 @@ FVector CurveRasterizer::ToModCoordinate(FVector &pos, int mod, int dir){
     y += dir * (y % mod);
     return FVector(x, y, pos.Z);
 }
+
+
+
+
+

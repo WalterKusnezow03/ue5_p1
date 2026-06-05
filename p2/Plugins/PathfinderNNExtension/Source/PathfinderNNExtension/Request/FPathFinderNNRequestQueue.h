@@ -16,6 +16,7 @@ public:
     bool HasTasks();
 
     AActor *frontActor();
+    FPathFinderNNRequestPackage *frontPackage();
 
 protected:
     TArray<FPathFinderNNRequestPackage> tasks;

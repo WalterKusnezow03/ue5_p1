@@ -43,8 +43,13 @@ class NNServerPathfinder(nn_server.NNServer):
         self.frameNameBatch = "ANNPathFinderSFB"
         self.bWaitingForBatch = True
 
+        self.doBatchTraining = True
+
+        self.trainLive = False
 
 
+    def TagIsGroundTruthButDontTrainLive(self, tag):
+        return tag == self.frameNameGroundThruth and (self.trainLive == False)
     
     def ProcessSharedMemoryByTag(self, shortTag):
         if(self.sharedMemoryMap):
@@ -56,7 +61,11 @@ class NNServerPathfinder(nn_server.NNServer):
                 ##isReady()
                 ##writeReadyFalse()
                 if(page.isReady()):
-                    data = page.read_data_only_float_array()
+                    
+                    
+
+                    ## default process data
+                    data = page.read_data_only_float_array()                    
                     ##print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
                     page.writeReadyFalse()
                     self.ProcessDataByMemoryTag(data, shortTag)
@@ -82,12 +91,15 @@ class NNServerPathfinder(nn_server.NNServer):
 
             return
 
+        ##process frame data ground truth -> if life training enabled: do
         if(shortTag == self.frameNameGroundThruth):
             if(self.bWaitingForGroundTruth):
-                print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
-                self.Net.learnData(data)
+
                 self.bWaitingForGroundTruth = False ##ready for a new request
-                print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))
+                if(self.trainLive):
+                    print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
+                    self.Net.learnData(data)
+                    print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))
                 return
 
     def WriteResultDataIfPending(self):
@@ -99,7 +111,7 @@ class NNServerPathfinder(nn_server.NNServer):
                 resultPage.writeReadyTrue()
                 print("NNServerPathfinder_RequestFinishAvailable Write! float:", len(self.resultData), " uint8 ", len(self.resultData) * 4)
                 self.resultData = None
-                self.bResultDataWritten == True
+                self.bResultDataWritten = True ##mark as true
                 return
             else:
                 print("NNServerPathfinder_RequestFinishAvailable BUT RESULT PAGE NOT SETUP")
@@ -113,7 +125,7 @@ class NNServerPathfinder(nn_server.NNServer):
 
     ##override
     def ProcessSharedMemory(self):
-        self.sharedMemoryMap.ShowMap() ##debug
+        ##self.sharedMemoryMap.ShowMap() ##debug
         self.ProcessBatchOnce()
         self.WriteResultDataIfPending()
         
@@ -151,6 +163,7 @@ class NNServerPathfinder(nn_server.NNServer):
     ##### batch process only once! #####
     ##batch process single time
     def ProcessBatchOnce(self):
+
         if self.bWaitingForBatch:
             print("NNServerPathfinder_ProcessBatch_Waiting")
             if(self.sharedMemoryMap):
@@ -162,6 +175,11 @@ class NNServerPathfinder(nn_server.NNServer):
                         data = page.read_data_only_float_array()
                         ##print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
                         page.writeReadyFalse()
+
+                        ##block - testing needed
+                        if self.doBatchTraining == False:
+                            self.bWaitingForBatch = False
+                            return
                     
                         ##feed
                         self.Net.TrainFromBatchBinary(data)

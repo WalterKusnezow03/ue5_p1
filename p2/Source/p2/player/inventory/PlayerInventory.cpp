@@ -6,6 +6,7 @@
 #include "p2/entities/widgetPayloads/WidgetEntityLootPayload.h"
 #include "DebugPlugin/DebugHelper.h"
 
+
 PlayerInventory::PlayerInventory()
 {
     currentIndex = 0;

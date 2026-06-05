@@ -276,3 +276,18 @@ void APythonSocketBase::DebugSocketMessage(){
         Send(TEXT("Echo Python Debug"));
     }
 }
+
+
+
+
+void APythonSocketBase::SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener){
+    if(listener){
+        messageDispatcher.Subscribe(listener);
+    }
+}
+
+
+void APythonSocketBase::OnReceivePythonPrint(FString message){
+    //Super::OnReceivePythonPrint(message);
+    messageDispatcher.Dispatch(message);
+}

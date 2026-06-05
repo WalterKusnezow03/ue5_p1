@@ -1,12 +1,12 @@
 #include "PredictionTask.h"
-
+#include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
 
 
 void PredictionTask::Reset(){
     trackedActorPtr = nullptr;
     taskStarted = false;
     taskCompleted = true;
-    polygonDataCache.Reset();
+    polygonDataCache.Reset();  //clear task polygon data
 }
 
 void PredictionTask::Setup(ActorTrajectoryTracker *trackedActor){
@@ -29,8 +29,29 @@ FMeshedPolygonTrajectoryLayered &PredictionTask::GetPolygonData(){
 }
 
 int PredictionTask::ResultGridSizeBytes(){
-    return polygonDataCache.ResultGridSizeBytes();
+    return polygonDataCache.ResultGridSizeBytes(); //prediction / result byte size of grid
 }
+
+void PredictionTask::EmbedEnemyPositions(const TArray<FVisionCone*> &enemies){
+    polygonDataCache.EmbedEnemyVision(enemies);
+}
+
+
+
+void PredictionTask::EmbedEnemyPositions(FPathFinderNNRequestPackage &queue){
+    TArray<FVisionCone*> positionsToEmbed;
+    queue.GetRequesterVisionCones(positionsToEmbed);
+    EmbedEnemyPositions(positionsToEmbed);
+}
+
+
+
+
+
+
+
+
+
 
 void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
     taskStarted = true;
@@ -38,32 +59,15 @@ void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
 
     PrepareRequestMap(polygonDataCache);
 
+    //DebugHelper::logMessage(FString::Printf(TEXT("numedgeDebug PredictionTask num edges %d"), polygonDataCache.NumEdges()));
+    //400
+
+    //if appending binary data failed: reset task and clean buffer
     if(!polygonDataCache.PrepareAppendRequestBinary(buffer)){
         buffer.Empty();
-        Reset();
+        Reset(); //clear task.
         return;
     }
-
-
-
-
-
-    // --- deprecated ---
-
-    /*
-    //WRITE BINARY
-    //polygon.AppendFlagMap(buffer); //deprecated!
-    polygonDataCache.AppendFlagMapAsFloat(buffer);
-    polygonDataCache.AppendTimeMap(buffer);
-
-    //reset if data not valid!
-    if(!polygonDataCache.FlagAndTimeDataValid()){
-        buffer.Empty();
-        Reset();
-        return;
-    }*/
-
-    //WriteData(buffer);
 }
 
 void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonData){
@@ -89,7 +93,7 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonD
 
         //invert flag map for 1 possible position and 0 not possible
         //might be better for training
-        polygonData.InvertFlagMap();// ---> lags.
+        polygonData.InvertFlagMap();
 
         //move trajectory times to space of -1..1 to be similar to binary occupancy map of polygons!
         TArray<Trajectory> trajectories = trackedActorPtr->worldTrajectoriesNormalizedTime(); 
@@ -140,8 +144,8 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
 }
       
 //Heat map prediction embedding
-void PredictionTask::GenerateMapFromResultBytes(const TArray<uint8> &buffer){
-    polygonDataCache.GenerateMapFromResultBytes(buffer);
+void PredictionTask::GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer){
+    polygonDataCache.GenerateMapFromPredicitontBytes(buffer);
 }
 
 bool PredictionTask::IsSameActor(AActor *actorCheck){
@@ -159,11 +163,12 @@ void PredictionTask::ColoredHeatMap(
     FColor colorMin,
     FColor colorMax,
     FColor colorPolygonFlagged,
+    FColor colorViewGrid,
     FColor colorTrjacetory,
     FColor playerPosResult
 ){
     polygonDataCache.ColoredHeatMap(
-        image, colorMin, colorMax, colorPolygonFlagged, colorTrjacetory, playerPosResult
+        image, colorMin, colorMax, colorPolygonFlagged,colorViewGrid, colorTrjacetory, playerPosResult
     );
     taskCompleted = true;
 }

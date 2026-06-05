@@ -97,6 +97,25 @@ void AHumanEntityScript::init(FVector &location){
 
 }
 
+
+/// ----- todo: ------
+
+
+FVisionCone &AHumanEntityScript::GetVisionCone(){
+    //TODO:
+    FVector forward = humanoidPluginController.lookDirection();		 
+    FVector currentLocation = humanoidPluginController.GetLocation();
+
+    visionCone.Update(currentLocation,forward, VisionAngleDegree());
+    
+    return visionCone;
+}
+
+
+
+
+
+
 void AHumanEntityScript::Tick(float DeltaTime){
     Super::Tick(DeltaTime); //entity tick (spotting, path)
     if(AworldLevel::gameStateManager.GameStateIsPaused()){
@@ -192,10 +211,6 @@ void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
 void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
     DebugHelper::showScreenMessage("AHumanEntityScript::ResponseNNPositions Receive Response", FColor::Orange);
 }
-
-
-
-
 
 
 

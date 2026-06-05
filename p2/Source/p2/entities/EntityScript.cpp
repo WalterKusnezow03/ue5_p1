@@ -38,11 +38,13 @@ void AEntityScript::BeginPlay()
 	BeginPlayHumanoidController();
 
 	init();
-	
+	SetupVisionHelper();
 }
 
-
-
+void AEntityScript::SetupVisionHelper(){
+	float degreeVision = 180.0f;
+	visionHelper.setup(degreeVision);
+}
 
 /// @brief will enable the entity for tick
 /// set the player pointer, 
@@ -223,14 +225,34 @@ bool AEntityScript::withinVisionAngle(AActor *target){
 
 
 		//mindestens orthogonal oder näher an der 1
-		if(skalarprodukt >= 0.0f){
+		/*if (skalarprodukt >= 0.0f)
+		{
+			return true;
+		}*/
+
+		// --- TESTING NEEDED ---
+		if(InVisionAngle(skalarprodukt)){
 			return true;
 		}
+		//DebugHelper::showScreenMessage("Vision Angle Dot ", VisionAngleDot());
 	}
 	return false;
 }
 
 
+
+bool AEntityScript::InVisionAngle(float dotProduct){
+	//cos(theta) = a*b //wenn a und b normalisiert sind
+	return visionHelper.DotProductWithinVisionAngle(dotProduct);
+}
+
+float AEntityScript::VisionAngleDegree(){
+	return visionHelper.VisionAngleDegree();
+}
+
+float AEntityScript::VisionAngleDot(){
+	return visionHelper.VisionAngleDot();
+}
 
 /// @brief sets up the ignore params just once for raycast to avoid unesecarry code in raycast method
 void AEntityScript::setupRaycastIgnoreParams(){

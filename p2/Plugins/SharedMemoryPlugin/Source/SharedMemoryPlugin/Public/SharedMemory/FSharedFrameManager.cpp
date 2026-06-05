@@ -142,7 +142,7 @@ bool FSharedFrameManager::TryReadReadyFlag(FString pageName){
         bool result = frames[pageName].TryReadReadyFlag();
         FString messageA = "FSharedFrameManager::TryReadReadyFlag " + pageName;
         FString messageB = result ? " True " : " False";
-        DebugHelper::logMessage(messageA, messageB);
+        //DebugHelper::logMessage(messageA, messageB);
         return result;
     }
     return false;

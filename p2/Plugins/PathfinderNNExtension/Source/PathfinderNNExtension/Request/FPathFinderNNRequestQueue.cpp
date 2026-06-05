@@ -47,9 +47,16 @@ bool FPathFinderNNRequestQueue::HasTasks(){
 }
 
 AActor *FPathFinderNNRequestQueue::frontActor(){
+    if(FPathFinderNNRequestPackage *package = frontPackage()){
+        return package->GetActor();
+    }
+    return nullptr;
+}
+
+FPathFinderNNRequestPackage *FPathFinderNNRequestQueue::frontPackage(){
     if(HasTasks()){
         //DebugHelper::logMessage("FPathFinderNNRequestQueue::GetFrontActor");
-        return tasks[0].GetActor();
+        return &tasks[0];
     }
     return nullptr;
 }

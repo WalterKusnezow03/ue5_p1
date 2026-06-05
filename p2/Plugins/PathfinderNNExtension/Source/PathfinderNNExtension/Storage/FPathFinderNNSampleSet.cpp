@@ -37,7 +37,7 @@ void FPathFinderNNSampleSet::AddSample(FMeshedPolygonTrajectoryLayered &sample){
 void FPathFinderNNSampleSet::Load(){
     FPathFinderNNSampleStorageInterface interface;
     if(interface.Load(cache)){
-        DebugHelper::logMessage(TEXT("FPathFinderNNSampleSet::Loaded %d"), cache.Num());
+        DebugHelper::logMessage(FString::Printf(TEXT("FPathFinderNNSampleSet::Loaded %d"), cache.Num()));
     }
 }
 

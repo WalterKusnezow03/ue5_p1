@@ -7,7 +7,8 @@
 #include "Networking.h"
 
 #include "PythonPlugin/Public/base/PythonLauncher.h"
-
+#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNPathFinderSocketMessageReceiver.h"
+#include "NNCommunicationPlugin/Communication/Connection/base/notify/MessageDispatcher.h"
 
 #include "PythonSocketBase.generated.h"
 
@@ -27,6 +28,8 @@ public:
     );
     void LaunchPythonProcess(FString pluginName, FString pyName);
 
+    void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
+
 protected:
     void OpenSocket(float deltatime);
     void SetupSocketIfNeeded();
@@ -39,9 +42,7 @@ protected:
     float connectIntervall = 1.0f;
     float integratedDT = 0.0f;
 
-    
-
-    
+    MessageDispatcher messageDispatcher;
 
     FSocket *Socket = nullptr;
 
@@ -58,6 +59,9 @@ protected:
     virtual void TickSocketConnected(float deltatime);
 
     void LogMessage(FString msg);
+
+    
+    virtual void OnReceivePythonPrint(FString message) override;
 
     //send via socket connection
 public:

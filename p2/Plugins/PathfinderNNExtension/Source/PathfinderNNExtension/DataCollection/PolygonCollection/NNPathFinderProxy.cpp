@@ -17,6 +17,11 @@ void NNPathFinderProxy::CollectPolygon(
     FMeshedPolygon &outData
 ){
     if(APathFinder *instance = APathFinder::instance()){
+        
+        //log bottom left / override
+        // ---> already happens inside FMeshedPolygon
+        
+        
         float StartTime = FPlatformTime::Seconds();
         if(instance->TryGetSubGraphPolygonMesh(
             outData,
@@ -33,6 +38,8 @@ void NNPathFinderProxy::CollectPolygon(
             outData.SetName(
                 FString::Printf(TEXT("extracted_%d_%d"), (int) playerPos.X, (int) playerPos.Y)
             );
+
+            
 
             if(saveOnEnd){
                 cachedImages.Add(outData);

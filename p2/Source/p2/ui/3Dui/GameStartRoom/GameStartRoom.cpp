@@ -3,6 +3,7 @@
 #include "AssetEnumCollection/assetEnums/EGameActorEnum.h"
 #include "p2/ui/3Dui/GameStartRoom/WorldList/WorldListWidget.h"
 #include "p2/ui/3Dui/GameStartRoom/WorldCreator/WorldCreatorWidget.h"
+#include "p2/ui/3Dui/GameStartRoom/NNTrainWidget/NNTrainWidget.h"
 #include "GameCore/PlayerControllerBase/PlayerControllerBase.h"
 #include "p2/_world/worldLevel.h"
 
@@ -46,6 +47,9 @@ void AGameStartRoom::ClearReferencesOnEndPlay(){
     if(UWorldListWidget *widget = GetWorldListWidget()){
         widget->ResetParent();
     }
+    if(UNNTrainWidget *widget = GetNNWidget()){
+        widget->ResetParent();
+    }
 }
 
 void AGameStartRoom::SetParentReferencesOnWidgets(){
@@ -53,6 +57,9 @@ void AGameStartRoom::SetParentReferencesOnWidgets(){
         widget->SetParent(this);
     }
     if(UWorldListWidget *widget = GetWorldListWidget()){
+        widget->SetParent(this);
+    }
+    if(UNNTrainWidget *widget = GetNNWidget()){
         widget->SetParent(this);
     }
 }
@@ -68,6 +75,7 @@ void AGameStartRoom::BeginPlay(){
 void AGameStartRoom::FindActorsOnBeginPlay(){
     uiActorWorldCreator = TFindChildActorByName<ACustomMeshUIActor>("WorldCreatorWidgetActorBP");
     uiActorWorldList = TFindChildActorByName<ACustomMeshUIActor>("WorldListWidgetActorBP");
+    uiActorNNTrain = TFindChildActorByName<ACustomMeshUIActor>("NNTrainWidgetActorBP");
 
     SetParentReferencesOnWidgets();
 }
@@ -83,6 +91,13 @@ UWorldCreatorWidget *AGameStartRoom::GetWorldCreatorWidget(){
 UWorldListWidget *AGameStartRoom::GetWorldListWidget(){
     if(uiActorWorldList){
         return uiActorWorldList->GetWidget<UWorldListWidget>();
+    }
+    return nullptr;
+}
+
+UNNTrainWidget *AGameStartRoom::GetNNWidget(){
+    if(uiActorNNTrain){
+        return uiActorNNTrain->GetWidget<UNNTrainWidget>();
     }
     return nullptr;
 }
@@ -233,4 +248,19 @@ bool AGameStartRoom::AnyTextFieldSelected(){
 
 void AGameStartRoom::NotifyOnClickDispatch(){
     ChangeLockPlayerMovementBasedOnSeletedTextField();
+}
+
+
+
+void AGameStartRoom::NotifyNNTrainLaunch(){
+
+    //subscribe receiver
+    if(ANNPathFinderSocket *socket = ANNPathFinderSocket::PathFinderNNinstance()){
+        if(UNNTrainWidget *widget = GetNNWidget()){
+            socket->SubscribeMessageListener(widget);
+        }
+        //notify nn train launch
+        socket->SetTrainingAllowed();
+        //DebugHelper::logMessage("AGameStartRoom::NotifyNNTrainLaunch");
+    }
 }

@@ -18,6 +18,8 @@
 
 #include "p2/entetiesBase/miniMapRegisteredActor/MiniMapRegisteredActor.h"
 
+#include "p2/entities/VisionHelper/EntityVisionHelper.h"
+
 #include "EntityScript.generated.h"
 
 class AInteractWidgetActor;
@@ -87,6 +89,13 @@ public:
 	void alarm(); //sets spotting status to true
 
 protected:
+	FEntityVisionHelper visionHelper;
+	void SetupVisionHelper();
+
+	float VisionAngleDegree();
+	float VisionAngleDot();
+	bool InVisionAngle(float dotProduct);
+
 	void FindPlayerReferenceIfNeeded();
 	void UpdateCanSeePlayerStatus();
 	void UpdateVisionTimers(float DeltaTime);

@@ -65,14 +65,48 @@ void FMeshedPolygon::Init(TArray<FVector> &polygon, float widthOfInsideStep){
     
     
     stepSizeSaved = widthOfInsideStep;
-    FindBounds(polygonRasterized);
+    FindBounds(polygonRasterized); //polygonRasterized
     GenerateGrid();
 
     if(IsValid()){
         FlagTrue(polygonRasterized);
+        AppendIndexHull(polygon);
         FlagBetweenSpaceTrue();
     }
 }
+
+
+void FMeshedPolygon::AppendIndexHull(const TArray<FVector> &polygon){
+    FMeshedPolygonHullIndices hull;
+    AppendIndexHull(polygon, hull);
+    edgeSet.Add(hull);
+}
+
+void FMeshedPolygon::AppendIndexHull(const TArray<FVector> &polygon, FMeshedPolygonHullIndices &hull){
+    for (int i = 0; i < polygon.Num(); i++){
+        FVector pos = polygon[i];
+        
+        //local space edge points
+        int x, y = 0;
+        ToIndexRaw(pos, x, y);
+        hull.AddPosition(x, y);
+
+        /*if(IsValid()){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("FMeshedPolygon::AppendIndex %d %d of size %d %d (min, %s, pos %s)"), x, y,
+                    flagGrid.Num(), flagGrid[0].Num(),
+                    *minSaved.ToString(),
+                    *pos.ToString()
+                )
+            );
+            
+        }*/
+        
+    }
+}
+
+
 
 
 void FMeshedPolygon::InitForceSizeMin(TArray<FVector> &polygon, float widthOfInsideStep){
@@ -188,10 +222,14 @@ void FMeshedPolygon::ClearFlags(){
 }
 
 
+void FMeshedPolygon::ClearEdgeSet(){
+    edgeSet.Clear();
+}
 
-
-
-
+void FMeshedPolygon::ClearFlagsAndEdgeSet(){
+    ClearFlags();
+    ClearEdgeSet();
+}
 
 void FMeshedPolygon::GetSizeGrid(int &x, int &y){
     GetSizeGrid(x, y, stepSizeSaved);
@@ -306,14 +344,22 @@ void FMeshedPolygon::FlagTruePolygonEdge(const FVector &pos){
     ToIndexBounded(pos, x, y);
     flagGrid[x][y] = FlagAsInt8(true); //(uint8)1; // true;
 
-    std::pair<int, int> posCreated(x, y);
-    if(!edgeIndices.Contains(posCreated)){
-        edgeIndices.Add(posCreated);
-    }
+
+
+
+    //deprecated here!
+    //edgeIndices.AddPosition(x, y);
+
+    
 }
 
+
+
+
+
+
 //once two bool flags are found, the space inbetween is marked true
-void FMeshedPolygon::FlagBetweenSpaceTrue(){
+void FMeshedPolygon::FlagBetweenSpaceTrue(){    
     for (int i = 0; i < flagGrid.Num(); i++){
         TArray<uint8> &flagBuffer = flagGrid[i];
         FlagBetweenSpaceTrue(flagBuffer);
@@ -373,8 +419,8 @@ void FMeshedPolygon::ToIndexBounded(const FVector &pos, int &x, int &y){
 
 void FMeshedPolygon::ToIndexRaw(const FVector &pos, int &x, int &y){
     FVector relative = pos - minSaved; //AB = B - A
-    x = FMath::RoundToInt(relative.X / stepSizeSaved);
-    y = FMath::RoundToInt(relative.Y / stepSizeSaved);
+    x = FMath::FloorToInt(relative.X / stepSizeSaved);
+    y = FMath::FloorToInt(relative.Y / stepSizeSaved);
 }
 
 bool FMeshedPolygon::IsInBound(const FVector &pos){
@@ -392,6 +438,16 @@ bool FMeshedPolygon::IsInBound(const FVector &pos, int &x, int &y){
     }
     return false;
 }
+
+
+void FMeshedPolygon::ToIndexRaw(const FMeshedPolygon &other, int &x, int &y){
+    ToIndexRaw(other.minSaved, x, y);
+}
+
+
+
+
+
 
 
 bool FMeshedPolygon::FlagAt(int x, int y){
@@ -506,6 +562,7 @@ void FMeshedPolygon::GenerateFrom(
     const FVector &capB,
     float stepSizeIn
 ){
+    ClearFlagsAndEdgeSet();
     FVector relative = capB - capA; // AB = B - A
     DebugHelper::logMessage(
         FString::Printf(
@@ -543,20 +600,51 @@ void FMeshedPolygon::GenerateFrom(
     if(polygons.size() > 1){
         for (int i = 0; i < polygons.size(); i++){
             if(const FMeshedPolygon *current = polygons[i]){
-                FlagTrueFromFast(*current);
+                FlagTrueFromFastAndAppendLocalHulls(*current);
             }
         }
     }
 }
 
-//expects same step size on polygon!
-void FMeshedPolygon::FlagTrueFromFast(const FMeshedPolygon &other){
-    FVector bottomLeftOther = other.minSaved;
-    int otherX, otherY;
-    ToIndexRaw(bottomLeftOther, otherX, otherY);
+void FMeshedPolygon::FlagTrueFromFastAndAppendLocalHulls(
+    const FMeshedPolygon &other
+){
+    int xInGrid, yInGrid = 0;
+    ToIndexRaw(other, xInGrid, yInGrid);
 
+    /*DebugHelper::logMessage(
+        FString::Printf(
+            TEXT("FMeshedPolygon::Embed index(%d %d) bottomLeft %s, other bottomleft %s"),
+            xInGrid,
+            yInGrid,
+            *BottomLeft().ToString(),
+            *other.minSaved.ToString()
+        )
+    );*/
+
+    AppendLocalHulls(xInGrid, yInGrid, other);
+    FlagTrueFromFast(xInGrid, yInGrid, other);
+}
+
+void FMeshedPolygon::AppendLocalHulls(
+    const int xStart,
+    const int yStart,
+    const FMeshedPolygon &other
+){
+    //add the offset to move the edge data to the correct space
+    edgeSet.AddSetWithOffset(other.edgeSet, xStart, yStart); // + +
+}
+
+
+
+//expects same step size on polygon!
+void FMeshedPolygon::FlagTrueFromFast(
+    const int xStart,
+    const int yStart,
+    const FMeshedPolygon &other
+){
     const TArray<TArray<uint8>> &otherFlagGrid = other.GetFlagGridConst();
-    FlagTrueFromFast(otherX, otherY, otherFlagGrid);
+    FlagTrueFromFast(xStart, yStart, otherFlagGrid);
 }
 
 
@@ -741,8 +829,8 @@ void FMeshedPolygon::AppendAsBinary(
         TemplateBufferStorageInterface::TAppendSingleValue<FVector>(min, buffer);
         TemplateBufferStorageInterface::TAppendSingleValue<FVector>(max, buffer);
         TemplateBufferStorageInterface::TAppendGrid<uint8>(flags, buffer);
+        edgeSet.AppendAsBinary(buffer);
     }
-
 }
 
 
@@ -760,8 +848,14 @@ bool FMeshedPolygon::LoadFromBinary(
     TemplateBufferStorageInterface::TLoadSingleValue<float>(stepSizeSaved, Ptr);
     TemplateBufferStorageInterface::TLoadSingleValue<FVector>(minSaved, Ptr);
     TemplateBufferStorageInterface::TLoadSingleValue<FVector>(maxSaved, Ptr);
-
     TemplateBufferStorageInterface::TLoadGrid<uint8>(flags, Ptr);
+    edgeSet.LoadFromBinary(buffer, Ptr);
     return true;
 
+}
+
+
+
+int FMeshedPolygon::NumEdges(){
+    return edgeSet.NumEdges();
 }

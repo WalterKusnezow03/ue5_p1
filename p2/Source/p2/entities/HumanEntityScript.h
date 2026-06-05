@@ -9,6 +9,7 @@
 #include "p2/entities/botActionHelper/EAttackType.h"
 
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
+#include "PathfinderNNExtension/Interface/VisionCone.h"
 
 #include "HumanEntityScript.generated.h"
 
@@ -74,6 +75,8 @@ public:
 	using Super::alert; // <- macht alert() aus der Basisklasse wieder sichtbar
 	virtual void alert(FVector lookat) override;
 
+	virtual FVisionCone &GetVisionCone() override;
+
 protected:
 	virtual void requestNewPathTo(FVector &location, bool towardsPlayer) override;
 
@@ -85,8 +88,7 @@ protected:
 	//-- death payload / widget interaction override --
 	virtual void SetupLootDeathPayload() override; //is called on widget request.
 
-
-
+	FVisionCone visionCone;
 
 	// NN Interface
 	void FlagPlayerVisibleToNNInterface();
@@ -96,5 +98,8 @@ protected:
 
 public:
 	virtual void ResponseNNPositions(const TArray<FVector> &positions) override;
+	virtual FVector GetWorldLocation() override {
+		return GetActorLocation();
+	}
 	// NN Interface
 };

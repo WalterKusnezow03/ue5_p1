@@ -65,7 +65,7 @@ class NetA(nn.Module):
         self.latestResult = None
         self.latestLoss = None
 
-        channelsIn = 2
+        channelsIn = 3
         channelsOut = 1
         
 
@@ -176,6 +176,8 @@ class NetA(nn.Module):
         ##self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-4) ## lr=1e-4
  
 
+
+
         if(self.loadCheckpoint()):
             print("NNServerPathfinder_NetA: loaded model from Storage!")
             ##ANNPathFinderSocket::ReceivePythonPrint NNServerPathfinder_NetA: loaded model from Storage!
@@ -199,14 +201,15 @@ class NetA(nn.Module):
     def preprocessDataTwoChannel(self, data):
         size = H * W
 
-        channel0 = torch.tensor(data[:size], dtype=torch.float32).view(H, W)
-        channel1 = torch.tensor(data[size:2*size], dtype=torch.float32).view(H, W)
+        channel0 = torch.tensor(data[ : size], dtype=torch.float32).view(H, W)
+        channel1 = torch.tensor(data[size : 2*size], dtype=torch.float32).view(H, W)
+        channel2 = torch.tensor(data[size*2 : 3*size], dtype=torch.float32).view(H, W)
 
         ##ergebnis:
         ##channel0.shape = (142, 142)
         ##channel1.shape = (142, 142)
 
-        x = torch.stack([channel1, channel0], dim=0)  # (2, H, W)
+        x = torch.stack([channel2, channel1, channel0], dim=0)  # (2, H, W)
         ##ergebnis 2,142,142
 
         x = x.unsqueeze(0) # (1, 2, H, W) -> (batch, dim, H, W)
@@ -234,84 +237,10 @@ class NetA(nn.Module):
     
     
 
-    ############################ BACKWARD PASS SINGLE BATCH ############################
-    ############################ BACKWARD PASS SINGLE BATCH ############################
-    ############################ BACKWARD PASS SINGLE BATCH ############################
-
-    def preprocessDataSingleChannel(self, data):
-        x = torch.tensor(list(data[:H*W]), dtype=torch.float32)
-
-        # reshape in 2D
-        x = x.view(1, 1, H, W)  # (batch, channel, height, width)
-
-        return x
     
-    def learnData(self, data):
-        y = self.preprocessDataSingleChannel(data)
-        self.learnGroundTruth(y)
 
-    def learnGroundTruth(self, real_y):
-        ##train iterative
-        if(self.trainSample(real_y, 1)):
-            self.latestResult = None
-            return
-
-
-
-        if self.latestResult is None:
-            return
-        
-        if(self.latestResult == None):
-            return
-        ##print("NNServerPathfinder_RUN_NN_BACKPROP_START")
-
-        pred = self.latestResult
-        loss = self.loss_fn(pred, real_y)
-
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-
-        self.latestLoss = loss.item()
-
-        print("NNServerPathfinder_NetA_RUN_NN_BACKPROP_END")
-
-        self.latestResult = None
-
-    #####  TESTING NEEDED  #####
-    def trainSample(self, real_y, iterations=1):
-        if(self.latestX == None):
-            return False
-        if(iterations <= 0):
-            return False
-
-        x = self.latestX
-        y = real_y
-
-        print("NNServerPathfinder_NetA_RUN_NN_BACKPROP_START_ITERATIONS ", iterations)
-        for i in range(iterations):
-            print("NNServerPathfinder_NetA_RUN_NN_BACKPROP_ITERATION ", i)
-            pred = self.forward(x)
-            loss = self.loss_fn(pred, y)
-
-            
-
-
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-
-            self.latestLoss = loss.item()
-
-            print("NNServerPathfinder_NetA pred mean:", pred.mean().item())
-            print("NNServerPathfinder_NetA target mean:", real_y.mean().item())
-            print("NNServerPathfinder_NetA loss:", loss.item())
-
-        print("NNServerPathfinder_NetA_RUN_NN_BACKPROP_END_ITERATIONS ", iterations)
-
-        self.latestX = None
-
-        return True
+    
+    
     
 
 
@@ -352,21 +281,15 @@ class NetA(nn.Module):
         #### single all ####
         epochs = 50
 
-        flag = False
-        if(flag):
-            print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_START", "epochs: ",epochs, " samples: ", len(xBatch))
-            for i in range(epochs):
-                self.trainBatch(xBatch, yBatch) ##batch completly faster than each sample on its own
-                print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_FINISHED", i + 1, " of ", epochs, " LOSS ", self.latestLoss)
-        else:
-            print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_START", "epochs: ",epochs, " samples: ", len(xBatch))
-            sizeBatch = 32
-            batches_x, batches_y = self.SplitIntoMiniBatches(xBatch, yBatch, sizeBatch)
-            for i in range(epochs):
-                for j in range(len(batches_x)):
-                    self.trainBatch(batches_x[j], batches_y[j])
-                
-                print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_FINISHED", i + 1, " of ", epochs, " LOSS ", self.latestLoss)
+        
+        print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_START", "epochs: ",epochs, " samples: ", len(xBatch))
+        sizeBatch = 32
+        batches_x, batches_y = self.SplitIntoMiniBatches(xBatch, yBatch, sizeBatch)
+        for i in range(epochs):
+            for j in range(len(batches_x)):
+                self.trainBatch(batches_x[j], batches_y[j])
+            
+            print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_FINISHED", i + 1, "_of_", epochs, " LOSS ", self.latestLoss)
 
         
         return
@@ -394,7 +317,7 @@ class NetA(nn.Module):
 
     def DecomposeIntoBatches(self, binary):
         size = H * W
-        sampleSize = size * 3  # 2 input channels + 1 target
+        sampleSize = size * 4  # 3 input channels + 1 target
 
         xBatch = []
         yBatch = []
@@ -405,18 +328,22 @@ class NetA(nn.Module):
             offset = i * sampleSize
 
             # --- INPUT ---
+            #AppendFlagMapAsFloat(buffer);
+            #AppendTimeMap(buffer);
+            #AppendViewMap(buffer);
             channel0 = torch.tensor(binary[offset : offset + size], dtype=torch.float32).view(H, W)
             channel1 = torch.tensor(binary[offset + size : offset + 2*size], dtype=torch.float32).view(H, W)
+            channel2 = torch.tensor(binary[offset + 2 * size : offset + 3*size], dtype=torch.float32).view(H, W)
 
-            x = torch.stack([channel1, channel0], dim=0)  # (2, H, W)
+            x = torch.stack([channel2, channel1, channel0], dim=0)  # (3, H, W)
             xBatch.append(x)
 
             # --- TARGET ---
-            y = torch.tensor(binary[offset + 2*size : offset + 3*size], dtype=torch.float32).view(1, H, W)
+            y = torch.tensor(binary[offset + 3*size : offset + 4*size], dtype=torch.float32).view(1, H, W)
             yBatch.append(y)
 
         # --- STACK TO BATCH ---
-        xBatch = torch.stack(xBatch, dim=0)  # (B, 2, H, W)
+        xBatch = torch.stack(xBatch, dim=0)  # (B, 3, H, W)
         yBatch = torch.stack(yBatch, dim=0)  # (B, 1, H, W)
 
         return xBatch, yBatch

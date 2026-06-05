@@ -17,6 +17,7 @@
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
+
 #include "NNPathFinderSocket.generated.h"
 
 /// @brief Python socket with Shared Memory Support for Python Script!
@@ -57,7 +58,8 @@ public:
     //is visible or not
     void FlagVisible(AActor *actor);
 
-    
+    void SetTrainingAllowed();
+
 protected:
     using ANNSocket::WriteData;
     void WriteDataRequest(TArray<uint8> &data, int resultBytes);
@@ -90,7 +92,7 @@ protected:
     void PredictNextTask();
 
     void PredictNode(
-        AActor *actor
+        FPathFinderNNRequestPackage *package
     );
     
 
@@ -99,6 +101,8 @@ protected:
 
 
 
+
+    bool trainingStartAllowed = false;
     FPathFinderNNSampleSet batchTask;
     void LoadBatchIfNotDoneYet();
 

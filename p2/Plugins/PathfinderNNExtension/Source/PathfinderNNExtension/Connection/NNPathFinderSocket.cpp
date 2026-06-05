@@ -65,8 +65,8 @@ void ANNPathFinderSocket::Tick(float deltatime){
 }
 
 void ANNPathFinderSocket::LoadBatchIfNotDoneYet(){
-    if(!batchTask.BatchPrepared()){
-
+    if(trainingStartAllowed && !batchTask.BatchPrepared()){
+        DebugHelper::logMessage("ANNPathFinderSocket::LoadBatchIfNotDoneYet");
         TArray<uint8> buffer;
         batchTask.PrepareBinary(buffer);
         if (buffer.Num() > 0)
@@ -75,6 +75,12 @@ void ANNPathFinderSocket::LoadBatchIfNotDoneYet(){
         }
     }
 }
+
+void ANNPathFinderSocket::SetTrainingAllowed(){
+    trainingStartAllowed = true;
+}
+
+
 
 
 
@@ -111,7 +117,7 @@ void ANNPathFinderSocket::FlagVisible(AActor *actor){
 }
 
 
-
+// ---- subrscribe observer pattern ----
 void ANNPathFinderSocket::PredictNode(
     IPathfinderNNInterface *interfaceNotify,
     AActor *actor
@@ -124,9 +130,17 @@ void ANNPathFinderSocket::PredictNode(
     }
 }
 
+
+
+
+
 void ANNPathFinderSocket::PredictNode(
-    AActor *actor
+    //AActor *actor
+    FPathFinderNNRequestPackage *package
 ){
+    
+
+
     //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY A");
     //one task at a time for now.
     if(task.IsValid()){
@@ -135,6 +149,14 @@ void ANNPathFinderSocket::PredictNode(
         }
     }
 
+
+
+
+    if(!package){
+        return;
+    }
+    AActor *actor = package->GetActor();
+
     DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY B");
 
     if (actor){
@@ -142,6 +164,9 @@ void ANNPathFinderSocket::PredictNode(
         actorTracker.AddTrackedActorIfNeeded(actor);
         task.Setup(actorTracker.FindIfTracked(actor));
         if(task.IsValid()){
+            //on task start: embed enemy postions for this actor.
+            task.EmbedEnemyPositions(*package);
+
             //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION");
             //DebugHelper::showScreenMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION", FColor::Red);
             TArray<uint8> requestBinary;
@@ -159,10 +184,14 @@ void ANNPathFinderSocket::PredictNode(
 //call this once a task is completed
 void ANNPathFinderSocket::PredictNextTask(){
     if(requests.HasTasks()){
-        //get next prediction actor
+        
+        /*//get next prediction actor
         if(AActor *front = requests.frontActor()){
             PredictNode(front); //if a task is still running right now, it will be discared.
             //the list stays the same.
+        }*/
+        if(FPathFinderNNRequestPackage *package = requests.frontPackage()){
+            PredictNode(package);
         }
     }
 }
@@ -225,7 +254,7 @@ void ANNPathFinderSocket::WriteDataGroundTruth(
 
 
 void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
-    //Super::OnReceivePythonPrint(Output);
+    Super::OnReceivePythonPrint(Output);
    
     if(true){
         //DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
@@ -238,13 +267,14 @@ void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
 
 void ANNPathFinderSocket::ReadDataResult(){
     
+    /// create heat map from prediction
     
     //this a float buffer just like NN input
     TArray<uint8> buffer;
     frameManager.TryReadDataTo(frameNameResult, buffer);
     //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST FINISH Arrived! ResulDataSize", buffer.Num());
 
-    task.GenerateMapFromResultBytes(buffer);
+    task.GenerateMapFromPredicitontBytes(buffer);
     
     //create result for queue ------> TODO!
     TArray<FVector> positions;
@@ -259,6 +289,7 @@ void ANNPathFinderSocket::ReadDataResult(){
         FColor(0, 0, 255, 255), //FColor colorMin,
         FColor(255, 0, 0, 255), //FColor colorMax,
         FColor(255,255,255,255), //FColor colorPolygonFlagged,
+        FColor(FColor::Cyan), //FColor colorViewGrid
         FColor(FColor::Yellow), //FColor colorTrjacetory,
         FColor(0,255,0,255) //FColor playerPosResult
     );
