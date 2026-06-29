@@ -99,13 +99,13 @@ void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 
 //---- tests -----
-#include "CoreMath/algorithm/_Test/TestAlgorithm.h"
+
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
 #include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
 void AgameModeSubclass::RunTests(){
     //AssetPathMaker::Test();
-    //TestAlgorithm::Test();
+    
     //BoundingBoxSimple::Test();
     //ANNSocket::MakeInstance(GetWorld());
     ANNPathFinderSocket::MakePathFinderSocketInstance(GetWorld());

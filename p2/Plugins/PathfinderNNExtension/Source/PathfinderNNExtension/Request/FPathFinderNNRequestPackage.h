@@ -4,7 +4,7 @@
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
 #include "PathfinderNNExtension/Interface/VisionCone.h"
 
-/// @brief package for task queue
+/// @brief package for task queue for a targeted actor
 class PATHFINDERNNEXTENSION_API FPathFinderNNRequestPackage {
 
 public:
@@ -26,6 +26,7 @@ public:
 
     void GetRequesterVisionCones(TArray<FVisionCone *> &outPositions);
 
+    TArray<IPathfinderNNInterface *> &GetSubscribedActors();
 
 private:
     TArray<IPathfinderNNInterface *> subscribed;

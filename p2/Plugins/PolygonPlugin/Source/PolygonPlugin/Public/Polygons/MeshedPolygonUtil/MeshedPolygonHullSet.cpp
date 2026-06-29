@@ -50,14 +50,24 @@ FMeshedPolygonHullIndices &FMeshedPolygonHullSet::operator[](int32 i){
 }
 
 
-
 bool FMeshedPolygonHullSet::RayIntersectPolygons(
     int x, 
     int y, 
     const FVector2D &dir,
     FIntPoint &outClosestHit
 ){
-    DebugHelper::logMessage(FString::Printf(TEXT("FMeshedPolygonHullSet::RayIntersectPolygons (%d)"), set.Num()));
+    float tIgnored = 0.0f;
+    return RayIntersectPolygons(x, y, dir, outClosestHit, tIgnored);
+}
+
+bool FMeshedPolygonHullSet::RayIntersectPolygons(
+    int x, 
+    int y, 
+    const FVector2D &dir,
+    FIntPoint &outClosestHit,
+    float &outT
+){
+    //DebugHelper::logMessage(FString::Printf(TEXT("FMeshedPolygonHullSet::RayIntersectPolygons (%d)"), set.Num()));
 
     bool found = false;
     float t = FLT_MAX;
@@ -72,6 +82,9 @@ bool FMeshedPolygonHullSet::RayIntersectPolygons(
                 found = true;
             }
         }
+    }
+    if(found){
+        outT = t;
     }
     return found;
 }

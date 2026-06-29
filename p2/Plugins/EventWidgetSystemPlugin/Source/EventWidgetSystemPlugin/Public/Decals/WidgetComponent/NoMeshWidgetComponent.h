@@ -68,6 +68,8 @@ private:
     FString actorName = "Actor47";
     // -- id for event dispatcher --
 
+    bool printNoDecalMatOnce = false;
+
 public:
 
 

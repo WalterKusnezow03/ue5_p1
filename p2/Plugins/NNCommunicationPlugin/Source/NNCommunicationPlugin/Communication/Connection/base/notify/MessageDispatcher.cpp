@@ -21,13 +21,16 @@ void MessageDispatcher::Subscribe(INNPathFinderSocketMessageReceiver *other){
 
 
 void MessageDispatcher::Dispatch(FString message){
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("Python::MessageDispatcher::Dispatch (TO %d) %s"),
-            receiverSet.Num(),
-            *message
-        )
-    );
+    if(!message.ToLower().Contains("debug")){
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("Python::MessageDispatcher::Dispatch (TO %d) %s"),
+                receiverSet.Num(),
+                *message
+            )
+        );
+    }
+    
     for (int i = 0; i < receiverSet.Num(); i++){
         if(INNPathFinderSocketMessageReceiver *current = receiverSet[i]){
             current->ReceiveMessage(message);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PolygonPlugin/Public/Polygons/MeshedPolygonUtil/triangulate/PolygonHullTriangulator.h"
 
 //store the polygon edge indices explictly
 class POLYGONPLUGIN_API FMeshedPolygonHullIndices{
@@ -42,13 +43,18 @@ public:
     int32 Num();
     std::pair<int, int>& operator[](int i);
 
+    void Triangulate(bool clockwise);
     bool InsideHull(int x, int y) const;
 
+    void AddAll(const TArray<FIntPoint> &hits);
+
 protected:
-    
+    //saved to storage
     TArray<std::pair<int, int>> indices;
 
-    
+    //not saved to storage
+    FPolygonHullTriangulator triangulator;
+
     float Dot(const FVector2D &a, const FVector2D &b);
 
 
@@ -73,14 +79,5 @@ protected:
 
     int Dot(std::pair<int, int> &n, int x, int y) const;
 
-    std::pair<int, int> Normal(
-        int i, int j
-    ) const;
-    std::pair<int, int> Connect(
-        int i, int j) const;
-
-    std::pair<int, int> Connect(
-        const std::pair<int, int> &a,
-        const std::pair<int, int> &b
-    ) const ;
+    
 };

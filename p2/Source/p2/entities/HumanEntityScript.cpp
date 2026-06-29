@@ -209,7 +209,33 @@ void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
 
 //process requested positions
 void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
-    DebugHelper::showScreenMessage("AHumanEntityScript::ResponseNNPositions Receive Response", FColor::Orange);
+    if(positions.Num() > 0){
+        FString message = FString::Printf(
+            TEXT("AHumanEntityScript::ResponseNNPositions Receive Response (%d)"),
+            positions.Num()
+        );
+        DebugHelper::showScreenMessage(message, FColor::Orange);
+        DebugHelper::logMessage(message);
+
+        for (int i = 0; i < positions.Num(); i++){
+            FVector current = positions[i];
+            FVector actorLocation = humanoidPluginController.GetLocation();
+            current.Z = actorLocation.Z;
+
+            DebugHelper::showLineBetween(
+                GetWorld(),
+                current,
+                actorLocation,
+                FColor::Green,
+                1.0f
+            );
+        }
+
+        //process check if visible at all
+
+        //notifiy team
+        
+    }
 }
 
 

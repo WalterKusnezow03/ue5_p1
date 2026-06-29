@@ -11,6 +11,8 @@
 
 
 class FVisionCone;
+class FMeshedPolygonColorAttributes;
+class IPathfinderNNInterface;
 
 //encode trajectory layer
 class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayered : public FMeshedPolygonRaytracable {
@@ -28,12 +30,10 @@ public:
     void AppendFlagMapAsFloat(TArray<uint8> &buffer) const;
     void AppendTimeMap(TArray<uint8> &buffer) const;
     void AppendViewMap(TArray<uint8> &buffer);
+    void AppendTrajectoryConeMap(TArray<uint8> &buffer);
     void AppendResultMapAsFloat(TArray<uint8> &buffer) const;
-    
-    int ResultGridSizeBytes();
 
-    //deprecated
-    void EmbedEnemyPositions(const TArray<FVector> &enemies);
+    int ResultGridSizeBytes(); //ground truth grid size bytes
 
     //new
     void EmbedEnemyVision(const TArray<FVisionCone *> &cones);
@@ -47,19 +47,13 @@ public:
     // ---- Paste result from nn ----
     void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
 
-    
     void ColoredHeatMap(
         Image &image,
-        FColor colorMin,
-        FColor colorMax,
-        FColor colorPolygonFlagged,
-        FColor colorViewGrid,
-        FColor colorTrjacetory,
-        FColor playerPosResult
+        FMeshedPolygonColorAttributes &attributes
     );
 
-    void GenerateResultPositions(
-        TArray<FVector> &positions
+    void NotifyVisiblePositionsFor(
+        IPathfinderNNInterface *interfaceIn
     );
 
     //binary generation
@@ -77,33 +71,78 @@ public:
     //binary generation
 
 private:
-    bool TimeGridIsValid() const;
-    /*
-    rasterize
-    to index buffer
-    time.
-    */
+    void EmbedConeFromTrajectories(
+        TArray<Trajectory> &trajectories
+    );
 
+    void GenerateResultPositions(
+        TArray<FVector> &positions
+    );
+
+    void GenerateResultPositionsVisibleBy(
+        IPathfinderNNInterface *interfaceIn,
+        TArray<FVector> &outpositions
+    );
+
+    void GenerateResultPositionsVisibleBy(
+        const FVector &lookFromPos,
+        TArray<FVector> &outpositions
+    );
+
+    void GenerateResultPositionsVisibleBy(
+        const FVector &lookFromPos,
+        TArray<FVector> &possibleSolutions,
+        TArray<FVector> &outpositions
+    );
+
+    void ColoredHeatMap(
+        Image &image,
+        FColor colorMin,
+        FColor colorMax,
+        FColor colorPolygonFlagged,
+        FColor colorViewGrid,
+        FColor colorTrjacetory,
+        FColor playerPosResult
+    );
+
+
+
+
+    // --- player trajectories ---
+    bool TimeGridIsValid() const;
     void OverrideTime(Trajectory &trajectory);
     void OverrideTime(int i, int j, float time);
     void OverrideTimeGaussian(int i, int j, float time, int size, float sigma);
 
     void CreateOrClearTrajectoryGrid();
-    TArray<TArray<float>> timeGrid;
+    TArray<TArray<float>> timeGrid; //trajectories from player
 
     void AppendFloatMapToBuffer(
         TArray<uint8> &buffer,
         const TArray<TArray<float>> &someMap
     ) const;
 
+    // --- player trajectory prediction Cone ---
+    TArray<TArray<float>> trajectoryConePrecited;
+    bool TrajectoryConeGridIsValid();
+    void CreateOrClearTrajectoryConeGrid();
 
 
-    TArray<TArray<float>> resultGrid;
-    bool ResultGridIsValid() const;
-    void CreateOrClearResultGrid();
-    void ClearResultGrid();
 
-    void GaussianResultGrid(int x, int y, int size, float sigma);
+
+
+
+
+    // --- ground truth ---
+
+    //ground truth position . ground truth grid
+    static constexpr float playerGroundTruthPeak = 1.0f;
+    TArray<TArray<float>> groundTruthGrid; //ground truth grid
+    bool GroundTruthGridIsValid() const;
+    void CreateOrClearGroundTruthGrid();
+    void ClearGroundTruthGrid();
+
+    void GaussianGroundTruthGrid(int x, int y, int size, float sigma);
     void GaussianOnGrid(
         int x,
         int y,
@@ -127,17 +166,12 @@ private:
 
 
 
-    float Gaussian(
-        int i, 
-        int j, 
-        int xCenter, 
-        int yCenter, 
-        float twoSigma2
-    );
+    
 
 
-    // --- new ---
+    // --- enemy positions - not used ---
     TArray<TArray<float>> enemyPositions;
+    //TArray<FVector> enemyPositionsRaw; //needs to be saved to SampleSet - NO DOES NOT NEED TO BE, POST PROCESS
     bool EnemyPositionGridIsValid();
     void CreateOrClearEnemyPositionGrid();
 
@@ -155,11 +189,22 @@ private:
     }
     void EmbedEnemyPosition(const FVector &position);
 
+    //
+
+
+
+
+
+
     /// ---- heatmap prediction ----
 
     TArray<TArray<float>> heatMap;
+    TArray<FVector> extractedHeatMapResults;
     void NormalizeHeatMap();
     void NormalizeHeatMapThroshold(float threshold);
+    void CacheResultPositionsFromHeatMap();
+    void RemoveHeatMapBorder(int sizeBorder);
+    void ClusterHeatMapPositions();
     void LogHeatMap(FString prefix);
     FColor DirColor(
         const FColor &colorMin,

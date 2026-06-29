@@ -18,8 +18,18 @@ import communicationPluginParent
 import nn_server
 from NNBase import CNNBase
 import NetA
+import NetB
 
-##print("IMPORT OK \n")
+print("NNServerPathfinder IMPORT OK \n")
+
+
+
+##debug
+##print("NNServerPathfinder make Net B instance debug \n")
+##localNet = NetB.NetB() ##NetA.NetA()
+##print("NNServerPathfinder make Net B instance finish \n")
+
+
 
 ##nn_server.Run() ##is executed!! :) 
 
@@ -30,12 +40,15 @@ class NNServerPathfinder(nn_server.NNServer):
     def __init__(self):
         super().__init__()  # wichtig zum socket aufmachen, und shared memory
         print("NNServerPathfinder constructor")
+        
         self.count = 0
         ##same as cpp socket
         self.frameNameRequest = "ANNPathFinderSFIN"
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
-        self.Net = NetA.NetA()
+
+        print("NNServerPathfinder_NetB: INIT!")
+        self.Net = NetB.NetB()
 
         self.bWaitingForGroundTruth = False
         self.resultData = None
@@ -46,6 +59,7 @@ class NNServerPathfinder(nn_server.NNServer):
         self.doBatchTraining = True
 
         self.trainLive = False
+        print("NNServerPathfinder constructor end")
 
 
     def TagIsGroundTruthButDontTrainLive(self, tag):
@@ -199,7 +213,9 @@ class NNServerPathfinder(nn_server.NNServer):
 
 
 ##tick
+print("NNServerPathfinder BEFORE INIT")
 server = NNServerPathfinder()
+print("NNServerPathfinder END INIT")
 
 
 def RunHere():

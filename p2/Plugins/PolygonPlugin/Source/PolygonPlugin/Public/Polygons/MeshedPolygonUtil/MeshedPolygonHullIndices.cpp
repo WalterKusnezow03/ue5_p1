@@ -3,6 +3,15 @@
 
 
 
+void FMeshedPolygonHullIndices::AddAll(const TArray<FIntPoint> &hits){
+    for (int i = 0; i < hits.Num(); i++){
+        const FIntPoint &current = hits[i];
+        AddPosition(
+            current.X,
+            current.Y
+        );
+    }
+}
 
 //FMeshedPolygonHullIndices
 void FMeshedPolygonHullIndices::AddPosition(int x, int y){
@@ -178,62 +187,22 @@ void FMeshedPolygonHullIndices::Clear(){
 }
 
 
+void FMeshedPolygonHullIndices::Triangulate(bool clockwise){
+    triangulator.Triangulate(indices, clockwise);
+}
+
+//so nur für convexe polygone !
 bool FMeshedPolygonHullIndices::InsideHull(int x, int y) const {
-    if(indices.Num() <= 2){
-        return true;
-    }
+    
 
-    int dot = 0;
-    for (int i = 0; i < indices.Num(); i++)
-    {
-        int j = (i + 1) % indices.Num();
+    //ein einfacher dot product test gegen
+    //alle edges ist nicht hinreichend bei 
+    //konkaven polygonen.
 
-        std::pair<int, int> n = Normal(i, j);
-        int currentDot = Dot(n, x, y);
-
-        if(i == 0){
-            dot = currentDot;
-        }else{
-
-            bool signA = currentDot > 0;
-            bool signB = dot > 0;
-
-            if(signA != signB){
-                return false;
-            }
-        }
-    }
-    return true;
+    //es muss ein ear clipping algorythmus verwendet werden
+    return triangulator.InsideHull(x, y);
 }
 
 int FMeshedPolygonHullIndices::Dot(std::pair<int,int> &n, int x, int y) const {
     return n.first * x + n.second * y;
-}
-
-std::pair<int, int> FMeshedPolygonHullIndices::Normal(
-    int i, int j
-) const {
-    std::pair<int, int> connect = Connect(i, j);
-    int copy = connect.second;
-    connect.second = -connect.first;
-    connect.first = copy;
-    return connect;
-}
-
-std::pair<int, int> FMeshedPolygonHullIndices::Connect(
-    int i, int j
-) const {
-    const std::pair<int, int> &a = indices[i];
-    const std::pair<int, int> &b = indices[j];
-    return Connect(a, b);
-}
-
-std::pair<int, int> FMeshedPolygonHullIndices::Connect(
-    const std::pair<int, int> &a,
-    const std::pair<int, int> &b
-) const {
-    std::pair<int, int> result;
-    result.first = b.first - a.first;
-    result.second = b.second - a.second;
-    return result;
 }

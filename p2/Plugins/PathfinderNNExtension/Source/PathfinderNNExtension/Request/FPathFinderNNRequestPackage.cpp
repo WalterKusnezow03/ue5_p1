@@ -60,6 +60,10 @@ void FPathFinderNNRequestPackage::NotifyAll(const TArray<FVector> &predictedPosi
 }
 
 
+TArray<IPathfinderNNInterface *> &FPathFinderNNRequestPackage::GetSubscribedActors(){
+    return subscribed;
+}
+
 AActor *FPathFinderNNRequestPackage::GetActor(){
     return setupActor;
 }

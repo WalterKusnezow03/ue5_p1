@@ -544,7 +544,7 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 void AEntityScript::followpath(float deltaTime){
 	if(hasNodesInPathLeft()){
 
-		DebugHelper::showScreenMessage("Following path.");
+		//DebugHelper::showScreenMessage("Following path.");
 
 		FVector currentLocation = humanoidPluginController.GetLocation(); 
 		FVector nextPos = path.front();

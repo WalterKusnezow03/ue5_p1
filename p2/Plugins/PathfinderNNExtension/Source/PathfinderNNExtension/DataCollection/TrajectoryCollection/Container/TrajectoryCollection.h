@@ -22,6 +22,10 @@ public:
 
     TArray<Trajectory> ToArrayNormalizedTime() const;
 
+    static bool EndDir(const TArray<Trajectory> &array, FVector2D &outDir);
+    static bool GlobalDir(const TArray<Trajectory> &array, FVector2D &outDir);
+    
+
 private:
     int maxElements = 1;
     int num = 0;
@@ -32,4 +36,7 @@ private:
 
     void PopFront();
     void CopyList(const TrajectoryCollection &other);
+
+
+    static FVector Dir2D(const Trajectory &a, const Trajectory &b);
 };

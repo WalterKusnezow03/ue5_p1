@@ -1,5 +1,6 @@
 #include "PredictionTask.h"
 #include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 
 
 void PredictionTask::Reset(){
@@ -32,17 +33,31 @@ int PredictionTask::ResultGridSizeBytes(){
     return polygonDataCache.ResultGridSizeBytes(); //prediction / result byte size of grid
 }
 
-void PredictionTask::EmbedEnemyPositions(const TArray<FVisionCone*> &enemies){
+void PredictionTask::EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies){
     polygonDataCache.EmbedEnemyVision(enemies);
 }
 
 
 
-void PredictionTask::EmbedEnemyPositions(FPathFinderNNRequestPackage &queue){
+void PredictionTask::EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue){
     TArray<FVisionCone*> positionsToEmbed;
     queue.GetRequesterVisionCones(positionsToEmbed);
-    EmbedEnemyPositions(positionsToEmbed);
+    EmbedEnemyPositionsAndVision(positionsToEmbed);
 }
+
+
+void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackage *queue){
+    if(queue){
+        TArray<IPathfinderNNInterface *> interfaces = queue->GetSubscribedActors();
+        for (int i = 0; i < interfaces.Num(); i++){
+            if(IPathfinderNNInterface *current = interfaces[i]){
+                polygonDataCache.NotifyVisiblePositionsFor(current);
+            }
+        }
+    }
+}
+
+
 
 
 
@@ -103,24 +118,18 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonD
 }
 
 
-void PredictionTask::GenerateResultPositions(
-    TArray<FVector> &positions
-){
-    polygonDataCache.GenerateResultPositions(positions);
-}
-
 //prepares result binary!
 bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes){
     
     if(IsValid()){
-        DebugHelper::showScreenMessage("PredictionTask::TickTask Z", FColor::Blue);
+        //DebugHelper::showScreenMessage("PredictionTask::TickTask Z", FColor::Blue);
         //if(taskStarted && !taskCompleted){ //new condition
         if(taskStarted){ //new condition
-            DebugHelper::showScreenMessage("PredictionTask::TickTask A", FColor::Blue);
+            //DebugHelper::showScreenMessage("PredictionTask::TickTask A", FColor::Blue);
             if(trackedActorPtr->IsFlaggedVisibleReset()){
                 //task is finished now, prepare bin for NN python / shared mem
                 resultbytes.Empty();
-                DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
+                //DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
                 
 
                 //embed player position into a other flag grid, same size as polygon data grid
@@ -160,17 +169,10 @@ bool PredictionTask::IsSameActor(AActor *actorCheck){
 
 void PredictionTask::ColoredHeatMap(
     Image &image,
-    FColor colorMin,
-    FColor colorMax,
-    FColor colorPolygonFlagged,
-    FColor colorViewGrid,
-    FColor colorTrjacetory,
-    FColor playerPosResult
+    FMeshedPolygonColorAttributes &attributes
 ){
     polygonDataCache.ColoredHeatMap(
-        image, colorMin, colorMax, colorPolygonFlagged,colorViewGrid, colorTrjacetory, playerPosResult
+        image, attributes
     );
     taskCompleted = true;
 }
-
-

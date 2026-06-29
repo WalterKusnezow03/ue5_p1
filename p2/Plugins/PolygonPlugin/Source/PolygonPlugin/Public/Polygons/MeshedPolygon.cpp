@@ -743,6 +743,8 @@ TArray<TArray<FVector>> &FMeshedPolygon::GetPositionGrid(){
 
 
 
+
+
 void FMeshedPolygon::GenerateColorBitmap(
     TArray<FColor> &outBuffer,
     FColor &free,
@@ -858,4 +860,47 @@ bool FMeshedPolygon::LoadFromBinary(
 
 int FMeshedPolygon::NumEdges(){
     return edgeSet.NumEdges();
+}
+
+
+
+FVector FMeshedPolygon::PositionFromIndex(int i, int j){
+    FVector posLocal(
+        i * stepSizeSaved,
+        j * stepSizeSaved,
+        0.0f
+    );
+    return posLocal + BottomLeft();
+}
+
+
+
+
+void FMeshedPolygon::RemoveMapBorder(TArray<TArray<float>> &grid, int sizeBorder, float value){
+    
+    int end = FMath::Min(sizeBorder, grid.Num());
+    for (int i = 0; i < end; i++){
+        if(i < grid.Num()){
+            TArray<float> &column = grid[i];
+            RemoveBorder(column, sizeBorder, value);
+        }
+    }
+
+    int start = FMath::Max(0, grid.Num() - sizeBorder);
+    for (int i = start; i < grid.Num(); i++){
+        TArray<float> &column = grid[i];
+        RemoveBorder(column, sizeBorder, value);
+    }
+}
+
+void FMeshedPolygon::RemoveBorder(TArray<float> &column, int sizeBorder, float value){
+    int end = FMath::Min(sizeBorder, column.Num());
+    for (int i = 0; i < end; i++){
+        column[i] = value;
+    }
+
+    int start = FMath::Max(0, column.Num() - sizeBorder);
+    for (int i = start; i < column.Num(); i++){
+        column[i] = value;
+    }
 }

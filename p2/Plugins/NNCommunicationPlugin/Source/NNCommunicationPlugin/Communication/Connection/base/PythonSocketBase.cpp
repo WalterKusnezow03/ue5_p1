@@ -163,7 +163,7 @@ void APythonSocketBase::Send(FString message){
     TArray<uint8> Bytes;
     Bytes.Append((uint8*)Converter.Get(), Converter.Length());
 
-    DebugHelper::logMessage("APythonSocketBase::SendMessage ", message);
+    //DebugHelper::logMessage("APythonSocketBase::SendMessage ", message);
     Send(Bytes);
 }
 
@@ -182,7 +182,7 @@ void APythonSocketBase::Send(TArray<uint8> &bin){
 
 
 
-    DebugHelper::logMessage("APythonSocketBase::SendBytes ", bin.Num());
+    //DebugHelper::logMessage("APythonSocketBase::SendBytes ", bin.Num());
 
     int32 numBytes = bin.Num();
 

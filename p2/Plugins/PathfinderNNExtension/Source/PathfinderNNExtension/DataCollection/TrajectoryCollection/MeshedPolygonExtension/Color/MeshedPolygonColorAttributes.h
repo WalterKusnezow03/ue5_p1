@@ -8,6 +8,15 @@ public:
     FMeshedPolygonColorAttributes();
     ~FMeshedPolygonColorAttributes();
 
+    FMeshedPolygonColorAttributes(
+        FColor colorMinHeatIn,
+        FColor colorMaxHeatIn,
+        FColor colorPolygonFlaggedIn,
+        FColor colorViewGridIn,
+        FColor colorTrjacetoryIn,
+        FColor playerPosResultIn
+    );
+
     void SetColors(
         FColor colorMinHeatIn,
         FColor colorMaxHeatIn,
@@ -17,8 +26,12 @@ public:
         FColor playerPosResultIn
     );
 
-
-
+    FColor ColorMinHeat();
+    FColor ColorMaxHeat();
+    FColor ColorPolygon();
+    FColor ColorView();
+    FColor ColorTrajectory();
+    FColor ColorPlayerResult();
 
 private:
 

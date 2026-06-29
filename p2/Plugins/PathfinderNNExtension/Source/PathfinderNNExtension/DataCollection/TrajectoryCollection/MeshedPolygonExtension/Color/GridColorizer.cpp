@@ -42,6 +42,67 @@ void FGridColorizer::ColorizeFromEpsilonFlag(
     }
 }
 
+void FGridColorizer::ColorizeFromEpsilonFlagMix(
+    Image &image,
+    TArray<TArray<float>> &grid,
+    float epsilon,
+    bool useAbs,
+    const FColor &color
+){
+    ColorizeFromEpsilonFlagMix(image, grid, epsilon, useAbs, color, 1.0f);
+}
+
+void FGridColorizer::ColorizeFromEpsilonFlagMix(
+    Image &image,
+    TArray<TArray<float>> &grid,
+    float epsilon,
+    bool useAbs,
+    const FColor &color,
+    float externalWeight
+){
+    for (int i = 0; i < grid.Num(); i++){
+        const TArray<float> &currentBuffer = grid[i];
+        for (int j = 0; j < currentBuffer.Num(); j++){
+            float scalar = currentBuffer[j];
+            if(useAbs){
+                scalar = std::abs(scalar);
+            }
+
+            FColor current = image.GetPixel(i, j);
+            FColor setColor = MixColor(color, current, scalar * externalWeight);
+
+            if(scalar > epsilon){
+                image.SetPixel(i, j, setColor);
+            }
+        }
+    }
+}
+
+FColor FGridColorizer::MixColor(
+    const FColor &a,
+    const FColor &b,
+    float weightA
+){
+    weightA = FMath::Clamp(weightA, 0.0f, 1.0f);
+    float weightB = 1.0f - weightA;
+    return MixColor(a, b, weightA, weightB);
+}
+
+FColor FGridColorizer::MixColor(
+    const FColor &a,
+    const FColor &b,
+    float weightA,
+    float weightB
+){
+    FColor result(
+        a.R * weightA + b.R * weightB,
+        a.G * weightA + b.G * weightB,
+        a.B * weightA + b.B * weightB,
+        255
+    );
+    return result;
+}
+
 void FGridColorizer::ColorizeFromUintFlag(
     Image &image,
     TArray<TArray<uint8>> &flagGrid,

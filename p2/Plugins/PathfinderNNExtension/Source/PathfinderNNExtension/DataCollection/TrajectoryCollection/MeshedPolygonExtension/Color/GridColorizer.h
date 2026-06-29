@@ -26,6 +26,22 @@ public:
         const FColor &color
     );
 
+    void ColorizeFromEpsilonFlagMix(
+        Image &image,
+        TArray<TArray<float>> &grid,
+        float epsilon,
+        bool useAbs,
+        const FColor &color
+    );
+    void ColorizeFromEpsilonFlagMix(
+        Image &image,
+        TArray<TArray<float>> &grid,
+        float epsilon,
+        bool useAbs,
+        const FColor &color,
+        float externalWeight
+    );
+
     void ColorizeFromUintFlag(
         Image &image,
         TArray<TArray<uint8>> &flagGrid,
@@ -58,4 +74,14 @@ private:
         const FColor &colorDir,
         float scalar
     );
+
+    FColor MixColor(
+        const FColor &a,
+        const FColor &b,
+        float weightA);
+    FColor MixColor(
+        const FColor &a,
+        const FColor &b,
+        float weightA,
+        float weightB);
 };

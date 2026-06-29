@@ -12,8 +12,24 @@ class POLYGONPLUGIN_API FMeshedPolygonRaytracable : public FMeshedPolygon{
 
 public:
     void TraceCone(const FVector &pos, const FVector2D &dir, float angle);
-    void TraceCone(const FVector &pos, const FVector2D &dir, float angle, float rays);
-    void TraceCone(int x, int y, const FVector2D &dir, float angle, float rays);
+    void TraceConeOnGrid(
+        const FVector &pos,
+        const FVector2D &dir,
+        float angle,
+        // expects grid to be same size and space as this polygon (externally passable for multichannel cones)
+        TArray<TArray<float>> &grid 
+    );
+    void TraceConeOnGrid(
+        const FVector &pos, const FVector2D &dir, float angle, float rays,
+        // expects grid to be same size and space as this polygon (externally passable for multichannel cones)
+        TArray<TArray<float>> &grid 
+    );
+    void TraceConeOnGridBetweenDirections(
+        const FVector &pos,
+        const FVector2D &limitA,
+        const FVector2D &limitB,
+        TArray<TArray<float>> &grid // expects grid to be same size and space as this polygon
+    );
 
     virtual void AppendAsBinary(
         TArray<uint8> &buffer
@@ -24,7 +40,26 @@ public:
         uint8 *&Ptr // reference to a pointer. Pointer by reference.
     ) override;
 
+    //perform visiblity check to verify NN prediciton
+    bool IsVisible(const FVector &a, const FVector &b);
+
 protected:
+    void TraceConeOnGrid(
+        int x, int y, const FVector2D &dir, float angle, float rays,
+        // expects grid to be same size and space as this polygon (externally passable for multichannel cones)
+        TArray<TArray<float>> &grid,
+        bool dirIsCentered
+    );
+
+    void TraceConeCollectHits(
+        int x, int y,
+        const FVector2D &dir,
+        float angle,
+        float rays,
+        TArray<FIntPoint> &hits,
+        bool dirIsCentered
+    );
+
     void CreateOrClearViewGrid();
     TArray<TArray<float>> viewGrid;
     bool ViewGridValid();
@@ -32,21 +67,17 @@ protected:
     FMeshedPolygonHullIndices boundHull;
 
     bool Trace(int x, int y, const FVector2D &dir, FIntPoint &outHit);
-    void FlagPositon(const FIntPoint &pos);
+    bool Trace(int x, int y, const FVector2D &dir, FIntPoint &outHit, bool ignoreBounds);
+    bool Trace(int x, int y, const FVector2D &dir, FIntPoint &outHit, bool ignoreBounds, float &outT);
+    void FlagPositon(const FIntPoint &pos, TArray<TArray<float>> &grid);
 
-
-    void FlagPositionsFromPolygon(
-        TArray<FIntPoint> &hits, // not rasterized properly yet
-        int x,
-        int y
+    void DrawLineFromPositionToHits(
+        FIntPoint &start,
+        TArray<FIntPoint> &hits,
+        TArray<TArray<float>> &grid
     );
 
-    void FlagPositionsFromPolygon(
-        TArray<FIntPoint> &hits, // not rasterized properly yet
-        const FIntPoint &start
-    );
-
-    void FlagPositionsFromPolygon(TArray<FIntPoint> &positionsRaw);
+    void FlagPositionsFromPolygon(TArray<FIntPoint> &positionsRaw, TArray<TArray<float>> &grid);
 
     void BresenhamLineAppend(
         const FIntPoint &Start, 
@@ -54,19 +85,21 @@ protected:
         TArray<FIntPoint> &outPoints
     );
 
-    void FlagBetweenSpace(float value);
-    void FlagBetweenSpace(TArray<float> &flagBuffer, float value);
-    void FlagBetweenSpace(TArray<float> &flagBuffer, int i, int j, float value);
+    void InjectStartingPointAtFrontAndEnd(
+        TArray<FIntPoint> &hits, // not rasterized properly yet
+        const FIntPoint &start
+    );
 
     FString MakeString(const TArray<FIntPoint> &hits);
 
     FString ViewGridAsString();
 
+    void ApplyGaussViewGrid();
+    void ApplyGaussViewGrid(int sizeMask, float sigma);
+
 private:
     float viewGridClearedValue = 0.0f;
     float viewGridTrueValue = 1.0f;
 
-
-
-    
+    FVector2D MakeDir(const FVector &v0, const FVector &v1);
 };

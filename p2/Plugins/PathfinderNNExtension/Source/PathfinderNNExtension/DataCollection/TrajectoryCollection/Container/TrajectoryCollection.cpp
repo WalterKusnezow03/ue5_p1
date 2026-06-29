@@ -122,3 +122,56 @@ void TrajectoryCollection::CopyList(const TrajectoryCollection &other){
         Node = Node->GetNextNode();
     }
 }
+
+
+
+//FVector2D dir
+bool TrajectoryCollection::EndDir(
+    const TArray<Trajectory> &inTrajectories,
+    FVector2D &outDir
+){
+    if(inTrajectories.Num() > 1){
+        const Trajectory &last = inTrajectories[inTrajectories.Num() - 1];
+        const Trajectory &prelast = inTrajectories[inTrajectories.Num() - 2];
+        FVector dir = Dir2D(prelast, last);
+        
+        outDir.X = dir.X;
+        outDir.Y = dir.Y;
+
+        return true;
+    }
+    return false;
+}
+
+
+bool TrajectoryCollection::GlobalDir(
+    const TArray<Trajectory> &inTrajectories,
+    FVector2D &outDir
+){
+    if(inTrajectories.Num() > 1){
+        FVector dir;
+        for (int i = 1; i < inTrajectories.Num(); i++)
+        {
+            const Trajectory &current = inTrajectories[i];
+            const Trajectory &prev = inTrajectories[i-1];
+            dir += Dir2D(prev, current);
+        }
+
+        dir = dir.GetSafeNormal();
+
+        outDir.X = dir.X;
+        outDir.Y = dir.Y;
+        return true;
+    }
+    return false;
+}
+
+
+FVector TrajectoryCollection::Dir2D(const Trajectory &a, const Trajectory &b){
+    FVector B = b.GetPosition();
+    FVector A = a.GetPosition();
+    FVector dir = B - A;
+    dir.Z = 0.0f;
+    dir = dir.GetSafeNormal();
+    return dir;
+}

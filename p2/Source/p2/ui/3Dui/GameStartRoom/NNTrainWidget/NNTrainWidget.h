@@ -32,6 +32,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetPlayButton();
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetTextLossWidget();
+
 
     //override
     virtual void Tick(float DeltaTime) override {};
@@ -53,7 +56,15 @@ protected:
     BorderInterfaceUtilButton playButtonUtil;
 
     void SetText(FString message);
-    UTextBlock *GetTextBlockWidget();
+    void SetTextLoss(FString message);
+    UTextBlock *GetTextBlockWidget(UWidget *raw);
 
-    bool ExtractProgress(FString message, FString &resultText);
+    bool ExtractProgress(const TArray<FString> &parts, FString &resultText);
+    bool ExtractLoss(const TArray<FString> &parts, FString &result);
+
+    void DecomposeIntoArray(FString message, TArray<FString> &outArray, FString targetSeperator);
+
+    int FindIndexLowerCase(const TArray<FString> &parts, FString target);
+
+    int FindDigitsNeeded(FString &lossString);
 };

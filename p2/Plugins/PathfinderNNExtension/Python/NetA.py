@@ -120,6 +120,11 @@ class NetA(nn.Module):
             nn.ReLU(),
             nn.Conv2d(16, channelsOut, 3, padding = 1) ##out = in142 + 2*1 - 3 + 1 = 142
         )
+        ##move to gpu if available
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+        self.net = self.net.to(device)
+        
+        ##no sigmoid at end
 
         ##self.loss_fn = nn.L1Loss() ##nn.MSELoss()
         ##self.loss_fn = nn.BCELoss()
@@ -149,39 +154,19 @@ class NetA(nn.Module):
         self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 50.0)).mean()
 
 
-        ##wie kann man peaks hevorstechen lassen?
-        ##ein exponential am ende
-        ##softmax aber ungeeignet, mehrere sind richtig! Heat gewollt! nicht ein pixel! ggf mehrere
-
-
-
-        ### mit sigmoid: bleibt stecken bei 0.25
-        ###### From CPP REsult data: player location 1 (gaussian 5x5), else 0
-        ##factor = 30.0 ##10
-        ##self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1 + target * factor)).mean()
-
-
-        ##negativ beispiel
-        ##((pred - target).abs() -> 0 - 1 = -1
-        ##(1 + target * 10) -> 1 + 1 = 11
-        ##-1 * 11 = abs(-11) loss, bestrafung
-
-        ##positiv beispiel
-        ##((pred - target).abs() -> 1 - 1 = 0
-        ##-1 * 11 = 0 loss, super gemacht
-
-
 
         self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3) ## lr=1e-4
         ##self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-4) ## lr=1e-4
- 
-
-
 
         if(self.loadCheckpoint()):
             print("NNServerPathfinder_NetA: loaded model from Storage!")
             ##ANNPathFinderSocket::ReceivePythonPrint NNServerPathfinder_NetA: loaded model from Storage!
             ##IS PRINTED.
+
+        
+
+
+        
 
     def __del__(self):
         ##self.saveCheckpoint()
@@ -201,9 +186,9 @@ class NetA(nn.Module):
     def preprocessDataTwoChannel(self, data):
         size = H * W
 
-        channel0 = torch.tensor(data[ : size], dtype=torch.float32).view(H, W)
-        channel1 = torch.tensor(data[size : 2*size], dtype=torch.float32).view(H, W)
-        channel2 = torch.tensor(data[size*2 : 3*size], dtype=torch.float32).view(H, W)
+        channel0 = torch.tensor(data[ : size], dtype=torch.float32).view(H, W) ##polygon channel
+        channel1 = torch.tensor(data[size : 2*size], dtype=torch.float32).view(H, W) ##player trajectory channel
+        channel2 = torch.tensor(data[size*2 : 3*size], dtype=torch.float32).view(H, W) ##vision cone channel
 
         ##ergebnis:
         ##channel0.shape = (142, 142)
@@ -218,6 +203,14 @@ class NetA(nn.Module):
 
     def forwardTwoChannelData(self, data):
         x = self.preprocessDataTwoChannel(data)
+
+        device = torch.device(
+            "mps" if torch.backends.mps.is_available()
+            else "cpu"
+        )
+        x = x.to(device)
+
+
         self.latestX = x.clone() ##copy incoming data
 
         fx = self.forward(x)
@@ -270,9 +263,83 @@ class NetA(nn.Module):
 
     ######## call this for learning a large set ########
     def TrainFromBatchBinary(self, binary):
+        device = torch.device(
+            "mps" if torch.backends.mps.is_available()
+            else "cpu"
+        )
+
+        print("Device:", device)
+
+        size = H * W
+        sampleSize = size * 4
+
+        # =========================
+        # 1) EINMALIG Tensor bauen
+        # =========================
+        data = torch.tensor(binary, dtype=torch.float32)
+
+        numSamples = data.shape[0] // sampleSize
+        data = data[:numSamples * sampleSize]
+
+        # =========================
+        # 2) Reshape in Samples
+        # =========================
+        data = data.view(numSamples, 4, H, W)
+
+        x = data[:, 0:3, :, :]   # input channels
+        y = data[:, 3:4, :, :]   # target
+
+        # =========================
+        # 3) GPU MOVE EINMAL
+        # =========================
+        x = x.to(device)
+        y = y.to(device)
+
+        print("samples:", numSamples)
+
+        epochs = 50
+        batch_size = 32
+
+        for epoch in range(epochs):
+
+            # shuffle indices (GPU-safe)
+            perm = torch.randperm(numSamples, device=device)
+
+            x_shuffled = x[perm]
+            y_shuffled = y[perm]
+
+            # batch loop
+            for i in range(0, numSamples, batch_size):
+                xb = x_shuffled[i:i+batch_size]
+                yb = y_shuffled[i:i+batch_size]
+
+                self.trainBatch(xb, yb)
+
+            print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", epochs, " LOSS ", self.latestLoss)
+        
+        ##rmv from gpu
+        x = None
+        y = None
+    
+    
+    
+
+
+
+
+
+
+
+    def old_TrainFromBatchBinary(self, binary):
         xBatch, yBatch = self.DecomposeIntoBatches(binary)
 
+        ##debug
+        device = torch.device(
+            "mps" if torch.backends.mps.is_available()
+            else "cpu"
+        )
 
+        print("NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_START Device:", device)
 
 
 

@@ -6,6 +6,7 @@
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
 class FPathFinderNNRequestPackage;
+class FMeshedPolygonColorAttributes;
 
 /// Will store task information about the tracked actor
 /// and 
@@ -46,17 +47,11 @@ public:
 
     void ColoredHeatMap(
         Image &image,
-        FColor colorMin,
-        FColor colorMax,
-        FColor colorPolygonFlagged,
-        FColor colorViewGrid,
-        FColor colorTrjacetory,
-        FColor playerPosResult
+        FMeshedPolygonColorAttributes &attributes
     );
 
-    void GenerateResultPositions(
-        TArray<FVector> &positions
-    );
+    void GenerateAndNotifyResultPositions(FPathFinderNNRequestPackage *queue);
+    
 
     void EndSave(){
         polygonProxy.EndSave();
@@ -68,8 +63,8 @@ public:
     //are listening for the given actor
 
 
-    void EmbedEnemyPositions(const TArray<FVisionCone*> &enemies);
-    void EmbedEnemyPositions(FPathFinderNNRequestPackage &queue);
+    void EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies);
+    void EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue);
 
 private:
     bool taskStarted = false;

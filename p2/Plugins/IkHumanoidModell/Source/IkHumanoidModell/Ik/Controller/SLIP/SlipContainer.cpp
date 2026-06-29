@@ -56,14 +56,14 @@ FVector SlipContainer::forceUnscaled(
 ){
     if(legdir_featherCurrent.Size() > featherComplete){
         legdir_featherCurrent = legdir_featherCurrent.GetSafeNormal() * featherComplete;
-        DebugHelper::logMessage(
+        /*DebugHelper::logMessage(
             FString::Printf(
                 TEXT("slip integral interpolated trajectory resize feather!!: (%.10f, %.10f, %.10f)"),
                 legdir_featherCurrent.X,
                 legdir_featherCurrent.Y,
                 legdir_featherCurrent.Z
             )
-        );
+        );*/
     }
 
     /*

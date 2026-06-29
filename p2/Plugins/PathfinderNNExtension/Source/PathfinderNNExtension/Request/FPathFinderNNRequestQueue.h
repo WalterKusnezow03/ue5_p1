@@ -10,6 +10,8 @@ public:
     
     void Subscribe(IPathfinderNNInterface *interface, AActor *targetActor);
 
+    void PopFront();
+
     //notifies the front task and pop fronts it since its finished.
     void NotifyPopFront(const TArray<FVector> &predictedPositions);
 

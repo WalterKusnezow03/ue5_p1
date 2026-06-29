@@ -31,6 +31,14 @@ public:
         FIntPoint &outClosestHit
     );
 
+    bool RayIntersectPolygons(
+        int x, 
+        int y, 
+        const FVector2D &dir,
+        FIntPoint &outClosestHit,
+        float &outT
+    );
+
     void Clear();
 
     int NumEdges();

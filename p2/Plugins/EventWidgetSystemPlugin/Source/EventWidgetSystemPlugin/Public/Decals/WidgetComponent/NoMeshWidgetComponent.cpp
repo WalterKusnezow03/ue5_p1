@@ -81,7 +81,11 @@ void UNoMeshWidgetComponent::UpdateDecalMaterial()
 	}
 
 	if(!decalBaseMaterialRef.Get()){
-		DebugHelper::logMessage("UNoMeshWidgetComponent::no decal material");
+		if(!printNoDecalMatOnce){
+			DebugHelper::logMessage("UNoMeshWidgetComponent::no decal material");
+			printNoDecalMatOnce = true;
+		}
+
 		return;
 	}
 
@@ -97,7 +101,7 @@ void UNoMeshWidgetComponent::UpdateDecalMaterial()
 		DebugHelper::showScreenMessage("UNoMeshWidgetComponent::NO RENDERTARGET");
 		return;
 	}
-		
+	printNoDecalMatOnce = false;
 
 	UMaterialInstanceDynamic* DecalMat =
 		UMaterialInstanceDynamic::Create(decalBaseMaterialRef.Get(), this);

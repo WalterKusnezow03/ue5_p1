@@ -1,6 +1,8 @@
 #include "MeshedPolygonRaytracable.h"
 #include "StoragePlugin/Storage/Template/TemplateBufferStorageInterface.h"
 #include "PolygonPlugin/Public/Polygons/rasterizer/CurveRasterizer.h"
+#include "PolygonPlugin/Public/GridBase/Operator/ConvolutionOperatorGauss.h"
+
 
 
 void FMeshedPolygonRaytracable::CreateOrClearViewGrid(){
@@ -29,22 +31,68 @@ bool FMeshedPolygonRaytracable::ViewGridValid(){
 }
 
 void FMeshedPolygonRaytracable::TraceCone(const FVector &pos, const FVector2D &dir, float angle){
+    TraceConeOnGrid(pos, dir, angle, viewGrid);
+}
+
+void FMeshedPolygonRaytracable::TraceConeOnGrid(
+    const FVector &pos, 
+    const FVector2D &dir, 
+    float angle,
+    TArray<TArray<float>> &grid //expects grid to be same size and space as this polygon
+){
     int asInt = FMath::CeilToInt(angle * 1.1f);
-    TraceCone(pos, dir, angle, asInt);
+    TraceConeOnGrid(pos, dir, angle, asInt, grid);
 }
 
-void FMeshedPolygonRaytracable::TraceCone(const FVector &pos, const FVector2D &dir, float angle, float rays){
-    int x, y = 0;
+
+void FMeshedPolygonRaytracable::TraceConeOnGrid(
+    const FVector &pos, const FVector2D &dir, float angle, float rays,
+    TArray<TArray<float>> &grid //expects grid to be same size and space as this polygon
+){
+    int x = 0, y = 0;
     ToIndexRaw(pos, x, y);
-    TraceCone(x, y, dir, angle, rays);
+    TraceConeOnGrid(x, y, dir, angle, rays, grid, true);
 }
 
-void FMeshedPolygonRaytracable::TraceCone(int x, int y, const FVector2D &dir, float angle, float rays){
+void FMeshedPolygonRaytracable::TraceConeOnGridBetweenDirections(
+    const FVector &pos,
+    const FVector2D &limitA,
+    const FVector2D &limitB,
+    TArray<TArray<float>> &grid // expects grid to be same size and space as this polygon
+){
+    FVector2D A = limitA.GetSafeNormal();
+    FVector2D B = limitB.GetSafeNormal();
+
+    float Dot = FVector2D::DotProduct(A, B);
+    float Cross = A.X * B.Y - A.Y * B.X;
+
+    float SignedAngleDegrees = FMath::RadiansToDegrees(FMath::Atan2(Cross, Dot));
+    int rays = SignedAngleDegrees;
+
+    int x = 0, y = 0;
+    ToIndexRaw(pos, x, y);
+    TraceConeOnGrid(x, y, A, SignedAngleDegrees, rays, grid, false);
+}
+
+
+
+
+
+
+
+void FMeshedPolygonRaytracable::TraceConeOnGrid(
+    int x, int y, const FVector2D &dir, float angle, float rays,
+    TArray<TArray<float>> &grid,
+    bool dirIsCentered
+){
+    TArray<FIntPoint> hits;
+    // bool dirIsCentered: true
+    TraceConeCollectHits(x, y, dir, angle, rays, hits, dirIsCentered);
 
     float base = FMath::Atan2(dir.Y, dir.X);
     float half = FMath::DegreesToRadians(angle * 0.5f);
 
-    TArray<FIntPoint> hits;
+    
     FString logMessage = "FMeshedPolygonRaytracable::TraceCone rays";
     for (int i = 0; i < rays; i++){
         float t = (rays == 1) ? 0.5f : (float)i / (rays - 1);
@@ -58,7 +106,7 @@ void FMeshedPolygonRaytracable::TraceCone(int x, int y, const FVector2D &dir, fl
             hits.Add(outHit);
         }
     }
-    //DebugHelper::logMessage(logMessage);
+    
 
     DebugHelper::logMessage(
         FString::Printf(
@@ -69,6 +117,8 @@ void FMeshedPolygonRaytracable::TraceCone(int x, int y, const FVector2D &dir, fl
     );
 
     /*
+    Counter clockwise order of rays!
+
     FMeshedPolygonRaytracable::TraceCone 
     rays
     (X=0.707 Y=-0.707)
@@ -94,22 +144,72 @@ void FMeshedPolygonRaytracable::TraceCone(int x, int y, const FVector2D &dir, fl
     (X=142 Y=137)
     (X=116 Y=141)
     */
+    FIntPoint startingPoint(x,y);
+    //alle rays zeichnen, hinreichend um flächendeckend zu malen bei genug rays
+    DrawLineFromPositionToHits(startingPoint, hits, grid);
 
-
+    //polygon am cone start schliessen
+    InjectStartingPointAtFrontAndEnd(hits, startingPoint);
 
     // draw all lines
-        // fill all lines
-    FlagPositionsFromPolygon(hits, x, y);
+    // fill all lines
+    FlagPositionsFromPolygon(hits, grid);
+}
 
-    // fill gaps
-    FlagBetweenSpace(viewGridTrueValue);
+void FMeshedPolygonRaytracable::TraceConeCollectHits(
+    int x, int y, 
+    const FVector2D &dir, 
+    float angle, 
+    float rays,
+    TArray<FIntPoint> &hits,
+    bool dirIsCentered
+){
+    float base = FMath::Atan2(dir.Y, dir.X);
+    float angleRad = FMath::DegreesToRadians(angle);
+    float half = angleRad * 0.5f;
 
-    DebugHelper::logMessage(
-        FString::Printf(
-            TEXT("FMeshedPolygonRaytracable::ViewGridAsString %s"),
-            *ViewGridAsString()
-        )
-    );
+    
+    FString logMessage = "FMeshedPolygonRaytracable::TraceCone rays";
+    for (int i = 0; i < rays; i++){
+        float t = (rays == 1) ? 0.5f : (float)i / (rays - 1);
+        
+        
+        float lerped = 0.0f;
+        if(dirIsCentered){
+            lerped = FMath::Lerp(-half, half, t);
+        }else{
+            lerped = FMath::Lerp(0, angleRad, t);
+        }
+
+        float theta = base + lerped;
+
+        FVector2D rayDir(FMath::Cos(theta), FMath::Sin(theta));
+
+        logMessage += "(" + rayDir.ToString() + ")";
+
+        FIntPoint outHit;
+        if(Trace(x, y, rayDir, outHit)){
+            hits.Add(outHit);
+        }
+    }
+}
+
+
+
+    
+
+
+
+
+
+
+
+void FMeshedPolygonRaytracable::InjectStartingPointAtFrontAndEnd(
+    TArray<FIntPoint> &hits, //not rasterized properly yet
+    const FIntPoint &start
+){
+    hits.Insert(start, 0);
+    hits.Add(start);
 }
 
 FString FMeshedPolygonRaytracable::MakeString(const TArray<FIntPoint> &hits){
@@ -121,33 +221,62 @@ FString FMeshedPolygonRaytracable::MakeString(const TArray<FIntPoint> &hits){
     return result;
 }
 
-bool FMeshedPolygonRaytracable::Trace(int x, int y, const FVector2D &dir, FIntPoint &outHit){
+bool FMeshedPolygonRaytracable::Trace(
+    int x, 
+    int y, 
+    const FVector2D &dir, 
+    FIntPoint &outHit
+){
+    return Trace(x, y, dir, outHit, false);
+}
+
+bool FMeshedPolygonRaytracable::Trace(
+    int x, 
+    int y, 
+    const FVector2D &dir, 
+    FIntPoint &outHit,
+    bool ignoreBounds
+){
+    float tIgnored = 0.0f;
+    return Trace(x, y, dir, outHit, ignoreBounds, tIgnored);
+}
+
+bool FMeshedPolygonRaytracable::Trace(
+    int x, 
+    int y, 
+    const FVector2D &dir, 
+    FIntPoint &outHit,
+    bool ignoreBounds,
+    float &outT
+){
     //trace against polygons
-    if(edgeSet.RayIntersectPolygons(x, y, dir, outHit)){
+    if(edgeSet.RayIntersectPolygons(x, y, dir, outHit, outT)){
         return true;
     }
 
-
-    if(boundHull.InsideHull(x,y)){
-        //if not found
-        //trace against edges
-        float t = FLT_MAX;
-        if(boundHull.RayIntersectPolygon(x,y,dir,outHit, t)){
-            return true;
-        }
-    }else{
-        //far hull
-        float t = 0.0f;
-        if(boundHull.RayIntersectPolygonFarHit(x,y,dir,outHit, t)){
-            return true;
+    if(!ignoreBounds){
+        if(boundHull.InsideHull(x,y)){
+            //if not found
+            //trace against edges
+            float t = FLT_MAX;
+            if(boundHull.RayIntersectPolygon(x,y,dir,outHit, t)){
+                outT = t;
+                return true;
+            }
+        }else{
+            //far hull
+            float t = 0.0f;
+            if(boundHull.RayIntersectPolygonFarHit(x,y,dir,outHit, t)){
+                outT = t;
+                return true;
+            }
         }
     }
-
-
 
     
     return false;
 }
+
 
 void FMeshedPolygonRaytracable::BresenhamLineAppend(
     const FIntPoint &Start, 
@@ -184,26 +313,32 @@ void FMeshedPolygonRaytracable::BresenhamLineAppend(
     }
 }
 
-void FMeshedPolygonRaytracable::FlagPositionsFromPolygon(
-    TArray<FIntPoint> &hits, //not rasterized properly yet
-    int x,
-    int y
+
+
+void FMeshedPolygonRaytracable::DrawLineFromPositionToHits(
+    FIntPoint &start,
+    TArray<FIntPoint> &hits,
+    TArray<TArray<float>> &grid
 ){
-    FIntPoint point(x, y);
-    FlagPositionsFromPolygon(hits, point);
+    TArray<FIntPoint> tmpList;
+
+    CurveRasterizer rasterizer;
+    for (int i = 0; i < hits.Num(); i++){
+        tmpList.Empty();
+        tmpList.Add(start);
+        tmpList.Add(hits[i]);
+        rasterizer.RasterizeVerteciesIntBrensenham(tmpList);
+
+        for (int j = 0; j < tmpList.Num(); j++){
+            FlagPositon(tmpList[j], grid);
+        }
+    }
 }
 
-void FMeshedPolygonRaytracable::FlagPositionsFromPolygon(
-    TArray<FIntPoint> &hits, //not rasterized properly yet
-    const FIntPoint &start
-){
-    hits.Insert(start, 0);
-    hits.Add(start);
-    FlagPositionsFromPolygon(hits);
-}
 
 void FMeshedPolygonRaytracable::FlagPositionsFromPolygon(
-    TArray<FIntPoint> &hits
+    TArray<FIntPoint> &hits,
+    TArray<TArray<float>> &grid
 ){
     FString message = FString::Printf(TEXT("FMeshedPolygonRaytracable::Rasterized from %d"), hits.Num());
     CurveRasterizer rasterizer;
@@ -212,14 +347,14 @@ void FMeshedPolygonRaytracable::FlagPositionsFromPolygon(
     DebugHelper::logMessage(message);
 
     for (int i = 0; i < hits.Num(); i++){
-        FlagPositon(hits[i]);
+        FlagPositon(hits[i], grid);
     }
 }
 
 
 
-void FMeshedPolygonRaytracable::FlagPositon(const FIntPoint &pos){
-    TOverrideValue<float>(viewGrid, pos.X, pos.Y, viewGridTrueValue);
+void FMeshedPolygonRaytracable::FlagPositon(const FIntPoint &pos, TArray<TArray<float>> &grid){
+    TOverrideValue<float>(grid, pos.X, pos.Y, viewGridTrueValue);
 }
 
 
@@ -229,51 +364,10 @@ void FMeshedPolygonRaytracable::FlagPositon(const FIntPoint &pos){
 
 
 
-void FMeshedPolygonRaytracable::FlagBetweenSpace(
-    float value
-){
-    for (int i = 0; i < viewGrid.Num(); i++){
-        TArray<float> &column = viewGrid[i];
-        FlagBetweenSpace(column, value);
-    }
-}
-
-void FMeshedPolygonRaytracable::FlagBetweenSpace(TArray<float> &flagBuffer, float value){
-    int start = -1;
-    int end = -1;
-    bool startFound = false;
-    bool endFound = false;
-
-    for (int i = 0; i < flagBuffer.Num(); i++)
-    {
-        bool current = flagBuffer[i] != viewGridClearedValue;
-        if(!startFound && current){
-            startFound = current;
-            start = i;
-            // reset copy
-            current = false;
-        }
-        if(startFound && !endFound && current){
-            end = i;
-            //copy
-            FlagBetweenSpace(flagBuffer, start, end, value);
-
-            start = -1;
-            end = -1;
-            startFound = false;
-            endFound = false;
-        }
-    }
-}
 
 
-void FMeshedPolygonRaytracable::FlagBetweenSpace(TArray<float> &flagBuffer, int i, int j, float value){
-    i = std::max(i, 0);
-    j = std::min(j, flagBuffer.Num());
-    for (int k = i; k < j; k++){
-        flagBuffer[k] = value;
-    }
-}
+
+
 
 
 FString FMeshedPolygonRaytracable::ViewGridAsString(){
@@ -291,6 +385,23 @@ FString FMeshedPolygonRaytracable::ViewGridAsString(){
     FString result = FString::Printf(TEXT("View grid count: %d"), count);
     return result;
 }
+
+
+    
+void FMeshedPolygonRaytracable::ApplyGaussViewGrid(){
+    int size = 3; //-3 1 +3
+    float sigma = 1.0f; //1.0f
+    ApplyGaussViewGrid(size, sigma);
+}
+
+void FMeshedPolygonRaytracable::ApplyGaussViewGrid(int sizeMask, float sigma){
+    if(ViewGridValid()){
+        ConvolutionOperatorGauss gauss(sigma, sizeMask);
+        gauss.ApplyOperator(viewGrid);
+    }
+}
+
+
 
 void FMeshedPolygonRaytracable::AppendAsBinary(
     TArray<uint8> &buffer
@@ -322,4 +433,34 @@ bool FMeshedPolygonRaytracable::LoadFromBinary(
         return true;
     }
     return false;
+}
+
+
+bool FMeshedPolygonRaytracable::IsVisible(const FVector &a, const FVector &b){
+    int xA, yA = 0;
+    ToIndexRaw(a, xA, yA);
+    FVector2D dir = MakeDir(a, b);
+
+    FIntPoint outHit;
+    float t = 0.0f;
+    if(Trace(xA, yA, dir, outHit, true, t)){
+        //if t is in range [0,1] a hit was detected before the position was
+        //reached
+        if(t >= 0.0f){
+            if(t < 0.9f){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+FVector2D FMeshedPolygonRaytracable::MakeDir(const FVector &v0, const FVector &v1){
+    FVector dir = v1 - v0; //AB = B - A
+    dir.Z = 0.0f;
+    dir = dir.GetSafeNormal();
+
+    FVector2D dir2D(dir.X, dir.Y);
+    dir2D = dir2D.GetSafeNormal();
+    return dir2D;
 }

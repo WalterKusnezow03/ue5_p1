@@ -36,10 +36,18 @@ FPathFinderNNRequestPackage *FPathFinderNNRequestQueue::Find(AActor *targetActor
 void FPathFinderNNRequestQueue::NotifyPopFront(const TArray<FVector> &predictedPositions){
     if(tasks.Num() > 0){
         tasks[0].NotifyAll(predictedPositions);
+        PopFront();
+        DebugHelper::logMessage("FPathFinderNNRequestQueue::NotifyPopFront");
+    }
+}
+
+void FPathFinderNNRequestQueue::PopFront(){
+     if(tasks.Num() > 0){
         tasks.RemoveAt(0);
         DebugHelper::logMessage("FPathFinderNNRequestQueue::NotifyPopFront");
     }
 }
+
 
 
 bool FPathFinderNNRequestQueue::HasTasks(){

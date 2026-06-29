@@ -114,6 +114,9 @@ public:
     void InvertFlagMap();
 
 protected:
+    void RemoveMapBorder(TArray<TArray<float>> &grid, int sizeBorder, float value);
+    void RemoveBorder(TArray<float> &column, int sizeBorder, float value);
+
     void InvertFlag(uint8 &flagCurrent);
     bool flagsInverted = false; //track inversion state
 
@@ -283,8 +286,7 @@ protected:
         }
     }
 
-
-
+    FVector PositionFromIndex(int i, int j);
 
 public:
     virtual void AppendAsBinary(

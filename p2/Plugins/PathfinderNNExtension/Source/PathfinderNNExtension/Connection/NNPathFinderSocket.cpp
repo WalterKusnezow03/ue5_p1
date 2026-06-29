@@ -2,6 +2,7 @@
 
 #include "DebugPlugin/DebugHelper.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 
 
 void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
@@ -165,7 +166,7 @@ void ANNPathFinderSocket::PredictNode(
         task.Setup(actorTracker.FindIfTracked(actor));
         if(task.IsValid()){
             //on task start: embed enemy postions for this actor.
-            task.EmbedEnemyPositions(*package);
+            task.EmbedEnemyPositionsAndVision(*package);
 
             //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION");
             //DebugHelper::showScreenMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION", FColor::Red);
@@ -198,7 +199,7 @@ void ANNPathFinderSocket::PredictNextTask(){
 
 void ANNPathFinderSocket::TickTask(){
     if(task.IsValid() == false){
-        DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask NOT VALID", FColor::Red);
+        //DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask NOT VALID", FColor::Red);
         return;
     }
     if(!task.WaitingForGroundTruth()){
@@ -256,7 +257,7 @@ void ANNPathFinderSocket::WriteDataGroundTruth(
 void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
     Super::OnReceivePythonPrint(Output);
    
-    if(true){
+    if(false){
         //DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
         DebugHelper::logMessage("ANNPathFinderSocket::PYTHON ", Output);
         return;
@@ -278,20 +279,24 @@ void ANNPathFinderSocket::ReadDataResult(){
     
     //create result for queue ------> TODO!
     TArray<FVector> positions;
-    task.GenerateResultPositions(positions);
-    requests.NotifyPopFront(positions);
+    task.GenerateAndNotifyResultPositions(requests.frontPackage());
+    requests.PopFront();
 
 
 
     Image image;
+    FMeshedPolygonColorAttributes attributes(
+        FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
+        FColor(FColor::Cyan),       // FColor colorViewGridIn,
+        FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
+        FColor(0, 255, 0, 255)      // FColor playerPosResultIn
+    );
+
     task.ColoredHeatMap(
         image, //Image &image,
-        FColor(0, 0, 255, 255), //FColor colorMin,
-        FColor(255, 0, 0, 255), //FColor colorMax,
-        FColor(255,255,255,255), //FColor colorPolygonFlagged,
-        FColor(FColor::Cyan), //FColor colorViewGrid
-        FColor(FColor::Yellow), //FColor colorTrjacetory,
-        FColor(0,255,0,255) //FColor playerPosResult
+        attributes
     );
     
     heatMaps.Add(image);

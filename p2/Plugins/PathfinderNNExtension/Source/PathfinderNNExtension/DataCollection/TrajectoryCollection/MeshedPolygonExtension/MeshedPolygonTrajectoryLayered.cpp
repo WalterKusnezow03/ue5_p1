@@ -4,12 +4,18 @@
 #include "StoragePlugin/Storage/Template/TemplateBufferStorageInterface.h"
 #include "PathfinderNNExtension/Interface/VisionCone.h"
 
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/GridColorizer.h"
+#include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
 
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/GridColorizer.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
+#include "CoreMath/algorithm/Vector/PositionCluster.h"
+
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/TrajectoryCollection.h"
+#include "PolygonPlugin/Public/GridBase/Operator/ConvolutionOperatorGauss.h"
 
 void FMeshedPolygonTrajectoryLayered::Reset(){
     //CreateOrClearViewGrid(); //from raytracable polygon
-    CreateOrClearResultGrid();
+    CreateOrClearGroundTruthGrid();
     CreateOrClearTrajectoryGrid();
     CreateOrClearEnemyPositionGrid();
 
@@ -24,6 +30,7 @@ bool FMeshedPolygonTrajectoryLayered::FlagAndTimeDataValid() const {
     return IsValid() && TimeGridIsValid();
 }
 
+//player trajectories
 void FMeshedPolygonTrajectoryLayered::EmbedTrajectories(TArray<Trajectory> &trajectories){
     if(IsValid()){
         CreateOrClearTrajectoryGrid();
@@ -33,25 +40,87 @@ void FMeshedPolygonTrajectoryLayered::EmbedTrajectories(TArray<Trajectory> &traj
         for (int i = 0; i < trajectories.Num(); i++){
             OverrideTime(trajectories[i]);
         }
-    }else{
+
+        EmbedConeFromTrajectories(trajectories);
+    }
+    else
+    {
         DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered::TimeMap Cant Embed Trajectories");
     }
 }
 
+//player movement cone from trajectories
+void FMeshedPolygonTrajectoryLayered::EmbedConeFromTrajectories(
+    TArray<Trajectory> &trajectories
+){
+    CreateOrClearTrajectoryConeGrid();
+    if(TrajectoryConeGridIsValid()){
+        FVector2D endDir, globalDir;
+        if(trajectories.Num() > 0){
+            FVector endPositon = trajectories.Last().GetPosition();
+            if(
+                TrajectoryCollection::EndDir(trajectories, endDir) && 
+                TrajectoryCollection::GlobalDir(trajectories, globalDir)
+            ){
+                TraceConeOnGridBetweenDirections(
+                    endPositon,
+                    globalDir,
+                    endDir,
+                    trajectoryConePrecited
+                );
+                
+                //Blur
+                float sigma = 2.0f;
+                int sizeMask = 5;
+                ConvolutionOperatorGauss gaussian(sigma, sizeMask);
+                gaussian.ApplyOperator(trajectoryConePrecited);
+            }
+        }
+
+
+        
+    }
+    
+
+    //global dir
+    //ending dir
+    //cone from both directions
+
+    //TraceCone(pos, cone->GetLookDir(), cone->GetAngle(), grid);
+
+
+    //movement speed (?)
+}
+
+
+bool FMeshedPolygonTrajectoryLayered::TrajectoryConeGridIsValid(){
+    return TGridIsValidToFlagGrid<float>(trajectoryConePrecited);
+}
+void FMeshedPolygonTrajectoryLayered::CreateOrClearTrajectoryConeGrid(){
+    TCreateOrClearGrid<float>(trajectoryConePrecited, 0.0f);
+}
+
+
+    
+
+
+
+
+//ground truth position
 void FMeshedPolygonTrajectoryLayered::EmbedResultPosition(FVector &position){
     if(IsValid()){
-        CreateOrClearResultGrid();
+        CreateOrClearGroundTruthGrid();
         int outX, outY = 1;
         if(IsInBound(position, outX, outY)){
             //where player is: 1, else: 0
-            GaussianResultGrid(outX, outY, 4, 2.0f);
-            TOverrideValue<float>(resultGrid, outX, outY, 1.0f);
+            GaussianGroundTruthGrid(outX, outY, 4, 2.0f);
+            TOverrideValue<float>(groundTruthGrid, outX, outY, playerGroundTruthPeak);
         }
     }
 }
 
-void FMeshedPolygonTrajectoryLayered::GaussianResultGrid(int x, int y, int size, float sigma){
-    GaussianOnGrid(x, y, size, sigma, resultGrid);
+void FMeshedPolygonTrajectoryLayered::GaussianGroundTruthGrid(int x, int y, int size, float sigma){
+    GaussianOnGrid(x, y, size, sigma, groundTruthGrid);
 }
 
 void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
@@ -64,6 +133,7 @@ void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
     GaussianOnGrid(x, y, size, sigma, grid, 1.0f);
 }
 
+//cant be removed since we cant blur where polygons are
 void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
     int x, 
     int y, 
@@ -76,9 +146,10 @@ void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
     const float twoSigma2 = 2.0f * sigma * sigma;
     for (int i = x - size; i < x + size; i++){
         for (int j = y - size; j < y + size; j++){
-            //if not flagged - polygon - but: inverted
+
+            //if not flagged - polygon - but: IS inverted
             //bool flagged = !FlagAt(i, j); //flags are inverted on collection (in prediction task.). Do not change.
-            bool flagged = FlagAt(i, j);
+            bool flagged = FlagAt(i, j); //which means its not flagged.
 
             /*if(flagsInverted){
                 flagged = !flagged;
@@ -96,19 +167,6 @@ void FMeshedPolygonTrajectoryLayered::GaussianOnGrid(
     }
 }
 
-float FMeshedPolygonTrajectoryLayered::Gaussian(
-    int i, 
-    int j, 
-    int xCenter, 
-    int yCenter, 
-    float twoSigma2
-){
-    float dx = float(i - xCenter); //AB = B - A
-    float dy = float(j - yCenter);
-    float dist2 = dx * dx + dy * dy; //size(dx,dy)^2
-    float value = expf(-dist2 / twoSigma2);
-    return value;
-}
 
 void FMeshedPolygonTrajectoryLayered::OverrideTime(Trajectory &current){
     FVector pos = current.GetPosition();
@@ -174,9 +232,9 @@ bool FMeshedPolygonTrajectoryLayered::TimeGridIsValid() const {
 }
 
 
-void FMeshedPolygonTrajectoryLayered::CreateOrClearResultGrid(){
+void FMeshedPolygonTrajectoryLayered::CreateOrClearGroundTruthGrid(){
     float clearedValue = -1.0f;
-    TCreateOrClearGrid<float>(resultGrid, 0.0f);
+    TCreateOrClearGrid<float>(groundTruthGrid, 0.0f);
 
     /*//grid size from bool grid
     int x = sizeX();
@@ -192,19 +250,21 @@ void FMeshedPolygonTrajectoryLayered::CreateOrClearResultGrid(){
 }
 
 
-void FMeshedPolygonTrajectoryLayered::ClearResultGrid(){
-    TClearGrid<float>(resultGrid, 0.0f);
+void FMeshedPolygonTrajectoryLayered::ClearGroundTruthGrid(){
+    TClearGrid<float>(groundTruthGrid, 0.0f);
 }
 
 
-bool FMeshedPolygonTrajectoryLayered::ResultGridIsValid() const{
+bool FMeshedPolygonTrajectoryLayered::GroundTruthGridIsValid() const{
     if(FlagGridIsValid()){ //buffer size at least one
-        if(resultGrid.Num() == flagGrid.Num()){
-            if(resultGrid[0].Num() == flagGrid[0].Num()){
+        if(groundTruthGrid.Num() == flagGrid.Num()){
+            if(groundTruthGrid[0].Num() == flagGrid[0].Num()){
                 return true;
             }
         }
     }
+    //GroundTruthGridIsValid
+    //groundTruthGrid
     return false;
 }
 
@@ -243,6 +303,34 @@ void FMeshedPolygonTrajectoryLayered::AppendViewMap(
     }
 }
 
+void FMeshedPolygonTrajectoryLayered::AppendTrajectoryConeMap(
+    TArray<uint8> &buffer
+){
+
+    //AppendViewMap(buffer);
+    //viewGrid
+    if(!TrajectoryConeGridIsValid()){
+        CreateOrClearTrajectoryConeGrid();
+    }
+
+    if(TrajectoryConeGridIsValid()){
+        AppendFloatMapToBuffer(buffer, trajectoryConePrecited);
+    }
+    else
+    {
+        DebugHelper::logMessage("FMeshedPolygon::AppendTrajectoryConeMap Failed", trajectoryConePrecited.Num());
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -255,7 +343,7 @@ void FMeshedPolygonTrajectoryLayered::AppendFlagMapAsFloat(TArray<uint8> &buffer
 
 
 void FMeshedPolygonTrajectoryLayered::AppendResultMapAsFloat(TArray<uint8> &buffer) const{
-    AppendFloatMapToBuffer(buffer, resultGrid);
+    AppendFloatMapToBuffer(buffer, groundTruthGrid);
 }
 
 
@@ -311,13 +399,13 @@ void FMeshedPolygonTrajectoryLayered::Uint8FlagMapToFloat(
 
 
 int FMeshedPolygonTrajectoryLayered::ResultGridSizeBytes(){
-    if(!ResultGridIsValid()){
-        CreateOrClearResultGrid();
+    if(!GroundTruthGridIsValid()){
+        CreateOrClearGroundTruthGrid();
     }
 
-    if(ResultGridIsValid()){
-        int x = resultGrid.Num();
-        int y = resultGrid[0].Num();
+    if(GroundTruthGridIsValid()){
+        int x = groundTruthGrid.Num();
+        int y = groundTruthGrid[0].Num();
         return x * y * sizeof(float); //as float instead of uint8.
     }
     return -1;
@@ -337,21 +425,9 @@ bool FMeshedPolygonTrajectoryLayered::EnemyPositionGridIsValid(){
 
 void FMeshedPolygonTrajectoryLayered::CreateOrClearEnemyPositionGrid(){
     float clearedValue = 0.0f;
-    TCreateOrClearGrid<float>(resultGrid, clearedValue);
+    TCreateOrClearGrid<float>(enemyPositions, clearedValue);
 }
 
-void FMeshedPolygonTrajectoryLayered::EmbedEnemyPositions(const TArray<FVector> &enemies){
-    if(IsValid()){
-
-        DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered::EmbedEnemyPositions ", enemies.Num());
-
-        CreateOrClearEnemyPositionGrid();
-        for (int i = 0; i < enemies.Num(); i++){
-            const FVector &pos = enemies[i];
-            EmbedEnemyPosition(pos);
-        }
-    }
-}
 
 
 void FMeshedPolygonTrajectoryLayered::EmbedEnemyPosition(const FVector &position){
@@ -361,6 +437,7 @@ void FMeshedPolygonTrajectoryLayered::EmbedEnemyPosition(const FVector &position
         //where enemy is: 1, else: 0
         GaussianOnGrid(outX, outY, 4, 2.0f, enemyPositions); //between 0 and 1
         TOverrideValue<float>(enemyPositions, outX, outY, 1.0f);
+
     }
 }
 
@@ -368,7 +445,7 @@ void FMeshedPolygonTrajectoryLayered::EmbedEnemyVision(const TArray<FVisionCone 
     if(IsValid()){
         CreateOrClearViewGrid();
         
-        
+
         // void EmbedEnemyPositions(const Tarray<FVisionCone *> &cones);
         //DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered::EmbedEnemyVision ", cones.Num());
         //DebugHelper::logMessage(FString::Printf(TEXT("numedgeDebug FMeshedPolygonTrajectoryLayered::EmbedEnemyVision num edges %d"), NumEdges()));
@@ -380,6 +457,8 @@ void FMeshedPolygonTrajectoryLayered::EmbedEnemyVision(const TArray<FVisionCone 
                 TraceCone(pos, cone->GetLookDir(), cone->GetAngle());
             }
         }
+        //after embedding all cones: blur
+        ApplyGaussViewGrid();
     }
 }
 
@@ -411,7 +490,9 @@ void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontBytes(const TArr
         }
         //LogHeatMap("HeatMapRaw: ");
         //NormalizeHeatMap();
-        NormalizeHeatMapThroshold(0.1f);
+        NormalizeHeatMapThroshold(0.5f);
+        RemoveHeatMapBorder(4); //3 pixels
+        CacheResultPositionsFromHeatMap();
         // LogHeatMap("HeatMapNormalized: ");
     }
 }
@@ -429,6 +510,9 @@ void FMeshedPolygonTrajectoryLayered::LogHeatMap(FString prefix){
     }
 }
 
+void FMeshedPolygonTrajectoryLayered::RemoveHeatMapBorder(int sizeBorder){
+    RemoveMapBorder(heatMap, sizeBorder, 0.0f);
+}
 
 void FMeshedPolygonTrajectoryLayered::NormalizeHeatMap(){
     float min = 0.0f;
@@ -467,16 +551,139 @@ void FMeshedPolygonTrajectoryLayered::NormalizeHeatMapThroshold(float capZero){
     }
 }
 
+//call after GenerateMapFromPredicitontBytes(...)
+
+
+
+////// ----- POST PROCESS RESULT EXTRACTION -----
+
+// so nicht hinreichend: was man braucht ist: 
+// result positions die sichtbar sind von einem Standpunkt aus
+// oder eben alle
+
+
+
+void FMeshedPolygonTrajectoryLayered::CacheResultPositionsFromHeatMap(){
+    extractedHeatMapResults.Empty();
+    GenerateResultPositions(extractedHeatMapResults);
+    DebugHelper::logMessage("extractedHeatMapResults ", extractedHeatMapResults.Num());
+}
+
+
+
 void FMeshedPolygonTrajectoryLayered::GenerateResultPositions(
-    TArray<FVector> &positions
+    TArray<FVector> &outpositions
 ){
-    //// ---- TODO ----
+    for (int i = 0; i < heatMap.Num(); i++)
+    {
+        TArray<float> &column = heatMap[i];
+        for (int j = 0; j < column.Num(); j++){
+            if(column[j] >= 0.8f){
+                FVector posFromIndex = PositionFromIndex(i, j); //FMeshedPolygon::
+                outpositions.Add(posFromIndex);
+            }
+        }
+    }
+}
+
+//validates prediction on 2D raycasts through the polygon map
+void FMeshedPolygonTrajectoryLayered::NotifyVisiblePositionsFor(
+    IPathfinderNNInterface *interfaceIn
+){
+    if(interfaceIn){
+        TArray<FVector> generated;
+        GenerateResultPositionsVisibleBy(interfaceIn, generated);
+
+        float distCluster = stepSizeSaved * 3.0f;
+        PositionCluster clusterTool;
+        clusterTool.ClusterPositions(generated, distCluster);
+        
+        if(generated.Num() > 0){
+            interfaceIn->ResponseNNPositions(generated);
+        }
+    }
 }
 
 
 
 
 
+void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
+    IPathfinderNNInterface *interfaceIn,
+    TArray<FVector> &outpositions
+){
+    if(interfaceIn){
+        FVector pos = interfaceIn->GetWorldLocation();
+        GenerateResultPositionsVisibleBy(pos, outpositions);
+    }
+}
+
+
+void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
+    const FVector &lookFromPos,
+    TArray<FVector> &outpositions
+){
+    GenerateResultPositionsVisibleBy(
+        lookFromPos,
+        extractedHeatMapResults,
+        outpositions
+    );
+}
+
+
+void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
+    const FVector &lookFromPos,
+    TArray<FVector> &possibleSolutions,
+    TArray<FVector> &outpositions
+){
+    for (int i = 0; i < possibleSolutions.Num(); i++){
+        const FVector &solution = possibleSolutions[i];
+        if(IsVisible(solution, lookFromPos)){
+            outpositions.Add(solution);
+        }
+    }
+}
+
+// ---> TODO: Pair aus position und AActor der Requested: check visibility
+// Position wird schonabgeaimt ja nein, dann belegen.
+// nur da wo der peak am höhsten ist
+// positionen clustern?
+
+////// ----- POST PROCESS RESULT EXTRACTION -----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////// ----- POST PROCESS IMAGE RESULT GENERATION ------
+
+void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
+    Image &image,
+    FMeshedPolygonColorAttributes &attributes
+){
+    ColoredHeatMap(
+        image,
+        attributes.ColorMinHeat(),
+        attributes.ColorMaxHeat(),
+        attributes.ColorPolygon(),
+        attributes.ColorView(),
+        attributes.ColorTrajectory(),
+        attributes.ColorPlayerResult()
+    );
+}
 
 
 void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
@@ -492,17 +699,24 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     FGridColorizer colorizer;
     colorizer.ColorizeFromLerp(image, heatMap, colorMin, colorMax); //heat map
 
-    colorizer.ColorizeFromEpsilonFlag(image, viewGrid, 0.0f, true, colorViewGrid);
-
     //polygon layer
     colorizer.ColorizeFromUintFlag(image, flagGrid, colorPolygonFlagged, flagsInverted); 
+
+    //view layer
+    colorizer.ColorizeFromEpsilonFlagMix(image, viewGrid, 0.0f, true, colorViewGrid, 0.5f);
     
     //tracjetory override
-    colorizer.ColorizeFromEpsilonFlag(image, timeGrid, 0.0f, true, colorTrjacetory);
+    //colorizer.ColorizeFromEpsilonFlag(image, timeGrid, 0.0f, true, colorTrjacetory);
+
+    colorizer.ColorizeFromEpsilonFlagMix(image, timeGrid, 0.0f, true, colorTrjacetory, 0.9f);
+       
+    colorizer.ColorizeFromEpsilonFlagMix(image, trajectoryConePrecited, 0.0f, true, colorTrjacetory, 0.2f);
+    
+
     
     //player pos override
-    colorizer.ColorizeFromEpsilonFlag(image, resultGrid, 0.0f, playerPosResult);
-    
+    colorizer.ColorizeFromEpsilonFlagMix(image, groundTruthGrid, 0.0f,true, playerPosResult, 0.9f);
+
     //vision cone override
     /*
     for (int i = 0; i < viewGrid.Num(); i++){
@@ -544,17 +758,21 @@ void FMeshedPolygonTrajectoryLayered::AppendAsBinary(
         if(!TimeGridIsValid()){
             CreateOrClearTrajectoryGrid();
         }
-        if(!ResultGridIsValid()){
-            CreateOrClearResultGrid();
+        if(!GroundTruthGridIsValid()){
+            CreateOrClearGroundTruthGrid();
         }
         if(!ViewGridValid()){
             CreateOrClearViewGrid();
         }
+        if(!TrajectoryConeGridIsValid()){
+            CreateOrClearTrajectoryConeGrid();
+        }
 
         //append other data here
         TemplateBufferStorageInterface::TAppendGrid<float>(timeGrid, buffer);
-        TemplateBufferStorageInterface::TAppendGrid<float>(resultGrid, buffer);
+        TemplateBufferStorageInterface::TAppendGrid<float>(groundTruthGrid, buffer);
         TemplateBufferStorageInterface::TAppendGrid<float>(viewGrid, buffer);
+        TemplateBufferStorageInterface::TAppendGrid<float>(trajectoryConePrecited, buffer);
     }
 
 }
@@ -572,10 +790,13 @@ bool FMeshedPolygonTrajectoryLayered::LoadFromBinary(
             TemplateBufferStorageInterface::TLoadGrid<float>(timeGrid, Ptr);
         }
         if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
-            TemplateBufferStorageInterface::TLoadGrid<float>(resultGrid, Ptr);
+            TemplateBufferStorageInterface::TLoadGrid<float>(groundTruthGrid, Ptr);
         }
         if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
             TemplateBufferStorageInterface::TLoadGrid<float>(viewGrid, Ptr);
+        }
+        if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
+            TemplateBufferStorageInterface::TLoadGrid<float>(trajectoryConePrecited, Ptr);
         }
         return true;
     }
@@ -594,7 +815,8 @@ bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &
         AppendFlagMapAsFloat(buffer);
         AppendTimeMap(buffer);
         AppendViewMap(buffer);
-        
+        AppendTrajectoryConeMap(buffer);
+
         return true;
     }
     return false;
@@ -602,7 +824,7 @@ bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &
 
 bool FMeshedPolygonTrajectoryLayered::PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer){
     //sample and ground truth valid
-    if(FlagAndTimeDataValid() && ResultGridIsValid()){
+    if(FlagAndTimeDataValid() && GroundTruthGridIsValid()){
         if(PrepareAppendRequestBinary(buffer)){
             AppendResultMapAsFloat(buffer);
             return true;
