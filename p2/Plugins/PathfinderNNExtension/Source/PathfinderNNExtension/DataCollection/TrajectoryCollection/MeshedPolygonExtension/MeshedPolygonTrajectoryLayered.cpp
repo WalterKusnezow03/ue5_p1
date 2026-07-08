@@ -497,6 +497,100 @@ void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontBytes(const TArr
     }
 }
 
+/*
+void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
+    if(buffer.Num() > 0){
+        TCreateOrClearGrid<float>(heatMap, 0.0f);
+        
+        //debug
+        if(heatMap.Num() > 0){
+            int size = heatMap.Num() * heatMap[0].Num();
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("FMeshedPolygonTrajectoryLayered heatMapSize %d , data size %d"),
+                    size, buffer.Num()
+                )
+            );
+            if(size != buffer.Num()){
+                return;
+            }
+        }
+
+        const float *Ptr = buffer.GetData();
+        for (int i = 0; i < heatMap.Num(); i++){
+            TArray<float> &column = heatMap[i];
+
+            //new
+            if(Ptr < buffer.GetData() + buffer.Num() * sizeof(float)){
+                DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered heatmap copy still valid!");
+                int bytesToCopy = column.Num() * sizeof(float);
+                void *Dest = column.GetData();
+                FMemory::Memcpy( 
+                    Dest,
+                    Ptr,
+                    bytesToCopy
+                );
+                Ptr += bytesToCopy;
+            }
+
+            
+        }
+        DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered heatmap copy finished!");
+
+        NormalizeHeatMapThroshold(0.5f);
+        RemoveHeatMapBorder(4); //3 pixels
+        CacheResultPositionsFromHeatMap();
+    }
+}*/
+
+void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
+    if(buffer.Num() > 0){
+        TCreateOrClearGrid<float>(heatMap, 0.0f);
+        
+        if(heatMap.Num() > 0){
+            int size = heatMap.Num() * heatMap[0].Num();
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("FMeshedPolygonTrajectoryLayered heatMapSize %d , data size %d"),
+                    size, buffer.Num()
+                )
+            );
+            if(size != buffer.Num()){
+                return;
+            }
+        }
+
+        const float *Ptr = buffer.GetData();
+        const float *EndPtr = buffer.GetData() + buffer.Num(); // The true end boundary element
+
+        for (int i = 0; i < heatMap.Num(); i++){
+            TArray<float> &column = heatMap[i];
+            int elementsToCopy = column.Num();
+
+            // Safety check: ensure we aren't reading past the buffer
+            if (Ptr + elementsToCopy <= EndPtr) {
+                DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered heatmap copy still valid!");
+                
+                // Copy using byte size, but increment Ptr by element count
+                FMemory::Memcpy(column.GetData(), Ptr, elementsToCopy * sizeof(float));
+                
+                Ptr += elementsToCopy; // ✅ Safely advances by number of floats, not bytes
+            } else {
+                DebugHelper::logMessage("Error: Attempted to read past buffer bounds!");
+                break;
+            }
+        }
+        
+        NormalizeHeatMapThroshold(0.5f);
+        RemoveHeatMapBorder(4); 
+        CacheResultPositionsFromHeatMap();
+    }
+}
+
+
+
+
+
 void FMeshedPolygonTrajectoryLayered::LogHeatMap(FString prefix){
     for (int i = 0; i < heatMap.Num(); i++){
         FString message = prefix;
@@ -822,6 +916,11 @@ bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &
     return false;
 }
 
+
+
+
+
+
 bool FMeshedPolygonTrajectoryLayered::PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer){
     //sample and ground truth valid
     if(FlagAndTimeDataValid() && GroundTruthGridIsValid()){
@@ -834,3 +933,41 @@ bool FMeshedPolygonTrajectoryLayered::PrepareRequestAndResultBatchBinary(TArray<
 }
 
 // polygonDataCache.AppendResultMapAsFloat(resultbytes);
+
+
+
+
+
+
+
+void FMeshedPolygonTrajectoryLayered::ResizeGrid(int x, int y){
+    if(x > 0 && y > 0){
+        FMeshedPolygonRaytracable::ResizeGrid(x, y);
+
+        /*void TResizeGrid(
+            TArray<TArray<T>> &originalGrid, 
+            T defaultNoneValue,
+            int xWanted,
+            int yWanted
+        )*/
+
+
+
+        // TArray<TArray<float>> timeGrid; //trajectories from player
+        // TArray<TArray<float>> trajectoryConePrecited;
+        // TArray<TArray<float>> groundTruthGrid; //ground truth grid
+        // TArray<TArray<float>> enemyPositions;
+        // TArray<TArray<float>> heatMap;
+
+        TResizeGrid<float>(timeGrid, 0.0f, x, y);
+        TResizeGrid<float>(trajectoryConePrecited, 0.0f, x, y);
+        TResizeGrid<float>(groundTruthGrid, 0.0f, x, y);
+        TResizeGrid<float>(enemyPositions, 0.0f, x, y);
+        TResizeGrid<float>(heatMap, 0.0f, x, y);
+        
+    }
+}
+
+void FMeshedPolygonTrajectoryLayered::ResizeGrid144(){
+    ResizeGrid(144, 144);
+}

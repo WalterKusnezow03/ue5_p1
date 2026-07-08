@@ -99,7 +99,8 @@ FVector& CurveRasterizer::ChooseRightOffCoordinateRelativeTo(
     FVector &relative
 ){
     FVector modLowerRelative = modLower - relative; // AB = B - A
-    //FVector modHigherRelative = modHigher - relative;
+    modLowerRelative.Z = 0.0f;
+    // FVector modHigherRelative = modHigher - relative;
 
     //stepping coordinate must be always right off, inside the polygon
     if(FVector::DotProduct(normal, modLowerRelative) <= 0.0f){
@@ -111,10 +112,26 @@ FVector& CurveRasterizer::ChooseRightOffCoordinateRelativeTo(
 }
 
 FVector CurveRasterizer::ToModCoordinate(FVector &pos, int mod, int dir){
-    int x = pos.X;
+    /*int x = pos.X;
     int y = pos.Y;
     x += dir * (x % mod);
     y += dir * (y % mod);
+    return FVector(x, y, pos.Z);*/
+
+    float asFloatMod = mod;
+    float x = pos.X;
+    float y = pos.Y;
+
+    if (dir < 0) {
+        // Abrunden auf das vorherige Grid-Vielfache
+        x = FMath::FloorToFloat(x / asFloatMod) * mod;
+        y = FMath::FloorToFloat(y / asFloatMod) * mod;
+    } else {
+        // Aufrunden auf das nächste Grid-Vielfache
+        x = FMath::CeilToFloat(x / asFloatMod) * mod;
+        y = FMath::CeilToFloat(y / asFloatMod) * mod;
+    }
+
     return FVector(x, y, pos.Z);
 }
 

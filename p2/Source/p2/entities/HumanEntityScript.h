@@ -29,6 +29,8 @@ class P2_API AHumanEntityScript : public AEntityScript, public IPathfinderNNInte
 private:
 	bool bDebugBlockOutpostRequest = true;
 
+	bool bWaitForPlayerVisibleAfterRequest = false;
+
 public:
 	AHumanEntityScript();
 	virtual void init() override;
@@ -47,6 +49,7 @@ private:
 	//weapon
 	class Aweapon *weaponPointer;
 
+	void ResetRequestAllowedFlagIfCanSeePlayerAgain();
 	void PerformActionsBasedOnPlayerVisibility();
 	void adaptWeaponToCurrentPlayerVisibilty();
 

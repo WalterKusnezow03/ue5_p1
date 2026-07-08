@@ -87,7 +87,7 @@ void AgameModeSubclass::BeginPlay()
          */
         AworldLevel::initWorld(GetWorld());
     }
-
+    LogPhysicsActors();
     //SlipLiftOffFrameFinder::Test();
 }
 
@@ -102,11 +102,56 @@ void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
-#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
+
+#include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
+
 void AgameModeSubclass::RunTests(){
     //AssetPathMaker::Test();
     
     //BoundingBoxSimple::Test();
     //ANNSocket::MakeInstance(GetWorld());
-    ANNPathFinderSocket::MakePathFinderSocketInstance(GetWorld());
+    //ANNPathFinderSocket::MakePathFinderSocketInstance(GetWorld());
+
+    NNPathFinderExtensionApi::BeginPlay(GetWorld());
+
+    
+    
+}
+
+#include "EngineUtils.h"
+void AgameModeSubclass::LogPhysicsActors()
+{
+    for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+    {
+        AActor* A = *It;
+        TArray<UPrimitiveComponent*> Comps;
+        A->GetComponents<UPrimitiveComponent>(Comps);
+        for (UPrimitiveComponent* Prim : Comps)
+        {
+            if (!Prim) continue;
+            const bool bHasCollision =
+                Prim->GetCollisionEnabled() != ECollisionEnabled::NoCollision;
+            const bool bHasPhysicsBody =
+                Prim->BodyInstance.bSimulatePhysics;
+            const bool bIsValid =
+                !Prim->GetComponentTransform().GetScale3D().ContainsNaN();
+            if (bHasCollision)
+            {
+                UE_LOG(LogTemp, Warning,
+                    TEXT("Actor: %s | Comp: %s | SimPhys: %d | Collision: %d | Valid: %d"),
+                    *A->GetName(),
+                    *Prim->GetName(),
+                    bHasPhysicsBody,
+                    bHasCollision,
+                    bIsValid);
+            }
+            if (!bIsValid)
+            {
+                UE_LOG(LogTemp, Error,
+                    TEXT("INVALID TRANSFORM DETECTED: %s / %s"),
+                    *A->GetName(),
+                    *Prim->GetName());
+            }
+        }
+    }
 }

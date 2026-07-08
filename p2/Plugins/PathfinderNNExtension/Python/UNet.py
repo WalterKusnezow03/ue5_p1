@@ -8,10 +8,10 @@ class UNet(nn.Module):
         super().__init__()
 
         ##channel nach importance gewichten
-        self.channel_weight = nn.Parameter(torch.tensor([1.0, 1.0, 10.0]))
+        ##self.channel_weight = nn.Parameter(torch.tensor([1.0, 1.0, 10.0]))
 
         # Encoder
-        self.enc1 = self.conv_block(in_ch, 16)
+        self.enc1 = self.conv_block(in_ch, 16) 
         self.enc2 = self.conv_block(16, 32)
         self.enc3 = self.conv_block(32, 64)
 
@@ -40,6 +40,7 @@ class UNet(nn.Module):
 
 
     def conv_block(self, a, b):
+        ##Padding = \frac{Kernel\_Size - 1}{2}
         return nn.Sequential(
             ##nn.Conv2d(in_channels, out_channels, image_kernel_size, ...)
             nn.Conv2d(a, b, 3, padding=1),
@@ -51,6 +52,11 @@ class UNet(nn.Module):
     def forward(self, x):
         input_size = x.shape[2:]
 
+        ##extra weight
+        ##x = x * self.channel_weight.unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+
+
+
         e1 = self.enc1(x)
         e2 = self.enc2(self.pool(e1))
         e3 = self.enc3(self.pool(e2))
@@ -58,17 +64,17 @@ class UNet(nn.Module):
         b = self.bottleneck(self.pool(e3))
 
         d3 = self.up3(b)
-        d3 = self.match_tensor(d3, e3)
+        #d3 = self.match_tensor(d3, e3)
         d3 = torch.cat([d3, e3], dim=1) ##concatenate encoded to decoder
         d3 = self.dec3(d3)
 
         d2 = self.up2(d3)
-        d2 = self.match_tensor(d2, e2)
+        #d2 = self.match_tensor(d2, e2)
         d2 = torch.cat([d2, e2], dim=1)
         d2 = self.dec2(d2)
 
         d1 = self.up1(d2)
-        d1 = self.match_tensor(d1, e1)
+        #d1 = self.match_tensor(d1, e1)
         d1 = torch.cat([d1, e1], dim=1)
         d1 = self.dec1(d1)
 

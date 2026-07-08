@@ -105,6 +105,7 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonD
             radiusMeter * 100.0f,
             polygonData
         );
+        polygonData.ResizeGrid144();
 
         //invert flag map for 1 possible position and 0 not possible
         //might be better for training
@@ -155,6 +156,10 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
 //Heat map prediction embedding
 void PredictionTask::GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer){
     polygonDataCache.GenerateMapFromPredicitontBytes(buffer);
+}
+
+void PredictionTask::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
+    polygonDataCache.GenerateMapFromPredicitontFloats(buffer);
 }
 
 bool PredictionTask::IsSameActor(AActor *actorCheck){

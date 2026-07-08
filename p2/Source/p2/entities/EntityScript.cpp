@@ -510,6 +510,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 }
 
 void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
+	DebugHelper::logMessage("Entity request new path");
 	UWorld *world = GetWorld();
 	if(world != nullptr){
 		APathFinder *p = APathFinder::instance();
@@ -520,6 +521,7 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 			FVector a = humanoidPluginController.GetLocation(); 
 
 			this->path = p->getPath(a,targetLocation);
+			DebugHelper::logMessage("Entity request new path finish");
 
 			//no path was found
 			if(this->path.size() <= 0){

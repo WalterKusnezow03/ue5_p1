@@ -153,24 +153,7 @@ void ALoadoutRoomActor::Leave(){
     Super::Leave();
 }
 
-void ALoadoutRoomActor::showScreenMessage(FString message, FColor color){
-    message += "-";
-    message += GetActorLabel();
-    DebugHelper::showScreenMessage(message, color);
-}
 
-void ALoadoutRoomActor::logMessage(FString message){
-    message += "-";
-    message += GetActorLabel();
-    DebugHelper::logMessage(message);
-}
-
-void ALoadoutRoomActor::logMessage(FString message, FVector pos){
-    message += FString::Printf(TEXT("(%.2f, %.2f, %.2f)"), pos.X, pos.Y, pos.Z);
-    message += "-";
-    message += GetActorLabel();
-    DebugHelper::logMessage(message);
-}
 
 
 

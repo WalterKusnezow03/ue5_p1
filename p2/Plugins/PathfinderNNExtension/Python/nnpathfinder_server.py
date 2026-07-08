@@ -1,3 +1,5 @@
+print("NNServerPathfinder LAUNCHED .PY \n")
+
 import os
 import sys
 
@@ -15,12 +17,22 @@ import sys
 
 ##### works as expected, ignore yellow line!
 import communicationPluginParent
-import nn_server
-from NNBase import CNNBase
-import NetA
-import NetB
+print("NNServerPathfinder communicationPluginParent import ok \n")
 
-print("NNServerPathfinder IMPORT OK \n")
+from Base import nn_server
+print("NNServerPathfinder nn_server import ok \n")
+
+from Base.NNBase import CNNBase
+print("NNServerPathfinder NNBase import ok \n")
+
+import NetA
+print("NNServerPathfinder NetA import ok \n")
+
+import NetB
+print("NNServerPathfinder NetB import ok \n")
+
+
+print("NNServerPathfinder ALL IMPORT OK \n")
 
 
 
@@ -47,7 +59,7 @@ class NNServerPathfinder(nn_server.NNServer):
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
 
-        print("NNServerPathfinder_NetB: INIT!")
+        
         self.Net = NetB.NetB()
 
         self.bWaitingForGroundTruth = False

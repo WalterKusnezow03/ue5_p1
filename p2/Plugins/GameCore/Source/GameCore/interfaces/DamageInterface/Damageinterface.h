@@ -18,7 +18,7 @@ class UDamageinterface : public UInterface
 /**
  * interface for taking damage and team management
  */
-class IDamageinterface
+class GAMECORE_API IDamageinterface
 {
 	GENERATED_BODY()
 
@@ -26,11 +26,15 @@ class IDamageinterface
 public:
 
 	//methods
-	virtual void takedamage(FCustomHitResult &result);
+	virtual void takedamage(FCustomHitResult &result) {};
 
 	//actor location might not be enough for explosive / alert management
-	virtual bool IsInRange(const FVector &position, float maxDistance) = 0;
+	virtual bool IsInRange(const FVector &position, float maxDistance){
+		return true;
+	}
 
-	virtual void setTeam(teamEnum t) = 0;
-	virtual teamEnum getTeam() = 0;
+	virtual void setTeam(teamEnum t) {};
+	virtual teamEnum getTeam() {
+		return teamEnum::none;
+	};
 };

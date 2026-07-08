@@ -49,4 +49,10 @@ protected:
 
     void ShutDownPython();
     void ShutDownPython(float timeOut);
+
+    void CopyPythonDataToTempDirectory(
+        const FPythonSetup &setup,
+        FString &outSafeWorkingDir,
+        FString &outArgs
+    );
 };

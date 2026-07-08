@@ -26,6 +26,10 @@
 		{
 			"Name": "SkeletalMeshModelingTools",
 			"Enabled": true
+		},
+		{
+			"Name": "PathfinderNNExtension",
+			"Enabled": false
 		}
 	]
 }

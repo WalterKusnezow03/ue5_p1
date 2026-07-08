@@ -86,6 +86,7 @@ void ActorManager::loadWorldMeshData(FString worldLevelString){
 //chunkMap must be already loaded / setup!
 void ActorManager::generateTerrain(){
     //push data into terrain generator
+    DebugHelper::logMessage("ActorManager: terrain generation started!");
 
     //setup chunk parser map
     chunkMeshDataParserMap.createArray(chunksForGame);

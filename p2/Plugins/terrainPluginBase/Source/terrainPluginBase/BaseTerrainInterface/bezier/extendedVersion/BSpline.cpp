@@ -19,7 +19,7 @@ BSpline::~BSpline()
 
 
 void BSpline::calculatecurve(
-    const TArray<FVector2D> &ref,
+    const TArray<FVector2D> &ref, //from anchors
     TArray<FVector2DBSplinePosition> &output,
     float _einheitsValue
 ){
@@ -79,6 +79,8 @@ void BSpline::calculatecurve(
  * ---- new 3D vertecies ---- 
  * 
  */
+
+
 void BSpline::calculatecurve(
     const TArray<FVector> &ref,
     TArray<FVectorBSplinePosition> &output,
@@ -462,6 +464,7 @@ void BSpline::afterSmoothHeight(
     float _einheitsValue,
     int anchorSkipPerStep
 ){
+    //nach welchem index gilt ein neuer anchor
     anchorSkipPerStep = std::max(std::abs(anchorSkipPerStep), 1);
 
     //copy anchors
@@ -496,3 +499,84 @@ void BSpline::afterSmoothHeight(
 
 
 }
+
+
+
+
+
+
+///---- IN PLACE SPLINE BUILDING AND UPDATING VERTECIES ----
+void BSpline::InplaceBuildSpline(
+    TArray<FVector*> &curve,
+    float _einheitsValue,
+    int anchorSkipPerStep
+){
+    //make Spline anchors from anchors (skip vertecies per step)
+    //nach welchem index gilt ein neuer anchor
+    anchorSkipPerStep = std::max(std::abs(anchorSkipPerStep), 1);
+
+    //copy anchors
+    TArray<FVector*> anchors;
+    for(int i = 0; i < curve.Num(); i += anchorSkipPerStep){
+        if(FVector *current = curve[i]){
+            anchors.Add(current);
+        }
+
+        int nextIndex = i + anchorSkipPerStep;
+        if(nextIndex >= curve.Num()){
+            FVector *next = curve[curve.Num() - 1];
+            if(next){
+                anchors.Add(next);
+            }
+        }
+    }
+
+
+    TArray<FVectorBSplinePosition> output;
+    calculatecurve(
+        anchors,
+        output,
+        _einheitsValue
+    );
+
+    //override back into ptr per created spline point
+    for (int i = 0; i < output.Num(); i++){
+        //copy back
+        if(i <= curve.Num()){
+            FVector *target = curve[i];
+            FVectorBSplinePosition &source = output[i];
+            FVector &sourcePoint = source.position;
+            if(target){
+                *target = sourcePoint; //copy
+            }
+        }
+    }
+
+    //--> terrain muss nicht manuell umkopieren!
+}
+
+
+void BSpline::calculatecurve(
+    const TArray<FVector*> &anchors, //anchors
+    TArray<FVectorBSplinePosition> &output,
+    float _einheitsValue
+){
+    TArray<FVectorBSplinePosition> converted;
+    for (int i = 0; i < anchors.Num(); i++){
+        if(FVector *current = anchors[i]){
+            converted.Add(
+                FVectorBSplinePosition(*current, i) // is marked as original index by default
+            );
+        }
+    }
+    //makes two 2D Splines and build c2 continouity curve internally
+    calculatecurve(converted, output, _einheitsValue);
+}
+
+
+
+
+
+
+
+

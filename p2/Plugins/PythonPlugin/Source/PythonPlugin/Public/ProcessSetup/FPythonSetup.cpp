@@ -44,6 +44,10 @@ void FPythonSetup::SetupPythonScript(FString pluginName, FString pyname){
 }
 
 void FPythonSetup::SetupPythonDir(FString pluginNameToPython, FString pythonExePath){
+    if(false){
+        return;
+    }
+
     FString pythonPathOther = PluginPythonDir(PluginDir(pluginNameToPython));
     pythonExe = FPaths::Combine(pythonPathOther, pythonExePath);
 }

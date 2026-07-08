@@ -13,17 +13,19 @@ print("import unet done")
 
 ##Input : 1 × 142 × 142
 ##Output: 1 × 142 × 142
-H = 142
-W = 142
+H = 144 #142
+W = 144 #142
 
 IN_CHANNELS = 4
 OUT_CHANNELS = 1
 
 class NetB(nn.Module):
 
-    
+    def exportNet(self):
+        NetCheckpoint.ExportNet(self, "NNServerPathfinder_NetB", W, H, IN_CHANNELS)
+        return
 
-    def saveCheckpoint(self, path="netBcheckpoint.pth"):
+    def saveCheckpoint(self, path="PyCheckpoint/netBcheckpoint.pth"):
         '''
         print("NNServerPathfinder_NetB: try save model!")
         torch.save({
@@ -36,7 +38,7 @@ class NetB(nn.Module):
         NetCheckpoint.saveCheckpoint(self, "NNServerPathfinder_NetB", path)
         return
 
-    def loadCheckpoint(self, path="netBcheckpoint.pth"):
+    def loadCheckpoint(self, path="PyCheckpoint/netBcheckpoint.pth"):
         '''
         import os
 
@@ -57,6 +59,7 @@ class NetB(nn.Module):
             print("NNServerPathfinder_NetB Checkpoint load failed:", e)
             return False
         '''
+        print("NNServerPathfinder_NetB: TRY LOAD CHECKPOINT")
         return NetCheckpoint.loadCheckpoint(self, "NNServerPathfinder_NetB", path)
         
 
@@ -130,6 +133,9 @@ class NetB(nn.Module):
             print("NNServerPathfinder_NetB: loaded model from Storage!")
             ##ANNPathFinderSocket::ReceivePythonPrint NNServerPathfinder_NetA: loaded model from Storage!
             ##IS PRINTED.
+
+            #debug
+            self.exportNet()
         
 
     def __del__(self):
@@ -244,6 +250,7 @@ class NetB(nn.Module):
         self.optimizer.step()
 
         self.latestLoss = loss.item()
+        print("NNServerPathfinder_NetB: BACKWARD FINISH!")
 
     ######## call this for learning a large set ########
     def TrainFromBatchBinary(self, binary):
@@ -312,6 +319,7 @@ class NetB(nn.Module):
 
         ##saved by nn server.
         self.saveCheckpoint()
+        self.exportNet()
 
         self.SwitchToCpu()
     

@@ -286,7 +286,8 @@ void PathFinderQuadrantMap::GenerateRasterizedConvexHull(TArray<FVector> &polygo
 
 float PathFinderQuadrantMap::PolygonStepSize(){
     if(parent){
-        return parent->GetOneMeter();
+        float asFloat = parent->GetOneMeter();
+        return asFloat;
     }
     return 100.0f;
 }

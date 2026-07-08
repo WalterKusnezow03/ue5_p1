@@ -251,16 +251,13 @@ void AGameStartRoom::NotifyOnClickDispatch(){
 }
 
 
-
+#include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
 void AGameStartRoom::NotifyNNTrainLaunch(){
 
     //subscribe receiver
-    if(ANNPathFinderSocket *socket = ANNPathFinderSocket::PathFinderNNinstance()){
-        if(UNNTrainWidget *widget = GetNNWidget()){
-            socket->SubscribeMessageListener(widget);
-        }
-        //notify nn train launch
-        socket->SetTrainingAllowed();
-        //DebugHelper::logMessage("AGameStartRoom::NotifyNNTrainLaunch");
+    if(UNNTrainWidget *widget = GetNNWidget()){
+        NNPathFinderExtensionApi::SubscribeMessageListener(widget);
     }
+    NNPathFinderExtensionApi::SetTrainingAllowed();
+   
 }

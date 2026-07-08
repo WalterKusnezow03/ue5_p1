@@ -8,8 +8,10 @@
 void FMeshedPolygonRaytracable::CreateOrClearViewGrid(){
     TCreateOrClearGrid<float>(viewGrid, viewGridClearedValue);
 
+    RecreateBoundHull();
+}
 
-
+void FMeshedPolygonRaytracable::RecreateBoundHull(){
     int x = sizeX();
     int y = sizeY();
 
@@ -23,8 +25,10 @@ void FMeshedPolygonRaytracable::CreateOrClearViewGrid(){
     boundHull.AddPosition(x, 0);
     boundHull.AddPosition(x, y);
     boundHull.AddPosition(0, y);
-    
 }
+
+
+
 
 bool FMeshedPolygonRaytracable::ViewGridValid(){
     return TGridIsSize(sizeX(), sizeY(), viewGrid);
@@ -463,4 +467,17 @@ FVector2D FMeshedPolygonRaytracable::MakeDir(const FVector &v0, const FVector &v
     FVector2D dir2D(dir.X, dir.Y);
     dir2D = dir2D.GetSafeNormal();
     return dir2D;
+}
+
+
+
+
+void FMeshedPolygonRaytracable::ResizeGrid(int x, int y){
+    if(x > 0 && y > 0){
+        FMeshedPolygon::ResizeGrid(x, y);
+
+        TResizeGrid<float>(viewGrid, viewGridClearedValue, x, y);
+
+        RecreateBoundHull();
+    }
 }

@@ -36,21 +36,18 @@ public:
 
 	/// @brief must provide this api for outside updates of the actor (but this is just an interface.)
 	/// is called on skelleton tick if item is attached!, called from carriedItemSocket!
-	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) = 0;
+	virtual void UpdateActorTransform(FVector &location, FRotator &rotation) {};
 
 	// --- TO BE CALLED FROM BONES ! ---
 	/// update for special carried items 
 	//(update passed though this function back to actor implementing the interface)
-	virtual void UpdateLowerArm(EArmType typeArm, const FVector &direction);
+	virtual void UpdateLowerArm(EArmType typeArm, const FVector &direction) {};
 
 	///@brief must be implemented if local actor position is changed for animations
 	/// (Weapon kickback manual for example)
-	virtual FVector LocalAnimationOffset();
-
-
-
-
-
+	virtual FVector LocalAnimationOffset(){
+		return FVector(0, 0, 0);
+	}
 
 	/// erstmal so machen und testen!
 	///denken

@@ -21,7 +21,7 @@
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
 #include "IkHumanoidModell/carryItems/enum/ECarriedItemPosition.h"
 
-#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
+
 
 
 // Sets default values
@@ -129,6 +129,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
 
         //addition to the base entity: attack the player if in vision
         //adaptWeaponToCurrentPlayerVisibilty();
+        ResetRequestAllowedFlagIfCanSeePlayerAgain();
         PerformActionsBasedOnPlayerVisibility();
 
         //if needed one is found
@@ -188,19 +189,21 @@ void AHumanEntityScript::FlagPlayerVisibleToNNInterface(){
     }
 }
 
+#include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
 void AHumanEntityScript::FlagActorVisibleToNNInterface(AActor *actor){
     if(actor){
-        if(ANNPathFinderSocket *nnSocket = ANNPathFinderSocket::PathFinderNNinstance()){
-            nnSocket->FlagVisible(actor);
-        }
+        NNPathFinderExtensionApi::FlagVisible(actor);
     }
 }
 
 void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
+    //not allowed to ask for positions if hasnt seen again!
+    if(bWaitForPlayerVisibleAfterRequest){
+        return;
+    }
+
     if(!canSeePlayer && playerPointer){
-        if(ANNPathFinderSocket *nnSocket = ANNPathFinderSocket::PathFinderNNinstance()){
-            nnSocket->PredictNode(this, playerPointer);
-        }
+        NNPathFinderExtensionApi::PredictNode(this, playerPointer);
     }
 }
 
@@ -208,6 +211,15 @@ void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
 
 
 //process requested positions
+void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(){
+    //since bWaitForPlayerVisibleAfterRequest is making
+    //the bot wait before performing new requests
+    if(canSeePlayer){
+        bWaitForPlayerVisibleAfterRequest = false; //testing needed!
+    }
+}
+
+
 void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
     if(positions.Num() > 0){
         FString message = FString::Printf(
@@ -217,6 +229,7 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         DebugHelper::showScreenMessage(message, FColor::Orange);
         DebugHelper::logMessage(message);
 
+        //debug draw
         for (int i = 0; i < positions.Num(); i++){
             FVector current = positions[i];
             FVector actorLocation = humanoidPluginController.GetLocation();
@@ -234,7 +247,9 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         //process check if visible at all
 
         //notifiy team
-        
+
+        //wait for player visible after prediction ask
+        bWaitForPlayerVisibleAfterRequest = true;
     }
 }
 

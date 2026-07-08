@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "priorityQueue.h"
 #include "PathFinder/pathFinding/PathFinder.h"
 #include <map>
 #include "DebugPlugin/DebugHelper.h"
-#include "priorityQueue.h"
+
 
 priorityQueue::priorityQueue()
 {

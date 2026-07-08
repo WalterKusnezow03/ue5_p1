@@ -13,6 +13,9 @@ class MeshData;
 // true: blocked, false: free
 class POLYGONPLUGIN_API FMeshedPolygon : public GridBase{
 
+private:
+    int MINSTEP = 10.0f;
+
 protected:
     TArray<TArray<uint8>> flagGrid;
     
@@ -146,7 +149,7 @@ protected:
     );
 
     //for interpolation
-    void GenerateStepDirectionForInterpolation(
+    bool GenerateStepDirectionForInterpolation(
         const FVector &v0,
         const FVector &v1,
         int &outSteps,
@@ -296,4 +299,43 @@ public:
         TArray<uint8> &buffer,
         uint8 *& Ptr
     );
+
+
+
+    // ---- resize ----
+    virtual void ResizeGrid(int x, int y);
+
+protected:
+    template <typename T>
+    void TResizeGrid(
+        TArray<TArray<T>> &originalGrid, 
+        T defaultNoneValue,
+        int xWanted,
+        int yWanted
+    ){
+        if(xWanted <= 0 || yWanted <= 0){
+            return;
+        }
+        if(TGridIsSize<T>(xWanted, yWanted, originalGrid)){
+            return;
+        }
+
+        TArray<TArray<T>> gridSmaller; //or larger
+        TGenerateGrid<T>(xWanted, yWanted, gridSmaller);
+        TClearGrid<T>(gridSmaller, defaultNoneValue);
+
+        for (int i = 0; i < gridSmaller.Num(); i++){
+            TArray<T> &column = gridSmaller[i];
+            if(i < originalGrid.Num()){
+                TArray<T> &other = originalGrid[i];
+
+                //void* FMemory::Memcpy(void* Dest, const void* Src, SIZE_T Count);
+                int32 smallerSize = FMath::Min(column.Num(), other.Num());
+                if(smallerSize > 0){
+                    FMemory::Memcpy(column.GetData(), other.GetData(), sizeof(T) * smallerSize);
+                }
+            }
+        }
+        originalGrid = gridSmaller; //override
+    }
 };

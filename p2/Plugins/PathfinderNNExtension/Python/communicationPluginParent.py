@@ -3,6 +3,7 @@ import sys
 
 
 #### find NNCommunicationPlugin working dir to launch tcp listener ####
+'''
 BASE_DIR = os.path.dirname(__file__)
 
 COMMUNICATION_PYTHON = os.path.abspath(
@@ -16,5 +17,9 @@ print("COMM PATH:", COMMUNICATION_PYTHON, "\n")
 ##### works as expected, ignore yellow line!
 import nn_server
 from NNBase import CNNBase
+'''
+
+from Base import nn_server
+from Base.NNBase import CNNBase
 
 print("IMPORT OK \n")

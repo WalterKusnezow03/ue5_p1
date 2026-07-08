@@ -1,10 +1,11 @@
 # nn_server.py
+print("NNServer NN_SERVER MODULE START")
 import socket, struct
 
 from InputOutput import receiver
 from SharedMemory.sharedMemory import UnrealSharedFrame
 from SharedMemory.sharedMemoryMap import UnrealSharedMemoryMap
-from NNBase import CNNBase
+##from NNBase import CNNBase
 
 print("NNServer NN_SERVER MODULE LOADED")
 
@@ -27,7 +28,7 @@ class NNServer:
         ##self.connection, self.addr = self.s.accept()
         ##print("NNServer Connection from", self.addr)
 
-        CNNBase.debugTorch()
+        ##CNNBase.debugTorch()
         self.SHUTDOWNFLAG = False
 
         ##NEW
@@ -40,7 +41,7 @@ class NNServer:
         self.s.bind(("127.0.0.1", 5050))
         self.s.listen(1)
         print("NNServer Python server ready")
-        print("Waiting for connection...")
+        print("NNServer Waiting for connection...")
         self.connection, self.addr = self.s.accept()
         print("NNServer Connection from", self.addr)
 

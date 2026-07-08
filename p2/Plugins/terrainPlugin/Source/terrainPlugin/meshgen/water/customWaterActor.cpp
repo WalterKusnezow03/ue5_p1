@@ -167,8 +167,19 @@ void AcustomWaterActor::createWaterPane(int vertexCountIn, int detail){
         thisMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
         thisMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
+        /*//set custom depth for screen space refraction
+        int depthPass = 1;
+        thisMesh->SetRenderCustomDepth(true);
+        thisMesh->SetCustomDepthStencilValue(depthPass);
+        thisMesh->MarkRenderStateDirty();
+
+        int32 Value = thisMesh->CustomDepthStencilValue;
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("AcustomWaterActor::setupDepthPass %d"), Value
+            )
+        );*/
     }
-    
 }
 
 MeshData& AcustomWaterActor::findMeshDataReference(
@@ -214,6 +225,9 @@ void AcustomWaterActor::vertexShader(){
                 FVector &vertex = vertecies[i];
 
                 if(!isAtLockedAxis(vertex)){
+                    
+                    //cant be deprecated, handled in shader, but needed for 
+                    //ripples right now
                     applyShaderToVertex(vertex);
                     applyWaterRippleOffset(vertex, actorLocation);
                 }else{

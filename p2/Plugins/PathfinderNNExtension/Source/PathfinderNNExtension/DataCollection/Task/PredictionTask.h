@@ -43,7 +43,9 @@ public:
 
     // heat map generation from result
     void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
-    
+
+    //for onnx handler
+    void GenerateMapFromPredicitontFloats(const TArray<float> &buffer);
 
     void ColoredHeatMap(
         Image &image,
@@ -81,4 +83,8 @@ private:
     FVector locationOfRequest;
 
     FMeshedPolygonTrajectoryLayered polygonDataCache;
+
+    //Unet input as 144 144, do not change, first check py script!!
+    void ResizeToNNSize(FMeshedPolygonTrajectoryLayered &polygonData);
+    void Resize(FMeshedPolygonTrajectoryLayered &polygonData, int x, int y); 
 };

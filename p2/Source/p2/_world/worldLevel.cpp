@@ -259,7 +259,9 @@ void AworldLevel::createTerrain(FString worldName){
     if(isTerrainInited){
         //return; //deprecated, auto unload reload world
     }
-    if(AworldLevel *InstanceWorldLevel = GetInstance()){
+    DebugHelper::logMessage("AworldLevel::launchTerrain!", worldName);
+    if (AworldLevel *InstanceWorldLevel = GetInstance())
+    {
         UWorld *world = InstanceWorldLevel->GetWorld();
         if(world != nullptr){
             isTerrainInited = true;

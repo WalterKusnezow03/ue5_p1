@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/TrajectoryCollection.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include "CoreMath/animation/timer/Timer.h"
 
 /// @brief tracks a single actor trajectory in a tick intervall
 /// Tick needs to be called from outside!

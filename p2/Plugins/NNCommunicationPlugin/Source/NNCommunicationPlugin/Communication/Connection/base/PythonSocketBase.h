@@ -18,6 +18,10 @@ class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public APythonLauncher {
     GENERATED_BODY()
 
 public:
+    static int GetPort(){
+        return 5050;
+    }
+
     //must be called on begin play in derived class
     using APythonLauncher::LaunchPythonProcess;
     void LaunchPythonProcess(

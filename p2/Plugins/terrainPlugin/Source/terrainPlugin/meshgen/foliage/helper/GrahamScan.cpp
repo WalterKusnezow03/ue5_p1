@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "GrahamScan.h"
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
-#include "GrahamScan.h"
+
 
 GrahamScan::GrahamScan()
 {

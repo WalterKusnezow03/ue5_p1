@@ -51,6 +51,7 @@ void ATerrainLauncher::Tick(float deltatime){
 
 void ATerrainLauncher::BeginAndLoad(FString WorldLevelName){
 
+    DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad!", WorldLevelName);
     //-- CRITICAL CHANGE --
     if(IsADifferentWorldThanCurrent(WorldLevelName)){
         EndAndSave(); //? testing needed
@@ -58,6 +59,7 @@ void ATerrainLauncher::BeginAndLoad(FString WorldLevelName){
     //-- CRITICAL CHANGE --
 
     actorManager.BeginPlay(WorldLevelName, GetWorld());
+    DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad Finished!", WorldLevelName);
     copiedWorldName = WorldLevelName;
     wasInitedOnce = true;
 }

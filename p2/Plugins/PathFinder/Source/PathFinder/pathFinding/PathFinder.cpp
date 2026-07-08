@@ -79,9 +79,10 @@ void APathFinder::Setup(FString worldname){
         DebugHelper::logMessage("Storage Interface PathFinder failed load from storage");
 
         //collect all edges from world if pathfinder wasnt inited yet!
+        DebugHelper::logMessage("PathFinder::Start Edge Collection From World");
         EdgeCollector c = EdgeCollector();
         c.getAllEdges(GetWorld()); //pushes them to the navmesh on its own
-	
+        DebugHelper::logMessage("PathFinder::End Edge Collection From World");
     }
     wasLoaded = true;
 }
@@ -246,8 +247,14 @@ void APathFinder::addNewNodeVector(std::vector<FVector>& vec){
 /// @brief expects the vector to be a convex hull of an object / grounded nodes! Do not ignore!
 /// @param vector vector of positions, convex hull!
 void APathFinder::addConvexHull(TArray<FVector> &vec){
+    if(vec.Num() <= 2){
+        DebugHelper::logMessage("APathFinder::Convex HullInvalid", vec.Num());
+        return;
+    }
+
     if(quadrantMap){
         quadrantMap->addConvexHull(vec);
+        DebugHelper::logMessage("APathFinder::Added Convex Hull");
     }
 }
 

@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "OutpostManager.h"
 #include "Outpost.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "OutpostManager.h"
+#include "p2/entities/HumanEntityScript.h"
+
 
 OutpostManager::OutpostManager()
 {

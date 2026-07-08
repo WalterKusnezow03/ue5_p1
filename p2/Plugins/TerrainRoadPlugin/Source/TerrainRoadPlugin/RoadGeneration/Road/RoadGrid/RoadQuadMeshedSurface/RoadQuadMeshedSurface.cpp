@@ -2,7 +2,8 @@
 #include "GameCore/util/FVectorUtil.h"
 #include "terrainPluginBase/BaseTerrainInterface/TerrainInterfaceBase.h"
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
-#include "terrainPluginBase/BaseTerrainInterface/bezier/rasterizer/CurveRasterizer.h"
+//#include "terrainPluginBase/BaseTerrainInterface/bezier/rasterizer/CurveRasterizer.h"
+#include "PolygonPlugin/Public/Polygons/rasterizer/CurveRasterizer.h"
 
 RoadQuadMeshedSurface::RoadQuadMeshedSurface(){
 

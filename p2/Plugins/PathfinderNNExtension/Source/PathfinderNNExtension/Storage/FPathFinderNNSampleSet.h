@@ -25,4 +25,5 @@ protected:
     bool batchPrepared = false;
 
     bool changedData = false;
+    void ResizeAll();
 };

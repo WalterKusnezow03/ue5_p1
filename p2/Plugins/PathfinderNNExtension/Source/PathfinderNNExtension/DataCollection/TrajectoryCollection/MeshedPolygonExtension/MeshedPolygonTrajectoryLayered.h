@@ -41,11 +41,13 @@ public:
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     bool PrepareAppendRequestBinary(TArray<uint8> &buffer);
     bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer);
+    
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     
 
     // ---- Paste result from nn ----
     void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
+    void GenerateMapFromPredicitontFloats(const TArray<float> &buffer);
 
     void ColoredHeatMap(
         Image &image,
@@ -65,10 +67,10 @@ public:
         TArray<uint8> &buffer,
         uint8 *& Ptr //reference to a pointer. Pointer by reference.
     ) override;
-
-
-
     //binary generation
+
+    virtual void ResizeGrid(int x, int y) override;
+    void ResizeGrid144();
 
 private:
     void EmbedConeFromTrajectories(

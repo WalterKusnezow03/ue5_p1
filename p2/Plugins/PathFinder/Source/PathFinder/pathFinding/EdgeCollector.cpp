@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "EdgeCollector.h"
 #include "CoreMinimal.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMesh.h"
@@ -16,7 +16,7 @@
 
 #include "DrawDebugHelpers.h"
 #include <cmath>
-#include "EdgeCollector.h"
+
 
 EdgeCollector::EdgeCollector()
 {
@@ -269,17 +269,20 @@ void EdgeCollector::getEdgesFromSingleMesh(
         }
     }
 
+    DebugHelper::logMessage("EdgeCollector::Made Edges before Convex Hull", currentEdges.size());
+
     //VERY IMPORTANT
     ComputeConvexHull(currentEdges);
 
     //causes issues currently
     CleanUpParalellEdges(currentEdges); //convex hull needed! -- this is not nesecarry because the hull is convex!
 
+    DebugHelper::logMessage("EdgeCollector::Made Edges After Clean", currentEdges.size());
 
     //caluclate raycast hits and apply to all edges aligning them properly
     scaleUpConvexHullShape(currentEdges);
     collectRaycasts(currentEdges, worldIn);
-    showEdges(currentEdges, worldIn); //debug
+    //showEdges(currentEdges, worldIn); //debug
 
     //feed to nav mesh
     TArray<FVector> toPosVec;
@@ -288,6 +291,7 @@ void EdgeCollector::getEdgesFromSingleMesh(
     }
     if(APathFinder *finder = APathFinder::instance()){
         finder->addConvexHull(toPosVec);
+        DebugHelper::logMessage("EdgeCollector::Added Convex Hull");
     }
     return;
 

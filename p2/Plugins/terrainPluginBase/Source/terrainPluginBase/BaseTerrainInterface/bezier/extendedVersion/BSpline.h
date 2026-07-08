@@ -37,6 +37,12 @@ public:
 		int anchorSkipPerStep
 	);
 
+	void InplaceBuildSpline(
+		TArray<FVector *> &curve,
+		float _einheitsValue,
+		int anchorSkipPerStep
+	);
+
 private:
 
     void calculatecurve(
@@ -51,7 +57,12 @@ private:
 		float _einheitsValue
 	);
 
-	
+	void calculatecurve(
+		const TArray<FVector *> &anchors, // anchors
+		TArray<FVectorBSplinePosition> &output,
+		float _einheitsValue
+	);
+
 	float EinheitsValue;
 
 

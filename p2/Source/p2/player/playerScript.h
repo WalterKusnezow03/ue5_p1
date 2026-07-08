@@ -29,7 +29,7 @@
 
 #include "CoreMath/animation/timer/Timer.h"
 
-#include "PathfinderNNExtension/Connection/NNPathFinderSocket.h"
+
 
 #include "playerScript.generated.h"
 

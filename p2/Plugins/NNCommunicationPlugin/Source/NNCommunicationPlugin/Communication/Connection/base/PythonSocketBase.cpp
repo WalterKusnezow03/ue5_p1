@@ -73,9 +73,9 @@ void APythonSocketBase::EndPlay(const EEndPlayReason::Type EndPlayReason){
 }
 
 void APythonSocketBase::CloseSocketOnEndPlay(){
-    for (int i = 0; i < 10; i++){
+    /*for (int i = 0; i < 10; i++){
         Send("SHUTDOWN");
-    }
+    }*/
 
     if (Socket)
     {
@@ -135,11 +135,15 @@ void APythonSocketBase::OpenSocket(float deltatime){
 
     bool bIsValid;
     Address->SetIp(TEXT("127.0.0.1"), bIsValid);
-    Address->SetPort(5050);
+    //Address->SetPort(5050);
+    Address->SetPort(GetPort());
 
     if (!Socket->Connect(*Address))
     {
-        DebugHelper::logMessage("APythonSocketBase::SocketConnect connect failed");
+        // --- FIX FÜR DEN BUILD-HÄNGER ---
+        // Schließe das korrupte/fehlgeschlagene Socket komplett
+        CloseSocketOnEndPlay();
+        DebugHelper::logMessage("APythonSocketBase::SocketConnect connect failed, recreate scoket");
         connected = false;
         //Restart();
         return;

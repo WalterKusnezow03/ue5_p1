@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "throwableLauncherWeapon.h"
 
 #include "p2/weapon/throwerWeapon/enum/throwableEnum.h"
 #include "p2/entityManager/EntityManager.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "p2/_world/worldLevel.h"
-#include "throwableLauncherWeapon.h"
+
 
 
 AthrowableLauncherWeapon::AthrowableLauncherWeapon(){

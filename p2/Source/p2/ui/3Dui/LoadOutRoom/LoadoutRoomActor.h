@@ -62,8 +62,5 @@ protected:
 
     virtual void ClearReferencesOnEndPlay() override;
 
-    //debug
-    void logMessage(FString message);
-    void logMessage(FString message, FVector pos);
-    void showScreenMessage(FString message, FColor color);
+    
 };

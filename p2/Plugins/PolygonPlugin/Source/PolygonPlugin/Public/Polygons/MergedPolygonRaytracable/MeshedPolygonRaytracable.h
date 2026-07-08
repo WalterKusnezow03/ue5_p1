@@ -43,7 +43,11 @@ public:
     //perform visiblity check to verify NN prediciton
     bool IsVisible(const FVector &a, const FVector &b);
 
+    virtual void ResizeGrid(int x, int y) override;
+
 protected:
+    void RecreateBoundHull();
+
     void TraceConeOnGrid(
         int x, int y, const FVector2D &dir, float angle, float rays,
         // expects grid to be same size and space as this polygon (externally passable for multichannel cones)

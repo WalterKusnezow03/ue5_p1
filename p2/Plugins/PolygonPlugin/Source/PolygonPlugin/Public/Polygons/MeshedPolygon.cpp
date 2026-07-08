@@ -188,26 +188,6 @@ void FMeshedPolygon::FindBounds(FVector bottomLeft, FVector topRight, bool safeC
 void FMeshedPolygon::GenerateGrid(){
     TCreateOrClearGrid<uint8>(flagGrid, FlagAsInt8(false));
     ClearFlags();
-    
-    /*
-    int x = -1;
-    int y = -1;
-    GetSizeGrid(x, y);
-    if(x > 0 && y > 0){
-        DebugHelper::logMessage(FString::Printf(TEXT("FMeshedPolygon::GenerateGrid x:%d y:%d"), x, y));
-        if (
-            TGridIsSize<uint8>(x, y, flagGrid) &&
-            TGridIsSize<FVector>(x, y, positionGrid))
-        {
-            ClearFlags();
-            return;
-        }
-
-        TGenerateGrid<uint8>(x, y, flagGrid);
-        TGenerateGrid<FVector>(x, y, positionGrid);
-        ClearFlags();
-        MakePositionGrid();
-    }*/
 }
 
 void FMeshedPolygon::ClearFlags(){
@@ -244,6 +224,10 @@ void FMeshedPolygon::GetSizeGrid(int &x, int &y, float widthOfInsideStep){
 
     x = std::abs(x);
     y = std::abs(y);
+
+    // SCHUTZ: Verhindere 0-Größen, die zu Invalidität führen
+    if (x == 0) x = 1;
+    if (y == 0) y = 1;
 }
 
 int FMeshedPolygon::sizeX(){
@@ -278,24 +262,34 @@ void FMeshedPolygon::FlagTrueInterpolate(
 
     FVector dirStepSized;
     int steps = 0;
-    GenerateStepDirectionForInterpolation(v0, v1, steps, dirStepSized);
-    for (int i = 0; i < steps + 1; i++){
-        FVector result = v0 + i * dirStepSized;
-        FlagTruePolygonEdge(result);
+    if(GenerateStepDirectionForInterpolation(v0, v1, steps, dirStepSized)){
+        for (int i = 0; i < steps + 1; i++){
+            FVector result = v0 + i * dirStepSized;
+            FlagTruePolygonEdge(result);
 
-        
+            
+        }
     }
+    
 }
 
 //generated the steps and step size for a linear interpolation across grid size to
 //hit all needed poisitons
-void FMeshedPolygon::GenerateStepDirectionForInterpolation(
+bool FMeshedPolygon::GenerateStepDirectionForInterpolation(
     const FVector &v0,
     const FVector &v1,
     int &outSteps,
     FVector &outDirStepSized
 ){
     float step = stepSizeSaved / 2.0f;
+    // Safety Guard: Prevent division by zero or infinite loop execution
+    if (stepSizeSaved <= MINSTEP)
+    {
+        outSteps = 0;
+        outDirStepSized = FVector::ZeroVector;
+        return false;
+    }
+
     float dist = FVector::Dist(v0, v1);
     int steps = dist / step;
 
@@ -305,6 +299,7 @@ void FMeshedPolygon::GenerateStepDirectionForInterpolation(
     //copy
     outSteps = steps;
     outDirStepSized = dirStepSized;
+    return true;
 }
 
 //reserved for polygon method only!
@@ -368,6 +363,11 @@ void FMeshedPolygon::FlagBetweenSpaceTrue(){
 
 
 void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer){
+    //impossible
+    if(flagBuffer.Num() <= 2){
+        return;
+    }
+
     int start = -1;
     int end = -1;
     bool startFound = false;
@@ -379,7 +379,8 @@ void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer){
         if(!startFound && current){
             startFound = current;
             start = i;
-            // reset copy
+            // reset copy, prevent end from being true at this pixel
+            // no range on self from [i..i], is not wanted!
             current = false;
         }
         if(startFound && !endFound && current){
@@ -902,5 +903,21 @@ void FMeshedPolygon::RemoveBorder(TArray<float> &column, int sizeBorder, float v
     int start = FMath::Max(0, column.Num() - sizeBorder);
     for (int i = start; i < column.Num(); i++){
         column[i] = value;
+    }
+}
+
+
+
+
+void FMeshedPolygon::ResizeGrid(int x, int y){
+    if(x > 0 && y > 0){
+        FVector dirStep(x * stepSizeSaved, y * stepSizeSaved, 0.0f);
+        maxSaved = minSaved + dirStep;
+
+        //false ist default, 0
+        //wenn invertiert: default 1
+        uint8 asFlagDefault = FlagAsInt8(flagsInverted);
+
+        TResizeGrid<uint8>(flagGrid, asFlagDefault, x, y);
     }
 }

@@ -23,4 +23,5 @@ public:
 
 private:
 	void RunTests();
+	void LogPhysicsActors();
 };

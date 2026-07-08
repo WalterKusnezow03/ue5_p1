@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "p2/weapon/weapon.h"
 #include "p2/weapon/setupHelper/weaponSetupHelper.h"
+#include "p2/weapon/weapon.h"
+
 
 
 #include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
