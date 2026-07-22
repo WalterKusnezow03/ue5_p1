@@ -30,6 +30,9 @@ TArray<std::pair<materialEnum, FString>> MaterialEnumHelper::GetMaterialPairs(){
 
     map.Add(MakePair(materialEnum::widgetMaterial, "widgetMaterial"));
 
+    map.Add(MakePair(materialEnum::transparentMaterial, "transparentMaterial"));
+    
+
 
     return map;
 }

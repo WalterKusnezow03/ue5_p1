@@ -22,6 +22,10 @@
 
 #include "p2/weapon/animationEnum/EVerschlussState.h"
 
+#include "p2/weapon/WeaponPartsOrganizer/weaponPartsCollection.h"
+#include "p2/PlateCarrier/virtualHand/MagSwapProcess.h"
+#include "p2/PlateCarrier/MagSocket/MagSocketType.h"
+
 #include "weapon.generated.h"
 
 
@@ -30,6 +34,7 @@
 
 //forward declare
 class IDamageinterface;
+class APlateCarrier;
 
 UCLASS()
 class P2_API Aweapon : public AcarriedItem
@@ -111,7 +116,7 @@ public:
 	//returns if the weapon is active or not
 	//bool isActive();
 
-
+	
 
 private:
 	
@@ -213,9 +218,9 @@ protected:
 	//animations
 	void shootAnimation();
 	void reloadAnimation();
+	void reloadAnimationBySequence();
+	bool TryReloadAnimationByPlateCarrier();
 
-	
-	
 	void setupAllComponentsAndAnimationsOnBeginPlay();
 	void LoadAnimationsFromAssetManager();
 	void findAllSkeletalAndSceneComponents();
@@ -228,15 +233,25 @@ protected:
 	//void playAnimation(const FString &AnimationPath, USkeletalMeshComponent *skeleton, float time);
 	void playAnimation(UAnimSequence *AnimSequence, USkeletalMeshComponent *skeleton, float time);
 
-	class USkeletalMeshComponent *rightHandTargetSkelletonPointer;
-	class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
-	class USkeletalMeshComponent *muzzleAttachmentSkelletonPointer;
-	class USkeletalMeshComponent *gripAttachmentSkelletonPointer;
-	class USkeletalMeshComponent *sightAttachmentSkeletonPointer;
 
+	
+
+	WeaponPartsCollection weaponPartsCollection;
+	
+
+	//class USkeletalMeshComponent *rightHandTargetSkelletonPointer;
+	//class USkeletalMeshComponent *leftHandTargetSkelletonPointer;
+	
+	//class USkeletalMeshComponent *gripAttachmentSkelletonPointer;
+	//class USkeletalMeshComponent *sightAttachmentSkeletonPointer;
+
+	//class USkeletalMeshComponent *muzzleAttachmentSkelletonPointer;
+
+	/*
 	class USkeletalMeshComponent *verschlussSkeletonPointer;
 	class USkeletalMeshComponent *magSkeletonPointer;
 	class USkeletalMeshComponent *gehauseSkeletonPointer;
+	*/
 	FString verschlussPath;
 	FString magAnimPath;
 	FString gehauseAnimPath;
@@ -301,7 +316,7 @@ private:
 	void loadAndSaveAttachment(weaponAttachmentEnum EattachmentType);
 	void attachNewItem(AActor *someActor);
 	void attachNewItem(AActor *actor, weaponAttachmentEnum type);
-	USkeletalMeshComponent *attachmentSkeletalComponentBy(weaponAttachmentEnum type);
+	USceneComponent *attachmentComponentBy(weaponAttachmentEnum type);
 
 	void showAllPickedAttachments();
 	void hideAllAttachments();
@@ -318,6 +333,9 @@ protected:
 		std::map<weaponAttachmentEnum, AActor *> &map,
 		weaponAttachmentEnum type
 	);
+
+
+
 
 	//new implementing animation from bonecontroller class
 	class KeyFrameAnimation actorKickBackAnim;
@@ -355,7 +373,7 @@ protected:
 
 	bool TickAnimationAndApplyLocation(
 		class KeyFrameAnimation &animation, 
-		USkeletalMeshComponent *component,
+		USceneComponent *component,
 		float DeltaTime
 	);
 
@@ -372,4 +390,14 @@ protected:
 	//sight offset
 	void findSightOffset();
 	void resetSightOffset();
+
+
+	//plate carrier ref
+public:
+	void SetPlateCarrierReference(APlateCarrier *plateCarrier);
+
+protected:
+	APlateCarrier *plateCarrierRef = nullptr;
+	MagSwapProcess swapProcess;
+	EMagSocketType getMagSocketType();
 };

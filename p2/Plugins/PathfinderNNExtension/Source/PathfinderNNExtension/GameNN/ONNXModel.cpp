@@ -7,6 +7,10 @@ ONNXModel::ONNXModel(){
     bModelWasLoaded = false;
 }
 
+bool ONNXModel::WasLoaded(){
+    return bModelWasLoaded;
+}
+
 ONNXModel::~ONNXModel(){
     Reset();
 }

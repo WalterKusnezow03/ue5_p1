@@ -140,3 +140,11 @@ bool WeaponEnumAssetPackProxy::isSingleFireOnly(weaponEnum weaponType){
     }
     return false;
 }
+
+
+EMagSocketType WeaponEnumAssetPackProxy::getMagSocketType(weaponEnum weaponType){
+    if(UWeaponEnumAssetPack *pack = FindInstance()){
+        return pack->getMagSocketType(weaponType);
+    }
+    return EMagSocketType::UTIL_MAG;
+}

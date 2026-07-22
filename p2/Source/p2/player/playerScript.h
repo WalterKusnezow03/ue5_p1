@@ -16,6 +16,8 @@
 #include "GameCore/Input/InputContainer.h"
 #include "GameCore/interfaces/Steeringinterface.h"
 
+
+
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 
@@ -26,16 +28,16 @@
 
 
 #include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
-
 #include "CoreMath/animation/timer/Timer.h"
 
 
 
 #include "playerScript.generated.h"
 
+class APlateCarrier;
+
 UCLASS()
-class P2_API AplayerScript : public APlayerControllerWidgetInteractiveBase
-{
+class P2_API AplayerScript : public APlayerControllerWidgetInteractiveBase {
 	GENERATED_BODY()
 
 public:
@@ -154,4 +156,9 @@ protected:
 
 	
 	void DebugTickPathfinderNN(float deltatime);
+
+
+	//plate carrier
+	void SetupPlateCarrierOnBeginPlay();
+	APlateCarrier *plateCarrier = nullptr;
 };

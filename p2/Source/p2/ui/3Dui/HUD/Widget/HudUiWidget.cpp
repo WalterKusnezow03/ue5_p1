@@ -65,8 +65,23 @@ bool UHudUiWidget::InitMiniMap(AActor *player){
 }
 
 void UHudUiWidget::Tick(float DeltaTime){
+    TickMiniMap(DeltaTime);
+    TickNNConnectionStateWidget(DeltaTime);
+}
+
+void UHudUiWidget::TickMiniMap(float DeltaTime){
+    //update minimap
     if(UMiniMapWidget *miniMap = MiniMapCasted()){
         miniMap->Tick(DeltaTime);
+    }
+}
+
+void UHudUiWidget::TickNNConnectionStateWidget(float DeltaTime){
+    //update nn connection state widget
+    if(UWidget *widget = GetWidgetNNConnectionState()){
+        if(IBaseUiInterface *casted = Cast<IBaseUiInterface>(widget)){
+            casted->Tick(DeltaTime);
+        }
     }
 }
 

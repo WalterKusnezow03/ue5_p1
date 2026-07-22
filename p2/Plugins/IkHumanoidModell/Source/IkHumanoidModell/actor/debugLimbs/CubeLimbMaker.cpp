@@ -1,6 +1,5 @@
 #include "CubeLimbMaker.h"
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/MeshData.h"
-#include "AssetEnumCollection/assetEnums/materialEnum.h"
 
 
 AActor *CubeLimbMaker::createLimbPivotAtTop(
@@ -8,6 +7,16 @@ AActor *CubeLimbMaker::createLimbPivotAtTop(
     int y, 
     int height,
     UWorld *world
+){
+    return createLimbPivotAtTop(x, y, height, world, materialEnum::wallMaterial);
+}
+
+AActor *CubeLimbMaker::createLimbPivotAtTop(
+    int x, 
+    int y, 
+    int height,
+    UWorld *world,
+    materialEnum materialType
 ){
 
 	height = std::abs(height) * -1; //orient downwardss
@@ -19,7 +28,7 @@ AActor *CubeLimbMaker::createLimbPivotAtTop(
             oberschenkel->setTeam(teamEnum::neutralTeam);
 
             bool haveRaycast = true;// with raycast, is ignored by humanoid controller manually
-            MeshData &ref = oberschenkel->findMeshDataReference(materialEnum::wallMaterial, haveRaycast); 
+            MeshData &ref = oberschenkel->findMeshDataReference(materialType, haveRaycast); 
 
             //smaller distances allowed:
             ref.MofidyEpsilon(0.1f); //smaller distances allowed, prevents removing triangles

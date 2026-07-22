@@ -11,8 +11,8 @@ public:
     FlipTimer();
     virtual ~FlipTimer();
 
-    virtual bool timesUp();
-    virtual float scalar();
+    virtual bool timesUp() override;
+    virtual float scalar() override;
 
 private:
     bool bFlipped = false; //marks state

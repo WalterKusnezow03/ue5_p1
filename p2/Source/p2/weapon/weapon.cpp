@@ -18,11 +18,15 @@
 #include "p2/entityManager/EntityManager.h"
 #include "AssetPlugin/gamestart/assetManager.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
+#include "p2/PlateCarrier/PlateCarrier.h"
 
 #include "CoreMath/util/Raycaster.h"
 
 
+
 #include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
+
+
 
 
 // Sets default values
@@ -33,16 +37,16 @@ Aweapon::Aweapon()
 	
 	cameraPointer = nullptr;
 	botPointer = nullptr;
+	
+
+	/*rightHandTargetSkelletonPointer = nullptr;
+	leftHandTargetSkelletonPointer = nullptr;
 	verschlussSkeletonPointer = nullptr;
 	magSkeletonPointer = nullptr;
-
-	rightHandTargetSkelletonPointer = nullptr;
-	leftHandTargetSkelletonPointer = nullptr;
-
-	
 	muzzleAttachmentSkelletonPointer = nullptr;
 	gripAttachmentSkelletonPointer = nullptr;
 	gehauseSkeletonPointer = nullptr;
+	*/
 
 	reddotSightChildActor = nullptr;
 	ironSightChildActor = nullptr;
@@ -195,6 +199,7 @@ void Aweapon::drop(){
 	Super::drop();
 	resetFlags();
     RegisterToMiniMap(); //register on drop
+	plateCarrierRef = nullptr;
 }
 
 void Aweapon::dropToObjectPool(){
@@ -513,14 +518,7 @@ void Aweapon::reload(int amount){
 
 		isReloading = true;
 
-		//add payload to timer: reset hand targets
-
-		Payload generated = handAndFingerPositionManager.UpdateTemporaryTargetWithPaylaod(
-			EArmType::ELeft, 
-			magSkeletonPointer,
-			"mag" //bone name
-		);
-		timer.AddPayload(generated);
+		
 
 
 
@@ -628,6 +626,13 @@ void Aweapon::showWeapon(bool show){
 	}else{
 		hideAllAttachments();
 	}
+
+	//hide current mag
+	if(USceneComponent *mag = weaponPartsCollection.FindComponent(EweaponPartEnum::EMag)){
+		bool hidden = !show;
+		bool shadow = show;
+		mag->SetHiddenInGame(hidden, shadow);
+	}
 }
 
 
@@ -677,31 +682,11 @@ void Aweapon::findAllSkeletalAndSceneComponents(){
 }
 
 void Aweapon::findAllSkeletalComponents(){
-	TArray<USkeletalMeshComponent*> SkeletalMeshComponents; //create t array
-    GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents); // ask actor for components
+	
+	TArray<USceneComponent*> components; //create t array
+    GetComponents<USceneComponent>(components); // ask actor for components
+	weaponPartsCollection.OverrideAllByName(components);
 
-    // Add each component to the output array
-    for (USkeletalMeshComponent* Component : SkeletalMeshComponents)
-    {
-        if (Component)
-        {
-			FString name = Component->GetName();
-
-			if (name.Contains("verschluss")){
-				verschlussSkeletonPointer = Component;
-			} else if(name.Contains("mag")){
-				magSkeletonPointer = Component;
-			}else if(name.Contains("gehaeuse") || name.Contains("gehause")){
-				gehauseSkeletonPointer = Component;
-			}else if(name.Contains("muzzle")){
-				muzzleAttachmentSkelletonPointer = Component;
-			}else if(name.Contains("grip")){
-				gripAttachmentSkelletonPointer = Component;
-			}else if(name.Contains("sight")){
-				sightAttachmentSkeletonPointer = Component;
-			}
-		}
-	}
 }
 
 void Aweapon::findAllNiagaraComponents(){
@@ -774,7 +759,17 @@ void Aweapon::NiagaraTriggerHuelseEject(){
 
 /// @brief plays the shoot animation if possible
 void Aweapon::shootAnimation(){
+	USkeletalMeshComponent *verschlussSkeletonPointer = 
+		weaponPartsCollection.TFindComponent<USkeletalMeshComponent>(EweaponPartEnum::EVerschluss);
+	USkeletalMeshComponent *gehauseSkeletonPointer = 
+		weaponPartsCollection.TFindComponent<USkeletalMeshComponent>(EweaponPartEnum::EGehaeuse);
+	USkeletalMeshComponent *magSkeletonPointer = 
+		weaponPartsCollection.TFindComponent<USkeletalMeshComponent>(EweaponPartEnum::EMag);
+
 	
+
+
+
 	if(false && verschlussSkeletonPointer != nullptr){
 		//old anim sequnce (new: custom animator)
 		//playAnimation(verschlussAnimationSquence, verschlussSkeletonPointer, cooldownTime);
@@ -794,17 +789,51 @@ void Aweapon::shootAnimation(){
 
 }
 
-/// @brief plays the reload animation
+
+
 void Aweapon::reloadAnimation(){
-	if(magSkeletonPointer != nullptr){
-		//play animation on skeletal mesh component with the UAnimation Sequence.
-		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime());
+	if(!TryReloadAnimationByPlateCarrier()){
+		reloadAnimationBySequence();
 	}
 }
 
 
+/// @brief plays the reload animation
+void Aweapon::reloadAnimationBySequence(){
+	USkeletalMeshComponent *magSkeletonPointer = 
+		weaponPartsCollection.TFindComponent<USkeletalMeshComponent>(EweaponPartEnum::EMag);
+	if(magSkeletonPointer != nullptr){
+		//play animation on skeletal mesh component with the UAnimation Sequence.
+		playAnimation(magAnimationSequence, magSkeletonPointer, reloadTime());
+	
+	
+		//set hand target to animated skelleton (-bone -> moved by animation sequence)
+		//add payload to timer: reset hand targets back to default
+		Payload generated = handAndFingerPositionManager.UpdateTemporaryTargetWithPaylaod(
+			EArmType::ELeft, 
+			magSkeletonPointer,
+			"mag" //bone name
+		);
+		//will send the reset message to the carried item hand management
+		//on timer finish
+		timer.AddPayload(generated); 
+	
+	}
+}
 
-
+//tries to start and setup the reload animation by the plate carrier.
+bool Aweapon::TryReloadAnimationByPlateCarrier(){
+	if(plateCarrierRef){
+		USceneComponent *hand = handAndFingerPositionManager.findPermanentTargetComponent(EArmType::ELeft);
+		if(hand){
+			swapProcess.PrepareSetEjectedWeaponMag(weaponPartsCollection);
+			swapProcess.PrepareSetHandComponent(hand);
+			DebugHelper::logMessage("Aweapon::TryReloadAnimationByPlateCarrier");
+			return plateCarrierRef->StartSwapMag(getMagSocketType(), &swapProcess);
+		}
+	}
+	return false;
+}
 
 // CAUTION: not in use anymore!
 
@@ -823,7 +852,6 @@ void Aweapon::playAnimation(
 
 		skeleton->PlayAnimation(AnimSequence, false); // false means don't loop
 		// Set the animation speed
-        //skeleton->SetPlayRate(60 * cooldownTime);
 		skeleton->SetPlayRate(playRate);
 	}
 }
@@ -995,10 +1023,14 @@ void Aweapon::attachNewItem(AActor* actor){
 		AActorUtil::enableColliderOnActor(*actor, false);
 
 		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
-		if (gehauseSkeletonPointer)
+		USceneComponent *gehause = weaponPartsCollection.FindComponent(EweaponPartEnum::EGehaeuse);
+		//if (gehauseSkeletonPointer)
+		if(gehause)
 		{
 			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
-			actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
+			
+			//actor->AttachToComponent(gehauseSkeletonPointer, AttachRules);
+			actor->AttachToComponent(gehause, AttachRules);
 		}
 	}
 }
@@ -1017,7 +1049,8 @@ void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
 		AActorUtil::enableColliderOnActor(*actor, false);
 
 		// IST DAS SELBE WIE AUS EINEM BLUEPRINT MANUELL HINZUFÜGEN
-		USkeletalMeshComponent *ptr = attachmentSkeletalComponentBy(type);
+		//USkeletalMeshComponent *ptr = attachmentSkeletalComponentBy(type);
+		USceneComponent *ptr = attachmentComponentBy(type);
 		if(ptr){
 			FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, true);
 			actor->AttachToComponent(ptr, AttachRules);
@@ -1027,24 +1060,28 @@ void Aweapon::attachNewItem(AActor* actor, weaponAttachmentEnum type){
 }
 
 ///@brief returns the skeletal mesh component pointer for an given attachment 
-USkeletalMeshComponent* Aweapon::attachmentSkeletalComponentBy(
+USceneComponent* Aweapon::attachmentComponentBy(
 	weaponAttachmentEnum EattachmentType
 ){
-	if(WeaponEnumAssetPackProxy::isASightAttachment(EattachmentType)){
-		//return explicit attachment pointer if valid.
-		if(sightAttachmentSkeletonPointer){
-			return sightAttachmentSkeletonPointer;
+	USceneComponent *sightComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::ESight);
+	USceneComponent *gehauseComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::EGehaeuse);
+	USceneComponent *muzzleComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::EMuzzle);
+	USceneComponent *gripComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::EGrip);
+
+	if (WeaponEnumAssetPackProxy::isASightAttachment(EattachmentType))
+	{
+		if(sightComponent){
+			return sightComponent;
 		}
-		//default attachment to 0,0,0 of weapon.
-		return gehauseSkeletonPointer;
+		return gehauseComponent;
 	}
 	if(WeaponEnumAssetPackProxy::isAMuzzleAttachment(EattachmentType)){
-		return muzzleAttachmentSkelletonPointer;
+		return muzzleComponent;
 	}
 	if(WeaponEnumAssetPackProxy::isAGripAttachment(EattachmentType)){
-		return gripAttachmentSkelletonPointer;
+		return gripComponent;
 	}
-	return gehauseSkeletonPointer;
+	return gehauseComponent;
 }
 
 bool Aweapon::actorAlreadyAttached(AActor *actor){
@@ -1155,8 +1192,11 @@ void Aweapon::TickKickback(float DeltaTime){
 
 void Aweapon::setupVerschlussAnimations(){
 	FVector currentRelativeLocation;
-	if (verschlussSkeletonPointer != nullptr){
-		currentRelativeLocation = verschlussSkeletonPointer->GetRelativeLocation();
+
+	USceneComponent *verschluss = weaponPartsCollection.FindComponent(EweaponPartEnum::EVerschluss);
+
+	if (verschluss != nullptr){
+		currentRelativeLocation = verschluss->GetRelativeLocation();
 	}
 	setupVerschlussAnimation(currentRelativeLocation);
 	setupVerschlussAnimationLastShot(currentRelativeLocation);
@@ -1223,7 +1263,8 @@ void Aweapon::setupVerschlussKickBackAnimationLastShotEmptyReload(const FVector 
 
 
 void Aweapon::TickVerschlussKickBack(float DeltaTime){
-	if(!verschlussSkeletonPointer){
+	USceneComponent *verschlussComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::EVerschluss);
+	if(!verschlussComponent){
 		return;
 	}
 
@@ -1238,14 +1279,14 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 			verschlussKickBackStarted = false;
 		}
 	}*/
-	
-	
-	
+
+	//USceneComponent *verschlussComponent = weaponPartsCollection.FindComponent(EweaponPartEnum::EVerschluss);
+
 	if(verschlussState == EVerschlussState::EEmptyMagKickback){
 	//if(verschlussKickBackLastShotStarted){
 		if(TickAnimationAndApplyLocation(
 			verschlussKickBackAnimationLastShot, 
-			verschlussSkeletonPointer,
+			verschlussComponent, //verschlussSkeletonPointer,
 			DeltaTime
 		)){
 			verschlussState = EVerschlussState::ENone; //lock in place, no default reset
@@ -1257,7 +1298,7 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 	if(verschlussState == EVerschlussState::EEmptyReloadRevert){
 		if(TickAnimationAndApplyLocation(
 			verschlussKickBackAnimationLastShotEmptyReload, 
-			verschlussSkeletonPointer,
+			verschlussComponent, //verschlussSkeletonPointer,
 			DeltaTime
 		)){
 			verschlussState = EVerschlussState::ENone; //lock in place, shoot will set it
@@ -1269,7 +1310,7 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 	if(verschlussState == EVerschlussState::EDefaultKickback){
 		if(TickAnimationAndApplyLocation(
 			verschlussKickBackAnimation, 
-			verschlussSkeletonPointer,
+			verschlussComponent, //verschlussSkeletonPointer,
 			DeltaTime
 		)){
 			//verschlussKickBackStarted = false;
@@ -1284,7 +1325,7 @@ void Aweapon::TickVerschlussKickBack(float DeltaTime){
 
 bool Aweapon::TickAnimationAndApplyLocation(
 	KeyFrameAnimation &animation, 
-	USkeletalMeshComponent *component,
+	USceneComponent *component,
 	float DeltaTime
 ){
 	if(component){
@@ -1354,4 +1395,32 @@ void Aweapon::findSightOffset(){
 
 void Aweapon::resetSightOffset(){
 	verticalSightOffset = FVector(0.0f, 0.0f, 0.0f);
+}
+
+
+
+
+void Aweapon::SetPlateCarrierReference(APlateCarrier *plateCarrier){
+	plateCarrierRef = plateCarrier;
+	if(plateCarrierRef != nullptr){
+
+		USceneComponent *magPointer = weaponPartsCollection.FindComponent(EweaponPartEnum::EMag);
+		if(magPointer){
+			//refill mags / update mags inside plate carrier
+			plateCarrierRef->FillMags(getMagSocketType(), magPointer);
+
+			//is executed
+			//but mag creation is bugged!
+			DebugHelper::logMessage(
+				"Aweapon::SetPlateCarrierReference - MAG UPDATE",
+				magPointer->GetName()
+			);
+		}
+	}
+}
+
+
+
+EMagSocketType Aweapon::getMagSocketType(){
+	return WeaponEnumAssetPackProxy::getMagSocketType(weaponType());
 }

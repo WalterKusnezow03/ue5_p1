@@ -87,6 +87,8 @@ protected:
 	//internal saving of scene components for hands.
 	CarriedItemHandComponentManager handAndFingerPositionManager;
 
+	
+
 	//dispatched to bone controller for hand targets
 	CarriedItemPositionData internalCarriedItemPositionContainer;
 

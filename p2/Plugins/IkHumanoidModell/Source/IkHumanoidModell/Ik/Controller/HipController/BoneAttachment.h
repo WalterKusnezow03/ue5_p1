@@ -6,6 +6,7 @@
 #include "IkHumanoidModell/Ik/Controller/SLIP/SlipContainer.h"
 
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/Properties/FTwoLimbHipProperty.h"
+#include "IkHumanoidModell/Ik/Controller/HipController/ESlipMode.h"
 
 #include "PlueckerCore/Interface/IJointInterface.h"
 #include "PlueckerCore/Bone/Joint.h"
@@ -95,12 +96,13 @@ public:
 
     SlipContainer &slipData(MMatrix &orientation);
 
-    FVector StaticSlipVelocity(
+    FVector SlipVelocity(
         FVector &lookDir,
         float velocityDown,
         float mass,
         float deltatime,
-        bool isInStance
+        bool isInStance,
+        ESlipMode slipMode
     );
     float VerticalDistanceFromTrajectoryAsScalar(float maxDistance);
 

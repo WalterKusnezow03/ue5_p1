@@ -120,6 +120,11 @@ public:
         return nullptr;
     }
 
+
+    
+    void EnableCollisionOnAllChilds(bool enabled);
+    static void EnableCollisionOn(USceneComponent *comp, bool enabled);
+
 private:
 
     

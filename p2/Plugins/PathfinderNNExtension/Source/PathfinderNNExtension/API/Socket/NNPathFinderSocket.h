@@ -47,7 +47,8 @@ protected:
 
     NNRequestHandle requestHandle;
     FNNRequestHandleTickData requestTickData;
-    
+
+    bool logConnection = false;
 
 public:
     static void MakePathFinderSocketInstance(UWorld *world);
@@ -65,7 +66,8 @@ public:
         AActor *actor
     ) override;
 
-    
+    //connection state of socket to display in widget
+    virtual bool NNIsConnected() override;
 
     //notified by all entites whether the player
     //is visible or not

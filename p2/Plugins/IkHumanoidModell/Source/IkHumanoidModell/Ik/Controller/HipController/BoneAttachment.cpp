@@ -312,26 +312,42 @@ FVector BoneAttachment::hipRelativeLocationToEndEffector(
  * slip force
  */
 /// ----- new dynamic slipforce -------
-FVector BoneAttachment::StaticSlipVelocity(
+FVector BoneAttachment::SlipVelocity(
     FVector &lookDir,
     float velocityDown, 
     float mass,
     float deltatime,
-    bool isInStance
+    bool isInStance,
+    ESlipMode slipMode
 ){
+    FVector velocity;
+    if(slipMode == ESlipMode::ESlipDynamic || slipMode == ESlipMode::ESlipDynamicLiftOffPrediction){
+        velocity = container.velocityInterpolated(
+            deltatime,
+            mass,
+            lookDir
+        );
+        return velocity;
+    }else{
+        //slip mode static
+        FVector EndEffectorLocalRotationSpace = bone.EndEffectorRelativeLocation();
+        velocity = container.StaticSlipVelocity(
+            lookDir,
+            EndEffectorLocalRotationSpace,
+            EndEffectorIsGrounded(),
+            velocityDown,
+            mass,
+            deltatime,
+            isInStance
+        );
+    }
 
-    FVector EndEffectorLocalRotationSpace = bone.EndEffectorRelativeLocation();
 
-    FVector velocity = container.StaticSlipVelocity(
-        lookDir,
-        EndEffectorLocalRotationSpace,
-        EndEffectorIsGrounded(),
-        velocityDown,
-        mass,
-        deltatime,
-        isInStance
-    );
 
+    
+
+
+    //is this needed?
     //weighted by distance from trajectory
     float maxDistanceFromTrajectory = 30.0f;
     float weight = VerticalDistanceFromTrajectoryAsScalar(maxDistanceFromTrajectory);
@@ -389,15 +405,23 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     //so lassen
     bone.clampTarget(aLocal);
 
+    MMatrix rFlip;
+    rFlip.yawRad(MMatrix::degToRadian(180));
+    FVector liftOffDefault = rFlip * defaultForwardFrame;
+
+    /*
     FVector liftOffDefault = defaultForwardFrame;
     FVector liftOffHacked = defaultForwardFrame;
     liftOffHacked.X = aLocal.X * -1.0f; //hack
 
     FVector bLocal = liftOffHacked; 
+    */
 
     //MOVE TO WORLD LIFT OFF
-    FVector bWorld = orientation * bLocal;
+    FVector bWorld = orientation * liftOffDefault;
 
+
+    //cache force
     container.setupInterpolatedD(
         aWorld, //local in rotated world space
         bWorld, //local in rotated world space
@@ -479,7 +503,7 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     FVector startLocalWorldRotationSpace = currentReached; //is already in world Rotation.
     FVector liftoffLocalWorldRotationSpace = liftOffFrame;
 
-
+    DebugHelper::logMessage("LiftOffTrajectory is valid");
     
 
     //setup

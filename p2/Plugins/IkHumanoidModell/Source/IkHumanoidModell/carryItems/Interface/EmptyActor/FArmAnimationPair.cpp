@@ -125,20 +125,23 @@ void FArmAnimationPair::ScaleToTime(float targetTime){
         ScaleTimeWithScalar(scalar);
 
         //LOG
-        FString message = FString::Printf(
-            TEXT("FArmAnimationPair::ScaleToTime %.2f with %.2f from max %.2f"),
-            targetTime,
-            scalar, 
-            maxAnimationTime
-        );
-        DebugHelper::logMessage(message);
-        DebugHelper::showScreenMessage(message);
-        message = FString::Printf(
-            TEXT("FArmAnimationPair::ScaleToTime after %.2f"),
-            LongestAnimationTime()
-        );
-        DebugHelper::logMessage(message);
-        DebugHelper::showScreenMessage(message);
+        if(false){
+            FString message = FString::Printf(
+                TEXT("FArmAnimationPair::ScaleToTime %.2f with %.2f from max %.2f"),
+                targetTime,
+                scalar, 
+                maxAnimationTime
+            );
+            DebugHelper::logMessage(message);
+            DebugHelper::showScreenMessage(message);
+            message = FString::Printf(
+                TEXT("FArmAnimationPair::ScaleToTime after %.2f"),
+                LongestAnimationTime()
+            );
+            DebugHelper::logMessage(message);
+            DebugHelper::showScreenMessage(message);
+        }
+        
         // LOG
 
 

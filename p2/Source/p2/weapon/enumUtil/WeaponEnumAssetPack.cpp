@@ -152,3 +152,12 @@ bool UWeaponEnumAssetPack::isSingleFireOnly(weaponEnum weaponType){
     }
     return false;
 }
+
+
+EMagSocketType UWeaponEnumAssetPack::getMagSocketType(weaponEnum weaponType){
+    if (FWeaponPropertyAsset* value = FindByWeapon(weaponType)){
+        return value->typeMagSocket;
+    }
+    return EMagSocketType::UTIL_MAG;
+}
+    

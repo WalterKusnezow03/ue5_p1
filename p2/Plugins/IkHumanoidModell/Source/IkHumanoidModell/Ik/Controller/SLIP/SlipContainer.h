@@ -22,6 +22,8 @@ public:
 private:
     bool bLogEnabled = false; //disable.
 
+    float BlendOut(float sizeFeather);
+
     FVector forceUnscaled(
         FVector &legdir_featherCurrent,
         FVector &movedir

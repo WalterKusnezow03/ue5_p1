@@ -90,10 +90,13 @@ FVector SlipContainer::forceUnscaled(
     float add_Y = legdir_featherCurrent.Y;
     float add_Z = legdir_featherCurrent.Z;
 
+    //blend out mod
+    float blendOut = BlendOut(size);
+
     //unscaled Force
     FVector forceRaw(
-        frac_X + add_X, 
-        frac_Y + add_Y,
+        (frac_X + add_X) * blendOut, 
+        (frac_Y + add_Y) * blendOut,
         frac_Z + add_Z 
     );
 
@@ -128,6 +131,15 @@ FVector SlipContainer::forceUnscaled(
     
 
     return forceRaw;
+}
+
+float SlipContainer::BlendOut(float sizeFeather){
+    // Wenn die Auslenkung winzig ist, lassen wir die Kraft gegen 0 laufen
+    float blendOut = 1.0f;
+    if (sizeFeather < 0.01f) {
+        blendOut = sizeFeather / 0.01f; // Linearer Verlauf gegen 0
+    }
+    return blendOut;
 }
 
 /// @brief slip force unscaled, no D applied
@@ -800,7 +812,9 @@ FVector SlipContainer::StaticSlipVelocity(
         FVector force = forceUnscaled(currentFootRelative, moveDir, isInStance);
         force.Z = avoidDivisionByZero(force.Z);
         float lowerFrac = force.Z * deltatime;
-
+        
+        //F_x(x, y) = D (-1*(l_{0} * x)/(sqrt(x^2 + y^2) + x)
+        //F_y(x, y) = D (-1*(l_{0} * y)/(sqrt(x^2 + y^2) + y)
         float D = upperFrac / lowerFrac;
 
         /*
@@ -811,6 +825,7 @@ FVector SlipContainer::StaticSlipVelocity(
         */
         float frac = (D * deltatime) / mass;
         FVector velocity = force * frac;
+
         return velocity;
     }
     return FVector(0, 0, 0);

@@ -41,6 +41,9 @@ public:
     void SetHeadRotation(const FRotator &rotation);
     void SetHeadRotationLookAt(const FVector &lookAt);
 
+    FVector NeckStartWorld();
+    FVector HeadLocationWorld();
+
 protected:
     MMatrix neckTranslation;
     MMatrix headTranslation;
@@ -73,4 +76,5 @@ protected:
         const FCustomHitResult &hitResult,
         Joint &affectedJoint
     );
+
 };

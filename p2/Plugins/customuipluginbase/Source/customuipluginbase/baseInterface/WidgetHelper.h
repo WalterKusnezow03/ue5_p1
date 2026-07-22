@@ -21,6 +21,13 @@ public:
         }
     }
 
+    static void SetRenderOpacity(UWidget *any, float opacity){
+        if(any != nullptr){
+            opacity = FMath::Clamp(opacity, 0.0f, 1.0f);
+            any->SetRenderOpacity(opacity);
+        }
+    }
+
 
 
 

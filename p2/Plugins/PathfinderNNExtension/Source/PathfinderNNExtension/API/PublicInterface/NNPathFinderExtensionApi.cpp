@@ -55,3 +55,13 @@ void NNPathFinderExtensionApi::SubscribeMessageListener(INNPathFinderSocketMessa
         }
     }
 }
+
+
+//use this to update the player hud ui to show the nn connection state 
+//instead of using debug print.
+bool NNPathFinderExtensionApi::NNIsConnected(){
+    if(INNRequestHandleInterface *interface = GetInstance()){
+        return interface->NNIsConnected();
+    }
+    return false;
+}

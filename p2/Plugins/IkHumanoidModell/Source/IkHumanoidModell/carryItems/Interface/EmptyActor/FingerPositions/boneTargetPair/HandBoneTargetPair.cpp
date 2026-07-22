@@ -1,18 +1,18 @@
 #include "HandBoneTargetPair.h"
 
-HandBoneTargetPair::HandBoneTargetPair(const HandBoneTargetPair &other){
-    if(this != &other){
-        *this = other;
+
+
+
+void HandBoneTargetPair::SetMainTargetComponent(USceneComponent *mainComponentIn){
+    mainTarget = mainComponentIn;
+    if(mainComponentIn != nullptr){
+        mainTargetOriginalLocation = mainComponentIn->GetRelativeLocation();
+        mainTargetOriginalRotation = mainComponentIn->GetRelativeRotation();
     }
 }
 
-HandBoneTargetPair &HandBoneTargetPair::operator=(const HandBoneTargetPair &other){
-    if(this != &other){
-        comp = other.comp;
-        boneName = other.boneName;
-        bIsEnabled = other.bIsEnabled;
-    }
-    return *this;
+USceneComponent *HandBoneTargetPair::GetMainTargetComponent(){
+    return mainTarget;
 }
 
 void HandBoneTargetPair::Update(USkeletalMeshComponent *compIn, FString boneNameIn){
@@ -22,26 +22,34 @@ void HandBoneTargetPair::Update(USkeletalMeshComponent *compIn, FString boneName
 
 void HandBoneTargetPair::UpdateAndEnable(USkeletalMeshComponent *compIn, FString boneNameIn){
     Update(compIn, boneNameIn);
-    enable();
+    enableTemporaryTarget();
 }
 
-void HandBoneTargetPair::disable(){
+
+void HandBoneTargetPair::disableTemporaryTarget(){
     bIsEnabled = false;
 }
 
-void HandBoneTargetPair::enable(){
+void HandBoneTargetPair::enableTemporaryTarget(){
     bIsEnabled = true;
 }
 
-bool HandBoneTargetPair::isEnabled(){
+bool HandBoneTargetPair::temporaryTargetIsEnabled(){
     return bIsEnabled;
 }
 
 FVector HandBoneTargetPair::boneLocation(){
-    if(comp){
-        //DebugHelper::logMessage("HandBoneTargetPair::NAME: ", boneName);
-        return comp->GetBoneLocation(FName(*boneName));
+    if(temporaryTargetIsEnabled()){
+        if(comp){
+            //DebugHelper::logMessage("HandBoneTargetPair::NAME: ", boneName);
+            return comp->GetBoneLocation(FName(*boneName));
+        }
     }
+    //world space!
+    if(mainTarget){
+        return mainTarget->GetComponentLocation();
+    }
+
     FVector none(0, 0, 0);
     return none;
 }

@@ -19,6 +19,8 @@ public:
 
     bool RunModelAsync(TArray<uint8> &bufferIn, TFunction<void(TArray<float>)> OnComplete);
 
+    bool WasLoaded();
+
 protected:
     bool RunModel(
         TArray<float> &bufferIn,

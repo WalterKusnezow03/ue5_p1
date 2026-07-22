@@ -82,6 +82,11 @@ void KeyFrameAnimation::addFrame(FVector position, float timeFromLastFrame, bool
     updateAverageVelocity();
 }
 
+void KeyFrameAnimation::clear(){
+    frames.clear();
+    restart();
+}
+
 void KeyFrameAnimation::addFrame(
     FVector position,
     float timeFromLastFrame,
@@ -159,7 +164,7 @@ bool KeyFrameAnimation::reachedLastFrameOfAnimation(){
 
 /// @brief returns if enough frames are available for an animation (at least 2)
 /// @return has enough or not
-bool KeyFrameAnimation::hasAnyFrames(){
+bool KeyFrameAnimation::hasAnyFrames() const {
     return frames.size() >= 2; //must be at least 2!
 }
 
@@ -171,6 +176,13 @@ bool KeyFrameAnimation::hasAnyFrames(){
  */
 
 FVector KeyFrameAnimation::interpolate(float DeltaTime){
+    if(!hasAnyFrames()){
+        updateFrameIndex(); //-> calls on finish
+        if(frames.size() == 1){
+            return frames[frames.size() - 1].readposition();
+        }
+    }
+
 
     if(hasAnyFrames()){
     
@@ -214,7 +226,9 @@ void KeyFrameAnimation::updateFrameIndex(){
         //reset rotation!
         resetRotationOnFramesFlag();
     }
-
+    if(isEnd){
+        OnFinish();
+    }
 }
 
 /// @brief call update AFTER increase / index update
@@ -638,12 +652,16 @@ FString KeyFrameAnimation::ToString(){
     return keyframeAnimationInfo;
 }
 
-
-
-
+FString KeyFrameAnimation::StatusInfo(){
+    FString outString = FString::Printf(TEXT("frame %d of %d"), frameIndex + 1, frames.size());
+    return outString;
+}
 
 /// --- SCALING ---
 void KeyFrameAnimation::ScaleTimeWithScalar(float scalar){
+    if (std::isnan(scalar) || std::isinf(scalar)) {
+        return;
+    }
     if(scalar >= 1.0f && scalar <= 1.01f){
         return;
     }
@@ -655,4 +673,13 @@ void KeyFrameAnimation::ScaleTimeWithScalar(float scalar){
     totalLengthSave *= scalar;
 
     //current interpolation can stay the same for now.
+}
+
+
+
+// debug
+void KeyFrameAnimation::GetAllKeyFrames(TArray<FVector> &array){
+    for (int i = 0; i < frames.size(); i++){
+        array.Add(frames[i].readposition());
+    }
 }

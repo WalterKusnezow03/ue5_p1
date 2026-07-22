@@ -19,6 +19,7 @@ public class p2 : ModuleRules
 
 			//game plugins,
 			"terrainPlugin",
+			"TerrainPluginBase",
 			"CoreMath",
 			"GameCore",
 			"PathFinder",
@@ -38,7 +39,7 @@ public class p2 : ModuleRules
 			"AeroDynamicPlugin",
 			"MeshDataPlugin",
 			"AnyMeshWidgetPlugin",
-			"PolygonPlugin"
+			"PolygonPlugin",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

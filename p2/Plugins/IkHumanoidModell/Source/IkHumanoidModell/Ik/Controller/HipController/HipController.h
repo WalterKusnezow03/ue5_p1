@@ -10,6 +10,8 @@
 #include "IkHumanoidModell/Ik/Controller/enums/ELegPhase.h"
 #include "IkHumanoidModell/Ik/Controller/enums/EHipControllerStates.h"
 #include "IkHumanoidModell/Ik/Controller/ControllerSetup/LocoMotionProperty/FLocomotionProperty.h"
+#include "IkHumanoidModell/Ik/Controller/HipController/ESlipMode.h"
+
 
 #include "CoreMath/animation/timer/Timer.h"
 
@@ -34,6 +36,10 @@ protected:
     bool HipAtGroundLevel();
 
     virtual bool backwardsKinematicAllowed();
+
+    bool IsRotating();
+
+    ESlipMode slipMode = ESlipMode::ESlipStatic;
 
 public:
     void EnableDebugLogExtended();
@@ -94,12 +100,12 @@ protected:
     FCollisionQueryParams GetCollisionParams();
 
 protected:
-    
+    void KeepMinVelocity();
 
     float setupLegLength = 100.0f; //some value, cant be 0 for setting location.
-    float bodyMass = 30.0f; // 10 kg ?
+    float bodyMass = 30.0f;        // 30.0f; // 10 kg ?
 
-    float motionTime = 0.3f; // 0.7f;//0.2f;
+    float motionTime = 0.4f; // 0.3f; // 0.7f;//0.2f;
 
     //actor velocity / hip velocity in every direction
     FVector velocity;
@@ -110,6 +116,7 @@ protected:
 
     BoneAttachment legLeft;
     BoneAttachment legRight;
+    bool AnyFootGrounded();
 
     ELegPhase phaseLeft;
     ELegPhase phaseRight;
@@ -144,6 +151,11 @@ protected:
     virtual void setupBackwardInterpolation(float animationTime);
     void setupForwardInterpolation();
     void ApplyVelocityToLocalTrajectory(FVector &localTrajectory);
+
+    FVector NextWorldTrajectoryProjectedWithoutVelocity(BoneAttachment &attachment);
+    FVector NextWorldTrajectoryProjectedWithVelocity(BoneAttachment &attachment);
+    FVector NextWorldTrajectoryProjected(BoneAttachment &attachment, bool ApplyVelocity);
+
     //experimental
     void RemoveVelocityFromWorldTrajectory(FVector &localTrajectory);
 

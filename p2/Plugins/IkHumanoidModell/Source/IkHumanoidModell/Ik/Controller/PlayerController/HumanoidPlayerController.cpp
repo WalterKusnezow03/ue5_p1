@@ -12,12 +12,16 @@ HumanoidPlayerController::~HumanoidPlayerController(){
 
 void HumanoidPlayerController::defaultSetup(AActor *actor){
     bool createHands = false;
-    HumanoidController::defaultSetup(actor, createHands);
-    FHumanoidControllerSetupPackage package = FHumanoidControllerSetupPackage::GetDefault(actor);
+    bool headVisible = false;
+    bool flagWantedHands = false;
+
+    FHumanoidControllerSetupPackage package = FHumanoidControllerSetupPackage::GetDefault(actor, headVisible);
+    SetupFrom(package, flagWantedHands);
     playerHipController.setup(package);
 
     DebugDisableCollisionOnLimbs();
     MarkEmptyActorOwnedByPlayer();
+   
 }
 
 void HumanoidPlayerController::MarkEmptyActorOwnedByPlayer(){
@@ -251,3 +255,4 @@ TArray<AActor *> HumanoidPlayerController::actorInChildrenArray(){
     playerHipController.getActors(base);
     return base;
 }
+

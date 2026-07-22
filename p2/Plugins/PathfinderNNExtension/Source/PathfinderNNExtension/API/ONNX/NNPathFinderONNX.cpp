@@ -42,17 +42,24 @@ void ANNPathFinderONNX::BeginPlay(){
     model.LoadModel(); //auto loads on construct
     requestHandle.BeginPlay();
 
+
     //debug
     NNPluginSettings::LogSetting();
 }
 
 
+bool ANNPathFinderONNX::NNIsConnected(){
+    return model.WasLoaded();
+}
 
 
 void ANNPathFinderONNX::Tick(float deltatime){
     Super::Tick(deltatime);
 
-    DebugHelper::showScreenMessage("ANNPathFinderONNX::Active", FColor::Cyan);
+    if(logConnection){
+        DebugHelper::showScreenMessage("ANNPathFinderONNX::Active", FColor::Cyan);
+    }
+    
 
     /*//prepare and execute task
     requestTickData.Reset();

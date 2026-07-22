@@ -30,6 +30,10 @@ public:
 
     static void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
 
+    //static connection api for widgets displaying the state of 
+    //connection either to python or ONNX 
+    static bool NNIsConnected();
+
 private:
     static INNRequestHandleInterface *GetInstance();
 

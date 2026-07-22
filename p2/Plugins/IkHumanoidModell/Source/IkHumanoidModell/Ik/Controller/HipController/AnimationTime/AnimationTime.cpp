@@ -4,7 +4,8 @@
 float AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
     const FVector &localStart,
     const FVector &localEnd,
-    float horizontalVelocity
+    float horizontalVelocity,
+    float minMotionTime 
 ){
     
     //vTarget = v
@@ -27,10 +28,13 @@ float AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
     float tEpsilonHigher = 1.0f;
     time = std::min(tEpsilonHigher, time);
 
+    minMotionTime = std::min(minMotionTime, time);
+
     //DebugHelper::showScreenMessage("hipcontroller dynamic time backward ", (float)time);
     //DebugHelper::logMessage(FString::Printf(TEXT("hipcontroller dynamic time backward %.2f"), time));
     return time;
 }
+
 
 
 
@@ -39,6 +43,23 @@ float AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
     const FVector &localEnd,
     float horizontalVelocity,
     float verticalVelocity
+){
+    return AnimationTimeBasedOnHorizontalAndVerticalVelocity(
+        localStart,
+        localEnd,
+        horizontalVelocity,
+        verticalVelocity,
+        std::numeric_limits<float>::max()
+    );
+}
+
+
+float AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
+    const FVector &localStart,
+    const FVector &localEnd,
+    float horizontalVelocity,
+    float verticalVelocity,
+    float minMotionTime
 ){
 
     /*
@@ -77,7 +98,8 @@ float AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
     float tHorizontal = AnimationTimeBasedOnHorizontalVelocity(
         localStart,
         localEnd,
-        horizontalVelocity
+        horizontalVelocity,
+        minMotionTime
     );
 
     float tResultOutput = tHorizontal;
@@ -88,6 +110,7 @@ float AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
         }
     }
     tResultOutput = std::min(tResultOutput, 3.0f);
+    tResultOutput = std::min(tResultOutput, minMotionTime);
 
     DebugHelper::logMessage(FString::Printf(
         TEXT("hipcontroller dynamic time forward gravity and horizontal output %.2f"), 

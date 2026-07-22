@@ -4,6 +4,7 @@
 #include "p2/weapon/ammunitionEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponAttachmentEnum.h"
 #include "AssetEnumCollection/assetEnums/weaponEnum.h"
+#include "p2/PlateCarrier/MagSocket/MagSocketType.h"
 
 class UWeaponEnumAssetPack;
 
@@ -38,6 +39,8 @@ public:
     static float CooldownTimeBasedOnRpm(weaponEnum weaponType);
     static ammunitionEnum getAmmunitionType(weaponEnum weaponType);
     static bool isSingleFireOnly(weaponEnum weaponType);
+
+    static EMagSocketType getMagSocketType(weaponEnum weaponType);
 
 private:
     static UWeaponEnumAssetPack *FindInstance();

@@ -17,6 +17,7 @@
 #include "AssetEnumCollection/assetEnums/textureEnum.h"
 #include "AssetEnumCollection/assetEnums/EDataAssetEnum.h"
 #include "p2/weapon/animationEnum/EweaponAnimation.h"
+#include "AssetEnumCollection/assetEnums/EntityAsset.h"
 #include <map>
 
 #include "p2/vfx/base/VFXActor.h"
@@ -71,6 +72,14 @@ void P2AssetLoader::loadEntities(){
         "humanEntityPrefab"           // Just the file name as displayed
     );
 
+
+    // Content/Prefabs/PlateCarrier/PlateCarrierBP.uasset
+    AssetLoader::LoadAndSaveAssetToManager<EntityAsset, UClass>(
+        EntityAsset::PlateCarrier, // track in asset manager
+        "Game",                    // like "Game" for game or any other plugin name
+        "Prefabs/PlateCarrier",    // like: "Prefabs/Weapons/attachments", no trailing slash
+        "PlateCarrierBP"           // Just the file name as displayed
+    );
 }
 
 
@@ -224,6 +233,14 @@ void P2AssetLoader::loadWeapons(){
     );
 
 
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+        weaponEnum::assaultRifle_hk416,       // track in asset manager
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/hk416", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "hk416_BP"                // Just the file name as displayed
+    );
+
+    
 
     
 
@@ -279,6 +296,18 @@ void P2AssetLoader::loadWeaponAnimations(){
         "Game",               
         "Prefabs/Weapons/rifle2", 
         "magAnimShoot"// Just the file name as displayed
+    );
+
+
+
+
+    //hk416 animation
+    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, EweaponAnimation, UAnimSequence>(
+        weaponEnum::assaultRifle_hk416,       // track in asset manager
+        EweaponAnimation::magAnimationReload,
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/Weapons/hk416", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "Untitled_mag_Anim"                // Just the file name as displayed
     );
 
 
@@ -374,7 +403,8 @@ void P2AssetLoader::loadMaterials(){
     assetNames[materialEnum::wallMaterial] = "wallMaterial";
     assetNames[materialEnum::glassMaterial] = "glassMaterial";
     assetNames[materialEnum::grassMaterialWithShader] = "grassMaterialWithShader";
-    
+    assetNames[materialEnum::transparentMaterial] = "transparentMaterial";
+
 
     for(auto &pair : assetNames){
         materialEnum typeEnum = pair.first;
@@ -419,7 +449,7 @@ void P2AssetLoader::loadTextures(){
     
 }
 
-
+#include "p2/weapon/enumUtil/WeaponEnumAssetPackProxy.h"
 void P2AssetLoader::loadWeaponDataAssetPack(){
     AssetLoader::LoadAndSavePrimaryDataAssetToAssetToManager<EDataAssetEnum, UPrimaryDataAsset>(
         EDataAssetEnum::WeaponDataAssetPack, // track in asset manager

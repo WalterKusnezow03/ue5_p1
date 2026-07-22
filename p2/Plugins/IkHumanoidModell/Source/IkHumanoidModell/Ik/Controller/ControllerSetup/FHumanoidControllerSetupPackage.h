@@ -9,6 +9,7 @@ class IKHUMANOIDMODELL_API FHumanoidControllerSetupPackage : public FAbstractPro
 
 public:
     static FHumanoidControllerSetupPackage GetDefault(AActor *actor);
+    static FHumanoidControllerSetupPackage GetDefault(AActor *actor, bool headVisible);
 
 protected:
     static void DefaultTorsoSetup(FHumanoidControllerSetupPackage &newPackage, int widthMainBones);

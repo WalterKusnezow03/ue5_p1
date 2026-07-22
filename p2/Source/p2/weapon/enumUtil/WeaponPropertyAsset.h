@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "p2/PlateCarrier/MagSocket/MagSocketType.h"
 #include "WeaponPropertyAsset.generated.h"
 
 /// @brief struct to save weapon properties
@@ -26,6 +27,12 @@ public:
 
     UPROPERTY(EditAnywhere, Category="WeaponConversionData")
     ammunitionEnum typeAmmunition = ammunitionEnum::assaultrifle556;
+
+    UPROPERTY(EditAnywhere, Category="WeaponConversionData")
+    EMagSocketType typeMagSocket = EMagSocketType::AR_MAG;
+    
+
+
 
     bool IsSameAmmunitionAndThrowable(ammunitionEnum compare);
     bool IsThrowable();

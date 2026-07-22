@@ -7,6 +7,8 @@
 #include "CoreMath/Matrix/MMatrix.h"
 #include "DebugPlugin/DebugHelper.h"
 #include "GameCore/MeshGenBase/ELod.h"
+#include "p2/entityManager/EntityManager.h"
+#include "p2/_world/worldLevel.h"
 
 
 

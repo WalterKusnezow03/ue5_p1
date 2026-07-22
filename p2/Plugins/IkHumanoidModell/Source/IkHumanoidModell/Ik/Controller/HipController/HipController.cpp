@@ -152,47 +152,6 @@ void HipController::Tick(float deltatime){
         RebuildLegsEndInPlace(deltatime);
     }
 
-    /*
-    FString message;
-    if (groundedByDistance()) //new here with locomotion enabled!
-    {
-
-        if(locoMotionStateEnabled()){
-            if(DEBUG_SLOWTIME){
-                float timesSlower = 5.0f;
-                deltatime = 1.0f / (timesSlower * 60.0f); // DEBUG
-            }
-                
-    
-            TickHipRotation(deltatime);
-            TickLocomotion(deltatime);
-            message = TEXT("locomotion");
-        }else{
-            RebuildLegsEndInPlace(deltatime);
-        }
-
-
-
-    }
-    else
-    {
-        TickFalling(deltatime);
-        message = TEXT("falling");
-        
-        //makes it worse.
-        //ResetAllLocomotionFlags(); //doesnt fix infinite fall issue
-    }*/
-
-    //DebugHelper::showScreenMessage(message);
-
-    /*
-    DebugHelper::showScreenMessage(
-        FString::Printf(
-            TEXT("z height %.2f, v_z %.2f"), 
-            GetLocation().Z, 
-            velocity.Z
-        )
-    );*/
 }
 
 void HipController::ResetAllLocomotionFlags(){
@@ -349,7 +308,7 @@ void HipController::setupBackwardInterpolation(){
     );
     FVector localEnd = attachment.defaultExtendedEndToStartLocal();
     float dynamicMotionTime = AnimationTime::AnimationTimeBasedOnHorizontalVelocity(
-        localStart, localEnd, horizontalVelocity()
+        localStart, localEnd, horizontalVelocity(), motionTime
     );
     
     
@@ -363,6 +322,40 @@ void HipController::setupBackwardInterpolation(){
     }
     
     setupBackwardInterpolation(dynamicMotionTime);
+
+
+
+    //slip cache prediction
+    FVector fowardframe = forwardTrajectory();
+    if(slipMode == ESlipMode::ESlipDynamic){
+        attachment.setupSlipDataOnStanceBegin(
+            orientation,
+            fowardframe,
+            dynamicMotionTime,
+            verticalVelocity(),
+            bodyMass
+        );
+    }
+    if(slipMode == ESlipMode::ESlipDynamicLiftOffPrediction){
+        BoneAttachment &attachmentOther = legLeftPlaying ? legRight : legLeft;
+        bool WithoutVelocity = true;
+        FVector nextTrajectoryOfOtherLegWorldSpace = NextWorldTrajectoryProjected(
+            attachmentOther, !WithoutVelocity
+        );
+        FVector endEffectorOther = attachmentOther.endEffectorWorldLocation();
+
+        attachment.setupSlipDataOnStanceBegin(
+            orientation,
+            translation,
+            endEffectorOther,                   // FVector &otherLegWorldSpace,
+            nextTrajectoryOfOtherLegWorldSpace, // next projceted frame of next leg target, !!velocity removed!!
+            motionTime,                  // float time,
+            verticalVelocity(),
+            horizontalVelocity(),
+            bodyMass,
+            fowardframe // FVector &defaultForwardFrameFallback
+        );
+    }
 }
 
 //base method
@@ -371,14 +364,21 @@ void HipController::setupBackwardInterpolation(float dynamicMotionTime){
     DebugHelper::logMessage("HipController Base setupBackwardInterpolation");
 }
 
-void HipController::setupForwardInterpolation(){
-    BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
+FVector HipController::NextWorldTrajectoryProjectedWithoutVelocity(BoneAttachment &attachment){
+    return NextWorldTrajectoryProjected(attachment, false);
+}
 
+FVector HipController::NextWorldTrajectoryProjectedWithVelocity(BoneAttachment &attachment){
+    return NextWorldTrajectoryProjected(attachment, true);
+}
 
+FVector HipController::NextWorldTrajectoryProjected(BoneAttachment &attachment, bool ApplyVelocity){
     //move trajectory to future with velocity
     FVector localTrajectory = forwardTrajectory();
-    ApplyVelocityToLocalTrajectory(localTrajectory);
-
+    if(ApplyVelocity){
+        ApplyVelocityToLocalTrajectory(localTrajectory);
+    }
+    
     //move trajectory to world space, from hip starting joint
     FVector worldTrajectory = attachment.inWorldSpace(
         localTrajectory, //forwardDefaultLocalLocomotionFrame,
@@ -388,6 +388,16 @@ void HipController::setupForwardInterpolation(){
 
     //project frame to ground
     FVector worldTrajectoryProjected = worldTrajectory;
+    projectToGround(worldTrajectoryProjected);
+    return worldTrajectoryProjected;
+}
+
+void HipController::setupForwardInterpolation(){
+    BoneAttachment &attachment = legLeftPlaying ? legLeft : legRight;
+
+
+    //project frame to ground
+    FVector worldTrajectoryProjected = NextWorldTrajectoryProjectedWithVelocity(attachment);
     projectToGround(worldTrajectoryProjected);
     attachment.UpdateGroundTruth(worldTrajectoryProjected);
 
@@ -412,12 +422,13 @@ void HipController::setupForwardInterpolation(){
         currentEndEffector, 
         worldTrajectoryProjected, 
         horizontalVelocity(),
-        verticalVelocity()
+        verticalVelocity(),
+        motionTime
     );
 
 
     //no gravity at all. More consitent.
-    dynamicMotionTime = motionTime;
+    //dynamicMotionTime = motionTime;
 
     //copy for IK hand interface
     FlagUpdatedMotionTimeForArmAnimation(dynamicMotionTime);
@@ -512,12 +523,23 @@ FCollisionQueryParams HipController::GetCollisionParams(){
     return params;
 }
 
+bool HipController::IsRotating(){
+    return rotationSet;
+}
+
 /// ---- force section ----
 void HipController::applyForces(float deltatime){
 
-    //unklar ob es hier bleibt
-    applyForceGravity(deltatime);
-    applySlipForce(deltatime);
+    //rotation macht slip force extrem instabil.
+    if(true || !IsRotating()){
+        applyForceGravity(deltatime);
+        applySlipForce(deltatime);
+    }else{
+        //DebugHelper::showScreenMessage("is rotating - disbale SLIP", FColor::Orange);
+    }
+
+    //applyForceGravity(deltatime);
+    //applySlipForce(deltatime);
     applyVelocity(deltatime);
     
     //very important
@@ -582,16 +604,20 @@ void HipController::RebuildLegsNone(float deltatime){
 
 //hack
 void HipController::ClampMaxVelocity(){
-    FVector2D velocity2D(velocity.X, velocity.Y);
+    
+    /*FVector2D velocity2D(velocity.X, velocity.Y);
     //float maxHorizontalVelocity = 200.0f;
 
     float maxHorizontalVelocity = locomotionProperty.GetMaxVelocity();
+    float minHorizontalVelocity = locomotionProperty.GetMinVelocity();
 
     if(velocity2D.Size() > maxHorizontalVelocity){
         velocity2D = velocity2D.GetSafeNormal() * maxHorizontalVelocity;
         velocity.X = velocity2D.X;
         velocity.Y = velocity2D.Y;
     }
+    */
+    locomotionProperty.ClampHorizontal(velocity);
 }
 
 /// @brief clamps the position update to not fall below ground
@@ -605,22 +631,25 @@ void HipController::validateTransformUpdate(FVector &position){
 
 
 void HipController::applySlipForceStatic(float deltatime){
+
     FVector move = lookDirection();
 
-    FVector v1 = legLeft.StaticSlipVelocity(
+    FVector v1 = legLeft.SlipVelocity(
         move,
         verticalVelocity(),
         bodyMass,
         deltatime,
-        leftInStancePhase()
+        leftInStancePhase(),
+        slipMode
     );
 
-    FVector v2 = legRight.StaticSlipVelocity(
+    FVector v2 = legRight.SlipVelocity(
         move,
         verticalVelocity(),
         bodyMass,
         deltatime,
-        rightInStancePhase()
+        rightInStancePhase(),
+        slipMode
     );
 
     float div = 1.0f;
@@ -629,7 +658,18 @@ void HipController::applySlipForceStatic(float deltatime){
         div = 2.0f;
     }
 
+    //multiplier
+    //v1 *= 1.5f;
+    //v2 *= 1.5f;
+
     FVector vSum = v1 + v2;
+
+    //debug
+    /*if(rotationSet){
+        vSum.X = 0.0f;
+        vSum.Y = 0.0f;
+    }*/
+
     velocity += vSum / div;
 }
 
@@ -742,7 +782,7 @@ void HipController::setupRotationForNextStep(float radian){
     if(rotationSet){
         return;
     }
-    DebugHelper::showScreenMessage("hipRotation start!", FColor::Red);
+    //DebugHelper::showScreenMessage("hipRotation start!", FColor::Red);
 
     MMatrix addYawMat;
     addYawMat.yawRadAdd(radian);
@@ -795,14 +835,18 @@ void HipController::slowDownBasedOnRotationInRadian(
     deltaRotation.yawRadAdd(radianInNextStep);
     FVector forwardDeltaApplied = deltaRotation * forward;
     float scalar = FVector::DotProduct(forward, forwardDeltaApplied);
-    float slow = scalar > 0.0f ? scalar : 0.0f;
+    //float slow = scalar > 0.0f ? scalar : 0.0f;
+    float slow = FMath::Max(scalar, 0.0f);
+
+    slow += 0.5f;
+    slow = FMath::Clamp(slow, 0.0f, 1.0f);
 
     //alternativ:
     //kann man radiant (pi/2) auf mit x / pi zu skalaren umwandeln?
 
     if(rotatevelocity){
         //DebugHelper::logMessage("HipController update hVeloity on rotation before ", velocity);
-        FVector updatedVelocity2D = forwardDeltaApplied.GetSafeNormal() * velocity.Size() * slow;
+        FVector updatedVelocity2D = forwardDeltaApplied.GetSafeNormal() * horizontalVelocity() * slow;
         updateHorizontalVelocity(updatedVelocity2D);
         //DebugHelper::logMessage("HipController update hVeloity on rotation after ", velocity);
         //return;
@@ -859,11 +903,21 @@ void HipController::updateHorizontalVelocity(FVector &velocityIn){
     velocity.Y = velocityIn.Y;
 }
 
+
+bool HipController::AnyFootGrounded(){
+    return legLeft.EndEffectorIsGrounded() || legRight.EndEffectorIsGrounded();
+}
+
 /// @brief ticks the hip rotation if an angle was setup in "setupRotationForNextStep()"
 /// @param deltatime 
 void HipController::TickHipRotation(float deltatime){
     //debug
     //return;
+
+    //if is grounded: rotate
+    if(!AnyFootGrounded()){
+        return;
+    }
 
     if(rotationSet && anyBackwardPhase() && rotationTimeOverriden){
         if(hipRotationInterpolator.endReached()){ //endReached(),
@@ -964,7 +1018,7 @@ void HipController::ResetAndRebuild(){
 
     FString message = TEXT("HumanoidController Rebuild: HipController: Rebuild Hip ");
     message += GetLocation().ToString();
-    DebugHelper::logMessage(message);
+    //DebugHelper::logMessage(message);
 
     DebugHelper::showLineBetween(
         worldPointer,
@@ -989,7 +1043,7 @@ void HipController::showExtendedDebugLog(float deltatime){
         return;
     }
 
-    if(bExtendedDebugLog){
+    if(bExtendedDebugLog && false){
         debugIntegratedTime += deltatime;
         if(debugIntegratedTime < debugIntervall){
             return;
@@ -1204,7 +1258,7 @@ void HipController::TickAngularDampingTimerCollapsePhysics(float deltatime){
 
     angularDampingTimer.Tick(deltatime);
     float scalar = angularDampingTimer.InvertedScalar(); //between 1 and 0, damp towards zero
-    DebugHelper::logMessage(FString::Printf(TEXT("HipController::AngularDamp %.2f"), scalar));
+    //DebugHelper::logMessage(FString::Printf(TEXT("HipController::AngularDamp %.2f"), scalar));
     rootJoint.SetAngularDampingRecursive(scalar);
 }
 

@@ -85,7 +85,7 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
         UE_LOG(LogTemp, Log, TEXT("APythonLauncher::Started Python server sucess!: %s"), *setup.getPath());
         serverRunning = true; //mark as python launched now.
         for (int i = 0; i < 100; i++){
-            DebugHelper::showScreenMessage("PYTHON LAUNCH");
+            //DebugHelper::showScreenMessage("PYTHON LAUNCH");
         }
     }
     else{

@@ -55,14 +55,19 @@ void HeadController::SetupActorLimbs(
             neckProperty.GetWidth(), 
             neckProperty.GetWidth(), 
             neckProperty.GetSize(), 
-            worldPointer
+            worldPointer,
+            neckProperty.GetLimbMaterial()
         );
         AActor *head = CubeLimbMaker::createLimbPivotAtTop(
             headProperty.GetWidth(), 
             headProperty.GetWidth(), 
             headProperty.GetSize(), 
-            worldPointer
+            worldPointer,
+            headProperty.GetLimbMaterial()
         );
+
+
+
         attachLimbs(neck, head);
     }
 }
@@ -173,3 +178,22 @@ void HeadController::SetHeadRotationLookAt(const FVector &lookAt){
     FRotator rLookAt = localVec.Rotation();
     SetHeadRotation(rLookAt);
 }
+
+
+
+FVector HeadController::NeckStartWorld(){
+    if(neckActor){
+        return neckActor->GetActorLocation();
+    }
+    return headWorldCache.getTranslation();
+}
+
+
+FVector HeadController::HeadLocationWorld(){
+    if(headActor){
+        return headActor->GetActorLocation();
+    }
+    return headWorldCache.getTranslation();
+}
+
+

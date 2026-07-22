@@ -49,6 +49,10 @@ void ANNPathFinderSocket::BeginPlay(){
     NNPluginSettings::LogSetting();
 }
 
+bool ANNPathFinderSocket::NNIsConnected(){
+    return IsConnected();
+}
+
 void ANNPathFinderSocket::Tick(float deltatime){
     Super::Tick(deltatime);
 
@@ -131,7 +135,12 @@ void ANNPathFinderSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
     // --- nothing needed here for now ---
     //TickTask();
-    DebugHelper::showScreenMessage("ANNPathFinderSocket::TickSocketConnected", FColor::Cyan);
+
+    if(logConnection){
+        DebugHelper::showScreenMessage("ANNPathFinderSocket::TickSocketConnected", FColor::Cyan);
+    }
+
+    
 }
 
 void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){

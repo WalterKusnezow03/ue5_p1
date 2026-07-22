@@ -69,6 +69,9 @@ public:
     ammunitionEnum getAmmunitionType(weaponEnum weaponType);
     bool isSingleFireOnly(weaponEnum weaponType);
 
+    EMagSocketType getMagSocketType(weaponEnum type);
+    
+
 protected:
     FWeaponPropertyAsset *FindByAmmunition(ammunitionEnum ammoType);
     FWeaponPropertyAsset *FindByWeapon(weaponEnum type);

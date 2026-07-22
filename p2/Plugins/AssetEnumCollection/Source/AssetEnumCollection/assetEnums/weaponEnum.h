@@ -19,4 +19,5 @@ enum class weaponEnum
 	rpgLauncher,
 	baseballBat,
 	tripWire,
+	assaultRifle_hk416,
 };

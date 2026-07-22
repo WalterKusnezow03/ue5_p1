@@ -19,11 +19,15 @@ private:
     static ANNPathFinderONNX *instancePtr;
     ONNXModel model;
 
+    bool logConnection = false;
+
 public:
     static ANNPathFinderONNX *ApiInstance();
     static void MakePathFinderONNXInstance(UWorld *World);
 
     ANNPathFinderONNX();
+
+    virtual bool NNIsConnected() override;
 
 protected:
     virtual void BeginPlay() override;

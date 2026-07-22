@@ -2,25 +2,29 @@
 
 #include "CoreMinimal.h"
 
+//allows to set main target component and temporary target
+//via skeletal mesh comp name and bone name
 class IKHUMANOIDMODELL_API HandBoneTargetPair {
+
+protected:
+    USceneComponent *mainTarget = nullptr;
+    FVector mainTargetOriginalLocation;
+    FRotator mainTargetOriginalRotation;
+
 public:
-    HandBoneTargetPair(){
-        bIsEnabled = false;
-    }
-    ~HandBoneTargetPair(){}
-    HandBoneTargetPair(const HandBoneTargetPair &other);
-    HandBoneTargetPair &operator=(const HandBoneTargetPair &other);
+    void SetMainTargetComponent(USceneComponent *mainComponentIn);
+    USceneComponent *GetMainTargetComponent();
 
     void Update(USkeletalMeshComponent *compIn, FString boneNameIn);
     void UpdateAndEnable(USkeletalMeshComponent *compIn, FString boneNameIn);
-    void disable();
-    void enable();
-    bool isEnabled();
+    void disableTemporaryTarget();
+    void enableTemporaryTarget();
+    bool temporaryTargetIsEnabled();
 
     FVector boneLocation();
 
 private:
-    bool bIsEnabled;
+    bool bIsEnabled = false;
     USkeletalMeshComponent *comp = nullptr;
     FString boneName;
 };

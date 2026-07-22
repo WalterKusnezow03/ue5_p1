@@ -6,7 +6,7 @@
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "terrainPlugin/meshgen/water/customWaterActor.h"
-#include "AssetPlugin/gamestart/assetManager.h"
+
 
 #include "Engine/World.h"
 #include "p2/entities/EntityScript.h"
@@ -18,7 +18,7 @@
 #include "PathFinder/pathFinding/PathFinder.h"
 #include "p2/weapon/throwerWeapon/base/throwableLauncherWeapon.h"
 
-#include "GcGameCore/Launcher/GcLauncher.h"
+
 
 #include "IkHumanoidModell/SharedRaycastParams/SharedRaycastParamManager.h"
 #include "p2/ui/3Dui/GamePlayWidgets/InteractWidget/InteractWidgetActor.h"
@@ -249,6 +249,7 @@ AEntityScript* EntityManager::spawnEntity(UWorld* world, FVector &Location) {
 
     AGcLauncher *gc = AGcLauncher::Instance();
     if(gc){
+        //spawns internally if possible!
         // gc->Add<E>(uobject*, e);
         // T* gc->Get<T, E>(UClass_T*, e);
         AEntityScript *found = gc->collection.Get<AEntityScript,teamEnum>(
@@ -291,6 +292,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 
     AGcLauncher *gc = AGcLauncher::Instance();
     if(gc){
+        //spwans internally if possible
         // gc->Add<E>(uobject*, e);
         // T* gc->Get<T, E>(UClass_T*, e);
         AHumanEntityScript *human = gc->collection.Get<AHumanEntityScript,teamEnum>(
@@ -320,6 +322,7 @@ AHumanEntityScript* EntityManager::spawnHumanEntity(UWorld* world, FVector &Loca
 /// @param Location location to spawn at
 /// @return spawned actor pointer
 AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector &Location){
+    
     if(world != nullptr && toSpawn != nullptr){
         
         //check if the type to spawn is even aactor and the casting is valid
@@ -339,6 +342,8 @@ AActor *EntityManager::spawnAactor(UWorld * world, UClass *toSpawn, FVector &Loc
     }
     return nullptr;
 }
+
+
 
 
 
@@ -637,3 +642,20 @@ AVFXActor *EntityManager::spawnAVFXActor(EVFXActorType typeVFX){
     }
     return nullptr;
 }
+
+
+
+
+
+
+
+
+
+
+
+// Entity asset spawning
+
+
+
+
+

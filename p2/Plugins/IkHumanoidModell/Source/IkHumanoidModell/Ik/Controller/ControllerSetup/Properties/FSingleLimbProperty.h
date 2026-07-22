@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "FAbstractProperty.h"
 #include "DebugPlugin/DebugHelper.h"
+#include "AssetEnumCollection/assetEnums/materialEnum.h"
 
 class IKHUMANOIDMODELL_API FSingleLimbProperty : public FAbstractProperty{
 
@@ -35,11 +36,16 @@ public:
         DebugHelper::logMessage(prefix);
     }
 
+    materialEnum GetLimbMaterial(){
+        return materialtype;
+    }
 
-
-
+    void SetLimbMaterial(materialEnum typeIn){
+        materialtype = typeIn;
+    }
 
 protected:
     float sizeDepth = 1.0f;
     float widthOptional = 1.0f;
+    materialEnum materialtype = materialEnum::wallMaterial;
 };

@@ -19,9 +19,13 @@ public:
     TorsoController();
     ~TorsoController();
 
+    void setup(
+        FHumanoidControllerSetupPackage &package,
+        MMatrix &actorTranslation,
+        MMatrix &actorRotation
+    );
     void setup(FHumanoidControllerSetupPackage &setupPackage);
 
-    
     void ResetAndRebuild(
         MMatrix &actorTranslation,
         MMatrix &actorRotation
@@ -42,12 +46,15 @@ public:
     //api for get actors:apply damaged owner casted mesh actor
     void getActors(TArray<AActor *> &outArray);
 
-    //connect hip
+    //connect hip joint
     Joint *GetTopJoint();
 
 
     void SetHeadRotation(const FRotator &rotation);
     void SetHeadRotationLookAt(const FVector &lookAt);
+
+    FVector NeckStartEffectorWorld();
+    FVector HeadStartEffectorWorld();
 
 private:
     //connect spine to layered bones.
@@ -83,6 +90,7 @@ public:
 
 
     virtual void ReactToDamage(const FCustomHitResult &hitResult) override;
+    
 
 protected:
     void SetupJointParents();

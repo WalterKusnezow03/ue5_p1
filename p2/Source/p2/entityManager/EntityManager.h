@@ -30,6 +30,8 @@
 #include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
 #include "p2/vfx/type/EVFXActorType.h"
 
+#include "AssetPlugin/gamestart/assetManager.h"
+#include "GcGameCore/Launcher/GcLauncher.h"
 
 #include "GameCore/Raycast/query/mapTracker/TCollisionTracker.h"
 
@@ -120,6 +122,29 @@ public:
 	//particles
 	void createExplosion(FVector &location);
 	
+
+
+	//entity util spwaning
+
+	template <typename T, typename E>
+	T *TESpawnActor(E typeEnum){
+		UClass *selectedBp = nullptr;
+		if(assetManager *a = assetManager::instance()){
+			selectedBp = a->Find<E, UClass>(typeEnum);
+		}
+		if(selectedBp != nullptr){
+			AGcLauncher *gc = AGcLauncher::Instance();
+			if(gc){
+				//will spawn if not found by blueprint.
+				T *actor = gc->collection.Get<T,E>(
+					selectedBp, typeEnum
+				);
+
+				return actor;
+			}
+		}
+		return nullptr;
+	}
 
 
 

@@ -104,7 +104,7 @@ private:
     
 
     bool HasTemporaryTarget(EArmType typeArm);
-    void CreateTemporaryTargetIfNeeded(EArmType typeArm);
+    
 
     void UpdateContainer(
         CarriedItemPositionData &data,
@@ -128,10 +128,12 @@ private:
     
 
     std::map<EArmType, std::map<HandBoneIndexEnum, USceneComponent *>> fingerMap;
-    std::map<EArmType, USceneComponent *> handMap;
+    
+    //std::map<EArmType, USceneComponent *> handMap;
+    std::map<EArmType, HandBoneTargetPair> handMap;
+    HandBoneTargetPair &CreateOrFindTargetPair(EArmType type);
 
-
-    std::map<EArmType, HandBoneTargetPair> handMapTemporary;
+    //std::map<EArmType, HandBoneTargetPair> handMapTemporary;
 
     void GetComponents(
         EArmType type,

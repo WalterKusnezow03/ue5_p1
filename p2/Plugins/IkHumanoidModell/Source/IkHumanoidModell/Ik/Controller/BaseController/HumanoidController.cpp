@@ -56,12 +56,26 @@ void HumanoidController::defaultSetup(AActor *actorOwner){
 
 void HumanoidController::defaultSetup(AActor *actorOwner, bool flagWantedHands){
     FHumanoidControllerSetupPackage property = FHumanoidControllerSetupPackage::GetDefault(actorOwner);
+    SetupFrom(property, flagWantedHands);
+}
+
+void HumanoidController::SetupFrom(FHumanoidControllerSetupPackage &property, bool flagWantedHands){
     if(flagWantedHands){
         property.MarkHandsWanted();
     }
 
+    //sets up with build on start
     hipController.setup(property);
-    torsoController.setup(property);
+
+    //manual rebuild with hip transform data
+    torsoController.setup(
+        property,
+        hipController.getTranslation(), // MMatrix &actorTranslation,
+        hipController.getOrientation() // MMatrix &actorRotation,
+    );
+    
+
+
     AddTorsoControllerTopJointsToHipForPlueckerJoints();
 
     SetupEmptyArmAnimationActor(property.GetWorld());
@@ -502,4 +516,25 @@ void HumanoidController::SetHeadRotationLookAt(const FVector &lookAt){
 
 void HumanoidController::AppendFootPositions(TArray<FVector> &outPositions){
     hipController.AppendFootPositions(outPositions);
+}
+
+
+
+
+
+//shoulder interface
+FVector HumanoidController::LocalShoulderLocation(){
+    //AB = B - A
+    FVector shoulderWorld = torsoController.NeckStartEffectorWorld();
+    DebugHelper::logMessage("HumanoidController::ShoulderWorld", shoulderWorld);
+    FVector relative = shoulderWorld - GetLocation();
+    return relative;
+}
+
+FVector HumanoidController::LocalHeadLocation(){
+    //AB = B - A
+    FVector shoulderWorld = torsoController.HeadStartEffectorWorld();
+    DebugHelper::logMessage("HumanoidController::ShoulderWorld", shoulderWorld);
+    FVector relative = shoulderWorld - GetLocation();
+    return relative;
 }

@@ -816,9 +816,16 @@ ELod AcustomMeshActorBase::lodLevelByDistanceTo(FVector &locationOfPlayer){
  */
 void AcustomMeshActorBase::TickShaderRunningTime(float DeltaTime){
     shaderRunningTime += DeltaTime;
-    if(shaderRunningTime > 2 * M_PI){
-        shaderRunningTime = 0.0f;
+
+    if (shaderRunningTime > 3600.0f){
+        // Wir ziehen exakt 3600 Sekunden ab – oder nutzen Fmod
+        shaderRunningTime = FMath::Fmod(shaderRunningTime, 3600.0f);
     }
+
+
+    /*if(shaderRunningTime > 2 * M_PI){
+        shaderRunningTime = 0.0f;
+    }*/
 }
 
 void AcustomMeshActorBase::vertexShaderFor(MeshData &data){
@@ -917,6 +924,10 @@ void AcustomMeshActorBase::createTwoSidedQuad(
     replaceMeshData(meshData, material);
     ReloadMeshAndApplyAllMaterials();
 }
+
+
+
+        
 
 
 

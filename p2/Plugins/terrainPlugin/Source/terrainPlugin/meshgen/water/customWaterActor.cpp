@@ -33,6 +33,8 @@ void AcustomWaterActor::Tick(float DeltaTime){
         return;
     }
 
+    //cpue sided vertex offset is only happening
+    //if the player is in range.
     if (playerIsInRenderRange()){
         //updateRunningTime(DeltaTime);
         TickRipples(DeltaTime); //tick ripples before vertex shader to already modify mesh
@@ -53,14 +55,16 @@ void AcustomWaterActor::createWaterPane(
         return;
     }
 
-    int vertexCount = scaleMeters / DEFAULT_DISTANCE_BETWEEN_VERTECIES;
-
-    int paneCount = vertexCount / MAX_VERTEXCOUNT;
+    float fVertexCount = (float) scaleMeters / DEFAULT_DISTANCE_BETWEEN_VERTECIES;
+    int paneCount = fVertexCount / MAX_VERTEXCOUNT;
     if(paneCount == 0){ //below max size, do 1
         paneCount = 1;
     }
 
-    int offsetOnAxis = MAX_VERTEXCOUNT * DEFAULT_DISTANCE_BETWEEN_VERTECIES;
+    //int offsetOnAxis = MAX_VERTEXCOUNT * DEFAULT_DISTANCE_BETWEEN_VERTECIES;
+
+    int verticesPerPane = fVertexCount / paneCount;
+    int offsetOnAxis = verticesPerPane * DEFAULT_DISTANCE_BETWEEN_VERTECIES;
 
     //DebugHelper::logMessage("DEBUGSIZE OF WATER VERTEXCOUNT", vertexCount);
     //DebugHelper::logMessage("DEBUGSIZE OF WATER PANECOUNT", paneCount);
@@ -72,8 +76,8 @@ void AcustomWaterActor::createWaterPane(
         for (int j = 0; j < paneCount; j++){
 
             FVector finalLocation = offsetVector;
-            offsetVector.X += offsetOnAxis * i;
-            offsetVector.Y += offsetOnAxis * j;
+            finalLocation.X += offsetOnAxis * i;
+            finalLocation.Y += offsetOnAxis * j;
 
             FRotator rotation;
             FActorSpawnParameters params;
@@ -85,7 +89,7 @@ void AcustomWaterActor::createWaterPane(
             );
             if(SpawnedActor != nullptr){
                 SpawnedActor->createWaterPane(
-                    vertexCount, 
+                    verticesPerPane, 
                     DEFAULT_DISTANCE_BETWEEN_VERTECIES
                 );
             }
@@ -109,9 +113,9 @@ void AcustomWaterActor::createWaterPane(int vertexCountIn, int detail){
     if(vertexCountIn <= 2){
         vertexCountIn = 3;
     }
-    if(vertexCountIn > MAX_VERTEXCOUNT){
+    /*if(vertexCountIn > MAX_VERTEXCOUNT){
         vertexCountIn = MAX_VERTEXCOUNT;
-    }
+    }*/
 
     vertexcountX = vertexCountIn;
     vertexcountY = vertexCountIn;
@@ -149,7 +153,7 @@ void AcustomWaterActor::createWaterPane(int vertexCountIn, int detail){
 
     ReloadMeshAndApplyAllMaterials();
     meshInited = true;
-
+    originalVertecies = waterMesh.getVerteciesRefConst();
 
     //exclude this for bone controller raycast
     /*
@@ -180,6 +184,8 @@ void AcustomWaterActor::createWaterPane(int vertexCountIn, int detail){
             )
         );*/
     }
+
+    distanceBetweenVerteciesSaved = detail;
 }
 
 MeshData& AcustomWaterActor::findMeshDataReference(
@@ -214,7 +220,8 @@ void AcustomWaterActor::vertexShader(){
     //raycast is not blocked by water
     UProceduralMeshComponent *thisMesh = meshComponentPointer();
     if(thisMesh){
-        TArray<FVector> &vertecies = waterMesh.getVerteciesRef();
+        MeshData &ref = waterMesh;
+        TArray<FVector> &vertecies = ref.getVerteciesRef();
 
         //old working, linear: bad
         
@@ -228,6 +235,7 @@ void AcustomWaterActor::vertexShader(){
                     
                     //cant be deprecated, handled in shader, but needed for 
                     //ripples right now
+                    resetVertexShadignFor(vertex, i, vertecies.Num());
                     applyShaderToVertex(vertex);
                     applyWaterRippleOffset(vertex, actorLocation);
                 }else{
@@ -246,9 +254,36 @@ void AcustomWaterActor::vertexShader(){
             
         }
 
-        refreshMesh(*thisMesh, waterMesh, layer);
+        refreshMesh(*thisMesh, ref, layer);
     }
 }
+
+
+void AcustomWaterActor::resetVertexShadignFor(FVector &vertex, int index, int all){
+    if(index >= 0 && index < originalVertecies.Num()){
+        FVector copy = originalVertecies[index];
+        vertex = copy;
+        resetVertexShadignFor(vertex);
+        return;
+    }
+
+    //horizontal gibt es 
+    //vertikale columns
+    int numVerticesY = vertexcountY + 1;
+    int xPos = (index / numVerticesY);
+    int yPos = index % numVerticesY;
+
+    resetVertexShadignFor(vertex);
+    vertex.X = xPos * distanceBetweenVerteciesSaved;
+    vertex.Y = yPos * distanceBetweenVerteciesSaved;
+}
+
+void AcustomWaterActor::resetVertexShadignFor(FVector &other){
+    other.Z = 0.0f;
+}
+
+
+
 
 ///@brief will tell whether a vertex should be moved or not
 bool AcustomWaterActor::isAtLockedAxis(FVector &other){
@@ -278,21 +313,65 @@ bool AcustomWaterActor::isAtLockedAxis(FVector &other){
     return false;
 }
 
+#include "terrainPlugin/meshgen/water/waveShaders/WaveProperty.h"
 
 /// @brief apply vertex shader to the given vertex
 /// @param vertex vertex to move
 void AcustomWaterActor::applyShaderToVertex(FVector &vertex){
+    /*
+    shader.SetWaveLength(1000.0f); // must be greater than vertex distance
+    shader.SetWaveSpeed(0.5f);
+    shader.SetAmplitude(20.0f);
+    shader.SetWaveSteepNess(3.0f);
+
+    shader.SetWaveLength(800.0f); // must be greater than vertex distance
+    shader.SetWaveSpeed(0.5f);
+    shader.SetAmplitude(40.0f);
+    shader.SetWaveSteepNess(0.1f);
+
+    shader.UpdateShaderRunningTime(shaderRunningTime);
+    shader.applyShaderToVertex(vertex, actorLocation);
+    */
+
     FVector actorLocation = GetActorLocation();
-    float distXAll = vertex.X + actorLocation.X;
-    float distYAll = vertex.Y + actorLocation.Y;
 
-    float frequency = 0.01f; // Wellenbreite
-    float amplitude = 10.0f; // Wellenhöhe
-    float speed = 1.0f; // Wellengeschwindigkeit //1.0;
-    float wave = sin(distXAll * frequency + shaderRunningTime * speed) + 
-                 cos(distYAll * frequency + shaderRunningTime * speed);
+    WaveProperty property0;
+    WaveProperty property1;
+    WaveProperty property2;
 
-    vertex.Z = wave * amplitude;
+    FVector2D dir(1, 0);
+    property0.SetWaveLength(1000.0f); // must be greater than vertex distance
+    property0.SetWaveSpeed(0.5f);
+    property0.SetAmplitude(20.0f);
+    property0.SetWaveSteepNess(0.2f);
+    property0.SetWaveDirection(dir);
+
+    dir = FVector2D(4, 1);
+    property1.SetWaveLength(500.0f); // must be greater than vertex distance
+    property1.SetWaveSpeed(0.5f);
+    property1.SetAmplitude(30.0f);
+    property1.SetWaveSteepNess(0.3f);
+    property1.SetWaveDirection(dir);
+
+    dir = FVector2D(1, 2);
+    property2.SetWaveLength(200.0f); // must be greater than vertex distance
+    property2.SetWaveSpeed(1.0f);
+    property2.SetAmplitude(10.0f);
+    property2.SetWaveSteepNess(0.7f);
+    property2.SetWaveDirection(dir);
+
+    TArray<WaveProperty> properties = {property0, property1, property2};
+
+    //mehrere wellen müssen addiertw erden
+    //die steilere winkel haben
+    //damit die spitzen entstehen!
+
+     
+
+    shader.UpdateShaderRunningTime(shaderRunningTime);
+    shader.applyShadersToVertex(vertex, actorLocation, properties);
+
+
 
 }
 
@@ -317,9 +396,7 @@ void AcustomWaterActor::resetAllShaderOffsets(){
     }
 }
 
-void AcustomWaterActor::resetVertexShadignFor(FVector &other){
-    other.Z = 0.0f;
-}
+
 
 void AcustomWaterActor::refreshMesh(
     UProceduralMeshComponent& meshComponent,
@@ -428,6 +505,10 @@ void AcustomWaterActor::removeRippleAtIndex(int index){
  * helper player distance
  */
 
+int AcustomWaterActor::Meters(int meters){
+    return meters * 100.0f;
+}
+
 bool AcustomWaterActor::playerIsInRenderRange(){
 
     FVector playerLook = PlayerInfo::playerLookDir();
@@ -436,7 +517,7 @@ bool AcustomWaterActor::playerIsInRenderRange(){
 
     FVector actorLocation = GetActorLocation();
     LodCheckContainer checkContainer;
-    checkContainer.modifyUpperDistanceLimitFor(ELod::lodNear, 50*100); //50
+    checkContainer.modifyUpperDistanceLimitFor(ELod::lodNear, Meters(50)); //50
     checkContainer.checkLod(actorLocation, locationOfPlayer);
     SetActorHiddenInGame(checkContainer.hideActorByLod()); //if far, hide
 

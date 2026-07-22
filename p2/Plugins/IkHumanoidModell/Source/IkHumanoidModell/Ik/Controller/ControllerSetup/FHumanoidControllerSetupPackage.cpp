@@ -3,6 +3,10 @@
 /// --- default setup ---
 
 FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AActor *world){
+    return GetDefault(world, true);
+}
+
+FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AActor *world, bool headVisible){
     int widthMainBones = 10;
 
     FHumanoidControllerSetupPackage newPackage(world);
@@ -11,8 +15,19 @@ FHumanoidControllerSetupPackage FHumanoidControllerSetupPackage::GetDefault(AAct
     DefaultHeadSetup(newPackage, widthMainBones);
     DefaultHandSetup(newPackage);
 
+    FSingleLimbProperty &head = newPackage.GetHeadSize();
+    if(!headVisible){
+        head.SetLimbMaterial(materialEnum::transparentMaterial);
+    }
+
     return newPackage;
 }
+
+
+
+
+
+
 
 void FHumanoidControllerSetupPackage::DefaultTorsoSetup(
     FHumanoidControllerSetupPackage &newPackage,
@@ -45,8 +60,8 @@ void FHumanoidControllerSetupPackage::DefaultLegSetup(
 
     FLocomotionProperty &locomotion = newPackage.GetLocomotionProperty();
     locomotion.SetMaxVelocity(500.0f);
+    locomotion.SetMinVelocity(200.0f);
 }
-
 
 void FHumanoidControllerSetupPackage::DefaultHeadSetup(
     FHumanoidControllerSetupPackage &newPackage,

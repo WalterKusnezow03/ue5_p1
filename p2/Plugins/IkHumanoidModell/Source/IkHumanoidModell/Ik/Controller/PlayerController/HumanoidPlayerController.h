@@ -41,6 +41,7 @@ public:
     void weaponRaisedReadyPosition(bool raise);
     void weaponContactPosition();
 
+    
 
 protected:
     virtual TArray<AActor *> actorInChildrenArray() override;

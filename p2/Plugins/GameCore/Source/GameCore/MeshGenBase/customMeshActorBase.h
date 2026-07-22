@@ -92,8 +92,7 @@ public:
 		materialEnum type
 	);
 
-
-
+	
 
 protected:
 	bool distanceListeningBlocked = false;

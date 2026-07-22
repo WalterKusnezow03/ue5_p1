@@ -39,4 +39,9 @@ public:
 	virtual void FlagVisible(AActor *actor) {};
 
 	virtual void SetTrainingAllowed() {};
+
+
+	virtual bool NNIsConnected(){
+		return false;
+	}
 };

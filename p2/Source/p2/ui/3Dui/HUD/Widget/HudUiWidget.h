@@ -36,6 +36,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetInventorySlotPanel();
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetWidgetNNConnectionState();
+
     // update widget elements
     void UpdateWidget(FPlayerStatus &playerStatusStruct);
 
@@ -66,4 +69,7 @@ protected:
     void UpdateAmmunitionText(FText text);
 
     void UpdateInventorySlots(TArray<FPlayerStatusInventorySlot> &slots);
+
+    void TickMiniMap(float deltatime);
+    void TickNNConnectionStateWidget(float deltatime);
 };

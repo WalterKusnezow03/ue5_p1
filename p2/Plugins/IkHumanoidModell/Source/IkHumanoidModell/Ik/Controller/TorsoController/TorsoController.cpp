@@ -13,6 +13,18 @@ TorsoController::~TorsoController(){
 }
 
 
+void TorsoController::setup(
+    FHumanoidControllerSetupPackage &package,
+    MMatrix &actorTranslation,
+    MMatrix &actorRotation
+){
+    setup(package);
+    ResetAndRebuild(
+        actorTranslation,
+        actorRotation
+    );
+}
+
 void TorsoController::setup(FHumanoidControllerSetupPackage &package){
 
     FTwoLimbProperty &spinePackage = package.GetTorsoSpineSize();
@@ -42,7 +54,7 @@ void TorsoController::ResetAndRebuild(
 
     FString message = TEXT("HumanoidController Rebuild: TorsoController: Rebuild Torso ");
     message += actorTranslation.getTranslation().ToString();
-    DebugHelper::logMessage(message);
+    //DebugHelper::logMessage(message);
 }
 
 void TorsoController::Tick(
@@ -156,4 +168,13 @@ void TorsoController::SetHeadRotation(const FRotator &rotation){
 
 void TorsoController::SetHeadRotationLookAt(const FVector &lookAt){
     headController.SetHeadRotationLookAt(lookAt);
+}
+
+
+FVector TorsoController::NeckStartEffectorWorld(){
+    return headController.NeckStartWorld();
+}
+
+FVector TorsoController::HeadStartEffectorWorld(){
+    return headController.HeadLocationWorld();
 }

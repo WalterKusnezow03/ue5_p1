@@ -139,3 +139,25 @@ FVector AActorBase::worldToLocalPosition(const FVector &worldhit){
     FTransform worldTransform = GetActorTransform();
     return worldTransform.InverseTransformPosition(worldhit);
 }
+
+
+
+
+
+void AActorBase::EnableCollisionOnAllChilds(bool enable){
+    TArray<USceneComponent *> container;
+    FindAllChilds(container);
+    for (int i = 0; i < container.Num(); i++){
+        EnableCollisionOn(container[i], enable);
+    }
+}
+
+void AActorBase::EnableCollisionOn(USceneComponent *comp, bool enabled){
+    if(comp){
+        //must be a primitive component
+        if (UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(comp)){
+            ECollisionEnabled::Type collision = enabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
+            PrimitiveComp->SetCollisionEnabled(collision);
+        }
+    }
+}

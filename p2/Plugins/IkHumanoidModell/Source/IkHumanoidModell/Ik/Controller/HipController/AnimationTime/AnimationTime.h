@@ -10,7 +10,16 @@ public:
     static float AnimationTimeBasedOnHorizontalVelocity(
         const FVector &a,
         const FVector &b,
-        float horizontalVelocity
+        float horizontalVelocity,
+        float minMotionTime
+    );
+
+    static float AnimationTimeBasedOnHorizontalAndVerticalVelocity(
+        const FVector &localStart,
+        const FVector &localEnd,
+        float horizontalVelocity,
+        float verticalVelocity,
+        float minMotionTime
     );
 
     static float AnimationTimeBasedOnHorizontalAndVerticalVelocity(

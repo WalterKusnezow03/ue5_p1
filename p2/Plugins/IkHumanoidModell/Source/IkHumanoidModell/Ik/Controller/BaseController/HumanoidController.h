@@ -22,7 +22,7 @@ public:
 
     virtual void defaultSetup(AActor *actorOwner);
     virtual void defaultSetup(AActor *actorOwner, bool flagWantedHands);
-   
+    void SetupFrom(FHumanoidControllerSetupPackage &property, bool createHands);
 
     void ResetAndRebuild();
 
@@ -76,6 +76,8 @@ public:
     void SetHeadRotationLookAt(const FVector &lookAt);
 
     //foot positions for p2 game interaction
+    //gets the foot positions and adds it to array
+    //(for tripwire interaction.)
     void AppendFootPositions(TArray<FVector> &outPositions);
 
 public:
@@ -84,6 +86,10 @@ public:
     void SetStateCollapseTrue();
 
     void ReactToDamage(const FCustomHitResult &hitResult);
+
+    //shoulder interface
+    FVector LocalShoulderLocation();
+    FVector LocalHeadLocation();
 
 protected:
     bool collapseEnabledPhysics = false;

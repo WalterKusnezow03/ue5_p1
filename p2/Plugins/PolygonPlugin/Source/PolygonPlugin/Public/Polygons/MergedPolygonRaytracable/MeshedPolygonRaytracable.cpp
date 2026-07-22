@@ -112,13 +112,13 @@ void FMeshedPolygonRaytracable::TraceConeOnGrid(
     }
     
 
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(
             TEXT("FMeshedPolygonRaytracable::TraceCone Index Raw %d %d, vision Angle %.2f hits %d: %s"), 
             x, y, angle, hits.Num(),
             *MakeString(hits)
         )
-    );
+    );*/
 
     /*
     Counter clockwise order of rays!

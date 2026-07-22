@@ -6,6 +6,9 @@
 #include "GameCore/MeshGenBase/customMeshActorBase.h"
 #include "GameCore/interfaces/DamageInterface/Damageinterface.h"
 #include "ripple.h"
+#include "terrainPlugin/meshgen/water/waveShaders/CpuWaterVertexShaderTrochoidal.h"
+#include "terrainPlugin/meshgen/water/waveShaders/CpuWaterVertexShaderSimple.h"
+
 #include "customWaterActor.generated.h"
 
 /**
@@ -41,11 +44,14 @@ protected:
 
 	bool inBoundsOfPane(FVector &vec);
 
-	
 
-	static const int MAX_VERTEXCOUNT = 50;
-	static const int DEFAULT_DISTANCE_BETWEEN_VERTECIES = 100;
-	int MAX_DISTANCE = 10000; // 10000; // 100000;
+	//static const int MAX_VERTEXCOUNT = 50; //per pane
+	//static const int DEFAULT_DISTANCE_BETWEEN_VERTECIES = 100;
+
+
+	static const int MAX_VERTEXCOUNT = 50; //per pane
+	static const int DEFAULT_DISTANCE_BETWEEN_VERTECIES = 50;
+	int distanceBetweenVerteciesSaved = 50;
 
 	teamEnum teamSaved = teamEnum::none;
 
@@ -81,8 +87,8 @@ protected:
 	virtual void applyShaderToVertex(FVector &vertex) override;
 	void resetAllShaderOffsets();
 	void resetVertexShadignFor(FVector &other);
+	void resetVertexShadignFor(FVector &vertex, int index, int all);
 
-	
 	bool playerIsInBounds();
 
 	bool meshInited = false;
@@ -107,6 +113,13 @@ protected:
 		ELod lod
 	);
 	UProceduralMeshComponent *meshComponentPointer();
+
+	int Meters(int meters);
+
+	CpuWaterVertexShaderTrochoidal shader;
+
+private:
+	TArray<FVector> originalVertecies;
 
 
 };

@@ -27,6 +27,8 @@
 
 #include "p2/ui/3Dui/HUD/HudUiActor.h"
 
+#include "p2/PlateCarrier/PlateCarrier.h"
+
 
 // Sets default values
 AplayerScript::AplayerScript() : Super()
@@ -42,6 +44,8 @@ void AplayerScript::BeginPlay()
 
     setTeam(teamEnum::playerTeam);
     setupBoneController();
+    SetupPlateCarrierOnBeginPlay();
+
     PickupDefaultWeaponOnBeginPlay();
     CreateUiHudActorOnBeginPlay();
     //createMiniMap();
@@ -55,7 +59,7 @@ void AplayerScript::PickupDefaultWeaponOnBeginPlay(){
         entityMananger->addActorToIgnoredAllParams(this); //skelleton may not walk on player.
 
         
-        weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle);
+        weapon = entityMananger->spawnAweapon(GetWorld(), weaponEnum::assaultRifle_hk416);
         if(weapon != nullptr){
             weapon->applySight(weaponAttachmentEnum::reddot);
             pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(weapon);
@@ -408,7 +412,7 @@ void AplayerScript::shoot(){
 
 void AplayerScript::ApplyRecoil(){
     float recoil = playerInventory.recoilValue(); 
-    DebugHelper::logMessageFloat("WeaponRecoil", recoil); //ok
+    //DebugHelper::logMessageFloat("WeaponRecoil", recoil); //ok
     addPendingRecoil(recoil * 10.0f);
 }
 
@@ -473,7 +477,17 @@ void AplayerScript::setupBoneController(){
 
     //keine ahnung ob das was bringt.
     if(CameraComponent){
-        float legScaleCM = 100;
+        float pushForward = 10.0f;
+        float pushUp = 18.0f;
+
+        FVector headLocation = boneController.LocalHeadLocation();
+        headLocation.X += pushForward;
+        headLocation.Z += pushUp;
+
+        cameraReltiveLocationOriginal = headLocation;
+        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
+
+        /*float legScaleCM = 100;
         float armScaleCM = 100;
         float allScale = legScaleCM + armScaleCM;
         float allHalf = allScale / 2.0f;
@@ -481,7 +495,7 @@ void AplayerScript::setupBoneController(){
 
         int pushForward = 10;
         cameraReltiveLocationOriginal = FVector(pushForward, 0, allHalf);
-        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);
+        CameraComponent->SetRelativeLocation(cameraReltiveLocationOriginal);*/
     }
 
 
@@ -648,6 +662,7 @@ void AplayerScript::pickUpWeaponIntoInventoryIfNeededAndAttachToBoneController(
     if(weapon != nullptr){
         playerInventory.addWeaponIfNotInInventory(weapon);
         weapon->pickup(CameraComponent);
+        weapon->SetPlateCarrierReference(plateCarrier); //must be merged with pickup method <- TODO!
 
         boneController.attachOrReplaceCarriedItem(weapon);
         // boneController.dropWeapon(); //drop old weapon(?)
@@ -692,3 +707,28 @@ void AplayerScript::DebugTickPathfinderNN(float deltatime){
 }
 
 
+
+
+
+void AplayerScript::SetupPlateCarrierOnBeginPlay(){
+    
+    if(plateCarrier == nullptr){
+        plateCarrier = APlateCarrier::MakeInstance();
+        if(plateCarrier){
+            //DEPRECATED
+            //attach as child with offset at shoulder height
+            FVector shoulderRelativeLocation = boneController.LocalShoulderLocation();
+            shoulderRelativeLocation += FVector(0, 0, 20);
+
+            DebugHelper::logMessage(
+                FString::Printf(TEXT("AplayerScript::SetupPlateCarrierOnBeginPlay Shoulder location")),
+                shoulderRelativeLocation
+            );
+
+            plateCarrier->AttachToActor(this, shoulderRelativeLocation);
+
+            //NEW: ATTACH TO SPINE BONE SCENE COMPONENT AT TOP IMMIDIATLY!
+        }
+    }
+}
+    

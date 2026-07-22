@@ -24,7 +24,7 @@ protected:
 public:
 	KeyFrameAnimation();
 	KeyFrameAnimation(bool loopIn);
-	~KeyFrameAnimation();
+	virtual ~KeyFrameAnimation();
 
 	KeyFrameAnimation(UKeyFrameAnimationAsset *asset);
 	void ConstructFrom(UKeyFrameAnimationAsset *asset);
@@ -45,6 +45,7 @@ public:
 	void addAll(const TArray<FKeyFrameAsset> *ptr);
 	void addAll(const TArray<FKeyFrameAsset> &array);
 	void addAll(const FKeyFrameAssetArray &arrayIn);
+	void clear();
 
 	FVector interpolate(float DeltaTime);
 	FVector interpolate(float DeltaTime, FVector currentPos);
@@ -62,7 +63,7 @@ public:
 	bool nextFrameIsProjected();
 
 	/// @brief never true, if animation marked looping
-	bool reachedLastFrameOfAnimation();
+	virtual bool reachedLastFrameOfAnimation();
 	void overrideCurrentStartingFrame(FVector &somePoisition);
 	void overrideNextFrame(FVector &framePos);
 	
@@ -88,7 +89,11 @@ public:
  
 	void useHermiteSplineInterpolation(bool flag);
 
-	
+protected:
+
+	virtual void OnFinish() {
+		//to be overriden.
+	};
 
 private:
 	void addRotationToFrame(FVector &localFrameToRotate);
@@ -124,7 +129,7 @@ private:
 
 	void updateFrameIndex();
 	bool canAnimate();
-	bool hasAnyFrames();
+	bool hasAnyFrames()const;
 
 
 
@@ -159,7 +164,10 @@ protected:
 public:
 	FString ToString();
 
+	FString StatusInfo();
 
+	// ---- DEBUG ----
+	void GetAllKeyFrames(TArray<FVector> &array);
 
 public:
 	// --- SCALING ---
@@ -167,4 +175,8 @@ public:
 	//scales the animation with a given scalar
 	//and its current progress
 	void ScaleTimeWithScalar(float scalar);
+
+
+
+	
 };

@@ -149,13 +149,18 @@ USceneComponent *CarriedItemHandComponentManager::GetComponentStatic(
     EArmType typeArm
 ){
     if(handMap.find(typeArm) != handMap.end()){
-        return handMap[typeArm];
+        return handMap[typeArm].GetMainTargetComponent();
     }
     return nullptr;
 }
 
 FVector CarriedItemHandComponentManager::FindLocation(EArmType type){
-    if(HasTemporaryTarget(type)){
+    
+    if(handMap.find(type) != handMap.end()){
+        return handMap[type].boneLocation();
+    }
+
+    /*if(HasTemporaryTarget(type)){
         return handMapTemporary[type].boneLocation();
     }
 
@@ -163,7 +168,7 @@ FVector CarriedItemHandComponentManager::FindLocation(EArmType type){
         if(USceneComponent *comp = handMap[type]){
             return comp->GetComponentLocation();
         }
-    }
+    }*/
     return FVector(0,0,0);
 }
 
@@ -267,16 +272,23 @@ void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
 }
 
 
+HandBoneTargetPair &CarriedItemHandComponentManager::CreateOrFindTargetPair(EArmType type){
+    if(handMap.find(type) == handMap.end()){
+        handMap[type] = HandBoneTargetPair();
+    }
+    return handMap[type];
+}
+
 void CarriedItemHandComponentManager::OverridePermanentTargetComponent(
     EArmType typeArm, 
     USceneComponent *scene
 ){
-    handMap[typeArm] = scene;
+    CreateOrFindTargetPair(typeArm).SetMainTargetComponent(scene);
 }
 
 USceneComponent *CarriedItemHandComponentManager::findPermanentTargetComponent(EArmType typeArm){
     if(handMap.find(typeArm) != handMap.end()){
-        return handMap[typeArm];
+        return handMap[typeArm].GetMainTargetComponent();
     }
     return nullptr;
 }
@@ -299,29 +311,22 @@ void CarriedItemHandComponentManager::UpdateTemporaryTarget(
     FString boneName
 ){
     if(comp){
-        CreateTemporaryTargetIfNeeded(typeArm);
-        handMapTemporary[typeArm].UpdateAndEnable(comp, boneName);
+        HandBoneTargetPair &pair = CreateOrFindTargetPair(typeArm);
+        pair.UpdateAndEnable(comp, boneName);
     }
 }
 
 void CarriedItemHandComponentManager::ResetTemporaryTarget(EArmType typeArm){
-    if(HasTemporaryTarget(typeArm)){
-        handMapTemporary[typeArm].disable();
-    }
+    HandBoneTargetPair &pair = CreateOrFindTargetPair(typeArm);
+    pair.disableTemporaryTarget();
 }
 
 
 
 bool CarriedItemHandComponentManager::HasTemporaryTarget(EArmType typeArm){
-    CreateTemporaryTargetIfNeeded(typeArm);
-    return handMapTemporary[typeArm].isEnabled();
+    return CreateOrFindTargetPair(typeArm).temporaryTargetIsEnabled();
 }
 
-void CarriedItemHandComponentManager::CreateTemporaryTargetIfNeeded(EArmType typeArm){
-    if(handMapTemporary.find(typeArm) == handMapTemporary.end()){
-        handMapTemporary[typeArm] = HandBoneTargetPair();
-    }
-}
 
 
 //notify reset target

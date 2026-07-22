@@ -22,4 +22,6 @@ enum class materialEnum
     wingMaterial,
     grassMaterialWithShader,
     widgetMaterial,
+    transparentMaterial,
+    
 };
