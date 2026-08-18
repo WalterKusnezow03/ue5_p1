@@ -133,6 +133,7 @@ bool ANNPathFinderONNX::PrepareRequestData(float deltatime){
 
 void ANNPathFinderONNX::EndPlay(const EEndPlayReason::Type EndPlayReason){
     requestHandle.EndPlay();
+    instancePtr = nullptr;
     Super::EndPlay(EndPlayReason);
 }
 

@@ -62,9 +62,9 @@ void RoadQuad::UpdateCenter(){
 /*
 void RoadQuad::AppendRoadMesh(MeshData &data, float width){
     / *
-    1->2
-    |  |
-    0<-3
+    1------->2
+    |        |
+    0<-------3
     inner - outer
     * /
     GenerateParalellRoad(width);
@@ -73,25 +73,36 @@ void RoadQuad::AppendRoadMesh(MeshData &data, float width){
 
 void RoadQuad::AppendRoadMesh(MeshData &data, TerrainInterfaceBase *creator){
     if(circle.Num() == innerCircle.Num()){
-        for (int i = 1; i < circle.Num(); i++){
-            FVector &v0 = innerCircle[i - 1];
+        for (int i = 0; i < circle.Num(); i++){
+            int current = i;
+            int next = (i + 1) % circle.Num();
+
+            /*FVector &v0 = innerCircle[i - 1];
             FVector &v1 = innerCircle[i];
-
             FVector &v2 = circle[i];
-            FVector &v3 = circle[i - 1];
+            FVector &v3 = circle[i - 1];*/
 
-            if(creator){
+            FVector &v0 = innerCircle[current];
+            FVector &v1 = innerCircle[next];
+            FVector &v2 = circle[next];
+            FVector &v3 = circle[current];
+
+            data.appendEfficent(v0,v1,v2,v3);
+
+            /*if(creator){
                 if(
                     creator->IsInBound(v0) &&
                     creator->IsInBound(v1) &&
                     creator->IsInBound(v2) &&
                     creator->IsInBound(v3)
                 ){
-                    data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+                    //data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+                    data.appendEfficent(v0,v1,v2,v3);
                 }
             }else{
-                data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
-            }
+                data.appendEfficent(v0,v1,v2,v3);
+                //data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
+            }*/
 
 
             //data.appendEfficent(v2, v1, v0, v3); //flipped, is correct.
@@ -133,20 +144,18 @@ void RoadQuad::GenerateParalellRoad(float width){
 
     wasModified = false;
 
+
+
+
+
+
     //TESTING NEEDED
-    FVectorUtil::ScaleDownByWidth(circle, innerCircle, width);
+    float distEps = 50.0f;
+    FVectorUtil::Clean(circle, distEps);
 
-    /*
-    innerCircle.SetNum(circle.Num());
-    FVector normal;
-    for (int i = 0; i < circle.Num(); i++){
-        FVector &current = circle[i];
-        normal = (center - current);// AB = B - A
-        normal.Z = 0.0f;
-        normal = normal.GetSafeNormal(); 
+    bool clockwisePolygon = false;
+    FVectorUtil::ScaleDownByNormal(circle, innerCircle, width, clockwisePolygon);
 
-        innerCircle[i] = current + normal * width; //update
-    }*/
 }
 
 TArray<FVector> &RoadQuad::GetCirlce(){
@@ -162,7 +171,7 @@ FVector &RoadQuad::GetCenter(){
 }
 
 
-void RoadQuad::RemoveOffset(FVector &offset){
+void RoadQuad::RemoveOffsetFromInnerAndOuterCircle(FVector &offset){
     center -= offset;
     for (int i = 0; i < circle.Num(); i++){
         circle[i] -= offset;
@@ -175,6 +184,7 @@ void RoadQuad::RemoveOffset(FVector &offset){
 
 
 void RoadQuad::GenerateMeshedSurface(TerrainInterfaceBase *creator, float widthOfInsideStep){
+    //might need to be smaller for more satble building injection into the polygons
     meshedSurface.Init(
         *this, 
         creator,

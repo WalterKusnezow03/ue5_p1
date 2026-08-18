@@ -8,6 +8,8 @@
  * acts as a task interface for plugins - processed in Sub Game Project!
  */
 
+
+
 UCLASS()
 class GAMECORE_API AworldLevelBase : public AActor{
 

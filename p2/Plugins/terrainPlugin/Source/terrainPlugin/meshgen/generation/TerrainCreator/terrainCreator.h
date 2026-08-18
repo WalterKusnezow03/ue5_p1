@@ -15,6 +15,8 @@
 #include "terrainPlugin/main/worldCache/ChunkParserMap.h"
 #include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadMakerFromGrid.h"
 
+#include "terrainBuildingPlugin/PublicInterface/BuildingMaker/BuildingMaker.h"
+
 #include "terrainPluginBase/BaseTerrainInterface/TerrainInterfaceBase.h"
 
 
@@ -71,6 +73,8 @@ public:
 		const TArray<FVector> &line1
 	) override;
 
+	virtual void lockQuad(const TArray<FVector> &quad) override;
+
 private:
 	//pre merge with top right topright chunks for fix gaps of one meter.
 	void PreMergeWithTopLeftRightChunks();
@@ -79,8 +83,10 @@ private:
 	//copy to chunk parser
 	void applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFillDataTo, int x, int y);
 
-
-	
+	//happens before road, building and mesh generation
+	void ApplyTerrainActorLocations(ChunkParserMap &mapToFillDataTo);
+	void ApplyTerrainActorLocationAt(ChunkParserMap &mapToFillDataTo, int x, int y);
+	//happens before road, building and mesh generation
 
 	class UWorld *worldPointer = nullptr;
 
@@ -108,7 +114,13 @@ private:
 	int cmToMeter(int a);
 	int meterToInnerChunkIndex(int a);
 	int cmToInnerChunkIndex(int a);
-
+ 
+	void AreaCmToChunkIndices(
+		FVector &a, 
+		FVector &b,
+		std::pair<int,int> &aOut,
+		std::pair<int,int> &bOut
+	);
 
 
 
@@ -123,9 +135,7 @@ private:
 public:	
 	chunk *chunkAt(int x, int y);
 	chunk *chunkAt(terrainHillSetup &setup);
-	TArray<chunk *> chunksAt(
-		TArray<FVector> &positionsWorld
-	);
+	TArray<chunk *> chunksAt(const TArray<FVector> &positionsWorld);
 	chunk *chunkAtWorldPositon(const FVector &worldPos);
 	virtual std::pair<int, int> Index2DFromWorldPosition(
 		const FVector &worldPos
@@ -152,9 +162,10 @@ private:
 
 
 
+
 	// --- road maker ---
 	RoadMakerFromGrid roadMaker;
 
-
-
+	// --- building maker ----
+	BuildingMaker buildingMaker;
 };

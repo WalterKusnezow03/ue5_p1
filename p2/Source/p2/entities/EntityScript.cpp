@@ -510,7 +510,7 @@ void AEntityScript::moveTowardsPlayer(float deltaTime){
 }
 
 void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer){
-	DebugHelper::logMessage("Entity request new path");
+	//DebugHelper::logMessage("Entity request new path");
 	UWorld *world = GetWorld();
 	if(world != nullptr){
 		APathFinder *p = APathFinder::instance();
@@ -518,16 +518,16 @@ void AEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsPlayer
 		//ask for path
 		if(p != nullptr){
 
-			FVector a = humanoidPluginController.GetLocation(); 
+			FVector start = humanoidPluginController.GetLocation(); 
 
-			this->path = p->getPath(a,targetLocation);
-			DebugHelper::logMessage("Entity request new path finish");
+			this->path = p->getPath(start, targetLocation);
+			//DebugHelper::logMessage("Entity request new path finish");
 
 			//no path was found
 			if(this->path.size() <= 0){
 				DebugHelper::showScreenMessage("Entity path empty", FColor::Yellow);
 
-				resetPathDelay(5.0f); 
+				resetPathDelay(5.0f);
 				//wait 3 seconds before asking for next path, allows player to move, 
 				//better path finding and saving resources because if an issue with the pathfinding occurs,
 				//it wont be solved unless the target moves. 

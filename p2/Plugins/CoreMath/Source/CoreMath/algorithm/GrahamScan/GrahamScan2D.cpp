@@ -10,6 +10,35 @@ GrahamScan2D::~GrahamScan2D()
 }
 
 
+void GrahamScan2D::ComputeConvexHull(TArray<std::pair<int, int>> &indices){
+    TArray<FVector2D> as2D;
+    //convert
+    as2D.SetNum(indices.Num());
+    for (int i = 0; i < indices.Num(); i++){
+        const std::pair<int, int> &current = indices[i];
+        Make2D(current, as2D[i]);
+    }
+
+    //make convex
+    ComputeConvexHull(as2D);
+
+    //convert back
+    indices.SetNum(as2D.Num());
+    for (int i = 0; i < as2D.Num(); i++){
+        const FVector2D &current = as2D[i];
+        MakePairInt(current, indices[i]);
+    }
+}
+
+
+void GrahamScan2D::Make2D(const std::pair<int, int> &pair, FVector2D &out){
+    out = FVector2D(pair.first, pair.second);
+}
+
+void GrahamScan2D::MakePairInt(const FVector2D &pos, std::pair<int, int> &out){
+    out.first = FMath::FloorToInt(pos.X);
+    out.second = FMath::FloorToInt(pos.Y);
+}
 
 /// @brief will compute the convex hull on the XY pane
 /// @param points points will be replaced with the convex hull of the passed points if possible

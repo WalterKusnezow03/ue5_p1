@@ -66,7 +66,29 @@ public:
         const FVector &center
     );
 
+	static void ScaleDownByNormal(
+		const TArray<FVector> &circle,
+		TArray<FVector> &OutInnerCircle,
+		float width,
+		bool clockwisePolygon
+	);
+
+	static void Clean(TArray<FVector> &circle, float distEps);
+
 private:
 	FVectorUtil();
 	~FVectorUtil();
+
+	static FVector DirectionToNext(
+		const TArray<FVector> &array,
+		int index,
+		bool loop
+	);
+
+	static FVector Direction2DNormalizedTo(
+		const FVector &start,
+		const FVector &end
+	);
+
+	static FVector Normal2DFrom(const FVector &dir, bool clockwisePolygon);
 };

@@ -51,7 +51,8 @@ void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackag
         TArray<IPathfinderNNInterface *> interfaces = queue->GetSubscribedActors();
         for (int i = 0; i < interfaces.Num(); i++){
             if(IPathfinderNNInterface *current = interfaces[i]){
-                polygonDataCache.NotifyVisiblePositionsFor(current);
+                bool useVisibility = false;
+                polygonDataCache.NotifyVisiblePositionsFor(current, useVisibility);
             }
         }
     }

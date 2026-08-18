@@ -113,6 +113,14 @@ void terrainCreator::smooth3dMap(){
     //smooth3dMap(a, b, 1);
 }
 
+
+
+
+
+
+
+
+
 /// @brief will smooth out all chunks rows and columns and merge them together to the map
 void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
 
@@ -125,6 +133,8 @@ void terrainCreator::smooth3dMap(FVector &a, FVector &b, int iterations){
     fromY = clampIndex(cmToChunkIndex(fromY));
     toX = clampIndex(cmToChunkIndex(toX));
     toY = clampIndex(cmToChunkIndex(toY));
+
+    
 
 
     // get all x and y axis and smooth them.
@@ -324,6 +334,32 @@ int terrainCreator::cmToChunkIndex(int a){
     int aToMeter = cmToMeter(a);
     int aToChunk = aToMeter / terrainConstants::CHUNKSIZE;
     return aToChunk;
+}
+
+void terrainCreator::AreaCmToChunkIndices(
+    FVector &a, 
+    FVector &b,
+    std::pair<int,int> &aOut,
+    std::pair<int,int> &bOut
+){
+   
+
+    //calculate enclosed bounds, works as expected
+    int fromX = a.X < b.X ? a.X : b.X;
+    int fromY = a.Y < b.Y ? a.Y : b.Y;
+    int toX = a.X > b.X ? a.X : b.X;
+    int toY = a.Y > b.Y ? a.Y : b.Y;
+    fromX = clampIndex(cmToChunkIndex(fromX));
+    fromY = clampIndex(cmToChunkIndex(fromY));
+    toX = clampIndex(cmToChunkIndex(toX));
+    toY = clampIndex(cmToChunkIndex(toY));
+
+    aOut.first = fromX;
+    aOut.second = fromY;
+
+    bOut.first = toX;
+    bOut.second = toY;
+
 }
 
 std::pair<int,int> terrainCreator::Index2DFromWorldPosition(
@@ -538,13 +574,48 @@ void terrainCreator::createTerrainAndSetupChunkParserMap(
     //road creation
     PreMergeWithTopLeftRightChunks(); //must happen to close gaps
 
+    //apply actor locations
+    //so the building mesh data is assigned to the correct chunk
+    //before having the meshdata setup
+    ApplyTerrainActorLocations(mapToFillDataTo);
+
     //fill data for roads
     createRoads(mapToFillDataTo);
+
+    //create builidngs on chunks
+    createBuildings(mapToFillDataTo); //still have time to lock trees down if building placed.
 
     //fill
     applyTerrainDataIntoChunkParserMapCache(mapToFillDataTo);
 
+    
+
+    
+
 }
+
+//apply actor locations for the chunk parsers
+//before generating any meshdata, buildings and roads
+void terrainCreator::ApplyTerrainActorLocations(ChunkParserMap &mapToFillDataTo){
+    for (int i = 0; i < map.size(); i++){
+        for (int j = 0; j < map[i].size(); j++){
+            ApplyTerrainActorLocationAt(mapToFillDataTo, i, j); //verifies the index automatically!
+        }
+    }
+}
+
+//offset needs to be set before hand so the buildings are assigned to the correct chunk
+void terrainCreator::ApplyTerrainActorLocationAt(ChunkParserMap &mapToFillDataTo, int x, int y){
+    chunk *currentChunk = chunkAt(x,y);
+    if(currentChunk != nullptr){
+        FVector newPos = currentChunk->positionPivotBottomLeft();
+        ChunkParser &currentChunkParser = mapToFillDataTo.findByIndex(x, y);
+        currentChunkParser.SetActorLocation(newPos);
+    }
+}
+
+
+
 
 void terrainCreator::applyTerrainDataIntoChunkParserMapCache(
     ChunkParserMap &mapToFillDataTo
@@ -572,7 +643,7 @@ void terrainCreator::applyTerrainDataIntoChunkParserAt(ChunkParserMap &mapToFill
         //ChunkParser Map generated in same size!
         ChunkParser &currentChunkParser = mapToFillDataTo.findByIndex(x, y);
         TerrainChunkSetup package = currentChunk->makeSetupPackage();
-        //makeSetupPackage(top, right, topright);
+       
 
         // apply position and data
         FVector newPos = currentChunk->positionPivotBottomLeft();
@@ -798,12 +869,12 @@ bool terrainCreator::ChunkPositionFromIndexPair(FVector &outPos, const std::pair
 }
 
 TArray<chunk *> terrainCreator::chunksAt(
-    TArray<FVector> &positionsWorld
+    const TArray<FVector> &positionsWorld
 ){
     TArray<chunk *> outputArray;
     for (int i = 0; i < positionsWorld.Num(); i++)
     {
-        FVector &current = positionsWorld[i];
+        const FVector &current = positionsWorld[i];
         if (chunk *found = chunkAtWorldPositon(current))
         {
             outputArray.Add(found);
@@ -879,8 +950,29 @@ void terrainCreator::createRoads(ChunkParserMap &mapToFillDataTo){
 }
 
 
+#include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadQuadMeshedSurface/MeshedSurfaceGrid.h"
 void terrainCreator::createBuildings(ChunkParserMap &mapToFillDataTo){
 
+    //use road maker / road quads
+    //to extract the areas for the buildings
+    TArray<FMeshedSurfaceGrid *> buildingAreas = roadMaker.GetMeshedSurfaces();
+
+    //pass to builidng plugin
+
+    //create buildings
+
+    //lock terrain from building used up space
+
+    /*
+    bool FMeshedSurfaceGrid::FindShape(
+        int x, //in cm
+        int y, //in cm
+        FVector &outBottomLeft,
+        FVector &outRotation
+    )
+    
+    */
+    buildingMaker.Build(this, mapToFillDataTo, buildingAreas);
 }
 
 
@@ -909,7 +1001,7 @@ void terrainCreator::lockQuadsFromParalellArrayLines(
     */
 
 
-    float scaleFromCenter = 2.0f;
+    
     int limit = std::min(line0.Num(), line1.Num());
     for(int i = 1; i < limit; i++){
         const FVector &v2 = line1[i];
@@ -923,22 +1015,34 @@ void terrainCreator::lockQuadsFromParalellArrayLines(
             const FVector &v1 = line1[i-1];
             const FVector &v3 = line0[i];
             TArray<FVector> positions = {v0, v1, v2, v3};
-            TArray<chunk *> chunksCollected = chunksAt(positions);
-            
-
-            //DebugHelper::logMessage("terrainCreator::lockQuads Chunks B", chunksCollected.Num());
-
-            for (int j = 0; j < chunksCollected.Num(); j++){
-                if(chunk *currentChunk = chunksCollected[j]){
-                    currentChunk->blockAreaForFoliage(v0, v1, v2, v3, scaleFromCenter);
-                }
-            }
-        
-            
+            lockQuad(positions);
         }
         
     }
 }
+
+void terrainCreator::lockQuad(const TArray<FVector> &quadPositions){
+    if(quadPositions.Num() >= 4){
+        TArray<chunk *> chunksCollected = chunksAt(quadPositions);
+
+        float scaleFromCenter = 2.0f; //extension
+
+        //DebugHelper::logMessage("terrainCreator::lockQuads Chunks B", chunksCollected.Num());
+
+        for (int j = 0; j < chunksCollected.Num(); j++){
+            if(chunk *currentChunk = chunksCollected[j]){
+                currentChunk->blockAreaForFoliage(
+                    quadPositions[0],//v0, 
+                    quadPositions[1],//v1, 
+                    quadPositions[2],//v2,
+                    quadPositions[3],//v3, 
+                    scaleFromCenter
+                );
+            }
+        }
+    }
+}
+
 
 
 // --- lock road polygon area by scale down ---

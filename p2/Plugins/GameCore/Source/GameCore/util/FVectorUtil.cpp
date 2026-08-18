@@ -331,18 +331,117 @@ void FVectorUtil::ScaleDownByWidth(
         FVector normal;
         for (int i = 0; i < circle.Num(); i++){
             const FVector &current = circle[i];
-            normal = (center - current);// AB = B - A
+            normal = Direction2DNormalizedTo(current, center);
+
+            /*normal = (center - current);// AB = B - A
             normal.Z = 0.0f;
-            normal = normal.GetSafeNormal(); 
+            normal = normal.GetSafeNormal();*/
 
             OutInnerCircle[i] = current + normal * width; //update
         }
     }
 }
 
+FVector FVectorUtil::Direction2DNormalizedTo(
+    const FVector &start,
+    const FVector &end
+){
+    FVector dir = (end - start);
+    dir.Z = 0.0f;
+    return dir.GetSafeNormal();
+}
 
+FVector FVectorUtil::Normal2DFrom(const FVector &dir, bool clockwisePolygon){
+    //clockwise polygon means: normal facing right
+    FVector normal(-dir.Y, dir.X, 0.0f);
+            
+    if(clockwisePolygon){
+        normal *= -1.0f;
+    }
+    return normal.GetSafeNormal();
+}
 
+void FVectorUtil::ScaleDownByNormal(
+    const TArray<FVector> &circle,
+    TArray<FVector> &OutInnerCircle,
+    float width,
+    bool clockwisePolygon
+){
+    if(circle.Num() > 0){
+        FVector center = FVectorUtil::calculateCenter(circle);
 
+        OutInnerCircle.SetNum(circle.Num());
+        for (int i = 0; i < circle.Num(); i++)
+        {
+            const FVector &current = circle[i];
+            FVector dir = DirectionToNext(circle, i, false);
+
+            //if gap is too small: 
+            //push inwards by center direction
+            FVector normal;
+            if(dir.Size() > 1.0f){
+                normal = Normal2DFrom(dir, clockwisePolygon);
+            }else{
+                normal = Direction2DNormalizedTo(current, center);
+            }
+
+            OutInnerCircle[i] = current + normal * width;
+        }
+    }
+}
+
+FVector FVectorUtil::DirectionToNext(
+    const TArray<FVector> &array,
+    int index,
+    bool loop
+){
+    FVector outDir;
+    if (index >= 0 && index < array.Num()){
+
+        int end = array.Num() - 1;
+        bool endOfArray = (index == end);
+        int nextIndex = (index + 1) % array.Num();
+
+        if(endOfArray && !loop){
+            index--;
+            nextIndex--;
+        }
+
+        index = FMath::Clamp(index, 0, end);
+        nextIndex = FMath::Clamp(nextIndex, 0, end);
+
+        const FVector &current = array[index];
+        const FVector &next = array[nextIndex];
+
+        outDir = next - current; //AB = B - A
+    }
+    return outDir;
+}
+
+void FVectorUtil::Clean(TArray<FVector> &circle, float distEps){
+    TArray<FVector> copy = circle;
+    int num = 0;
+    float dist2Eps = distEps * distEps;
+
+    for (int i = 0; i < circle.Num(); i++){
+        FVector &current = circle[i];
+
+        if(num <= 0){
+            num++;
+            copy[i] = current;
+        }else{
+            FVector &latest = copy.Last();
+            float dist2 = FVector::DotProduct(current, latest);
+            if(dist2 > dist2Eps){
+                copy[num] = current;
+                num++;
+            }
+        }
+    }
+
+    copy.SetNum(num);
+    circle = copy;
+}
 
 // --- testing needed ---
 

@@ -55,7 +55,8 @@ public:
     );
 
     void NotifyVisiblePositionsFor(
-        IPathfinderNNInterface *interfaceIn
+        IPathfinderNNInterface *interfaceIn,
+        bool useVisiblity
     );
 
     //binary generation
@@ -93,7 +94,7 @@ private:
 
     void GenerateResultPositionsVisibleBy(
         const FVector &lookFromPos,
-        TArray<FVector> &possibleSolutions,
+        const TArray<FVector> &possibleSolutions,
         TArray<FVector> &outpositions
     );
 

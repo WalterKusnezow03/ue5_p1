@@ -15,6 +15,15 @@ bool FMeshedPolygonPositionField::GridValid() const{
 }
 
 
+void FMeshedPolygonPositionField::UpdateWorldHeightFor(FVector &asWorldPos){
+    std::pair<int, int> pivot;
+    ToIndexBounded(asWorldPos, pivot);
+
+    //get world pos from grid
+    FVector worldPosZ = GetPositionAt(pivot);
+    asWorldPos.Z = worldPosZ.Z;
+}
+
 
 
 bool FMeshedPolygonPositionField::InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep){
@@ -142,21 +151,35 @@ FVector FMeshedPolygonPositionField::GetPositionAt(const std::pair<int,int> &pai
 
 // ------ DEBUG APPEND MESH DATA -------
 
-
-
 void FMeshedPolygonPositionField::AppendMeshedSurface(MeshData &data){
+    AppendMeshedSurface(data, false);
+}
+
+//true for local mesh
+void FMeshedPolygonPositionField::AppendMeshedSurface(MeshData &data, bool removeOffset2D){
     if(!GridValid()){
         return;
     }
     for (int i = 0; i < flagGrid.Num() - 1; i++){
         for(int j = 0; j < flagGrid[i].Num(); j++){
-            AppendAt(i, j, data);
+            AppendAt(i, j, data, removeOffset2D);
         }
     }
 }
 
-void FMeshedPolygonPositionField::AppendAt(int i, int j, MeshData &data){
+//true for local mesh
+void FMeshedPolygonPositionField::AppendAt(int i, int j, MeshData &data, bool removeOffset2D){
     TArray<FVector> buffer = GetQuadOrTriangleAt(i, j);
+
+    if(removeOffset2D){
+        FVector pivot = BottomLeft();
+        //pivot.Z = 0.0f;
+        for (int v = 0; v < buffer.Num(); v++)
+        {
+            buffer[v] = buffer[v] - pivot; //AB = B - A
+        }
+    }
+
     if(buffer.Num() == 3){
         data.appendEfficent(buffer[0], buffer[1], buffer[2]);
     }

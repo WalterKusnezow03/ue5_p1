@@ -14,6 +14,7 @@ public:
 	~MMatrix();
 
 	MMatrix(const FVector &other);
+	MMatrix(const FVector2D &other);
 	MMatrix(FRotator &other);
 	MMatrix(const FQuat &other);
 	MMatrix(const MMatrix &other);

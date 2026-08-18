@@ -50,6 +50,12 @@ MMatrix::MMatrix(const FVector &other){
     setTranslation(other);
 }
 
+MMatrix::MMatrix(const FVector2D &other){
+    FVector other3D(other.X, other.Y, 0.0);
+    makeIdentity();
+    setTranslation(other3D);
+}
+
 MMatrix::MMatrix(FRotator &other){
     makeIdentity();
     setRotation(other);
@@ -192,8 +198,8 @@ FVector MMatrix::operator*(const FVector &other) const {
 
 FVector2D MMatrix::operator*(const FVector2D &other) const {
     FVector d3Vec(other.X, other.Y, 0.0f);
-    d3Vec = *this * d3Vec;
-    return FVector2D(d3Vec.X, d3Vec.Y);
+    FVector result = *this * d3Vec;
+    return FVector2D(result.X, result.Y);
 }
 
 

@@ -452,10 +452,12 @@ FVector2D chunk::getFirstYRowAnchor(int yRow){
     if(yRow < innerMap.size()){
         anchor.Y = innerMap.at(0).at(yRow).Z;
     }
-    return anchor; 
-    
-    
+    return anchor;    
 }
+
+
+
+
 
 
 

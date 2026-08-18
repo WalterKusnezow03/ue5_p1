@@ -221,11 +221,11 @@ void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(){
 
 
 void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
+    FString message = FString::Printf(
+        TEXT("AHumanEntityScript::ResponseNNPositions Receive Response (%d)"),
+        positions.Num()
+    );
     if(positions.Num() > 0){
-        FString message = FString::Printf(
-            TEXT("AHumanEntityScript::ResponseNNPositions Receive Response (%d)"),
-            positions.Num()
-        );
         DebugHelper::showScreenMessage(message, FColor::Orange);
         DebugHelper::logMessage(message);
 

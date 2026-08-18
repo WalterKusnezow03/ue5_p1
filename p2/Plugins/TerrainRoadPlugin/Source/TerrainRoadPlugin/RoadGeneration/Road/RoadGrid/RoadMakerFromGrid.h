@@ -59,7 +59,7 @@ public:
 protected:
     // ----- Base Properties -----
 
-    //raw mesh 
+    //raw mesh of interactions
     TArray<TArray<FRoadMakerPosition>> mesh;
     
     //helper properites for distortion

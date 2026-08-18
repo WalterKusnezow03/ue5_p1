@@ -46,7 +46,7 @@ public:
     void createTerrainFrom2DMap(FVector &positionChunkActorLocation, TerrainChunkSetup &package);
 
     /// @brief targeted actor location for custom mesh actor
-    FVector GetActorLocation();
+    virtual FVector GetActorLocation() override;
 
     //set id for meshdata saving!
     void setChunkId(int inId);

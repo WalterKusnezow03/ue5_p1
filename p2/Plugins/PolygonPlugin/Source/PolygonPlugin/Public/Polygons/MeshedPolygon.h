@@ -26,11 +26,17 @@ protected:
     //FMeshedPolygonHullIndices edgeIndices;
 
     FMeshedPolygonHullSet edgeSet;
+    FMeshedPolygonHullSet edgeSetRawTemp;
 
     FMeshedPolygonHullIndices &GetEdgeIndices(){
         //return at 0
         return edgeSet[0];
     }
+
+    FMeshedPolygonHullIndices &GetEdgeIndicesRaw(){
+        return edgeSetRawTemp[0];
+    }
+
 
     FVector minSaved;
     FVector maxSaved;
@@ -96,6 +102,10 @@ public:
     void AppendIndexHull(const TArray<FVector> &polygon);
     void AppendIndexHull(const TArray<FVector> &polygon, FMeshedPolygonHullIndices &hull);
 
+    // --- raw hull temp ---
+    void AppendPolygonHullRaw(const TArray<FVector> &polygon);
+    void AppendPolygonHullRaw(const TArray<FVector> &polygon, FMeshedPolygonHullIndices &hull);
+
     // --- storage interface ---
 
     TArray<TArray<uint8>> &GetFlagGrid();
@@ -159,8 +169,10 @@ protected:
     void FlagTrue(const FVector &pos);
     void FlagTruePolygonEdge(const FVector &pos);
     void ToIndexBounded(const FVector &pos, int &x, int &y);
+    void ToIndexBounded(const FVector &pos, std::pair<int,int> &pair);
     void ToIndexRaw(const FVector &pos, int &x, int &y);
     void ToIndexRaw(const FMeshedPolygon &other, int &x, int &y);
+    void SizeToIndexRaw(const float sizeIn, int &outIndex);
     bool FlagAtPosition(const FVector &pos);
 
     bool FlagAt(int x, int y);

@@ -574,7 +574,7 @@ void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontFloats(const TAr
                 // Copy using byte size, but increment Ptr by element count
                 FMemory::Memcpy(column.GetData(), Ptr, elementsToCopy * sizeof(float));
                 
-                Ptr += elementsToCopy; // ✅ Safely advances by number of floats, not bytes
+                Ptr += elementsToCopy;
             } else {
                 DebugHelper::logMessage("Error: Attempted to read past buffer bounds!");
                 break;
@@ -682,19 +682,24 @@ void FMeshedPolygonTrajectoryLayered::GenerateResultPositions(
 
 //validates prediction on 2D raycasts through the polygon map
 void FMeshedPolygonTrajectoryLayered::NotifyVisiblePositionsFor(
-    IPathfinderNNInterface *interfaceIn
+    IPathfinderNNInterface *interfaceIn,
+    bool useVisiblity
 ){
     if(interfaceIn){
         TArray<FVector> generated;
-        GenerateResultPositionsVisibleBy(interfaceIn, generated);
+        if (useVisiblity){   
+            GenerateResultPositionsVisibleBy(interfaceIn, generated);
+        }else{
+            generated = extractedHeatMapResults;
+        }
+
+        DebugHelper::logMessage("extractedHeatMapResults Notify ", generated.Num());
 
         float distCluster = stepSizeSaved * 3.0f;
         PositionCluster clusterTool;
         clusterTool.ClusterPositions(generated, distCluster);
         
-        if(generated.Num() > 0){
-            interfaceIn->ResponseNNPositions(generated);
-        }
+        interfaceIn->ResponseNNPositions(generated);
     }
 }
 
@@ -727,7 +732,7 @@ void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
 
 void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
     const FVector &lookFromPos,
-    TArray<FVector> &possibleSolutions,
+    const TArray<FVector> &possibleSolutions,
     TArray<FVector> &outpositions
 ){
     for (int i = 0; i < possibleSolutions.Num(); i++){

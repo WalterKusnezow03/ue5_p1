@@ -41,7 +41,8 @@ public:
         return chunkindexInTerrain;
     }
 
-    void RemoveOffset(FVector &offset);
+    //removes offset from inner and outer circle, RoadQuadMeshedSurface is not changed!
+    void RemoveOffsetFromInnerAndOuterCircle(FVector &offset);
 
     //meshed surface for building gen
     //generates the flag grid and the MeshedSurfaceGrid to align buildings on.

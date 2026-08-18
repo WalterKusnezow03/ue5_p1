@@ -18,17 +18,16 @@ public:
       const FVector &worldPos
     );
 
-      virtual bool ChunkPositionFromIndexPair(FVector &outPos, const std::pair<int, int> &index);
+    virtual bool ChunkPositionFromIndexPair(FVector &outPos, const std::pair<int, int> &index);
 
-      virtual void lockQuadsFromParalellArrayLines(
+    virtual void lockQuadsFromParalellArrayLines(
       const TArray<FVector> &line0,
       const TArray<FVector> &line1
     ){};
 
+    virtual void lockQuad(const TArray<FVector> &quad) {};
 
-
-
-private:
+  private:
 
 
 };

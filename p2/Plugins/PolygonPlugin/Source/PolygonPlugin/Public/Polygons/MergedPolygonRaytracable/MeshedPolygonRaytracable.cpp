@@ -444,6 +444,7 @@ bool FMeshedPolygonRaytracable::IsVisible(const FVector &a, const FVector &b){
     int xA, yA = 0;
     ToIndexRaw(a, xA, yA);
     FVector2D dir = MakeDir(a, b);
+    float maxT = FVector::Dist(a, b);
 
     FIntPoint outHit;
     float t = 0.0f;
@@ -451,7 +452,8 @@ bool FMeshedPolygonRaytracable::IsVisible(const FVector &a, const FVector &b){
         //if t is in range [0,1] a hit was detected before the position was
         //reached
         if(t >= 0.0f){
-            if(t < 0.9f){
+            //if(t < 0.9f){
+            if(t < maxT + 0.01f){
                 return false;
             }
         }

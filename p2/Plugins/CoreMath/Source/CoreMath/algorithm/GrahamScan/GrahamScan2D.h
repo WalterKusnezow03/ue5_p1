@@ -12,6 +12,9 @@ public:
     GrahamScan2D();
     ~GrahamScan2D();
 
+    //2d int points
+    void ComputeConvexHull(TArray<std::pair<int, int>> &indices);
+
     ///@brief makes a convex hull from the given points, array modifed
     void ComputeConvexHull(TArray<FVector2D> &points);
 
@@ -38,4 +41,7 @@ private:
         TArray<FVector2D> &eliminated,
         bool findEliminated
     );
+
+    void Make2D(const std::pair<int, int> &pair, FVector2D &out);
+    void MakePairInt(const FVector2D &pos, std::pair<int, int> &out);
 };

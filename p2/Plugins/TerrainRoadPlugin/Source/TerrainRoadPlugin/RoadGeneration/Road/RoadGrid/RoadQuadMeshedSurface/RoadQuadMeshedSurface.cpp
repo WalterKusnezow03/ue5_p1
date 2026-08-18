@@ -119,7 +119,11 @@ void RoadQuadMeshedSurface::RasterizePolygonEdgeTo(
     Draw(rasterized);
 
     //create grid data
-    meshedGrid.Init(rasterized, widthOfInsideStep);
+    //meshedGrid.Init(rasterized, widthOfInsideStep);
+
+    //init from raw polygon data: rasterized interally!!
+    meshedGrid.Init(polygon, widthOfInsideStep);
+
 
     //create surface frames for edge
     for (int i = 0; i < polygon.Num(); i++)
@@ -149,9 +153,16 @@ void RoadQuadMeshedSurface::Draw(TArray<FVector> &rasterized){
         FVector v1 = rasterized[next];
 
         FColor color = (i % 2 == 0) ? FColor::Red : FColor::Blue;
+
+        //show winding
+        if(i < 4){
+            color = FColor::Green;
+        }
+        if(i > rasterized.Num() - 4){
+            color = FColor::Purple;
+        }
+
         Draw(v0, v1, offset, color);
-        Draw(v0, v1, offset * 2, color);
-        Draw(v0, v1, offset * 3, color);
     }
 }
 

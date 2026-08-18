@@ -18,17 +18,21 @@ protected:
 
     bool PositionAt(int x, int y, FVector &outPos);
     bool PositionAt(const std::pair<int, int> &pair, FVector &outPos);
+
+    //is in world space (with pivot offset)
     FVector GetPositionAt(const std::pair<int, int> &pair);
 
     //debug
-    void AppendAt(int i, int j, MeshData &data);
+    void AppendAt(int i, int j, MeshData &data, bool removeOffset2D);
     TArray<FVector> GetQuadOrTriangleAt(int i, int j);
 
+    //created with respect to world pivot.
     void MakePositionGrid();
 
     void SetPosition(int x, int y, const FVector &pos);
 
-    
+    //updates the world height of the given world coordinate
+    void UpdateWorldHeightFor(FVector &asWorldPos);
 
 public:
     TArray<TArray<FVector>> &GetPositionGrid();
@@ -39,6 +43,9 @@ public:
     //virtual void InitForceSizeMin(TArray<FVector> &polygon, float widthOfInsideStep) override;
 
     void AppendMeshedSurface(MeshData &data);
+
+    //remove offset for local mesh
+    void AppendMeshedSurface(MeshData &data, bool removeOffset2D);
 
     FVector BottomLeft() override;
     FVector TopRight() override;

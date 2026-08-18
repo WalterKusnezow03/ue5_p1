@@ -277,6 +277,12 @@ public:
 		FVector orthogonalDir
 	);
 
+	//must contain at least 4 vertecies.
+	void appendCube(
+		TArray<FVector> &array,
+		FVector orthogonalDir
+	);
+
 	void appendCubeAt(
 		FVector &pivot,
 		int scaleX,

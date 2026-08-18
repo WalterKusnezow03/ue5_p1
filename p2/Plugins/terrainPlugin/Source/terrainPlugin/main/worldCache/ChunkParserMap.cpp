@@ -112,6 +112,8 @@ ChunkParserInterfaceBase &ChunkParserMap::findByIndexBase(int i, int j){
     return findByIndex(i, j);
 }
 
+
+
 ChunkParser &ChunkParserMap::findByIndex(int i, int j){
     if(i >= 0 && i < innerChunkParserMap.Num()){
         if(j >= 0 && j < innerChunkParserMap[i].Num()){
@@ -120,6 +122,7 @@ ChunkParser &ChunkParserMap::findByIndex(int i, int j){
     }
     return fallback;
 }
+
 
 
 
@@ -190,6 +193,8 @@ TArray<ChunkParser *> ChunkParserMap::allChunksForSetup(){
     }
     return outArray;
 }
+
+
 
 
 ///@brief finds a quad around a center of chunks which are in valid index space

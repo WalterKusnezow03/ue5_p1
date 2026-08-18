@@ -374,8 +374,9 @@ void RoadMakerFromGrid::ComputeYAxis(int index, float _einheitsValue){
 
             DebugHelper::logMessage(
                 FString::Printf(
-                    TEXT("RoadMakerFromGrid::ComputeYAxis %d"),
-                    outArray.Num()
+                    TEXT("RoadMakerFromGrid::ComputeYAxis %d, old size %d "),
+                    outArray.Num(),
+                    yAxis.Num()
                 )
             );
         }
@@ -411,7 +412,15 @@ void RoadMakerFromGrid::ComputeXAxis(int index, float _einheitsValue){
                 outArray,
                 _einheitsValue
             );
-            DebugHelper::logMessage("RoadMakerFromGrid::ComputeXAxis ", outArray.Num());
+            
+
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("RoadMakerFromGrid::ComputeXAxis %d, old size %d "),
+                    outArray.Num(),
+                    copiedXAxis.Num()
+                )
+            );
         }
     }
 }
@@ -585,6 +594,8 @@ TArray<std::pair<int,int>> RoadMakerFromGrid::GetAllQuadShapedIndices(){
         int yArrays = mesh.Num();
         int xArrays = mesh[0].Num(); //along vertical, how many horizontal (refacture for function!)
         
+        //COUNTER CLOCK WISE ORDER
+
         // -- comment on overall objective: --
         //build and add segments
         //build in x, x+1, x+1,y+1, y+1,x, y+1,x
@@ -592,6 +603,12 @@ TArray<std::pair<int,int>> RoadMakerFromGrid::GetAllQuadShapedIndices(){
         0(x,y)----1(x+1,y)
         |             |
         3(x,y+1)--2(x+1,y+1)
+        */
+
+        /*
+        1-->2
+        
+        0<--3
         */
 
         //add to ordered quad.
@@ -602,10 +619,20 @@ TArray<std::pair<int,int>> RoadMakerFromGrid::GetAllQuadShapedIndices(){
                 std::pair<int,int> p1(j, i-1);
                 std::pair<int,int> p2(j, i);
                 std::pair<int,int> p3(j-1, i);
-                outArray.Add(p0);
+
+                //in this case:
+
+                //this is counter clock wise
+                /*outArray.Add(p0);
                 outArray.Add(p1);
                 outArray.Add(p2);
+                outArray.Add(p3);*/
+
+                //clockwise
                 outArray.Add(p3);
+                outArray.Add(p2);
+                outArray.Add(p1);
+                outArray.Add(p0);
             }
         }
     }
@@ -639,6 +666,8 @@ void RoadMakerFromGrid::LockTerrainFromGeneratedRoadQuads(
                 creator->lockQuadsFromParalellArrayLines(
                     outer,
                     inner
+                    //inner,
+                    //outer
                 );
             }
         }
@@ -710,7 +739,7 @@ void RoadMakerFromGrid::RemoveTerrainOffsetFromRoadQuads(
                 std::pair<int, int> &index = currentQuad.GetChunkIndex();
                 FVector removeOffset;
                 if (creator->ChunkPositionFromIndexPair(removeOffset, index)){
-                    currentQuad.RemoveOffset(removeOffset);
+                    currentQuad.RemoveOffsetFromInnerAndOuterCircle(removeOffset);
                 }
 
             }
@@ -770,18 +799,18 @@ void RoadMakerFromGrid::GenerateQuadMeshedSurfaces(TerrainInterfaceBase *creator
     if(creator){
         
         
-        
-        
-        
         float widthOfInsideStep = terrainConstants::ONEMETER;
-        bool debugOnly = true;
+        
+        
+        
+        /*bool debugOnly = false;
         if(debugOnly){
             if(buildedMeshQuads.Num() > 0 && buildedMeshQuads[0].Num() > 0){
                 RoadQuad &quad = buildedMeshQuads[0][0];
                 quad.GenerateMeshedSurface(creator, widthOfInsideStep);
             }
             return;
-        }
+        }*/
 
         //all
         for (int i = 0; i < buildedMeshQuads.Num(); i++)

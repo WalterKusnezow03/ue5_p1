@@ -41,6 +41,11 @@ public class terrainBuildingPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"terrainPluginBase",
+				"TerrainRoadPlugin", //needed for meshed surface grid
+				"MeshDataPlugin", //needed for mesh data creation
+				"PolygonPlugin",
+				"DebugPlugin"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

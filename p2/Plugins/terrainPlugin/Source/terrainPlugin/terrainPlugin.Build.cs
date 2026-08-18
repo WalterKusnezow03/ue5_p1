@@ -34,6 +34,7 @@ public class terrainPlugin : ModuleRules
 				"DebugPlugin",
 				"terrainPluginBase", //NEW !
 				"TerrainRoadPlugin", //NEW !
+				"terrainBuildingPlugin", //NEW!
 				"AssetEnumCollection",
 				// ... add other public dependencies that you statically link with here ...
 			}

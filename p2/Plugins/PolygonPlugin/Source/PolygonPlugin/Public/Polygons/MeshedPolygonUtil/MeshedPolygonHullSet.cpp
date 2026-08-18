@@ -27,6 +27,12 @@ void FMeshedPolygonHullSet::LoadFromBinary(
     
 }
 
+void FMeshedPolygonHullSet::AddAll(TArray<FMeshedPolygonHullIndices> &hulls){
+    for (int i = 0; i < hulls.Num(); i++){
+        Add(hulls[i]);
+    }
+}
+
 void FMeshedPolygonHullSet::Add(FMeshedPolygonHullIndices &hull){
     set.Add(hull);
 }
@@ -50,6 +56,57 @@ FMeshedPolygonHullIndices &FMeshedPolygonHullSet::operator[](int32 i){
 }
 
 
+
+
+bool FMeshedPolygonHullSet::IsVisibleHull(
+    const TArray<FVector2D> &array
+){
+    if(array.Num() > 1){
+        for (int i = 0; i < array.Num(); i++)
+        {
+            const FVector2D &current = array[i];
+            const FVector2D &next = array[(i + 1) % array.Num()];
+            if(!IsVisible(current, next)){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+bool FMeshedPolygonHullSet::IsVisible(const FVector2D &a, const FVector2D &b){
+    int xA = FMath::FloorToInt(a.X);
+    int yA = FMath::FloorToInt(a.Y);
+
+    int xB = FMath::FloorToInt(b.X);
+    int yB = FMath::FloorToInt(b.Y);
+    return IsVisble(xA, yA, xB, yB);
+}
+
+
+
+bool FMeshedPolygonHullSet::IsVisble(
+    int x,
+    int y,
+    int xB,
+    int yB
+){
+    FVector2D dir(xB - x, yB - y);
+    float tMax = dir.Size();
+    float t = tMax;
+    dir = dir.GetSafeNormal();
+
+    FIntPoint outClosestHit;
+    if (RayIntersectPolygons(x, y, dir, outClosestHit, t)){
+        if(t < tMax){
+            return false;
+        }
+    }
+    return true;
+}
+
+
 bool FMeshedPolygonHullSet::RayIntersectPolygons(
     int x, 
     int y, 
@@ -60,6 +117,7 @@ bool FMeshedPolygonHullSet::RayIntersectPolygons(
     return RayIntersectPolygons(x, y, dir, outClosestHit, tIgnored);
 }
 
+
 bool FMeshedPolygonHullSet::RayIntersectPolygons(
     int x, 
     int y, 
@@ -67,26 +125,42 @@ bool FMeshedPolygonHullSet::RayIntersectPolygons(
     FIntPoint &outClosestHit,
     float &outT
 ){
-    //DebugHelper::logMessage(FString::Printf(TEXT("FMeshedPolygonHullSet::RayIntersectPolygons (%d)"), set.Num()));
 
     bool found = false;
-    float t = FLT_MAX;
+    //float t = FLT_MAX;
+    outT = FLT_MAX; //must be set to Float Max to work properly
     for (int i = 0; i < set.Num(); i++){
+        //FIntPoint currentHitResult;
+        if(RayIntersectPolygonUpdateT(x, y, dir, outClosestHit, outT, i)){
+            found = true;
+        }
+    }
+    return found;
+}
+
+
+bool FMeshedPolygonHullSet::RayIntersectPolygonUpdateT(
+    int x, 
+    int y, 
+    const FVector2D &dir,
+    FIntPoint &outClosestHit,
+    float &outT,
+    int layer
+){
+    if(layer >= 0 && layer < set.Num()){
         float tHitCurrent = FLT_MAX;
         FIntPoint currentHitResult;
-        FMeshedPolygonHullIndices &hull = set[i];
+        FMeshedPolygonHullIndices &hull = set[layer];
         if(hull.RayIntersectPolygon(x, y, dir, currentHitResult, tHitCurrent)){
-            if(tHitCurrent < t){
-                t = tHitCurrent;
+            if(tHitCurrent < outT){
+                outT = tHitCurrent;
                 outClosestHit = currentHitResult;
-                found = true;
+                //DebugHelper::logMessage(FString::Printf(TEXT("FMeshedPolygonHullSet::ray update hit %.2f"), outT));
+                return true;
             }
         }
     }
-    if(found){
-        outT = t;
-    }
-    return found;
+    return false;
 }
 
 
@@ -103,4 +177,46 @@ int FMeshedPolygonHullSet::NumEdges(){
         num += set[i].Num();
     }
     return num;
+}
+
+
+
+/// ----- Eject self cutting polygons on outer hull-----
+/// -- ear clipping like algorythm to cut loops --
+void FMeshedPolygonHullSet::SplitSelfCuttingPolygonsFromOuterHull(){
+    if(set.Num() > 0){
+        SplitSelfCuttingPolygonsFromHullAt(0);
+    }
+}
+
+void FMeshedPolygonHullSet::SplitSelfCuttingPolygonsFromHullAt(int index){
+    if(index >= 0 && index < set.Num()){
+        FMeshedPolygonHullIndices &toSplit = set[index];
+
+        int num = toSplit.Num();
+
+        //eject polygons
+        TArray<FMeshedPolygonHullIndices> splitOff;
+        toSplit.EjectSelfCuttingPolygons(splitOff);
+
+
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("FMeshedPolygonHullSet::SplitSelfCuttingPolygonsFromHullAt index %d num %d ejected %d left over %d"),
+                index,
+                num,
+                splitOff.Num(),
+                toSplit.Num()
+            )
+        );
+
+        //add to set
+        AddAll(splitOff);
+    }
+}
+
+void FMeshedPolygonHullSet::SortByArea() {
+    set.Sort([](const FMeshedPolygonHullIndices& A, const FMeshedPolygonHullIndices& B) {
+        return A.Area() > B.Area();
+    });
 }

@@ -2091,6 +2091,15 @@ void MeshData::appendCube(
     appendCube(a, b, c, d, a1, b1, c1, d1);
 }
 
+void MeshData::appendCube(
+    TArray<FVector> &array,
+    FVector orthogonalDir
+){
+    if(array.Num() >= 4){
+        appendCube(array[0], array[1], array[2], array[3], orthogonalDir);
+    }
+}
+
 
 void MeshData::appendCubeAt(
     FVector &pivot,

@@ -71,6 +71,7 @@ void FMeshedPolygon::Init(TArray<FVector> &polygon, float widthOfInsideStep){
     if(IsValid()){
         FlagTrue(polygonRasterized);
         AppendIndexHull(polygon);
+        AppendPolygonHullRaw(polygon);
         FlagBetweenSpaceTrue();
     }
 }
@@ -105,6 +106,26 @@ void FMeshedPolygon::AppendIndexHull(const TArray<FVector> &polygon, FMeshedPoly
         
     }
 }
+
+//other than using indices in grid, the raw vector data is placed here!
+//there are NOT saved to storage!
+void FMeshedPolygon::AppendPolygonHullRaw(const TArray<FVector> &polygon){
+    FMeshedPolygonHullIndices hull;
+    AppendPolygonHullRaw(polygon, hull);
+
+    //use: edgeSetRawTemp
+    edgeSetRawTemp.Add(hull);
+}
+
+void FMeshedPolygon::AppendPolygonHullRaw(
+    const TArray<FVector> &polygon, 
+    FMeshedPolygonHullIndices &hull
+){
+    for (int i = 0; i < polygon.Num(); i++){
+        hull.AddPosition(polygon[i]);
+    }
+}
+
 
 
 
@@ -418,11 +439,27 @@ void FMeshedPolygon::ToIndexBounded(const FVector &pos, int &x, int &y){
     }
 }
 
+void FMeshedPolygon::ToIndexBounded(const FVector &pos, std::pair<int,int> &pair){
+    int x = 0;
+    int y = 0;
+    ToIndexBounded(pos, x, y);
+    pair.first = x;
+    pair.second = y;
+}
+
 void FMeshedPolygon::ToIndexRaw(const FVector &pos, int &x, int &y){
     FVector relative = pos - minSaved; //AB = B - A
     x = FMath::FloorToInt(relative.X / stepSizeSaved);
     y = FMath::FloorToInt(relative.Y / stepSizeSaved);
 }
+
+void FMeshedPolygon::SizeToIndexRaw(const float sizeIn, int &outIndex){
+    outIndex = FMath::FloorToInt(sizeIn / stepSizeSaved);
+}
+
+
+
+
 
 bool FMeshedPolygon::IsInBound(const FVector &pos){
     int x = -1;
