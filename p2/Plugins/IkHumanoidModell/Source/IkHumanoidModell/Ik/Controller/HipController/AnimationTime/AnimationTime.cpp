@@ -88,11 +88,11 @@ float AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
 
         tVerticalResultValid = true;
 
-        DebugHelper::showScreenMessage("hipcontroller dynamic time forward gravity ", float(tVertical));
+        /*DebugHelper::showScreenMessage("hipcontroller dynamic time forward gravity ", float(tVertical));
         DebugHelper::logMessage(FString::Printf(
             TEXT("hipcontroller dynamic time forward gravity %.2f"), 
             tVertical
-        ));
+        ));*/
     }
 
     float tHorizontal = AnimationTimeBasedOnHorizontalVelocity(

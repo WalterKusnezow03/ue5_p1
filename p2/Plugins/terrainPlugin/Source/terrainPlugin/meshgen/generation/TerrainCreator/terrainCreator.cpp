@@ -76,7 +76,7 @@ void terrainCreator::setupFromChunkMapQuadPart(
             int posY = current->posY;
             int height = current->height;
             bool outpostFlag = current->outpostFlagged;
-            bool buildingFlag = current->buildingFlagged;
+            
 
             chunk *chunkPtr = chunkAt(posX, posY);
             if(chunkPtr){
@@ -85,9 +85,7 @@ void terrainCreator::setupFromChunkMapQuadPart(
                 if(outpostFlag){
                     chunkPtr->markCreateOutpostTrue();
                 }
-                if(buildingFlag){
-                    chunkPtr->markBuildingCreateTrueAndBlockTrees();
-                }
+                
             }
         }
     }
@@ -925,12 +923,7 @@ AcustomMeshActor *terrainCreator::getNewMeshActor(UWorld *world){
 
 
 
-/// ----- Road gen -------
-
-void terrainCreator::createRoadsAndBuildings(ChunkParserMap &mapToFillDataTo){
-    createRoads(mapToFillDataTo);
-    createBuildings(mapToFillDataTo);
-}
+/// ----- Road and building gen -------
 
 void terrainCreator::createRoads(ChunkParserMap &mapToFillDataTo){
     
@@ -958,20 +951,8 @@ void terrainCreator::createBuildings(ChunkParserMap &mapToFillDataTo){
     TArray<FMeshedSurfaceGrid *> buildingAreas = roadMaker.GetMeshedSurfaces();
 
     //pass to builidng plugin
-
     //create buildings
-
     //lock terrain from building used up space
-
-    /*
-    bool FMeshedSurfaceGrid::FindShape(
-        int x, //in cm
-        int y, //in cm
-        FVector &outBottomLeft,
-        FVector &outRotation
-    )
-    
-    */
     buildingMaker.Build(this, mapToFillDataTo, buildingAreas);
 }
 
@@ -1044,62 +1025,3 @@ void terrainCreator::lockQuad(const TArray<FVector> &quadPositions){
 }
 
 
-
-// --- lock road polygon area by scale down ---
-/*
-void terrainCreator::lockQuadsFromPolygon(
-    const TArray<FVector> &polygon
-){
-    int maxIterations = 1000;
-    TArray<FVector> prev = polygon;
-    float maxArea = terrainConstants::ONEMETER * terrainConstants::ONEMETER;
-
-    for (int i = 0; i < maxIterations; i++){
-        if(AreaOfPolygonAroundCenter(prev) > maxArea){
-
-        }
-    }
-
-    //for iterations
-        // > one meter square
-            //scale down, lock
-
-
-}
-
-bool terrainCreator::AreaOfPolygonAroundCenterExceedsLimit(
-    const TArray<FVector> &polygon,
-    TArray<FVector> &outScaledDown,
-    float minAreaToReach,
-    float scaleDownStep //inward push in cm
-){
-    FVector center = FVectorUtil::calculateCenter(polygon);
-    if(AreaOfPolygonAroundCenter(polygon, center) > minAreaToReach){
-
-    }
-
-}
-
-
-float terrainCreator::AreaOfPolygonAroundCenter(
-    const TArray<FVector> &polygon,
-    const FVector &center
-){
-    
-    float area = 0.0f;
-
-    int num = polygon.Num();
-    if(num > 1){ //lower is no triangle, at least 2.
-        for (int i = 0; i < polygon.Num(); i++)
-        {
-            int next = (i + 1) % polygon.Num();
-
-            area += FVectorUtil::AreaTriangle(
-                polygon[i],
-                polygon[next],
-                center
-            );
-        }
-    }
-    return area;
-}*/

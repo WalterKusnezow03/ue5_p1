@@ -3,11 +3,28 @@
 #include "DebugPlugin/DebugHelper.h"
 
 
+//to avoid overloaded functions
+void BuildingMaker::SetTemporaryPointers(
+    TerrainInterfaceBase *creatorIn,
+    ChunkParserMapInterfaceBase &mapIn
+){
+    creator = creatorIn;
+    map = &mapIn;
+}
+
+void BuildingMaker::ResetTemporaryPointers(){
+    creator = nullptr;
+    map = nullptr;
+}
+
+//to avoid overloaded functions
+
 void BuildingMaker::Build(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map, 
+    TerrainInterfaceBase *creatorIn,
+    ChunkParserMapInterfaceBase &mapIn, 
     TArray<FMeshedSurfaceGrid *> &buildingAreas
 ){
+    SetTemporaryPointers(creatorIn, mapIn);
     DebugHelper::logMessage(
         FString::Printf(
             TEXT("BuildingMaker::Build from grids: %d"), buildingAreas.Num()
@@ -18,14 +35,13 @@ void BuildingMaker::Build(
     int buildingsWantedPerGrid = 50;
     for (int i = 0; i < buildingAreas.Num(); i++){
         if(FMeshedSurfaceGrid *current = buildingAreas[i]){
-            BuildSingleGrid(creator, map, current, buildingsWantedPerGrid);
+            BuildSingleGrid(current, buildingsWantedPerGrid);
         }
     }
+    ResetTemporaryPointers();
 }
 
 void BuildingMaker::BuildSingleGrid(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map,
     FMeshedSurfaceGrid *grid,
     int buildingsWanted
 ){
@@ -66,24 +82,22 @@ void BuildingMaker::BuildSingleGrid(
 
 
         //lock terrain from generated bounds
-        LockTerrainFromQuadBounds(creator, preparedBounds);
+        LockTerrainFromQuadBounds(preparedBounds);
 
         //for now
-        //create debug cubes / paste inside chunk map
-        //DebugAppendGrid(creator, map, grid);
-        
-        CreateDebugCubesFromBoundsCreated(creator, map, preparedBounds);
+        //create debug cubes / paste inside chunk map    
+        CreateDebugCubesFromBoundsCreated(preparedBounds);
 
-        //paste bounds of buildings to pathfinder once generated mesh (?)
-        
+        //paste bounds of buildings to pathfinder (via chunkparser) once generated mesh
+        AddBoundsToPathFinderGeometry(preparedBounds);
 
         //later
         //generate individual buildings
     }
 
-    if(true){
+    if(false){
         //append hull AND generated polygons
-        DebugAppendHull(creator, map, grid);
+        DebugAppendHull(grid);
     }
 
    
@@ -92,7 +106,7 @@ void BuildingMaker::BuildSingleGrid(
 
 void BuildingMaker::PrepareFittedBounds(
     TArray<BuildingBounds> &boundsType,
-    TArray<BuildingBounds> &outPreparedBounds,
+    TArray<BuildingBounds> &outPreparedBounds, //generated and fitted bounds
     FMeshedSurfaceGrid *grid,
     int buildingsWanted
 ){
@@ -112,145 +126,11 @@ void BuildingMaker::PrepareFittedBounds(
 }
 
 
-
-
-
-
-
-//deprecated, not needed
-void BuildingMaker::DebugAppendGrid(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map,
-    FMeshedSurfaceGrid *grid
-){  
-    if(grid){
-
-        //FVector pivot = grid->BottomLeft();
-        //std::pair<int, int> posIndex2D = creator->Index2DFromWorldPosition(pivot);
-        //ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(posIndex2D.first, posIndex2D.second);
-        ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(0,0);
-
-
-        //append meshdata
-        MeshData &meshDataRef = interfaceFound.findMeshDataReference(
-            materialEnum::wallMaterial,
-            ELod::lodNear,
-            true // bool raycastOnLayer
-        );
-
-        bool removeOffset2DLocalMesh = false;
-        grid->AppendMeshedSurface(meshDataRef, removeOffset2DLocalMesh);
-    }
-}
-
-
-void BuildingMaker::DebugAppendHull(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map,
-    FMeshedSurfaceGrid *grid
-){
-    if(grid){
-        const FVector pivot = grid->BottomLeft();
-
-        ChunkParserInterfaceBase &interfaceFound = map.findByWorldLocation(creator, pivot);
-        
-        //std::pair<int, int> posIndex2D = creator->Index2DFromWorldPosition(pivot);
-        //ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(posIndex2D.first, posIndex2D.second);
-
-        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); //offset to remove
-
-        
-
-        //ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(0,0);
-        MeshData &meshDataRef = interfaceFound.findMeshDataReference(
-            materialEnum::prop_alarmBoxMaterial,
-            ELod::lodNear,
-            true // bool raycastOnLayer
-        );
-
-        float height = 100;
-        grid->DebugAppendEdgeSetRawAsMeshData(height, meshDataRef, targetLocationRemove);
-    }
-}
-
-
-
-
-
-
-void BuildingMaker::LockTerrainFromQuadBounds(
-    TerrainInterfaceBase *creator,
-    TArray<BuildingBounds> &preparedBounds
-){
-    if(creator){
-        TArray<FVector> reUsableArray;
-        for (int i = 0; i < preparedBounds.Num(); i++){
-            BuildingBounds &current = preparedBounds[i];
-            current.GetOverrideBoundingVerteciesWorld(reUsableArray); //set to num 4 internally
-            //terrainCreator::lockQuad(const TArray<FVector> &quadPositions)
-            creator->lockQuad(reUsableArray);
-        }
-    }
-}
-
-void BuildingMaker::CreateDebugCubesFromBoundsCreated(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map,
-    TArray<BuildingBounds> &preparedBounds 
-){
-    if(creator){
-        for (int i = 0; i < preparedBounds.Num(); i++){
-            CreateDebugCubesFromBoundCreated(
-                creator,
-                map,
-                preparedBounds[i]
-            );
-        }
-    }
-}
-
-void BuildingMaker::CreateDebugCubesFromBoundCreated(
-    TerrainInterfaceBase *creator,
-    ChunkParserMapInterfaceBase &map,
-    BuildingBounds &preparedBound 
-){
-    if(creator){
-
-        //bound pivot to chunk parser
-        const FVector &pivot = preparedBound.GetPivot();
-        DebugHelper::logMessage("BuildingMaker::Create Cube at ", pivot);
-
-        std::pair<int, int> posIndex2D = creator->Index2DFromWorldPosition(pivot);
-        ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(posIndex2D.first, posIndex2D.second);
-
-        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); //offset to remove
-        
-
-
-        //append meshdata
-        MeshData &meshDataRef = interfaceFound.findMeshDataReference(
-            materialEnum::wallMaterial,
-            ELod::lodNear,
-            true // bool raycastOnLayer
-        );
-
-        //wenn nicht darüber ist der scale sehr klein.
-
-       
-        preparedBound.AppendDebugCube(meshDataRef, targetLocationRemove); // debug
-    }
-}
-
-
-
-
-
-
 //Updates the bounds with the assigned rotation and position
 bool BuildingMaker::FindShape(
     FMeshedSurfaceGrid *grid,
     const BuildingBounds &prefab, 
-    BuildingBounds &outBounds
+    BuildingBounds &outBounds //created bounds out if succeded
 ){
     if(grid){
         FVector posWorldOfBound;
@@ -271,7 +151,106 @@ bool BuildingMaker::FindShape(
     return false;
 }
 
-    
+
+
+
+
+
+
+
+
+
+/// @brief locks quads for tree blocking on the desired terrain creator
+/// before generating the meshdata and trees procedurally for each chunk
+/// @param creator 
+/// @param preparedBounds 
+void BuildingMaker::LockTerrainFromQuadBounds(
+    TArray<BuildingBounds> &preparedBounds
+){
+    if(creator){
+        TArray<FVector> reUsableArray;
+        for (int i = 0; i < preparedBounds.Num(); i++){
+            BuildingBounds &current = preparedBounds[i];
+            current.GetOverrideBoundingVerteciesWorld(reUsableArray); //set to num 4 internally
+            //terrainCreator::lockQuad(const TArray<FVector> &quadPositions)
+            creator->lockQuad(reUsableArray);
+        }
+    }
+}
+
+
+
+
+
+
+void BuildingMaker::CreateDebugCubesFromBoundsCreated(
+    TArray<BuildingBounds> &preparedBounds 
+){
+    if(creator && map){
+        for (int i = 0; i < preparedBounds.Num(); i++){
+            CreateDebugCubesFromBoundCreated(preparedBounds[i]);
+        }
+    }
+}
+
+void BuildingMaker::CreateDebugCubesFromBoundCreated(
+    BuildingBounds &preparedBound 
+){
+    if(creator && map){
+
+        //bound pivot to chunk parser
+        const FVector &pivot = preparedBound.GetPivot();
+        DebugHelper::logMessage("BuildingMaker::Create Cube at ", pivot);
+
+        ChunkParserInterfaceBase &interfaceFound = map->findByWorldLocation(creator, pivot);
+        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); //offset to remove
+        
+
+
+        //append meshdata
+        MeshData &meshDataRef = interfaceFound.findMeshDataReference(
+            materialEnum::wallMaterial,
+            ELod::lodNear,
+            true // bool raycastOnLayer
+        );
+
+        //wenn nicht darüber ist der scale sehr klein.
+
+       
+        preparedBound.AppendDebugCube(meshDataRef, targetLocationRemove); // debug
+    }
+}
+
+
+
+void BuildingMaker::AddBoundsToPathFinderGeometry(
+    TArray<BuildingBounds> &preparedBounds 
+){
+    for (int i = 0; i < preparedBounds.Num(); i++){
+        AddBoundsToPathFinderGeometry(preparedBounds[i]);
+    }
+}
+
+void BuildingMaker::AddBoundsToPathFinderGeometry(
+    BuildingBounds &preparedBound
+){
+    if(map && creator){
+        const FVector &pivot = preparedBound.GetPivot();
+        ChunkParserInterfaceBase &interfaceFound = map->findByWorldLocation(creator, pivot);
+
+        FGeometryCollection &collection = interfaceFound.GetGeometryCollection();
+        //add world bounds. -> are added to path finder by world coordinates
+        TArray<FVector> worldPositions;
+        preparedBound.GetOverrideBoundingVerteciesWorld(worldPositions);
+        collection.AddConvexHull(worldPositions);
+    }
+}
+
+
+
+
+
+
 
 
 void BuildingMaker::GetBuildingSizes(TArray<BuildingBounds> &outBoundsType){
@@ -292,3 +271,40 @@ void BuildingMaker::GetBuildingSizes(TArray<BuildingBounds> &outBoundsType){
 
 }
 
+
+
+
+
+
+
+
+/// ---------- DEBUG ----------
+
+
+//not used. Debug only.
+void BuildingMaker::DebugAppendHull(
+    FMeshedSurfaceGrid *grid
+){
+    if(creator && map && grid){
+        const FVector pivot = grid->BottomLeft();
+
+        ChunkParserInterfaceBase &interfaceFound = map->findByWorldLocation(creator, pivot);
+        
+        //std::pair<int, int> posIndex2D = creator->Index2DFromWorldPosition(pivot);
+        //ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(posIndex2D.first, posIndex2D.second);
+
+        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); //offset to remove
+
+        
+
+        //ChunkParserInterfaceBase &interfaceFound = map.findByIndexBase(0,0);
+        MeshData &meshDataRef = interfaceFound.findMeshDataReference(
+            materialEnum::prop_alarmBoxMaterial,
+            ELod::lodNear,
+            true // bool raycastOnLayer
+        );
+
+        float height = 100;
+        grid->DebugAppendEdgeSetRawAsMeshData(height, meshDataRef, targetLocationRemove);
+    }
+}

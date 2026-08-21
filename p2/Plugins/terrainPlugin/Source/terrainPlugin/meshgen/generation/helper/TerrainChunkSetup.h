@@ -13,8 +13,7 @@ public:
         ETerrainType typeIn,
         bool createOutpostIn,
         FVector &outpostLocationIn,
-        bool hasTrees,
-        bool bCreateBuildings
+        bool hasTrees
     );
 
     TerrainChunkSetup(TerrainChunkSetup &other);
@@ -30,8 +29,7 @@ public:
     //outpost creating needed
     bool OutPostFlagged();
 
-    //building creation needed
-    bool BuildingFlagged();
+    
 
     void createOutPostIfFlagged(UWorld *world);
 
@@ -50,7 +48,7 @@ private:
     ETerrainType savedTerrainType = ETerrainType::ETropical;
     bool createOutpost = false;
     bool blockTrees = false;
-    bool createBuilding = false;
+    
 
     FVector outpostLocation;
 };

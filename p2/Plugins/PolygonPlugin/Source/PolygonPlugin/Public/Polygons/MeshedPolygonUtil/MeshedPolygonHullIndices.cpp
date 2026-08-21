@@ -225,15 +225,14 @@ std::pair<int, int>& FMeshedPolygonHullIndices::operator[](int i){
     return indices[i];
 }
 
-FVector FMeshedPolygonHullIndices::Get(int i){
+FVector FMeshedPolygonHullIndices::Get(int i) const {
     if(indices.Num() <= 0){
         return FVector(0, 0, 0);
     }
     i = std::max(0, i);
     i = i % indices.Num();
 
-    FMeshedPolygonHullIndices &self = *this;
-    const std::pair<int, int> &pair = self[i];
+    const std::pair<int, int> &pair = indices[i];
     return FVector(pair.first, pair.second, 0.0f);
 }
 
@@ -586,4 +585,18 @@ bool FMeshedPolygonHullIndices::CanSee(const FVector2D &a, const FVector2D &b, F
     }
 
     return !result.WasHit();
+}
+
+
+
+//get data raw as 3D
+void FMeshedPolygonHullIndices::GetData3D(TArray<FVector> &dataOut) const {
+    dataOut.Empty();
+    if(indices.Num() > 0){
+        int32 size = indices.Num();
+        dataOut.SetNum(size);
+        for (int i = 0; i < size; i++){
+            dataOut[i] = Get(i);
+        }
+    }
 }

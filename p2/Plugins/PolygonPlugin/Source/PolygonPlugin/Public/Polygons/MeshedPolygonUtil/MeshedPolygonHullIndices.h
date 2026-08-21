@@ -52,7 +52,7 @@ public:
 
     int32 Num() const;
     std::pair<int, int>& operator[](int i);
-    FVector Get(int i);
+    FVector Get(int i) const;
 
     void Triangulate(bool clockwise);
 
@@ -83,6 +83,9 @@ public:
     bool IsVisibleHull(const TArray<FVector2D> &array, FVector &outHit);
 
     bool CanSee(const FVector2D &a, const FVector2D &b, FVector &outhit);
+
+    //array must be clear
+    void GetData3D(TArray<FVector> &dataOut) const;
 
 protected:
     //saved to storage

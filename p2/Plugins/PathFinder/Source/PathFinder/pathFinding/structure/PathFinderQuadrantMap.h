@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "PathFinderQuadrant.h"
 #include "PathFinderNode.h"
+#include "CoreMath/algorithm/SharedGeometryCollection/GeometryCollection.h"
 
 class APathFinder;
 
@@ -32,7 +33,11 @@ public:
     //adds new nodes based on hull and creates a tracked gridded polygon
     void addConvexHull(TArray<FVector> &vec);
 
+    //for each: adds new nodes based on hull and creates a tracked gridded polygon
+    void addConvexHulls(TArray<TArray<FVector>> &vec);
+
     void addNewNode(FVector a);
+    void addNewNodes(const TArray<FVector> &data);
 
     void addNoConnect(PathFinderNode *node);
 
@@ -40,6 +45,11 @@ public:
     PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
 
     std::vector<FMeshedPolygon *> GetAllPolygons();
+
+    //generates a new downsampled hull: positions must be in world space!
+    void addNewHull(const FMeshedPolygonHullIndices &polygon);
+    void addNewHulls(TArray<FMeshedPolygonHullIndices *> &polygons);
+    void addGeometryCollection(FGeometryCollection &collection);
 
 protected:
     APathFinder *parent = nullptr;

@@ -152,7 +152,7 @@ private:
 
 	
 	//RoadMaker roadmaker;
-	void createRoadsAndBuildings(ChunkParserMap &mapToFillDataTo);
+	
 	void createRoads(ChunkParserMap &mapToFillDataTo);
 	void createBuildings(ChunkParserMap &mapToFillDataTo);
 

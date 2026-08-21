@@ -51,7 +51,6 @@ void ChunkParser::createTerrainFrom2DMap(FVector &positionChunk, TerrainChunkSet
 
 
     //package.createOutPostIfFlagged(GetWorld());
-    createBuildingIfNeeded(package);
 }
 
 
@@ -275,7 +274,9 @@ void ChunkParser::createFoliageAndPushNodesAroundFoliageToNavMesh(
         {
             convexHull.Add(offsets[j] + currentLocation + ownLocationOffset);
         }
-        navmeshConvexHulls.Add(convexHull);
+
+        //navmeshConvexHulls.Add(convexHull);
+        pathFinderGeomtry.AddConvexHull(convexHull);
     }
 
     DebugHelper::logMessage("debugPathfinder added nodes to mesh", pickedLocationsForNavmesh.size() * 4);    
@@ -283,8 +284,9 @@ void ChunkParser::createFoliageAndPushNodesAroundFoliageToNavMesh(
 
 }
 
-
-
+FGeometryCollection &ChunkParser::GetGeometryCollection(){
+    return pathFinderGeomtry;
+}
 
 //new!
 
@@ -333,20 +335,22 @@ void ChunkParser::addRandomNodesToNavmesh(TArray<FVectorTouple> &touples){
 
     int limit = 30;
     
-    std::vector<FVector> picked;
+    TArray<FVector> picked;
     for (auto &ref : indices)
     {
         if(ref >= 0 && ref < size){
-            picked.push_back(touples[ref].first()); //first is location
+            picked.Add(touples[ref].first()); //first is location
             limit--;
             if(limit <= 0){
                 break;
             }
         }
     }
+    pathFinderGeomtry.AddRawNodes(picked);
 
-    if(picked.size() > 0){
-        navmeshNodes = picked;
+    if(picked.Num() > 0){
+        //navmeshNodes = picked;
+        
     }
 }
 
@@ -385,40 +389,31 @@ void ChunkParser::addNodesToNavMeshIfNeeded(UWorld *world){
 
     DebugHelper::logMessage("ChunkParser::Add Nodes");
     // add all normal centers to navmesh to allow the bots to move over the terrain
-    if (APathFinder *f = APathFinder::instance())
+    if (APathFinder *pathFinder = APathFinder::instance())
     {
         SetNavMeshUpdated(true);
 
-        FVector offset(0, 0, 70);
-        f->addNewNodeVector(navmeshNodes, offset);
+        pathFinderGeomtry.AddOffsetRawNodes(FVector(0, 0, 70));
+        pathFinder->addGeometryCollection(pathFinderGeomtry);
+
+        /*FVector offset(0, 0, 70);
+        pathFinder->addNewNodeVector(navmeshNodes, offset);
         //navmeshNodesAdded = true;
 
 
         //convex hulls
         for (int i = 0; i < navmeshConvexHulls.Num(); i++){
-            f->addConvexHull(navmeshConvexHulls[i]);
+            pathFinder->addConvexHull(navmeshConvexHulls[i]);
             DebugHelper::logMessage("ChunkParser::Added Convex Hull");
-        }
-    }
-}
+        }*/
 
-
-
-
-/// ----- BUILDING CREATION ------
-void ChunkParser::createBuildingIfNeeded(TerrainChunkSetup &package){
-    //TODO: REFACTURE BUILDING / ROOM ACTOR!
-    if(package.BuildingFlagged()){
-        DebugHelper::logMessage("Chunk Parser: Room Creation NOT REFACTURED");
-
-
-        // ---- inject building creation here ----
-        
-
-
+        //convex hulls from meshed grid / hull indices
 
     }
 }
+
+
+
 
 
 /// ----- WATER ACTOR FLAGS ------

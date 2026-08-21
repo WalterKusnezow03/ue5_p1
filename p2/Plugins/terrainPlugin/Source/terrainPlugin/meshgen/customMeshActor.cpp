@@ -209,6 +209,7 @@ void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser){
             //needed on first launch
             currentPair.ApplyAllMaterials();
 
+            //needed on first launch - collection cleared afterwards
             parser.addNodesToNavMeshIfNeeded(GetWorld());
         }
     }

@@ -12,6 +12,8 @@
 
 #include "PathFinder/pathFinding/structure/PathFinderQuadrantMap.h"
 
+#include "CoreMath/algorithm/SharedGeometryCollection/GeometryCollection.h"
+
 #include "PathFinder.generated.h"
 
 class raycastTask;
@@ -121,11 +123,22 @@ public:
 
 	void addAllPolygons(std::vector<FMeshedPolygon *> &polygons);
 
+	void addGeometryCollection(FGeometryCollection &collection);
+
 protected:
 	void addNewNode(FVector a);
 
 public:
+	/// - internally generates a meshed polygon!
 	void addConvexHull(TArray<FVector> &vec);
+
+	/// - internally generates a new meshed polygon with rasterization
+	/// to chunk node grid size targeted!
+	/// generates a new downsampled hull: positions must be in world space!
+	void addNewHull(const FMeshedPolygonHullIndices &polygon);
+
+
+
 
 	std::vector<FVector> getPath(FVector a, FVector b);
 

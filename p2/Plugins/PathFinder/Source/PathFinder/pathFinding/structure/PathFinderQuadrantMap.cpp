@@ -169,6 +169,12 @@ void PathFinderQuadrantMap::addNode(PathFinderNode * node){
     }
 }
 
+void PathFinderQuadrantMap::addNewNodes(const TArray<FVector> &data){
+    for (int i = 0; i < data.Num(); i++){
+        addNewNode(data[i]);
+    }
+}
+
 void PathFinderQuadrantMap::addNewNode(FVector a){
     PathFinderQuadrant *q = askforQuadrant(a.X, a.Y);
     if(q != nullptr){
@@ -197,6 +203,54 @@ void PathFinderQuadrantMap::addAllNodes(std::vector<PathFinderNode*> &nodes){
     }
 }
 
+
+void PathFinderQuadrantMap::addGeometryCollection(FGeometryCollection &collection){
+    addNewNodes(collection.GetRawNodes());
+    addConvexHulls(collection.GetRawConvexHulls());
+    
+
+}
+
+//is not in use
+void PathFinderQuadrantMap::addNewHulls(TArray<FMeshedPolygonHullIndices *> &polygons){
+    for (int i = 0; i < polygons.Num(); i++){
+        FMeshedPolygonHullIndices *currentPtr = polygons[i];
+        if(currentPtr){
+            addNewHull(*currentPtr);
+        }
+    }
+}
+
+
+//is not in use
+/// - internally generates a new meshed polygon with rasterization
+/// to chunk node grid size targeted!
+//generates a new downsampled hull: positions must be in world space!
+void PathFinderQuadrantMap::addNewHull(const FMeshedPolygonHullIndices &polygon){
+    TArray<FVector> rawVectorData;
+    polygon.GetData3D(rawVectorData);
+    
+    //is not garantiued to be convex!
+    std::vector<PathFinderNode *> outNodes;
+    for (int i = 0; i < rawVectorData.Num(); i++){
+        PathFinderNode *n = new PathFinderNode(rawVectorData[i]);
+        outNodes.push_back(n);
+    }
+    
+    addAllNodes(outNodes);
+
+    //generate a new downsampled polygon, rasterized.
+    GenerateRasterizedConvexHull(rawVectorData);
+}
+
+
+
+
+void PathFinderQuadrantMap::addConvexHulls(TArray<TArray<FVector>> &vec){
+    for (int i = 0; i < vec.Num(); i++){
+        addConvexHull(vec[i]);
+    }
+}
 
 
 
@@ -252,6 +306,7 @@ void PathFinderQuadrantMap::addConvexHull(TArray<FVector> &vec){
     addAllNodes(outNodes);
     GenerateRasterizedConvexHull(vec);
 }
+
 
 void PathFinderQuadrantMap::GenerateRasterizedConvexHull(TArray<FVector> &polygon){
     if(polygon.Num() <= 0){

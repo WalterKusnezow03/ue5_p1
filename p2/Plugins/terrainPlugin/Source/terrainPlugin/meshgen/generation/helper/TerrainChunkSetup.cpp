@@ -10,15 +10,13 @@ TerrainChunkSetup::TerrainChunkSetup(
     ETerrainType typeIn,
     bool createOutpostIn,
     FVector &outpostLocationIn,
-    bool blockTreesIn,
-    bool bCreateBuilding
+    bool blockTreesIn
 ){
     setMapReference(refIn);
     savedTerrainType = typeIn;
     createOutpost = createOutpostIn;
     blockTrees = blockTreesIn;
     outpostLocation = outpostLocationIn;
-    createBuilding = bCreateBuilding;
 }
 
 TerrainChunkSetup::TerrainChunkSetup(TerrainChunkSetup &other){
@@ -33,6 +31,7 @@ TerrainChunkSetup &TerrainChunkSetup::operator=(TerrainChunkSetup &other){
         savedTerrainType = other.savedTerrainType;
         createOutpost = other.createOutpost;
         blockTrees = other.blockTrees;
+        outpostLocation = other.outpostLocation;
     }
     return *this;
 }
@@ -117,9 +116,7 @@ bool TerrainChunkSetup::OutPostFlagged(){
     return createOutpost;
 }
 
-bool TerrainChunkSetup::BuildingFlagged(){
-    return createBuilding;
-}
+
 
 void TerrainChunkSetup::createOutPostIfFlagged(UWorld *world){
     if(world && createOutpost){

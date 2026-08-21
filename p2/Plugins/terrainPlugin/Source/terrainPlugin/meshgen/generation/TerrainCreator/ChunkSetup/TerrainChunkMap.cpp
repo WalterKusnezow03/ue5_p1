@@ -192,8 +192,7 @@ void TerrainChunkMap::createRandomOutpostFlagAndSmoothArea(){
         if(currentAttributes){
             heightTotal += currentAttributes->height;
 
-            //flag building needed around outpost.
-            currentAttributes->buildingFlagged = true;
+            
         }
     }
 

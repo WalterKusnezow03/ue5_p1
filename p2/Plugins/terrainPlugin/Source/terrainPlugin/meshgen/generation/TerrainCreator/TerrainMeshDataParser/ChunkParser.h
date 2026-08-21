@@ -17,6 +17,7 @@
 
 #include "terrainPluginBase/BaseTerrainInterface/TerrainMeshDataParsingBase/ChunkParserInterfaceBase.h"
 
+#include "CoreMath/algorithm/SharedGeometryCollection/GeometryCollection.h"
 
 #include <map>
 
@@ -94,6 +95,8 @@ public:
         bool raycastOnLayer
     );
 
+    virtual FGeometryCollection &GetGeometryCollection() override;
+
 private:
 
     
@@ -115,9 +118,13 @@ private:
     bool flagOutpostNeeded = false;
 
 
-
+    
     std::vector<FVector> navmeshNodes;
     TArray<TArray<FVector>> navmeshConvexHulls;
+
+    FGeometryCollection pathFinderGeomtry;
+
+
     ETerrainType thisTerrainType;
     MatrixTree tree;
 
@@ -150,7 +157,7 @@ private:
 
     void addRandomNodesToNavmesh(TArray<FVectorTouple> &touples);
 
-    void createBuildingIfNeeded(TerrainChunkSetup &package);
+    
 
 
 

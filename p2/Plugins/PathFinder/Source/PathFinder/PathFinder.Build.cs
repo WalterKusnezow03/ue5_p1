@@ -30,6 +30,7 @@ public class PathFinder : ModuleRules
 				"StoragePlugin",
 				"DebugPlugin",
 				"PolygonPlugin",
+				"CoreMath",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

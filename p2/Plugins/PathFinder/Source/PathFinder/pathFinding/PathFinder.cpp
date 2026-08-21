@@ -246,6 +246,7 @@ void APathFinder::addNewNodeVector(std::vector<FVector>& vec){
 
 /// @brief expects the vector to be a convex hull of an object / grounded nodes! Do not ignore!
 /// @param vector vector of positions, convex hull!
+/// - internally generates a meshed polygon!
 void APathFinder::addConvexHull(TArray<FVector> &vec){
     if(vec.Num() <= 2){
         DebugHelper::logMessage("APathFinder::Convex HullInvalid", vec.Num());
@@ -255,6 +256,15 @@ void APathFinder::addConvexHull(TArray<FVector> &vec){
     if(quadrantMap){
         quadrantMap->addConvexHull(vec);
         DebugHelper::logMessage("APathFinder::Added Convex Hull");
+    }
+}
+
+/// - internally generates a new meshed polygon with rasterization
+/// to chunk node grid size targeted!
+/// generates a new downsampled hull: positions must be in world space!
+void APathFinder::addNewHull(const FMeshedPolygonHullIndices &polygon){
+    if(quadrantMap){
+        quadrantMap->addNewHull(polygon);
     }
 }
 
@@ -268,6 +278,12 @@ void APathFinder::addNewNode(FVector a){
     }
 }
 
+
+void APathFinder::addGeometryCollection(FGeometryCollection &collection){
+    if(quadrantMap){
+        quadrantMap->addGeometryCollection(collection);
+    }
+}
 
 
 

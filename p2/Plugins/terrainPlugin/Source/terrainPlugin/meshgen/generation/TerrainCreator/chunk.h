@@ -125,7 +125,6 @@ private:
     ETerrainType savedTerrainType = ETerrainType::ETropical;
     bool createOutpost = false;
     bool blockTrees = false;
-    bool createBuilding = false;
 
     std::vector<std::vector<FVector>> innerMap;
     std::vector<std::vector<bool>> innerMapFreePositions;

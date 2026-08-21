@@ -57,8 +57,7 @@ TerrainChunkSetup chunk::makeSetupPackage(){
         savedTerrainType,
         createOutpost,
         locationWorld,
-        blockTrees,
-        createBuilding
+        blockTrees
     );
 
     //copy free foliage positions
@@ -118,10 +117,7 @@ void chunk::markCreateOutpostTrue(){
     createOutpost = true;
 }
 
-void chunk::markBuildingCreateTrueAndBlockTrees(){
-    createBuilding = true;
-    setTreesBlocked(true);
-}
+
 
 /// @brief will return the inner map as reference, is not deisnged to be modified
 /// @return map by reference, do not modify

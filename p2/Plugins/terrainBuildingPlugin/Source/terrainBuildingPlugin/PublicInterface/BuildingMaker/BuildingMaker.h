@@ -13,17 +13,28 @@ class TERRAINBUILDINGPLUGIN_API BuildingMaker {
 
 public:
     void Build(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map, 
+        TerrainInterfaceBase *creatorIn,
+        ChunkParserMapInterfaceBase &mapIn, 
         TArray<FMeshedSurfaceGrid *> &buildingAreas
     );
 
 
 
-private:
+private:    
+    //to avoid overloaded functions
+    void SetTemporaryPointers(
+        TerrainInterfaceBase *creatorIn,
+        ChunkParserMapInterfaceBase &mapIn
+    );
+    void ResetTemporaryPointers();
+
+    TerrainInterfaceBase *creator = nullptr;
+    ChunkParserMapInterfaceBase *map = nullptr;
+    //to avoid overloaded functions
+
+
+
     void BuildSingleGrid(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map,
         FMeshedSurfaceGrid *grid,
         int buildingsWanted
     );
@@ -44,32 +55,33 @@ private:
     );
 
     
-
+    /// lock trees from the created bounds
     void LockTerrainFromQuadBounds(
-        TerrainInterfaceBase *creator,
         TArray<BuildingBounds> &preparedBounds
     );
 
+    //cube generation for buildings (DEBUG)
     void CreateDebugCubesFromBoundsCreated(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map,
         TArray<BuildingBounds> &preparedBounds
     );
     void CreateDebugCubesFromBoundCreated(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map,
         BuildingBounds &preparedBound
     );
 
-    void DebugAppendGrid(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map,
-        FMeshedSurfaceGrid *grid
+    //add created bounds to the collected nodes 
+    //as polygons
+    void AddBoundsToPathFinderGeometry(
+        TArray<BuildingBounds> &preparedBounds
+    );
+    void AddBoundsToPathFinderGeometry(
+        BuildingBounds &bound
     );
 
+
+
+    
+
     void DebugAppendHull(
-        TerrainInterfaceBase *creator,
-        ChunkParserMapInterfaceBase &map,
         FMeshedSurfaceGrid *grid
     );
 };
