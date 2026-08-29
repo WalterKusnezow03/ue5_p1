@@ -33,10 +33,9 @@
 #include "PathFinder/Public/PathFinderModule.h"
 #include "IkHumanoidModell/actor/IkDebugActor.h"
 
-//testing storage plugin
-#include "StoragePlugin/Storage/Test/TestStorageInterface.h"
-#include "terrainPlugin/Storage/chunkMapHeaderLoading/ChunkMapStorageInterface.h"
 
+
+#include "terrainPluginBase/BaseTerrainInterface/externalActorTask/ExternalActorSpawnCollection.h"
 
 
 #include "terrainPlugin/main/TerrainLauncher.h"
@@ -256,25 +255,79 @@ OutpostManager * AworldLevel::outpostManager(){
 
 
 void AworldLevel::createTerrain(FString worldName){
-    if(isTerrainInited){
-        //return; //deprecated, auto unload reload world
-    }
+    
     DebugHelper::logMessage("AworldLevel::launchTerrain!", worldName);
     if (AworldLevel *InstanceWorldLevel = GetInstance())
     {
         UWorld *world = InstanceWorldLevel->GetWorld();
         if(world != nullptr){
-            isTerrainInited = true;
+            
+            //prepare actors to be spawned
+            ExternalActorSpawnCollection preparedSpawnCollection;
+            PrepareExternalActorSpawnParamsForTerrain(preparedSpawnCollection);
+
             if(terrainLauncher == nullptr){
-                terrainLauncher = ATerrainLauncher::makeInstance(world, worldName);
+                terrainLauncher = ATerrainLauncher::makeInstance(world, worldName, preparedSpawnCollection);
             }else{
                 //if a world switch is wanted the terrain launcher is not killed
-                terrainLauncher->BeginAndLoad(worldName);
+                terrainLauncher->BeginAndLoad(worldName, preparedSpawnCollection);
             }
+            SpawnExternalActorCollectionFromTerrain();
         }
     }
 }
 
+#include "GameCore/DataAssetCollection/Proxy/ActorAssetDataCollectionProxy.h"
+#include "GameCore/DataAssetCollection/ActorAssetByString.h"
+
+
+void AworldLevel::PrepareExternalActorSpawnParamsForTerrain(ExternalActorSpawnCollection &other){
+    //add names from ActorAssetDataCollectionProxy
+    
+    //FActorAssetByString *UActorAssetDataCollection::FindAsset
+    if(FActorAssetByString *found = ActorAssetDataCollectionProxy::FindAsset("outpost")){
+        other.AddCollection(found);
+        DebugHelper::logMessage("AworldLevel::ExternalActor found OUTPOST");
+    }else{
+        DebugHelper::logMessage("AworldLevel::ExternalActor not found OUTPOST");
+    }
+}
+
+void AworldLevel::SpawnExternalActorCollectionFromTerrain(){
+    if(terrainLauncher != nullptr){
+        const ExternalActorSpawnCollection &createdCollection = terrainLauncher->GetExternalActorCollection();
+        const TArray<ExternalActorSpawnPositions> &collectionDataRaw = createdCollection.GetCollectionConst();
+
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("AworldLevel::ExternalActor SPAWN TYPES %d"),
+                collectionDataRaw.Num()
+            )
+        );
+        
+        //process all collection data
+        for (int i = 0; i < collectionDataRaw.Num(); i++){
+            const ExternalActorSpawnPositions &currentActorData = collectionDataRaw[i];
+
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("AworldLevel::ExternalActor SPAWN %s %d"),
+                    *currentActorData.GetName(),
+                    currentActorData.GetSpawnPositions().Num()
+                )
+            );
+
+            ActorAssetDataCollectionProxy::SpawnAllByName(
+                GetWorld(), 
+                //name setup from AssetDataProxy, will be found
+                //also found ptr by string added to params
+                //inside "PrepareExternalActorSpawnParamsForTerrain()"
+                currentActorData.GetName(),
+                currentActorData.GetSpawnPositions()
+            );
+        }
+    }
+}
 
 
 

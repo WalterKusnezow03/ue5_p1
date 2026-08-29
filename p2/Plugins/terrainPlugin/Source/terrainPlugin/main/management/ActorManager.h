@@ -3,6 +3,7 @@
 #include "terrainPlugin/meshgen/customMeshActor.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkMap.h"
 #include "terrainPlugin/meshgen/generation/TerrainCreator/terrainCreator.h"
+#include "terrainPluginBase/BaseTerrainInterface/externalActorTask/ExternalActorSpawnCollection.h"
 
 /// @brief will listen for player location and re use actors, load meshes from storage
 /// and apply to existing mesh actors
@@ -14,11 +15,19 @@ public:
 
     /// @brief starts a world or tries to find from storage
     void BeginPlay(FString worldLevelString, UWorld *world);
+    void BeginPlay(
+        FString worldLevelString, 
+        UWorld *world, 
+        const ExternalActorSpawnCollection &collectionOverrideParameters
+    );
     
     /// @brief end play - must be called from terrain launcher!
     void EndPlay();
 
     void Tick(float deltatime);
+
+    //use after the terrain was generated or loaded from disk.
+    const ExternalActorSpawnCollection &GetExternalActorCollection();
 
 private:
     void ClearChunkHeaderAndParserMap();
@@ -64,5 +73,11 @@ private:
     //use for generting meshes
     terrainCreator terraincreator;
 
-    
+
+    //created or loaded actors to spawn
+    ExternalActorSpawnCollection externalActors;
+
+    void OverrideExternalActors(const ExternalActorSpawnCollection &other, FString worldName);
+    void OverrideExternalActors(const ExternalActorSpawnCollection &other);
+    void SaveAndClearExternalActors();
 };

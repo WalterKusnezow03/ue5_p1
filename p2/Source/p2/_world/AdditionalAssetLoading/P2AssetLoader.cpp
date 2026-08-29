@@ -44,6 +44,8 @@ void P2AssetLoader::LoadGameAssets(){
     loadEntities();
 
     loadWeaponDataAssetPack();
+    loadActorDataAssetPack();
+
     loadWeapons();
     loadWeaponAnimations();
     loadWeaponAttachments();
@@ -458,6 +460,16 @@ void P2AssetLoader::loadWeaponDataAssetPack(){
         "WeaponAssetPackBP"                   // Just the file name as displayed
     );
     WeaponEnumAssetPackProxy::ValidatePropertiesOnInit();
+}
+
+
+void P2AssetLoader::loadActorDataAssetPack(){
+    AssetLoader::LoadAndSavePrimaryDataAssetToAssetToManager<EDataAssetEnum, UPrimaryDataAsset>(
+        EDataAssetEnum::ActorDataAssetPack, // track in asset manager
+        "Game",                       // like "Game" for game or any other plugin name
+        "Prefabs/ActorAssetCollection/", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "ActorAssetPackBP"                   // Just the file name as displayed
+    );
 }
 
 

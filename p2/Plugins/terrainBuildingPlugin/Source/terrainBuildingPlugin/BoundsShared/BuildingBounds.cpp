@@ -78,27 +78,19 @@ void BuildingBounds::TransformAll(TArray<FVector> &outArray, MMatrix &M){
 }
 
 void BuildingBounds::AppendDebugCube(MeshData &data, FVector &offset){
-    AppendDebugCube(data, offset, 1.0f);
-}
-
-void BuildingBounds::AppendDebugCube(MeshData &data, FVector &offset, float debugScale){
-    FVector up(0, 0, 300); //debug very high
+    
+    FVector up(0, 0, 300); //debug height
 
     TArray<FVector> bottomQuad;
     BoundVerteciesRaw(bottomQuad);
 
     MMatrix tOffset(offset);
-    MMatrix s;
-    s.scaleUniform(debugScale);
     
 
-    //M = tOff*(TR)* S
-    MMatrix TRS = transform * s;
-    MMatrix M = tOffset * TRS;
+    //M = tOff*(TR)
+    MMatrix M = tOffset * transform;
     TransformAll(bottomQuad, M);
 
-
-    up *= debugScale;
     data.appendCube(bottomQuad, up);
 }
 

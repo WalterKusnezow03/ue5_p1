@@ -35,9 +35,9 @@ void StorageInterfaceStringArray::Save(FString path, TArray<FString> &Names){
     {
         AppendString(Bytes, Names[i]);
     }
-    if(moreDebugLog){
+    /*if(moreDebugLog){
         PrintBinary(Bytes, "String Array Saved");
-    }
+    }*/
 
 
     SaveBinaryData(path, Bytes);
@@ -71,9 +71,9 @@ bool StorageInterfaceStringArray::Load(FString path, TArray<FString> &NamesOut){
         NamesOut[i] = loadString(Ptr);
     }
 
-    if(moreDebugLog){
+    /*if(moreDebugLog){
         PrintBinary(Bytes, "String Array Loaded");
-    }
+    }*/
 
     return true;
 }
@@ -156,9 +156,9 @@ FString StorageInterfaceStringArray::loadString(
     FMemory::Memcpy(&count, Ptr, bytesForCountCharacters);
     Ptr += bytesForCountCharacters;
 
-    if(moreDebugLog){
+    /*if(moreDebugLog){
         DebugHelper::logMessage(FString::Printf(TEXT("Storage Interface String array: characters(%d)"), count));
-    }
+    }*/
 
     //init char array to the size for pointer to be valid
     charArray.SetNumUninitialized(count);

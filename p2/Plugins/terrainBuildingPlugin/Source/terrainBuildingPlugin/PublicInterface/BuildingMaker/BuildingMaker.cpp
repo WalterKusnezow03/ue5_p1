@@ -56,19 +56,17 @@ void BuildingMaker::BuildSingleGrid(
     //clean up hulls
     grid->SplitSelfCuttingPolygonsFromOuterHull(); //sort by area only.
     
+    //hull valid for fit?
     if(!grid->CanFindShape()){
         return;
     }
-
-    //fixed. Debug not needed.
-    //DebugAppendGrid(creator, map, grid);
     
 
-    //types
+    //make types
     TArray<BuildingBounds> boundsType;
     GetBuildingSizes(boundsType);
 
-    //made
+    //try fit all types (first fit)
     TArray<BuildingBounds> preparedBounds;
     PrepareFittedBounds(boundsType, preparedBounds, grid, buildingsWanted);
 
@@ -203,7 +201,11 @@ void BuildingMaker::CreateDebugCubesFromBoundCreated(
         DebugHelper::logMessage("BuildingMaker::Create Cube at ", pivot);
 
         ChunkParserInterfaceBase &interfaceFound = map->findByWorldLocation(creator, pivot);
-        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); //offset to remove
+
+        //offset to remove
+        //to bring the vertecies to the local coordinate system of the
+        //chunk parser
+        FVector targetLocationRemove = -1.0f * interfaceFound.GetActorLocation(); 
         
 
 

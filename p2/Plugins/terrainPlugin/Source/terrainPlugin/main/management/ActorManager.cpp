@@ -7,6 +7,8 @@
 #include "GameCore/world/worldLevelBase.h"
 #include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
+#include "terrainPluginBase/BaseTerrainInterface/externalActorTask/storageInterface/ExternalActorSpawnCollectionStorageInterface.h"
+
 
 ActorManager::ActorManager(){
     worldContext = nullptr;
@@ -16,11 +18,22 @@ ActorManager::~ActorManager(){
     worldContext = nullptr;
 }
 
+void ActorManager::BeginPlay(
+    FString worldLevelString, 
+    UWorld *world, 
+    const ExternalActorSpawnCollection &collectionOverrideParameters
+){
+    //override the actor collection before terrain generation / hook before
+    OverrideExternalActors(collectionOverrideParameters, worldLevelString);
+    BeginPlay(worldLevelString, world);
+}
+
 void ActorManager::BeginPlay(FString worldLevelString, UWorld *world){
     findMaxChunkViewDistanceOnBeginPlay();
     worldContext = world;
 
     chunkMeshDataParserMap.setWorldLevelName(worldLevelString);
+    externalActors.SetWorldName(worldLevelString);
 
     //load header map (not all chunks may be generated all at once, header map needed)
     terrainHeaderFileWasFound = chunkHeaderMap.Load(worldLevelString);
@@ -31,6 +44,8 @@ void ActorManager::BeginPlay(FString worldLevelString, UWorld *world){
     }
     else
     {
+        //load external actors
+        externalActors.Load(worldLevelString); //fraglich ob das hier dann noch sein darf!
 
         //Option 1:
         //handled in tick to load proper chunk data / meshdata obj stuff.
@@ -39,6 +54,7 @@ void ActorManager::BeginPlay(FString worldLevelString, UWorld *world){
         //load all mesh data into chunk parser map,
         //used by custom mesh actor later
         loadWorldMeshData(worldLevelString);
+
     }
 }
 
@@ -50,7 +66,10 @@ void ActorManager::EndPlay(){
 
     //save world
     chunkMeshDataParserMap.saveWorldLevel();
-    
+
+    //save external actors collection
+    SaveAndClearExternalActors();
+
     //clear actors and chunk parser pointers
     markAllActorsAsFree();
 
@@ -60,6 +79,33 @@ void ActorManager::EndPlay(){
     //mark all pointers as free, game doesnt need to end,
     //just terrain cleared.
     
+}
+
+/// will save the current collection if overriden 
+/// and replace it.
+/// if one by world name can be found, it will NOT replace the current one
+void ActorManager::OverrideExternalActors(const ExternalActorSpawnCollection &other, FString worldName){
+    if(!externalActors.Load(worldName)){
+        //since the collection was not found from disk -
+        //not existent yet, a new one is created / overriden
+        OverrideExternalActors(other);
+        externalActors.SetWorldName(worldName);
+    }
+}
+
+void ActorManager::OverrideExternalActors(const ExternalActorSpawnCollection &other){
+    SaveAndClearExternalActors();
+    externalActors = other; 
+}
+
+void ActorManager::SaveAndClearExternalActors(){
+     //save external actors collection
+    externalActors.Save();
+    externalActors.Clear();
+}
+
+const ExternalActorSpawnCollection &ActorManager::GetExternalActorCollection(){
+    return externalActors;
 }
 
 void ActorManager::ClearChunkHeaderAndParserMap(){
@@ -78,6 +124,7 @@ void ActorManager::loadWorldMeshData(FString worldLevelString){
 
 
     }else{
+        //since the chunks could not be loaded: generate terrain
         DebugHelper::logMessage("ActorManager: terrain generation needed!", worldLevelString);
         generateTerrain();
     }
@@ -90,7 +137,11 @@ void ActorManager::generateTerrain(){
 
     //setup chunk parser map
     chunkMeshDataParserMap.createArray(chunksForGame);
-    terraincreator.createTerrainAndSetupChunkParserMap(chunkHeaderMap, chunkMeshDataParserMap);
+    terraincreator.createTerrainAndSetupChunkParserMap(
+        chunkHeaderMap, 
+        chunkMeshDataParserMap,
+        externalActors
+    );
 
     //debug wise gen all at once
     //later with updates.
@@ -98,6 +149,8 @@ void ActorManager::generateTerrain(){
         applyChunkmeshDataCompletly();
         DebugHelper::logMessage("ActorManager: terrain generation finished!");
     }
+
+    //external actors will NOT be automatically replaced!
 }
 
 void ActorManager::applyChunkmeshDataCompletly(){
@@ -122,6 +175,7 @@ void ActorManager::applyChunkmeshDataCompletly(){
                 madeActors++;
             }
 
+            // -- to be refactured for external actors --
             //create outposts
             //single fire create outpost, once!
             if(currentParserPackage->OutpostFlagCreationNeeded()){
@@ -296,3 +350,6 @@ void ActorManager::updateMeshActorsBasedOnPlayerLocation(FVector2D &playerLocati
         }
     }
 }
+
+
+

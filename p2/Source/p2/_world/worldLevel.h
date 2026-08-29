@@ -15,6 +15,7 @@
 #include "worldLevel.generated.h"
 
 class ATerrainLauncher;
+class ExternalActorSpawnCollection;
 
 /**
  * saves the world data and nesecarry instance pointers 
@@ -80,8 +81,8 @@ private:
 	void debugStoragePlugin();
 
 	void createTerrain(FString worldName);
-	
-
+	void PrepareExternalActorSpawnParamsForTerrain(ExternalActorSpawnCollection &other);
+	void SpawnExternalActorCollectionFromTerrain();
 
 	void createOutpostsRequested();
 
@@ -93,8 +94,7 @@ private:
 	//manager
 	class OutpostManager *outpostManagerPointer = nullptr;
 
-	//terrain
-	bool isTerrainInited;
+	
 
 	//bots
 	bool areBotsInited;

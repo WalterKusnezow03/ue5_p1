@@ -16,9 +16,11 @@
 #include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadMakerFromGrid.h"
 
 #include "terrainBuildingPlugin/PublicInterface/BuildingMaker/BuildingMaker.h"
+#include "terrainPluginBase/BaseTerrainInterface/externalActorTask/ExternalActorSpawnCollection.h"
 
 #include "terrainPluginBase/BaseTerrainInterface/TerrainInterfaceBase.h"
 
+class ExternalActorSpawnPositions;
 
 /**
  * 
@@ -31,6 +33,11 @@ public:
 
 	//---- Use for terrain generation ----
 
+	void createTerrainAndSetupChunkParserMap(
+		TerrainChunkMap &heightMap, //chunk information (height and position in grid)
+		ChunkParserMap &mapToFillDataTo, //chunk parsermap to fill, which can setup mesh actors trough chunkparser
+		ExternalActorSpawnCollection &externalActorCollection
+	);
 	void createTerrainAndSetupChunkParserMap(
 		TerrainChunkMap &heightMap, //chunk information (height and position in grid)
 		ChunkParserMap &mapToFillDataTo //chunk parsermap to fill, which can setup mesh actors trough chunkparser
@@ -168,4 +175,11 @@ private:
 
 	// --- building maker ----
 	BuildingMaker buildingMaker;
+
+	void FillExternalActorSpawnCollection(ExternalActorSpawnCollection &externalActorCollection);
+	void FillExternalActorSpawnPositions(ExternalActorSpawnPositions &positionsOut);
+	void FillExternalActorSpawnPositions(
+		ExternalActorSpawnPositions &positionsOut,
+		int chunkStep
+	);
 };

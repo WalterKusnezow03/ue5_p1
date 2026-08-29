@@ -20,6 +20,7 @@
 #include "terrainPlugin/meshgen/foliage/helper/FVectorShape.h"
 
 #include "terrainPlugin/meshgen/generation/TerrainCreator/ChunkSetup/TerrainChunkAttributes.h"
+#include "terrainPluginBase/BaseTerrainInterface/externalActorTask/ExternalActorSpawnPositions.h"
 
 #include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
@@ -554,6 +555,16 @@ int terrainCreator::chunkNum(){
  * 
  */
 void terrainCreator::createTerrainAndSetupChunkParserMap(
+    TerrainChunkMap &heightMap, //chunk information (height and position in grid)
+    ChunkParserMap &mapToFillDataTo, //chunk parsermap to fill, which can setup mesh actors trough chunkparser
+    ExternalActorSpawnCollection &externalActorCollection
+){
+    createTerrainAndSetupChunkParserMap(heightMap, mapToFillDataTo);
+
+    FillExternalActorSpawnCollection(externalActorCollection);
+}
+
+void terrainCreator::createTerrainAndSetupChunkParserMap(
     TerrainChunkMap &heightMap,
     ChunkParserMap &mapToFillDataTo
 ){
@@ -1025,3 +1036,57 @@ void terrainCreator::lockQuad(const TArray<FVector> &quadPositions){
 }
 
 
+
+
+/// ---- external actor spawn collection apply ----
+void terrainCreator::FillExternalActorSpawnCollection(
+    ExternalActorSpawnCollection &externalActorCollection
+){
+    //go over every actor type
+    TArray<ExternalActorSpawnPositions> &collectionToPrepare = externalActorCollection.GetCollection();
+    for (int i = 0; i < collectionToPrepare.Num(); i++){
+        ExternalActorSpawnPositions &current = collectionToPrepare[i];
+        FillExternalActorSpawnPositions(current);
+    }
+}
+
+void terrainCreator::FillExternalActorSpawnPositions(
+    ExternalActorSpawnPositions &positionsOut
+){
+    float cmStepPerAxis = positionsOut.GetAxisScalePerCm();
+    float chunkPerAxisStep = cmToChunkIndex(cmStepPerAxis);
+
+    //extract density per m^2, iterate
+        //to chunk
+            //select a chunk from the area by random (i,j)
+            //paste location
+    FillExternalActorSpawnPositions(positionsOut, chunkPerAxisStep);
+}
+
+void terrainCreator::FillExternalActorSpawnPositions(
+    ExternalActorSpawnPositions &positionsOut,
+    int chunkStep
+){
+    chunkStep = std::max(chunkStep, 1);
+    for (int i = 0; i < map.size(); i += chunkStep){
+        for (int j = 0; j < map[i].size(); j += chunkStep){
+            int32 xInner = FMath::RandRange(0, chunkStep - 1);
+            int32 yInner = FMath::RandRange(0, chunkStep - 1);
+
+            int xOuter = i + xInner;
+            int yOuter = j + yInner;
+
+            // --- TODO ? ---
+            //collision tests könnten hier noch auftauchen per polygon 
+            //aus road maker / building, tuen sie aber grade nicht
+            // --- TODO ? ---
+            if(chunk *found = chunkAt(xOuter, yOuter)){
+                //erstmal einfach mit chunk location, ohne random
+                FVector worldLocation = found->position();
+                float zUpdate = getHeightFor(worldLocation);
+                worldLocation.Z = zUpdate;
+                positionsOut.AddPosition(worldLocation);
+            }
+        }
+    }
+}

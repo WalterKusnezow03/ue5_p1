@@ -26,7 +26,7 @@ public:
     void GetOverrideBoundingVerteciesWorld(TArray<FVector> &outArray);
 
     void AppendDebugCube(MeshData &data, FVector &offset);
-    void AppendDebugCube(MeshData &data, FVector &offset, float debugScale);
+    
 
     const FVector &GetPivot();
 

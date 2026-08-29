@@ -7,4 +7,5 @@ enum class EDataAssetEnum
 {
     EUiColorAsset,
     WeaponDataAssetPack,
+    ActorDataAssetPack,
 };

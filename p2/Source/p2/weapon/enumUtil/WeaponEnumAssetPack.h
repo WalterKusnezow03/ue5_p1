@@ -11,7 +11,7 @@
 /// @brief will store a map of Weapon Enum Structs, saving string conversion,
 /// damage, attachments and other data for quick and bundled conversion
 UCLASS(BlueprintType)
-class COREMATH_API UWeaponEnumAssetPack : public UPrimaryDataAsset
+class P2_API UWeaponEnumAssetPack : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 

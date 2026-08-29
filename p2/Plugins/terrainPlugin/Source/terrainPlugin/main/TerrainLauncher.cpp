@@ -5,7 +5,11 @@ ATerrainLauncher::ATerrainLauncher(){
     PrimaryActorTick.bCanEverTick = true; //needed for tick update
 }
 
-ATerrainLauncher* ATerrainLauncher::makeInstance(UWorld *world, FString WorldLevelName){
+ATerrainLauncher* ATerrainLauncher::makeInstance(
+    UWorld *world, 
+    FString WorldLevelName,
+    const ExternalActorSpawnCollection &preparedSpawnCollection
+){
     TerrainPluginAssetLoader::LoadGrassAssetOnBeginPlay(); //happens only once anyway.
     if(world != nullptr){
 
@@ -19,7 +23,7 @@ ATerrainLauncher* ATerrainLauncher::makeInstance(UWorld *world, FString WorldLev
 
                 ATerrainLauncher *casted = Cast<ATerrainLauncher>(spawned);
                 if(casted){
-                    casted->BeginAndLoad(WorldLevelName);
+                    casted->BeginAndLoad(WorldLevelName, preparedSpawnCollection);
                     return casted;
                 }
             }
@@ -50,15 +54,20 @@ void ATerrainLauncher::Tick(float deltatime){
 // -- external begin / end api --
 
 void ATerrainLauncher::BeginAndLoad(FString WorldLevelName){
+    ExternalActorSpawnCollection none;
+    BeginAndLoad(WorldLevelName, none);
+}
+
+void ATerrainLauncher::BeginAndLoad(FString WorldLevelName, const ExternalActorSpawnCollection &spawnActorParams){
 
     DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad!", WorldLevelName);
     //-- CRITICAL CHANGE --
     if(IsADifferentWorldThanCurrent(WorldLevelName)){
-        EndAndSave(); //? testing needed
+        EndAndSave(); 
     }
     //-- CRITICAL CHANGE --
 
-    actorManager.BeginPlay(WorldLevelName, GetWorld());
+    actorManager.BeginPlay(WorldLevelName, GetWorld(), spawnActorParams);
     DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad Finished!", WorldLevelName);
     copiedWorldName = WorldLevelName;
     wasInitedOnce = true;
@@ -80,4 +89,8 @@ bool ATerrainLauncher::IsADifferentWorldThanCurrent(FString WorldLevelName){
         return copiedWorldName != WorldLevelName;
     }
     return false;
+}
+
+const ExternalActorSpawnCollection &ATerrainLauncher::GetExternalActorCollection(){
+    return actorManager.GetExternalActorCollection();
 }

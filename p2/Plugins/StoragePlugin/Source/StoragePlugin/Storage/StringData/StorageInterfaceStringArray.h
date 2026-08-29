@@ -19,20 +19,25 @@ public:
 
     void Test();
 
+
+
+    //single string load and save
+    static void AppendString(
+        TArray<uint8> &Bytes,
+        FString &name
+    );
+    static FString loadString(uint8* &Ptr);
+
 private:
     bool moreDebugLog = true;
 
     void writeStringCount(TArray<uint8> &Bytes, TArray<FString> &names);
     int readStringCount(uint8* &Ptr);
 
-    //single string load and save
-    void AppendString(
-        TArray<uint8> &Bytes,
-        FString &name
-    );
-    FString loadString(uint8* &Ptr);
+   
+    
 
-    int bytesForChars(int num);
+    static int bytesForChars(int num);
 
     void print(TArray<FString> &array, FString prefixInner);
 };
