@@ -34,6 +34,7 @@ void NNRequestHandle::Tick(FNNRequestHandleTickData &tickData){
 
 void NNRequestHandle::LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData){
  
+    //if the binary wasnt loaded and learned yet: load
     if(tickData.bBatchBinaryDataNeeded && !batchTask.BatchPrepared()){
         DebugHelper::logMessage("ANNPathFinderSocket::LoadBatchIfNotDoneYet");
 
@@ -41,8 +42,7 @@ void NNRequestHandle::LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData){
         batchTask.PrepareBinary(buffer);
         if (buffer.Num() > 0) //size must be valid
         {
-            tickData.bBatchBinaryOutChanged = true;
-
+            tickData.bBatchBinaryOutChanged = true; //flag for writing to shared memory
             //WriteData(frameNameBatch, buffer);
         }
     }
@@ -252,6 +252,10 @@ void NNRequestHandle::GenerateAndNotifyResultPositionsForRequestQueue(){
 }
 
 void NNRequestHandle::GenerateResultImage(){
+    if(!saveHeatMapsEnabled){
+        return;
+    }
+
     Image image;
     FMeshedPolygonColorAttributes attributes(
         FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
@@ -285,11 +289,23 @@ void NNRequestHandle::EndPlay(){
 #include "StoragePlugin/Storage/ImageData/ImageWriter/ImageWriter.h"
 void NNRequestHandle::SaveHeatMapsOnEndPlay(){
     
-    DebugHelper::logMessage("ANNPathFinderSocket::Save HeatMaps ", heatMaps.Num());
-    ImageWriter::SaveImagesAsPngFromName(
-        heatMaps,
-        "NNPathFinderHeatMaps",
-        "heatMap"
-    );
+    if(saveHeatMapsEnabled){
+        DebugHelper::logMessage("ANNPathFinderSocket::Save HeatMaps ", heatMaps.Num());
+        ImageWriter::SaveImagesAsPngFromName(
+            heatMaps,
+            "NNPathFinderHeatMaps",
+            "heatMap"
+        );
+    }
+    
     heatMaps.Empty();
+}
+
+
+void NNRequestHandle::EnableHeatMapSaveOnEnd(bool flag){
+    saveHeatMapsEnabled = flag;
+}
+
+bool NNRequestHandle::HeatMapSaveOnEndEnabled(){
+    return saveHeatMapsEnabled;
 }

@@ -322,6 +322,8 @@ class NetB(nn.Module):
         self.exportNet()
 
         self.SwitchToCpu()
+
+        print("NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED")
     
     
     

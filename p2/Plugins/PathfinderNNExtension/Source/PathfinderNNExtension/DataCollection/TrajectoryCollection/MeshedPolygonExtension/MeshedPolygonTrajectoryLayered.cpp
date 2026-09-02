@@ -976,3 +976,53 @@ void FMeshedPolygonTrajectoryLayered::ResizeGrid(int x, int y){
 void FMeshedPolygonTrajectoryLayered::ResizeGrid144(){
     ResizeGrid(144, 144);
 }
+
+
+
+//lossMax must be between 0.0f and 1.0f 
+bool FMeshedPolygonTrajectoryLayered::IsSimilar(const FMeshedPolygonTrajectoryLayered &other, float lossMax){
+    float similarityMin = 1.0f - lossMax;
+    float similarity = SimilarityOfSample(other);
+    return similarity >= similarityMin;
+}
+
+//will return a value between 0.0 and 1.0
+float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(const FMeshedPolygonTrajectoryLayered &other){
+    //todo: compare grids in similarity
+    //all inputs and all outputs
+
+    //find most smallest similarity of global similarity
+    //is more stable than avg similarity,
+    //and also intended where every match must be good!
+    float minSimilarity = 1.0f;
+    minSimilarity = std::min(minSimilarity, TSimilarity<uint8>(flagGrid, other.flagGrid));
+    minSimilarity = std::min(minSimilarity, TSimilarity<float>(viewGrid, other.viewGrid));
+    minSimilarity = std::min(minSimilarity, TSimilarity<float>(timeGrid, other.timeGrid));
+    minSimilarity = std::min(minSimilarity, TSimilarity<float>(trajectoryConePrecited, other.trajectoryConePrecited));
+    minSimilarity = std::min(minSimilarity, TSimilarity<float>(groundTruthGrid, other.groundTruthGrid));
+    minSimilarity = std::min(minSimilarity, TSimilarity<float>(enemyPositions, other.enemyPositions));
+
+
+    //similarity ergibt immer werte von 0..1
+    /*minSimilarity += TSimilarity<uint8>(flagGrid, other.flagGrid);
+    minSimilarity += TSimilarity<float>(viewGrid, other.viewGrid);
+    minSimilarity += TSimilarity<float>(timeGrid, other.timeGrid);
+    minSimilarity += TSimilarity<float>(trajectoryConePrecited, other.trajectoryConePrecited);
+    minSimilarity += TSimilarity<float>(groundTruthGrid, other.groundTruthGrid);
+    minSimilarity += TSimilarity<float>(enemyPositions, other.enemyPositions);
+    minSimilarity /= 6.0f;
+    minSimilarity = FMath::Clamp(minSimilarity, 0.0f, 1.0f);*/
+
+    
+    DebugHelper::logMessage(FString::Printf(TEXT("Similarity %.2f"), minSimilarity));
+
+    /*float s = GridBase::TSimilarity<uint8>(
+        const TArray<TArray<T>> &gridA,
+        const TArray<TArray<T>> &gridB
+    )*/
+    //TResizeGrid<float>(heatMap, 0.0f, x, y); //visual only
+
+    return minSimilarity;
+
+    //return 1.0f; //max by default
+}

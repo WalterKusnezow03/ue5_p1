@@ -89,6 +89,10 @@ class NNServer:
             if(prefix == "FRAMEID"):
                 print("NNServer received data as string: FRAME ID DATA: ", message)
                 self.CloseAndReopenSharedMemoryCommand(message)
+
+            if(prefix == "FRAMEIDCLOSE"):
+                print("NNServer received data as string: FRAME ID CLOSE DATA: ", message)
+                self.CloseSharedMemoryCommand(message)
                 
 
     def closeConnect(self):
@@ -113,7 +117,8 @@ class NNServer:
         self.openedconnection = False
         print("SHUTDOWN_CONFIRMED")
 
-    ##### not tested ! #####
+    ##### is tested ! #####
+    #### message is a array of string keywords which were seperated by "_"
     def CloseAndReopenSharedMemoryCommand(self, message):
         if(len(message) >= 4):
             prefix = message[0]
@@ -139,7 +144,21 @@ class NNServer:
                         self.sharedMemoryMap.CloseAndReopenPageSemaphore(tagname, size, semMutexName, shortTag)
                         print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size, " ", semMutexName)
                 
-                
+    ## testing needed !
+    ## message is a array of string parts
+    def CloseSharedMemoryCommand(self, message):
+        if(len(message) > 0):
+            prefix = message[0]
+            if(prefix == "FRAMEIDCLOSE"): ## seperate command for close shared memory
+                tagname, size, shortTag = message[1], int(message[2]), message[3]
+                if(len(tagname) < 2):
+                    return
+                if(int(size) < 1):
+                    return
+                if(self.sharedMemoryMap):
+                    ##page is closed by tag / key from map, not identifier
+                    self.sharedMemoryMap.closePage(shortTag)
+        return    
                 
                 
 

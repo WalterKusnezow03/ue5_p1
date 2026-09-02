@@ -53,7 +53,8 @@ public:
 
     //void SetTrainingAllowed();
 
-    
+    virtual void EnableHeatMapSaveOnEnd(bool saveOnEnd) override;
+    virtual bool HeatMapSaveOnEndEnabled() override;
 
 private:
     bool PrepareRequestData(float deltatime);

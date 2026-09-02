@@ -34,6 +34,10 @@ public:
     //connection either to python or ONNX 
     static bool NNIsConnected();
 
+    //static heatmap enable (for onnx output and python output)
+    static void EnableHeatMapSaveOnEnd(bool enable);
+    static bool HeatMapSaveOnEndEnabled();
+
 private:
     static INNRequestHandleInterface *GetInstance();
 

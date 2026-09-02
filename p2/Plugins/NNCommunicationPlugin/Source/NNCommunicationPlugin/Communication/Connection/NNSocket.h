@@ -37,6 +37,8 @@ protected:
 
     FCommunicationSharedFrameManager frameManager;
 
+    void ClosePage(FString name);
+
 public:
     ANNSocket();
 

@@ -14,6 +14,7 @@ public:
 
     void Open(FString pageName, int bytes);
     bool HasFrame(FString pageName);
+    bool Close(FString pageName); //returns true on close success
 
     //doesnt create frame if not found! -> buffer will be cleared!
     void TryReadDataTo(FString pageName, TArray<uint8> &buffer);

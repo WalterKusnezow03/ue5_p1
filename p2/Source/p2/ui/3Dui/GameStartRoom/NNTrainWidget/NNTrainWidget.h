@@ -35,6 +35,11 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetTextLossWidget();
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetHeatMapEnableDisableButton();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetHeatMapSettingTextWidget();
 
     //override
     virtual void Tick(float DeltaTime) override {};
@@ -54,6 +59,7 @@ protected:
 
     void Init();
     BorderInterfaceUtilButton playButtonUtil;
+    BorderInterfaceUtilButton heatMapButtonUtil;
 
     void SetText(FString message);
     void SetTextLoss(FString message);
@@ -67,4 +73,7 @@ protected:
     int FindIndexLowerCase(const TArray<FString> &parts, FString target);
 
     int FindDigitsNeeded(FString &lossString);
+
+    void UpdateHeatMapSaveOnEndTextNextState();
+    void UpdateHeatMapSaveOnEndText();
 };

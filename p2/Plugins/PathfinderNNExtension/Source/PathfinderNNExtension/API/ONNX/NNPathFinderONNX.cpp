@@ -152,3 +152,16 @@ void ANNPathFinderONNX::PredictNode(
 ){
     requestHandle.PredictNode(interfaceNotify, actor);
 }
+
+
+void ANNPathFinderONNX::EnableHeatMapSaveOnEnd(bool saveOnEnd){
+    //set auto to false (?)
+
+
+    //default
+    requestHandle.EnableHeatMapSaveOnEnd(saveOnEnd);
+}
+
+bool ANNPathFinderONNX::HeatMapSaveOnEndEnabled(){
+    return requestHandle.HeatMapSaveOnEndEnabled();
+}

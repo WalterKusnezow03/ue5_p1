@@ -9,6 +9,8 @@ FPathFinderNNSampleStorageInterface::~FPathFinderNNSampleStorageInterface(){
 
 }
 
+// todo here: set max mb size per file
+
 void FPathFinderNNSampleStorageInterface::Save(
     TArray<FMeshedPolygonTrajectoryLayered> &data
 ){
@@ -30,6 +32,10 @@ void FPathFinderNNSampleStorageInterface::Save(
     DebugHelper::logMessage("FPathFinderNNSampleStorageInterface Save Bin data, polygons ", data.Num());
 
 }
+
+
+
+/// todo here: load targeted MB size / or file count as single binary
 
 bool FPathFinderNNSampleStorageInterface::Load(
     TArray<FMeshedPolygonTrajectoryLayered> &dataOut

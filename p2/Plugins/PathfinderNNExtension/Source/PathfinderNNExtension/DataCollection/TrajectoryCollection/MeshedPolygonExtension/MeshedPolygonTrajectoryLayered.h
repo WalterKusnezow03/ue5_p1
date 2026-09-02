@@ -73,7 +73,15 @@ public:
     virtual void ResizeGrid(int x, int y) override;
     void ResizeGrid144();
 
+    //needed for sample set reduction
+    bool IsSimilar(const FMeshedPolygonTrajectoryLayered &other, float lossMax);
+
 private:
+    //needed for sample set reduction
+    //will return a value between 0.0 and 1.0
+    float SimilarityOfSample(const FMeshedPolygonTrajectoryLayered &other);
+
+
     void EmbedConeFromTrajectories(
         TArray<Trajectory> &trajectories
     );

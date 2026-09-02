@@ -59,13 +59,15 @@ public:
         }
         return nullptr;
     }
-
+    
+    // -- INNRequestHandleInterface override --
     //predicts a node if task not qeued
     virtual void PredictNode(
         IPathfinderNNInterface *interfaceNotify,
         AActor *actor
     ) override;
 
+    
     //connection state of socket to display in widget
     virtual bool NNIsConnected() override;
 
@@ -74,6 +76,8 @@ public:
     virtual void FlagVisible(AActor *actor) override;
 
     virtual void SetTrainingAllowed() override;
+    virtual void EnableHeatMapSaveOnEnd(bool saveOnEnd) override;
+    virtual bool HeatMapSaveOnEndEnabled() override;
 
 protected:
     using ANNSocket::WriteData;
@@ -100,4 +104,6 @@ protected:
 
     bool trainingStartAllowed = false;
     
+private:
+    bool CloseTrainSharedMemoryFrame(const FString &message);
 };

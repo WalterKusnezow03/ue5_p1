@@ -44,4 +44,10 @@ public:
 	virtual bool NNIsConnected(){
 		return false;
 	}
+
+	//disable inside request habdle
+	virtual void EnableHeatMapSaveOnEnd(bool saveOnEnd) {};
+	virtual bool HeatMapSaveOnEndEnabled(){
+		return false;
+	}
 };

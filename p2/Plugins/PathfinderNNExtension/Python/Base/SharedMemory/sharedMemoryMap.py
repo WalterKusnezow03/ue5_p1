@@ -16,6 +16,7 @@ class UnrealSharedMemoryMap:
         self.pagesMap[shortTag] = (UnrealSharedFrame(tagname, size, semWriteName, semReadName))
         print("UnrealSharedMemoryMap open page", tagname, " ", shortTag)
 
+    ##by short tag. (map key)
     def closePage(self, shortTag):
         page = self.findPage(shortTag)
         
@@ -26,6 +27,9 @@ class UnrealSharedMemoryMap:
     def CloseAndReopenPage(self, tagname, size, shortTag):
         self.closePage(shortTag)
         self.openPage(tagname, size, shortTag)
+
+    
+
 
     def CloseAndReopenPageSemaphore(self, tagname, size, semMutexName, shortTag):
         self.closePage(shortTag)

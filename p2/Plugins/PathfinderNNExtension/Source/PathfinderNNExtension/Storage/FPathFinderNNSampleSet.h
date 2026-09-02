@@ -26,4 +26,12 @@ protected:
 
     bool changedData = false;
     void ResizeAll();
+    
+
+
+
+    //clean up samples
+    void CleanUpSimilarSamples();
+    TSet<int> FindMarkedForRemoval(float maxLoss);
+    void FilterOut(const TSet<int> &removeIndices);
 };

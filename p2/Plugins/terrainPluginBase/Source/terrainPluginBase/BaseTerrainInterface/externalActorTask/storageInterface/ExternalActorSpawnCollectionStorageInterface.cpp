@@ -27,6 +27,9 @@ bool ExternalActorSpawnCollectionStorageInterface::Load(
         FString message = FString::Printf(TEXT("Storage Interface ExternalActorSpawnCollectionStorageInterface ERROR LOADING BIN DATA (%s)"), *path);
         DebugHelper::logMessage(message);
         return false;
+    }else{
+        FString message = FString::Printf(TEXT("Storage Interface ExternalActorSpawnCollectionStorageInterface SUCCESS LOADING BIN DATA (%s)"), *path);
+        DebugHelper::logMessage(message);
     }
 
     uint8 *Ptr = Bytes.GetData(); //global pointer for loading, because meshdata is concatenated

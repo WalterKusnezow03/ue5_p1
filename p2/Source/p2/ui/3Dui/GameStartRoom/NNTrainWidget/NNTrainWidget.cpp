@@ -55,45 +55,63 @@ void UNNTrainWidget::SetTextLoss(FString message){
 //override
 bool UNNTrainWidget::dispatchClick(const FVector2D &position){
     ClickDispatcher dispatcher;    
-    if(UWidget *button = GetPlayButton()){
-        if(dispatcher.InBound(button, position)){
-            SetText("Training Launched!");
-            NotifyLaunch();
-            return true;
-        }
+    
+    if(dispatcher.InBound(GetPlayButton(), position)){
+        SetText("Training Launched!");
+        NotifyLaunch();
+        return true;
     }
+    if(dispatcher.InBound(GetHeatMapEnableDisableButton(), position)){
+        UpdateHeatMapSaveOnEndTextNextState();
+        return true;
+    }
+
+    
+    
     return false; 
 }
 
+
+
+
+
+
+
 bool UNNTrainWidget::dispatchHover(const FVector2D &position){
-    DebugHelper::showScreenMessage("UNNTrainWidget::HOVER", FColor::Red);
-    if (playButtonUtil.dispatchHover(position))
-    {
-        DebugHelper::showScreenMessage("UNNTrainWidget::HOVER 2", FColor::Red);
+    //DebugHelper::showScreenMessage("UNNTrainWidget::HOVER", FColor::Red);
+    bool hoverA = playButtonUtil.dispatchHover(position);
+    bool hoverB = heatMapButtonUtil.dispatchHover(position);
+
+    if(hoverA || hoverB){
         return true;
     }
+
+    /*if (playButtonUtil.dispatchHover(position))
+    {
+        //DebugHelper::showScreenMessage("UNNTrainWidget::HOVER 2", FColor::Red);
+        return true;
+    }*/
+
     return false;
 }
 
 //remove hover on widget left
 void UNNTrainWidget::removeHover(){
     playButtonUtil.removeHover();
-    
+    heatMapButtonUtil.removeHover();
 }
-
-
-
-
 
 void UNNTrainWidget::Init(){
     SetupFromDefaultColors(
         playButtonUtil,
         GetPlayButton()
     );
+    SetupFromDefaultColors(
+        heatMapButtonUtil,
+        GetHeatMapEnableDisableButton()
+    );
+    UpdateHeatMapSaveOnEndText();
 }
-
-
-
 
 void UNNTrainWidget::ReceiveMessage(FString message){
     //DebugHelper::logMessage("UNNTrainWidget::Receive ", message);
@@ -199,3 +217,24 @@ int UNNTrainWidget::FindDigitsNeeded(FString &lossString){
     }
     return minNeeded;
 }
+
+
+
+//update for heatmap output enabled y/n
+//on dispatch click change
+//aswell as update the text
+void UNNTrainWidget::UpdateHeatMapSaveOnEndTextNextState(){
+    bool currentState = NNPathFinderExtensionApi::HeatMapSaveOnEndEnabled();
+    bool nextState = !currentState;
+    NNPathFinderExtensionApi::EnableHeatMapSaveOnEnd(nextState);
+    UpdateHeatMapSaveOnEndText();
+}
+
+void UNNTrainWidget::UpdateHeatMapSaveOnEndText(){
+    bool currentState = NNPathFinderExtensionApi::HeatMapSaveOnEndEnabled();
+    FString updateText = currentState ? "Heatmap output Enabled" : "Heatmap output Disabled";
+    if(UTextBlock *widget = GetTextBlockWidget(GetHeatMapSettingTextWidget())){
+        widget->SetText(FText::FromString(updateText));
+    }
+}
+

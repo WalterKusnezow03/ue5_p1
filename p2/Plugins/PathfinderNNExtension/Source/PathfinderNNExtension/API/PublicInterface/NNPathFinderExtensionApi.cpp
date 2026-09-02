@@ -65,3 +65,17 @@ bool NNPathFinderExtensionApi::NNIsConnected(){
     }
     return false;
 }
+
+void NNPathFinderExtensionApi::EnableHeatMapSaveOnEnd(bool enable){
+    if(INNRequestHandleInterface *interface = GetInstance()){
+        interface->EnableHeatMapSaveOnEnd(enable);
+    }
+}
+
+bool NNPathFinderExtensionApi::HeatMapSaveOnEndEnabled(){
+    if(INNRequestHandleInterface *interface = GetInstance()){
+        return interface->HeatMapSaveOnEndEnabled();
+    }
+    return false;
+}
+

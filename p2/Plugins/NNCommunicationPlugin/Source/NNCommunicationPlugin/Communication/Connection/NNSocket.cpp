@@ -66,10 +66,9 @@ void ANNSocket::WriteData(FString name, const TArray<uint8> &data){
     frameManager.WriteData(name, data);
 }
 
-
-
-
-
+void ANNSocket::ClosePage(FString name){
+    frameManager.ClosePage(name);
+}
 
 //Tick:
 //if (serverRunning && connected)

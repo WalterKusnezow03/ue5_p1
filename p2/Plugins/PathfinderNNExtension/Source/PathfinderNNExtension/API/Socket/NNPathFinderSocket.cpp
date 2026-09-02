@@ -86,6 +86,12 @@ void ANNPathFinderSocket::Tick(float deltatime){
         }
     }
 
+    //todo: once training is finished: close the Train Batch Shared Memory page
+    //must be also removed from python!
+
+
+
+
     //write ground truth binary if exists
     //TickTask(); to:
     if(requestTickData.bGroundTruthBinaryOutChanged){
@@ -128,6 +134,14 @@ void ANNPathFinderSocket::SetTrainingAllowed(){
 }
 
 
+void ANNPathFinderSocket::EnableHeatMapSaveOnEnd(bool saveOnEnd){
+    requestHandle.EnableHeatMapSaveOnEnd(saveOnEnd);
+}
+
+
+bool ANNPathFinderSocket::HeatMapSaveOnEndEnabled(){
+    return requestHandle.HeatMapSaveOnEndEnabled();
+}
 
 
 
@@ -222,10 +236,21 @@ void ANNPathFinderSocket::WriteDataGroundTruth(
     
 }
 
-
+/// receives all incoming python prints
 void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
     Super::OnReceivePythonPrint(Output);
-   
+    
+    // --- TODO! ---
+    //if finished: close train batch shared memory!
+    //printed in python: "NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED"
+    if(CloseTrainSharedMemoryFrame(Output)){
+        //close shared memory from shared memory manager
+        //notify shared page is closed!   
+        ClosePage(frameNameBatch);
+    }
+
+
+
     if(false){
         //DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
         DebugHelper::logMessage("ANNPathFinderSocket::PYTHON ", Output);
@@ -234,8 +259,15 @@ void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
 }
 
 
-
-
-
-
-
+bool ANNPathFinderSocket::CloseTrainSharedMemoryFrame(const FString &message){
+    //if finished: close train batch shared memory!
+    //printed in python: "NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED"
+    if(message.Contains("RUN_NN_BATCH_TRAIN_FINISHED")){
+        return true;
+    }
+    //nicht zwingend net B !
+    if(message.Contains("NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED")){
+        return true;
+    }
+    return false;
+}

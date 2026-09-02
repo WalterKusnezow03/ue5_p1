@@ -61,6 +61,16 @@ bool FSharedFrameManager::HasFrame(FString pageName){
     return frames.find(pageName) != frames.end();
 }
 
+bool FSharedFrameManager::Close(FString pageName){
+    //MANUAL CLOSE NEEDED, NOT IN DESTRUCTOR!
+    if(FSharedFrame *found = FindFrame(pageName)){
+        found->CleanFrame(); //NOT called in destructor! Must happen here!
+        frames.erase(pageName); // Removes the key "apple"
+        return true;
+    }
+    return false;
+}
+
 FSharedFrame *FSharedFrameManager::FindFrame(FString name){
     if(HasFrame(name)){
         return &frames[name];

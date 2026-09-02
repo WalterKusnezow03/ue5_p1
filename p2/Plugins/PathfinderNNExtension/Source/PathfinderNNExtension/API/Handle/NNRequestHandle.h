@@ -33,6 +33,9 @@ public:
     //only call from ONNX NN PathFinder ! - never anywhere else!
     void ReadDataResultImmidiate(TArray<float> &data);
 
+    void EnableHeatMapSaveOnEnd(bool flag);
+    bool HeatMapSaveOnEndEnabled();
+
 private:
     FPathFinderNNSampleSet batchTask;
     FPathFinderNNRequestQueue requests;
@@ -50,8 +53,8 @@ private:
     void TickReadDataResult(FNNRequestHandleTickData &tickData);
     
     void ReadDataResult(TArray<uint8> &bufferPrediction);
-    
 
+    bool saveHeatMapsEnabled = false; //is set default to false: no heatmaps output by default
     TArray<Image> heatMaps;
     void SaveHeatMapsOnEndPlay();
 
