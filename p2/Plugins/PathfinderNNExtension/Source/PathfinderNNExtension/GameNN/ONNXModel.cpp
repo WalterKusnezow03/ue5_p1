@@ -46,10 +46,16 @@ FString ONNXModel::PluginDir(FString pluginName){
 
 
 
-void ONNXModel::LoadModel(){
+void ONNXModel::LoadModel(FONNXModelsetup setup){
+    if(!setup.IsValid()){
+        return;
+    }
+    setupData = setup;
+
+
     // 1. Pfad zur ONNX-Datei definieren (z.B. im Saved- oder Projekt-Ordner)
-    FString FilePath = MakePath();
-    LoadModel(FilePath);
+    //FString FilePath = MakePath();
+    LoadModel(setupData.MakeFilePath());
 }
 
 void ONNXModel::LoadModel(FString ModelPath)
@@ -162,7 +168,9 @@ void ONNXModel::InitEnviroment(FString ModelPath)
 
 //to be refractured into PathfinderNN ONNX
 void ONNXModel::InitTensor(){
-    InitTensor(144, 144, 4);
+    InitTensor(setupData.GetWidth(), setupData.GetHeight(), setupData.GetChannels());
+
+    //InitTensor(144, 144, 4); //diese informationen müssen in ein NN Property package
 }
 
 void ONNXModel::InitTensor(int W, int H, int channels){
@@ -341,7 +349,9 @@ bool ONNXModel::RunModel(
     try
     {
         if(!bModelWasLoaded){
-            LoadModel();
+            //LoadModel();
+            DebugHelper::logMessage("ONNXModel RunModel Fail: Model not loaded!");
+            return false;
         }
         if(CopyDataToTensor(bufferIn)){
             if(Forward(bufferPredictionOut)){

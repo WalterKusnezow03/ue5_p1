@@ -161,6 +161,20 @@ void FMeshedPolygonRaytracable::TraceConeOnGrid(
 }
 
 void FMeshedPolygonRaytracable::TraceConeCollectHits(
+    const FVector &pos,
+    const FVector2D &dir, 
+    float angle, 
+    float rays,
+    TArray<FIntPoint> &hits,
+    bool dirIsCentered
+){
+    int x = 0, y = 0;
+    ToIndexRaw(pos, x, y);
+    TraceConeCollectHits(x, y, dir, angle, rays, hits, dirIsCentered);
+}
+
+
+void FMeshedPolygonRaytracable::TraceConeCollectHits(
     int x, int y, 
     const FVector2D &dir, 
     float angle, 
@@ -477,6 +491,9 @@ FVector2D FMeshedPolygonRaytracable::MakeDir(const FVector &v0, const FVector &v
 void FMeshedPolygonRaytracable::ResizeGrid(int x, int y){
     if(x > 0 && y > 0){
         FMeshedPolygon::ResizeGrid(x, y);
+        if(TGridIsSize<float>(x, y, viewGrid)){
+            return;
+        }
 
         TResizeGrid<float>(viewGrid, viewGridClearedValue, x, y);
 

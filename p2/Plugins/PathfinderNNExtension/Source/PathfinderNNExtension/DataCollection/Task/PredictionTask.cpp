@@ -7,7 +7,11 @@ void PredictionTask::Reset(){
     trackedActorPtr = nullptr;
     taskStarted = false;
     taskCompleted = true;
-    polygonDataCache.Reset();  //clear task polygon data
+
+    polygonDataUnetModel.Reset();
+    polygonRayModel.Reset();
+
+    //polygonDataCache.Reset();  //clear task polygon data
 }
 
 void PredictionTask::Setup(ActorTrajectoryTracker *trackedActor){
@@ -25,19 +29,17 @@ bool PredictionTask::IsValid(){
     return trackedActorPtr != nullptr;
 }
 
-FMeshedPolygonTrajectoryLayered &PredictionTask::GetPolygonData(){
-    return polygonDataCache;
-}
 
-int PredictionTask::ResultGridSizeBytes(){
-    return polygonDataCache.ResultGridSizeBytes(); //prediction / result byte size of grid
+int PredictionTask::ResultDataSizeBytes(){
+    FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
+    return data.ResultDataSizeBytes(); //prediction / result byte size of grid
 }
 
 void PredictionTask::EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies){
-    polygonDataCache.EmbedEnemyVision(enemies);
+    //polygonDataCache.EmbedEnemyVision(enemies);
+    FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
+    data.EmbedEnemyVision(enemies);
 }
-
-
 
 void PredictionTask::EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue){
     TArray<FVisionCone*> positionsToEmbed;
@@ -48,11 +50,15 @@ void PredictionTask::EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &q
 
 void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackage *queue){
     if(queue){
+        FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
+        
         TArray<IPathfinderNNInterface *> interfaces = queue->GetSubscribedActors();
         for (int i = 0; i < interfaces.Num(); i++){
             if(IPathfinderNNInterface *current = interfaces[i]){
-                bool useVisibility = false;
-                polygonDataCache.NotifyVisiblePositionsFor(current, useVisibility);
+                bool useVisibility = false; //ignore visibility 
+                //polygonDataCache.NotifyVisiblePositionsFor(current, useVisibility);
+
+                data.NotifyVisiblePositionsFor(current, useVisibility);
             }
         }
     }
@@ -73,6 +79,8 @@ void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
     taskStarted = true;
     taskCompleted = false;
 
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+
     PrepareRequestMap(polygonDataCache);
 
     //DebugHelper::logMessage(FString::Printf(TEXT("numedgeDebug PredictionTask num edges %d"), polygonDataCache.NumEdges()));
@@ -86,7 +94,7 @@ void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
     }
 }
 
-void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonData){
+void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface &polygonData){
     if(trackedActorPtr){
         polygonData.ClearFlags(); //clear previous map
 
@@ -106,7 +114,8 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonD
             radiusMeter * 100.0f,
             polygonData
         );
-        polygonData.ResizeGrid144();
+        //polygonData.ResizeGrid144();
+        polygonData.PrepareFitData();
 
         //invert flag map for 1 possible position and 0 not possible
         //might be better for training
@@ -134,12 +143,14 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
                 //DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
                 
 
+                FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+
                 //embed player position into a other flag grid, same size as polygon data grid
                 //add player pos single!
                 //append to bytes
                 FVector location = trackedActorPtr->ActorLocation();
                 polygonDataCache.EmbedResultPosition(location);
-                polygonDataCache.AppendResultMapAsFloat(resultbytes);
+                polygonDataCache.AppendGroundTruth(resultbytes);
 
                 //reset flag
                 taskStarted = false;
@@ -155,12 +166,14 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
 }
       
 //Heat map prediction embedding
-void PredictionTask::GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer){
-    polygonDataCache.GenerateMapFromPredicitontBytes(buffer);
+void PredictionTask::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+    polygonDataCache.ProcessFromPredictionBytes(buffer);
 }
 
-void PredictionTask::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
-    polygonDataCache.GenerateMapFromPredicitontFloats(buffer);
+void PredictionTask::ProcessFromPredictionFloats(const TArray<float> &buffer){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+    polygonDataCache.ProcessFromPredictionFloats(buffer);
 }
 
 bool PredictionTask::IsSameActor(AActor *actorCheck){
@@ -177,8 +190,31 @@ void PredictionTask::ColoredHeatMap(
     Image &image,
     FMeshedPolygonColorAttributes &attributes
 ){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     polygonDataCache.ColoredHeatMap(
         image, attributes
     );
     taskCompleted = true;
+}
+
+
+
+
+
+//get by type
+FMeshedPolygonTrajectoryLayeredInterface &PredictionTask::GetPolygonData(){
+    return GetPolygonData(sampleType);
+}
+
+FMeshedPolygonTrajectoryLayeredInterface &PredictionTask::GetPolygonData(EPolygonSampleType type){
+    if(type == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
+        return polygonDataUnetModel;
+    }
+    if(type == EPolygonSampleType::EMeshedPolygonTrajectoryRayModel){
+        return polygonRayModel;
+    }
+
+    //fallback
+    return polygonDataUnetModel;
+    //return polygonDataCache;
 }

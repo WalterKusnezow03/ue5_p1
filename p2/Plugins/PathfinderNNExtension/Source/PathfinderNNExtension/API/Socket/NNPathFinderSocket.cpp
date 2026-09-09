@@ -30,16 +30,19 @@ void ANNPathFinderSocket::BeginPlay(){
     requestHandle.BeginPlay();
 
     DebugHelper::logMessage("ANNPathFinderSocket BeginPlay - python");
-
+    
+    //just as used with python process!
+    //ANNPathFinderSF means ANNPathFinderSharedFrame
     frameNameRequest = "ANNPathFinderSFIN";
     frameNameResult = "ANNPathFinderSFRES";
     frameNameGroundThruth = "ANNPathFinderSFGT";
     frameNameBatch = "ANNPathFinderSFB";
+    frameNameNNType = "ANNPathFinderSFNN";
 
     //Plugins/NNCommunicationPlugin/Source/NNCommunicationPlugin/Python/venv/bin/python
     LaunchPythonProcess(
         "PathFinderNNExtension", 
-        "nnpathfinder_server.py",
+        "nnpathfinder_server.py", //local nnpathfinder_server.py, from this plugin
         "NNCommunicationPlugin", //hier ist python installiert.
         "venv/bin/python"
     ); // finds working dir automatically

@@ -1,31 +1,54 @@
-
-
-
 import torch
 import torch.nn as nn
-
 print("import torch done")
 
-import UNet
-import NetCheckpoint
+from . import NetCheckpoint as NetCheckpoint
 
-print("import unet done")
+print("import net checkpoint done")
 
-##Input : 1 × 142 × 142
-##Output: 1 × 142 × 142
-H = 144 #142
-W = 144 #142
+#### BASE CLASS FOR NN (NetB, NetC...)
+#### to have default functionality in export net etc
+class NetBase(nn.Module):
 
-IN_CHANNELS = 4
-OUT_CHANNELS = 1
+    def __init__(self):
+        super().__init__()
 
-class NetB(nn.Module):
+        print("NNServerPathfinder_NetBase: INIT!")
+
+        ##self.memory = []
+        self.latestX = None
+        self.latestResult = None
+        self.latestLoss = None
+        self.isGpu = False
+
+        #### MUST BE OVERRIDEN IN SUBCLASSES ! #####
+        self.InitializeTensorAndPathNames()
+        #### MUST BE OVERRIDEN IN SUBCLASSES ! #####
+        
+        self.ReInitNet()
+
+        
+        print("NNServerPathfinder_NetBase: finish construct!")
+
+    def InitializeTensorAndPathNames(self):
+        #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
+        self.W = 0
+        self.H = 0
+        self.IN_CHANNELS = 0
+        self.OUT_CHANNELS = 1
+
+        self.checkpointPath = "PyCheckpoint/netBcheckpoint.pth"
+        self.ONNXPath = "Python/onnxExport/netB_ONNX.onnx"
+
+        self.logname = "NNServerPathfinder_NetBase"
+        #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
+
 
     def exportNet(self):
-        NetCheckpoint.ExportNet(self, "NNServerPathfinder_NetB", W, H, IN_CHANNELS)
+        NetCheckpoint.ExportNet(self, self.logname, self.W, self.H, self.IN_CHANNELS, self.ONNXPath)
         return
 
-    def saveCheckpoint(self, path="PyCheckpoint/netBcheckpoint.pth"):
+    def saveCheckpoint(self):
         '''
         print("NNServerPathfinder_NetB: try save model!")
         torch.save({
@@ -35,10 +58,10 @@ class NetB(nn.Module):
         }, path)
         print("NNServerPathfinder_NetB:save model to Storage done!")
         '''
-        NetCheckpoint.saveCheckpoint(self, "NNServerPathfinder_NetB", path)
+        NetCheckpoint.saveCheckpoint(self, self.logname, self.checkpointPath)
         return
 
-    def loadCheckpoint(self, path="PyCheckpoint/netBcheckpoint.pth"):
+    def loadCheckpoint(self):
         '''
         import os
 
@@ -59,35 +82,12 @@ class NetB(nn.Module):
             print("NNServerPathfinder_NetB Checkpoint load failed:", e)
             return False
         '''
-        print("NNServerPathfinder_NetB: TRY LOAD CHECKPOINT")
-        return NetCheckpoint.loadCheckpoint(self, "NNServerPathfinder_NetB", path)
+        print(self.logname,": TRY LOAD CHECKPOINT")
+        return NetCheckpoint.loadCheckpoint(self, self.logname, self.checkpointPath)
         
-
-   
-    
-
-    def __init__(self):
-        super().__init__()
-
-        print("NNServerPathfinder_NetB: INIT!")
-
-        ##self.memory = []
-        self.latestX = None
-        self.latestResult = None
-        self.latestLoss = None
-        self.isGpu = False
-
-        
-        
-        self.ReInitNet()
-
-        
-        print("NNServerPathfinder_NetB: finish construct!")
-
-
-    
-
-
+    def ReInitNet():
+        ##override needed!
+        return
     
     def SwitchToCpu(self):
         self.isGpu = False
@@ -112,49 +112,18 @@ class NetB(nn.Module):
         ##    else "cpu"
         ##)
         return torch.device("cpu")
-
-    def ReInitNet(self):
-        channelsIn = IN_CHANNELS ##3
-        channelsOut = OUT_CHANNELS ##1
-        self.net = UNet.UNet(channelsIn, channelsOut)
-        ##move to gpu if available
-        self.net = self.net.to(self.GetDevice())
-
-
-        ##MSE aber bei falschem peak: 50 mal mehr loss, 1.0 + ... grund signal, 0 ist 0 aber nicht gut.
-        ##self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 50.0)).mean()
-        self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 100.0)).mean()
-
-
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3) ## lr=1e-4
-        ##self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-4) ## lr=1e-4
- 
-        if(self.loadCheckpoint()):
-            print("NNServerPathfinder_NetB: loaded model from Storage!")
-            ##ANNPathFinderSocket::ReceivePythonPrint NNServerPathfinder_NetA: loaded model from Storage!
-            ##IS PRINTED.
-
-            #debug
-            self.exportNet()
-        
-
+    
+    
     def __del__(self):
         self.saveCheckpoint()
         return
 
-    ############################ FORWARD PASS SINGLE BATCH ############################
-    ############################ FORWARD PASS SINGLE BATCH ############################
-    ############################ FORWARD PASS SINGLE BATCH ############################
 
-    def postprocess(self, out):
-        #out = out.squeeze(0).squeeze(0)  # (142, 142)
-        #return out.reshape(-1)           # 20164
-        return out.reshape(-1).detach() ##detach um vom net loszulösen
 
-    ##channel 0: polygon map
-    ##channel 1: player last visited time (relative to 0 (-4,-3,-2...))
-    def preprocessDataTwoChannel(self, data):
-        size = H * W
+    #######  FORWARD SINGLE REQUEST FROM BIN ########
+
+    def preprocessDataBinToTensor(self, data):
+        size = self.H * self.W
 
         ##logik
         if(False):
@@ -171,30 +140,18 @@ class NetB(nn.Module):
 
         ##besser wenn sowieso hintereinander gespeichert
         x = torch.tensor(data, dtype=torch.float32)
-        x = x.view(IN_CHANNELS, H, W)
+        x = x.view(self.IN_CHANNELS, self.H, self.W)
         x = x.unsqueeze(0)
         return x
 
+    def postprocess(self, out):
+        #out = out.squeeze(0).squeeze(0)  # (142, 142)
+        #return out.reshape(-1)           # 20164
+        return out.reshape(-1).detach() ##detach um vom net loszulösen
+    
 
-
-
-        #channel0 = torch.tensor(data[ : size], dtype=torch.float32).view(H, W) ##polygon channel
-        #channel1 = torch.tensor(data[size : 2*size], dtype=torch.float32).view(H, W) ##player trajectory channel
-        #channel2 = torch.tensor(data[size*2 : 3*size], dtype=torch.float32).view(H, W) ##vision cone channel
-
-        ##ergebnis:
-        ##channel0.shape = (142, 142)
-        ##channel1.shape = (142, 142)
-
-        #x = torch.stack([channel2, channel1, channel0], dim=0)  # (2, H, W)
-        ##ergebnis 2,142,142
-
-        #x = x.unsqueeze(0) # (1, 2, H, W) -> (batch, dim, H, W)
-
-        #return x
-
-    def forwardTwoChannelData(self, data):
-        x = self.preprocessDataTwoChannel(data)
+    def forwardBinData(self, data):
+        x = self.preprocessDataBinToTensor(data)
 
         x = x.to(self.GetDevice())
 
@@ -204,36 +161,14 @@ class NetB(nn.Module):
         fx = self.forward(x)
         return self.postprocess(fx)
 
-
     def forward(self, x):
-        print("NNServerPathfinder_NetB: FOWARD!")
-        result = self.net(x)
-
-        ##self.memory.append({
-        ##    "x": x,
-        ##    "pred": result
-        ##})
+        result = self.net(x) #### CAUTION: NET MUST BE DEFINED, net MUST BE GIVEN AS METHOD!
         self.latestResult = result
-        print("NNServerPathfinder_NetB: FOWARD FINISH!")
-
         return result
-    
-    
-
-    
-
-    
-    
-    
 
 
 
-
-    ######### FORWARD PASS MULTI BATCH #########
-    ######### FORWARD PASS MULTI BATCH #########
-    ######### FORWARD PASS MULTI BATCH #########
-    
-
+    ###### FOWRAD / TRAIN MULTI BATCH #######
     def trainBatchFor(self, batch_x, batch_y, iterations):
         for _ in range(iterations):
             self.trainBatch(batch_x, batch_y)
@@ -250,16 +185,16 @@ class NetB(nn.Module):
         self.optimizer.step()
 
         self.latestLoss = loss.item()
-        print("NNServerPathfinder_NetB: BACKWARD FINISH!")
+        ##print("NNServerPathfinder_NetB: BACKWARD FINISH!")
 
     ######## call this for learning a large set ########
     def TrainFromBatchBinary(self, binary):
         self.SwitchToGpu()
 
-        size = H * W
+        size = self.H * self.W
         ##sample: x + groundTruth
         
-        sizeAll = (IN_CHANNELS + OUT_CHANNELS)
+        sizeAll = (self.IN_CHANNELS + self.OUT_CHANNELS)
         sampleSize = size * sizeAll ## 4
 
         # =========================
@@ -274,13 +209,13 @@ class NetB(nn.Module):
         # 2) Reshape in Samples
         # =========================
         ##data = data.view(numSamples, 4, H, W)
-        data = data.view(numSamples, sizeAll, H, W)
+        data = data.view(numSamples, sizeAll, self.H, self.W)
 
         ##x = data[:, 0:3, :, :]   # input channels
         ##y = data[:, 3:4, :, :]   # target
 
-        x = data[:, 0:IN_CHANNELS, :, :]   # input channels
-        y = data[:, IN_CHANNELS:sizeAll, :, :]       # target
+        x = data[:, 0:self.IN_CHANNELS, :, :]   # input channels
+        y = data[:, self.IN_CHANNELS:sizeAll, :, :]       # target
 
 
         # =========================
@@ -311,7 +246,7 @@ class NetB(nn.Module):
 
                 self.trainBatch(xb, yb)
 
-            print("NNServerPathfinder_NetB_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", epochs, " LOSS ", self.latestLoss)
+            print(self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", epochs, " LOSS ", self.latestLoss)
         
         ##rmv from gpu
         x = None
@@ -321,18 +256,9 @@ class NetB(nn.Module):
         self.saveCheckpoint()
         self.exportNet()
 
+        ##reload net
         self.SwitchToCpu()
 
-        print("NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED")
+        print(self.logname,"_RUN_NN_BATCH_TRAIN_FINISHED")
     
     
-    
-
-
-
-
-
-
-
-
-

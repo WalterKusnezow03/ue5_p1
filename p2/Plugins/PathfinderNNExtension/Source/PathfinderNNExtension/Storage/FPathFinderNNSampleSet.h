@@ -1,37 +1,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 
-class ANNPathFinderSocket;
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/MeshedPolygonTrajectoryLayeredInterface.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryRayModel.h"
+
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
+
+#include "PathfinderNNExtension/Storage/Template/TPathFinderNNSampleSet.h"
 
 class PATHFINDERNNEXTENSION_API FPathFinderNNSampleSet
 {
 
 public:
-    FPathFinderNNSampleSet();
-    ~FPathFinderNNSampleSet();
 
     void Load();
     void EndSave();
 
-    bool BatchPrepared();
+    bool BatchPrepared(EPolygonSampleType type);
 
-    void PrepareBinary(TArray<uint8> &bytes);
-    void AddSample(FMeshedPolygonTrajectoryLayered &sample);
+    //add / load
+    void PrepareBatchBinary(TArray<uint8> &bytes, EPolygonSampleType type);
+    void AddSample(FMeshedPolygonTrajectoryLayeredInterface &sample);
 
 protected:
-    TArray<FMeshedPolygonTrajectoryLayered> cache;
-    bool batchPrepared = false;
-
-    bool changedData = false;
-    void ResizeAll();
-    
+    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryLayered> unetSamples;
+    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryRayModel> raymodelSamples;
 
 
-
-    //clean up samples
-    void CleanUpSimilarSamples();
-    TSet<int> FindMarkedForRemoval(float maxLoss);
-    void FilterOut(const TSet<int> &removeIndices);
 };

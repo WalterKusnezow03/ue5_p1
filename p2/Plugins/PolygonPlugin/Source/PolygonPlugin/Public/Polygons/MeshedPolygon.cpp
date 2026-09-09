@@ -225,6 +225,7 @@ void FMeshedPolygon::ClearFlags(){
 
 void FMeshedPolygon::ClearEdgeSet(){
     edgeSet.Clear();
+    edgeSetRawTemp.Clear();
 }
 
 void FMeshedPolygon::ClearFlagsAndEdgeSet(){
@@ -948,6 +949,10 @@ void FMeshedPolygon::RemoveBorder(TArray<float> &column, int sizeBorder, float v
 
 void FMeshedPolygon::ResizeGrid(int x, int y){
     if(x > 0 && y > 0){
+        if(TGridIsSize<uint8>(x, y, flagGrid)){
+            return;
+        }
+
         FVector dirStep(x * stepSizeSaved, y * stepSizeSaved, 0.0f);
         maxSaved = minSaved + dirStep;
 

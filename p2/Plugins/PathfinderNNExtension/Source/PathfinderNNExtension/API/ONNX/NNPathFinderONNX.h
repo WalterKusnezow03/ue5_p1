@@ -3,6 +3,8 @@
 #include "PathfinderNNExtension/API/Handle/NNRequestHandleInterface.h"
 #include "PathfinderNNExtension/GameNN/ONNXModel.h"
 #include "PathfinderNNExtension/API/Handle/NNRequestHandleTickDataOnnx.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
+#include <map>
 
 #include "NNPathFinderONNX.generated.h"
 
@@ -17,7 +19,17 @@ public INNRequestHandleInterface
 
 private:
     static ANNPathFinderONNX *instancePtr;
-    ONNXModel model;
+
+    void LoadModels();
+    
+    
+
+    ONNXModel modelTrajectoryLayered;
+    ONNXModel rayModel;
+
+    ONNXModel &FindSelectedModel();
+
+    
 
     bool logConnection = false;
 

@@ -4,6 +4,10 @@
 #include "PathfinderNNExtension/DataCollection/PolygonCollection/NNPathFinderProxy.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/ActorTrajectoryTracker.h"
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
+
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryRayModel.h"
 
 class FPathFinderNNRequestPackage;
 class FMeshedPolygonColorAttributes;
@@ -34,18 +38,18 @@ public:
 
     bool IsSameActor(AActor *actorCheck);
 
-    FMeshedPolygonTrajectoryLayered &GetPolygonData();
+    
 
     bool WaitingForGroundTruth();
     bool TaskCompleted();
 
-    int ResultGridSizeBytes();
+    int ResultDataSizeBytes();
 
     // heat map generation from result
-    void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
+    void ProcessFromPredictionBytes(const TArray<uint8> &buffer);
 
     //for onnx handler
-    void GenerateMapFromPredicitontFloats(const TArray<float> &buffer);
+    void ProcessFromPredictionFloats(const TArray<float> &buffer);
 
     void ColoredHeatMap(
         Image &image,
@@ -68,11 +72,16 @@ public:
     void EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies);
     void EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue);
 
+
+    //todo: set type for prediction task / can be swicthed
+    //todo: get type of prediction task
+
+
 private:
     bool taskStarted = false;
     bool taskCompleted = true;
 
-    void PrepareRequestMap(FMeshedPolygonTrajectoryLayered &polygonData);
+    void PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface &polygonData);
     void PrepareResultMap();
 
     NNPathFinderProxy polygonProxy;
@@ -82,7 +91,21 @@ private:
 
     FVector locationOfRequest;
 
-    FMeshedPolygonTrajectoryLayered polygonDataCache;
+    //set nn type
+    EPolygonSampleType sampleType = EPolygonSampleType::EMeshedPolygonTrajectoryLayered;
+
+    //Get Interface reference !
+public:
+    FMeshedPolygonTrajectoryLayeredInterface &GetPolygonData(); //by set type
+private:
+    FMeshedPolygonTrajectoryLayeredInterface &GetPolygonData(EPolygonSampleType type); //by set type
+
+    
+    FMeshedPolygonTrajectoryLayered polygonDataUnetModel; //switch to ptr
+    FMeshedPolygonTrajectoryRayModel polygonRayModel;
+
+
+    
 
     //Unet input as 144 144, do not change, first check py script!!
     void ResizeToNNSize(FMeshedPolygonTrajectoryLayered &polygonData);

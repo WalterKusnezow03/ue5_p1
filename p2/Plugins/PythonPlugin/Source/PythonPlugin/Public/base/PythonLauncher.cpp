@@ -19,7 +19,9 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
 
     FString PythonExe = setup.PythonExe(); // TEXT("/opt/homebrew/bin/python3");
     //PythonExe = TEXT("/opt/homebrew/bin/python3");
-    
+
+    DebugHelper::logMessage("APythonLauncher::RUN PYTHON VERSION: ", PythonExe);
+    /// opt/homebrew/bin/python3 -m pip install posix_ipc --break-system-packages
 
     FString PluginDir = setup.PluginDir();
     FPlatformProcess::CreatePipe(ReadPipe, WritePipe); // create pipe for output python print to unreal log.
@@ -36,7 +38,7 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
         UE_LOG(LogTemp, Error, TEXT("APythonLauncher::SKRIPT DATEI EXISTIERT NICHT: %s"), *ScriptPath);
         return;
     }else{
-        UE_LOG(LogTemp, Error, TEXT("APythonLauncher::SKRIPT DATEI WURDE GEFUNDEN: %s"), *ScriptPath);
+        UE_LOG(LogTemp, Warning, TEXT("APythonLauncher::SKRIPT DATEI WURDE GEFUNDEN: %s"), *ScriptPath);
     }
 
 
@@ -70,7 +72,8 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
         0,
         *SafeWorkingDir, //*PluginDir, // <- Wichtig! Arbeitsverzeichnis
         WritePipe,
-        ReadPipe
+        ReadPipe,
+        WritePipe  // Child StdErr
     );
 
     
@@ -202,7 +205,7 @@ void APythonLauncher::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 void APythonLauncher::ShutDownPython(){
 
-    ShutDownPython(5.0f);
+    ShutDownPython(1.0f);
     ShutDownPythonForce();
 }
 

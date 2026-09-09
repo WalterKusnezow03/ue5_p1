@@ -35,17 +35,21 @@ void NNRequestHandle::Tick(FNNRequestHandleTickData &tickData){
 void NNRequestHandle::LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData){
  
     //if the binary wasnt loaded and learned yet: load
-    if(tickData.bBatchBinaryDataNeeded && !batchTask.BatchPrepared()){
+    if(tickData.bBatchBinaryDataNeeded && !batchTask.BatchPrepared(sampleType)){
         DebugHelper::logMessage("ANNPathFinderSocket::LoadBatchIfNotDoneYet");
 
         TArray<uint8> &buffer = tickData.batchDataOut;
-        batchTask.PrepareBinary(buffer);
+        batchTask.PrepareBatchBinary(buffer, sampleType);
         if (buffer.Num() > 0) //size must be valid
         {
             tickData.bBatchBinaryOutChanged = true; //flag for writing to shared memory
             //WriteData(frameNameBatch, buffer);
         }
     }
+}
+
+EPolygonSampleType NNRequestHandle::SelectedModel(){
+    return sampleType;
 }
 
 
@@ -131,9 +135,9 @@ void NNRequestHandle::PredictNode(
             if(task.IsValid()){
                 tickData.bRequestBinaryOutChanged = true;
                 //write num bytes expected
-                tickData.expectedResultBytes = task.ResultGridSizeBytes();
+                tickData.expectedResultBytes = task.ResultDataSizeBytes();
 
-                //WriteDataRequest(requestBinary, task.ResultGridSizeBytes());
+                //WriteDataRequest(requestBinary, task.ResultDataSizeBytes());
             }
             //if data invalid, task is resettet
             else{
@@ -220,7 +224,7 @@ void NNRequestHandle::ReadDataResultImmidiate(TArray<float> &data){
         DebugHelper::logMessage(message);
 
         //generate
-        task.GenerateMapFromPredicitontFloats(data);
+        task.ProcessFromPredictionFloats(data);
         GenerateAndNotifyResultPositionsForRequestQueue(); //notify registered actors to the task.
         GenerateResultImage();
         
@@ -232,8 +236,8 @@ void NNRequestHandle::ReadDataResultImmidiate(TArray<float> &data){
 
 void NNRequestHandle::ReadDataResult(TArray<uint8> &bufferPrediction){
     
-    /// create heat map from prediction
-    task.GenerateMapFromPredicitontBytes(bufferPrediction);
+    /// create heat map /paste result from prediction
+    task.ProcessFromPredictionBytes(bufferPrediction);
     
     //notify
     GenerateAndNotifyResultPositionsForRequestQueue();
@@ -275,8 +279,6 @@ void NNRequestHandle::GenerateResultImage(){
 }
 
     
-
-
 
 
 

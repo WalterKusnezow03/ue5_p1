@@ -110,6 +110,16 @@ class UnrealSharedFrame:
             self.map.write(b"\x00" * remaining)
         self.UpMutex()
 
+    ## Read as int32 (signed 32-bit integer array)
+    def read_data_only_int_array(self):
+        self.DownMutex()
+        self.map.seek(4)  # after the Ready-Flag
+        raw = self.map.read(self.size - 4)
+        self.UpMutex()
+
+        int_count = len(raw) // 4
+        # Use 'i' for signed 32-bit int, or 'I' for unsigned 32-bit int
+        return struct.unpack(f"{int_count}i", raw[:int_count * 4])
 
 
     def close(self):

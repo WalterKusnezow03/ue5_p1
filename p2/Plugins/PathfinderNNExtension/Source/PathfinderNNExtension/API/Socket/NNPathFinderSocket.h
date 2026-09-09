@@ -42,10 +42,14 @@ protected:
 
     FString frameNameBatch = "DEFAULT_BATCH";
 
+    FString frameNameNNType = "DEFAULT_NNTYPE";
+
     virtual void OnReceivePythonPrint(FString message) override;
 
-
+    //processes the requests
     NNRequestHandle requestHandle;
+
+    //in (nn prediction) and out (nn requst) data 
     FNNRequestHandleTickData requestTickData;
 
     bool logConnection = false;

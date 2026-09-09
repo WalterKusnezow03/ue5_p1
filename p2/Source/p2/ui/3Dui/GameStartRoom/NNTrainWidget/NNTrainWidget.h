@@ -76,4 +76,6 @@ protected:
 
     void UpdateHeatMapSaveOnEndTextNextState();
     void UpdateHeatMapSaveOnEndText();
+
+    FString FormatLossScientificCustom(const FString &InLossString, int32 SignificantDigits);
 };

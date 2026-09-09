@@ -1,5 +1,6 @@
 #include "NNPathFinderONNX.h"
 #include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
 
 ANNPathFinderONNX *ANNPathFinderONNX::instancePtr = nullptr;
 
@@ -38,18 +39,37 @@ void ANNPathFinderONNX::MakePathFinderONNXInstance(UWorld* World)
 
 void ANNPathFinderONNX::BeginPlay(){
     Super::BeginPlay();
-    
-    model.LoadModel(); //auto loads on construct
-    requestHandle.BeginPlay();
 
+    LoadModels();
+    requestHandle.BeginPlay();
 
     //debug
     NNPluginSettings::LogSetting();
 }
 
+void ANNPathFinderONNX::LoadModels(){
+    modelTrajectoryLayered.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryLayered));
+    rayModel.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel));    
+}
+
+
+
+
+ONNXModel &ANNPathFinderONNX::FindSelectedModel(){
+    EPolygonSampleType currentModel = requestHandle.SelectedModel();
+    if(currentModel == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
+        return modelTrajectoryLayered;
+    }
+    if(currentModel == EPolygonSampleType::EMeshedPolygonTrajectoryRayModel){
+        return rayModel;
+    }
+    return modelTrajectoryLayered;
+}
 
 bool ANNPathFinderONNX::NNIsConnected(){
+    ONNXModel &model = FindSelectedModel();
     return model.WasLoaded();
+    // return model.WasLoaded();
 }
 
 
@@ -96,6 +116,9 @@ void ANNPathFinderONNX::Tick(float deltatime){
     //NEW
     if(PrepareRequestData(deltatime)){
         requestTickData.bIsBusy = true;
+
+        ONNXModel &model = FindSelectedModel();
+
         bool result = model.RunModelAsync(requestTickData.requestDataOut, [this](TArray<float> predictionGenerated)
         {
             // DIESER BLOCK LÄUFT AUTOMATISCH WIEDER IM GAMETHREAD

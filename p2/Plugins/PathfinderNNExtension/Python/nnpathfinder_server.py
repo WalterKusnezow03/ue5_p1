@@ -1,9 +1,9 @@
-print("NNServerPathfinder LAUNCHED .PY \n")
-
 import os
 import sys
+print("NNServerPathfinder LAUNCHED .PY \n")
 
-
+#### find from other folder / plugin
+#### ----- NOT USED ANYMORE! -----
 #### find NNCommunicationPlugin working dir to launch tcp listener ####
 ##BASE_DIR = os.path.dirname(__file__)
 
@@ -14,6 +14,7 @@ import sys
 ##sys.path.insert(0, COMMUNICATION_PYTHON)
 
 ##print("COMM PATH:", COMMUNICATION_PYTHON, "\n")
+#### ----- NOT USED ANYMORE! -----
 
 ##### works as expected, ignore yellow line!
 import communicationPluginParent
@@ -22,28 +23,31 @@ print("NNServerPathfinder communicationPluginParent import ok \n")
 from Base import nn_server
 print("NNServerPathfinder nn_server import ok \n")
 
-from Base.NNBase import CNNBase
-print("NNServerPathfinder NNBase import ok \n")
+##debug only
+##from Base.NNBase import CNNBase
+from Base.NNBase import TorchDebug
+print("NNServerPathfinder TorchDebug import ok \n")
 
-import NetA
+import Net.NetA as NetA
 print("NNServerPathfinder NetA import ok \n")
 
-import NetB
+import Net.NetB as NetB
 print("NNServerPathfinder NetB import ok \n")
+
+import Net.NetSwitcher as NetSwitcher
+print("NNServerPathfinder NetSwitcher import ok \n")
 
 
 print("NNServerPathfinder ALL IMPORT OK \n")
 
 
-
+#### ----- DEBUG - NOT NEEDED ANYMORE! -----
 ##debug
 ##print("NNServerPathfinder make Net B instance debug \n")
 ##localNet = NetB.NetB() ##NetA.NetA()
 ##print("NNServerPathfinder make Net B instance finish \n")
-
-
-
 ##nn_server.Run() ##is executed!! :) 
+#### ----- DEBUG - NOT NEEDED ANYMORE! -----
 
 
 
@@ -54,13 +58,15 @@ class NNServerPathfinder(nn_server.NNServer):
         print("NNServerPathfinder constructor")
         
         self.count = 0
-        ##same as cpp socket
+        ##same as cpp socket (ANNPathFinderSocket)
         self.frameNameRequest = "ANNPathFinderSFIN"
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
+        self.frameNameNNType = "ANNPathFinderSFNN"
 
+        self.netSwitcher = NetSwitcher.NetSwitcher()
         
-        self.Net = NetB.NetB()
+        ##self.Net = NetB.NetB()
 
         self.bWaitingForGroundTruth = False
         self.resultData = None
@@ -107,13 +113,16 @@ class NNServerPathfinder(nn_server.NNServer):
                 return
             print("NNServerPathfinder_RUN_NN")
             ##run net
-            self.resultData = self.Net.forwardTwoChannelData(data)
-            self.bWaitingForGroundTruth = True
-            self.bResultDataWritten = False
+            NetRef = self.GetNet()
+            if(NetRef):
+                self.resultData = NetRef.forwardBinData(data)
+                ##self.resultData = self.Net.forwardBinData(data)
+                self.bWaitingForGroundTruth = True
+                self.bResultDataWritten = False
 
-            ##write result
-            print("NNServerPathfinder_RUN_NN_Finish_A", len(self.resultData))
-            ##self.WriteResultDataIfPending()
+                ##write result
+                print("NNServerPathfinder_RUN_NN_Finish_A", len(self.resultData))
+                ##self.WriteResultDataIfPending()
 
             return
 
@@ -124,7 +133,12 @@ class NNServerPathfinder(nn_server.NNServer):
                 self.bWaitingForGroundTruth = False ##ready for a new request
                 if(self.trainLive):
                     print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
-                    self.Net.learnData(data)
+
+                    NetRef = self.GetNet()
+                    if(NetRef):
+                        NetRef.Net.learnData(data)
+
+                    ##self.Net.learnData(data)
                     print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))
                 return
 
@@ -144,7 +158,10 @@ class NNServerPathfinder(nn_server.NNServer):
             
         return
 
-
+    def GetNet(self):
+        if(self.netSwitcher != None):
+            return self.netSwitcher.GetActiveNet()
+        return None
     
 
 
@@ -152,6 +169,7 @@ class NNServerPathfinder(nn_server.NNServer):
     ##override
     def ProcessSharedMemory(self):
         ##self.sharedMemoryMap.ShowMap() ##debug
+        self.ProcessSharedMemorySwitchNNType()
         self.ProcessBatchOnce()
         self.WriteResultDataIfPending()
         
@@ -172,9 +190,12 @@ class NNServerPathfinder(nn_server.NNServer):
         super().ProcessMessage(message)
 
     def SaveNet(self):
-        if(self.Net != None):
-            self.Net.saveCheckpoint()
-            return
+        if(self.netSwitcher != None):
+            self.netSwitcher.SaveAll()
+
+        ##if(self.Net != None):
+        ##    self.Net.saveCheckpoint()
+        ##    return
 
     def OnShutDown(self):
         print("NNServerPathfinder OnShutDown Save net")
@@ -183,7 +204,19 @@ class NNServerPathfinder(nn_server.NNServer):
         print("PYTHON_SAFE_TO_EXIT")
         super().OnShutDown()
         return
-    
+
+
+    #### switch nn type by shared memory written number
+    def ProcessSharedMemorySwitchNNType(self):
+        if(self.sharedMemoryMap):
+            page = self.sharedMemoryMap.findPage(self.frameNameNNType)
+            if(page != None):
+                if(page.isReady()):
+                    if(self.netSwitcher != None):
+                        self.netSwitcher.UpdateActiveIndexFromIntArray(page.read_data_only_int_array())
+                        return
+            self.netSwitcher.UpdateActiveIndex(0)
+        return
 
 
     ##### batch process only once! #####
@@ -208,7 +241,10 @@ class NNServerPathfinder(nn_server.NNServer):
                             return
                     
                         ##feed
-                        self.Net.TrainFromBatchBinary(data)
+                        ##self.Net.TrainFromBatchBinary(data)
+                        NetRef = self.GetNet()
+                        if(NetRef != None):
+                            NetRef.TrainFromBatchBinary(data)
 
                         self.bWaitingForBatch = False
 

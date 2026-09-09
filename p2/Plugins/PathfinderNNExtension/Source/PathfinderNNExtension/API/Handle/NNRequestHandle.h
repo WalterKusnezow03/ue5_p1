@@ -36,11 +36,17 @@ public:
     void EnableHeatMapSaveOnEnd(bool flag);
     bool HeatMapSaveOnEndEnabled();
 
+    EPolygonSampleType SelectedModel();
+
 private:
+    //todo: add sample type swicther
+    EPolygonSampleType sampleType = EPolygonSampleType::EMeshedPolygonTrajectoryLayered; //default model
+
     FPathFinderNNSampleSet batchTask;
     FPathFinderNNRequestQueue requests;
     NActorTrajectoryTracker actorTracker;
     PredictionTask task;
+
     void TickTask();
 
     void LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData);

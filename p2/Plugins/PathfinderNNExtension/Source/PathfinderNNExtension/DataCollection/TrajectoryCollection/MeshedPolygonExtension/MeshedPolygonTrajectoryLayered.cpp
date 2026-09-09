@@ -342,6 +342,10 @@ void FMeshedPolygonTrajectoryLayered::AppendFlagMapAsFloat(TArray<uint8> &buffer
 }
 
 
+void FMeshedPolygonTrajectoryLayered::AppendGroundTruth(TArray<uint8> &buffer){
+    AppendResultMapAsFloat(buffer); //append map here
+}
+
 void FMeshedPolygonTrajectoryLayered::AppendResultMapAsFloat(TArray<uint8> &buffer) const{
     AppendFloatMapToBuffer(buffer, groundTruthGrid);
 }
@@ -398,7 +402,7 @@ void FMeshedPolygonTrajectoryLayered::Uint8FlagMapToFloat(
 
 
 
-int FMeshedPolygonTrajectoryLayered::ResultGridSizeBytes(){
+int FMeshedPolygonTrajectoryLayered::ResultDataSizeBytes(){
     if(!GroundTruthGridIsValid()){
         CreateOrClearGroundTruthGrid();
     }
@@ -464,9 +468,17 @@ void FMeshedPolygonTrajectoryLayered::EmbedEnemyVision(const TArray<FVisionCone 
 
 
 
+void FMeshedPolygonTrajectoryLayered::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
+    //todo check:
+    //to float
+    //to local pos
+    //to world pos
+    GenerateMapFromPredicitontBytes(buffer);
+}
 
-
-
+void FMeshedPolygonTrajectoryLayered::ProcessFromPredictionFloats(const TArray<float> &buffer){
+    GenerateMapFromPredicitontFloats(buffer);
+}
 
 /// from predicion change name!
 void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer){
@@ -497,51 +509,6 @@ void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontBytes(const TArr
     }
 }
 
-/*
-void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
-    if(buffer.Num() > 0){
-        TCreateOrClearGrid<float>(heatMap, 0.0f);
-        
-        //debug
-        if(heatMap.Num() > 0){
-            int size = heatMap.Num() * heatMap[0].Num();
-            DebugHelper::logMessage(
-                FString::Printf(
-                    TEXT("FMeshedPolygonTrajectoryLayered heatMapSize %d , data size %d"),
-                    size, buffer.Num()
-                )
-            );
-            if(size != buffer.Num()){
-                return;
-            }
-        }
-
-        const float *Ptr = buffer.GetData();
-        for (int i = 0; i < heatMap.Num(); i++){
-            TArray<float> &column = heatMap[i];
-
-            //new
-            if(Ptr < buffer.GetData() + buffer.Num() * sizeof(float)){
-                DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered heatmap copy still valid!");
-                int bytesToCopy = column.Num() * sizeof(float);
-                void *Dest = column.GetData();
-                FMemory::Memcpy( 
-                    Dest,
-                    Ptr,
-                    bytesToCopy
-                );
-                Ptr += bytesToCopy;
-            }
-
-            
-        }
-        DebugHelper::logMessage("FMeshedPolygonTrajectoryLayered heatmap copy finished!");
-
-        NormalizeHeatMapThroshold(0.5f);
-        RemoveHeatMapBorder(4); //3 pixels
-        CacheResultPositionsFromHeatMap();
-    }
-}*/
 
 void FMeshedPolygonTrajectoryLayered::GenerateMapFromPredicitontFloats(const TArray<float> &buffer){
     if(buffer.Num() > 0){
@@ -978,16 +945,22 @@ void FMeshedPolygonTrajectoryLayered::ResizeGrid144(){
 }
 
 
+void FMeshedPolygonTrajectoryLayered::PrepareFitData(){
+    ResizeGrid144();
+};
 
-//lossMax must be between 0.0f and 1.0f 
-bool FMeshedPolygonTrajectoryLayered::IsSimilar(const FMeshedPolygonTrajectoryLayered &other, float lossMax){
-    float similarityMin = 1.0f - lossMax;
-    float similarity = SimilarityOfSample(other);
-    return similarity >= similarityMin;
+float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other){
+    FMeshedPolygonTrajectoryLayered *ptr =
+        TSampleCast<FMeshedPolygonTrajectoryLayered>(other);
+    if(ptr){
+        //do compare here.
+        return SimilarityOfSampleCasted(*ptr);
+    }
+    return 0.0f;
 }
 
 //will return a value between 0.0 and 1.0
-float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(const FMeshedPolygonTrajectoryLayered &other){
+float FMeshedPolygonTrajectoryLayered::SimilarityOfSampleCasted(FMeshedPolygonTrajectoryLayered &other){
     //todo: compare grids in similarity
     //all inputs and all outputs
 
@@ -1014,7 +987,7 @@ float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(const FMeshedPolygonTr
     minSimilarity = FMath::Clamp(minSimilarity, 0.0f, 1.0f);*/
 
     
-    DebugHelper::logMessage(FString::Printf(TEXT("Similarity %.2f"), minSimilarity));
+    //DebugHelper::logMessage(FString::Printf(TEXT("Similarity %.2f"), minSimilarity));
 
     /*float s = GridBase::TSimilarity<uint8>(
         const TArray<TArray<T>> &gridA,

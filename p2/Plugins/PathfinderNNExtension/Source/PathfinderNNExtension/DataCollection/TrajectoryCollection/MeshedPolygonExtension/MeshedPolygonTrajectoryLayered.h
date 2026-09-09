@@ -8,56 +8,73 @@
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 
-
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/MeshedPolygonTrajectoryLayeredInterface.h"
 
 class FVisionCone;
 class FMeshedPolygonColorAttributes;
 class IPathfinderNNInterface;
 
 //encode trajectory layer
-class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayered : public FMeshedPolygonRaytracable {
+//encodes trajectory layer and has multilayer binary / image for net type NetB (NetA is deprecated!)
+
+//public FMeshedPolygonTrajectoryLayeredInterface
+class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayered : public FMeshedPolygonTrajectoryLayeredInterface {
+
+//class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayered : public FMeshedPolygonRaytracable {
 
 public:
-    void Reset();
+    void Reset() override;
 
     bool FlagAndTimeDataValid() const;
 
     // ---- REQUEST TO NN ----
     //clears corrosponding grid, object is reusable!
-    void EmbedTrajectories(TArray<Trajectory> &trajectories);
-    void EmbedResultPosition(FVector &position);
+    void EmbedTrajectories(TArray<Trajectory> &trajectories) override;
+    void EmbedResultPosition(FVector &position) override;
 
     void AppendFlagMapAsFloat(TArray<uint8> &buffer) const;
     void AppendTimeMap(TArray<uint8> &buffer) const;
     void AppendViewMap(TArray<uint8> &buffer);
     void AppendTrajectoryConeMap(TArray<uint8> &buffer);
+    
+    //ground truth
+    void AppendGroundTruth(TArray<uint8> &buffer) override;
     void AppendResultMapAsFloat(TArray<uint8> &buffer) const;
 
-    int ResultGridSizeBytes(); //ground truth grid size bytes
+    
+    int ResultDataSizeBytes() override; //ground truth grid size bytes
 
     //new
-    void EmbedEnemyVision(const TArray<FVisionCone *> &cones);
+    void EmbedEnemyVision(const TArray<FVisionCone *> &cones) override;
 
     // ---- REQUEST TO NN SIMPLE ACCESS ----
-    bool PrepareAppendRequestBinary(TArray<uint8> &buffer);
-    bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer);
+    void PrepareFitData() override; //resize data to match 144, 144 size for Unet / NetB
+
+    bool PrepareAppendRequestBinary(TArray<uint8> &buffer) override;
+    bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer) override;
     
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     
 
     // ---- Paste result from nn ----
+    void ProcessFromPredictionBytes(const TArray<uint8> &buffer) override;
+    void ProcessFromPredictionFloats(const TArray<float> &buffer) override;
+
+    // ---- private process nn result ----
+private:
     void GenerateMapFromPredicitontBytes(const TArray<uint8> &buffer);
     void GenerateMapFromPredicitontFloats(const TArray<float> &buffer);
 
+public:
     void ColoredHeatMap(
         Image &image,
         FMeshedPolygonColorAttributes &attributes
-    );
+    ) override;
 
-    void NotifyVisiblePositionsFor(
+    virtual void NotifyVisiblePositionsFor(
         IPathfinderNNInterface *interfaceIn,
         bool useVisiblity
-    );
+    ) override;
 
     //binary generation
     virtual void AppendAsBinary(
@@ -74,12 +91,17 @@ public:
     void ResizeGrid144();
 
     //needed for sample set reduction
-    bool IsSimilar(const FMeshedPolygonTrajectoryLayered &other, float lossMax);
+    //bool IsSimilar(FMeshedPolygonTrajectoryLayered &other, float lossMax);
+    float SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other) override;
+
+    virtual EPolygonSampleType GetType() override {
+        return EPolygonSampleType::EMeshedPolygonTrajectoryLayered;
+    }
 
 private:
     //needed for sample set reduction
     //will return a value between 0.0 and 1.0
-    float SimilarityOfSample(const FMeshedPolygonTrajectoryLayered &other);
+    float SimilarityOfSampleCasted(FMeshedPolygonTrajectoryLayered &other);
 
 
     void EmbedConeFromTrajectories(

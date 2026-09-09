@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "onnxruntime_cxx_api.h" 
+#include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
 
 
 class PATHFINDERNNEXTENSION_API ONNXModel {
@@ -15,7 +16,7 @@ public:
         TArray<float> &bufferPredictionOut
     );
 
-    void LoadModel();
+    void LoadModel(FONNXModelsetup setup);
 
     bool RunModelAsync(TArray<uint8> &bufferIn, TFunction<void(TArray<float>)> OnComplete);
 
@@ -51,6 +52,10 @@ private:
     
     std::vector<int64_t> inputDimensions; // = { 1, channels, H, W };
     std::vector<float> inputTensorValues;//write to this ref data
+
+
+    //setup data
+    FONNXModelsetup setupData;
 
     //flags
     bool bModelWasLoaded = false;

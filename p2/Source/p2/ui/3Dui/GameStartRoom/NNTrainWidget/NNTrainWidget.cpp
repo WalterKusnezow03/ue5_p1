@@ -187,6 +187,9 @@ bool UNNTrainWidget::ExtractProgress(const TArray<FString> &parts, FString &resu
 }
 
 
+
+
+/*
 bool UNNTrainWidget::ExtractLoss(const TArray<FString> &parts, FString &result){
     if(parts.Num() > 0){
         int j = FindIndexLowerCase(parts, TEXT("loss"));
@@ -216,6 +219,68 @@ int UNNTrainWidget::FindDigitsNeeded(FString &lossString){
         }
     }
     return minNeeded;
+}*/
+
+bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResult)
+{
+    if (Parts.Num() == 0) return false;
+
+    int32 Index = FindIndexLowerCase(Parts, TEXT("loss"));
+    if (Index >= 0 && Index + 1 < Parts.Num())
+    {
+        FString LossString = Parts[Index + 1];
+
+        // Transforms "2.510701415303629e-05" -> "0.(4)25107"
+        FString FormattedLoss = FormatLossScientificCustom(LossString, 5);
+
+        OutResult = "Loss: " + FormattedLoss;
+        return true;
+    }
+    return false;
+}
+
+FString UNNTrainWidget::FormatLossScientificCustom(const FString& InLossString, int32 SignificantDigits)
+{
+    int32 EIndex = INDEX_NONE;
+    if (!InLossString.FindChar('e', EIndex) && !InLossString.FindChar('E', EIndex))
+    {
+        // Not scientific notation; return as-is
+        return InLossString;
+    }
+
+    // 1. Split into Mantissa ("2.510701415303629") and Exponent ("-05")
+    FString MantissaStr = InLossString.Left(EIndex);
+    FString ExponentStr = InLossString.RightChop(EIndex + 1);
+
+    int32 Exponent = FCString::Atoi(*ExponentStr);
+
+    // Clean mantissa digits (remove sign and decimal point)
+    FString Sign = MantissaStr.StartsWith(TEXT("-")) ? TEXT("-") : TEXT("");
+    MantissaStr = MantissaStr.Replace(TEXT("-"), TEXT("")).Replace(TEXT("."), TEXT(""));
+
+    // Trim mantissa to desired significant digits
+    if (MantissaStr.Len() > SignificantDigits)
+    {
+        MantissaStr = MantissaStr.Left(SignificantDigits);
+    }
+
+    // 2. Format Negative Exponents -> 0.(ZerosCount)Mantissa
+    if (Exponent < 0)
+    {
+        int32 LeadingZerosCount = FMath::Abs(Exponent) - 1;
+
+        if (LeadingZerosCount > 0)
+        {
+            return FString::Printf(TEXT("%s0.(%d)%s"), *Sign, LeadingZerosCount, *MantissaStr);
+        }
+        else
+        {
+            return FString::Printf(TEXT("%s0.%s"), *Sign, *MantissaStr);
+        }
+    }
+
+    // 3. Fallback for positive exponents if encountered
+    return InLossString;
 }
 
 

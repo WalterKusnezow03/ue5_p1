@@ -64,6 +64,15 @@ protected:
         bool dirIsCentered
     );
 
+    void TraceConeCollectHits(
+        const FVector &pos,
+        const FVector2D &dir, 
+        float angle, 
+        float rays,
+        TArray<FIntPoint> &hits,
+        bool dirIsCentered
+    );
+
     void CreateOrClearViewGrid();
     TArray<TArray<float>> viewGrid;
     bool ViewGridValid();

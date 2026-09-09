@@ -20,6 +20,7 @@ from NNBase import CNNBase
 '''
 
 from Base import nn_server
-from Base.NNBase import CNNBase
+
+##from Plugins.PathfinderNNExtension.Python.Base.NNBase import TorchDebug
 
 print("IMPORT OK \n")
