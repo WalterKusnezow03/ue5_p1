@@ -7,6 +7,7 @@
 EntityAction::EntityAction(){
     typeOfAction = EActionType::ERoam;
 	targetPositionIsSetup = false;
+    hasTimerRunning = false;
 }
 
 EntityAction::EntityAction(EActionType typeOfActionIn)
@@ -57,4 +58,39 @@ void EntityAction::updateTargetPosition(FVector &pos){
 
 EActionType EntityAction::actionType(){
     return typeOfAction;
+}
+
+
+
+bool EntityAction::Tick(float deltatime){
+    if(hasTimerRunning){
+        timer.Tick(deltatime);
+
+	    if(timer.timesUp()){
+            hasTimerRunning = false;
+            return true;
+        }
+    }
+    return false; //switch not needed
+}
+
+
+EActionType EntityAction::GetFollowingActionType(){
+    return typeOfActionAfterTimeFinish;
+}
+
+void EntityAction::StartTimer(float time, EActionType nexttype){
+    if(time >= 0.0f){
+        typeOfActionAfterTimeFinish = nexttype;
+        hasTimerRunning = true;
+        timer.Begin(time);
+    }
+}
+
+bool EntityAction::HasTimer(){
+    return hasTimerRunning;
+}
+
+void EntityAction::abortTimer(){
+    hasTimerRunning = false;
 }

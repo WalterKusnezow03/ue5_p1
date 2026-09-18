@@ -79,9 +79,9 @@ FSharedFrame *FSharedFrameManager::FindFrame(FString name){
 }
 
 void FSharedFrameManager::WriteData(FString pageName, const TArray<uint8> &data, bool &frameChanged){
-    DebugHelper::logMessage(
+    /*DebugHelper::logMessage(
         FString::Printf(TEXT("FSharedFrameManager::Write Data Try %s"), *pageName)
-    );
+    );*/
     int bytes = data.Num();
     if(bytes > 0){
         /*if (!HasFrame(pageName)){
@@ -97,9 +97,9 @@ void FSharedFrameManager::WriteData(FString pageName, const TArray<uint8> &data,
         }*/
         MakeSureExists(pageName, bytes, frameChanged);
         frames[pageName].WriteData(data);
-        DebugHelper::logMessage(
+        /*DebugHelper::logMessage(
             FString::Printf(TEXT("FSharedFrameManager::Write Data End %s %d"), *pageName, bytes)
-        );
+        );*/
     }
 }
 

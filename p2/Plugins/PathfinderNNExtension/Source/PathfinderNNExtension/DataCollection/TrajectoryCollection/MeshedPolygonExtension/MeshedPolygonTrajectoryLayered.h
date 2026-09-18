@@ -52,7 +52,10 @@ public:
 
     bool PrepareAppendRequestBinary(TArray<uint8> &buffer) override;
     bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer) override;
-    
+
+    //onnx input
+    bool PrepareAppendRequestBinary(FONNXModelInput &input) override;
+
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     
 
@@ -68,6 +71,11 @@ private:
 public:
     void ColoredHeatMap(
         Image &image,
+        FMeshedPolygonColorAttributes &attributes
+    ) override;
+
+    void ColoredLayersMap(
+        TArray<Image> &images,
         FMeshedPolygonColorAttributes &attributes
     ) override;
 
@@ -138,8 +146,8 @@ private:
         FColor playerPosResult
     );
 
-
-
+    void FinalizeImage(Image &image);
+    void FinalizeImage(Image &image, bool alphaOverride);
 
     // --- player trajectories ---
     bool TimeGridIsValid() const;

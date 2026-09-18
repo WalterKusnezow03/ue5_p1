@@ -97,10 +97,14 @@ protected:
     
 
     // ----- private warp -----
+    void WarpCirlceRandomWithCountPositions(
+        int warpCircleLocations,
+        float minAngle,
+        float maxAngle
+    );
     void WarpCirlceByDistanceAroundCenter(
         float maxDistance,
-        float angle
-    );
+        float angle);
     void WarpCirlceByDistance(
         FVector &center,
         float maxDistance,

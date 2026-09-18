@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/CanvasRenderTarget2D.h"
-
+#include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
 #include "CustomRenderedTexture.generated.h"
 
@@ -37,13 +37,19 @@ public:
     ///rendering
     UCanvasRenderTarget2D *GetRenderTarget();
 
+    void UpdateImageData(Image *img){
+        if(img){
+            imageRendered = img;
+        }
+    }
+
 protected:
     void Init();
     void Init(int resXIn, int resYIn);
 
     void setupRenderTarget(int resXin, int resYin);
     void setupMaterial();
-    
+
 
     UPROPERTY()
     UCanvasRenderTarget2D *renderTarget = nullptr;
@@ -54,6 +60,7 @@ protected:
     int resX = 4096; //4096
     int resY = 4096; //4096
 
+    Image *imageRendered = nullptr;
 
     void drawImage(
         UCanvas *canvas,
@@ -87,6 +94,9 @@ protected:
         FRotator &rotation,
         bool centerPivot
     );
+
+    void RenderCustomImage(UCanvas *canvas);
+    void SetPixel(UCanvas *Canvas, float X, float Y, FLinearColor color);
 
     FVector2D scalePercent(float percent);
     FVector2D centerPositionPivot(FVector2D &pos, FVector2D &scale);

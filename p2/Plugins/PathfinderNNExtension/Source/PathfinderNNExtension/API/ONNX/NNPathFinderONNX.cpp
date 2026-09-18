@@ -1,6 +1,7 @@
 #include "NNPathFinderONNX.h"
 #include "PathfinderNNExtension/Settings/NNSetting.h"
 #include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
+#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
 
 ANNPathFinderONNX *ANNPathFinderONNX::instancePtr = nullptr;
 
@@ -56,7 +57,7 @@ void ANNPathFinderONNX::LoadModels(){
 
 
 ONNXModel &ANNPathFinderONNX::FindSelectedModel(){
-    EPolygonSampleType currentModel = requestHandle.SelectedModel();
+    EPolygonSampleType currentModel = requestHandle.GetSampleType();
     if(currentModel == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
         return modelTrajectoryLayered;
     }
@@ -187,4 +188,11 @@ void ANNPathFinderONNX::EnableHeatMapSaveOnEnd(bool saveOnEnd){
 
 bool ANNPathFinderONNX::HeatMapSaveOnEndEnabled(){
     return requestHandle.HeatMapSaveOnEndEnabled();
+}
+
+
+
+
+HeatMapReceivers &ANNPathFinderONNX::GetHeatMapReceivers(){
+    return requestHandle.GetHeatMapReceivers();
 }

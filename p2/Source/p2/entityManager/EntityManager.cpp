@@ -24,6 +24,7 @@
 #include "p2/ui/3Dui/GamePlayWidgets/InteractWidget/InteractWidgetActor.h"
 
 #include "p2/ui/3Dui/GamePlayWidgets/Enum/EWorldDynamicWidgetEnum.h"
+#include "p2/entities/EntityAssetBase/EntityAssetBase.h"
 
 #include "p2/vfx/base/VFXActor.h"
 
@@ -174,6 +175,19 @@ void EntityManager::add(AVFXActor *actorIn){
         if(gc){
             // gc->Add<E>(uobject*, e);
             gc->collection.Add<EVFXActorType>(actorIn, typeAdded);
+        }
+    }
+}
+
+
+void EntityManager::add(AEntityAssetBase *actorIn){
+    if(actorIn){
+        EntityAsset typeAsset = actorIn->GetAssetType();
+        
+        AGcLauncher *gc = AGcLauncher::Instance();
+        if(gc){
+            // gc->Add<E>(uobject*, e);
+            gc->collection.Add<EntityAsset>(actorIn, typeAsset);
         }
     }
 }

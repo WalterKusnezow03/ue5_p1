@@ -33,8 +33,16 @@ AOutpost::AOutpost()
 void AOutpost::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	InitialMinimapRegister();
 }
+
+void AOutpost::InitialMinimapRegister(){
+	UpdateMarkerBasedOnState();
+	RegisterToMiniMap();
+}
+
+
 
 void AOutpost::init(){
 	createEntity(5, teamEnum::enemyTeam);
@@ -303,9 +311,9 @@ void AOutpost::tryliberate(){
 	if(getVectorReferenceFor(teamEnum::enemyTeam).size() <= 0){ //a oder w = w
 		alarmEnabled = false;
 		alertEnabled = false;
-		isLiberated = true; 
+		isLiberated = true;
+		UpdateMarkerBasedOnState();
 
-		
 		DebugHelper::showScreenMessage("liberated outpost", FColor::Yellow);
 	}
 }
@@ -333,6 +341,7 @@ void AOutpost::releaseAll(){
 	alarmEnabled = false;
 	alertEnabled = false;
 	isLiberated = false; //DO NOT LIBERATE WHEN DESPAWN ALL
+	UpdateMarkerBasedOnState();
 }
 
 /**
@@ -503,3 +512,24 @@ void AOutpost::resetAlarmPoles(){
 	}
 }
 
+
+
+void AOutpost::UpdateMarkerBasedOnState(){
+	if(isLiberated){
+		UpdateMarker(EMarkerType::EFlagWhite);
+	}else{
+		UpdateMarker(EMarkerType::EFlagRed);
+	}
+}
+
+void AOutpost::UpdateMarker(EMarkerType type){
+	if(type == EMarkerType::EFlagRed || type == EMarkerType::EFlagWhite){
+		typeMarker = type;
+		UpdateMiniMapRegistration();
+	}
+}
+
+
+EMarkerType AOutpost::GetMarkerType(){
+	return typeMarker;
+}

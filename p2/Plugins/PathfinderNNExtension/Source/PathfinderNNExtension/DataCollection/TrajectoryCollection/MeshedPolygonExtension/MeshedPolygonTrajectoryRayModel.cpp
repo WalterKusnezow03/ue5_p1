@@ -110,9 +110,9 @@ void FMeshedPolygonTrajectoryRayModel::ClearEnemyVisionData(){
 void FMeshedPolygonTrajectoryRayModel::EmbedEnemyVision(const TArray<FVisionCone *> &cones){
     ClearEnemyVisionData();
     if (cones.Num() > 0){
-        int rays = maxRaysPlayerVision / cones.Num();
+        int raysPerEnemy = maxRaysPlayerVision / cones.Num();
         for (int i = 0; i < cones.Num(); i++){
-            EmbedEnemyVision(cones[i], rays);
+            EmbedEnemyVision(cones[i], raysPerEnemy);
         }
     }
     //must be initialized to fixed size in any case!
@@ -205,12 +205,28 @@ void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
     outBuffer.SetNum(bufferIn.Num() * 2);
     int innerIndex = 0;
 
+    //split into different channels (x1...xn)(y1...yn)
     for (int i = 0; i < bufferIn.Num(); i++){
         const FIntPoint &current = bufferIn[i];
         outBuffer[innerIndex] = current.X;
-        outBuffer[innerIndex + 1] = current.Y;
-        innerIndex += 2;
+        outBuffer[bufferIn.Num() + innerIndex] = current.Y;
+        innerIndex ++;
     }
+    
+    
+    /*for (int i = 0; i < bufferIn.Num(); i++){
+        const FIntPoint &current = bufferIn[i];
+        outBuffer[innerIndex] = current.X;
+        innerIndex ++;
+    }
+
+    for (int i = 0; i < bufferIn.Num(); i++){
+        const FIntPoint &current = bufferIn[i];
+        outBuffer[innerIndex] = current.Y;
+        innerIndex++;
+    }*/
+
+
 }
 
 void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
@@ -221,19 +237,38 @@ void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
     outBuffer.SetNum(bufferIn.Num() * 3);
     int innerIndex = 0;
 
+    //split into different channels (x1...xn)(y1...yn)(t1...tn)
     for (int i = 0; i < bufferIn.Num(); i++){
         const FVector &current = bufferIn[i];
         outBuffer[innerIndex] = current.X;
-        outBuffer[innerIndex + 1] = current.Y;
-        outBuffer[innerIndex + 2] = current.Z;
-
-        innerIndex += 3;
+        outBuffer[bufferIn.Num() + innerIndex] = current.Y;
+        outBuffer[bufferIn.Num() * 2 + innerIndex] = current.Z;
+        innerIndex ++;
     }
+
+    /*
+    for (int i = 0; i < bufferIn.Num(); i++){
+        const FIntPoint &current = bufferIn[i];
+        outBuffer[innerIndex] = current.X;
+        innerIndex ++;
+    }
+
+    for (int i = innerIndex; i < bufferIn.Num(); i++){
+        const FIntPoint &current = bufferIn[i];
+        outBuffer[innerIndex] = current.Y;
+        innerIndex++;
+    }
+    
+    for (int i = innerIndex; i < bufferIn.Num(); i++){
+        const FIntPoint &current = bufferIn[i];
+        outBuffer[innerIndex] = current.Z;
+        innerIndex++;
+    }*/
 }
 
 // ---- REQUEST TO NN SIMPLE ACCESS ----
 bool FMeshedPolygonTrajectoryRayModel::PrepareAppendRequestBinary(TArray<uint8> &buffer){
-   
+    PrepareFitData();
     //all as FVector binary or flaot ?
     //unclear. Float might be better. / simple float.
        
@@ -253,21 +288,38 @@ bool FMeshedPolygonTrajectoryRayModel::PrepareAppendRequestBinary(TArray<uint8> 
 
     ValidateAllBuffers();
 
+    // ---- CHANNEL 1 -----
     //append player ray model
     TArray<float> asFloat;
     ToFloatBufferChannels(playerHits, asFloat);
     TemplateBufferStorageInterface::TAppendBuffer<float>(asFloat, buffer);
+    // ---- CHANNEL 1 -----
 
+    // ---- CHANNEL 2 -----
     //append enemy ray model
     ToFloatBufferChannels(enemyHits, asFloat);
     TemplateBufferStorageInterface::TAppendBuffer<float>(asFloat, buffer);
+    // ---- CHANNEL 2 -----
 
+    // ---- SEPERATE CHANNEL ----
     //append player trajectoris (x,y,t)
     ToFloatBufferChannels(playerTrajectories, asFloat);
     TemplateBufferStorageInterface::TAppendBuffer<float>(asFloat, buffer);
+    // ---- SEPERATE CHANNEL ----
    
     return true;
 }
+
+
+bool FMeshedPolygonTrajectoryRayModel::PrepareAppendRequestBinary(FONNXModelInput &input){
+    PrepareFitData();
+    // --- todo! ---
+
+    return false;
+}
+
+
+
 
 void FMeshedPolygonTrajectoryRayModel::ValidateAllBuffers(){
     ValidateEnemyHitsBuffer();

@@ -114,7 +114,7 @@ class NNServerPathfinder(nn_server.NNServer):
             print("NNServerPathfinder_RUN_NN")
             ##run net
             NetRef = self.GetNet()
-            if(NetRef):
+            if(NetRef != None):
                 self.resultData = NetRef.forwardBinData(data)
                 ##self.resultData = self.Net.forwardBinData(data)
                 self.bWaitingForGroundTruth = True
@@ -131,12 +131,18 @@ class NNServerPathfinder(nn_server.NNServer):
             if(self.bWaitingForGroundTruth):
 
                 self.bWaitingForGroundTruth = False ##ready for a new request
+
+                NetRef = self.GetNet()
+                if(NetRef != None):
+                    NetRef.showLoss(data)
+
+
                 if(self.trainLive):
                     print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
 
-                    NetRef = self.GetNet()
-                    if(NetRef):
+                    if(NetRef != None):
                         NetRef.Net.learnData(data)
+                    
 
                     ##self.Net.learnData(data)
                     print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))

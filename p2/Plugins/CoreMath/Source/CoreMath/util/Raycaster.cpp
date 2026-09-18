@@ -111,5 +111,39 @@ bool Raycaster::performRaycast(
 
 
 
+void Raycaster::project(
+    UWorld *world, 
+    FVector &pos, 
+    const FVector &dirScaled,
+    bool traceComplex
+){
+    FVector hit = pos;
+    bool ignored = performRaycast(
+        world,
+        pos,
+        dirScaled,
+        hit,
+        traceComplex
+    );
+    pos = hit;
+}
+
+void Raycaster::projectAll(
+    UWorld *world, 
+    TArray<FVector> &positions, 
+    const FVector &dirScaled,
+    bool traceComplex
+){
+    for (int i = 0; i < positions.Num(); i++){
+        FVector &current = positions[i];
+        project(
+            world, 
+            current, 
+            dirScaled,
+            traceComplex
+        );   
+    }
+}
+
 
     

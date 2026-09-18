@@ -4,15 +4,12 @@
 #include "AssetEnumCollection/assetEnums/EntityAsset.h"
 
 APlateCarrier *APlateCarrier::MakeInstance(){
-    if(EntityManager *ptr = EntityManager::instance()){
+    /*if(EntityManager *ptr = EntityManager::instance()){
         return ptr->TESpawnActor<APlateCarrier, EntityAsset>(EntityAsset::PlateCarrier);
     }
-    return nullptr;
+    return nullptr;*/
+    return TMakeInstance<APlateCarrier>(EntityAsset::PlateCarrier);
 }
-
-
-
-
 
 APlateCarrier::APlateCarrier() : Super(){
     PrimaryActorTick.bCanEverTick = true;

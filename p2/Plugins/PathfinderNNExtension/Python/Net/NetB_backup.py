@@ -6,7 +6,7 @@ import torch.nn as nn
 
 print("import torch done")
 
-import Plugins.PathfinderNNExtension.Python.Net.UNet as UNet
+import Plugins.PathfinderNNExtension.Python.Net.NetTypes.UNet as UNet
 from . import NetCheckpoint as NetCheckpoint
 
 print("import unet done")

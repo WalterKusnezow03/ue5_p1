@@ -4,5 +4,7 @@
 UENUM()
 enum class EntityAsset
 {
-    PlateCarrier
+    PlateCarrier,
+    Flag,
+    None,
 };

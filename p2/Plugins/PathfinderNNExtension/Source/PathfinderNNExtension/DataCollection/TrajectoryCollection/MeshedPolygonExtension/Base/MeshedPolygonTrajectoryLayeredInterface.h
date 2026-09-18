@@ -7,6 +7,7 @@
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
+#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
 
 #include "EPolygonSampleType.h"
 
@@ -37,7 +38,10 @@ public:
 
     virtual bool PrepareAppendRequestBinary(TArray<uint8> &buffer) = 0;
     virtual bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer) = 0;
-    
+
+    //onnx input
+    virtual bool PrepareAppendRequestBinary(FONNXModelInput &input) = 0;
+
     //rename to ResultDataSizeBytes, not grid.
     virtual int ResultDataSizeBytes() = 0; //ResultDataSizeBytes()
 
@@ -57,6 +61,12 @@ public:
     // ---- post process debug images ----
     virtual void ColoredHeatMap(
         Image &image,
+        FMeshedPolygonColorAttributes &attributes
+    ){};
+
+    // expose all channels as indivual layers
+    virtual void ColoredLayersMap(
+        TArray<Image> &image,
         FMeshedPolygonColorAttributes &attributes
     ){};
 

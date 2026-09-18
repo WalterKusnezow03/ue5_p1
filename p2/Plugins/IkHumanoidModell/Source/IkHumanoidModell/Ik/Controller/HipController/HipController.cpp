@@ -970,6 +970,9 @@ void HipController::stopLocomotion(){
 }
 
 void HipController::stopLocomotionOnceRotationHasFinished(){
+    if(currentControllerState == EHipControllerStates::EIdle){
+        return;
+    }
     locomotionStopRequestedOnceRotationIsFinished = true;
 }
 

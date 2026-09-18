@@ -43,21 +43,21 @@ void FMeshedPolygonColorAttributes::SetColors(
     playerPosResult = playerPosResultIn;
 }
 
-FColor FMeshedPolygonColorAttributes::ColorMinHeat(){
+const FColor & FMeshedPolygonColorAttributes::ColorMinHeat(){
     return colorMinHeat;
 }
-FColor FMeshedPolygonColorAttributes::ColorMaxHeat(){
+const FColor & FMeshedPolygonColorAttributes::ColorMaxHeat(){
     return colorMaxHeat;
 }
-FColor FMeshedPolygonColorAttributes::ColorPolygon(){
+const FColor & FMeshedPolygonColorAttributes::ColorPolygon(){
     return colorPolygonFlagged;
 }
-FColor FMeshedPolygonColorAttributes::ColorView(){
+const FColor & FMeshedPolygonColorAttributes::ColorView(){
     return colorViewGrid;
 }
-FColor FMeshedPolygonColorAttributes::ColorTrajectory(){
+const FColor & FMeshedPolygonColorAttributes::ColorTrajectory(){
     return colorTrjacetory;
 }
-FColor FMeshedPolygonColorAttributes::ColorPlayerResult(){
+const FColor & FMeshedPolygonColorAttributes::ColorPlayerResult(){
     return playerPosResult;
 }

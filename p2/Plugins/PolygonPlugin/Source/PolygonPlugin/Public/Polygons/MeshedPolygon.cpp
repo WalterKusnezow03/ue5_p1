@@ -953,6 +953,8 @@ void FMeshedPolygon::ResizeGrid(int x, int y){
             return;
         }
 
+        //resize edge set
+
         FVector dirStep(x * stepSizeSaved, y * stepSizeSaved, 0.0f);
         maxSaved = minSaved + dirStep;
 

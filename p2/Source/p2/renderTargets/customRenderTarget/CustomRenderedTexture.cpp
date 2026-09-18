@@ -96,6 +96,7 @@ FVector2D UCustomRenderedTexture::scalePercent(float percent){
 
 
 
+
 /// @brief canvas to draw from player / ui component (for example minimap actor)
 /// @param deltatime 
 void UCustomRenderedTexture::Tick(float deltatime){
@@ -118,6 +119,7 @@ void UCustomRenderedTexture::CanvasUpdate(UCanvas* Canvas, int32 Width, int32 He
     if(Canvas == nullptr){
         return;
     }
+    RenderCustomImage(Canvas);
 
     //override this function.
 }
@@ -183,6 +185,48 @@ void UCustomRenderedTexture::drawImage(
 
 
 
+
+
+#include "CanvasItem.h"
+
+void UCustomRenderedTexture::RenderCustomImage(UCanvas *canvas){
+    if(canvas && imageRendered){
+        int W = imageRendered->widthX();
+        int H = imageRendered->heightY();
+        for (int i = 0; i < W; i++){
+            for (int j = 0; j < H; j++){
+                // Explicit conversion normalizes 0..255 integers to 0.0..1.0 float space
+                FColor RawColor = imageRendered->GetPixel(i, j);
+                FLinearColor LinearColor = FLinearColor(RawColor).GetClamped(0.0f, 1.0f);;
+                LinearColor.A = 1.0f;
+                SetPixel(canvas, i, j, LinearColor);
+            }
+        }
+    }
+}
+
+void UCustomRenderedTexture::SetPixel(UCanvas* Canvas, float X, float Y, FLinearColor Color)
+{
+    if (!Canvas || !Canvas->Canvas) return;
+
+    // Zeichnet eine gefüllte 1x1 Box an Position (X, Y)
+    int PixelSize = 10;
+    FCanvasTileItem TileItem(
+        FVector2D(X * PixelSize, Y * PixelSize), 
+        FVector2D(PixelSize, PixelSize), 
+        Color
+    );
+    
+    TileItem.BlendMode = SE_BLEND_Translucent;
+    Canvas->Canvas->DrawItem(TileItem);
+
+    /*int sizeBox = 1000;
+    FCanvasBoxItem BoxItem(FVector2D(X, Y), FVector2D(sizeBox, sizeBox));
+    BoxItem.SetColor(Color);
+    BoxItem.LineThickness = 1.0f; // Oder gefüllt rendern lassen
+    
+    Canvas->Canvas->DrawItem(BoxItem);*/
+}
 
 
 

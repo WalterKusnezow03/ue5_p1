@@ -55,11 +55,14 @@ public:
 
     bool InitMiniMap(AActor *player);
 
+    void RegisterActorsToMiniMap(TArray<AActor *> &actors, EMarkerType type);
     void RegisterActorToMiniMap(AActor *actor, EMarkerType type);
     void UnRegisterActorFromMiniMap(AActor *actor);
 
-protected:
     UMiniMapWidget *MiniMapCasted();
+
+protected:
+    
 
 
     void UpdateHealthText(FString text);

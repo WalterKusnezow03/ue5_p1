@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "NNRequestHandle.h"
+#include "PathfinderNNExtension/Interface/HeatMapReceiverCollection/HeatMapReceivers.h"
 #include "NNRequestHandleInterface.generated.h"
 
 // This class does not need to be modified.
@@ -50,4 +51,14 @@ public:
 	virtual bool HeatMapSaveOnEndEnabled(){
 		return false;
 	}
+
+	//widget display of heatmap / other sample type
+	void SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener){
+		if(listener){
+			GetHeatMapReceivers().Subscribe(listener);
+		}
+	}
+	
+protected:
+	virtual HeatMapReceivers &GetHeatMapReceivers() = 0;
 };

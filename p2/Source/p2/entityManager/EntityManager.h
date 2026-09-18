@@ -40,6 +40,7 @@
 
 class AWorldDynamicWidgetActor;
 class AVFXActor;
+class AEntityAssetBase;
 
 /**
  * OBJECT POOL MANAGER
@@ -88,6 +89,7 @@ public:
 	void add(AcustomMeshActor *meshActorIn);
 	void add(AWorldDynamicWidgetActor *actorIn);
 	void add(AVFXActor *actorIn);
+	void add(AEntityAssetBase *flagIn);
 
 	//spawn section
 	AHumanEntityScript *spawnHumanEntity(UWorld *world, FVector &Location, teamEnum team);

@@ -12,10 +12,12 @@
 #include "PathfinderNNExtension/Storage/FPathFinderNNSampleSet.h"
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
+#include "PathfinderNNExtension/Interface/HeatMapReceiverCollection/HeatMapReceivers.h"
 
 
 //Base Handle for requests: register actors / prepare data
 //and process prediction data
+//will also store the selected model type by "EPolygonSampleType"
 class PATHFINDERNNEXTENSION_API NNRequestHandle {
 
 public:
@@ -36,14 +38,21 @@ public:
     void EnableHeatMapSaveOnEnd(bool flag);
     bool HeatMapSaveOnEndEnabled();
 
-    EPolygonSampleType SelectedModel();
+    //todo: add sample type swicther
+    EPolygonSampleType GetSampleType();
+
+    void UpdateSampleType(EPolygonSampleType type);
+
+    //widget related coloring, external call
+    //also provides the pivot of the requested data in world space
+    void ColorizedWidgetImage(Image &image, FVector &worldPosPivot);
+
+    HeatMapReceivers &GetHeatMapReceivers();
 
 private:
-    //todo: add sample type swicther
-    EPolygonSampleType sampleType = EPolygonSampleType::EMeshedPolygonTrajectoryLayered; //default model
-
     FPathFinderNNSampleSet batchTask;
     FPathFinderNNRequestQueue requests;
+
     NActorTrajectoryTracker actorTracker;
     PredictionTask task;
 
@@ -55,6 +64,10 @@ private:
         FPathFinderNNRequestPackage *package,
         FNNRequestHandleTickData &tickData
     );
+    bool PredictNodeAllowed();
+    bool PrepareTaskFor(FPathFinderNNRequestPackage *package);
+    void UpdateRequestBinaryFor(FNNRequestHandleTickData &tickData);
+
     void TickTask(FNNRequestHandleTickData &tickData);
     void TickReadDataResult(FNNRequestHandleTickData &tickData);
     
@@ -62,10 +75,16 @@ private:
 
     bool saveHeatMapsEnabled = false; //is set default to false: no heatmaps output by default
     TArray<Image> heatMaps;
+    void AddHeatMapSampleToStorage(Image &image);
     void SaveHeatMapsOnEndPlay();
+
+    //interface for heatmap listening (widget)
+    HeatMapReceivers heatMapReceivers;
+    void NotifyHeatMapReceivers(Image &image);
 
     bool TaskCompleted();
 
     void GenerateAndNotifyResultPositionsForRequestQueue();
     void GenerateResultImage();
+    void GenerateResultImageChannels();
 };

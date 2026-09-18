@@ -62,7 +62,7 @@ void ANNSocket::CloseSharedMemory(){
 }
 
 void ANNSocket::WriteData(FString name, const TArray<uint8> &data){
-    DebugHelper::logMessage(FString::Printf(TEXT("ANNSocket::WriteData %s %d"), *name, data.Num()));
+    //DebugHelper::logMessage(FString::Printf(TEXT("ANNSocket::WriteData %s %d"), *name, data.Num()));
     frameManager.WriteData(name, data);
 }
 

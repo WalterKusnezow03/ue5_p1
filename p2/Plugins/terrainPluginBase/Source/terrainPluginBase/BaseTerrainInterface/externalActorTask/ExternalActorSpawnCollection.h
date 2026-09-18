@@ -52,4 +52,6 @@ private:
     ExternalActorSpawnPositions fallback;
     FString worldName;
     bool WorldNameValid();
+
+    bool IsDifferentWorld(FString name);
 };

@@ -62,6 +62,9 @@ public:
     bool PrepareAppendRequestBinary(TArray<uint8> &buffer) override;
     bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer) override;
 
+    //onnx input
+    bool PrepareAppendRequestBinary(FONNXModelInput &input) override;
+
     int ResultDataSizeBytes() override;
 
     virtual void AppendGroundTruth(TArray<uint8> &buffer) override;
@@ -96,8 +99,8 @@ protected:
     void ClearTrajectoryData();
     void ClearEnemyVisionData();
 
-    int maxRaysPlayerVision = 360;
-    int maxPlayerTrajectories = 20;
+    int maxRaysPlayerVision = 360; //total rays saved for player and bot (*2)
+    int maxPlayerTrajectories = 10;
 
     void EmbedRayModelFromTrajectories(TArray<Trajectory> &trajectories);
 

@@ -79,9 +79,17 @@ void P2AssetLoader::loadEntities(){
     AssetLoader::LoadAndSaveAssetToManager<EntityAsset, UClass>(
         EntityAsset::PlateCarrier, // track in asset manager
         "Game",                    // like "Game" for game or any other plugin name
-        "Prefabs/PlateCarrier",    // like: "Prefabs/Weapons/attachments", no trailing slash
+        "Prefabs/entityAssets/PlateCarrier",    // like: "Prefabs/Weapons/attachments", no trailing slash
         "PlateCarrierBP"           // Just the file name as displayed
     );
+
+    AssetLoader::LoadAndSaveAssetToManager<EntityAsset, UClass>(
+        EntityAsset::Flag, // track in asset manager
+        "Game",                    // like "Game" for game or any other plugin name
+        "Prefabs/entityAssets/Flag",    // like: "Prefabs/Weapons/attachments", no trailing slash
+        "FlagBP"           // Just the file name as displayed
+    );
+
 }
 
 

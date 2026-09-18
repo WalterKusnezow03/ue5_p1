@@ -74,6 +74,10 @@ public:
     
     //connection state of socket to display in widget
     virtual bool NNIsConnected() override;
+    //heatmap / other widget for minimap
+    
+
+    virtual HeatMapReceivers &GetHeatMapReceivers() override;
 
     //notified by all entites whether the player
     //is visible or not
@@ -88,7 +92,7 @@ protected:
     void WriteDataRequest(TArray<uint8> &data, int resultBytes);
     void WriteDataGroundTruth(TArray<uint8> &buffer);
    
-
+    void UpdateSelectedModelToSharedMemory();
 
 
     //using ANNSocket::WriteData;
@@ -102,7 +106,7 @@ protected:
 
 
 
-    
+        
 
 
 
@@ -110,4 +114,6 @@ protected:
     
 private:
     bool CloseTrainSharedMemoryFrame(const FString &message);
+
+    
 };

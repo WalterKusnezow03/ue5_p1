@@ -29,6 +29,8 @@
 
 #include "p2/PlateCarrier/PlateCarrier.h"
 
+#include "p2/entities/NN/NNHeatMapActor.h"
+
 
 // Sets default values
 AplayerScript::AplayerScript() : Super()
@@ -50,6 +52,7 @@ void AplayerScript::BeginPlay()
     CreateUiHudActorOnBeginPlay();
     //createMiniMap();
 
+    ANNHeatMapActor::MakeInstanceAttachTo(CameraComponent, FVector(100,100,25));
 }
 
 void AplayerScript::PickupDefaultWeaponOnBeginPlay(){

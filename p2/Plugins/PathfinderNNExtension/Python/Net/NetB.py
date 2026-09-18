@@ -6,7 +6,8 @@ import torch.nn as nn
 
 print("import torch done")
 
-from . import UNet as UNet
+from .NetTypes import UNet as UNet
+from.TensorInput import FTensor
 
 from . import NetBase as NetBase
 
@@ -26,9 +27,15 @@ class NetB(NetBase.NetBase):
     def InitializeTensorAndPathNames(self):
         
         #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
-        self.W = 144
-        self.H = 144
-        self.IN_CHANNELS = 4
+        Tensor = FTensor.FTensor(144,144,4)
+        self.Tensors = [Tensor]
+
+        self.outputTensor = FTensor.FTensor(144,144,1) ##output tensor
+
+        ##self.W = 144
+        ##self.H = 144
+        ##self.IN_CHANNELS = 4
+
         self.OUT_CHANNELS = 1
 
         self.checkpointPath = "PyCheckpoint/netBcheckpoint.pth"
@@ -37,9 +44,11 @@ class NetB(NetBase.NetBase):
         self.logname = "NNServerPathfinder_NetB"
         #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
 
-    ##override
+    ##override - called on construct aswell
     def ReInitNet(self):
-        channelsIn = self.IN_CHANNELS ##4
+        Tensor = self.GetInputTensor(0)
+
+        channelsIn = Tensor.Channels ##4
         channelsOut = self.OUT_CHANNELS ##1
         self.net = UNet.UNet(channelsIn, channelsOut)
         ##move to gpu if available
@@ -48,7 +57,9 @@ class NetB(NetBase.NetBase):
 
         ##MSE aber bei falschem peak: 50 mal mehr loss, 1.0 + ... grund signal, 0 ist 0 aber nicht gut.
         ##self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 50.0)).mean()
-        self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 100.0)).mean()
+
+        factor = 100.0
+        self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * factor)).mean()
 
 
         self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3) ## lr=1e-4

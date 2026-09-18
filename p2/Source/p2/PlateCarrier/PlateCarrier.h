@@ -6,12 +6,14 @@
 #include "p2/PlateCarrier/MagSocket/PlateCarrierMagSocket.h"
 #include "p2/PlateCarrier/virtualHand/MagSwapProcess.h"
 #include "p2/PlateCarrier/MagSocket/MagSocketType.h"
+#include "p2/entities/EntityAssetBase/EntityAssetBase.h"
 
 #include "PlateCarrier.generated.h"
 
 UCLASS()
 class P2_API APlateCarrier : 
-public AActorBase,
+//public AActorBase,
+public AEntityAssetBase,
 public IDamageinterface
 {
     GENERATED_BODY()
@@ -33,6 +35,10 @@ public:
     virtual void setTeam(teamEnum t) override;
     virtual teamEnum getTeam() override;
     // --- IDamageInterface override ---
+
+    virtual EntityAsset GetAssetType(){
+        return EntityAsset::PlateCarrier;
+    }
 
 
     //get mag static mesh / scene componenent

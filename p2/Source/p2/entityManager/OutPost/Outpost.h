@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameCore/team/teamEnum.h"
 #include <map>
+#include "p2/entetiesBase/miniMapRegisteredActor/MiniMapRegisteredActor.h"
 #include "Outpost.generated.h"
 
 //forward declaration
@@ -13,7 +14,7 @@ class AHumanEntityScript;
 class AOutpostAlarmPole;
 
 UCLASS()
-class P2_API AOutpost : public AActor
+class P2_API AOutpost : public AMiniMapRegisteredActor
 {
 	GENERATED_BODY()
 	
@@ -31,6 +32,8 @@ public:
 	void init();
 
 	void ClearAllOnEndPlay();
+
+	virtual EMarkerType GetMarkerType() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -102,8 +105,10 @@ private:
 	void pickTeamLeaderIfNeeded(teamEnum team);
 	bool newTeamLeaderNeeded(teamEnum team);
 
-
-
+	EMarkerType typeMarker = EMarkerType::EFlagRed;
+	void UpdateMarkerBasedOnState();
+	void UpdateMarker(EMarkerType type);
+	void InitialMinimapRegister();
 
 	std::vector<AOutpostAlarmPole *> alarmPoles;
 	void resetAlarmPoles();

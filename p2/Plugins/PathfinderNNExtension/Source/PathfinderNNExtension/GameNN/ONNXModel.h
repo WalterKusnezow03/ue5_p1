@@ -3,8 +3,12 @@
 #include "CoreMinimal.h"
 #include "onnxruntime_cxx_api.h" 
 #include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
+#include "PathfinderNNExtension/GameNN/Tensor/FTensorSetup.h"
+#include "PathfinderNNExtension/GameNN/Tensor/FTensor.h"
 
-
+/// @brief Will Support Multi or Single Input nets, with single output nets
+///
+/// CAUTION: MULTI TENSOR INPUT NOT SUPPORTED YET!
 class PATHFINDERNNEXTENSION_API ONNXModel {
 public:
     ONNXModel();
@@ -37,21 +41,22 @@ private:
 
     bool Uint8ToFloatConvertable(const TArray<uint8> &buffer) const;
 
-    FString MakePath();
-    FString PluginDir(FString pluginName);
+   
     
     void LoadModel(FString ModelPath);
 
-    void InitEnviroment(FString ModelPath);
+    bool InitEnviroment(FString ModelPath);
     void InitInputAndOutPutNames();
-    void InitTensor();
-    void InitTensor(int W, int H, int channels);
+
+    void InitTensors();
+    void AddInputTensors(TArray<FTensorSetup> &tensorBluePrints);
+    void AddInputTensor(FTensorSetup &other);
+    //void AddInputTensor(int W, int H, int channels);
 
     
     
     
-    std::vector<int64_t> inputDimensions; // = { 1, channels, H, W };
-    std::vector<float> inputTensorValues;//write to this ref data
+    
 
 
     //setup data
@@ -65,15 +70,24 @@ private:
     Ort::Session *Session = nullptr;
     
 
-    //tensor init 
+    //tensor init
+    std::vector<Ort::Value> inputTensorsRaw;
+    TArray<FTensor> inputTensors;
     Ort::MemoryInfo *memoryInfo = nullptr;
-    Ort::Value inputTensor;
+
+    // --- deprecated ---
+    //std::vector<int64_t> inputDimensions; // = { 1, channels, H, W };
+    //std::vector<float> inputTensorValues;//write to this ref data
+    
+    //Ort::Value inputTensor; //is not changed
+    // --- deprecated ---
+
 
     std::vector<const char*> InputNames;
     std::vector<const char*> OutputNames;
 
-    bool CopyDataToTensor(TArray<float> &bufferIn);
-    bool CopyDataToTensor(const TArrayView<float> &buffer);
+    bool CopyDataToTensor(TArray<float> &bufferIn, int index);
+    bool CopyDataToTensor(const TArrayView<float> &buffer, int index);
 
     bool Forward(std::vector<Ort::Value> &output);
     bool Forward(TArray<float> &bufferPredictionOut);

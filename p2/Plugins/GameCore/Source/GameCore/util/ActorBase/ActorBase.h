@@ -10,6 +10,25 @@ class GAMECORE_API AActorBase : public AActor {
     GENERATED_BODY()
 
 public:
+    template <typename T>
+    static T *TMakeInstance(UWorld *world){
+        if(world != nullptr){
+
+            UClass *toSpawn = T::StaticClass();
+            if(toSpawn){
+                
+                FActorSpawnParameters SpawnParams;
+                FVector Location;
+                AActor *spawned = world->SpawnActor<AActor>(toSpawn, Location, FRotator::ZeroRotator, SpawnParams); 
+                if(spawned){
+
+                    T *casted = Cast<T>(spawned);
+                    return casted;
+                }
+            }
+        }
+        return nullptr;
+    }
 
     FVector worldToLocalPosition(const FVector &worldhit);
 

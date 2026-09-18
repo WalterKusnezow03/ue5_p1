@@ -25,3 +25,6 @@ public:
     //todo
     virtual FVisionCone &GetVisionCone() = 0;
 };
+
+
+//IPathfinderNNHeatMapReceiver

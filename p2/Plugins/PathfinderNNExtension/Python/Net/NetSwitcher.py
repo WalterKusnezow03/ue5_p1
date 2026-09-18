@@ -2,6 +2,7 @@
 
 
 from . import NetB as NetB
+from . import NetC as NetC
 
 class NetSwitcher:
     def __init__(self):
@@ -11,7 +12,7 @@ class NetSwitcher:
 
     def autoLoadNets(self):
         self.netMap[0] = NetB.NetB()
-        self.netMap[1] = None
+        self.netMap[1] = NetC.NetC()
 
         return
 

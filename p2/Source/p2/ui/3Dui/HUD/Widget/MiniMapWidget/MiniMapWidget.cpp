@@ -38,6 +38,7 @@ void UMiniMapWidget::UpdatePlayerTransformToMinimapData(){
     }
 }
 
+//OnTick
 void UMiniMapWidget::UpdateMarkers(){
     //mark all free, and create "new" ones from the cache (none are really deleted.)
     MarkAllMarkersFree();
@@ -57,11 +58,11 @@ void UMiniMapWidget::UpdateMarkers(){
 
 //only call after mark all markersfree
 void UMiniMapWidget::UpdateMarkers(
-    const std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &mapIn
+    const std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> &mapIn
 ){
     for(auto &pair : mapIn){
         EMarkerType type = pair.first;
-        const TArray<FMiniMapMarkerTransform> &array = pair.second;
+        const TArray<FMiniMapMarkerSetup> &array = pair.second;
         UpdateMarkers(type, array);
     }
 }
@@ -69,12 +70,12 @@ void UMiniMapWidget::UpdateMarkers(
 //only call from map
 void UMiniMapWidget::UpdateMarkers(
     EMarkerType type,
-    const TArray<FMiniMapMarkerTransform> &array
+    const TArray<FMiniMapMarkerSetup> &array
 ){
     //just get since all markers were marked free before 
     for(int i = 0; i < array.Num(); i++){
-        const FMiniMapMarkerTransform &targetTransform = array[i];
-        UMiniMapMarker *current = CreateMarker(type, targetTransform);
+        const FMiniMapMarkerSetup &targetSetup = array[i];
+        UMiniMapMarker *current = CreateMarker(type, targetSetup);
     }
 }
 
@@ -119,11 +120,22 @@ void UMiniMapWidget::MarkAllMarkersFree(){
 
 UMiniMapMarker *UMiniMapWidget::CreateMarker(
     EMarkerType type,
-    const FMiniMapMarkerTransform &transformIn
+    const FMiniMapMarkerSetup &setupIn
 ){
     //create marker and after that set pos
     if(UMiniMapMarker *item = CreateMarker(type)){
-        item->UpdateTransform(transformIn);
+        item->UpdateTransform(setupIn.GetTransformConst());
+
+        //update image data if allowed
+        if(type == EMarkerType::ECustomDrawMarker){
+            if(setupIn.HasImageData()){
+                //const Image *GetImageDataConst() const
+                item->UpdateCustomMarkerImage(
+                    setupIn.GetImageDataConst(),
+                    setupIn.GetSizeOfWidgetDesired()
+                );
+            }
+        }
 
         return item;
     }
@@ -131,11 +143,13 @@ UMiniMapMarker *UMiniMapWidget::CreateMarker(
 }
 
 UMiniMapMarker *UMiniMapWidget::CreateMarker(EMarkerType type){
+    //try find from freed up markers
     if(UMiniMapMarker *marker = FindMarker()){
         marker->SetType(type);
         marker->MarkFree(false);
         return marker;
     }
+    //create marker
     UMiniMapMarker* created = CreateWidget<UMiniMapMarker>(GetWorld(), widgetClassForItem);
     if(created){
 

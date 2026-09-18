@@ -69,22 +69,42 @@ void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackag
 
 
 
-
-
-
-
-
-
-void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
+//start task and refill / reload the polygon data cache
+//to be appended to request binary / model input
+void PredictionTask::StartTaskBeforePrepareBinary(
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache
+){
     taskStarted = true;
     taskCompleted = false;
-
-    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
-
     PrepareRequestMap(polygonDataCache);
+}
 
-    //DebugHelper::logMessage(FString::Printf(TEXT("numedgeDebug PredictionTask num edges %d"), polygonDataCache.NumEdges()));
-    //400
+
+
+//onnx input for ONNX Model
+void PredictionTask::UpdateSampleType(EPolygonSampleType type){
+    sampleType = type;
+}
+
+EPolygonSampleType PredictionTask::GetSampleType(){
+    return sampleType;
+}
+
+void PredictionTask::PrepareRequestBinary(FONNXModelInput &model){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+    StartTaskBeforePrepareBinary(polygonDataCache);
+    
+    //if appending binary data failed: reset task and clean buffer
+    if(!polygonDataCache.PrepareAppendRequestBinary(model)){
+        model.Empty();
+        Reset(); //clear task.
+        return;
+    }
+}
+
+void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+    StartTaskBeforePrepareBinary(polygonDataCache);
 
     //if appending binary data failed: reset task and clean buffer
     if(!polygonDataCache.PrepareAppendRequestBinary(buffer)){
@@ -94,6 +114,10 @@ void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
     }
 }
 
+
+//deprecated naming but collects all polygon data from the area
+//requested, prepares the data to fit unet or other
+//and embeds the player (tracked actor) trajectories
 void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface &polygonData){
     if(trackedActorPtr){
         polygonData.ClearFlags(); //clear previous map
@@ -114,8 +138,7 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface 
             radiusMeter * 100.0f,
             polygonData
         );
-        //polygonData.ResizeGrid144();
-        polygonData.PrepareFitData();
+        
 
         //invert flag map for 1 possible position and 0 not possible
         //might be better for training
@@ -125,6 +148,8 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface 
         TArray<Trajectory> trajectories = trackedActorPtr->worldTrajectoriesNormalizedTime(); 
         // trackedActorPtr->worldTrajectories();
         polygonData.EmbedTrajectories(trajectories);
+
+        //polygonData.PrepareFitData();
     }
 }
 
@@ -197,6 +222,15 @@ void PredictionTask::ColoredHeatMap(
     taskCompleted = true;
 }
 
+void PredictionTask::ColoredLayersMap(
+    TArray<Image> &images,
+    FMeshedPolygonColorAttributes &attributes
+){
+    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+    polygonDataCache.ColoredLayersMap(
+        images, attributes
+    );
+}
 
 
 

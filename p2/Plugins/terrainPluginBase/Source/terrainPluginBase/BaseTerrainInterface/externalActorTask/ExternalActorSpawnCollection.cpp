@@ -113,7 +113,16 @@ void ExternalActorSpawnCollection::Save(){
     }
 }
 
+bool ExternalActorSpawnCollection::IsDifferentWorld(FString name){
+    return name.Equals(worldName);
+}
+
 bool ExternalActorSpawnCollection::Load(FString worldNameIn){
+    if(IsDifferentWorld(worldNameIn)){
+        Save();
+    }
+
+    Clear();
     SetWorldName(worldNameIn);
     if(WorldNameValid()){
         ExternalActorSpawnCollectionStorageInterface interface;

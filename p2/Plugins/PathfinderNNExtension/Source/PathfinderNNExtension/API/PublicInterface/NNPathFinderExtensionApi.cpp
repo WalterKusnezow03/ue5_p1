@@ -56,6 +56,15 @@ void NNPathFinderExtensionApi::SubscribeMessageListener(INNPathFinderSocketMessa
     }
 }
 
+void NNPathFinderExtensionApi::SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener){
+    if(INNRequestHandleInterface *interface = GetInstance()){
+        interface->SubscribeHeatMapListener(listener);
+    }
+}
+
+
+
+
 
 //use this to update the player hud ui to show the nn connection state 
 //instead of using debug print.

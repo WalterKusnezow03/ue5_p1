@@ -83,6 +83,7 @@ void ANNPathFinderSocket::Tick(float deltatime){
     //LoadBatchIfNotDoneYet(); //to:
     //Load Batch if not done yet / training 
     if(trainingStartAllowed){
+        //if handler updated the batch binary, write it.
         if(requestTickData.bBatchBinaryOutChanged){
             WriteData(frameNameBatch, requestTickData.batchDataOut);
             DebugHelper::logMessage("WRITE TRAIN BATCH ", requestTickData.batchDataOut.Num());
@@ -102,6 +103,12 @@ void ANNPathFinderSocket::Tick(float deltatime){
         DebugHelper::logMessage("WRITE GROUND TRUTH ", requestTickData.groundTruthBinaryOut.Num());
     }
 
+    //---> hier richtig? Unklar.
+    //write NN type updates from Request Handle (for now)
+    UpdateSelectedModelToSharedMemory();
+
+
+    //write request data
     if(requestTickData.bRequestBinaryOutChanged){
         DebugHelper::logMessage("WRITE REQUEST ", requestTickData.requestDataOut.Num());
         WriteDataRequest(
@@ -111,26 +118,19 @@ void ANNPathFinderSocket::Tick(float deltatime){
     }
 
     
-    
-
-    
-   
-
-    //LoadBatchIfNotDoneYet();
-    //actorTracker.Tick(deltatime);
-    
-    //tick in connected? samples can be collected without.
-    //TickTask();
-    
-    
-    //TickReadDataResult();
-    //DebugHelper::showScreenMessage("ANNPathFinderSocket::Tick", FColor::Cyan);
-
-
-    //if a task will be completed: reload next task automatically.
-    //PredictNextTask();
 }
 
+void ANNPathFinderSocket::UpdateSelectedModelToSharedMemory(){
+
+    // --- todo: only on change model ---
+
+    EPolygonSampleType type = requestHandle.GetSampleType();
+
+    //write to buffer / shared memory
+    TArray<uint8> data;
+    EPolygonSampleTypeNameConversion::WriteNNTypeIntTo(type, data);
+    WriteData(frameNameNNType, data);
+}
 
 void ANNPathFinderSocket::SetTrainingAllowed(){
     trainingStartAllowed = true;
@@ -273,4 +273,11 @@ bool ANNPathFinderSocket::CloseTrainSharedMemoryFrame(const FString &message){
         return true;
     }
     return false;
+}
+
+
+
+
+HeatMapReceivers &ANNPathFinderSocket::GetHeatMapReceivers(){
+    return requestHandle.GetHeatMapReceivers();
 }

@@ -129,7 +129,7 @@ void AHumanEntityScript::Tick(float DeltaTime){
 
         //addition to the base entity: attack the player if in vision
         //adaptWeaponToCurrentPlayerVisibilty();
-        ResetRequestAllowedFlagIfCanSeePlayerAgain();
+        ResetRequestAllowedFlagIfCanSeePlayerAgain(DeltaTime);
         PerformActionsBasedOnPlayerVisibility();
 
         //if needed one is found
@@ -157,9 +157,15 @@ void AHumanEntityScript::PerformActionsBasedOnPlayerVisibility(){
     adaptWeaponToCurrentPlayerVisibilty(); 
 
     //any bot can share memory whether player was seen
+    UpdateWaitForGroundTruthStatusIfPlayerVisible();
     FlagPlayerVisibleToNNInterface();
     RequestPlayerPredictionFromNNInterface();
 }
+
+
+
+
+
 
 void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
     if(canSeePlayer && spottedPlayer){
@@ -211,11 +217,20 @@ void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
 
 
 //process requested positions
-void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(){
+void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(float deltatime){
     //since bWaitForPlayerVisibleAfterRequest is making
     //the bot wait before performing new requests
     if(canSeePlayer){
-        bWaitForPlayerVisibleAfterRequest = false; //testing needed!
+        //tick the delay before creating a new ground truth
+        //the player needs some time to be behind cover.
+        //creates more game realistic result, rather than instant
+        nnWaitDelay.Tick(deltatime);
+        if (nnWaitDelay.timesUp())
+        {
+            bWaitForPlayerVisibleAfterRequest = false; //is tested
+        }
+        
+        //bWaitForPlayerVisibleAfterRequest = false; //is tested
     }
 }
 
@@ -226,33 +241,45 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         positions.Num()
     );
     if(positions.Num() > 0){
-        DebugHelper::showScreenMessage(message, FColor::Orange);
+        //DebugHelper::showScreenMessage(message, FColor::Orange);
         DebugHelper::logMessage(message);
 
-        //debug draw
-        for (int i = 0; i < positions.Num(); i++){
-            FVector current = positions[i];
-            FVector actorLocation = humanoidPluginController.GetLocation();
-            current.Z = actorLocation.Z;
+        nnResultFlagManager.UpdateFlagPositions(positions, GetWorld());
+        nnResultFlagManager.DrawFlagPositionsFrom(
+            humanoidPluginController.GetLocation(),
+            GetWorld()
+        );
 
-            DebugHelper::showLineBetween(
-                GetWorld(),
-                current,
-                actorLocation,
-                FColor::Green,
-                1.0f
-            );
-        }
+        //wait for player
+        float timeToWait = 5.0f;
+        actionManager.changeToActionTimed(EActionType::EWait, timeToWait);
+        LookAt(positions[0]); //debug wise look at first position / might also be only one.
+
+        //update minimap - is auto updated
+        //AworldLevel::uiSimulation.Notify(EUiEvent::HudMiniMapUpdateNNHeatMap);
 
         //process check if visible at all
 
         //notifiy team
 
-        //wait for player visible after prediction ask
+        //wait for player visible after next / new prediction request!
         bWaitForPlayerVisibleAfterRequest = true;
+
+        //add delay before creating a new ground truth for the reapperance position
+        //the player needs some time to be behind cover.
+        //creates more game realistic result, rather than instant
+        float timeDelay = 1.0f;
+        nnWaitDelay.Begin(timeDelay);
     }
 }
 
+
+void AHumanEntityScript::UpdateWaitForGroundTruthStatusIfPlayerVisible(){
+    if(canSeePlayer){
+        //abort wait since player is visible again
+        actionManager.abortTimerOnAction(EActionType::EWait);
+    }
+}
 
 
 

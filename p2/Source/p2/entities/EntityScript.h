@@ -174,7 +174,7 @@ protected:
 	//TODO!
 	class Timer despawnBodyTimer;
 
-	//NEW ACTION MANAGER
+	//NEW ACTION MANAGER TO LET BOT ACT UPON ACTION!
 	void actUponCurrentAction(float DeltaTime);
 	ActionManager actionManager;
 

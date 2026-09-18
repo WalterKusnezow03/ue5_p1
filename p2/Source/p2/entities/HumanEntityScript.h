@@ -10,6 +10,7 @@
 
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
 #include "PathfinderNNExtension/Interface/VisionCone.h"
+#include "p2/entities/NN/NNResultFlagManager.h"
 
 #include "HumanEntityScript.generated.h"
 
@@ -49,7 +50,7 @@ private:
 	//weapon
 	class Aweapon *weaponPointer;
 
-	void ResetRequestAllowedFlagIfCanSeePlayerAgain();
+	void ResetRequestAllowedFlagIfCanSeePlayerAgain(float deltatime);
 	void PerformActionsBasedOnPlayerVisibility();
 	void adaptWeaponToCurrentPlayerVisibilty();
 
@@ -98,6 +99,12 @@ protected:
 	void FlagActorVisibleToNNInterface(AActor *actor);
 
 	void RequestPlayerPredictionFromNNInterface();
+
+	//NN Result Process Visual
+	NNResultFlagManager nnResultFlagManager;
+	bool bWaitForPlayerGroundTruth = true;
+	Timer nnWaitDelay;
+	void UpdateWaitForGroundTruthStatusIfPlayerVisible();
 
 public:
 	virtual void ResponseNNPositions(const TArray<FVector> &positions) override;

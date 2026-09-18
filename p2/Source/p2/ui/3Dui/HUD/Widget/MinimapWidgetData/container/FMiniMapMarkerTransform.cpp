@@ -9,6 +9,10 @@ FMiniMapMarkerTransform::~FMiniMapMarkerTransform(){
 }
 
 FMiniMapMarkerTransform::FMiniMapMarkerTransform(const FVector2D &posIn, float angleIn){
+    Setup(posIn, angleIn);
+}
+
+void FMiniMapMarkerTransform::Setup(const FVector2D &posIn, float angleIn){
     SetAngle(angleIn);
     SetLocation(posIn);
 }

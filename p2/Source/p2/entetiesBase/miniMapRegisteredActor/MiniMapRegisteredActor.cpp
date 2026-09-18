@@ -9,18 +9,29 @@ AMiniMapRegisteredActor::AMiniMapRegisteredActor() : Super() {
 
 
 void AMiniMapRegisteredActor::UnRegisterFromMiniMap(){
-    AworldLevel::uiSimulation.Notify(
+    if(AworldLevel::uiSimulation.Notify(
         EUiEvent::HudMiniMapUnRegisterActor, 
         this
-    );
+    )){
+        queuedForRemoveFromMinimap = false;
+    }else{
+        queuedForRemoveFromMinimap = true;
+    }
+
+    queuedForAddToMinimap = false;
 }
 
 void AMiniMapRegisteredActor::RegisterToMiniMap(){
-    AworldLevel::uiSimulation.Notify(
+    if(AworldLevel::uiSimulation.Notify(
         EUiEvent::HudMiniMapRegisterActor, 
         this,
         GetMarkerType() //must be overriden by subclasses.
-    );
+    )){
+        queuedForAddToMinimap = false;
+    }else{
+        queuedForAddToMinimap = true;
+    }
+    queuedForRemoveFromMinimap = false;
 }
 
 // ----- mini map ------
@@ -33,3 +44,14 @@ void AMiniMapRegisteredActor::EndPlay(const EEndPlayReason::Type EndPlayReason){
     UnRegisterFromMiniMap();
     Super::EndPlay(EndPlayReason);
 }
+
+void AMiniMapRegisteredActor::Tick(float deltatime){
+    Super::Tick(deltatime);
+    if(queuedForAddToMinimap){
+        RegisterToMiniMap();
+    }
+    if(queuedForRemoveFromMinimap){
+        UnRegisterFromMiniMap();
+    }
+}
+

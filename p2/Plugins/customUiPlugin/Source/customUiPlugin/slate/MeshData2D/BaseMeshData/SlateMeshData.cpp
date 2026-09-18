@@ -587,6 +587,19 @@ void SlateMeshData::UpdateCursorColor(FLinearColor &color){
 }
 
 
+void SlateMeshData::AddAmbientPixelColor(
+    FVector2D pixelPos, 
+    FLinearColor color
+){
+    float dirX = boundingBox.sizeX();
+    float dirY = boundingBox.sizeY();
+    if(dirX > 0.01f && dirY > 0.01f){
+        FVector2D asUv(pixelPos.X / dirX, pixelPos.Y / dirY);
+        AddAmbientUvColor(asUv, color);
+    }
+}
+
+
 void SlateMeshData::AddAmbientUvColor(
     FVector2D uvPos, 
     FLinearColor color
@@ -629,6 +642,9 @@ void SlateMeshData::ResetFullColor(){
 FVector2D SlateMeshData::convertUVInvertedToVertexBufferSpace(const FVector2D &uv){
 
     FVector2D uvCopy = uv;
+    uvCopy.X = FMath::Clamp(uvCopy.X, 0.0f, 1.0f);
+    uvCopy.Y = FMath::Clamp(uvCopy.Y, 0.0f, 1.0f);
+
     uvCopy.X = 1.0f - uvCopy.X;
     uvCopy.Y = 1.0f - uvCopy.Y;
 
@@ -709,7 +725,7 @@ FLinearColor SlateMeshData::InterpolatedColorFor(
                 accumulatedColor += scalar * pair.color;
 
             
-                if(bLogColor){
+                if(false && bLogColor){
                     UiDebugHelper::logMessage(
                         FString::Printf(
                             TEXT("Slate: SlateMeshData: Color scaled %.2f from R_%.2f G_%.2f B_%.2f A_%.2f to R_%.2f G_%.2f B_%.2f A_%.2f"),

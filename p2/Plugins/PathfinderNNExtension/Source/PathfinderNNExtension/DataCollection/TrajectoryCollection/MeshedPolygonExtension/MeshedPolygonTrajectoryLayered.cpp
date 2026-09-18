@@ -768,6 +768,10 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     //polygon layer
     colorizer.ColorizeFromUintFlag(image, flagGrid, colorPolygonFlagged, flagsInverted); 
 
+    //heat overdraw
+    FColor clear(0, 0, 0, 0);
+    colorizer.ColorizeFromEpsilonFlagMix(image, heatMap, 0.0f, true, colorMax); // heat map
+
     //view layer
     colorizer.ColorizeFromEpsilonFlagMix(image, viewGrid, 0.0f, true, colorViewGrid, 0.5f);
     
@@ -783,20 +787,6 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     //player pos override
     colorizer.ColorizeFromEpsilonFlagMix(image, groundTruthGrid, 0.0f,true, playerPosResult, 0.9f);
 
-    //vision cone override
-    /*
-    for (int i = 0; i < viewGrid.Num(); i++){
-        const TArray<float> &currentBuffer = viewGrid[i];
-        for (int j = 0; j < currentBuffer.Num(); j++){
-            if(currentBuffer[j] > 0.0f){
-                if(FlagAt(i,j) == false){
-                    image.SetPixel(i, j, colorViewGrid);
-                }
-            }
-        }
-    }*/
-    
-
     //are correct
     /*colorizer.ColorizeEdgePoints(
         image,
@@ -805,12 +795,106 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     );*/
 
     //needed.
+    /*
+    image.SetUnitStepPerPixel(stepSizeSaved);
     image.Transpose();
     image.FlipX();
-    image.SetAlpha(255);
+    image.SetAlpha(255);*/
+    FinalizeImage(image);
 }
 
+void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
+    TArray<Image> &images,
+    FMeshedPolygonColorAttributes &attributes
+){
+    Image imageShared;
 
+    /*
+    attributes.ColorMinHeat(),
+    attributes.ColorMaxHeat(),
+    attributes.ColorPolygon(),
+    attributes.ColorView(),
+    attributes.ColorTrajectory(),
+    attributes.ColorPlayerResult()
+    
+    */
+
+    //heat map
+    FGridColorizer colorizer;
+    colorizer.ColorizeFromLerp(imageShared, heatMap, attributes.ColorMinHeat(), attributes.ColorMaxHeat()); //heat map
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+
+    //polygon layer
+    colorizer.ColorizeFromUintFlag(imageShared, flagGrid, attributes.ColorPolygon(), flagsInverted); 
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+
+    //view layer
+    colorizer.ColorizeFromEpsilonFlag(
+        imageShared,
+        viewGrid,
+        0.0f,
+        true,
+        attributes.ColorView()
+    );
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+    
+    //tracjetory override
+    //colorizer.ColorizeFromEpsilonFlag(image, timeGrid, 0.0f, true, colorTrjacetory);
+    colorizer.ColorizeFromEpsilonFlag(
+        imageShared,
+        timeGrid,
+        0.0f,
+        true,
+        attributes.ColorTrajectory()
+    );
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+
+    colorizer.ColorizeFromEpsilonFlag(
+        imageShared,
+        trajectoryConePrecited,
+        0.0f,
+        true,
+        attributes.ColorTrajectory()
+    );
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+    
+
+    
+    //player pos override
+    colorizer.ColorizeFromEpsilonFlag(
+        imageShared,
+        groundTruthGrid,
+        0.0f,
+        true,
+        attributes.ColorPlayerResult()
+    );
+    FinalizeImage(imageShared, false);
+    images.Add(imageShared);
+    imageShared.Clear();
+
+}
+
+void FMeshedPolygonTrajectoryLayered::FinalizeImage(Image &image, bool alphaOverride){
+    image.SetUnitStepPerPixel(stepSizeSaved);
+    image.Transpose();
+    image.FlipX();
+    if(alphaOverride)
+        image.SetAlpha(255);
+}
+
+void FMeshedPolygonTrajectoryLayered::FinalizeImage(Image &image){
+    FinalizeImage(image, true);
+}
 
 // --- binary generation for sample save retrain model ---
 
@@ -878,6 +962,7 @@ bool FMeshedPolygonTrajectoryLayered::LoadFromBinary(
 //request data only.
 bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &buffer){
     if(FlagAndTimeDataValid()){
+        PrepareFitData();
         AppendFlagMapAsFloat(buffer);
         AppendTimeMap(buffer);
         AppendViewMap(buffer);
@@ -888,6 +973,16 @@ bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(TArray<uint8> &
     return false;
 }
 
+
+bool FMeshedPolygonTrajectoryLayered::PrepareAppendRequestBinary(FONNXModelInput &input){
+    if(FlagAndTimeDataValid()){
+
+        //Unet FMeshedPolygonTrajectoryLayered Model has only one Input Tensor
+        TArray<uint8> &buffer = input.GetBufferForInputTensor(0);
+        return PrepareAppendRequestBinary(buffer);
+    }
+    return false;
+}
 
 
 

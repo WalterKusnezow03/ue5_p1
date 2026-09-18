@@ -106,6 +106,10 @@ public:
     ///@brief once a uv color coordinate is added, it is moved to
     ///vertex buffer space, and WILL move if the buffer changes.
     void AddAmbientUvColor(FVector2D uv, FLinearColor color);
+    void AddAmbientPixelColor(
+        FVector2D pixelPos,
+        FLinearColor color
+    );
     void ClearAmbientColors();
 
     ///@brief blocks ambient colors

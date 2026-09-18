@@ -454,9 +454,12 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 
 
 void AEntityScript::actUponCurrentAction(float DeltaTime){
+	actionManager.Tick(DeltaTime);
 	if(team == teamEnum::enemyTeam){
 		if(spottedPlayer && !canSeePlayer){
-			actionManager.changeToAction(EActionType::EMoveToPlayer);
+			//actionManager.changeToAction(EActionType::EMoveToPlayer);
+
+			actionManager.changeToActionIfPossible(EActionType::EMoveToPlayer);
 		}
 	}
 	if(team == teamEnum::neutralTeam){
@@ -477,7 +480,14 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 		return;
 	}
 
+	if(currentAction.actionType() == EActionType::EWait){
+		//let a rotation to be finished before stopping
+		humanoidPluginController.stopLocomotionOnceRotationHasFinished();
+		return;
+	}
+
 	if(currentAction.actionType() == EActionType::ERoam){
+		//to be implemented
 		return;
 	}
 	if(currentAction.actionType() == EActionType::EMoveToSpecialPosition){

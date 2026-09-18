@@ -164,27 +164,41 @@ void RoadMakerFromGrid::WarpCirlceRandom(){
     int iterations = 2;
     int warpCirclesPerIteration = 3;
     while(iterations > 0){
-        float randomScalar = FVectorUtil::randomFloatNumber(0, 1);
-        float maxDistance = sizeSaved.Size() * randomScalar;
-        float angle = FVectorUtil::randomFloatNumber(0, 30);
-        //FVectorUtil::randomFloatNumber(-30, 30);
 
-        TArray<FVector> randomPositions = RandomPositions(
-            warpCirclesPerIteration, 
-            maxDistance
-        );
-        for(int i = 0; i < randomPositions.Num(); i++){
-            WarpCirlceByDistance(
-                randomPositions[i],
-                maxDistance,
-                angle
-            );
-        }
+        float minAngle = 10;
+        float maxAngle = 40;
+        WarpCirlceRandomWithCountPositions(warpCirclesPerIteration, minAngle, maxAngle);
 
-        //WarpCirlceByDistanceAroundCenter(maxDistance, angle);
         iterations--;
     }
 }
+
+void RoadMakerFromGrid::WarpCirlceRandomWithCountPositions(
+    int warpCircleLocations,
+    float minAngle,
+    float maxAngle
+){
+    float randomScalar = FVectorUtil::randomFloatNumber(0, 1);
+    float maxDistance = sizeSaved.Size() * randomScalar;
+
+    float angle = FVectorUtil::randomFloatNumber(0, 30);
+    //FVectorUtil::randomFloatNumber(-30, 30);
+
+    TArray<FVector> randomPositions = RandomPositions(
+        warpCircleLocations, //count
+        maxDistance
+    );
+    for(int i = 0; i < randomPositions.Num(); i++){
+        WarpCirlceByDistance(
+            randomPositions[i],
+            maxDistance,
+            angle
+        );
+    }
+}
+
+
+
 
 void RoadMakerFromGrid::WarpCirlceByDistanceAroundCenter(
     float maxDistance,

@@ -35,11 +35,11 @@ void NNRequestHandle::Tick(FNNRequestHandleTickData &tickData){
 void NNRequestHandle::LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData){
  
     //if the binary wasnt loaded and learned yet: load
-    if(tickData.bBatchBinaryDataNeeded && !batchTask.BatchPrepared(sampleType)){
+    if(tickData.bBatchBinaryDataNeeded && !batchTask.BatchPrepared(GetSampleType())){
         DebugHelper::logMessage("ANNPathFinderSocket::LoadBatchIfNotDoneYet");
 
         TArray<uint8> &buffer = tickData.batchDataOut;
-        batchTask.PrepareBatchBinary(buffer, sampleType);
+        batchTask.PrepareBatchBinary(buffer, GetSampleType());
         if (buffer.Num() > 0) //size must be valid
         {
             tickData.bBatchBinaryOutChanged = true; //flag for writing to shared memory
@@ -48,11 +48,12 @@ void NNRequestHandle::LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData){
     }
 }
 
-EPolygonSampleType NNRequestHandle::SelectedModel(){
-    return sampleType;
+EPolygonSampleType NNRequestHandle::GetSampleType(){
+    return task.GetSampleType();
 }
-
-
+void NNRequestHandle::UpdateSampleType(EPolygonSampleType type){
+    task.UpdateSampleType(type);
+}
 
 //flags a aactor as spotted
 void NNRequestHandle::FlagVisible(AActor *actor){
@@ -93,25 +94,94 @@ void NNRequestHandle::PredictNextTask(FNNRequestHandleTickData &tickData){
 }
 
 
+bool NNRequestHandle::PredictNodeAllowed(){
+    //one task at a time for now.
+    if(task.IsValid()){
+        if(!task.TaskCompleted()){
+            return false;
+        }
+    }
+    return true;
+}
+
+//prepares the task by:
+//adding actor to tracking if needed
+//embedding the enemy vision into the task from the package
+bool NNRequestHandle::PrepareTaskFor(FPathFinderNNRequestPackage *package){
+    if(!package){
+        return false;
+    }
+
+    AActor *actor = package->GetActor();
+    if(actor){
+        actorTracker.AddTrackedActorIfNeeded(actor);
+        task.Setup(actorTracker.FindIfTracked(actor));
+        if(task.IsValid()){
+            //on task start: embed enemy postions for this actor.
+            task.EmbedEnemyPositionsAndVision(*package);
+            return true;
+        }
+    }
+    return false;
+}
+
+void NNRequestHandle::UpdateRequestBinaryFor(FNNRequestHandleTickData &tickData){
+    //choose correct input
+    if(tickData.useOnnxInput){
+        task.PrepareRequestBinary(tickData.modelInput);
+    }else{
+        TArray<uint8> &requestBinary = tickData.requestDataOut;
+        requestBinary.Empty();
+        task.PrepareRequestBinary(requestBinary);
+    }
+}
+
 void NNRequestHandle::PredictNode(
     //AActor *actor
     FPathFinderNNRequestPackage *package,
     FNNRequestHandleTickData &tickData
 ){
-    
+    if(!PredictNodeAllowed()){
+        return;
+    }
 
-
-    //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY A");
+    /*//DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION - TRY A");
     //one task at a time for now.
     if(task.IsValid()){
         if(!task.TaskCompleted()){
             return;
         }
+    }*/
+
+    if(PrepareTaskFor(package)){
+        //choose correct input
+        UpdateRequestBinaryFor(tickData);
+
+        if(task.IsValid()){
+            tickData.bRequestBinaryOutChanged = true;
+            //write num bytes expected
+            tickData.expectedResultBytes = task.ResultDataSizeBytes();
+
+            //WriteDataRequest(requestBinary, task.ResultDataSizeBytes());
+        }
+        //if data invalid, task is resettet
+        else{
+            task.Reset();
+        }
+
+
+
+    }else{
+        task.Reset();
     }
 
 
 
 
+
+    // ---- IS REFACTURED ! -----
+    // ---- DEPRECATED ----
+    /*
     if(!package){
         return;
     }
@@ -129,8 +199,20 @@ void NNRequestHandle::PredictNode(
 
             //DebugHelper::logMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION");
             //DebugHelper::showScreenMessage("ANNPathFinderSocket::REQUEST PREDICT NEW POSITION", FColor::Red);
-            TArray<uint8> &requestBinary = tickData.requestDataOut;
-            task.PrepareRequestBinary(requestBinary);
+
+            //no onnx support yet
+            //TArray<uint8> &requestBinary = tickData.requestDataOut;
+            //task.PrepareRequestBinary(requestBinary);
+
+            if(tickData.useOnnxInput){
+                task.PrepareRequestBinary(tickData.modelInput);
+            }else{
+                TArray<uint8> &requestBinary = tickData.requestDataOut;
+                task.PrepareRequestBinary(requestBinary);
+            }
+
+            
+            
             
             if(task.IsValid()){
                 tickData.bRequestBinaryOutChanged = true;
@@ -144,7 +226,7 @@ void NNRequestHandle::PredictNode(
                 task.Reset();
             }
         }
-    }
+    }*/
 }
 
 
@@ -242,8 +324,9 @@ void NNRequestHandle::ReadDataResult(TArray<uint8> &bufferPrediction){
     //notify
     GenerateAndNotifyResultPositionsForRequestQueue();
 
-    //generate result image
+    //generate result image (for storage and subscribed widget listeners)
     GenerateResultImage();
+    GenerateResultImageChannels();
 
     //task.Reset();
 }
@@ -256,10 +339,6 @@ void NNRequestHandle::GenerateAndNotifyResultPositionsForRequestQueue(){
 }
 
 void NNRequestHandle::GenerateResultImage(){
-    if(!saveHeatMapsEnabled){
-        return;
-    }
-
     Image image;
     FMeshedPolygonColorAttributes attributes(
         FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
@@ -268,19 +347,74 @@ void NNRequestHandle::GenerateResultImage(){
         FColor(FColor::Cyan),       // FColor colorViewGridIn,
         FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
         FColor(0, 255, 0, 255)      // FColor playerPosResultIn
+        /*FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(0, 0, 0, 0), // FColor colorPolygonFlaggedIn,
+        FColor(FColor::Cyan),       // FColor colorViewGridIn,
+        FColor(0,0,0,0),     // FColor colorTrjacetoryIn,
+        FColor(0, 255, 0, 255)      // FColor playerPosResultIn*/
     );
 
     task.ColoredHeatMap(
         image, //Image &image,
         attributes
     );
-    
+    AddHeatMapSampleToStorage(image);
+    NotifyHeatMapReceivers(image);
+}
+
+void NNRequestHandle::AddHeatMapSampleToStorage(Image &image){
+    if(!saveHeatMapsEnabled){
+        return;
+    }
     heatMaps.Add(image);
 }
 
-    
+void NNRequestHandle::GenerateResultImageChannels(){
+    FMeshedPolygonColorAttributes attributes(
+        FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
+        FColor(FColor::Cyan),       // FColor colorViewGridIn,
+        FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
+        FColor(0, 255, 0, 255)      // FColor playerPosResultIn
+    );
+    TArray<Image> images;
+    task.ColoredLayersMap(images, attributes);
+    heatMaps.Append(images);
+}
 
 
+void NNRequestHandle::NotifyHeatMapReceivers(Image &image){
+    //generate widget image
+    //notfiy listeners
+   
+    FVector pos = task.GetPolygonData().BottomLeft();
+    //ColorizedWidgetImage(image, pos);
+    heatMapReceivers.NotifyAll(image, pos);
+}
+
+HeatMapReceivers &NNRequestHandle::GetHeatMapReceivers(){
+    return heatMapReceivers;
+}
+
+void NNRequestHandle::ColorizedWidgetImage(Image &image, FVector &worldPosPivot){
+    FMeshedPolygonColorAttributes attributes(
+        FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
+        FColor(FColor::Cyan),       // FColor colorViewGridIn,
+        FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
+        FColor(0, 255, 0, 255)      // FColor playerPosResultIn
+    );
+    task.ColoredHeatMap(
+        image, //Image &image,
+        attributes
+    );
+
+    //of FMeshedPolygonTrajectoryLayeredInterface
+    worldPosPivot = task.GetPolygonData().BottomLeft();
+}
 
 void NNRequestHandle::EndPlay(){
     task.EndSave();

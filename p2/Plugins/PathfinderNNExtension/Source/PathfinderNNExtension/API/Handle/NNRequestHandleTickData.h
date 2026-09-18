@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
 
 //data to share between a NN Manager / Python / ONNX 
 //and request processing from the NNRequestHandle.
@@ -12,8 +14,9 @@ struct PATHFINDERNNEXTENSION_API FNNRequestHandleTickData {
     //result data arrival -> must be written from outside to processed in request handle
     TArray<uint8> predictionData;
     bool bHasPredictionData = false;
-    // ---- IN DATA ----
 
+    EPolygonSampleType sampletype = EPolygonSampleType::none;
+    // ---- IN DATA ----
 
     // ---- OUT DATA ----
     //ground truth arrival
@@ -24,6 +27,10 @@ struct PATHFINDERNNEXTENSION_API FNNRequestHandleTickData {
     TArray<uint8> requestDataOut;
     bool bRequestBinaryOutChanged = false;
     int expectedResultBytes = 0;
+    //new requestdata (onnx input)
+    bool useOnnxInput = false;
+    FONNXModelInput modelInput;
+
 
     //new batch train data
     bool bBatchBinaryDataNeeded = false; //-> IN DATA

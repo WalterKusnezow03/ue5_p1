@@ -25,26 +25,6 @@ void ONNXModel::Reset(){
     bModelWasLoaded = false;
 }
 
-FString ONNXModel::MakePath(){
-    FString pluginName = "PathFinderNNExtension";
-    FString pluginDir = PluginDir(pluginName);
-
-    
-    FString PythonONNXPart = FString::Printf(TEXT("Python/onnxExport/netB_ONNX.onnx"));
-    return FPaths::Combine(pluginDir, PythonONNXPart);
-}
-
-FString ONNXModel::PluginDir(FString pluginName){
-    FString inner = pluginName; //refactured. // FString::Printf(TEXT("%s/Source/%s"), *pluginName, *pluginName);
-    FString pluginDir = FPaths::ConvertRelativePathToFull(
-        FPaths::ProjectPluginsDir() / 
-        *inner
-    );
-    DebugHelper::logMessage("ONNXLoader::PluginDir --> ", pluginDir);
-    return pluginDir;
-}
-
-
 
 void ONNXModel::LoadModel(FONNXModelsetup setup){
     if(!setup.IsValid()){
@@ -62,11 +42,13 @@ void ONNXModel::LoadModel(FString ModelPath)
 {
     try{
         DebugHelper::logMessage("ONNXModel 0) try load enviroment!: ", ModelPath);
-        InitEnviroment(ModelPath);
+        if(!InitEnviroment(ModelPath)){
+            return;
+        }
         DebugHelper::logMessage("ONNXModel 1) loaded enviroment!: ", ModelPath);
 
-        InitTensor();
-        DebugHelper::logMessage("ONNXModel 2) loaded tensor!: ", ModelPath);
+        InitTensors();
+        DebugHelper::logMessage("ONNXModel 2) loaded tensors!: ", ModelPath);
 
         InitInputAndOutPutNames();
         DebugHelper::logMessage("ONNXModel 3) loaded input output!: ", ModelPath);
@@ -81,50 +63,7 @@ void ONNXModel::LoadModel(FString ModelPath)
     }
 }
 
-/*
-void ONNXModel::InitEnviroment(FString ModelPath){
-    // 1. Microsoft Umgebung initialisieren
-    //static Ort::Env Env(ORT_LOGGING_LEVEL_WARNING, "ONNX_Mac_Session");
-    //env = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "ONNX_Mac_Session");
-
-    // Übergib ORT_API_VERSION als dritten Parameter!
-    env = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "ONNX_Mac_Session", ORT_API_VERSION);
-   
-    Ort::SessionOptions localSessionOptions;
-    localSessionOptions.SetIntraOpNumThreads(2); 
-    
-    
-    // 3. Modell direkt laden (Konvertierung von FString zu Mac-kompatiblem Pfad)
-    std::string StdModelPath = TCHAR_TO_UTF8(*ModelPath);// Perfekt abgestimmt fürs M4-Air-Multithreading
-    
-    //// Aus der offiziellen onnxruntime_cxx_api.h
-    //Env(OrtLoggingLevel default_logging_level, const char* logid, uint32_t api_version = ORT_API_VERSION);
-
-    // Session erstellen lädt und parst das Modell direkt über Microsofts Core-Code!
-    //Ort::Session Session(Env, StdModelPath.c_str(), SessionOptions);
-    Session = new Ort::Session(*env, StdModelPath.c_str(), localSessionOptions);
-    
-    UE_LOG(LogTemp, Log, TEXT("ONNX-Model was loaded!"));
-}*/
-/*
-void ONNXModel::InitEnviroment(FString ModelPath)
-{
-    // Wir nutzen exakt den vom Compiler vorgeschlagenen Konstruktor mit 2 Parametern.
-    // Das 'static' sorgt dafür, dass die Umgebung im Mac-Speicher überlebt.
-    static Ort::Env StaticEnv(ORT_LOGGING_LEVEL_WARNING, "ONNX_Mac_Session");
-   
-    Ort::SessionOptions localSessionOptions;
-    localSessionOptions.SetIntraOpNumThreads(2); 
-    
-    // Modell-Pfad für die Microsoft C-API konvertieren
-    std::string StdModelPath = TCHAR_TO_UTF8(*ModelPath);
-    
-    // Session erstellen und die statische Umgebung übergeben
-    Session = new Ort::Session(StaticEnv, StdModelPath.c_str(), localSessionOptions);
-    
-    UE_LOG(LogTemp, Log, TEXT("ONNX-Model wurde erfolgreich initialisiert!"));
-}*/
-void ONNXModel::InitEnviroment(FString ModelPath)
+bool ONNXModel::InitEnviroment(FString ModelPath)
 {
     // 1. Safe dynamic initialization for the environment
     static Ort::Env* StaticEnv = nullptr;
@@ -162,23 +101,57 @@ void ONNXModel::InitEnviroment(FString ModelPath)
     {
         FString ErrorMsg(e.what());
         UE_LOG(LogTemp, Error, TEXT("ONNX Session creation failed: %s"), *ErrorMsg);
+        return false;
+    }
+    return true;
+}
+
+//to be refractured into PathfinderNN ONNX
+void ONNXModel::InitTensors(){
+    //InitTensor(setupData.GetWidth(), setupData.GetHeight(), setupData.GetChannels());
+    //InitTensor(144, 144, 4); //diese informationen müssen in ein NN Property package
+
+    AddInputTensors(setupData.GetInputTensors());
+}
+
+void ONNXModel::AddInputTensors(TArray<FTensorSetup> &tensorBluePrints){
+    for (int i = 0; i < tensorBluePrints.Num(); i++){
+        FTensorSetup &current = tensorBluePrints[i];
+        AddInputTensor(current);
     }
 }
 
+void ONNXModel::AddInputTensor(FTensorSetup &other){
+    inputTensors.SetNum(inputTensors.Num() + 1);
 
-//to be refractured into PathfinderNN ONNX
-void ONNXModel::InitTensor(){
-    InitTensor(setupData.GetWidth(), setupData.GetHeight(), setupData.GetChannels());
+    FTensor &tensor = inputTensors.Last();
+    tensor.SetupFrom(other);
 
-    //InitTensor(144, 144, 4); //diese informationen müssen in ein NN Property package
+    Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
+        *memoryInfo, 
+        tensor.GetInputTensorValues().data(), //direkter pointer <- hier können dann MemCpy operations stattfinden um 
+        //einen neuen forward pass zu erzeugen
+        tensor.GetInputTensorValues().size(), 
+        tensor.GetInputDimensions().data(), 
+        tensor.GetInputDimensions().size()
+    );
+
+    inputTensorsRaw.push_back(std::move(inputTensor));
 }
 
-void ONNXModel::InitTensor(int W, int H, int channels){
+
+// ---- todo: APPEND TESNOR TO ARRAY! ----
+/*void ONNXModel::AddInputTensor(int W, int H, int channels){
     //batch 1
     //channels 4
     //dim x,y = 142
 
-    /*
+    inputTensors.SetNum(inputTensors.Num() + 1);
+    FTensor &tensor = inputTensors.Last();
+    tensor.Setup(W, H, channels);
+
+    // --- deprecated ---
+    
     Python analog:
 
     x = torch.tensor(data, dtype=torch.float32)
@@ -187,6 +160,7 @@ void ONNXModel::InitTensor(int W, int H, int channels){
 
     */
 
+    /*
     // 1. Die finale Shape definieren: [Batch, Channels, Height, Width]
     // Entspricht exakt: x.view(4, 142, 142) -> unsqueeze(0)
     //std::vector<int64_t> InputDims = { 1, 4, 142, 142 };
@@ -215,7 +189,11 @@ void ONNXModel::InitTensor(int W, int H, int channels){
         inputDimensions.size()
     );
 
-}
+    
+    
+
+    
+}*/
 
 void ONNXModel::InitInputAndOutPutNames(){
     /*
@@ -231,26 +209,25 @@ void ONNXModel::InitInputAndOutPutNames(){
     //const char* InputNames[] = { "input_name" };  // Ändere das zu deinem echten Input-Namen
     //const char* OutputNames[] = { "output_name" }; // Ändere das zu deinem echten Output-Namen
 
-    InputNames = { "input" };  // Ändere das zu deinem echten Input-Namen
-    OutputNames = { "output" }; // Ändere das zu deinem echten Output-Namen
+    //deprecated
+    //InputNames = { "input" };  // Ändere das zu deinem echten Input-Namen
+    //OutputNames = { "output" }; // Ändere das zu deinem echten Output-Namen
+
+
+    InputNames = setupData.GetInputNames();
+    OutputNames = setupData.GetOutputNames();
+
 }
 
-bool ONNXModel::CopyDataToTensor(TArray<float> &buffer){
+bool ONNXModel::CopyDataToTensor(TArray<float> &buffer, int index){
     TArrayView<float> FullViewBuffer(buffer);
-    return CopyDataToTensor(FullViewBuffer);
+    return CopyDataToTensor(FullViewBuffer, index);
 }
 
-bool ONNXModel::CopyDataToTensor(const TArrayView<float> &buffer){
+bool ONNXModel::CopyDataToTensor(const TArrayView<float> &buffer, int index){
     if(bModelWasLoaded){
-        if(buffer.Num() > 0 && buffer.Num() == inputTensorValues.size()){
-            //copy buffer in into input tensor std vector
-            //FMemory::Memcpy(*Target, *Src, sizeT)
-            FMemory::Memcpy(
-                inputTensorValues.data(),  // Ziel: Die direkte RAM-Adresse des std::vector, als ref in tensor drin!
-                buffer.GetData(),          // Quelle: Die direkte RAM-Adresse des Unreal TArray
-                buffer.Num() * sizeof(float) // Größe in Bytes: Anzahl der Floats * 4 Bytes
-            );
-            return true;
+        if(index >= 0 && index < inputTensors.Num()){
+            return inputTensors[index].CopyDataToTensor(buffer);
         }
     }
     return false;
@@ -263,14 +240,29 @@ bool ONNXModel::Forward(std::vector<Ort::Value> &output){
     }
     
 
-    output = Session->Run(
+    /*output = Session->Run(
         Ort::RunOptions{nullptr}, 
         InputNames.data(), 
         &inputTensor, 
         1, 
         OutputNames.data(), 
         1
+    );*/
+    output = Session->Run(
+        Ort::RunOptions{nullptr}, 
+        InputNames.data(), 
+        inputTensorsRaw.data(),
+        InputNames.size(),     // Number of inputs (e.g., 2)
+        OutputNames.data(), 
+        OutputNames.size()
+        
+        
+        /*inputTensors.data(),   // Pointer to array of input tensors
+        InputNames.size(),     // Number of inputs (e.g., 2)
+        OutputNames.data(), 
+        OutputNames.size()*/
     );
+
     if (!output.empty() && output[0].IsTensor()){
         return true;
     }
@@ -307,6 +299,10 @@ bool ONNXModel::Forward(TArray<float> &bufferPredictionOut){
     }
     return false;
 }
+
+
+
+
 
 bool ONNXModel::RunModel(
     TArray<float> &bufferIn,
@@ -353,7 +349,10 @@ bool ONNXModel::RunModel(
             DebugHelper::logMessage("ONNXModel RunModel Fail: Model not loaded!");
             return false;
         }
-        if(CopyDataToTensor(bufferIn)){
+
+        int INDEX_TODO = 0;
+        if (CopyDataToTensor(bufferIn, INDEX_TODO))
+        {
             if(Forward(bufferPredictionOut)){
                 DebugHelper::logMessage("ONNXModel RunModel Success");
                 return true;

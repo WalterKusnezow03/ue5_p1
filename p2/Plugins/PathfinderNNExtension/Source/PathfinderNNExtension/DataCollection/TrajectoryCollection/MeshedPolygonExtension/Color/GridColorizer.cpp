@@ -98,7 +98,7 @@ FColor FGridColorizer::MixColor(
         a.R * weightA + b.R * weightB,
         a.G * weightA + b.G * weightB,
         a.B * weightA + b.B * weightB,
-        255
+        255 //a.A * weightA + b.A * weightB //instead of 255
     );
     return result;
 }
@@ -184,6 +184,10 @@ FColor FGridColorizer::LerpColor(
     result.B = std::min(result.B, maxVal);
 
     result.A = 255;
+    //instead of 255
+    //result.A = std::max(result.A, zero);
+    //result.A = std::min(result.A, maxVal);
+
     return result;
 }
 

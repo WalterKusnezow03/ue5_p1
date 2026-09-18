@@ -24,6 +24,10 @@
 #include "p2/_world/EGameState.h"
 #include "p2/_world/worldLevel.h"
 #include "p2/_world/gameStateManager/GameStateManager.h"
+#include "p2/entities/NN/NNHeatMapActor.h"
+
+//nn plugin
+#include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
 
 //gc
 #include "GcGameCore/Launcher/GcLauncher.h"
@@ -52,6 +56,8 @@ void AgameModeSubclass::BeginPlay()
     Super::BeginPlay();
     DebugHelper::DebugToolsEnabled = true;
 
+    NNPathFinderExtensionApi::BeginPlay(GetWorld());
+
     //DEBUG
     RunTests(); 
 
@@ -68,6 +74,9 @@ void AgameModeSubclass::BeginPlay()
 
     P2AssetLoader loader;
     loader.LoadGameAssets();
+
+    //is not used, too heavy performance hit.
+    //ANNHeatMapActor::MakeInstance(GetWorld());
 
     //launch ui from here, not from player
     //UPlayerUi::createNewInstance(GetWorld());
@@ -103,7 +112,7 @@ void AgameModeSubclass::EndPlay(const EEndPlayReason::Type EndPlayReason){
 #include "MeshDataPlugin/Public/MeshGenBase/MeshData/BoundingBox/BoundingBoxSimple.h"
 #include "NNCommunicationPlugin/Communication/Connection/NNSocket.h"
 
-#include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
+
 
 void AgameModeSubclass::RunTests(){
     //AssetPathMaker::Test();
@@ -111,8 +120,8 @@ void AgameModeSubclass::RunTests(){
     //BoundingBoxSimple::Test();
     //ANNSocket::MakeInstance(GetWorld());
     //ANNPathFinderSocket::MakePathFinderSocketInstance(GetWorld());
-
-    NNPathFinderExtensionApi::BeginPlay(GetWorld());
+    //NNPathFinderExtensionApi::BeginPlay(GetWorld());
+    
 
     
     

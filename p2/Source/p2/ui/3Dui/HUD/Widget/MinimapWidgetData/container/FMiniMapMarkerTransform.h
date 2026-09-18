@@ -14,6 +14,7 @@ public:
 
     FMiniMapMarkerTransform(const FVector2D &posIn, float angleIn);
 
+    void Setup(const FVector2D &posIn, float angleIn);
     void SetLocation(const FVector2D &posIn);
     void SetAngle(const float angle);
 

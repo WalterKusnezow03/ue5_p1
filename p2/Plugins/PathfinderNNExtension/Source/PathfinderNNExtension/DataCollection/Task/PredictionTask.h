@@ -8,6 +8,7 @@
 
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryRayModel.h"
+#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
 
 class FPathFinderNNRequestPackage;
 class FMeshedPolygonColorAttributes;
@@ -21,7 +22,7 @@ class PATHFINDERNNEXTENSION_API PredictionTask {
 
 private:
     float radiusMeter = 100.0f; //stays the same! Do not change!
-
+    //maybe 50
 
 public:
     void Reset();
@@ -30,6 +31,7 @@ public:
     void Setup(ActorTrajectoryTracker *trackedActor); //needed for visibilty check
 
     void PrepareRequestBinary(TArray<uint8> &bytes); //binary for shared mem python nn
+    void PrepareRequestBinary(FONNXModelInput &model); //onnx input for ONNX Model
 
     //returns true if result is ready for NN Backward pass!
     bool TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes);
@@ -53,6 +55,10 @@ public:
 
     void ColoredHeatMap(
         Image &image,
+        FMeshedPolygonColorAttributes &attributes
+    );
+    void ColoredLayersMap(
+        TArray<Image> &images,
         FMeshedPolygonColorAttributes &attributes
     );
 
@@ -81,6 +87,8 @@ private:
     bool taskStarted = false;
     bool taskCompleted = true;
 
+    void StartTaskBeforePrepareBinary(FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache);
+
     void PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface &polygonData);
     void PrepareResultMap();
 
@@ -91,16 +99,19 @@ private:
 
     FVector locationOfRequest;
 
-    //set nn type
-    EPolygonSampleType sampleType = EPolygonSampleType::EMeshedPolygonTrajectoryLayered;
+    
 
     //Get Interface reference !
 public:
     FMeshedPolygonTrajectoryLayeredInterface &GetPolygonData(); //by set type
-private:
-    FMeshedPolygonTrajectoryLayeredInterface &GetPolygonData(EPolygonSampleType type); //by set type
+    void UpdateSampleType(EPolygonSampleType type);
+    EPolygonSampleType GetSampleType();
 
-    
+private:
+
+    FMeshedPolygonTrajectoryLayeredInterface &GetPolygonData(EPolygonSampleType type); //by set type
+    EPolygonSampleType sampleType = EPolygonSampleType::EMeshedPolygonTrajectoryLayered;
+
     FMeshedPolygonTrajectoryLayered polygonDataUnetModel; //switch to ptr
     FMeshedPolygonTrajectoryRayModel polygonRayModel;
 

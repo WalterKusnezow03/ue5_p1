@@ -9,6 +9,7 @@
 
 #include "HudUiActor.generated.h"
 
+/// @brief tood: move into seperate base plugin.
 UCLASS()
 class P2_API AHudUiActor : public ACustomMeshUIActor {
     GENERATED_BODY()
@@ -45,6 +46,9 @@ public:
     // --- entity register and unregister ---
     void RegisterActorToMiniMap(AActor *actor, EMarkerType type);
     void UnRegisterActorFromMiniMap(AActor *actor);
+
+   
+   
 
 protected:
     virtual void BeginPlay() override;

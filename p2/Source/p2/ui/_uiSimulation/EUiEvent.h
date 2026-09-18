@@ -9,4 +9,5 @@ enum class EUiEvent
     HudTopTextTimed,
     HudMiniMapRegisterActor,
     HudMiniMapUnRegisterActor,
+    HudMiniMapUpdateNNHeatMap,
 };

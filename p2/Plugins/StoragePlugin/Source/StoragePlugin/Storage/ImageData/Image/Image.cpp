@@ -2,6 +2,11 @@
 #include "StoragePlugin/Storage/ImageData/ImageLoader/ImageLoader.h"
 
 
+void Image::Copy(const Image &other){
+    data = other.data;
+    unitStepPerPixel = other.unitStepPerPixel;
+}
+
 bool Image::LoadFromPath(FString localPath){
     ImageLoader loader;
     wasLoaded = loader.LoadPNGLocalPath(localPath, data);
@@ -20,6 +25,13 @@ bool Image::SizeValid()const{
     return widthX() > 0 && heightY() > 0;
 }
 
+void Image::SetUnitStepPerPixel(float s){
+    unitStepPerPixel = std::abs(s);
+}
+
+float Image::GetUnitStepPerPixel()const{
+    return unitStepPerPixel;
+}
 
 /// ---- todo: flip x and y axis completly! ----
 
@@ -182,4 +194,8 @@ void Image::SetAlpha(int alpha){
             color.A = alpha;
         }
     }
+}
+
+void Image::Clear(){
+    data.Empty();
 }

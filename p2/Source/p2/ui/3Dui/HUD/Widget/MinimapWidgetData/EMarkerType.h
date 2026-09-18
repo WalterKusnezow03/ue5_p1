@@ -9,4 +9,7 @@ enum class EMarkerType
     EEnemy,
     EPlayer,
     EWeapon,
+    EFlagRed,
+    EFlagWhite,
+    ECustomDrawMarker,
 };

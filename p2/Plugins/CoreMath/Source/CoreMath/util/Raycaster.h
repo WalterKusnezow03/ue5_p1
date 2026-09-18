@@ -50,6 +50,20 @@ public:
         bool traceComplex = true
     );
 
+    //projection / pos override
+    void project(
+        UWorld *world, 
+        FVector &pos, 
+        const FVector &dirScaled,
+        bool traceComplex = true
+    );
+
+    void projectAll(
+        UWorld *world, 
+        TArray<FVector> &positions, 
+        const FVector &dirScaled,
+        bool traceComplex = true
+    );
 private:
 
 

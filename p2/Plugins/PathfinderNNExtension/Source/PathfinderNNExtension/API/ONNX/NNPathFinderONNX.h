@@ -41,6 +41,11 @@ public:
 
     virtual bool NNIsConnected() override;
 
+    
+
+    //todo
+    virtual HeatMapReceivers &GetHeatMapReceivers() override;
+
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float deltatime) override;

@@ -26,12 +26,12 @@ public:
         FColor playerPosResultIn
     );
 
-    FColor ColorMinHeat();
-    FColor ColorMaxHeat();
-    FColor ColorPolygon();
-    FColor ColorView();
-    FColor ColorTrajectory();
-    FColor ColorPlayerResult();
+    const FColor &ColorMinHeat();
+    const FColor &ColorMaxHeat();
+    const FColor &ColorPolygon();
+    const FColor &ColorView();
+    const FColor &ColorTrajectory();
+    const FColor &ColorPlayerResult();
 
 private:
 

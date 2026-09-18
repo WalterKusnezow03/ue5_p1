@@ -17,9 +17,10 @@ void FONNXModelsetup::SetupFromType(EPolygonSampleType type){
         return;
     }
     if(type == EPolygonSampleType::EMeshedPolygonTrajectoryRayModel){
-        //todo
-    }
+        //todo multi input
 
+        return;
+    }
 }
 
 bool FONNXModelsetup::IsValid(){
@@ -27,19 +28,13 @@ bool FONNXModelsetup::IsValid(){
 }
 
 void FONNXModelsetup::InitTensor(int W, int H, int channelsIn){
-    tensorWidth = W;
-    tensorHeight = H;
-    channels = channelsIn;
+    FTensorSetup tensor;
+    tensor.Setup(W, H, channelsIn);
+    inputTensorsBlueprint.Add(tensor);
 }
 
-int FONNXModelsetup::GetWidth(){
-    return tensorWidth;
-}
-int FONNXModelsetup::GetHeight(){
-    return tensorHeight;
-}
-int FONNXModelsetup::GetChannels(){
-    return channels;
+TArray<FTensorSetup> &FONNXModelsetup::GetInputTensors(){
+    return inputTensorsBlueprint;
 }
 
 FString FONNXModelsetup::MakeFilePath(){
@@ -61,4 +56,29 @@ FString FONNXModelsetup::PluginDir(FString pluginName){
     );
     DebugHelper::logMessage("ONNXLoader::PluginDir --> ", pluginDir);
     return pluginDir;
+}
+
+
+void FONNXModelsetup::InitInputAndOutputNames(){
+    if(savedType == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
+        InputNames = { "input" };  //NetB Export
+        OutputNames = { "output" }; //NetB Export
+        return;
+    }
+    if(savedType == EPolygonSampleType::EMeshedPolygonTrajectoryRayModel){
+        //todo
+        //named consistent as (0,1,..n)
+        InputNames = { "input0", "intput1" };  //NetC Export
+        OutputNames = { "output" }; //NetC Export
+        return;
+    }
+}
+
+
+std::vector<const char*> FONNXModelsetup::GetInputNames(){
+    return InputNames;
+}
+
+std::vector<const char*> FONNXModelsetup::GetOutputNames(){
+    return OutputNames;
 }

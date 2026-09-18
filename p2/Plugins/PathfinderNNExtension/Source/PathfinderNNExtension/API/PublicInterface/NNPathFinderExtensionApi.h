@@ -29,10 +29,14 @@ public:
     static void SetTrainingAllowed();
 
     static void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
+    
+    static void SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener);
 
     //static connection api for widgets displaying the state of 
     //connection either to python or ONNX 
     static bool NNIsConnected();
+    //static image generation of heatmap for minimap
+    
 
     //static heatmap enable (for onnx output and python output)
     static void EnableHeatMapSaveOnEnd(bool enable);

@@ -11,11 +11,13 @@ public:
     UiSimulation();
     ~UiSimulation();
 
+    bool Notify(EUiEvent event);
+    bool Notify(EUiEvent event, FString message);
+    bool Notify(EUiEvent event, AActor *actor);
+    bool Notify(EUiEvent event, AActor *actor, EMarkerType type);
 
-    void Notify(EUiEvent event, FString message);
-    void Notify(EUiEvent event, AActor *actor);
-    void Notify(EUiEvent event, AActor *actor, EMarkerType type);
-    
+    bool MiniMapInitialized();
+
 private:
 
 };

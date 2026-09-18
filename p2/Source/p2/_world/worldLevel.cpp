@@ -58,6 +58,7 @@ UiSimulation AworldLevel::uiSimulation;
 
 AworldLevel::AworldLevel() : AworldLevelBase()
 {   
+    
 }
 
 void AworldLevel::MakeInstance(UWorld *world){
@@ -311,7 +312,7 @@ void AworldLevel::SpawnExternalActorCollectionFromTerrain(){
 
             DebugHelper::logMessage(
                 FString::Printf(
-                    TEXT("AworldLevel::ExternalActor SPAWN %s %d"),
+                    TEXT("AworldLevel::ExternalActor SPAWN %s count %d"),
                     *currentActorData.GetName(),
                     currentActorData.GetSpawnPositions().Num()
                 )

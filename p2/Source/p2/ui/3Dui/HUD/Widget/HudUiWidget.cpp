@@ -97,10 +97,18 @@ UMiniMapWidget *UHudUiWidget::MiniMapCasted(){
 
 
 // ---- mini map register actor ----
+void UHudUiWidget::RegisterActorsToMiniMap(TArray<AActor*> &actors, EMarkerType type){
+    for (int i = 0; i < actors.Num(); i++){
+        RegisterActorToMiniMap(actors[i], type);
+    }
+}
+
+
 void UHudUiWidget::RegisterActorToMiniMap(AActor *actor, EMarkerType type){
     if(actor){
         if(UMiniMapWidget *casted = MiniMapCasted()){
             casted->AddMarker(type, actor);
+            //DebugHelper::showScreenMessage("RegisterActorToMiniMap ", actor->GetName());
         }
     }
 }

@@ -7,8 +7,11 @@
 class STORAGEPLUGIN_API Image {
 
 public:
+    void Copy(const Image &other);
+
     bool LoadFromPath(FString localPath);
     bool IsValid();
+    
 
     int widthX()const;
     int heightY()const;
@@ -29,6 +32,11 @@ public:
 
     void SetAlpha(int alpha);
 
+    void SetUnitStepPerPixel(float s);
+    float GetUnitStepPerPixel() const;
+
+    void Clear();
+
 protected:
     bool wasLoaded = false;
     bool InBound(int x, int y);
@@ -39,4 +47,7 @@ protected:
     uint8 CampedSumInt(uint8 a, uint8 b);
 
     TArray<TArray<FColor>> data;
+
+    //widget image data
+    float unitStepPerPixel = 1.0f;
 };
