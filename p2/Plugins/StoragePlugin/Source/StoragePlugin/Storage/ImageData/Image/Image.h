@@ -36,6 +36,8 @@ public:
     float GetUnitStepPerPixel() const;
 
     void Clear();
+    bool bWasChanged();
+    void ResetWasChanged();
 
 protected:
     bool wasLoaded = false;
@@ -50,4 +52,5 @@ protected:
 
     //widget image data
     float unitStepPerPixel = 1.0f;
+    bool wasChanged = false;
 };

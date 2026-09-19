@@ -210,6 +210,9 @@ bool PredictionTask::IsSameActor(AActor *actorCheck){
     return false;
 }
 
+void PredictionTask::MarkTaskFinished(){
+    taskCompleted = true;
+}
 
 void PredictionTask::ColoredHeatMap(
     Image &image,
@@ -219,7 +222,6 @@ void PredictionTask::ColoredHeatMap(
     polygonDataCache.ColoredHeatMap(
         image, attributes
     );
-    taskCompleted = true;
 }
 
 void PredictionTask::ColoredLayersMap(

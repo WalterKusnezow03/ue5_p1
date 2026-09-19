@@ -191,7 +191,12 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
 
 void AHumanEntityScript::FlagPlayerVisibleToNNInterface(){
     if(playerPointer && canSeePlayer){
-        FlagActorVisibleToNNInterface(playerPointer);
+        //waiting delay for request
+        if(nnWaitDelay.timesUp()){
+            FlagActorVisibleToNNInterface(playerPointer);
+        }   
+
+        //FlagActorVisibleToNNInterface(playerPointer);
     }
 }
 
@@ -220,11 +225,17 @@ void AHumanEntityScript::RequestPlayerPredictionFromNNInterface(){
 void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(float deltatime){
     //since bWaitForPlayerVisibleAfterRequest is making
     //the bot wait before performing new requests
+
+    //added newly here, more performance
+    if(bWaitForPlayerVisibleAfterRequest){
+        nnWaitDelay.Tick(deltatime);
+    }
+    
     if(canSeePlayer){
         //tick the delay before creating a new ground truth
         //the player needs some time to be behind cover.
         //creates more game realistic result, rather than instant
-        nnWaitDelay.Tick(deltatime);
+        //nnWaitDelay.Tick(deltatime);
         if (nnWaitDelay.timesUp())
         {
             bWaitForPlayerVisibleAfterRequest = false; //is tested
@@ -268,7 +279,7 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         //add delay before creating a new ground truth for the reapperance position
         //the player needs some time to be behind cover.
         //creates more game realistic result, rather than instant
-        float timeDelay = 1.0f;
+        float timeDelay = 2.0f; //1.0f
         nnWaitDelay.Begin(timeDelay);
     }
 }

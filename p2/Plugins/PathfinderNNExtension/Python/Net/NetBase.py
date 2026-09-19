@@ -14,7 +14,7 @@ class NetBase(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.epochs = 300
+        self.epochs = 100 #300
 
         print("NNServerPathfinder_NetBase: INIT!")
 

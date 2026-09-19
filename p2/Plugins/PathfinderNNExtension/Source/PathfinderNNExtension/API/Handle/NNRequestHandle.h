@@ -84,7 +84,12 @@ private:
 
     bool TaskCompleted();
 
+    //PREDICTION PROCESS
     void GenerateAndNotifyResultPositionsForRequestQueue();
+    void GeneratePredictionImage();
+    bool alreadyReadPredictionData = false;
+
+    //GT PROCESS
     void GenerateResultImage();
     void GenerateResultImageChannels();
 };

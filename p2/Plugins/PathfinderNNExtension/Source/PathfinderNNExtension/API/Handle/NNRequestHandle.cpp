@@ -8,6 +8,7 @@ void NNRequestHandle::BeginPlay(){
     actorTracker.Setup(intervall, listTrajectoriesmaxSize);
     task.Reset();
     batchTask.Load();
+    alreadyReadPredictionData = false;
 }
 
 bool NNRequestHandle::TaskCompleted(){
@@ -161,6 +162,7 @@ void NNRequestHandle::PredictNode(
             tickData.bRequestBinaryOutChanged = true;
             //write num bytes expected
             tickData.expectedResultBytes = task.ResultDataSizeBytes();
+            alreadyReadPredictionData = false;
 
             //WriteDataRequest(requestBinary, task.ResultDataSizeBytes());
         }
@@ -245,8 +247,25 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
 
     TArray<uint8> &groundTruthBinary = tickData.groundTruthBinaryOut;
 
-    task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary);
-    if(groundTruthBinary.Num() > 0){
+    //check visibility of target and prepare binary.
+    if(task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary)){
+        DebugHelper::logMessage("NNRequestHandle::TickTask FINISH GT"); 
+        GenerateResultImage();
+
+        if(groundTruthBinary.Num() > 0){
+            //flag ground truth data written.
+            tickData.bGroundTruthBinaryOutChanged = true;
+            batchTask.AddSample(task.GetPolygonData());
+            DebugHelper::logMessage("NNRequestHandle::TickTask FINISH GT ADD SAMPLE");
+            
+        }
+        //GenerateResultImage();
+        task.MarkTaskFinished();
+        task.Reset();
+    }
+    
+    
+    /*if(groundTruthBinary.Num() > 0){
         //flag ground truth data written.
         tickData.bGroundTruthBinaryOutChanged = true;
 
@@ -257,7 +276,14 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
         batchTask.AddSample(task.GetPolygonData());
 
         //WriteDataGroundTruth(groundTruthBinary);
-    }
+
+        // --- NEW HERE ---
+        //mark as finished
+        DebugHelper::logMessage("NNRequestHandle::TickTask FINISH GT");
+        GenerateResultImage();
+        task.MarkTaskFinished();
+        task.Reset();
+    }*/
 }
 
 
@@ -268,12 +294,17 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
 
 void NNRequestHandle::TickReadDataResult(FNNRequestHandleTickData &tickData){
     if(!TaskCompleted()){
+        if(alreadyReadPredictionData){
+            return;
+        }
+
         if(tickData.bHasPredictionData){
+            alreadyReadPredictionData = true;
             ReadDataResult(tickData.predictionData);
             FString message = "NNRequestHandle::REQUEST FINISH Arrived IMPLICIT!";
             DebugHelper::logMessage(message);
             //mark as finished
-            task.Reset();
+            //task.Reset();
         }
     }
 
@@ -308,11 +339,13 @@ void NNRequestHandle::ReadDataResultImmidiate(TArray<float> &data){
         //generate
         task.ProcessFromPredictionFloats(data);
         GenerateAndNotifyResultPositionsForRequestQueue(); //notify registered actors to the task.
-        GenerateResultImage();
-        
+        //GenerateResultImage();
+        GeneratePredictionImage();
 
+        //IS WRONG HERE: ONCE GT IS REAL!
+        //task.MarkTaskFinished();
         //mark as finished! (? should be correct)
-        task.Reset();
+        //task.Reset();
     }
 }
 
@@ -323,20 +356,48 @@ void NNRequestHandle::ReadDataResult(TArray<uint8> &bufferPrediction){
     
     //notify
     GenerateAndNotifyResultPositionsForRequestQueue();
+    GeneratePredictionImage();
+
+    /*
 
     //generate result image (for storage and subscribed widget listeners)
     GenerateResultImage();
     GenerateResultImageChannels();
+    task.MarkTaskFinished();*/
 
     //task.Reset();
 }
 
+//notfiy prediction positions
 void NNRequestHandle::GenerateAndNotifyResultPositionsForRequestQueue(){
     //create result for queue ------> TODO!
     TArray<FVector> positions;
     task.GenerateAndNotifyResultPositions(requests.frontPackage());
     requests.PopFront();
 }
+
+//looks ok.
+void NNRequestHandle::GeneratePredictionImage(){
+    Image image;
+    FMeshedPolygonColorAttributes attributes(
+        FColor(0, 0, 255, 0),       // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
+        FColor(0,0,0,0),            // FColor colorViewGridIn,
+        FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
+        FColor(0, 0, 0, 0)          // FColor playerPosResultIn
+    );
+
+    task.ColoredHeatMap(
+        image, //Image &image,
+        attributes
+    );
+    NotifyHeatMapReceivers(image);
+}
+
+
+
+
 
 void NNRequestHandle::GenerateResultImage(){
     Image image;
@@ -347,20 +408,18 @@ void NNRequestHandle::GenerateResultImage(){
         FColor(FColor::Cyan),       // FColor colorViewGridIn,
         FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
         FColor(0, 255, 0, 255)      // FColor playerPosResultIn
-        /*FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
-        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
-        FColor(0, 0, 0, 0), // FColor colorPolygonFlaggedIn,
-        FColor(FColor::Cyan),       // FColor colorViewGridIn,
-        FColor(0,0,0,0),     // FColor colorTrjacetoryIn,
-        FColor(0, 255, 0, 255)      // FColor playerPosResultIn*/
     );
+
+    for(int i = 0; i < 10; i++){
+        DebugHelper::showScreenMessage("NNRequestHandle::GenerateResultImage!", FColor::Orange);
+    }
 
     task.ColoredHeatMap(
         image, //Image &image,
         attributes
     );
-    AddHeatMapSampleToStorage(image);
     NotifyHeatMapReceivers(image);
+    AddHeatMapSampleToStorage(image);
 }
 
 void NNRequestHandle::AddHeatMapSampleToStorage(Image &image){

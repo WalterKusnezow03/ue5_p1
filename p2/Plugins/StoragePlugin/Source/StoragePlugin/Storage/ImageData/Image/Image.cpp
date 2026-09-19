@@ -5,11 +5,15 @@
 void Image::Copy(const Image &other){
     data = other.data;
     unitStepPerPixel = other.unitStepPerPixel;
+    wasChanged = true;
 }
 
 bool Image::LoadFromPath(FString localPath){
     ImageLoader loader;
     wasLoaded = loader.LoadPNGLocalPath(localPath, data);
+    if(wasLoaded){
+        wasChanged = true;
+    }
     return wasLoaded;
 }
 
@@ -27,6 +31,7 @@ bool Image::SizeValid()const{
 
 void Image::SetUnitStepPerPixel(float s){
     unitStepPerPixel = std::abs(s);
+    wasChanged = true;
 }
 
 float Image::GetUnitStepPerPixel()const{
@@ -62,6 +67,7 @@ void Image::Setup(int x, int y){
         for (int i = 0; i < y; i++){
             data[i].SetNum(x);
         }
+        wasChanged = true;
     }
 }
 
@@ -77,6 +83,7 @@ void Image::SetPixel(int x, int y, FColor color){
                 data[y][x] = color;
             }
         }
+        wasChanged = true;
     }
 }
 
@@ -93,6 +100,7 @@ FColor Image::GetPixel(int x, int y) const{
 void Image::AddPixel(int x, int y, FColor color){
     if(InBound(x,y)){
         data[y][x] = ClampedSum(data[y][x], color);
+        wasChanged = true;
     }
 }
 
@@ -162,6 +170,7 @@ void Image::Transpose(){
             }
         }
         data = MoveTemp(newData);
+        wasChanged = true;
     }
 }
 
@@ -180,6 +189,7 @@ void Image::FlipX(){
             }
         }
         data = MoveTemp(newData);
+        wasChanged = true;
     }
 }
 
@@ -194,8 +204,18 @@ void Image::SetAlpha(int alpha){
             color.A = alpha;
         }
     }
+    wasChanged = true;
 }
 
 void Image::Clear(){
     data.Empty();
+    wasChanged = true;
+}
+
+bool Image::bWasChanged(){
+    return wasChanged;
+}
+
+void Image::ResetWasChanged(){
+    wasChanged = false;
 }

@@ -27,6 +27,10 @@ void FGridColorizer::ColorizeFromEpsilonFlag(
     bool useAbs,
     const FColor &color
 ){
+    if(color.A <= 0){
+        return;
+    }
+
     for (int i = 0; i < grid.Num(); i++){
         const TArray<float> &currentBuffer = grid[i];
         for (int j = 0; j < currentBuffer.Num(); j++){
@@ -49,6 +53,9 @@ void FGridColorizer::ColorizeFromEpsilonFlagMix(
     bool useAbs,
     const FColor &color
 ){
+    if(color.A <= 0){
+        return;
+    }
     ColorizeFromEpsilonFlagMix(image, grid, epsilon, useAbs, color, 1.0f);
 }
 
@@ -60,6 +67,9 @@ void FGridColorizer::ColorizeFromEpsilonFlagMix(
     const FColor &color,
     float externalWeight
 ){
+    if(color.A <= 0){
+        return;
+    }
     for (int i = 0; i < grid.Num(); i++){
         const TArray<float> &currentBuffer = grid[i];
         for (int j = 0; j < currentBuffer.Num(); j++){
@@ -109,6 +119,9 @@ void FGridColorizer::ColorizeFromUintFlag(
     const FColor &color,
     bool flagsInverted
 ){
+    if(color.A <= 0){
+        return;
+    }
     for (int i = 0; i < flagGrid.Num(); i++){
         const TArray<uint8> &currentBuffer = flagGrid[i];
         for (int j = 0; j < currentBuffer.Num(); j++){
@@ -134,6 +147,9 @@ void FGridColorizer::ColorizeFromLerp(
     const FColor &colorMin, 
     const FColor &colorMax
 ){
+    if(colorMin.A <= 0 && colorMax.A <= 0){
+        return;
+    }
     int sizeX = grid.Num();
     if(grid.Num() > 0){
         FColor colorDir = DirColor(colorMin, colorMax);

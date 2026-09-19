@@ -78,6 +78,8 @@ public:
     void EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies);
     void EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue);
 
+    //mark finished after result heat map extracted
+    void MarkTaskFinished();
 
     //todo: set type for prediction task / can be swicthed
     //todo: get type of prediction task
