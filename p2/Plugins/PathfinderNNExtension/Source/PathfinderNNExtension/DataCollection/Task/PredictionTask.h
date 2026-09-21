@@ -53,9 +53,14 @@ public:
     //for onnx handler
     void ProcessFromPredictionFloats(const TArray<float> &buffer);
 
-    void ColoredHeatMap(
+    void ColoredHeatMapWithTemporaryPlayer(
         Image &image,
         FMeshedPolygonColorAttributes &attributes
+    );
+    void ColoredHeatMap(
+        Image &image,
+        FMeshedPolygonColorAttributes &attributes,
+        bool tmpPlayerPos = false
     );
     void ColoredLayersMap(
         TArray<Image> &images,

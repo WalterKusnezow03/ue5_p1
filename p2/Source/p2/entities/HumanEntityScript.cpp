@@ -264,6 +264,8 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         //wait for player
         float timeToWait = 5.0f;
         actionManager.changeToActionTimed(EActionType::EWait, timeToWait);
+        
+        //switch to closest to player.
         LookAt(positions[0]); //debug wise look at first position / might also be only one.
 
         //update minimap - is auto updated
@@ -279,7 +281,7 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         //add delay before creating a new ground truth for the reapperance position
         //the player needs some time to be behind cover.
         //creates more game realistic result, rather than instant
-        float timeDelay = 2.0f; //1.0f
+        float timeDelay = 1.0f; //1.0f
         nnWaitDelay.Begin(timeDelay);
     }
 }

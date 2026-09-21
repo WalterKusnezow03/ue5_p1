@@ -58,7 +58,9 @@ int Image::heightY()const{
 
 
 void Image::Setup(int x, int y){
-    if(x > 0 && y > 0){
+    Clear();
+    if (x > 0 && y > 0)
+    {
         /*data.SetNum(x);
         for (int i = 0; i < x; i++){
             data[i].SetNum(y);

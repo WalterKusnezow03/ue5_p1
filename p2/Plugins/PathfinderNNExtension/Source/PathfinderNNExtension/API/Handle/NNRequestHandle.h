@@ -89,6 +89,9 @@ private:
     void GeneratePredictionImage();
     bool alreadyReadPredictionData = false;
 
+    //widget
+    void GenerateLiveImage();
+
     //GT PROCESS
     void GenerateResultImage();
     void GenerateResultImageChannels();

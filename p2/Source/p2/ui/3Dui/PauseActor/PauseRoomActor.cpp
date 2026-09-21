@@ -92,7 +92,7 @@ void APauseRoomActor::ShowSettingsWidget(bool flag){
 
 void APauseRoomActor::StaticEnter(AActor *player){
     CreateInstanceIfNeeded(player);
-    if (instance)
+    if (instance != nullptr && player != nullptr)
     {
         instance->Enter(player);
     }

@@ -8,6 +8,7 @@
 
 FSharedFrame::FSharedFrame(){
     closeOnDestroy = true;
+    bUseMutex = false;
 }
 
 FSharedFrame::FSharedFrame(bool closeOnDestroyFlag){
@@ -155,7 +156,7 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
 
     int copy = BytesWithoutReadyFlag();
     if(bytes.Num() != copy){
-        DebugHelper::logMessage("FSharedFrame::WriteData Cant Write Data", bytes.Num());
+        //DebugHelper::logMessage("FSharedFrame::WriteData Cant Write Data", bytes.Num());
         return;
     }
 
@@ -175,19 +176,19 @@ void FSharedFrame::WriteData(const TArray<uint8> &bytes)
     MarkReady(true);
     Up();
 
-    DebugHelper::logMessage("FSharedFrame::WriteData ", copy);
+    //DebugHelper::logMessage("FSharedFrame::WriteData ", copy);
 }
 
 
 void FSharedFrame::Down(){
-    if(semaphoreMutex && bUseMutex){
+    if(bUseMutex && semaphoreMutex){
         sem_wait(semaphoreMutex);
     }
 }
 
 
 void FSharedFrame::Up(){
-    if(semaphoreMutex && bUseMutex){
+    if(bUseMutex && semaphoreMutex){
         sem_post(semaphoreMutex);
     }
 }

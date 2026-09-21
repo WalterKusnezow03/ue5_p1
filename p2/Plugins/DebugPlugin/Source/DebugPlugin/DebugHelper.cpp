@@ -335,8 +335,15 @@ void DebugHelper::showLineBetween(UWorld *worldin, FVector Start, FVector End, F
 	}
 }
 
-
-
+void DebugHelper::showLineBetween(UWorld *worldin, FVector Start, FVector End, FColor color, float time, bool force){
+	if(force){
+		if(worldin != nullptr){
+			DrawDebugLine(worldin, Start, End, color, false, time, 0, 1.0f);
+			return;
+		}
+	}
+	showLineBetween(worldin, Start, End, color, time);
+}
 
 /// @brief draws a line between 2 given points
 /// @param world world to draw in

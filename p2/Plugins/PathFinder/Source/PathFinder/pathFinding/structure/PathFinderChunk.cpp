@@ -120,7 +120,30 @@ PathFinderNode* PathFinderChunk::findNodeInDirection(FVector &pos, FVector &dir)
             if(current->hasAnyNeighbors()){ //no neighbors makes no sense.
                 float Difference = FVector::Dist(pos, current->pos);
 
-                if(Difference < closest){
+                if(checkDir){
+                    FVector dirFromBotLocation = current->pos - pos; // AB = B - A
+                    dirFromBotLocation.Z = 0.0f;
+                    dirFromBotLocation = dirFromBotLocation.GetSafeNormal();
+
+                    //dot product similar: ok
+                    float dotProduct = FVector::DotProduct(dir, dirFromBotLocation);
+                    //wenn das skalarprodukt zweier normalisierter
+                    //vektoren 1 ergibt sind sie paralell zu einander
+                    if(dotProduct > prevDotProduct){
+                        closest = Difference;
+                        closestNode = current;
+                        prevDotProduct = dotProduct;
+                    }
+                }else{
+                    if(Difference < closest){
+                        closest = Difference;
+                        closestNode = current;
+                    }
+                }
+
+
+
+                /*if(Difference < closest){
 
                     //direction check
                     if(checkDir){
@@ -143,7 +166,7 @@ PathFinderNode* PathFinderChunk::findNodeInDirection(FVector &pos, FVector &dir)
                     }
 
                     
-                }
+                }*/
             }
             
         }

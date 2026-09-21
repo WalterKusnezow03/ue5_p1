@@ -66,7 +66,8 @@ void NNResultFlagManager::DrawFlagPositionsFrom(FVector actorLocation, UWorld *w
                 current->GetActorLocation(),
                 actorLocation,
                 FColor::Green,
-                1.0f
+                1.0f,
+                true
             );
         }
 

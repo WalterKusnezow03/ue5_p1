@@ -119,6 +119,21 @@ void FMeshedPolygonTrajectoryLayered::EmbedResultPosition(FVector &position){
     }
 }
 
+void FMeshedPolygonTrajectoryLayered::EmbedResultPositionTempoary(FVector &position){
+    if(IsValid()){
+        float clearedValue = -1.0f;
+        TCreateOrClearGrid<float>(groundTruthGridTempoary, 0.0f);        
+        int outX, outY = 1;
+        if(IsInBound(position, outX, outY)){
+            //where player is: 1, else: 0
+            float peak = 0.8f;
+            GaussianOnGrid(outX, outY, 4, 2.0f, groundTruthGridTempoary, peak);
+            TOverrideValue<float>(groundTruthGridTempoary, outX, outY, peak);
+        }
+    }
+}
+
+
 void FMeshedPolygonTrajectoryLayered::GaussianGroundTruthGrid(int x, int y, int size, float sigma){
     GaussianOnGrid(x, y, size, sigma, groundTruthGrid);
 }
@@ -738,7 +753,8 @@ void FMeshedPolygonTrajectoryLayered::GenerateResultPositionsVisibleBy(
 
 void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     Image &image,
-    FMeshedPolygonColorAttributes &attributes
+    FMeshedPolygonColorAttributes &attributes,
+    bool useTmpPlayerPosition
 ){
     ColoredHeatMap(
         image,
@@ -747,7 +763,8 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
         attributes.ColorPolygon(),
         attributes.ColorView(),
         attributes.ColorTrajectory(),
-        attributes.ColorPlayerResult()
+        attributes.ColorPlayerResult(),
+        useTmpPlayerPosition
     );
 }
 
@@ -759,18 +776,20 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     FColor colorPolygonFlagged,
     FColor colorViewGrid,
     FColor colorTrjacetory,
-    FColor playerPosResult
+    FColor playerPosResult,
+    bool useTmpPlayerPosition
 ){
-    //heat map
     FGridColorizer colorizer;
+    image.Setup(sizeX(), sizeY());
+    colorizer.ColorizeFullBaseColor(image, heatMap, colorMin);
+
+    //heat map
     colorizer.ColorizeFromLerp(image, heatMap, colorMin, colorMax); //heat map
 
     //polygon layer
     colorizer.ColorizeFromUintFlag(image, flagGrid, colorPolygonFlagged, flagsInverted); 
 
-    //heat overdraw
-    FColor clear(0, 0, 0, 0);
-    colorizer.ColorizeFromEpsilonFlagMix(image, heatMap, 0.0f, true, colorMax); // heat map
+    
 
     //view layer
     colorizer.ColorizeFromEpsilonFlagMix(image, viewGrid, 0.0f, true, colorViewGrid, 0.5f);
@@ -783,9 +802,18 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
     colorizer.ColorizeFromEpsilonFlagMix(image, trajectoryConePrecited, 0.0f, true, colorTrjacetory, 0.2f);
     
 
+    //heat overdraw
+    colorizer.ColorizeFromEpsilonFlagMix(image, heatMap, 0.0f, true, colorMax); // heat map
     
     //player pos override
-    colorizer.ColorizeFromEpsilonFlagMix(image, groundTruthGrid, 0.0f,true, playerPosResult, 0.9f);
+    if(!useTmpPlayerPosition){
+        colorizer.ColorizeFromEpsilonFlagMix(image, groundTruthGrid, 0.0f,true, playerPosResult, 0.9f);
+    }else{
+        //groundTruthGridTempoary, tmp player pos
+        colorizer.ColorizeFromEpsilonFlagMix(image, groundTruthGridTempoary, 0.0f,true, playerPosResult, 0.9f);
+        //colorizer.ColorizeFromEpsilonFlag(image, groundTruthGridTempoary, 0.0f, false, playerPosResult);
+    }
+
 
     //are correct
     /*colorizer.ColorizeEdgePoints(
@@ -794,19 +822,15 @@ void FMeshedPolygonTrajectoryLayered::ColoredHeatMap(
         FColor::Black
     );*/
 
-    //needed.
-    /*
-    image.SetUnitStepPerPixel(stepSizeSaved);
-    image.Transpose();
-    image.FlipX();
-    image.SetAlpha(255);*/
-    FinalizeImage(image);
+    
+    FinalizeImage(image, true); //true
 }
 
 void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
     TArray<Image> &images,
     FMeshedPolygonColorAttributes &attributes
 ){
+    DebugHelper::logMessage("ColoredLayersMap Add");
     Image imageShared;
 
     /*
@@ -821,18 +845,21 @@ void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
 
     //heat map
     FGridColorizer colorizer;
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromLerp(imageShared, heatMap, attributes.ColorMinHeat(), attributes.ColorMaxHeat()); //heat map
     FinalizeImage(imageShared, false);
     images.Add(imageShared);
     imageShared.Clear();
 
     //polygon layer
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromUintFlag(imageShared, flagGrid, attributes.ColorPolygon(), flagsInverted); 
     FinalizeImage(imageShared, false);
     images.Add(imageShared);
     imageShared.Clear();
 
     //view layer
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromEpsilonFlag(
         imageShared,
         viewGrid,
@@ -846,6 +873,7 @@ void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
     
     //tracjetory override
     //colorizer.ColorizeFromEpsilonFlag(image, timeGrid, 0.0f, true, colorTrjacetory);
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromEpsilonFlag(
         imageShared,
         timeGrid,
@@ -857,6 +885,7 @@ void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
     images.Add(imageShared);
     imageShared.Clear();
 
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromEpsilonFlag(
         imageShared,
         trajectoryConePrecited,
@@ -871,6 +900,7 @@ void FMeshedPolygonTrajectoryLayered::ColoredLayersMap(
 
     
     //player pos override
+    imageShared.Setup(sizeX(), sizeY());
     colorizer.ColorizeFromEpsilonFlag(
         imageShared,
         groundTruthGrid,

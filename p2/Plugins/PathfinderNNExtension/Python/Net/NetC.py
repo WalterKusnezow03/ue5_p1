@@ -63,7 +63,7 @@ class NetC(NetBase.NetBase):
 
         ##MSE aber bei falschem peak: 50 mal mehr loss, 1.0 + ... grund signal, 0 ist 0 aber nicht gut.
         ##self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * 50.0)).mean()
-        increaseLoss = 1 # 50, 100
+        increaseLoss = 20 # 50, 100
         self.loss_fn = lambda pred, target: (((pred - target) ** 2) * (1.0 + target * increaseLoss)).mean()
 
 

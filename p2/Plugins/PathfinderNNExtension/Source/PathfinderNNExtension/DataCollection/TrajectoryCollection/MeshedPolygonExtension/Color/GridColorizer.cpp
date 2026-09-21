@@ -11,6 +11,21 @@ FGridColorizer::~FGridColorizer(){
 
 
 
+
+///
+void FGridColorizer::ColorizeFullBaseColor(
+    Image &image,
+    TArray<TArray<float>> &grid,
+    const FColor &color
+){
+    for (int i = 0; i < grid.Num(); i++){
+        const TArray<float> &currentBuffer = grid[i];
+        for (int j = 0; j < currentBuffer.Num(); j++){
+            image.SetPixel(i, j, color);
+        }
+    }
+}
+
 void FGridColorizer::ColorizeFromEpsilonFlag(
     Image &image, 
     TArray<TArray<float>> &grid,

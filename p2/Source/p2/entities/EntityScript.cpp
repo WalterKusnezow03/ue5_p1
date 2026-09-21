@@ -455,6 +455,15 @@ void AEntityScript::updateSpottingTime(float deltaTime){
 
 void AEntityScript::actUponCurrentAction(float DeltaTime){
 	actionManager.Tick(DeltaTime);
+	EntityAction &currentAction = actionManager.currentAction();
+	
+	
+	if(currentAction.actionType() == EActionType::EWait){
+		//let a rotation to be finished before stopping
+		humanoidPluginController.stopLocomotionOnceRotationHasFinished();
+		return;
+	}
+
 	if(team == teamEnum::enemyTeam){
 		if(spottedPlayer && !canSeePlayer){
 			//actionManager.changeToAction(EActionType::EMoveToPlayer);
@@ -471,7 +480,7 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 	
 	
 
-	EntityAction &currentAction = actionManager.currentAction();
+	
 	if(currentAction.actionType() == EActionType::EMoveToPlayer){
 		
 		//DebugHelper::showScreenMessage("MOVE TO PLAYER");
@@ -480,11 +489,7 @@ void AEntityScript::actUponCurrentAction(float DeltaTime){
 		return;
 	}
 
-	if(currentAction.actionType() == EActionType::EWait){
-		//let a rotation to be finished before stopping
-		humanoidPluginController.stopLocomotionOnceRotationHasFinished();
-		return;
-	}
+	
 
 	if(currentAction.actionType() == EActionType::ERoam){
 		//to be implemented

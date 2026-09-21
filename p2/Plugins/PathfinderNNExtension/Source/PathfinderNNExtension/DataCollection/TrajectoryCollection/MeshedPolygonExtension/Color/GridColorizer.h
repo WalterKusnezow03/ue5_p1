@@ -12,6 +12,12 @@ public:
     FGridColorizer();
     ~FGridColorizer();
 
+    void ColorizeFullBaseColor(
+        Image &image,
+        TArray<TArray<float>> &grid,
+        const FColor &color
+    ); 
+
     void ColorizeFromEpsilonFlag(
         Image &image,
         TArray<TArray<float>> &grid,

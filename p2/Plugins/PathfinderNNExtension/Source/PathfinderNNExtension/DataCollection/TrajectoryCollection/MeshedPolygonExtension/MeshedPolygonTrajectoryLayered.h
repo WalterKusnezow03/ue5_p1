@@ -31,6 +31,7 @@ public:
     //clears corrosponding grid, object is reusable!
     void EmbedTrajectories(TArray<Trajectory> &trajectories) override;
     void EmbedResultPosition(FVector &position) override;
+    void EmbedResultPositionTempoary(FVector &position) override;
 
     void AppendFlagMapAsFloat(TArray<uint8> &buffer) const;
     void AppendTimeMap(TArray<uint8> &buffer) const;
@@ -71,7 +72,8 @@ private:
 public:
     void ColoredHeatMap(
         Image &image,
-        FMeshedPolygonColorAttributes &attributes
+        FMeshedPolygonColorAttributes &attributes,
+        bool useTmpPlayerPosition = false
     ) override;
 
     void ColoredLayersMap(
@@ -143,7 +145,8 @@ private:
         FColor colorPolygonFlagged,
         FColor colorViewGrid,
         FColor colorTrjacetory,
-        FColor playerPosResult
+        FColor playerPosResult,
+        bool useTmpPlayerPosition = false
     );
 
     void FinalizeImage(Image &image);
@@ -175,6 +178,8 @@ private:
 
 
     // --- ground truth ---
+
+    TArray<TArray<float>> groundTruthGridTempoary; //ground truth grid temporary for widget
 
     //ground truth position . ground truth grid
     static constexpr float playerGroundTruthPeak = 1.0f;

@@ -243,6 +243,9 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
         return;
     }
 
+    //live update Widget Heatmap
+    GenerateLiveImage();
+
     //DebugHelper::showScreenMessage("ANNPathFinderSocket::TickTask", FColor::Red);
 
     TArray<uint8> &groundTruthBinary = tickData.groundTruthBinaryOut;
@@ -251,6 +254,7 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
     if(task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary)){
         DebugHelper::logMessage("NNRequestHandle::TickTask FINISH GT"); 
         GenerateResultImage();
+        GenerateResultImageChannels();
 
         if(groundTruthBinary.Num() > 0){
             //flag ground truth data written.
@@ -395,9 +399,30 @@ void NNRequestHandle::GeneratePredictionImage(){
     NotifyHeatMapReceivers(image);
 }
 
+void NNRequestHandle::GenerateLiveImage(){
+    Image image;
+    FVector pos;
+    ColorizedWidgetImage(image, pos);
+    heatMapReceivers.NotifyAll(image, pos);
+}
 
+void NNRequestHandle::ColorizedWidgetImage(Image &image, FVector &worldPosPivot){
+    FMeshedPolygonColorAttributes attributes(
+        FColor(0, 0, 0, 255),     // FColor colorMinHeatIn,
+        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
+        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
+        FColor(0,0,0,0),       // FColor colorViewGridIn,
+        FColor(0,0,0,0), //FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
+        FColor(0, 240, 0, 255)      // FColor playerPosResultIn
+    );
+    task.ColoredHeatMapWithTemporaryPlayer(
+        image, //Image &image,
+        attributes
+    );
 
-
+    //of FMeshedPolygonTrajectoryLayeredInterface
+    worldPosPivot = task.GetPolygonData().BottomLeft();
+}
 
 void NNRequestHandle::GenerateResultImage(){
     Image image;
@@ -410,15 +435,15 @@ void NNRequestHandle::GenerateResultImage(){
         FColor(0, 255, 0, 255)      // FColor playerPosResultIn
     );
 
-    for(int i = 0; i < 10; i++){
+    /*for(int i = 0; i < 10; i++){
         DebugHelper::showScreenMessage("NNRequestHandle::GenerateResultImage!", FColor::Orange);
-    }
+    }*/
 
     task.ColoredHeatMap(
         image, //Image &image,
         attributes
     );
-    NotifyHeatMapReceivers(image);
+    //NotifyHeatMapReceivers(image);
     AddHeatMapSampleToStorage(image);
 }
 
@@ -430,6 +455,10 @@ void NNRequestHandle::AddHeatMapSampleToStorage(Image &image){
 }
 
 void NNRequestHandle::GenerateResultImageChannels(){
+    if(!saveHeatMapsEnabled){
+        return;
+    }
+    DebugHelper::logMessage("NNRequestHandle::GenerateResultImageChannels");
     FMeshedPolygonColorAttributes attributes(
         FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
         FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
@@ -438,9 +467,8 @@ void NNRequestHandle::GenerateResultImageChannels(){
         FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
         FColor(0, 255, 0, 255)      // FColor playerPosResultIn
     );
-    TArray<Image> images;
-    task.ColoredLayersMap(images, attributes);
-    heatMaps.Append(images);
+    task.ColoredLayersMap(heatMaps, attributes);
+    
 }
 
 
@@ -457,23 +485,6 @@ HeatMapReceivers &NNRequestHandle::GetHeatMapReceivers(){
     return heatMapReceivers;
 }
 
-void NNRequestHandle::ColorizedWidgetImage(Image &image, FVector &worldPosPivot){
-    FMeshedPolygonColorAttributes attributes(
-        FColor(0, 0, 255, 255),     // FColor colorMinHeatIn,
-        FColor(255, 0, 0, 255),     // FColor colorMaxHeatIn,
-        FColor(255, 255, 255, 255), // FColor colorPolygonFlaggedIn,
-        FColor(FColor::Cyan),       // FColor colorViewGridIn,
-        FColor(FColor::Yellow),     // FColor colorTrjacetoryIn,
-        FColor(0, 255, 0, 255)      // FColor playerPosResultIn
-    );
-    task.ColoredHeatMap(
-        image, //Image &image,
-        attributes
-    );
-
-    //of FMeshedPolygonTrajectoryLayeredInterface
-    worldPosPivot = task.GetPolygonData().BottomLeft();
-}
 
 void NNRequestHandle::EndPlay(){
     task.EndSave();

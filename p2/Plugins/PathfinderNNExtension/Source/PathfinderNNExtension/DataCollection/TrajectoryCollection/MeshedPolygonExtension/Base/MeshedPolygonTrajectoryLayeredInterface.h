@@ -31,6 +31,7 @@ public:
     virtual void EmbedEnemyVision(const TArray<FVisionCone *> &cones) = 0;
     virtual void EmbedTrajectories(TArray<Trajectory> &trajectories) = 0;
     virtual void EmbedResultPosition(FVector &position) = 0;
+    virtual void EmbedResultPositionTempoary(FVector &position) {};
 
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     //prepare data (for netB resize 144 for example)
@@ -61,7 +62,8 @@ public:
     // ---- post process debug images ----
     virtual void ColoredHeatMap(
         Image &image,
-        FMeshedPolygonColorAttributes &attributes
+        FMeshedPolygonColorAttributes &attributes,
+        bool useTmpPlayerPosition = false
     ){};
 
     // expose all channels as indivual layers

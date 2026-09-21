@@ -261,7 +261,7 @@ void MiniMapData::AddMarker(EMarkerType type, AActor *actor){
         
         if(!actors.Contains(actor)){
             actors.Add(actor);
-            DebugHelper::logMessage("MiniMapData::AddedActor");
+            //DebugHelper::logMessage("MiniMapData::AddedActor");
         }
         
     }

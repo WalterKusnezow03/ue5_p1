@@ -75,6 +75,7 @@ public:
 	static void showLineBetween(UWorld *world, FVector Start, FVector End);
 	static void showLineBetween(UWorld *world, FVector Start, FVector End, FColor color);
 	static void showLineBetween(UWorld *worldin, FVector Start, FVector End, FColor color, float time);
+	static void showLineBetween(UWorld *worldin, FVector Start, FVector End, FColor color, float time, bool force);
 	static void showLine(UWorld *world, std::vector<FVector> &vec);
 	static void showLine(UWorld *world, std::vector<FVector> &vec, FColor color);
 	static void showLine(UWorld *world, std::vector<FVector> &vec, FColor color, int scale);

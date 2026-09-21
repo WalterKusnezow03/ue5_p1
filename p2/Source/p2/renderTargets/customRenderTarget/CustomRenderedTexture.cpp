@@ -209,6 +209,9 @@ void UCustomRenderedTexture::SetPixel(UCanvas* Canvas, float X, float Y, FLinear
 {
     if (!Canvas || !Canvas->Canvas) return;
 
+    //todo: pixelsize: widthX / maxX
+
+
     // Zeichnet eine gefüllte 1x1 Box an Position (X, Y)
     int PixelSize = 10;
     FCanvasTileItem TileItem(

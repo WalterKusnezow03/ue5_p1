@@ -214,13 +214,28 @@ void PredictionTask::MarkTaskFinished(){
     taskCompleted = true;
 }
 
-void PredictionTask::ColoredHeatMap(
+
+void PredictionTask::ColoredHeatMapWithTemporaryPlayer(
     Image &image,
     FMeshedPolygonColorAttributes &attributes
 ){
+    if(trackedActorPtr){
+        FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+        FVector location = trackedActorPtr->ActorLocation();
+        polygonDataCache.EmbedResultPositionTempoary(location);
+    }
+    ColoredHeatMap(image, attributes, true);
+}
+
+//for result output
+void PredictionTask::ColoredHeatMap(
+    Image &image,
+    FMeshedPolygonColorAttributes &attributes,
+    bool tmpPlayerPos
+){
     FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     polygonDataCache.ColoredHeatMap(
-        image, attributes
+        image, attributes, tmpPlayerPos
     );
 }
 

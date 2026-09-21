@@ -189,39 +189,8 @@ bool UNNTrainWidget::ExtractProgress(const TArray<FString> &parts, FString &resu
 
 
 
-/*
-bool UNNTrainWidget::ExtractLoss(const TArray<FString> &parts, FString &result){
-    if(parts.Num() > 0){
-        int j = FindIndexLowerCase(parts, TEXT("loss"));
-        if(j>= 0 && j +1 < parts.Num()){
-            FString lossString = parts[j + 1];
 
-            int digits = FindDigitsNeeded(lossString); // 5; //"." also inside.
-            if(digits > 0){
-                lossString = lossString.Left(digits + 1);
-                result = "Loss: " + lossString;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-int UNNTrainWidget::FindDigitsNeeded(FString &lossString){
-    //0.xxx //start from index 2
-    int minNeeded = 2;
-    for (int i = 2; i < lossString.Len(); i++){
-        TCHAR current = lossString[i];
-        
-        if(current != '0'){
-            minNeeded += i;
-            return minNeeded;
-        }
-    }
-    return minNeeded;
-}*/
-
-bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResult)
+/*bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResult)
 {
     if (Parts.Num() == 0) return false;
 
@@ -268,6 +237,68 @@ FString UNNTrainWidget::FormatLossScientificCustom(const FString& InLossString, 
     if (Exponent < 0)
     {
         int32 LeadingZerosCount = FMath::Abs(Exponent) - 1;
+
+        if (LeadingZerosCount > 0)
+        {
+            return FString::Printf(TEXT("%s0.(%d)%s"), *Sign, LeadingZerosCount, *MantissaStr);
+        }
+        else
+        {
+            return FString::Printf(TEXT("%s0.%s"), *Sign, *MantissaStr);
+        }
+    }
+
+    // 3. Fallback for positive exponents if encountered
+    return InLossString;
+}*/
+
+bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResult)
+{
+    if (Parts.Num() == 0) return false;
+
+    int32 Index = FindIndexLowerCase(Parts, TEXT("loss"));
+    if (Index >= 0 && Index + 1 < Parts.Num())
+    {
+        FString LossString = Parts[Index + 1];
+
+        // Transforms scientific notation into custom compact format
+        FString FormattedLoss = FormatLossScientificCustom(LossString, 5);
+
+        OutResult = "Loss: " + FormattedLoss;
+        return true;
+    }
+    return false;
+}
+
+FString UNNTrainWidget::FormatLossScientificCustom(const FString& InLossString, int32 SignificantDigits)
+{
+    int32 EIndex = INDEX_NONE;
+    if (!InLossString.FindChar('e', EIndex) && !InLossString.FindChar('E', EIndex))
+    {
+        // Not scientific notation; return as-is
+        return InLossString;
+    }
+
+    // 1. Split into Mantissa and Exponent
+    FString MantissaStr = InLossString.Left(EIndex);
+    FString ExponentStr = InLossString.RightChop(EIndex + 1);
+
+    int32 Exponent = FCString::Atoi(*ExponentStr);
+
+    // Clean mantissa digits (remove sign and decimal point)
+    FString Sign = MantissaStr.StartsWith(TEXT("-")) ? TEXT("-") : TEXT("");
+    MantissaStr = MantissaStr.Replace(TEXT("-"), TEXT("")).Replace(TEXT("."), TEXT(""));
+
+    // 2. Format Negative Exponents -> 0.(ZerosCount)Mantissa
+    if (Exponent < 0)
+    {
+        int32 LeadingZerosCount = FMath::Abs(Exponent) - 1;
+
+        // Ensure we take only the requested significant digits starting from the first non-zero representation
+        if (MantissaStr.Len() > SignificantDigits)
+        {
+            MantissaStr = MantissaStr.Left(SignificantDigits);
+        }
 
         if (LeadingZerosCount > 0)
         {
