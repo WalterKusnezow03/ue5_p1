@@ -24,6 +24,29 @@ void FMeshedPolygonPositionField::UpdateWorldHeightFor(FVector &asWorldPos){
     asWorldPos.Z = worldPosZ.Z;
 }
 
+void FMeshedPolygonPositionField::UpdateWorldHeightFor(const FVector2D &in2D, FVector &out){
+    out.X = in2D.X;
+    out.Y = in2D.Y;
+    UpdateWorldHeightFor(out);
+}
+
+void FMeshedPolygonPositionField::UpdateWorldHeightFor(
+    const TArray<FVector2D> &array2Din,
+    TArray<FVector> &out3D
+){
+    int sizeCurrent = out3D.Num();
+    int sizeAdd = array2Din.Num();
+    if(sizeAdd > 0){
+        out3D.SetNum(sizeCurrent + sizeAdd);
+        for (int i = 0; i < array2Din.Num(); i++)
+        {
+            int indexOffseted = sizeCurrent + i;
+            UpdateWorldHeightFor(array2Din[i], out3D[indexOffseted]);
+        }
+    }
+}
+
+
 
 
 bool FMeshedPolygonPositionField::InitAsSinglePixel(TArray<FVector> &polygon, float widthOfInsideStep){

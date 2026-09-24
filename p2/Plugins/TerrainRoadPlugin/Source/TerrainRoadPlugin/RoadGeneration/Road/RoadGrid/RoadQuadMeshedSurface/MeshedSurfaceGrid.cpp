@@ -72,12 +72,7 @@ bool FMeshedSurfaceGrid::CanFindShape(){
     return edgeIndices.Num() > 0;
 }
 
-bool FMeshedSurfaceGrid::FindShape(
-    int x, //in cm
-    int y, //in cm
-    FVector &outBottomLeft,
-    FRotator &outRotation
-){
+bool FMeshedSurfaceGrid::FindShape(ShapeFitTask &taskInOut){
     /*if(!BoundsSmallerThanStepSize(x,y)){
         return false;
     }*/
@@ -97,7 +92,7 @@ bool FMeshedSurfaceGrid::FindShape(
         FVector2D mainEdgeStepDir;
         
         //nach rechts zeigen für x
-        FVector pivot = edgeIndices.Get(i);
+        FVector pivotTargeted = edgeIndices.Get(i);
         FVector next = edgeIndices.Get(i+1);
         if(edgeIndices.EdgeDirection(i + 1, i, mainEdgeStepDir)){ //i, i-1
             //DrawConnect(pivot, next, 150.0f, FColor::Green); //looks okay
@@ -106,11 +101,8 @@ bool FMeshedSurfaceGrid::FindShape(
                 
                 FVector2D inset = MakeInsetFromEdgeAngle(angleDot, insetStep);
 
-                //first fit found:
-
-                if (LockArea(pivot, mainEdgeStepDir, inset, x, y, outRotation)){
-                    UpdateWorldHeightFor(pivot);
-                    outBottomLeft = pivot;
+                //first fit found is picked
+                if (LockArea(pivotTargeted, taskInOut, mainEdgeStepDir, inset)){
                     return true;
                 }
             }
@@ -121,6 +113,23 @@ bool FMeshedSurfaceGrid::FindShape(
             //DebugHelper::logMessage("FMeshedSurfaceGrid::FindShape::DirInvalid");
             //DrawMarker(pivot, FColor::Red);
         }
+    }
+    return false;
+}
+
+bool FMeshedSurfaceGrid::FindShape(
+    int x, //in cm
+    int y, //in cm
+    FVector &outBottomLeft,
+    FRotator &outRotation
+){
+    ShapeFitTask task;
+    task.Setup(x, y);
+    if(FindShape(task)){
+        //set params if found.
+        outBottomLeft = task.GetPivot();
+        outRotation = task.GetRotation();
+        return true;
     }
     return false;
 }
@@ -146,20 +155,28 @@ FVector2D FMeshedSurfaceGrid::MakeInsetFromEdgeAngle(float dot, float depth){
 }
 
 bool FMeshedSurfaceGrid::LockArea(
-    FVector &pivot,
+    FVector &pivotTargeted,
+    ShapeFitTask &taskInOut,
     const FVector2D &stepDir, //zeigt nach rechts
-    const FVector2D &inset,
-    int xSize, //für nach rechts
-    int ySize,
-    FRotator &outRotation
+    const FVector2D &inset
+    //int xSize, //für nach rechts
+    //int ySize,
+    //FRotator &outRotation
 ){
-    // ---- PROBLEM NOCH SEHR UNKLAR! ----
+    int xSize = 0;
+    int ySize = 0;
+    taskInOut.GetSize(xSize, ySize);
+
+    // ---- PROBLEM NOCH SEHR UNKLAR! ---- (Gibts hier noch eins? nein.)
     FVector2D orthogonal(stepDir.Y, -stepDir.X);
     FVector2D rotation = orthogonal;
 
-    FVector copyPivot = pivot;
+    FVector copyPivot = pivotTargeted;
     TArray<FVector2D> array;
-    MakeBounds(xSize, ySize, array, pivot, rotation, inset, outRotation);
+    //MakeBounds(xSize, ySize, array, pivot, rotation, inset, outRotation);
+    //rotation implicitly updated via reference
+    MakeBounds(xSize, ySize, array, pivotTargeted, rotation, inset, taskInOut.GetRotationRef());
+    
 
     //log okay.
     /*DebugHelper::logMessage(
@@ -173,9 +190,21 @@ bool FMeshedSurfaceGrid::LockArea(
     bool inside = false;
     if (PolygonCanBeAdded(array, inside, visible))
     {
+        //add hull to set to block the area.
         FMeshedPolygonHullIndices hull;
         hull.AddAll(array);
         edgeSetRawTemp.Add(hull);
+
+        //set pivot targeted to out data
+        UpdateWorldHeightFor(pivotTargeted);
+        taskInOut.SetPivot(pivotTargeted);
+
+        //choose the lowest Z value of all Bounding positions
+        //so the shape will touch the ground at its lowest point.
+        TArray<FVector> d3Positions;
+        UpdateWorldHeightFor(array, d3Positions);
+        taskInOut.UpdatePivotPickLowestZ(d3Positions);
+
         //Draw(array, FColor::Green);
 
         /*DebugHelper::logMessage(

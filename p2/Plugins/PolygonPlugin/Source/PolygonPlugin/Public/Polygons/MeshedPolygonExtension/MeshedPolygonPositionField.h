@@ -33,6 +33,11 @@ protected:
 
     //updates the world height of the given world coordinate
     void UpdateWorldHeightFor(FVector &asWorldPos);
+    void UpdateWorldHeightFor(const FVector2D &in2D, FVector &out);
+    void UpdateWorldHeightFor(
+        const TArray<FVector2D> &array2Din,
+        TArray<FVector> &out3D
+    );
 
 public:
     TArray<TArray<FVector>> &GetPositionGrid();

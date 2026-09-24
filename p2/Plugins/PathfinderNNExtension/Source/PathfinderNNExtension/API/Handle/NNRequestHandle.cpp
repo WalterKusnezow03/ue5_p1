@@ -254,7 +254,7 @@ void NNRequestHandle::TickTask(FNNRequestHandleTickData &tickData){
     if(task.TickVisiblityCheckAndPrepareGroundTruthBinary(groundTruthBinary)){
         DebugHelper::logMessage("NNRequestHandle::TickTask FINISH GT"); 
         GenerateResultImage();
-        GenerateResultImageChannels();
+        //GenerateResultImageChannels();
 
         if(groundTruthBinary.Num() > 0){
             //flag ground truth data written.

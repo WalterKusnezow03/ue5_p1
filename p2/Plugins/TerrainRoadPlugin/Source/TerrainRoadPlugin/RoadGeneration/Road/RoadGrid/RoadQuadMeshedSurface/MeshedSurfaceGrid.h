@@ -5,6 +5,7 @@
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 #include "PolygonPlugin/Public/Polygons/MeshedPolygonExtension/MeshedPolygonPositionField.h"
 #include "PolygonPlugin/Public/Polygons/MeshedPolygonUtil/MeshedPolygonHullSet.h"
+#include "TerrainRoadPlugin/RoadGeneration/Road/RoadGrid/RoadQuadMeshedSurface/ShapeFitTask/ShapeFitTask.h"
 
 class TerrainInterfaceBase;
 class MeshData;
@@ -29,6 +30,9 @@ public:
 
     // on raw hull
     bool CanFindShape();
+
+    bool FindShape(ShapeFitTask &taskInOut);
+
     bool FindShape(
         int x, // in cm
         int y, // in cm
@@ -39,6 +43,8 @@ public:
     
 
     //debug - in world space / grid data world
+    //creates a wall like structure around the polygon with updated 
+    //surface heights
     void DebugAppendEdgeSetRawAsMeshData(float height, MeshData &other, float offset);
     void DebugAppendEdgeSetRawAsMeshData(float height, MeshData &other, const FVector offset);
     void DebugAppendEdgeSetRawAsMeshData(
@@ -64,12 +70,10 @@ private:
 
     //if true returned: success
     bool LockArea(
-        FVector &pivot,
-        const FVector2D &stepDir,
-        const FVector2D &inset,
-        int xIndicesNeeded,
-        int yIndicesNeeded,
-        FRotator &outRotation
+        FVector &pivotTargeted,
+        ShapeFitTask &taskInOut,
+        const FVector2D &stepDir, //zeigt nach rechts
+        const FVector2D &inset
     );
 
     FVector Rotation(
