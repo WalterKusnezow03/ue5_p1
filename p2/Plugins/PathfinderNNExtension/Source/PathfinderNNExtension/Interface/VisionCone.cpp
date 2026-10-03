@@ -7,6 +7,11 @@ void FVisionCone::Update(const FVector &pos, const FVector &lookDir, float angle
     location = pos;
 }
 
+void FVisionCone::UpdateAs360(const FVector &pos){
+    FVector look(1, 0, 0);
+    Update(pos, look, 360.0f);
+}
+
 FVector &FVisionCone::ActorLocation(){
     return location;
 }

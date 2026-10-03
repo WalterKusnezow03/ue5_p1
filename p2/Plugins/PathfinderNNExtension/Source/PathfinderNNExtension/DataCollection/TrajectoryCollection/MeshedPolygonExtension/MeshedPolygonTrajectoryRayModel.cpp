@@ -4,6 +4,7 @@
 void FMeshedPolygonTrajectoryRayModel::Reset(){
     ClearTrajectoryData();
     ClearEnemyVisionData();
+    playerHitsGroundTruth.Empty();
 }
 
 void FMeshedPolygonTrajectoryRayModel::ClearTrajectoryData(){
@@ -12,11 +13,16 @@ void FMeshedPolygonTrajectoryRayModel::ClearTrajectoryData(){
 
 //immer in local coordinates
 void FMeshedPolygonTrajectoryRayModel::EmbedResultPosition(FVector &position){
+    playerHitsGroundTruth.Empty();
+    Trace360(position, playerHitsGroundTruth);
+
+    //playerGroundTruth = position - BottomLeft();  // AB = B - A
+
     int outX, outY = 1;
     ToIndexRaw(position, outX, outY);
-    playerGroundTruth = FIntPoint(outX, outY);
+    FIntPoint playerGroundTruth = FIntPoint(outX, outY);
+    playerHitsGroundTruth[playerHitsGroundTruth.Num() -1 ] = playerGroundTruth; //359 + 1
 }
-
 
 void FMeshedPolygonTrajectoryRayModel::EmbedTrajectories(TArray<Trajectory> &trajectories){
     if(IsValid()){
@@ -35,7 +41,34 @@ void FMeshedPolygonTrajectoryRayModel::EmbedTrajectories(TArray<Trajectory> &tra
 void FMeshedPolygonTrajectoryRayModel::EmbedRayModelFromTrajectories(TArray<Trajectory> &trajectories){
     //kann ja sein dass die letzten 4 punkte hinreichend sind
     //und von hier aus die samples gezogen werden.
+
+    //oder nur einer am ende
+    if(trajectories.Num() > 0){
+        Trajectory &last = trajectories.Last();
+        FVector pos = last.GetPosition();
+        Trace360(pos, playerHits);
+    }
 }
+
+void FMeshedPolygonTrajectoryRayModel::Trace360(
+    const FVector &pos,
+    TArray<FIntPoint> &hitsCollected
+){
+    FVisionCone cone;
+    cone.UpdateAs360(pos);
+
+    TArray<FIntPoint> hitsCollectedTmp;
+    TraceConeCollectHits(
+        cone.ActorLocation(),
+        cone.GetLookDir(),
+        cone.GetAngle(),
+        maxRaysPlayerVision,
+        hitsCollectedTmp,
+        true // dir is centered forward.
+    );
+    hitsCollected.Append(hitsCollectedTmp);
+}
+
 
 
 
@@ -131,8 +164,9 @@ void FMeshedPolygonTrajectoryRayModel::ValidatePlayerTrajectoryBuffer(){
     playerTrajectories.SetNum(maxPlayerTrajectories);
 }
 
-
-
+void FMeshedPolygonTrajectoryRayModel::ValidatePlayerGTBuffer(){
+    playerHitsGroundTruth.SetNum(maxRaysPlayerVision); //360 + pos
+}
 
 void FMeshedPolygonTrajectoryRayModel::EmbedEnemyVision(FVisionCone *cone, int rays){
     if(cone){
@@ -160,7 +194,9 @@ void FMeshedPolygonTrajectoryRayModel::AppendAsBinary(
         TemplateBufferStorageInterface::TAppendBuffer<FIntPoint>(enemyHits, buffer);
 
         TemplateBufferStorageInterface::TAppendBuffer<FVector>(playerTrajectories, buffer);
-        TemplateBufferStorageInterface::TAppendSingleValue<FIntPoint>(playerGroundTruth, buffer);
+
+        TemplateBufferStorageInterface::TAppendBuffer<FIntPoint>(playerHitsGroundTruth, buffer);
+        //TemplateBufferStorageInterface::TAppendSingleValue<FIntPoint>(playerGroundTruth, buffer);
     }
 
 }
@@ -182,7 +218,8 @@ bool FMeshedPolygonTrajectoryRayModel::LoadFromBinary(
             TemplateBufferStorageInterface::TLoadBuffer<FVector>(playerTrajectories, Ptr);
         }
         if(!TemplateBufferStorageInterface::EndReached(Ptr, buffer)){
-            TemplateBufferStorageInterface::TLoadSingleValue<FIntPoint>(playerGroundTruth, Ptr);
+            TemplateBufferStorageInterface::TLoadBuffer<FIntPoint>(playerHitsGroundTruth, Ptr);
+            //TemplateBufferStorageInterface::TLoadSingleValue<FIntPoint>(playerGroundTruth, Ptr);
         }
         return true;
     }
@@ -205,28 +242,13 @@ void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
     outBuffer.SetNum(bufferIn.Num() * 2);
     int innerIndex = 0;
 
-    //split into different channels (x1...xn)(y1...yn)
+    //split into 2 different channels (x1...xn)(y1...yn)
     for (int i = 0; i < bufferIn.Num(); i++){
         const FIntPoint &current = bufferIn[i];
         outBuffer[innerIndex] = current.X;
         outBuffer[bufferIn.Num() + innerIndex] = current.Y;
         innerIndex ++;
     }
-    
-    
-    /*for (int i = 0; i < bufferIn.Num(); i++){
-        const FIntPoint &current = bufferIn[i];
-        outBuffer[innerIndex] = current.X;
-        innerIndex ++;
-    }
-
-    for (int i = 0; i < bufferIn.Num(); i++){
-        const FIntPoint &current = bufferIn[i];
-        outBuffer[innerIndex] = current.Y;
-        innerIndex++;
-    }*/
-
-
 }
 
 void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
@@ -237,7 +259,7 @@ void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
     outBuffer.SetNum(bufferIn.Num() * 3);
     int innerIndex = 0;
 
-    //split into different channels (x1...xn)(y1...yn)(t1...tn)
+    //split into 3 different channels (x1...xn)(y1...yn)(t1...tn)
     for (int i = 0; i < bufferIn.Num(); i++){
         const FVector &current = bufferIn[i];
         outBuffer[innerIndex] = current.X;
@@ -245,25 +267,6 @@ void FMeshedPolygonTrajectoryRayModel::ToFloatBufferChannels(
         outBuffer[bufferIn.Num() * 2 + innerIndex] = current.Z;
         innerIndex ++;
     }
-
-    /*
-    for (int i = 0; i < bufferIn.Num(); i++){
-        const FIntPoint &current = bufferIn[i];
-        outBuffer[innerIndex] = current.X;
-        innerIndex ++;
-    }
-
-    for (int i = innerIndex; i < bufferIn.Num(); i++){
-        const FIntPoint &current = bufferIn[i];
-        outBuffer[innerIndex] = current.Y;
-        innerIndex++;
-    }
-    
-    for (int i = innerIndex; i < bufferIn.Num(); i++){
-        const FIntPoint &current = bufferIn[i];
-        outBuffer[innerIndex] = current.Z;
-        innerIndex++;
-    }*/
 }
 
 // ---- REQUEST TO NN SIMPLE ACCESS ----
@@ -313,6 +316,7 @@ bool FMeshedPolygonTrajectoryRayModel::PrepareAppendRequestBinary(TArray<uint8> 
 
 bool FMeshedPolygonTrajectoryRayModel::PrepareAppendRequestBinary(FONNXModelInput &input){
     PrepareFitData();
+    ValidateAllBuffers();
     // --- todo! ---
 
     return false;
@@ -325,19 +329,26 @@ void FMeshedPolygonTrajectoryRayModel::ValidateAllBuffers(){
     ValidateEnemyHitsBuffer();
     ValidatePlayerHitsBuffer();
     ValidatePlayerTrajectoryBuffer();
+    ValidatePlayerGTBuffer();
 }
 
 //append (float, float) to ground truth buffer
 void FMeshedPolygonTrajectoryRayModel::AppendGroundTruth(TArray<uint8> &buffer){
-    float x = playerGroundTruth.X;
+    TArray<float> asFloat;
+    ToFloatBufferChannels(playerHitsGroundTruth, asFloat);
+    TemplateBufferStorageInterface::TAppendBuffer<float>(asFloat, buffer);
+
+    
+    
+    /*float x = playerGroundTruth.X;
     float y = playerGroundTruth.Y;
     TemplateBufferStorageInterface::TAppendSingleValue<float>(x, buffer);
-    TemplateBufferStorageInterface::TAppendSingleValue<float>(y, buffer);
+    TemplateBufferStorageInterface::TAppendSingleValue<float>(y, buffer);*/
 }
 
 
 int FMeshedPolygonTrajectoryRayModel::ResultDataSizeBytes(){
-    return sizeof(float) * 2;
+    return sizeof(float) * maxRaysPlayerVision;
 }
 
 bool FMeshedPolygonTrajectoryRayModel::PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer){
@@ -351,6 +362,9 @@ bool FMeshedPolygonTrajectoryRayModel::PrepareRequestAndResultBatchBinary(TArray
 
 // ---- Respone Process ----
 void FMeshedPolygonTrajectoryRayModel::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
+
+    DebugHelper::logMessage("FMeshedPolygonTrajectoryRayModel::Process Prediction Bins");
+
     //1.Ensure the byte size is divisible by 4 (sizeof(float))
     if (buffer.Num() % sizeof(float) == 0){
         int32 FloatCount = buffer.Num() / sizeof(float);
@@ -369,10 +383,23 @@ void FMeshedPolygonTrajectoryRayModel::ProcessFromPredictionFloats(const TArray<
     //to local pos
     //to world pos
 
+    DebugHelper::logMessage("FMeshedPolygonTrajectoryRayModel::Process Prediction Floats");
+
     //result expected as (x,y) as float
-    if(buffer.Num() >= 2){
-        localPrediciton = FVector(buffer[0], buffer[1], 0.0f);
-        playerPrediction = BottomLeft() + localPrediciton;
+    //moved to world space coordinates
+    if(buffer.Num() % 2 == 0){
+        
+        //(x1...xn)(y1...yN), last of both
+        int last = buffer.Num();
+        int half = last / 2.0f;
+
+        localPrediciton = FVector(buffer[half-1], buffer[last-1], 0.0f);
+
+        //GT is in index space, therefore output / Pred is aswell
+        //ove to worldspace
+        playerPrediction = PositionFromIndex(localPrediciton.X, localPrediciton.Y);
+
+        //playerPrediction = BottomLeft() + localPrediciton;
     }
 }
 
@@ -409,21 +436,31 @@ EPolygonSampleType FMeshedPolygonTrajectoryRayModel::GetType(){
 
 
 
-
+#include "CoreMath/algorithm/Vector/FChamferDistance.h"
 float FMeshedPolygonTrajectoryRayModel::SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other){
     FMeshedPolygonTrajectoryRayModel *ptr =
         TSampleCast<FMeshedPolygonTrajectoryRayModel>(other);
-    if(ptr){
+    if(ptr && false){ //debug false
         //do compare here (later, but needed!)
+        float normFaktor = 4.0f; //4 sets
 
+        float Loss = 0.0f;
+        FIntPointChamferDistance algIntPoint;
+        Loss += algIntPoint.Loss(playerHits, ptr->playerHits);
+        Loss += algIntPoint.Loss(enemyHits, ptr->enemyHits);
+        Loss += algIntPoint.Loss(playerHitsGroundTruth, ptr->playerHitsGroundTruth);
+
+        FVectorChamferDistance algVec;
+        Loss += algVec.Loss(playerTrajectories, ptr->playerTrajectories);
+
+        float lossNormalized = Loss / normFaktor;
+        float similarity = FMath::Clamp(1.0f - lossNormalized, 0.0f, 1.0f);
+        return similarity;
     }
 
     return 0.0f; //by default, no deletion for now at all.
 }
 
-//todo: similatrity of sample for this class, aus eingesammelten hits einsammeln,
-//und aus result position ?
-
-
-
-
+float FMeshedPolygonTrajectoryRayModel::sizeOfAllSets(){
+    return playerHits.Num() + enemyHits.Num() + playerTrajectories.Num() + playerHitsGroundTruth.Num();
+}

@@ -27,6 +27,12 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 
 void ANNPathFinderSocket::BeginPlay(){
     Super::BeginPlay();
+    requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+    
+    //bad model.
+    //requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel);
+
+
     requestHandle.BeginPlay();
 
     DebugHelper::logMessage("ANNPathFinderSocket BeginPlay - python");

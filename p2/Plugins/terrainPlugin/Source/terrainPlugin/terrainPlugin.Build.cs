@@ -36,6 +36,7 @@ public class terrainPlugin : ModuleRules
 				"TerrainRoadPlugin", //NEW !
 				"terrainBuildingPlugin", //NEW!
 				"AssetEnumCollection",
+				"PolygonPlugin", //NEW!
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

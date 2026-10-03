@@ -139,3 +139,18 @@ p2/Build/*/**
 
 # tensorflow and any third party
 p2/Plugins/ComputerVisionPlugin/ThirdParty/
+
+*.DS_Store
+
+
+# --- UNIVERSELLE REGELN FÜR SUBFOLDER (Binaries & Intermediate) ---
+# Ignoriert "Binaries" und "Intermediate" in ALLEN Unterordnern egal wie tief
+**/Binaries/
+**/Intermediate/
+
+**/ThirdParty/
+**/__pycache__/
+
+
+p2/Content/Prefabs/_meshExtraction/m4Modell/
+*.pyc

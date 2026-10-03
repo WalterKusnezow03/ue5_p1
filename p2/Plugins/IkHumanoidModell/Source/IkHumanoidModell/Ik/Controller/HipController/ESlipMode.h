@@ -7,6 +7,5 @@ UENUM()
 enum class ESlipMode
 {
     ESlipDynamic, 
-    ESlipDynamicLiftOffPrediction,
     ESlipStatic
 };

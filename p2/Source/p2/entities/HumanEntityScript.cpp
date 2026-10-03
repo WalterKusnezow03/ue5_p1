@@ -267,6 +267,15 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         
         //switch to closest to player.
         LookAt(positions[0]); //debug wise look at first position / might also be only one.
+        humanoidPluginController.stopLocomotionOnceRotationHasFinished();
+        DebugHelper::showLineBetween(
+            GetWorld(),
+            humanoidPluginController.GetLocation(),
+            positions[0],
+            FColor::Orange,
+            10.0f
+        );
+
 
         //update minimap - is auto updated
         //AworldLevel::uiSimulation.Notify(EUiEvent::HudMiniMapUpdateNNHeatMap);

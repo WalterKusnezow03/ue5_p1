@@ -6,7 +6,8 @@ class PATHFINDERNNEXTENSION_API FVisionCone {
 
 public:
     void Update(const FVector &pos, const FVector &lookDir, float angleIn);
-    
+    void UpdateAs360(const FVector &pos);
+
     FVector &ActorLocation();
     FVector2D &GetLookDir();
     

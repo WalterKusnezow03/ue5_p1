@@ -18,7 +18,7 @@ public:
     ~PathFinderQuadrant();
 
     PathFinderNode *findNode(FVector pos);
-    PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
+    PathFinderNode *findNodeClosestTo(FVector &node, FVector &dir);
     
     std::vector<PathFinderNode *> askForArea(FVector a, FVector b);
     std::vector<FMeshedPolygon *> getPolygonsInArea(FVector a, FVector b);

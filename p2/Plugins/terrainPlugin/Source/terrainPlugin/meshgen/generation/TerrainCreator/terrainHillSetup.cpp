@@ -56,6 +56,17 @@ int terrainHillSetup::yTargetCopy(){
 
 
 int terrainHillSetup::getHeightIfSetOrRandomHeight(){
+    return getHeightIfSetOrRandomHeight(-1, -1, false); //index not used
+}
+
+int terrainHillSetup::getHeightIfSetOrRandomHeight(int i, int j, bool useGaussian){
+    if(useGaussian){
+        return evaluateGaussian(i, j);
+    }
+    return getHeight();
+}
+
+int terrainHillSetup::getHeight(){
     if(forceHeightWasSet){
         return forceHeight;
     }
@@ -140,3 +151,23 @@ FVector terrainHillSetup::center(){
     );
     return centerVec;
 }
+
+
+
+#include "PolygonPlugin/Public/GridBase/Operator/ConvolutionOperatorGauss.h"
+/// @brief Berechnet den Höhenwert an Position (x, y) basierend auf einer 2D-Gauß-Verteilung (Glockenkurve).
+int terrainHillSetup::evaluateGaussian(int x, int y)
+{
+    FVector centerOfGauss = center();
+    float sigma = 3; //softness / width of gaussian when large
+    ConvolutionOperatorGauss gaussOperator(sigma, 0); // sizeMaskIgnored
+    float resultRaw = gaussOperator.Gaussian(
+        x, 
+        y,
+        centerOfGauss.X,
+        centerOfGauss.Y
+    );
+    int amplitude = getHeight();
+    return amplitude * resultRaw;
+}
+

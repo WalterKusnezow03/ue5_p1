@@ -178,7 +178,7 @@ private:
 
 	//A node is Found in O(1)!
 	PathFinderNode *findNode(FVector pos);
-	PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
+	PathFinderNode *findNodeClosestTo(FVector &node, FVector &other);
 
 	void showPos(FVector e);
 	void showPos(FVector e, FColor c);

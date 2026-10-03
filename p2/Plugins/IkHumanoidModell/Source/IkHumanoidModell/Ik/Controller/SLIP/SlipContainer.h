@@ -21,6 +21,7 @@ public:
 
 private:
     bool bLogEnabled = false; //disable.
+    
 
     float BlendOut(float sizeFeather);
 
@@ -57,16 +58,7 @@ public:
         float velocity,
         float mass
     );
-    void setupInterpolatedD(
-        FVector &endA, // start LOCAL, With rotation
-        FVector &endB, // lift off, Local, with rotation
-        FVector &movedir,
-        float B1,
-        float F1,
-        float B2,
-        float velocityDown,
-        float mass
-    );
+    
 
     FVector velocityInterpolated(
         float deltatime,
@@ -113,15 +105,7 @@ private:
         FVector &b
     );
 
-    FVector forceIntegrated(
-        float B1,
-        float F1,
-        float B2,
-        float deltaTime,
-        FVector &moveDir,
-        FVector &a,
-        FVector &b
-    );
+   
 
     //experimental
     void deRotateDirectionsForSlipSine(

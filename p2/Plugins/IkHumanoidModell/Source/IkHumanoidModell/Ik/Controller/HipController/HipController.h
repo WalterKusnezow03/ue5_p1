@@ -39,7 +39,9 @@ protected:
 
     bool IsRotating();
 
-    ESlipMode slipMode = ESlipMode::ESlipStatic;
+    //slip mode static is the most stable one.
+    ESlipMode slipMode = ESlipMode::ESlipStatic; //stable
+    //ESlipMode slipMode = ESlipMode::ESlipDynamic; //unstable.
 
 public:
     void EnableDebugLogExtended();

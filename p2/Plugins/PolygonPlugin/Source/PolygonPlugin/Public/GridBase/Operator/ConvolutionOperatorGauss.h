@@ -6,13 +6,12 @@
 class POLYGONPLUGIN_API ConvolutionOperatorGauss : public ConvolutionOperator {
 
 protected:
-    float twoSigma2 = 1.0f;
+    float twoSigma2 = 1.0f; //higher: softer gaussian, lower: tippier gaussian
 
 public:
-    
+
     ConvolutionOperatorGauss(float sigma, int sizeMask);
 
-protected:
     
 
     float Gaussian(

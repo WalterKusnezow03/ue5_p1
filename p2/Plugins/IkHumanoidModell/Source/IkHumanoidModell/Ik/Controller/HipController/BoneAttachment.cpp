@@ -321,7 +321,7 @@ FVector BoneAttachment::SlipVelocity(
     ESlipMode slipMode
 ){
     FVector velocity;
-    if(slipMode == ESlipMode::ESlipDynamic || slipMode == ESlipMode::ESlipDynamicLiftOffPrediction){
+    if(slipMode == ESlipMode::ESlipDynamic){
         velocity = container.velocityInterpolated(
             deltatime,
             mass,
@@ -329,7 +329,7 @@ FVector BoneAttachment::SlipVelocity(
         );
         return velocity;
     }else{
-        //slip mode static
+        //slip mode static (Most stable!)
         FVector EndEffectorLocalRotationSpace = bone.EndEffectorRelativeLocation();
         velocity = container.StaticSlipVelocity(
             lookDir,
@@ -340,6 +340,11 @@ FVector BoneAttachment::SlipVelocity(
             deltatime,
             isInStance
         );
+        //is this needed?
+        //weighted by distance from trajectory
+        float maxDistanceFromTrajectory = 30.0f;
+        float weight = VerticalDistanceFromTrajectoryAsScalar(maxDistanceFromTrajectory);
+        velocity *= weight;
     }
 
 
@@ -349,9 +354,9 @@ FVector BoneAttachment::SlipVelocity(
 
     //is this needed?
     //weighted by distance from trajectory
-    float maxDistanceFromTrajectory = 30.0f;
+    /*float maxDistanceFromTrajectory = 30.0f;
     float weight = VerticalDistanceFromTrajectoryAsScalar(maxDistanceFromTrajectory);
-    velocity *= weight;
+    velocity *= weight;*/
     //DebugHelper::showScreenMessage(FString::Printf(TEXT("Velocity Weighted %.2f"), weight), FColor::Red);
     return velocity;
 }
@@ -432,143 +437,9 @@ void BoneAttachment::setupSlipDataOnStanceBegin(
     );
 }
 
-/// -- new method with regards to next foot step. Will calculate the lift off frame dynamically--
-/// ----> testing needed!
-void BoneAttachment::setupSlipDataOnStanceBegin(
-    MMatrix &orientation,
-    MMatrix &translation,
-    FVector &otherLegWorldSpace,
-    FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
-    float time,
-    float velocityDown,
-    float velocityHorizontal,
-    float mass,
-    FVector &defaultForwardFrameFallback
-){
-    float heelOffEpsilon = 0.0f; //might be changed.
-    
-    //both trajectories for heel off in local space.
-    FVector currentReached = bone.EndEffectorRelativeLocation(); //no rotation removed, start to end effector vector.
-    MMatrix r1 = orientation.transposedRotation();
-    FVector currentLocalSpace = r1 * currentReached;
-
-    float B1 = time;
-    float B2 = B1; //einfacher
-    float F1 = AnimationTime::AnimationTimeBasedOnHorizontalAndVerticalVelocity(
-        otherLegWorldSpace, nextTrajectoryOfOtherLegWorldSpace, velocityHorizontal, velocityDown
-    );
-
-
-    time = B1 + F1 + B2;
-    if(false){
-        DebugHelper::logMessage(
-            FString::Printf(TEXT("time total B1 F1 B2 %.2f"), 
-                time
-            )
-        );
-
-    }   
-
-
-    //lift off frame relative to start effector found, from (0,0,0), rotation space supported.
-    //uses 2 world coordinates as input, returns a local lift off trajectory, which is not derotated.
-    FVector targetWorld = bone.EndEffectorLocation();
-    SlipLiftOffFrameFinder liftOffFinder;
-    FVector liftOffFrame = liftOffFinder.FindLiftOffFrameRelativeLocalToNextHipFromWorldTrajectories(
-        targetWorld, // A0 (current foot target / "A_1" in your notes), WORLD SPACE
-        nextTrajectoryOfOtherLegWorldSpace, // B0 (next foot target), WORLD SPACE
-        bone.lengthOfBone(),
-        heelOffEpsilon
-    );
-
-
-    //must be given by bone controller.
-    FVector moveDir(1, 0, 0);
-    moveDir = orientation * moveDir;
-
-    //debug
-    if(!LiftOffTrajectoryIsValid(liftOffFrame, moveDir)){
-        DebugHelper::logMessage("LiftOffTrajectory not valid");
-        /*setupSlipDataOnStanceBegin(
-            orientation,
-            defaultForwardFrameFallback,
-            time,
-            velocityDown,
-            mass
-        );*/
-        return;
-    }
-
-    //move both trajectories to world rotation space and setup slip data
-    FVector startLocalWorldRotationSpace = currentReached; //is already in world Rotation.
-    FVector liftoffLocalWorldRotationSpace = liftOffFrame;
-
-    DebugHelper::logMessage("LiftOffTrajectory is valid");
-    
-
-    //setup
-    /*
-    container.setupInterpolatedD(
-        startLocalWorldRotationSpace, //local in rotated world space
-        liftoffLocalWorldRotationSpace, //local in rotated world space
-        moveDir,
-        time,
-        velocityDown,
-        mass
-    );*/
-    container.setupInterpolatedD(
-        startLocalWorldRotationSpace, //local in rotated world space
-        liftoffLocalWorldRotationSpace, //local in rotated world space
-        moveDir,
-        B1,
-        F1,
-        B2,
-        velocityDown,
-        mass
-    );
-
-}
 
 
 
-
-bool BoneAttachment::LiftOffTrajectoryIsValid(
-    FVector &liftOffFrameLocal,
-    FVector &moveDir
-){
-    FVector down(0.0f, 0.0f, -1.0f);
-    FVector directionOfLiftOff = liftOffFrameLocal.GetSafeNormal();
-    float minDot = 0.95f;
-    float angle = FVector::DotProduct(directionOfLiftOff, down);
-    if (angle >= minDot){
-        FString message = TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin");
-        message += TEXT("Fallback to fake trajectory, angle too narrow!");
-
-        message += FString::Printf(TEXT("%.2f"), MMatrix::radToDegree(angle));
-        //DebugHelper::showScreenMessage(message);
-        //DebugHelper::logMessage(message);
-        return false;
-    }
-    FVector up = -1.0f * down;
-    if(FVector::DotProduct(directionOfLiftOff, up) > 0.0f){
-        return false;
-    }
-    if(FVector::DotProduct(directionOfLiftOff, moveDir) >= 0.0f){
-        return false;
-    }
-    
-
-
-
-    FString message = FString::Printf(
-        TEXT("SlipLiftOffFrameFinder setupSlipDataOnStanceBegin angle: %.2f"), 
-        angle
-    );
-    //DebugHelper::showScreenMessage(message);
-    //DebugHelper::logMessage(message);
-    return true;
-}
-// ------ DEPRECATED precalculated slip force: deprecated end --------
 
 
 

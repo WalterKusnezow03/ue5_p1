@@ -171,17 +171,6 @@ public:
 
 
 
-    void setupSlipDataOnStanceBegin(
-        MMatrix &orientation,
-        MMatrix &translation,
-        FVector &otherLegWorldSpace,
-        FVector &nextTrajectoryOfOtherLegWorldSpace, //next projceted frame of next leg target, !!velocity removed!!
-        float time,
-        float velocityDown,
-        float velocityHorizontal,
-        float mass,
-        FVector &defaultForwardFrameFallback
-    );
 
 
 

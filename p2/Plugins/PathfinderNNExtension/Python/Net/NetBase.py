@@ -226,6 +226,7 @@ class NetBase(nn.Module):
 
 
     def forward(self, x):
+        print("NNServerPathfinder_NetBase: Forward!")
         # Falls x eine Liste ist, entpacken wir die Argumente für self.net(*x)
         # heisst aus: lsit(x0,x1..xn)
         # wird forward(x0, x1, ... xn) zu argumenten!
@@ -273,6 +274,10 @@ class NetBase(nn.Module):
         self.optimizer.step()
 
         self.latestLoss = loss.item()
+
+         # In NetBase.py oder direkt beim Loss-Aufruf:
+        print("NNServerPathfinder_Net: PRED min/max:", pred.min().item(), pred.max().item())
+        print("NNServerPathfinder_Net: TARGET min/max:", batch_y.min().item(), batch_y.max().item())
         ##print("NNServerPathfinder_NetB: BACKWARD FINISH!")
 
     ######## call this for learning a large set ########

@@ -72,7 +72,7 @@ private:
     TArray<TArray<FTerrainChunkAttributes>> innerMap;
 
 
-    //inset for hil data!
+    //inset for hill data!
     int insetHillData = 1;
     int clampIndexInset(int index);
 
@@ -80,5 +80,5 @@ private:
 
     //call AFTER Hill generation!
     void createRandomOutpostFlags();
-    void createRandomOutpostFlagAndSmoothArea();
+    void createRandomOutpostFlagAndSmoothArea(bool smoothArea);
 };

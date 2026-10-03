@@ -336,26 +336,7 @@ void HipController::setupBackwardInterpolation(){
             bodyMass
         );
     }
-    if(slipMode == ESlipMode::ESlipDynamicLiftOffPrediction){
-        BoneAttachment &attachmentOther = legLeftPlaying ? legRight : legLeft;
-        bool WithoutVelocity = true;
-        FVector nextTrajectoryOfOtherLegWorldSpace = NextWorldTrajectoryProjected(
-            attachmentOther, !WithoutVelocity
-        );
-        FVector endEffectorOther = attachmentOther.endEffectorWorldLocation();
-
-        attachment.setupSlipDataOnStanceBegin(
-            orientation,
-            translation,
-            endEffectorOther,                   // FVector &otherLegWorldSpace,
-            nextTrajectoryOfOtherLegWorldSpace, // next projceted frame of next leg target, !!velocity removed!!
-            motionTime,                  // float time,
-            verticalVelocity(),
-            horizontalVelocity(),
-            bodyMass,
-            fowardframe // FVector &defaultForwardFrameFallback
-        );
-    }
+    
 }
 
 //base method
@@ -768,7 +749,9 @@ void HipController::LookAt(FVector &location){
     FVector lookDir = lookDirection();
     FVector2D look2D(lookDir.X, lookDir.Y);
     FVector2D targetLook2D(lookDirTargeted.X, lookDirTargeted.Y);
-    if(true && FVector2D::DotProduct(look2D, targetLook2D) >= 0.90f){
+    
+    //if(true && FVector2D::DotProduct(look2D, targetLook2D) >= 0.90f){
+    if(FVector2D::DotProduct(look2D, targetLook2D) >= 0.90f){
         return;
     }
 
@@ -782,6 +765,7 @@ void HipController::setupRotationForNextStep(float radian){
     if(rotationSet){
         return;
     }
+    rotationSet = true;
     //DebugHelper::showScreenMessage("hipRotation start!", FColor::Red);
 
     MMatrix addYawMat;
@@ -799,8 +783,6 @@ void HipController::setupRotationForNextStep(float radian){
     float timeScaled = 1.0f; //will be overriden on backward interpolation
     hipRotationInterpolator.setTarget(current, end, timeScaled);
     // FRotator TransformInterpolator::interpolateRotationOnly(float DeltaTime)
-
-    rotationSet = true;
 
     //prevent skelleton from slipping and not running again properly
     slowDownBasedOnRotationInRadian(radian);
@@ -977,8 +959,15 @@ void HipController::stopLocomotionOnceRotationHasFinished(){
 }
 
 bool HipController::locoMotionStateEnabled(){
-    return currentControllerState == EHipControllerStates::ELocomotion &&
-           !bDebugBlockLocomotion;
+    if(bDebugBlockLocomotion){
+        return false;
+    }
+    //allow to finish the hip rotation
+    if(locomotionStopRequestedOnceRotationIsFinished){
+        return true;
+    }
+
+    return currentControllerState == EHipControllerStates::ELocomotion;
 }
 
 // --- api for get actors:apply damaged owner casted mesh actor ---

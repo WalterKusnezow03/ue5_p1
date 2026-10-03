@@ -13,7 +13,7 @@ class NetSwitcher:
     def autoLoadNets(self):
         self.netMap[0] = NetB.NetB()
         self.netMap[1] = NetC.NetC()
-
+        ##self.netMap[0] = NetB.NetB()
         return
 
     def __del__(self):

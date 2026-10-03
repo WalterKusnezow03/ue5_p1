@@ -394,9 +394,9 @@ PathFinderNode* APathFinder::findNode(FVector node){
     return nullptr;
 }
 
-PathFinderNode* APathFinder::findNodeInDirection(FVector &node, FVector &dir){
+PathFinderNode* APathFinder::findNodeClosestTo(FVector &node, FVector &other){
     if(quadrantMap){
-        return quadrantMap->findNodeInDirection(node, dir);
+        return quadrantMap->findNodeClosestTo(node, other);
     }
 
     return nullptr;
@@ -478,8 +478,7 @@ std::vector<FVector> APathFinder::getPath(FVector a, FVector b){
     PathFinderNode *start = nullptr;
     PathFinderNode *end = nullptr;
 
-    FVector dir = b - a;
-    start = findNodeInDirection(a, dir);
+    start = findNodeClosestTo(a, b);
     //start = findNode(a);
     if(start == nullptr){
         DebugHelper::showScreenMessage("START NODE NOT FOUND", FColor::Red);

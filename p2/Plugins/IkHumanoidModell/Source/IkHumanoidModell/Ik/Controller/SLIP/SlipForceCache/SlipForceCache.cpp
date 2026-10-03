@@ -106,6 +106,10 @@ bool SlipForceCache::endReached(){
 
 FVector SlipForceCache::Tick(float deltatime){
     if(endReached()){
+        //debug
+        if(forceFrames.Num() > 0)
+            return forceFrames.Last();
+        
         return FVector::ZeroVector;
     }
 

@@ -33,6 +33,7 @@ public:
 	
 
 	int getHeightIfSetOrRandomHeight();
+	int getHeightIfSetOrRandomHeight(int i, int j, bool useGaussian);
 
 	void forceSetHeight(int heightIn); //forceHeight
 	int getForcedSetHeight();
@@ -42,12 +43,14 @@ public:
 	void extendInEveryDirectionBy(int count);
 
 private:
+	int getHeight();
+	int evaluateGaussian(int x, int y);
 
 	//(x,y) in chunk index space
-	int xPos = 0;
-	int yPos = 0;
-	int xTarget = 1;
-	int yTarget = 1;
+	int xPos = 0; //min x
+	int yPos = 0; //min x
+	int xTarget = 1; //max x
+	int yTarget = 1; //max y
 	int zMinheightAdd = 100;
 	int zMaxheightAdd = 200;
 
@@ -60,4 +63,5 @@ private:
 
 	bool isEnclousingX(int from, int to);
 	bool isEnclousingY(int from, int to);
+
 };

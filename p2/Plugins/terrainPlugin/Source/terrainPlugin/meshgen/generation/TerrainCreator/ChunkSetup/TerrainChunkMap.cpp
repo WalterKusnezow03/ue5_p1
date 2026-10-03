@@ -152,7 +152,12 @@ void TerrainChunkMap::applyHillData(terrainHillSetup &hillData){
     for (int i = clampIndexInset(hillData.xPosCopy()); i < clampIndexInset(hillData.xTargetCopy()); i++){
         for (int j = clampIndexInset(hillData.yPosCopy()); j < clampIndexInset(hillData.yTargetCopy()); j++){
             FTerrainChunkAttributes &ref = find(i, j);
-            ref.height += hillData.getHeightIfSetOrRandomHeight();
+
+            //new: use gaussian.
+            bool useGauss = true;
+            ref.height += hillData.getHeightIfSetOrRandomHeight(i, j, useGauss);
+
+            //ref.height += hillData.getHeightIfSetOrRandomHeight();
         }
     }
 }
@@ -161,17 +166,21 @@ void TerrainChunkMap::applyHillData(terrainHillSetup &hillData){
 void TerrainChunkMap::createRandomOutpostFlags(){
     int max = chunks * 0.1f; //10 percent
     for (int i = 0; i < max; i++){
-        createRandomOutpostFlagAndSmoothArea();
+        createRandomOutpostFlagAndSmoothArea(false);
     }
 }
 
-void TerrainChunkMap::createRandomOutpostFlagAndSmoothArea(){
+void TerrainChunkMap::createRandomOutpostFlagAndSmoothArea(bool smoothArea){
     int i = FVectorUtil::randomNumber(insetHillData, chunks - insetHillData);
     int j = FVectorUtil::randomNumber(insetHillData, chunks - insetHillData);
     FTerrainChunkAttributes &attributes = find(i, j);
 
     //flag outpost
     attributes.outpostFlagged = true;
+
+    if(!smoothArea){
+        return;
+    }
 
     //set height same around area
     int bound = 1;
@@ -184,15 +193,13 @@ void TerrainChunkMap::createRandomOutpostFlagAndSmoothArea(){
         return;
     }
 
-    //find average height and flag building needed
+    //find average height
     float heightTotal = 0.0f;
     for (int c = 0; c < quadToEvenHeight.Num(); c++)
     {
         FTerrainChunkAttributes *currentAttributes = quadToEvenHeight[c];
         if(currentAttributes){
             heightTotal += currentAttributes->height;
-
-            
         }
     }
 

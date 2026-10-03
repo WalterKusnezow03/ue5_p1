@@ -8,6 +8,8 @@
 //allows a position, a viewcone angle and ray density 
 //to trace a visiblity cone on the seperate grid
 
+//note that all ray traces happen on the RASTERIZED
+//edge set, not raw! - which also means that the traces happen in local space!
 class POLYGONPLUGIN_API FMeshedPolygonRaytracable : public FMeshedPolygon{
 
 public:

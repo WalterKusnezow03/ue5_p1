@@ -172,7 +172,7 @@ PathFinderNode* PathFinderQuadrant::findNode(FVector pos){
 
 
 
-PathFinderNode *PathFinderQuadrant::findNodeInDirection(FVector &pos, FVector &dir){
+PathFinderNode *PathFinderQuadrant::findNodeClosestTo(FVector &pos, FVector &dir){
     if(parent){
         int chunksize = parent->GetChunkSize();
         
@@ -181,7 +181,7 @@ PathFinderNode *PathFinderQuadrant::findNodeInDirection(FVector &pos, FVector &d
 
         if(map.size() > x1 && map.at(x1).size() > y1){
             if(map.at(x1).at(y1) != nullptr){
-                PathFinderNode* n = map.at(x1).at(y1)->findNodeInDirection(pos, dir);
+                PathFinderNode* n = map.at(x1).at(y1)->findNodeClosestTo(pos, dir);
                 if(n != nullptr){
                     //DebugHelper::showScreenMessage("quadrant found node return!", FColor::Green);
                     return n;

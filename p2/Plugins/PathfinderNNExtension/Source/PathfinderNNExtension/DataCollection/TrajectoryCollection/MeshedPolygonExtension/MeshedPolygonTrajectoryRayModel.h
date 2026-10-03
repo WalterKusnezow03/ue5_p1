@@ -109,11 +109,17 @@ protected:
     void ValidateEnemyHitsBuffer();
     void ValidatePlayerHitsBuffer();
     void ValidatePlayerTrajectoryBuffer();
+    void ValidatePlayerGTBuffer();
     void ValidateAllBuffers();
 
     void OverrideTime(TArray<Trajectory> &trajectories);
     void OverrideTime(Trajectory &current);
     void OverrideTime(int x, int y, float time);
+
+    void Trace360(
+        const FVector &pos,
+        TArray<FIntPoint> &hitsCollected
+    );
 
 private:
     //converts the buffer of (x,y) pairs to (x...x)(y..y) buffer
@@ -126,11 +132,15 @@ private:
     TArray<FIntPoint> enemyHits;
     TArray<FVector> playerTrajectories; //converted to Vector3 as (pos, time)
 
-    FIntPoint playerGroundTruth;
+    
+    TArray<FIntPoint> playerHitsGroundTruth;
 
     //nn output prediction
     FVector localPrediciton;
     FVector playerPrediction;
 
     TArray<FVector> GetPlayerResultPositions();
+
+    //size of num in sets
+    float sizeOfAllSets();
 };

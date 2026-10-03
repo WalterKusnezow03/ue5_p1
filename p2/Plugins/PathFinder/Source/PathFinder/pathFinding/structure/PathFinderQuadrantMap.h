@@ -42,7 +42,7 @@ public:
     void addNoConnect(PathFinderNode *node);
 
     PathFinderNode *findNode(FVector node);
-    PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
+    PathFinderNode *findNodeClosestTo(FVector &node, FVector &other);
 
     std::vector<FMeshedPolygon *> GetAllPolygons();
 

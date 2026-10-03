@@ -141,12 +141,12 @@ PathFinderNode* PathFinderQuadrantMap::findNode(FVector node){
     return nullptr;
 }
 
-PathFinderNode* PathFinderQuadrantMap::findNodeInDirection(FVector &node, FVector &dir){
+PathFinderNode* PathFinderQuadrantMap::findNodeClosestTo(FVector &node, FVector &other){
     int x = (int) node.X;
     int y = (int) node.Y;
     PathFinderQuadrant *q = askforQuadrant(x, y);
     if(q != nullptr){
-        PathFinderNode *nodeFound = q->findNodeInDirection(node, dir);
+        PathFinderNode *nodeFound = q->findNodeClosestTo(node, other);
         if(nodeFound != nullptr){
             DebugHelper::showScreenMessage("node found path finder", FColor::Green);
             return nodeFound;

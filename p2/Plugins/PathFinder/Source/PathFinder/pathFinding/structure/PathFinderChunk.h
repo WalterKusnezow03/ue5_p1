@@ -35,7 +35,7 @@ public:
 
     std::vector<PathFinderNode *> &getNodes();
     PathFinderNode *findNode(FVector pos);
-    PathFinderNode *findNodeInDirection(FVector &node, FVector &dir);
+    PathFinderNode *findNodeClosestTo(FVector &node, FVector &other);
 
     std::vector<FMeshedPolygon *> &getPolygons();
 
