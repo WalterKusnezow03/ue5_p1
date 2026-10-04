@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/EMarkerType.h"
 
 
 #include "HudUiWidget.generated.h"

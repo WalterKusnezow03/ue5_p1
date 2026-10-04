@@ -4,14 +4,14 @@
 #include "Components/CanvasPanel.h"
 #include "Components/SizeBox.h"
 
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
 
-
+#include "DebugPlugin/DebugHelper.h"
 
 void UMiniMapWidget::AddMarker(EMarkerType type, AActor *actor){
     miniMapData.AddMarker(type, actor);
+    DebugHelper::logMessage("UMiniMapWidget::AddMarker");
 }
-
 
 void UMiniMapWidget::RemoveMarker(AActor *actor){
     miniMapData.RemoveMarker(actor);
@@ -23,6 +23,7 @@ void UMiniMapWidget::SetPlayerReference(AActor *playerIn){
     }
     player = playerIn;
     AddMarker(EMarkerType::EPlayer, player);
+    DebugHelper::logMessage("UMiniMapWidget::SetPlayer");
 }
 
 void UMiniMapWidget::Tick(float DeltaTime){
@@ -58,11 +59,11 @@ void UMiniMapWidget::UpdateMarkers(){
 
 //only call after mark all markersfree
 void UMiniMapWidget::UpdateMarkers(
-    const std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> &mapIn
+    const std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &mapIn
 ){
     for(auto &pair : mapIn){
         EMarkerType type = pair.first;
-        const TArray<FMiniMapMarkerSetup> &array = pair.second;
+        const TArray<FMiniMapMarkerTransform> &array = pair.second;
         UpdateMarkers(type, array);
     }
 }
@@ -70,11 +71,11 @@ void UMiniMapWidget::UpdateMarkers(
 //only call from map
 void UMiniMapWidget::UpdateMarkers(
     EMarkerType type,
-    const TArray<FMiniMapMarkerSetup> &array
+    const TArray<FMiniMapMarkerTransform> &array
 ){
     //just get since all markers were marked free before 
     for(int i = 0; i < array.Num(); i++){
-        const FMiniMapMarkerSetup &targetSetup = array[i];
+        const FMiniMapMarkerTransform &targetSetup = array[i];
         UMiniMapMarker *current = CreateMarker(type, targetSetup);
     }
 }
@@ -120,23 +121,11 @@ void UMiniMapWidget::MarkAllMarkersFree(){
 
 UMiniMapMarker *UMiniMapWidget::CreateMarker(
     EMarkerType type,
-    const FMiniMapMarkerSetup &setupIn
+    const FMiniMapMarkerTransform &setupIn
 ){
     //create marker and after that set pos
     if(UMiniMapMarker *item = CreateMarker(type)){
-        item->UpdateTransform(setupIn.GetTransformConst());
-
-        //update image data if allowed
-        if(type == EMarkerType::ECustomDrawMarker){
-            if(setupIn.HasImageData()){
-                //const Image *GetImageDataConst() const
-                item->UpdateCustomMarkerImage(
-                    setupIn.GetImageDataConst(),
-                    setupIn.GetSizeOfWidgetDesired()
-                );
-            }
-        }
-
+        item->UpdateTransform(setupIn);
         return item;
     }
     return nullptr;

@@ -11,5 +11,4 @@ enum class EMarkerType
     EWeapon,
     EFlagRed,
     EFlagWhite,
-    ECustomDrawMarker,
 };

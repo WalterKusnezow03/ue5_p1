@@ -26,6 +26,7 @@ public class p2 : ModuleRules
 			"AssetPlugin",
 			"IkHumanoidModell",
 			"customuipluginbase",
+			"MinimapPlugin",
 			"customUiPlugin",
 			"StoragePlugin",
 			"GcGameCore",

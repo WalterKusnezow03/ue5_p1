@@ -1,8 +1,9 @@
 #include "HudUiWidget.h"
 #include "Components/TextBlock.h"
-#include "p2/ui/3Dui/HUD/Widget/MiniMapWidget/MiniMapWidget.h"
+#include "MinimapPlugin/Public/Widget/MiniMapWidget/MiniMapWidget.h"
 #include "p2/_world/PlayerStatManager/Inventory/PlayerStatusInventorySlot.h"
 #include "p2/ui/3Dui/HUD/Widget/InventorySlotWidget/InventorySlotPanelWidget.h"
+
 
 
 void UHudUiWidget::UpdateWidget(FPlayerStatus &playerStatus){

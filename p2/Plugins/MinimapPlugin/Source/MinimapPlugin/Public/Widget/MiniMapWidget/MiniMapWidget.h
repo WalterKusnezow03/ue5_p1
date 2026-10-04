@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 
 
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/MiniMapData.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/MiniMapData.h"
 #include "customuipluginbase/baseInterface/BaseUiInterface.h"
 #include "MiniMapMarker.h"
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/EMarkerType.h"
 
 #include "MiniMapWidget.generated.h"
 
@@ -17,7 +17,7 @@ class FMiniMapMarkerTransform;
 
 //owns all markers and actors can subsribe by type, and unsubscribe
 UCLASS()
-class P2_API UMiniMapWidget : public UUserWidget, public IBaseUiInterface{
+class MINIMAPPLUGIN_API UMiniMapWidget : public UUserWidget, public IBaseUiInterface{
     GENERATED_BODY()
 
 public:
@@ -44,7 +44,7 @@ public:
     // player setup
     void SetPlayerReference(AActor *playerIn);
 
-    // --- needed for update ---
+    // --- Tick to update ---
     virtual void Tick(float DeltaTime) override;
     virtual bool dispatchClick(const FVector2D &position) override {return false;}
 
@@ -61,7 +61,7 @@ protected:
     USizeBox *GetSizeBoxCasted();
     UCanvasPanel *GetBaseCanvasCasted();
     
-    UMiniMapMarker *CreateMarker(EMarkerType type, const FMiniMapMarkerSetup &setupIn);
+    UMiniMapMarker *CreateMarker(EMarkerType type, const FMiniMapMarkerTransform &setupIn);
     UMiniMapMarker *CreateMarker(EMarkerType type);
     TArray<UMiniMapMarker *> GetAllMarkerChildren();
     UMiniMapMarker *FindMarker();
@@ -72,8 +72,8 @@ protected:
     bool GetMiniMapResolution(FVector2D &outRes);
 
     void UpdateMarkers();
-    void UpdateMarkers(const std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> &mapIn);
-    void UpdateMarkers(EMarkerType type, const TArray<FMiniMapMarkerSetup> &array);
+    void UpdateMarkers(const std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &mapIn);
+    void UpdateMarkers(EMarkerType type, const TArray<FMiniMapMarkerTransform> &array);
 
     void UpdatePlayerTransformToMinimapData();
 

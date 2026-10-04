@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 
-class P2_API FMiniMapMarkerTransform {
+class MINIMAPPLUGIN_API FMiniMapMarkerTransform {
 
 public:
     FMiniMapMarkerTransform();

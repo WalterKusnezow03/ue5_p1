@@ -1,6 +1,7 @@
 #include "MiniMapData.h"
 #include "DebugPlugin/DebugHelper.h"
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+
 
 MiniMapData::MiniMapData(){
 
@@ -41,7 +42,7 @@ void MiniMapData::MakePlayerInverse(){
 
 
 
-std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> &MiniMapData::MapFromCollectMarkersCanvasSpace(
+std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &MiniMapData::MapFromCollectMarkersCanvasSpace(
     const FVector2D &canvasScale
 ){
     /*DebugHelper::showScreenMessage(
@@ -64,9 +65,9 @@ void MiniMapData::UpdateMarkersCanvasSpace(const FVector2D &canvasScale){
     {
         EMarkerType type = pair.first;
         if(visibleMarkerMap.find(type) == visibleMarkerMap.end()){
-            visibleMarkerMap[type] = TArray<FMiniMapMarkerSetup>();
+            visibleMarkerMap[type] = TArray<FMiniMapMarkerTransform>();
         }
-        TArray<FMiniMapMarkerSetup> &array = visibleMarkerMap[type];
+        TArray<FMiniMapMarkerTransform> &array = visibleMarkerMap[type];
         
         //clear array before hand
         array.Empty();
@@ -80,7 +81,7 @@ void MiniMapData::UpdateMarkersCanvasSpace(const FVector2D &canvasScale){
 
 void MiniMapData::CollectMarkersCanvasSpace(
     EMarkerType type, 
-    TArray<FMiniMapMarkerSetup> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     const FVector2D &canvasScale,
     const FVector2D &canvasHalfScale
 ){
@@ -89,12 +90,12 @@ void MiniMapData::CollectMarkersCanvasSpace(
 }
 
 void MiniMapData::MoveToCanvasSpace(
-    TArray<FMiniMapMarkerSetup> &array, 
+    TArray<FMiniMapMarkerTransform> &array, 
     const FVector2D &canvasScale,
     const FVector2D &canvasHalfScale
 ){
     for (int i = 0; i < array.Num(); i++){
-        FMiniMapMarkerTransform &transform = array[i].GetTransform();
+        FMiniMapMarkerTransform &transform = array[i];
         MoveToCanvasSpace(
             transform.GetPositionRef(), //get by ref and update
             canvasScale, 
@@ -138,7 +139,7 @@ void MiniMapData::InvertYAxis(FVector2D &pos, const FVector2D &canvasScale){
 
 
 void MiniMapData::CollectMarkersWorld( 
-    TArray<FMiniMapMarkerSetup> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     EMarkerType type
 ){
     TArray<AActor *> &array = Find(type);
@@ -146,7 +147,7 @@ void MiniMapData::CollectMarkersWorld(
 }
 
 void MiniMapData::CollectMarkersWorld( 
-    TArray<FMiniMapMarkerSetup> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     TArray<AActor *> &array //actors to add if in range
 ){
 
@@ -160,29 +161,18 @@ void MiniMapData::CollectMarkersWorld(
 }
 
 void MiniMapData::CollectMarkerIfInRange(
-    TArray<FMiniMapMarkerSetup> &outMarkers,
+    TArray<FMiniMapMarkerTransform> &outMarkers,
     AActor *current
 ){
     if(current){
         FVector2D result = LocationInPlayerRelativeSpace(current);
         if(InRange(result)){
 
-            FMiniMapMarkerSetup setupResult;
-            FMiniMapMarkerTransform &transform = setupResult.GetTransform();
+            FMiniMapMarkerTransform transform;
             transform.Setup(
-                result, 
-                DegRotationInPlayerRelativeSpace(current)
-            );
-
-            //setup image data, if there is any
-            if(AMiniMapRegisteredActor *casted = Cast<AMiniMapRegisteredActor>(current)){
-                Image *image = casted->GetCustomMarkerImageData();
-                if(image != nullptr){
-                    setupResult.UpdateImageDataPtr(image, maxRadiusMap);
-                }
-            }
-
-            outMarkers.Add(setupResult);
+                result,
+                DegRotationInPlayerRelativeSpace(current));
+            outMarkers.Add(transform);
 
 
             /*FString message = FString::Printf(

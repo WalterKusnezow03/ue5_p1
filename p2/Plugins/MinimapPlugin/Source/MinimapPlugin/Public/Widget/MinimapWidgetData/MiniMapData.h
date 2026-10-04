@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "CoreMath/Matrix/MMatrix.h"
 #include <map>
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerSetup.h"
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/EMarkerType.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/EMarkerType.h"
 
-class P2_API MiniMapData {
+
+class MINIMAPPLUGIN_API MiniMapData {
 
 public:
     MiniMapData();
@@ -15,7 +16,7 @@ public:
     void UpdatePlayerTransform(AActor *player);
 
 
-    std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> &MapFromCollectMarkersCanvasSpace(
+    std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> &MapFromCollectMarkersCanvasSpace(
         const FVector2D &canvasScale
     );
 
@@ -38,28 +39,28 @@ private:
 
     void CollectMarkersCanvasSpace(
         EMarkerType type, 
-        TArray<FMiniMapMarkerSetup> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         const FVector2D &canvasScale,
         const FVector2D &canvasHalfScale
     );
 
 
     void CollectMarkersWorld(
-        TArray<FMiniMapMarkerSetup> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         EMarkerType type
     );
     void CollectMarkersWorld(
-        TArray<FMiniMapMarkerSetup> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         TArray<AActor *> &array // actors to add if in range
     );
 
     void CollectMarkerIfInRange(
-        TArray<FMiniMapMarkerSetup> &outMarkers,
+        TArray<FMiniMapMarkerTransform> &outMarkers,
         AActor *current
     );
 
     void MoveToCanvasSpace(
-        TArray<FMiniMapMarkerSetup> &array, 
+        TArray<FMiniMapMarkerTransform> &array, 
         const FVector2D &canvasScale, 
         const FVector2D &canvasHalfScale
     );
@@ -73,7 +74,7 @@ private:
     std::map<EMarkerType, TArray<AActor *>> typeMap;
 
     // CACHE
-    std::map<EMarkerType, TArray<FMiniMapMarkerSetup>> visibleMarkerMap;
+    std::map<EMarkerType, TArray<FMiniMapMarkerTransform>> visibleMarkerMap;
     // CACHE
    
 

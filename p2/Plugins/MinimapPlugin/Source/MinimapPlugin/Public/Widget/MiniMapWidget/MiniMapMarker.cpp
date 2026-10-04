@@ -1,7 +1,8 @@
 #include "MiniMapMarker.h"
 #include "customuipluginbase/baseInterface/WidgetHelper.h"
 #include "Components/CanvasPanelSlot.h"
-#include "p2/ui/3Dui/HUD/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
+
+#include "MinimapPlugin/Public/Widget/MinimapWidgetData/container/FMiniMapMarkerTransform.h"
 #include <map>
 
 
@@ -61,7 +62,6 @@ void UMiniMapMarker::SetType(EMarkerType type){
     markerMap[EMarkerType::EWeapon] = GetWeaponMarker();
     markerMap[EMarkerType::EFlagRed] = GetFlagRedMarker();
     markerMap[EMarkerType::EFlagWhite] = GetFlagWhiteMarker();
-    markerMap[EMarkerType::ECustomDrawMarker] = GetCustomMarker();
 
     WidgetHelper helper;
     for (auto &pair : markerMap)
@@ -75,48 +75,3 @@ void UMiniMapMarker::SetType(EMarkerType type){
 }
 
 
-
-#include "customUiPlugin/slateDerived/pixelDraw/WidgetPixelDraw.h"
-UWidgetPixelDraw *UMiniMapMarker::GetCustomMarkerCasted(){
-    if(UWidget *marker = GetCustomMarker()){
-        return Cast<UWidgetPixelDraw>(marker);
-    }
-    return nullptr;
-}
-
-
-//update image needed here!
-
-void UMiniMapMarker::UpdateCustomMarkerImage(
-    const Image *image,
-    float scale
-){
-    if(image != nullptr){
-        UpdateCustomMarkerImage(*image, scale);
-    }
-}
-
-void UMiniMapMarker::UpdateCustomMarkerImage(
-    const Image &image,
-    float scale
-){
-    //Big performance hit, no solution found yet!
-    return;
-
-    if(UWidgetPixelDraw *marker = GetCustomMarkerCasted()){
-        if(image.SizeValid()){
-            DebugHelper::logMessage("UMiniMapMarker::update Image scale ", scale);
-
-            marker->Clear();
-            marker->SetScale(scale);
-            for (int x = 0; x < image.widthX(); x++)
-            {
-                for (int y = 0; y < image.heightY(); y++){
-                    marker->SetColorPixel(x, y, image.GetPixel(x,y));
-                }
-            }
-
-
-        }
-    }
-}

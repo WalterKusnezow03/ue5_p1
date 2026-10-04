@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class customuipluginbase : ModuleRules
+public class MinimapPlugin : ModuleRules
 {
-	public customuipluginbase(ReadOnlyTargetRules Target) : base(Target)
+	public MinimapPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -26,6 +26,8 @@ public class customuipluginbase : ModuleRules
 			new string[]
 			{
 				"Core",
+				"CoreMath",
+				"customuipluginbase",
 				"DebugPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -39,11 +41,8 @@ public class customuipluginbase : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"DebugPlugin",
-				"InputCore",
 				"UMG",
-				"Slate",
-				"SlateCore"
+				
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

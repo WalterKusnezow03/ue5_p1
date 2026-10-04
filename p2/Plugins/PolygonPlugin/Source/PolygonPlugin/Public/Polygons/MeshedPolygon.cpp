@@ -391,10 +391,53 @@ void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer){
     }
 
     int start = -1;
-    int end = -1;
     bool startFound = false;
     bool endFound = false;
 
+    
+    //works okay
+    /*for (int i = 0; i < flagBuffer.Num(); i++)
+    {
+        //if the starting point is not set yet, look for it
+        if (start == -1) {
+            if (flagBuffer[i] != 0) { // true gefunden
+                start = i;
+            }
+        } 
+        else {
+            //if we found the starting point, we look for the next
+            //end spot
+            if (flagBuffer[i] != 0) {
+                int end = i;
+                
+                // Fülle den Bereich dazwischen (inklusive Start und Ende)
+                FlagBetweenSpaceTrue(flagBuffer, start, end);
+                start = end; 
+            }
+        }
+    }*/
+
+    int end = -1;
+    for (int i = 0; i < flagBuffer.Num(); i++)
+    {
+        bool current = flagBuffer[i];
+        if(start == -1){
+            start = i;
+        }
+        if(end == -1){
+            if(current && i > start + 1){
+                end = i;
+                FlagBetweenSpaceTrue(flagBuffer, start, end);
+                start = -1;
+                end = -1;
+            }
+        }
+    }
+
+
+
+
+    /*
     for (int i = 0; i < flagBuffer.Num(); i++)
     {
         bool current = flagBuffer[i];
@@ -405,23 +448,25 @@ void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer){
             // no range on self from [i..i], is not wanted!
             current = false;
         }
-        if(startFound && !endFound && current){
+        if(!endFound && current){
+            endFound = true;
+            current = false;
             end = i;
-            //copy
+        }
+        if(startFound && endFound){
             FlagBetweenSpaceTrue(flagBuffer, start, end);
-
             start = -1;
             end = -1;
             startFound = false;
             endFound = false;
         }
-    }
+    }*/
 }
 
 void FMeshedPolygon::FlagBetweenSpaceTrue(TArray<uint8> &flagBuffer, int i, int j){
     i = std::max(i, 0);
-    j = std::min(j, flagBuffer.Num());
-    for (int k = i; k < j; k++){
+    j = std::min(j, flagBuffer.Num() - 1);
+    for (int k = i; k <= j; k++){
         flagBuffer[k] = true;
     }
 }
