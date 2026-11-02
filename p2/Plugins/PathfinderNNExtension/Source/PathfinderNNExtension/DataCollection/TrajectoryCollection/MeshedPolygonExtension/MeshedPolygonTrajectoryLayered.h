@@ -102,11 +102,15 @@ public:
 
     //needed for sample set reduction
     //bool IsSimilar(FMeshedPolygonTrajectoryLayered &other, float lossMax);
-    float SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other) override;
+    float SimilarityOfSample(SampleInterface &other) override;
 
     virtual EPolygonSampleType GetType() override {
         return EPolygonSampleType::EMeshedPolygonTrajectoryLayered;
     }
+
+    virtual FString GetTypeString() override {
+        return "FMeshedPolygonTrajectoryLayered";
+    };
 
 private:
     //needed for sample set reduction

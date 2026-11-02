@@ -41,6 +41,7 @@ public class p2 : ModuleRules
 			"MeshDataPlugin",
 			"AnyMeshWidgetPlugin",
 			"PolygonPlugin",
+			"LoadingScreenPlugin",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProceduralMeshComponent" });

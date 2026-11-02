@@ -94,3 +94,22 @@ bool EntityAction::HasTimer(){
 void EntityAction::abortTimer(){
     hasTimerRunning = false;
 }
+
+
+
+//event based
+void EntityAction::StartWithEvent(FString eventName, EActionType nexttype){
+    hasEventStringAttached = true;
+    attachedEventString = eventName;
+    typeOfActionAfterTimeFinish = nexttype;
+}
+
+bool EntityAction::TryCompleteWithEvent(FString name){
+    if(hasEventStringAttached){
+        if(name.Equals(attachedEventString)){
+            hasEventStringAttached = false;
+            return true;
+        }
+    }
+    return false;
+}

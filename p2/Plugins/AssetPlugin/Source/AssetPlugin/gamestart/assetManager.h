@@ -13,6 +13,8 @@
 #include "AssetPlugin/gamestart/PathMaker/enum/EAssetType.h"
 #include <map>
 
+#include "AssetPlugin/EnumTools/EnumTool.h"
+
 /**
  * Saves assets of any UEnum to any UObject derived class. Supports any enum out of any plugin!
  * To Add Assets by an Enum,
@@ -242,11 +244,13 @@ private:
 		return false;
 	}
 
+
 	///@brief enum name read from header definition.
 	///used to store FNamedEnum Structs 
 	template<typename E>
 	FString EnumName(){
-		UEnum* EnumPtr = StaticEnum<E>(); //isA UObject
+		return EnumTool::EnumName<E>();
+		/*UEnum* EnumPtr = StaticEnum<E>(); //isA UObject
 		FString outname = TEXT("invalidEnum");
 		if(EnumPtr){
 			//is just as in the Header definition, the enum name.
@@ -256,9 +260,9 @@ private:
 				FString message = FString::Printf(TEXT("assetManager Tracked Enum As String : %s"), *outname);
 				UE_LOG(LogTemp, Log, TEXT("%s"), *message);
 			}
-			
+
 		}
-		return outname;
+		return outname;*/
 	}
 
 	

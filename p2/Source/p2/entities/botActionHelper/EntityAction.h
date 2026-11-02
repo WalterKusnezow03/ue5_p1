@@ -31,6 +31,10 @@ public:
 	bool HasTimer();
 	void abortTimer();
 
+	//if event matches, switch to next action
+	void StartWithEvent(FString eventName, EActionType nexttype);
+	bool TryCompleteWithEvent(FString name);
+
 private:
 	EActionType typeOfAction = EActionType::ERoam;
 
@@ -42,5 +46,7 @@ private:
 	Timer timer;
 	bool hasTimerRunning = false;
 
-
+	// --- event switch of action ---
+	FString attachedEventString;
+	bool hasEventStringAttached = false;
 };

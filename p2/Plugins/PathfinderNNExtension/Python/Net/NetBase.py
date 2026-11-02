@@ -4,6 +4,7 @@ print("import torch done")
 
 from . import NetCheckpoint as NetCheckpoint
 from .TensorInput import FTensor
+from .LossMetric import LossCache
 
 print("import net checkpoint done")
 
@@ -23,6 +24,10 @@ class NetBase(nn.Module):
         self.latestResult = None
         self.latestLoss = None
         self.isGpu = False
+
+        ##for loss curve output
+        self.isTraining = False
+        self.lossCache = LossCache.LossCache()
 
         #### MUST BE OVERRIDEN IN SUBCLASSES ! #####
         self.InitializeTensorAndPathNames()
@@ -236,9 +241,10 @@ class NetBase(nn.Module):
             result = self.net(x)
 
         self.latestResult = result
-        
         return result
 
+    def SaveLossItemToCache(self, lossIn):
+        self.lossCache.addLossItem(lossIn, self.isTraining)
 
 
     ###### FOWRAD / TRAIN MULTI BATCH #######
@@ -264,6 +270,7 @@ class NetBase(nn.Module):
 
             loss = self.loss_fn(self.latestResult, gt)
             print(self.logname, "_LIVE_LOSS_", loss.item())
+            self.SaveLossItemToCache(loss.item())
 
     def trainBatch(self, batch_x, batch_y):
         pred = self.forward(batch_x)
@@ -378,6 +385,9 @@ class NetBase(nn.Module):
         print(self.logname,"_RUN_NN_BATCH_TRAIN_FINISHED")'''
 
     def TrainFromBatchBinary(self, binary):
+
+        self.isTraining = True
+
         self.SwitchToGpu()
         device = self.GetDevice()
 
@@ -463,6 +473,7 @@ class NetBase(nn.Module):
                 yb = y_shuffled[i : i + batch_size]
 
                 self.trainBatch(xb, yb)
+                self.SaveLossItemToCache(self.latestLoss)
 
             print(self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", self.epochs, " LOSS ", self.latestLoss)
 
@@ -479,5 +490,8 @@ class NetBase(nn.Module):
         self.SwitchToCpu()
 
         print(self.logname, "_RUN_NN_BATCH_TRAIN_FINISHED")
+
+        self.isTraining = False
+        self.lossCache.save_plot()
     
     

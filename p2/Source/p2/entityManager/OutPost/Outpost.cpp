@@ -416,7 +416,7 @@ void AOutpost::validatePlayerTargetMovingPosition(
 ){
 	if(!isTeamLeader(botPointer)){
 		//random offset
-		int range = 500; //3m
+		int range = 500; //5m
 		FVector randomOffset = FVectorUtil::randomOffset(range);
 		position += randomOffset;
 		DebugHelper::logMessage("debugOutpost - was NOT team leader!");

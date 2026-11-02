@@ -35,9 +35,10 @@ public class NNCommunicationPlugin : ModuleRules
 				"DebugPlugin",
 				"PythonPlugin",
 				"SharedMemoryPlugin",
+				"LoadingScreenPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
-			);
+		);
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -48,7 +49,7 @@ public class NNCommunicationPlugin : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Sockets",
-    			"Networking"
+				"Networking"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

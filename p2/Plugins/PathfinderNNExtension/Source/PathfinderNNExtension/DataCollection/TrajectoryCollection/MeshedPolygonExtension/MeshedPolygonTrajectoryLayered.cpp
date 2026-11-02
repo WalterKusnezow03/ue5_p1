@@ -1074,7 +1074,7 @@ void FMeshedPolygonTrajectoryLayered::PrepareFitData(){
     ResizeGrid144();
 };
 
-float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other){
+float FMeshedPolygonTrajectoryLayered::SimilarityOfSample(SampleInterface &other){
     FMeshedPolygonTrajectoryLayered *ptr =
         TSampleCast<FMeshedPolygonTrajectoryLayered>(other);
     if(ptr){

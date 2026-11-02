@@ -23,6 +23,8 @@
 #include "p2/vfx/base/VFXActor.h"
 #include "p2/vfx/type/EVFXActorType.h"
 
+#include "AssetPlugin/collection/PathCollection/EnumPropertyCollectionAsset.h"
+
 
 /*
 template <typename E0, typename E1, typename T>
@@ -39,6 +41,8 @@ static void LoadAndSaveAssetToManager(
 
 //constructor
 void P2AssetLoader::LoadGameAssets(){
+
+    LoadWeaponsEnummedAsset();
 
     loadMaterials(); //materials need to be loaded first to not have any issues
     loadEntities();
@@ -177,7 +181,7 @@ void P2AssetLoader::loadWeaponAttachments(){
 /// @brief loads all weapons to the entity manager
 void P2AssetLoader::loadWeapons(){
 
-    AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
+    /*AssetLoader::LoadAndSaveAssetToManager<weaponEnum, UClass>(
         weaponEnum::pistol,                 // track in asset manager
         "Game",                             // like "Game" for game or any other plugin name
         "Prefabs/Weapons/pistol/pistolNew", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
@@ -189,7 +193,7 @@ void P2AssetLoader::loadWeapons(){
         "Game",                             // like "Game" for game or any other plugin name
         "Prefabs/Weapons/rifle2", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "rifleBp"                         // Just the file name as displayed
-    );
+    );*/
 
 
     //
@@ -588,3 +592,23 @@ void P2AssetLoader::load3DWidgets(){
 }
 
 
+
+
+
+//new: ennumed property assets with <E,T> enum as string
+//used for weapon assets inside this collection,
+//instead of hardcode
+void P2AssetLoader::LoadWeaponsEnummedAsset(){
+    UEnumPropertyCollectionAsset *found = AssetLoader::loadPrimaryDataAsset<UEnumPropertyCollectionAsset>(
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/ActorAssetCollection",// like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "weaponBPCollection"   // Just the file name as displayed
+    );
+
+    if(found){
+        found->ValidatePropertiesOnInit();
+        
+        //run weapons
+        found->SafeCompatibleAssetsToAssetManager<weaponEnum, UClass>();
+    }
+}

@@ -27,8 +27,9 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 
 void ANNPathFinderSocket::BeginPlay(){
     Super::BeginPlay();
-    requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
     
+    requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+
     //bad model.
     //requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel);
 
@@ -93,6 +94,9 @@ void ANNPathFinderSocket::Tick(float deltatime){
         if(requestTickData.bBatchBinaryOutChanged){
             WriteData(frameNameBatch, requestTickData.batchDataOut);
             DebugHelper::logMessage("WRITE TRAIN BATCH ", requestTickData.batchDataOut.Num());
+
+            //reset (?)
+            trainingStartAllowed = false;
         }
     }
 
@@ -165,6 +169,10 @@ void ANNPathFinderSocket::TickSocketConnected(float deltatime){
 
     
 }
+
+
+
+
 
 void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
     requestHandle.EndPlay();

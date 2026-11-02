@@ -1,5 +1,6 @@
 #include "TerrainLauncher.h"
 #include "terrainPlugin/AssetEditorCreation/TerrainPluginAssetLoader.h"
+#include "LoadingScreenPlugin/Public/LoadingScreen/LoadingScreenGameInstance.h"
 
 ATerrainLauncher::ATerrainLauncher(){
     PrimaryActorTick.bCanEverTick = true; //needed for tick update
@@ -67,10 +68,25 @@ void ATerrainLauncher::BeginAndLoad(FString WorldLevelName, const ExternalActorS
     }
     //-- CRITICAL CHANGE --
 
-    actorManager.BeginPlay(WorldLevelName, GetWorld(), spawnActorParams);
-    DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad Finished!", WorldLevelName);
-    copiedWorldName = WorldLevelName;
-    wasInitedOnce = true;
+    //update ui
+    ULoadingScreenGameInstance::UpdateLoadingEntry(
+        "ATerrainLauncher::loadWorld", 
+        "Loading World...",
+        LoadTerrainAction(WorldLevelName, spawnActorParams)
+    );
+}
+
+TFunction<void()> ATerrainLauncher::LoadTerrainAction(
+    FString WorldLevelName, 
+    const ExternalActorSpawnCollection &spawnActorParams
+){
+    return [this, WorldLevelName, spawnActorParams]()
+    {
+        actorManager.BeginPlay(WorldLevelName, GetWorld(), spawnActorParams);
+        DebugHelper::logMessage("ATerrainLauncher::BeginAndLoad Finished!", WorldLevelName);
+        copiedWorldName = WorldLevelName;
+        wasInitedOnce = true;
+    };
 }
 
 void ATerrainLauncher::EndAndSave(){

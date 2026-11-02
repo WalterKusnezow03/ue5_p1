@@ -7,6 +7,7 @@
 
 /// @brief will listen for player location and re use actors, load meshes from storage
 /// and apply to existing mesh actors
+/// Use Only fro ATerrain Launcher
 class TERRAINPLUGIN_API ActorManager {
 
 public:
@@ -53,6 +54,9 @@ private:
 
     //debug method, generates all mesh actors immidiatly from chunk parser map
     void applyChunkmeshDataCompletly();
+    void applyChunkmeshDataCompletlyToNextFreeActor(
+        ChunkParser *currentParserPackage
+    );
 
     //apply chunks based on player location and view distance
     void updateMeshActorsBasedOnPlayerLocation(FVector2D &playerLocationChunkSpace);

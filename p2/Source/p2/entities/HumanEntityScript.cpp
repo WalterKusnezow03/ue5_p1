@@ -262,9 +262,11 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         );
 
         //wait for player
-        float timeToWait = 5.0f;
-        actionManager.changeToActionTimed(EActionType::EWait, timeToWait);
+        actionManager.changeToActionTimed(EActionType::EWait, waitForPlayerReappearanceTime);
         
+        //todo.
+        actionManager.changeToActionWaitForEvent(EActionType::EWait, TEXT("WaitPlayerNNReappearance"));
+
         //switch to closest to player.
         LookAt(positions[0]); //debug wise look at first position / might also be only one.
         humanoidPluginController.stopLocomotionOnceRotationHasFinished();
@@ -372,22 +374,29 @@ void AHumanEntityScript::die(){
     humanoidPluginController.SetStateCollapseTrue();
 
     //entity manager
-    EntityManager *entityManager = AworldLevel::entityManager();
+    DropWeaponToEntityManager();
+    DropSelfToEntityManager();
 
-    //drop weapon and release
-    if (weaponPointer != nullptr)
-    {
-        weaponPointer->drop();
 
-        if(entityManager != nullptr){
-            entityManager->add(weaponPointer);
+}
+
+void AHumanEntityScript::DropWeaponToEntityManager(){
+    if(EntityManager *entityManager = AworldLevel::entityManager()){
+        //drop weapon and release
+        if (weaponPointer != nullptr)
+        {
+            weaponPointer->drop();
+
+            if(entityManager != nullptr){
+                entityManager->add(weaponPointer);
+            }
+
+            weaponPointer = nullptr;
         }
-
-
-        weaponPointer = nullptr;
     }
+}
 
-    
+void AHumanEntityScript::DropSelfToEntityManager(){
 
     //release over outpost, so the outpost ca remove the entity from its own list
     if(outpost != nullptr){
@@ -397,13 +406,14 @@ void AHumanEntityScript::die(){
     }else{
         //default entity manager death
         //Super::die();
-        if (entityManager != nullptr){
-            entityManager->add(this); //cant call entity super method because super method would add entity instead of human entity
+        if(EntityManager *entityManager = AworldLevel::entityManager()){
+            if (entityManager != nullptr){
+                entityManager->add(this); //cant call entity super method because super method would add entity instead of human entity
+            }
         }
     }
-
-
 }
+
 
 /// @brief despawns the entity 
 void AHumanEntityScript::despawn(){
@@ -462,6 +472,7 @@ void AHumanEntityScript::requestNewPathTo(FVector &targetLocation, bool towardsP
     if(towardsPlayer){
         if(outpost != nullptr){
             //will modify the target based on team leader or not
+            //to move in a sphere like shape
             outpost->validatePlayerTargetMovingPosition(
                 this,
                 targetLocation

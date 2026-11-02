@@ -57,6 +57,10 @@ private:
 	void attackPlayer();
 	void shootAt(FVector target);
 
+	//drop / entity manager
+	void DropWeaponToEntityManager();
+	void DropSelfToEntityManager();
+
 	//outpost
 	class AOutpost *outpost;
 	void findOutPostNearby();
@@ -111,5 +115,9 @@ public:
 	virtual FVector GetWorldLocation() override {
 		return GetActorLocation();
 	}
+
+protected:
+	float waitForPlayerReappearanceTime = 5.0f;
+
 	// NN Interface
 };

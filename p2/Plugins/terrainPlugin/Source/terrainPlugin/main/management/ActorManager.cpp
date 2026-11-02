@@ -8,7 +8,7 @@
 #include "terrainPluginBase/BaseTerrainInterface/terrainConstants.h"
 
 #include "terrainPluginBase/BaseTerrainInterface/externalActorTask/storageInterface/ExternalActorSpawnCollectionStorageInterface.h"
-
+#include "LoadingScreenPlugin/Public/LoadingScreen/LoadingScreenGameInstance.h"
 
 ActorManager::ActorManager(){
     worldContext = nullptr;
@@ -116,12 +116,24 @@ void ActorManager::loadWorldMeshData(FString worldLevelString){
     //try to load Chunk Data into chunkparser map.
     if(chunkMeshDataParserMap.loadWorldLevel(worldLevelString, chunkHeaderMap)){
         DebugHelper::logMessage("ActorManager: Chunks loaded from SSD ", worldLevelString);
+
         
-        if(instantTerrainActorApply){
+        ULoadingScreenGameInstance::UpdateLoadingEntry(
+            "ActorManager::loadTerrain", 
+            "Load Terrain chunks...",
+            [this, worldLevelString](){
+                applyChunkmeshDataCompletly();
+                DebugHelper::logMessage("ActorManager: terrain loading from SSD finished!", worldLevelString);
+            }
+        );
+        
+        
+        /*if(instantTerrainActorApply){
             applyChunkmeshDataCompletly();
             DebugHelper::logMessage("ActorManager: terrain loading from SSD finished!", worldLevelString);
-        }
+        }*/
 
+        
 
     }else{
         //since the chunks could not be loaded: generate terrain
@@ -134,6 +146,12 @@ void ActorManager::loadWorldMeshData(FString worldLevelString){
 void ActorManager::generateTerrain(){
     //push data into terrain generator
     DebugHelper::logMessage("ActorManager: terrain generation started!");
+
+    FString tag = "ActorManager::generateTerrain";
+    ULoadingScreenGameInstance::UpdateLoadingEntrySlateTick(
+        tag,
+        "Generate Terrain"
+    );
 
     //setup chunk parser map
     chunkMeshDataParserMap.createArray(chunksForGame);
@@ -149,6 +167,8 @@ void ActorManager::generateTerrain(){
         applyChunkmeshDataCompletly();
         DebugHelper::logMessage("ActorManager: terrain generation finished!");
     }
+    ULoadingScreenGameInstance::HideLoadingEntrySlateTick(tag);
+    
 
     //external actors will NOT be automatically replaced!
 }
@@ -162,42 +182,58 @@ void ActorManager::applyChunkmeshDataCompletly(){
 
     //void AcustomMeshActor::UpdateMeshDataAndPosition(ChunkParser &parser)
 
-    int madeActors = 0;
+    
     TArray<ChunkParser *> setupChunks = chunkMeshDataParserMap.allChunksForSetup();
-    for (int i = 0; i < setupChunks.Num(); i++){
+    for (int i = 0; i < setupChunks.Num(); i++)
+    {
         ChunkParser *currentParserPackage = setupChunks[i];
-        if(currentParserPackage){
-
-            //create terrain mesh actor
-            AcustomMeshActor *actor = PopMeshActorFromFreeList();
-            if (actor){
-                actor->UpdateMeshDataAndPosition(*currentParserPackage);
-                madeActors++;
+        /*ULoadingScreenGameInstance::UpdateLoadingEntry(
+            "ActorManager::applyChunkmeshDataCompletly",
+            FString::Printf(TEXT("Load Chunk %d of %d"), i + 1, setupChunks.Num()),
+            [this, currentParserPackage]()
+            {
+                applyChunkmeshDataCompletlyToNextFreeActor(currentParserPackage);
             }
-
-            // -- to be refactured for external actors --
-            //create outposts
-            //single fire create outpost, once!
-            if(currentParserPackage->OutpostFlagCreationNeeded()){
-                FVector outpostLocation = currentParserPackage->GetActorLocation();
-                AworldLevelBase::addOutpostAt(outpostLocation);
-            }
-
-            //create water
-            if(currentParserPackage->WaterActorNeededFlagged()){
-                FVector waterLocation = currentParserPackage->GetWaterActorLocation();
-                AcustomWaterActor::createWaterPane(
-                    worldContext,
-                    waterLocation,
-                    terrainConstants::CHUNKSIZE * terrainConstants::ONEMETER
-                );
-            }
-
-        }
+        );*/
+        ULoadingScreenGameInstance::UpdateLoadingEntrySlateTick(
+            "ActorManager::applyChunkmeshDataCompletly",
+            FString::Printf(TEXT("Load Chunk %d of %d"), i + 1, setupChunks.Num())
+        );
+        applyChunkmeshDataCompletlyToNextFreeActor(currentParserPackage);
+        
     }
-    DebugHelper::logMessage("ActorManager made actors", madeActors);
+    ULoadingScreenGameInstance::HideLoadingEntrySlateTick("ActorManager::applyChunkmeshDataCompletly");
 }
 
+void ActorManager::applyChunkmeshDataCompletlyToNextFreeActor(
+    ChunkParser *currentParserPackage
+){
+    if(currentParserPackage){
+        //create terrain mesh actor
+        AcustomMeshActor *actor = PopMeshActorFromFreeList();
+        if (actor){
+            actor->UpdateMeshDataAndPosition(*currentParserPackage);
+        }
+
+        // -- to be refactured for external actors --
+        //create outposts
+        //single fire create outpost, once!
+        if(currentParserPackage->OutpostFlagCreationNeeded()){
+            FVector outpostLocation = currentParserPackage->GetActorLocation();
+            AworldLevelBase::addOutpostAt(outpostLocation);
+        }
+
+        //create water
+        if(currentParserPackage->WaterActorNeededFlagged()){
+            FVector waterLocation = currentParserPackage->GetWaterActorLocation();
+            AcustomWaterActor::createWaterPane(
+                worldContext,
+                waterLocation,
+                terrainConstants::CHUNKSIZE * terrainConstants::ONEMETER
+            );
+        }
+    }
+}
 
 
 void ActorManager::findMaxChunkViewDistanceOnBeginPlay(){

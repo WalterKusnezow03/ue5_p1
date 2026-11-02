@@ -11,13 +11,18 @@
 
 #include "EPolygonSampleType.h"
 
+#include "NNCommunicationPlugin/Communication/Sample/Interface/SampleInterface.h"
+
 
 class FVisionCone;
 class FMeshedPolygonColorAttributes;
 class IPathfinderNNInterface;
 
 //INTERFACE
-class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayeredInterface : public FMeshedPolygonRaytracable {
+class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryLayeredInterface : 
+public FMeshedPolygonRaytracable,
+public SampleInterface
+{
 
 public:
     //custom polymorphism
@@ -25,6 +30,10 @@ public:
     virtual EPolygonSampleType GetType(){
         return EPolygonSampleType::none;
     }
+
+    virtual FString GetTypeString() override {
+        return "FMeshedPolygonTrajectoryLayeredInterface";
+    };
 
 public:
     virtual void Reset() = 0;
@@ -35,7 +44,7 @@ public:
 
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     //prepare data (for netB resize 144 for example)
-    virtual void PrepareFitData() {};
+    /*virtual void PrepareFitData() {};
 
     virtual bool PrepareAppendRequestBinary(TArray<uint8> &buffer) = 0;
     virtual bool PrepareRequestAndResultBatchBinary(TArray<uint8> &buffer) = 0;
@@ -51,7 +60,7 @@ public:
 
     // ---- process result for game ----
     virtual void ProcessFromPredictionBytes(const TArray<uint8> &buffer) = 0;
-    virtual void ProcessFromPredictionFloats(const TArray<float> &buffer) = 0;
+    virtual void ProcessFromPredictionFloats(const TArray<float> &buffer) = 0;*/
 
     virtual void NotifyVisiblePositionsFor(
         IPathfinderNNInterface *interfaceIn,
@@ -81,20 +90,20 @@ public:
 
 
     //must be converted with static cast in derived class
-    bool IsSimilar(FMeshedPolygonTrajectoryLayeredInterface &other, float lossMax){
+    /*bool IsSimilar(FMeshedPolygonTrajectoryLayeredInterface &other, float lossMax){
         float similarityMin = 1.0f - lossMax;
         float similarity = SimilarityOfSample(other);
         return similarity >= similarityMin;
     }
 
     //to be implemented!
-    virtual float SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other) = 0;
+    virtual float SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other) = 0;*/
 
 
 
 protected:
 
-    template <typename T>
+    /*template <typename T>
     T *TSampleCast(FMeshedPolygonTrajectoryLayeredInterface &other){
         T temp;
         if (temp.GetType() == other.GetType()){
@@ -102,7 +111,7 @@ protected:
             return derived_ptr;
         }
         return nullptr;
-    }
+    }*/
 
 private:
 

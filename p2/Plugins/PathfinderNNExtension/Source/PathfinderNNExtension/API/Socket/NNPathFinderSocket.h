@@ -104,12 +104,6 @@ protected:
     
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-
-
-        
-
-
-
     bool trainingStartAllowed = false;
     
 private:

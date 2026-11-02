@@ -37,4 +37,7 @@ private:
     void load3DWidgetData();
     void loadWidgetMaterial();
     void load3DWidgets();
+
+    //new
+    void LoadWeaponsEnummedAsset();
 };

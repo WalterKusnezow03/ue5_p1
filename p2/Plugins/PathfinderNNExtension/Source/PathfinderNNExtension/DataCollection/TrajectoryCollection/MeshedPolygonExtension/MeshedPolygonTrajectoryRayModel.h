@@ -90,10 +90,14 @@ public:
 
     EPolygonSampleType GetType() override;
 
+    virtual FString GetTypeString() override {
+        return "FMeshedPolygonTrajectoryRayModel";
+    };
+
     
 
     
-    float SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other) override;
+    float SimilarityOfSample(SampleInterface &other) override;
 
 protected:
     void ClearTrajectoryData();

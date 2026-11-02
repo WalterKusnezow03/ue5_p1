@@ -80,6 +80,12 @@ void ActionManager::changeToActionTimed(EActionType wantedType, float time, EAct
     action.StartTimer(time, nextAction);
 }
 
+void ActionManager::changeToActionWaitForEvent(EActionType wantedType, FString waitForEvent){
+    changeToAction(wantedType);
+    EntityAction &action = FindAction(wantedType);
+    action.StartWithEvent(waitForEvent, currentActionTask);
+}
+
 void ActionManager::abortTimerOnAction(EActionType type){
     EntityAction &actionToAbort = FindAction(type);
     if(actionToAbort.HasTimer()){

@@ -437,7 +437,7 @@ EPolygonSampleType FMeshedPolygonTrajectoryRayModel::GetType(){
 
 
 #include "CoreMath/algorithm/Vector/FChamferDistance.h"
-float FMeshedPolygonTrajectoryRayModel::SimilarityOfSample(FMeshedPolygonTrajectoryLayeredInterface &other){
+float FMeshedPolygonTrajectoryRayModel::SimilarityOfSample(SampleInterface &other){
     FMeshedPolygonTrajectoryRayModel *ptr =
         TSampleCast<FMeshedPolygonTrajectoryRayModel>(other);
     if(ptr && false){ //debug false

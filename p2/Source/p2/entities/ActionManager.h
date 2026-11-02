@@ -25,7 +25,10 @@ public:
 	//timed actions
 	void changeToActionTimed(EActionType wantedType, float time);
 	void changeToActionTimed(EActionType wantedType, float time, EActionType nextAction);
-	
+
+	//event wait actions
+	void changeToActionWaitForEvent(EActionType wantedType, FString waitForEvent);
+
 	//cancels the timer if any setup, if so and is currenttask, switch to targeted next task
 	void abortTimerOnAction(EActionType type);
 

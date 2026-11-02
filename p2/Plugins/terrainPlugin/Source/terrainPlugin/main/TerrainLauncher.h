@@ -37,6 +37,10 @@ public:
     const ExternalActorSpawnCollection &GetExternalActorCollection();
 
 private:
+    TFunction<void()> LoadTerrainAction(
+        FString WorldLevelName, 
+        const ExternalActorSpawnCollection &spawnActorParams
+    );
 
     bool IsADifferentWorldThanCurrent(FString WorldLevelName);
     

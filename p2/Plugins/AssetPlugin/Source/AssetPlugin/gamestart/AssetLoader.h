@@ -42,8 +42,35 @@ public:
 		}
 		return nullptr;
 	}
-	
 
+	template <typename T>
+	static T* loadPrimaryDataAsset(
+		FString pluginName, // like "Game" for game or any other plugin name
+		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+		FString assetName //Just the file name as displayed
+	){
+
+		// ------ NOT FUNCTIONAL !!!! ---------
+
+		EAssetType typeAsset = EAssetType::EUClassBlueprint;
+		
+
+		//make a path
+		AssetPathMaker pathMaker;
+		FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
+
+		T *loaded = nullptr;
+		if(UClass *classLoaded = loadUClassBluePrint(path)){
+			UE_LOG(LogTemp, Log, TEXT("AssetLoader: Loaded raw uclass %s"), *classLoaded->GetClass()->GetName());
+			if (T* Data = Cast<T>(classLoaded->GetDefaultObject()))
+			{
+				UE_LOG(LogTemp, Log, TEXT("AssetLoader: Blueprint DataAsset OK (NEW via CDO) = %s"), *Data->GetName());
+				//loaded = Data;
+				loaded = Data;
+			}
+		}
+		return loaded;
+	}
 
 	/// ---- LOAD AND ADD ASSET TO ASSET MANAGER ----
 
@@ -186,7 +213,8 @@ public:
 		AssetPathMaker pathMaker;
 		FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
 
-		T *loaded = nullptr;
+		T *loaded = loadPrimaryDataAsset<T>(pluginName, innerPath, assetName);
+		/*= nullptr;
 		if(UClass *classLoaded = loadUClassBluePrint(path)){
 			UE_LOG(LogTemp, Log, TEXT("AssetLoader: Loaded raw uclass %s"), *classLoaded->GetClass()->GetName());
 			if (T* Data = Cast<T>(classLoaded->GetDefaultObject()))
@@ -195,8 +223,8 @@ public:
 				//loaded = Data;
 				loaded = Data;
 			}
-		}
-		
+		}*/
+
 		//save asset to asset manager once found
 		if(loaded != nullptr){
 			assetManager *manager = assetManager::instance();
@@ -215,7 +243,6 @@ public:
 		FString innerPath, // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
 		FString assetName //Just the file name as displayed
 	){
-		// ------ NOT FUNCTIONAL !!!! ---------
 
 		EAssetType typeAsset = EAssetType::EUClassBlueprint;
 		
@@ -224,7 +251,7 @@ public:
 		AssetPathMaker pathMaker;
 		FString path = pathMaker.makeAssetPath(typeAsset, pluginName, innerPath, assetName);
 
-		T *loaded = nullptr;
+		/*T *loaded = nullptr;
 		if(UClass *classLoaded = loadUClassBluePrint(path)){
 			UE_LOG(LogTemp, Log, TEXT("AssetLoader: Loaded raw uclass %s"), *classLoaded->GetClass()->GetName());
 			if (T* Data = Cast<T>(classLoaded->GetDefaultObject()))
@@ -233,7 +260,8 @@ public:
 				//loaded = Data;
 				loaded = Data;
 			}
-		}
+		}*/
+		T *loaded = loadPrimaryDataAsset<T>(pluginName, innerPath, assetName);
 		
 		//save asset to asset manager once found
 		if(loaded != nullptr){
