@@ -40,4 +40,5 @@ private:
 
     //new
     void LoadWeaponsEnummedAsset();
+    void LoadWeaponAttachmentsEnummedAsset();
 };

@@ -54,7 +54,7 @@ public:
         return false;
     }
 
-    void ValidatePropertiesOnInit(){
+    virtual void ValidatePropertiesOnInit(){
         
     }
 

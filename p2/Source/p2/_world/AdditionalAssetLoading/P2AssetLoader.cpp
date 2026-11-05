@@ -42,7 +42,9 @@ static void LoadAndSaveAssetToManager(
 //constructor
 void P2AssetLoader::LoadGameAssets(){
 
+    LoadWeaponAttachmentsEnummedAsset();
     LoadWeaponsEnummedAsset();
+    
 
     loadMaterials(); //materials need to be loaded first to not have any issues
     loadEntities();
@@ -114,6 +116,7 @@ void P2AssetLoader::loadWeaponAttachments(){
 	)
     */
 
+    /*
     AssetLoader::LoadAndSaveAssetToManager<weaponEnum, weaponAttachmentEnum, UClass>(
         weaponEnum::assaultRifle,      // track in asset manager
         weaponAttachmentEnum::reddot,  // track in asset manager
@@ -170,7 +173,7 @@ void P2AssetLoader::loadWeaponAttachments(){
         "Game",                                       // like "Game" for game or any other plugin name
         "Prefabs/Weapons/attachments",                // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "MundungsfeuerdampferBp"                      // Just the file name as displayed
-    );
+    );*/
 
 
 }
@@ -193,7 +196,7 @@ void P2AssetLoader::loadWeapons(){
         "Game",                             // like "Game" for game or any other plugin name
         "Prefabs/Weapons/rifle2", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "rifleBp"                         // Just the file name as displayed
-    );*/
+    );
 
 
     //
@@ -252,7 +255,7 @@ void P2AssetLoader::loadWeapons(){
         "Game", // like "Game" for game or any other plugin name
         "Prefabs/Weapons/hk416", // like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
         "hk416_BP"                // Just the file name as displayed
-    );
+    );*/
 
     
 
@@ -610,5 +613,20 @@ void P2AssetLoader::LoadWeaponsEnummedAsset(){
         
         //run weapons
         found->SafeCompatibleAssetsToAssetManager<weaponEnum, UClass>();
+    }
+}
+
+void P2AssetLoader::LoadWeaponAttachmentsEnummedAsset(){
+    UEnumPropertyCollectionAsset *found = AssetLoader::loadPrimaryDataAsset<UEnumPropertyCollectionAsset>(
+        "Game", // like "Game" for game or any other plugin name
+        "Prefabs/ActorAssetCollection",// like: "Prefabs/Weapons/attachments", no trailing slash, found inside the last folder
+        "weaponAttachmentBPCollection"   // Just the file name as displayed
+    );
+
+    if(found){
+        found->ValidatePropertiesOnInit();
+        
+        //run weapons
+        found->SafeCompatibleAssetsToAssetManager<weaponEnum, weaponAttachmentEnum, UClass>();
     }
 }
