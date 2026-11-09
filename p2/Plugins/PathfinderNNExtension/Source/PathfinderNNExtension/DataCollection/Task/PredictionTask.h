@@ -8,9 +8,11 @@
 
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryRayModel.h"
-#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
+#include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
-class FPathFinderNNRequestPackage;
+#include "NNCommunicationPlugin/DataCollection/Task/PredictionTaskBase.h"
+
+class FNNRequestPackage;
 class FMeshedPolygonColorAttributes;
 
 /// Will store task information about the tracked actor
@@ -18,40 +20,37 @@ class FMeshedPolygonColorAttributes;
 /// store the map once the player reappears in the
 /// map, with a single pixel drawn
 /// ---- will enable asynchronus prediction ----
-class PATHFINDERNNEXTENSION_API PredictionTask {
+class PATHFINDERNNEXTENSION_API PredictionTask : public PredictionTaskBase{
 
 private:
     float radiusMeter = 100.0f; //stays the same! Do not change!
     //maybe 50
 
 public:
-    void Reset();
+    void Reset() override;
 
     //is reusable.
     void Setup(ActorTrajectoryTracker *trackedActor); //needed for visibilty check
 
-    void PrepareRequestBinary(TArray<uint8> &bytes); //binary for shared mem python nn
-    void PrepareRequestBinary(FONNXModelInput &model); //onnx input for ONNX Model
+    void PrepareRequestBinary(TArray<uint8> &bytes) override; //binary for shared mem python nn
+    void PrepareRequestBinary(FONNXModelInput &model) override; //onnx input for ONNX Model
 
     //returns true if result is ready for NN Backward pass!
-    bool TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes);
+    bool TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes) override;
 
-    bool IsValid();
+    bool IsValid() override;
 
     bool IsSameActor(AActor *actorCheck);
 
     
 
-    bool WaitingForGroundTruth();
-    bool TaskCompleted();
-
-    int ResultDataSizeBytes();
+    int ResultDataSizeBytes() override;
 
     // heat map generation from result
-    void ProcessFromPredictionBytes(const TArray<uint8> &buffer);
+    void ProcessFromPredictionBytes(const TArray<uint8> &buffer) override;
 
     //for onnx handler
-    void ProcessFromPredictionFloats(const TArray<float> &buffer);
+    void ProcessFromPredictionFloats(const TArray<float> &buffer) override;
 
     void ColoredHeatMapWithTemporaryPlayer(
         Image &image,
@@ -67,10 +66,10 @@ public:
         FMeshedPolygonColorAttributes &attributes
     );
 
-    void GenerateAndNotifyResultPositions(FPathFinderNNRequestPackage *queue);
+    void GenerateAndNotifyResultData(FNNRequestPackage *queue) override;
     
 
-    void EndSave(){
+    void EndSave() override {
         polygonProxy.EndSave();
     }
 
@@ -81,21 +80,15 @@ public:
 
 
     void EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &enemies);
-    void EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue);
-
-    //mark finished after result heat map extracted
-    void MarkTaskFinished();
+    void EmbedRequestData(FNNRequestPackage &queue) override;
 
     //todo: set type for prediction task / can be swicthed
     //todo: get type of prediction task
 
+    ///@brief returns the sample data (the Trajectory Layered Polygon data sample)
+    SampleInterface *GetSampleData() override;
 
 private:
-    bool taskStarted = false;
-    bool taskCompleted = true;
-
-    void StartTaskBeforePrepareBinary(FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache);
-
     void PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface &polygonData);
     void PrepareResultMap();
 

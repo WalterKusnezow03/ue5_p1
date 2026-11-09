@@ -4,7 +4,7 @@
 
 /// @brief stores input tensor buffers in seperate Arrays
 /// for simplicity in passing onto the ONNX Model
-class PATHFINDERNNEXTENSION_API FONNXModelInput {
+class NNCOMMUNICATIONPLUGIN_API FONNXModelInput {
 
 public:
     TArray<uint8> &GetBufferForInputTensor(int index);

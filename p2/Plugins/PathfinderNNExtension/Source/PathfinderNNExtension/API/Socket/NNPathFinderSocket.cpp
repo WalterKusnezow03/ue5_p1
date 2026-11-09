@@ -25,19 +25,14 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 
 #include "PathfinderNNExtension/Settings/NNSetting.h"
 
-void ANNPathFinderSocket::BeginPlay(){
-    Super::BeginPlay();
+void ANNCommunicationSocket::OnBeginPlaySetupHandleStructure(){
+    requestHandle = new NNRequestHandle();
+    requestTickData = new FNNRequestHandleTickDataBase();
+
     
-    requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+}
 
-    //bad model.
-    //requestHandle.UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel);
-
-
-    requestHandle.BeginPlay();
-
-    DebugHelper::logMessage("ANNPathFinderSocket BeginPlay - python");
-    
+void ANNCommunicationSocket::OnBeginPlaySetupFrameNames(){
     //just as used with python process!
     //ANNPathFinderSF means ANNPathFinderSharedFrame
     frameNameRequest = "ANNPathFinderSFIN";
@@ -45,118 +40,80 @@ void ANNPathFinderSocket::BeginPlay(){
     frameNameGroundThruth = "ANNPathFinderSFGT";
     frameNameBatch = "ANNPathFinderSFB";
     frameNameNNType = "ANNPathFinderSFNN";
+}
 
-    //Plugins/NNCommunicationPlugin/Source/NNCommunicationPlugin/Python/venv/bin/python
+void ANNCommunicationSocket::OnBeginPlayLaunchPython(){
     LaunchPythonProcess(
         "PathFinderNNExtension", 
         "nnpathfinder_server.py", //local nnpathfinder_server.py, from this plugin
         "NNCommunicationPlugin", //hier ist python installiert.
         "venv/bin/python"
-    ); // finds working dir automatically
+    ); 
+}
 
+NNRequestHandle *ANNPathFinderSocket::GetHandle(){
+    if(requestHandle){
+        return static_cast<NNRequestHandle *>(requestHandle);
+    }
+    return nullptr;
+}
+
+void ANNPathFinderSocket::BeginPlay(){
+    Super::BeginPlay();
+
+    if(NNRequestHandle *handle = GetHandle()){
+        //bad model.
+        //handle->UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel);
+        
+        //unet model - good
+        handle->UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+    }
 
     //debug
     NNPluginSettings::LogSetting();
 }
 
-bool ANNPathFinderSocket::NNIsConnected(){
-    return IsConnected();
-}
 
 void ANNPathFinderSocket::Tick(float deltatime){
-    Super::Tick(deltatime);
-
-    //prepare and execute task
-    requestTickData.Reset();
-    requestTickData.bBatchBinaryDataNeeded = trainingStartAllowed;
-    requestTickData.deltatime = deltatime;
-
-    //prepare result data if arrived (Prediction arrived)
-
-    //result data arrived
-    //TickReadDataResult(); to:
-    if(frameManager.TryReadReadyFlag(frameNameResult)){
-        frameManager.TryReadDataTo(frameNameResult, requestTickData.predictionData);
-        requestTickData.bHasPredictionData = true; //new prediction data was read.
-        frameManager.MarkReadyFalse(frameNameResult); //mark as read
-        FString message = "ANNPathFinderSocket::REQUEST FINISH Arrived IMPLICIT!";
-        DebugHelper::logMessage(message);
-    }
-
-
-    //tick request handler
-    requestHandle.Tick(requestTickData);
-
-    //LoadBatchIfNotDoneYet(); //to:
-    //Load Batch if not done yet / training 
-    if(trainingStartAllowed){
-        //if handler updated the batch binary, write it.
-        if(requestTickData.bBatchBinaryOutChanged){
-            WriteData(frameNameBatch, requestTickData.batchDataOut);
-            DebugHelper::logMessage("WRITE TRAIN BATCH ", requestTickData.batchDataOut.Num());
-
-            //reset (?)
-            trainingStartAllowed = false;
-        }
-    }
-
-    //todo: once training is finished: close the Train Batch Shared Memory page
-    //must be also removed from python!
-
-
-
-
-    //write ground truth binary if exists
-    //TickTask(); to:
-    if(requestTickData.bGroundTruthBinaryOutChanged){
-        WriteDataGroundTruth(requestTickData.groundTruthBinaryOut);
-        DebugHelper::logMessage("WRITE GROUND TRUTH ", requestTickData.groundTruthBinaryOut.Num());
-    }
-
-    //---> hier richtig? Unklar.
     //write NN type updates from Request Handle (for now)
     UpdateSelectedModelToSharedMemory();
 
+    NNRequestHandle *handle = GetHandle();
+    FString hasHandle = handle != nullptr ? "Has Handle" : "No Handle";
+    DebugHelper::logMessage(FString::Printf(TEXT("ANNPathFinderSocket::Tick %s"), *hasHandle));
 
-    //write request data
-    if(requestTickData.bRequestBinaryOutChanged){
-        DebugHelper::logMessage("WRITE REQUEST ", requestTickData.requestDataOut.Num());
-        WriteDataRequest(
-            requestTickData.requestDataOut,
-            requestTickData.expectedResultBytes
-        );
-    }
-
-    
+    Super::Tick(deltatime);
 }
 
 void ANNPathFinderSocket::UpdateSelectedModelToSharedMemory(){
 
     // --- todo: only on change model ---
 
-    EPolygonSampleType type = requestHandle.GetSampleType();
+    if(NNRequestHandle *handle = GetHandle()){
+        EPolygonSampleType type = handle->GetSampleType();
 
-    //write to buffer / shared memory
-    TArray<uint8> data;
-    EPolygonSampleTypeNameConversion::WriteNNTypeIntTo(type, data);
-    WriteData(frameNameNNType, data);
+        //write to buffer / shared memory
+        TArray<uint8> data;
+        EPolygonSampleTypeNameConversion::WriteNNTypeIntTo(type, data);
+        WriteData(frameNameNNType, data);
+    }
 }
 
-void ANNPathFinderSocket::SetTrainingAllowed(){
-    trainingStartAllowed = true;
-}
 
 
 void ANNPathFinderSocket::EnableHeatMapSaveOnEnd(bool saveOnEnd){
-    requestHandle.EnableHeatMapSaveOnEnd(saveOnEnd);
+    if(NNRequestHandle *handle = GetHandle()){
+        handle->EnableHeatMapSaveOnEnd(saveOnEnd);
+    }
 }
 
 
 bool ANNPathFinderSocket::HeatMapSaveOnEndEnabled(){
-    return requestHandle.HeatMapSaveOnEndEnabled();
+    if(NNRequestHandle *handle = GetHandle()){
+        return handle->HeatMapSaveOnEndEnabled();
+    }
+    return false;
 }
-
-
 
 void ANNPathFinderSocket::TickSocketConnected(float deltatime){
     Super::TickSocketConnected(deltatime);
@@ -174,12 +131,6 @@ void ANNPathFinderSocket::TickSocketConnected(float deltatime){
 
 
 
-void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    requestHandle.EndPlay();
-    Super::EndPlay(EndPlayReason);
-}
-
-
 
 
 
@@ -191,12 +142,9 @@ void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 //flags a aactor as spotted
 void ANNPathFinderSocket::FlagVisible(AActor *actor){
-    requestHandle.FlagVisible(actor);
-
-    /*if(actor){
-        actorTracker.AddTrackedActorIfNeeded(actor);
-        actorTracker.FlagVisible(actor);
-    }*/
+    if(NNRequestHandle *handle = GetHandle()){
+        handle->FlagVisible(actor);
+    }
 }
 
 
@@ -205,93 +153,21 @@ void ANNPathFinderSocket::PredictNode(
     IPathfinderNNInterface *interfaceNotify,
     AActor *actor
 ){
-    requestHandle.PredictNode(interfaceNotify, actor);
-
-    /*if(actor){
-        actorTracker.AddTrackedActorIfNeeded(actor);
-    }
-    if(interfaceNotify && actor){
-        requests.Subscribe(interfaceNotify, actor);
-    }*/
-}
-
-
-
-
-
-
-
-void ANNPathFinderSocket::WriteDataRequest(TArray<uint8> &buffer, int resultBytes){
-    FString message = FString::Printf(
-        TEXT("ANNPathFinderSocket::WriteDataRequest %d, Result Bytes Expected %d"),
-        buffer.Num(),
-        resultBytes
-    );
-    DebugHelper::logMessage(message);
-    //DebugHelper::showScreenMessage(message, FColor::Red);
-    if(buffer.Num() > 0 && resultBytes > 0){
-        
-        // ---- result must exists to ask the NN for a result! (is not created in python!) ----
-        frameManager.MakeSureExists(frameNameResult, resultBytes);
-        WriteData(frameNameRequest, buffer);
-    }
-    //reseted inside request handle.
-    /*else{
-        task.Reset();
-    }*/
-}
-
-void ANNPathFinderSocket::WriteDataGroundTruth(
-    TArray<uint8> &buffer
-){
-    if(buffer.Num() > 0){
-        FString message = FString::Printf(TEXT("ANNPathFinderSocket::WriteDataGroundTruth %d"),buffer.Num());
-        //DebugHelper::showScreenMessage(message, FColor::Red);
-        DebugHelper::logMessage(message);
-        WriteData(frameNameGroundThruth, buffer);
-    }
-    
-}
-
-/// receives all incoming python prints
-void ANNPathFinderSocket::OnReceivePythonPrint(FString Output){
-    Super::OnReceivePythonPrint(Output);
-    
-    // --- TODO! ---
-    //if finished: close train batch shared memory!
-    //printed in python: "NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED"
-    if(CloseTrainSharedMemoryFrame(Output)){
-        //close shared memory from shared memory manager
-        //notify shared page is closed!   
-        ClosePage(frameNameBatch);
-    }
-
-
-
-    if(false){
-        //DebugHelper::showScreenMessage("ANNPathFinderSocket::ReceivePythonPrint ", Output, FColor::Red);
-        DebugHelper::logMessage("ANNPathFinderSocket::PYTHON ", Output);
-        return;
+    if(actor){
+        FString name = actor->GetName();
+        if(requestHandle){
+            requestHandle->PredictData(interfaceNotify, name, actor);
+        }
     }
 }
-
-
-bool ANNPathFinderSocket::CloseTrainSharedMemoryFrame(const FString &message){
-    //if finished: close train batch shared memory!
-    //printed in python: "NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED"
-    if(message.Contains("RUN_NN_BATCH_TRAIN_FINISHED")){
-        return true;
-    }
-    //nicht zwingend net B !
-    if(message.Contains("NNServerPathfinder_NetB_RUN_NN_BATCH_TRAIN_FINISHED")){
-        return true;
-    }
-    return false;
-}
-
 
 
 
 HeatMapReceivers &ANNPathFinderSocket::GetHeatMapReceivers(){
-    return requestHandle.GetHeatMapReceivers();
+    if(NNRequestHandle *handle = GetHandle()){
+        return handle->GetHeatMapReceivers();
+    }else{
+        DebugHelper::logMessage("ANNPathFinderSocket::Could Not Find HeatMapReceivers!");
+    }
+    return empty;
 }

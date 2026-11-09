@@ -10,18 +10,17 @@
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
 
-#include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
-#include "PathfinderNNExtension/Request/FPathFinderNNRequestQueue.h"
+ 
+  
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
-#include "PathfinderNNExtension/Storage/FPathFinderNNSampleSet.h"
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
 #include "PathfinderNNExtension/API/Handle/NNRequestHandle.h"
-#include "PathfinderNNExtension/API/Handle/NNRequestHandleTickData.h"
 
-#include "PathfinderNNExtension/API/Handle/NNRequestHandleInterface.h"
+#include "PathfinderNNExtension/API/Handle/PathFinderNNRequestHandleInterface.h"
 
+#include "NNCommunicationPlugin/API/Socket/NNCommunicationSocket.h"
 
 #include "NNPathFinderSocket.generated.h"
 
@@ -29,28 +28,16 @@
 /// ---- NN SOCKET BASE WITH SHARED MEMORY SUPPORT----
 UCLASS()
 class PATHFINDERNNEXTENSION_API ANNPathFinderSocket : 
-public ANNSocket,
-public INNRequestHandleInterface
+public ANNCommunicationSocket,
+public IPathFinderNNRequestHandleInterface
 {
     GENERATED_BODY()
 
 
 protected:
-    FString frameNameRequest = "DEFAULT_IN";
-    FString frameNameResult = "DEFAULT_OUT";
-    FString frameNameGroundThruth = "DEFAULT_GT";
-
-    FString frameNameBatch = "DEFAULT_BATCH";
-
-    FString frameNameNNType = "DEFAULT_NNTYPE";
-
-    virtual void OnReceivePythonPrint(FString message) override;
-
+    
     //processes the requests
-    NNRequestHandle requestHandle;
-
-    //in (nn prediction) and out (nn requst) data 
-    FNNRequestHandleTickData requestTickData;
+    NNRequestHandle *GetHandle();
 
     bool logConnection = false;
 
@@ -64,33 +51,33 @@ public:
         return nullptr;
     }
     
-    // -- INNRequestHandleInterface override --
+    // -- IPathFinderNNRequestHandleInterface overrides --
     //predicts a node if task not qeued
     virtual void PredictNode(
         IPathfinderNNInterface *interfaceNotify,
         AActor *actor
     ) override;
-
-    
-    //connection state of socket to display in widget
-    virtual bool NNIsConnected() override;
-    //heatmap / other widget for minimap
     
 
     virtual HeatMapReceivers &GetHeatMapReceivers() override;
+
+    virtual bool NNIsConnected() override {
+        return ANNCommunicationSocket::NNIsConnected();
+    }
+
+    virtual void SetTrainingAllowed() override {
+        ANNCommunicationSocket::SetTrainingAllowed();
+    }
 
     //notified by all entites whether the player
     //is visible or not
     virtual void FlagVisible(AActor *actor) override;
 
-    virtual void SetTrainingAllowed() override;
+    
     virtual void EnableHeatMapSaveOnEnd(bool saveOnEnd) override;
     virtual bool HeatMapSaveOnEndEnabled() override;
 
 protected:
-    using ANNSocket::WriteData;
-    void WriteDataRequest(TArray<uint8> &data, int resultBytes);
-    void WriteDataGroundTruth(TArray<uint8> &buffer);
    
     void UpdateSelectedModelToSharedMemory();
 
@@ -102,12 +89,7 @@ protected:
     virtual void TickSocketConnected(float deltatime) override;
     virtual void BeginPlay() override;
     
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-    bool trainingStartAllowed = false;
-    
 private:
-    bool CloseTrainSharedMemoryFrame(const FString &message);
 
-    
+    HeatMapReceivers empty;
 };

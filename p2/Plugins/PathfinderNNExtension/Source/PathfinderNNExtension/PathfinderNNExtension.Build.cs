@@ -139,6 +139,43 @@ public class PathfinderNNExtension : ModuleRules
 
 		AddONNXToBuild(ORXLibPath);
 	}
+
+
+	void AddONNXToBuild()
+	{
+		// 1. Unreal-Standardabhängigkeiten (KEIN NNE, KEIN ORTCpu!)
+		//PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "Slate", "SlateCore" });
+
+		// 2. Pfade zur externen Microsoft ONNX Runtime definieren
+		//string ThirdPartyPath = Path.Combine(ModuleDirectory, "..", "ThirdParty");
+		string PluginRootDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", ".."));
+		string ThirdPartyPath = Path.Combine(PluginRootDir, "ThirdParty");
+
+
+		//string ORXIncludePath = Path.Combine(ThirdPartyPath, "ONNXRuntime", "Include");
+		string ORXIncludePath = Path.Combine(ThirdPartyPath, "ONNXRuntime", "include");
+
+		//string ORXLibPath = Path.Combine(ThirdPartyPath, "ONNXRuntime", "Lib", "Mac");
+		string ORXLibPath = Path.Combine(ThirdPartyPath, "ONNXRuntime", "lib");
+
+		// 3. Header für den Compiler freigeben
+		PublicIncludePaths.Add(ORXIncludePath);
+
+		// 4. Bibliothek für macOS verlinken
+		if (Target.Platform == UnrealTargetPlatform.Mac)
+		{
+			//clang: error: no such file or directory: 
+			//'/Users/walterk/Documents/UnrealProjects/p2/Plugins/PathfinderNNExtension/Source/ThirdParty/
+			// ONNXRuntime/lib/libonnxruntime.dylib'
+
+			//Plugins/PathfinderNNExtension/ThirdParty/ONNXRuntime/lib/libonnxruntime.dylib
+			string DylibPath = Path.Combine(ORXLibPath, "libonnxruntime.dylib");
+
+			PublicAdditionalLibraries.Add(DylibPath);
+			RuntimeDependencies.Add(DylibPath);
+		}
+		AddONNXToBuild(ORXLibPath);
+	}
 	
 	void AddONNXToBuild(string ORXLibPath)
 	{

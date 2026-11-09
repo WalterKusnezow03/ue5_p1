@@ -29,7 +29,8 @@ void ANNSocket::MakeInstance(UWorld* World)
 
 void ANNSocket::BeginPlay(){
     Super::BeginPlay();
-    
+    sendPythonHeartBeat = true;
+
     //launch only if not blocked
     if(false){
         LaunchPythonProcess(
@@ -82,7 +83,7 @@ void ANNSocket::TickSocketConnected(float deltatime){
     ########## Fixing attempts not sucessfull yet, is a workaround! ##########
      */
 
-    /// ----- DO NOT REMOVE -----
+    /// ----- DO NOT REMOVE ----- (happens in super)
     //Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
     /// the python code will be stuck!!!
     /// ----- DO NOT REMOVE -----

@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "onnxruntime_cxx_api.h" 
-#include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
-#include "PathfinderNNExtension/GameNN/Tensor/FTensorSetup.h"
-#include "PathfinderNNExtension/GameNN/Tensor/FTensor.h"
+#include "NNCommunicationPlugin/GameNN/FONNXModelsetupBase.h"
+#include "NNCommunicationPlugin/GameNN/Tensor/FTensorSetup.h"
+#include "NNCommunicationPlugin/GameNN/Tensor/FTensor.h"
 
 /// @brief Will Support Multi or Single Input nets, with single output nets
 ///
 /// CAUTION: MULTI TENSOR INPUT NOT SUPPORTED YET!
-class PATHFINDERNNEXTENSION_API ONNXModel {
+class NNCOMMUNICATIONPLUGIN_API ONNXModel {
 public:
     ONNXModel();
     ~ONNXModel();
@@ -20,7 +20,7 @@ public:
         TArray<float> &bufferPredictionOut
     );
 
-    void LoadModel(FONNXModelsetup setup);
+    void LoadModel(FONNXModelsetupBase setup);
 
     bool RunModelAsync(TArray<uint8> &bufferIn, TFunction<void(TArray<float>)> OnComplete);
 
@@ -60,7 +60,7 @@ private:
 
 
     //setup data
-    FONNXModelsetup setupData;
+    FONNXModelsetupBase setupData;
 
     //flags
     bool bModelWasLoaded = false;

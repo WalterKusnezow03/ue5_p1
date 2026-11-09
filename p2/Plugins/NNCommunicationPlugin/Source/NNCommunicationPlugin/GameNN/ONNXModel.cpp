@@ -26,7 +26,7 @@ void ONNXModel::Reset(){
 }
 
 
-void ONNXModel::LoadModel(FONNXModelsetup setup){
+void ONNXModel::LoadModel(FONNXModelsetupBase setup){
     if(!setup.IsValid()){
         return;
     }

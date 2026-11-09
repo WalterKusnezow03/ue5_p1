@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "NNRequestHandle.h"
+
+#include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
 #include "PathfinderNNExtension/Interface/HeatMapReceiverCollection/HeatMapReceivers.h"
-#include "NNRequestHandleInterface.generated.h"
+#include "PathFinderNNRequestHandleInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UNNRequestHandleInterface : public UInterface
+class UPathFinderNNRequestHandleInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -18,7 +19,7 @@ class UNNRequestHandleInterface : public UInterface
 /**
  * interface for NN Any user of Request Handler (Python Socket and ONNX actor)
  */
-class PATHFINDERNNEXTENSION_API INNRequestHandleInterface
+class PATHFINDERNNEXTENSION_API IPathFinderNNRequestHandleInterface
 {
 	GENERATED_BODY()
 
@@ -39,18 +40,13 @@ public:
     //is visible or not
 	virtual void FlagVisible(AActor *actor) {};
 
-	virtual void SetTrainingAllowed() {};
-
-
-	virtual bool NNIsConnected(){
-		return false;
-	}
 
 	//disable inside request habdle
 	virtual void EnableHeatMapSaveOnEnd(bool saveOnEnd) {};
 	virtual bool HeatMapSaveOnEndEnabled(){
 		return false;
 	}
+
 
 	//widget display of heatmap / other sample type
 	void SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener){

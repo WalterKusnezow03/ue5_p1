@@ -100,12 +100,22 @@ void APythonSocketBase::Tick(float deltatime){
     }
     DebugSocketMessage();
     // LogPythonMessages(); //happens in super
+    SendHeartBeat();
 }
 
 //if (serverRunning && connected)
 void APythonSocketBase::TickSocketConnected(float deltatime){
     //is connected: Tick
+
+    
 }
+
+void APythonSocketBase::SendHeartBeat(){
+    if(sendPythonHeartBeat){
+        Send("EmptyData");
+    }
+}
+
 
 void APythonSocketBase::ConnectIfNeeded(float deltatime){
     if(serverRunning && !connected){

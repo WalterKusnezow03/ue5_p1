@@ -1,39 +1,40 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "NNRequestHandleTickData.h"
+
 
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/NActorTrajectoryTracker.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
 
-#include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
-#include "PathfinderNNExtension/Request/FPathFinderNNRequestQueue.h"
+ 
+  
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
-#include "PathfinderNNExtension/Storage/FPathFinderNNSampleSet.h"
+
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/Interface/HeatMapReceiverCollection/HeatMapReceivers.h"
 
+#include "PathfinderNNExtension/Storage/Template/TPathFinderNNSampleSet.h"
+
+#include "NNCommunicationPlugin/API/Handle/NNRequestHandleBase.h"
 
 //Base Handle for requests: register actors / prepare data
 //and process prediction data
 //will also store the selected model type by "EPolygonSampleType"
-class PATHFINDERNNEXTENSION_API NNRequestHandle {
+class PATHFINDERNNEXTENSION_API NNRequestHandle : public NNRequestHandleBase{
 
 public:
-    void BeginPlay();
-    void Tick(FNNRequestHandleTickData &tickData);
+    void BeginPlay() override;
+    void Tick(FNNRequestHandleTickDataBase &tickData) override;
+    void EndPlay() override;
 
     void FlagVisible(AActor *actor);
-    void PredictNode(
-        IPathfinderNNInterface *interfaceNotify,
-        AActor *actor
-    );
 
-    void EndPlay();
-
-    //only call from ONNX NN PathFinder ! - never anywhere else!
-    void ReadDataResultImmidiate(TArray<float> &data);
+    void PredictData(
+        IBaseNNInterface *interfaceNotify,
+        FString nameTaskTarget,
+        UObject *targetObject
+    ) override;
 
     void EnableHeatMapSaveOnEnd(bool flag);
     bool HeatMapSaveOnEndEnabled();
@@ -49,29 +50,31 @@ public:
 
     HeatMapReceivers &GetHeatMapReceivers();
 
-private:
-    FPathFinderNNSampleSet batchTask;
-    FPathFinderNNRequestQueue requests;
-
-    NActorTrajectoryTracker actorTracker;
-    PredictionTask task;
-
-    void TickTask();
-
-    void LoadBatchIfNotDoneYet(FNNRequestHandleTickData &tickData);
-    void PredictNextTask(FNNRequestHandleTickData &tickData);
-    void PredictNode(
-        FPathFinderNNRequestPackage *package,
-        FNNRequestHandleTickData &tickData
-    );
-    bool PredictNodeAllowed();
-    bool PrepareTaskFor(FPathFinderNNRequestPackage *package);
-    void UpdateRequestBinaryFor(FNNRequestHandleTickData &tickData);
-
-    void TickTask(FNNRequestHandleTickData &tickData);
-    void TickReadDataResult(FNNRequestHandleTickData &tickData);
+protected:
+    virtual void OnBeginPlaySetupTask() override;
+    void OnBeginPlaySetupBatchTask() override;
+    void OnTick() override;
+    void OnTickTaskWaitForGroundTruth() override;
+    void OnTickTaskArrivedGroundTruth() override;
+    //void OnTickTaskArrivedGroundTruthValid() override;
+    void OnPredictionArrive() override;
     
-    void ReadDataResult(TArray<uint8> &bufferPrediction);
+
+    void OnEndPlayBatchTaskSave() override;
+
+    PredictionTask *GetTask();
+    virtual FNNSampleSetBase *GetBatchTask() override;
+
+    //batch data for different sample types
+    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryLayered> unetSamples;
+    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryRayModel> raymodelSamples;
+
+
+protected:
+    
+    NActorTrajectoryTracker actorTracker;
+
+    virtual bool PrepareTaskFor(FNNRequestPackage *package) override;
 
     bool saveHeatMapsEnabled = false; //is set default to false: no heatmaps output by default
     TArray<Image> heatMaps;
@@ -81,13 +84,7 @@ private:
     //interface for heatmap listening (widget)
     HeatMapReceivers heatMapReceivers;
     void NotifyHeatMapReceivers(Image &image);
-
-    bool TaskCompleted();
-
-    //PREDICTION PROCESS
-    void GenerateAndNotifyResultPositionsForRequestQueue();
     void GeneratePredictionImage();
-    bool alreadyReadPredictionData = false;
 
     //widget
     void GenerateLiveImage();

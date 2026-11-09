@@ -27,37 +27,13 @@ bool FONNXModelsetup::IsValid(){
     return savedType != EPolygonSampleType::none;
 }
 
-void FONNXModelsetup::InitTensor(int W, int H, int channelsIn){
-    FTensorSetup tensor;
-    tensor.Setup(W, H, channelsIn);
-    inputTensorsBlueprint.Add(tensor);
-}
-
-TArray<FTensorSetup> &FONNXModelsetup::GetInputTensors(){
-    return inputTensorsBlueprint;
-}
 
 FString FONNXModelsetup::MakeFilePath(){
     FString pluginName = "PathFinderNNExtension";
-    FString pluginDir = PluginDir(pluginName);
-
-    
-    //FString PythonONNXPart = FString::Printf(TEXT("Python/onnxExport/netB_ONNX.onnx"));
     FString fileName = EPolygonSampleTypeNameConversion::ONNXFileName(savedType);
-    FString PythonONNXPart = FString::Printf(TEXT("Python/onnxExport/%s"), *fileName);
-    return FPaths::Combine(pluginDir, PythonONNXPart);
+    savedFilePath = FONNXModelsetupBase::MakeFilePath(pluginName, fileName);
+    return savedFilePath;
 }
-
-FString FONNXModelsetup::PluginDir(FString pluginName){
-    FString inner = pluginName; //refactured. // FString::Printf(TEXT("%s/Source/%s"), *pluginName, *pluginName);
-    FString pluginDir = FPaths::ConvertRelativePathToFull(
-        FPaths::ProjectPluginsDir() / 
-        *inner
-    );
-    DebugHelper::logMessage("ONNXLoader::PluginDir --> ", pluginDir);
-    return pluginDir;
-}
-
 
 void FONNXModelsetup::InitInputAndOutputNames(){
     if(savedType == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
@@ -72,13 +48,4 @@ void FONNXModelsetup::InitInputAndOutputNames(){
         OutputNames = { "output" }; //NetC Export
         return;
     }
-}
-
-
-std::vector<const char*> FONNXModelsetup::GetInputNames(){
-    return InputNames;
-}
-
-std::vector<const char*> FONNXModelsetup::GetOutputNames(){
-    return OutputNames;
 }

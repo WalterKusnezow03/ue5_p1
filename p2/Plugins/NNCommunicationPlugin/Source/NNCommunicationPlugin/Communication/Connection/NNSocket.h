@@ -39,6 +39,8 @@ protected:
 
     void ClosePage(FString name);
 
+    
+
 public:
     ANNSocket();
 

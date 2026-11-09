@@ -1,13 +1,11 @@
 #include "PredictionTask.h"
-#include "PathfinderNNExtension/Request/FPathFinderNNRequestPackage.h"
+#include "NNCommunicationPlugin/Request/FNNRequestPackage.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 
 
 void PredictionTask::Reset(){
+    PredictionTaskBase::Reset();
     trackedActorPtr = nullptr;
-    taskStarted = false;
-    taskCompleted = true;
-
     polygonDataUnetModel.Reset();
     polygonRayModel.Reset();
 
@@ -18,17 +16,14 @@ void PredictionTask::Setup(ActorTrajectoryTracker *trackedActor){
     trackedActorPtr = trackedActor;
 }
 
-bool PredictionTask::WaitingForGroundTruth(){
-    return taskStarted;
-}
-bool PredictionTask::TaskCompleted(){
-    return !WaitingForGroundTruth() && taskCompleted;
-}
-
 bool PredictionTask::IsValid(){
     return trackedActorPtr != nullptr;
 }
 
+SampleInterface *PredictionTask::GetSampleData(){
+   FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
+   return &data;
+}
 
 int PredictionTask::ResultDataSizeBytes(){
     FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
@@ -41,20 +36,25 @@ void PredictionTask::EmbedEnemyPositionsAndVision(const TArray<FVisionCone*> &en
     data.EmbedEnemyVision(enemies);
 }
 
-void PredictionTask::EmbedEnemyPositionsAndVision(FPathFinderNNRequestPackage &queue){
+void PredictionTask::EmbedRequestData(FNNRequestPackage &queue){
     TArray<FVisionCone*> positionsToEmbed;
-    queue.GetRequesterVisionCones(positionsToEmbed);
+    for(IBaseNNInterface *interface : queue.GetSubscribedActors()){
+        if(IPathfinderNNInterface *pathfinderInterface = Cast<IPathfinderNNInterface>(interface)){
+            positionsToEmbed.Add(&pathfinderInterface->GetVisionCone());
+        }
+    }
     EmbedEnemyPositionsAndVision(positionsToEmbed);
 }
 
 
-void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackage *queue){
+
+void PredictionTask::GenerateAndNotifyResultData(FNNRequestPackage *queue){
     if(queue){
         FMeshedPolygonTrajectoryLayeredInterface &data = GetPolygonData();
         
-        TArray<IPathfinderNNInterface *> interfaces = queue->GetSubscribedActors();
+        TArray<IBaseNNInterface *> interfaces = queue->GetSubscribedActors();
         for (int i = 0; i < interfaces.Num(); i++){
-            if(IPathfinderNNInterface *current = interfaces[i]){
+            if(IPathfinderNNInterface *current = Cast<IPathfinderNNInterface>(interfaces[i])){
                 bool useVisibility = false; //ignore visibility 
                 //polygonDataCache.NotifyVisiblePositionsFor(current, useVisibility);
 
@@ -69,18 +69,6 @@ void PredictionTask::GenerateAndNotifyResultPositions(FPathFinderNNRequestPackag
 
 
 
-//start task and refill / reload the polygon data cache
-//to be appended to request binary / model input
-void PredictionTask::StartTaskBeforePrepareBinary(
-    FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache
-){
-    taskStarted = true;
-    taskCompleted = false;
-    PrepareRequestMap(polygonDataCache);
-}
-
-
-
 //onnx input for ONNX Model
 void PredictionTask::UpdateSampleType(EPolygonSampleType type){
     sampleType = type;
@@ -91,9 +79,11 @@ EPolygonSampleType PredictionTask::GetSampleType(){
 }
 
 void PredictionTask::PrepareRequestBinary(FONNXModelInput &model){
+    PredictionTaskBase::PrepareRequestBinary(model);
+
     FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
-    StartTaskBeforePrepareBinary(polygonDataCache);
-    
+    PrepareRequestMap(polygonDataCache);
+
     //if appending binary data failed: reset task and clean buffer
     if(!polygonDataCache.PrepareAppendRequestBinary(model)){
         model.Empty();
@@ -103,9 +93,10 @@ void PredictionTask::PrepareRequestBinary(FONNXModelInput &model){
 }
 
 void PredictionTask::PrepareRequestBinary(TArray<uint8> &buffer){
+    PredictionTaskBase::PrepareRequestBinary(buffer);
+    
     FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
-    StartTaskBeforePrepareBinary(polygonDataCache);
-
+    PrepareRequestMap(polygonDataCache);
     //if appending binary data failed: reset task and clean buffer
     if(!polygonDataCache.PrepareAppendRequestBinary(buffer)){
         buffer.Empty();
@@ -157,35 +148,24 @@ void PredictionTask::PrepareRequestMap(FMeshedPolygonTrajectoryLayeredInterface 
 //prepares result binary!
 bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8> &resultbytes){
     
-    if(IsValid()){
-        //DebugHelper::showScreenMessage("PredictionTask::TickTask Z", FColor::Blue);
-        //if(taskStarted && !taskCompleted){ //new condition
-        if(taskStarted){ //new condition
-            //DebugHelper::showScreenMessage("PredictionTask::TickTask A", FColor::Blue);
-            if(trackedActorPtr->IsFlaggedVisibleReset()){
-                //task is finished now, prepare bin for NN python / shared mem
-                resultbytes.Empty();
-                //DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
-                
+    if(PredictionTaskBase::TickVisiblityCheckAndPrepareGroundTruthBinary(resultbytes)){
+        if(trackedActorPtr->IsFlaggedVisibleReset()){
+            //task is finished now, prepare bin for NN python / shared mem
+            resultbytes.Empty();
+            //DebugHelper::showScreenMessage("PredictionTask::TickTask B", FColor::Blue);
+            
 
-                FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
+            FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
 
-                //embed player position into a other flag grid, same size as polygon data grid
-                //add player pos single!
-                //append to bytes
-                FVector location = trackedActorPtr->ActorLocation();
-                polygonDataCache.EmbedResultPosition(location);
-                polygonDataCache.AppendGroundTruth(resultbytes);
+            //embed player position into a other flag grid, same size as polygon data grid
+            //add player pos single!
+            //append to bytes
+            FVector location = trackedActorPtr->ActorLocation();
+            polygonDataCache.EmbedResultPosition(location);
+            polygonDataCache.AppendGroundTruth(resultbytes);
 
-                //reset flag
-                taskStarted = false;
-
-                return true;
-            }
+            return true;
         }
-    
-
-        
     }
     return false;
 }
@@ -210,9 +190,6 @@ bool PredictionTask::IsSameActor(AActor *actorCheck){
     return false;
 }
 
-void PredictionTask::MarkTaskFinished(){
-    taskCompleted = true;
-}
 
 
 void PredictionTask::ColoredHeatMapWithTemporaryPlayer(

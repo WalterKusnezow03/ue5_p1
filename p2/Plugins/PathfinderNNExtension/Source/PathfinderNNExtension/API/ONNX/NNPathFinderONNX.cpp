@@ -1,9 +1,9 @@
 #include "NNPathFinderONNX.h"
 #include "PathfinderNNExtension/Settings/NNSetting.h"
 #include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
-#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
+#include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
-ANNPathFinderONNX *ANNPathFinderONNX::instancePtr = nullptr;
+
 
 
 ANNPathFinderONNX::ANNPathFinderONNX() : Super(){
@@ -38,134 +38,67 @@ void ANNPathFinderONNX::MakePathFinderONNXInstance(UWorld* World)
 }
 
 
+void ANNPathFinderONNX::OnBeginPlaySetupHandleStructure(){
+    requestHandle = new NNRequestHandle();
+    requestTickData = new FNNRequestHandleTickDataOnnx();
+
+    if(NNRequestHandle *handle = GetHandle()){
+        handle->UpdateSampleType(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+    }
+}
+
+NNRequestHandle *ANNPathFinderONNX::GetHandle(){
+    if(requestHandle){
+        return static_cast<NNRequestHandle *>(requestHandle);
+    }
+    return nullptr;
+}
+
+void ANNPathFinderONNX::OnBeginPlayLoadModels(){
+    LoadModel(EPolygonSampleType::EMeshedPolygonTrajectoryLayered);
+    LoadModel(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel);
+}
+
 void ANNPathFinderONNX::BeginPlay(){
     Super::BeginPlay();
-
-    LoadModels();
-    requestHandle.BeginPlay();
-
     //debug
     NNPluginSettings::LogSetting();
 }
 
-void ANNPathFinderONNX::LoadModels(){
-    modelTrajectoryLayered.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryLayered));
-    rayModel.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel));    
+
+
+void ANNPathFinderONNX::LoadModel(EPolygonSampleType type){
+    FString name = EPolygonSampleTypeNameConversion::ONNXFileName(type);
+    FONNXModelsetup setup(type);
+    ANNCommunicationONNX::LoadModel(setup, name);
 }
 
-
-
-
-ONNXModel &ANNPathFinderONNX::FindSelectedModel(){
-    EPolygonSampleType currentModel = requestHandle.GetSampleType();
-    if(currentModel == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
-        return modelTrajectoryLayered;
+ONNXModel *ANNPathFinderONNX::FindSelectedModel(){
+    if(NNRequestHandle *handle = GetHandle()){
+        EPolygonSampleType currentModel = handle->GetSampleType();
+        
+        //make String
+        selectedModel = EPolygonSampleTypeNameConversion::ONNXFileName(currentModel);
+        return ANNCommunicationONNX::FindSelectedModel(selectedModel);
     }
-    if(currentModel == EPolygonSampleType::EMeshedPolygonTrajectoryRayModel){
-        return rayModel;
-    }
-    return modelTrajectoryLayered;
-}
-
-bool ANNPathFinderONNX::NNIsConnected(){
-    ONNXModel &model = FindSelectedModel();
-    return model.WasLoaded();
-    // return model.WasLoaded();
-}
-
-
-void ANNPathFinderONNX::Tick(float deltatime){
-    Super::Tick(deltatime);
-
-    if(logConnection){
-        DebugHelper::showScreenMessage("ANNPathFinderONNX::Active", FColor::Cyan);
-    }
-    
-
-    /*//prepare and execute task
-    requestTickData.Reset();
-    requestTickData.bBatchBinaryDataNeeded = false;
-    requestTickData.deltatime = deltatime;
-    requestHandle.Tick(requestTickData);
-
-    //is tested!
-
-
-    // -----> ADD ASYNC OPERATION SUPPORT HERE!!!
-    // -----> MUTEX LOCK UNLOCK!
-
-
-    //has new request
-    if(requestTickData.bRequestBinaryOutChanged){
-        //new request: immidiate call for in and out
-
-        //read from tick data: request
-        //write to tick data: result
-        TArray<float> predictionGenerated;
-        if(model.RunModel(
-            requestTickData.requestDataOut, //TArray<uint8> &bufferIn, //binary like python / shared mem
-            predictionGenerated //TArray<float> &bufferPredictionOut
-        )){
-            requestTickData.bHasPredictionData = true; 
-            
-            //Notify immidiate
-            requestHandle.ReadDataResultImmidiate(predictionGenerated);
-        }
-    }*/
-
-
-    //NEW
-    if(PrepareRequestData(deltatime)){
-        requestTickData.bIsBusy = true;
-
-        ONNXModel &model = FindSelectedModel();
-
-        bool result = model.RunModelAsync(requestTickData.requestDataOut, [this](TArray<float> predictionGenerated)
-        {
-            // DIESER BLOCK LÄUFT AUTOMATISCH WIEDER IM GAMETHREAD
-            //Notify immidiate
-            this->requestHandle.ReadDataResultImmidiate(predictionGenerated);
-            this->requestTickData.bIsBusy = false;
-        });
-        if(!result){
-            requestTickData.bIsBusy = false;
-        }
-    }
-    
-}
-
-bool ANNPathFinderONNX::PrepareRequestData(float deltatime){
-    if(requestTickData.bIsBusy){
-        DebugHelper::showScreenMessage("ANNPathFinderONNX::BUSY", FColor::Orange);
-        return false;
-    }
-
-    //prepare and execute task
-    requestTickData.Reset();
-    requestTickData.bBatchBinaryDataNeeded = false;
-    requestTickData.deltatime = deltatime;
-    requestHandle.Tick(requestTickData);
-    if(requestTickData.bRequestBinaryOutChanged){
-        return true;
-    }
-    return false;
+    return nullptr;
 }
 
 
 
 
 
-void ANNPathFinderONNX::EndPlay(const EEndPlayReason::Type EndPlayReason){
-    requestHandle.EndPlay();
-    instancePtr = nullptr;
-    Super::EndPlay(EndPlayReason);
-}
+
+
+
 
 
 
 //flags a aactor as spotted
 void ANNPathFinderONNX::FlagVisible(AActor *actor){
-    requestHandle.FlagVisible(actor);
+    if(NNRequestHandle *handle = GetHandle()){
+        handle->FlagVisible(actor);
+    }
 }
 
 
@@ -174,25 +107,37 @@ void ANNPathFinderONNX::PredictNode(
     IPathfinderNNInterface *interfaceNotify,
     AActor *actor
 ){
-    requestHandle.PredictNode(interfaceNotify, actor);
+    if(actor){
+        FString name = actor->GetName();
+        PredictData(interfaceNotify, name, actor);
+    }
 }
 
 
 void ANNPathFinderONNX::EnableHeatMapSaveOnEnd(bool saveOnEnd){
     //set auto to false (?)
 
+    if(NNRequestHandle *handle = GetHandle()){
+        //default
+        handle->EnableHeatMapSaveOnEnd(saveOnEnd);
+    }
 
-    //default
-    requestHandle.EnableHeatMapSaveOnEnd(saveOnEnd);
+    
 }
 
 bool ANNPathFinderONNX::HeatMapSaveOnEndEnabled(){
-    return requestHandle.HeatMapSaveOnEndEnabled();
+    if(NNRequestHandle *handle = GetHandle()){
+        return handle->HeatMapSaveOnEndEnabled();
+    }
+    return false;
 }
 
 
 
 
 HeatMapReceivers &ANNPathFinderONNX::GetHeatMapReceivers(){
-    return requestHandle.GetHeatMapReceivers();
+    if(NNRequestHandle *handle = GetHandle()){
+        return handle->GetHeatMapReceivers();
+    }
+    return none;
 }

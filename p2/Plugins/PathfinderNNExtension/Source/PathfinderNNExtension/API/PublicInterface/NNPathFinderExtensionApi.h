@@ -2,8 +2,11 @@
 #include "CoreMinimal.h"
 
 #include "NNCommunicationPlugin/Communication/Connection/base/notify/NNPathFinderSocketMessageReceiver.h"
-#include "PathfinderNNExtension/API/Handle/NNRequestHandleInterface.h"
+#include "PathfinderNNExtension/API/Handle/PathFinderNNRequestHandleInterface.h"
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
+#include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "PathfinderNNExtension/API/Socket/NNPathFinderSocket.h"
+#include "PathfinderNNExtension/API/ONNX/NNPathFinderONNX.h"
 
 //will decide between socket and ONNX Model
 //public api for all prediction tasks:
@@ -42,7 +45,22 @@ public:
     static void EnableHeatMapSaveOnEnd(bool enable);
     static bool HeatMapSaveOnEndEnabled();
 
+protected:
+    template<typename T>
+    static T *TGetInstance(){
+        AActor *instanceFound = nullptr;
+        if(NNPluginSettings::UsePythonNN()){
+            instanceFound = ANNPathFinderSocket::PathFinderNNinstance();
+        }else{
+            instanceFound = ANNPathFinderONNX::ApiInstance();
+        }
+        if(instanceFound){
+            return Cast<T>(instanceFound);
+        }
+        return nullptr;
+    }
+
 private:
-    static INNRequestHandleInterface *GetInstance();
+    static IPathFinderNNRequestHandleInterface *GetInstance();
 
 };

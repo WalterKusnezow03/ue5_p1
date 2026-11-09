@@ -5,7 +5,7 @@
 /// @brief class to store a actual tensor used by the onnx model
 ///
 ///  WILL HANDLE THE TENSOR ON ITS OWN!
-class PATHFINDERNNEXTENSION_API FTensor : public FTensorSetup {
+class NNCOMMUNICATIONPLUGIN_API FTensor : public FTensorSetup {
 
 public:
 

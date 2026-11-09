@@ -14,21 +14,13 @@ void NNPathFinderExtensionApi::BeginPlay(UWorld *world){
     }
 }
 
-INNRequestHandleInterface *NNPathFinderExtensionApi::GetInstance(){
-    if(NNPluginSettings::UsePythonNN()){
-        return ANNPathFinderSocket::PathFinderNNinstance();
-    }else{
-        return ANNPathFinderONNX::ApiInstance();
-    }
-    return nullptr;
-}
 
 //predicts a node if task not qeued
 void NNPathFinderExtensionApi::PredictNode(
     IPathfinderNNInterface *interfaceNotify,
     AActor *actor
 ){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(IPathFinderNNRequestHandleInterface *interface = TGetInstance<IPathFinderNNRequestHandleInterface>()){
         interface->PredictNode(interfaceNotify, actor);
     }
 }
@@ -36,13 +28,15 @@ void NNPathFinderExtensionApi::PredictNode(
 //notified by all entites whether the player
 //is visible or not
 void NNPathFinderExtensionApi::FlagVisible(AActor *actor){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(IPathFinderNNRequestHandleInterface *interface = TGetInstance<IPathFinderNNRequestHandleInterface>()){
         interface->FlagVisible(actor);
     }
 }
 
+#include "NNCommunicationPlugin/API/RequestTakerInterface/NNRequestTakerInterfaceBase.h"
+
 void NNPathFinderExtensionApi::SetTrainingAllowed(){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(INNRequestTakerInterfaceBase *interface = TGetInstance<INNRequestTakerInterfaceBase>()){
         interface->SetTrainingAllowed();
     }
 }
@@ -57,7 +51,7 @@ void NNPathFinderExtensionApi::SubscribeMessageListener(INNPathFinderSocketMessa
 }
 
 void NNPathFinderExtensionApi::SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(IPathFinderNNRequestHandleInterface *interface = TGetInstance<IPathFinderNNRequestHandleInterface>()){
         interface->SubscribeHeatMapListener(listener);
     }
 }
@@ -69,22 +63,21 @@ void NNPathFinderExtensionApi::SubscribeHeatMapListener(IPathfinderNNHeatMapRece
 //use this to update the player hud ui to show the nn connection state 
 //instead of using debug print.
 bool NNPathFinderExtensionApi::NNIsConnected(){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(INNRequestTakerInterfaceBase *interface = TGetInstance<INNRequestTakerInterfaceBase>()){
         return interface->NNIsConnected();
     }
     return false;
 }
 
 void NNPathFinderExtensionApi::EnableHeatMapSaveOnEnd(bool enable){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(IPathFinderNNRequestHandleInterface *interface = TGetInstance<IPathFinderNNRequestHandleInterface>()){
         interface->EnableHeatMapSaveOnEnd(enable);
     }
 }
 
 bool NNPathFinderExtensionApi::HeatMapSaveOnEndEnabled(){
-    if(INNRequestHandleInterface *interface = GetInstance()){
+    if(IPathFinderNNRequestHandleInterface *interface = TGetInstance<IPathFinderNNRequestHandleInterface>()){
         return interface->HeatMapSaveOnEndEnabled();
     }
     return false;
 }
-

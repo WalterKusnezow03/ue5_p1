@@ -52,4 +52,9 @@ public:
     virtual FString GetTypeString(){
         return "SampleInterfaceBase";
     }
+
+    //HAS TO BE OVERRIDEN!
+    virtual FString StorageFileName(){
+        return "SampleInterfaceBaseBin";
+    }
 };

@@ -1,10 +1,14 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "PathfinderNNExtension/API/Handle/NNRequestHandleInterface.h"
-#include "PathfinderNNExtension/GameNN/ONNXModel.h"
-#include "PathfinderNNExtension/API/Handle/NNRequestHandleTickDataOnnx.h"
+#include "PathfinderNNExtension/API/Handle/PathFinderNNRequestHandleInterface.h"
+#include "NNCommunicationPlugin/GameNN/ONNXModel.h"
+#include "NNCommunicationPlugin/API/Handle/NNRequestHandleTickDataOnnx.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
 #include <map>
+
+#include "NNCommunicationPlugin/API/ONNX/NNCommunicationONNX.h"
+
+#include "PathfinderNNExtension/API/Handle/NNRequestHandle.h"
 
 #include "NNPathFinderONNX.generated.h"
 
@@ -12,24 +16,20 @@
 //public api for all prediction tasks:
 UCLASS()
 class PATHFINDERNNEXTENSION_API ANNPathFinderONNX : 
-public AActor,
-public INNRequestHandleInterface
+public ANNCommunicationONNX,
+public IPathFinderNNRequestHandleInterface
 {
     GENERATED_BODY()
 
-private:
-    static ANNPathFinderONNX *instancePtr;
+protected:
+    NNRequestHandle *GetHandle();
 
-    void LoadModels();
-    
-    
+    virtual void OnBeginPlayLoadModels() override;
+    virtual void OnBeginPlaySetupHandleStructure() override;
 
-    ONNXModel modelTrajectoryLayered;
-    ONNXModel rayModel;
+    ONNXModel *FindSelectedModel() override;
 
-    ONNXModel &FindSelectedModel();
-
-    
+    void LoadModel(EPolygonSampleType type);
 
     bool logConnection = false;
 
@@ -39,7 +39,7 @@ public:
 
     ANNPathFinderONNX();
 
-    virtual bool NNIsConnected() override;
+   
 
     
 
@@ -48,12 +48,10 @@ public:
 
 protected:
     virtual void BeginPlay() override;
-    virtual void Tick(float deltatime) override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    
+    
 
-    NNRequestHandle requestHandle;
-    //FNNRequestHandleTickData requestTickData;
-    FNNRequestHandleTickDataOnnx requestTickData;
+    HeatMapReceivers none;
 
 public:
     //predicts a node if task not qeued

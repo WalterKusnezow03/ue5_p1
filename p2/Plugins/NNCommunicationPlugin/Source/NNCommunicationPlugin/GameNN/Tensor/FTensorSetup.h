@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 
-class PATHFINDERNNEXTENSION_API FTensorSetup {
+class NNCOMMUNICATIONPLUGIN_API FTensorSetup {
 
 protected:
     int tensorWidth = 1;

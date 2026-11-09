@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "PathfinderNNExtension/Interface/PathfinderNNHeatMapReceiver.h"
-
+#include "DebugPlugin/DebugHelper.h"
 
 class PATHFINDERNNEXTENSION_API HeatMapReceivers {
 
@@ -21,12 +21,18 @@ public:
     }
 
     void NotifyAll(Image &image, FVector &worldPosPivot){
-        for (int i = 0; i < listeners.Num(); i++){
+        int notified = 0;
+        for (int i = 0; i < listeners.Num(); i++)
+        {
             if(IPathfinderNNHeatMapReceiver *current = listeners[i]){
                 current->SetLocation(worldPosPivot);
                 current->ResponseHeatMap(image);
+                notified++;
             }
         }
+        DebugHelper::logMessage(
+            FString::Printf(TEXT("NNRequestHandle::HeatMapReceivers::NotifyHeatMapReceivers Notify %d"), notified)
+        );
     }
 
 };

@@ -241,6 +241,7 @@ class NetBase(nn.Module):
             result = self.net(x)
 
         self.latestResult = result
+        print("NNServerPathfinder_NetBase: Forward Finish!")
         return result
 
     def SaveLossItemToCache(self, lossIn):

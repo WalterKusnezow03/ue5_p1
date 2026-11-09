@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "StoragePlugin/Storage/ImageData/Image/Image.h"
 
 #include "PathfinderNNHeatMapReceiver.generated.h"
 

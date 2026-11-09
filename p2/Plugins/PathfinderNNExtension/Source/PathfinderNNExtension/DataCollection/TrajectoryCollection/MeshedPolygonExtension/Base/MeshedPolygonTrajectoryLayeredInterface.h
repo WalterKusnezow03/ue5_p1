@@ -7,12 +7,13 @@
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
-#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
+#include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
 #include "EPolygonSampleType.h"
 
 #include "NNCommunicationPlugin/Communication/Sample/Interface/SampleInterface.h"
 
+#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/NameConversion/EPolygonSampleTypeNameConversion.h"
 
 class FVisionCone;
 class FMeshedPolygonColorAttributes;
@@ -34,6 +35,11 @@ public:
     virtual FString GetTypeString() override {
         return "FMeshedPolygonTrajectoryLayeredInterface";
     };
+
+    virtual FString StorageFileName() override {
+        //will work since GetType will be overriden by subclasses.
+        return EPolygonSampleTypeNameConversion::StorageName(GetType());
+    }
 
 public:
     virtual void Reset() = 0;

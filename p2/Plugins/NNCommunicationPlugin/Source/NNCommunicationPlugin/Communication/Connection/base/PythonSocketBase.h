@@ -34,7 +34,12 @@ public:
 
     void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
 
+private:
+    void SendHeartBeat();
+
 protected:
+    bool sendPythonHeartBeat = true;
+
     void OpenSocket(float deltatime);
     void SetupSocketIfNeeded();
     void CloseSocketOnEndPlay();

@@ -1,12 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PathfinderNNExtension/GameNN/ModelInput/FONNXModelInput.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
+#include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
 //data to share between a NN Manager / Python / ONNX 
 //and request processing from the NNRequestHandle.
-struct PATHFINDERNNEXTENSION_API FNNRequestHandleTickData {
+struct NNCOMMUNICATIONPLUGIN_API FNNRequestHandleTickDataBase {
 
     // ---- IN DATA ----
     float deltatime = 1.0f;
@@ -15,7 +14,7 @@ struct PATHFINDERNNEXTENSION_API FNNRequestHandleTickData {
     TArray<uint8> predictionData;
     bool bHasPredictionData = false;
 
-    EPolygonSampleType sampletype = EPolygonSampleType::none;
+    //EPolygonSampleType sampletype = EPolygonSampleType::none;
     // ---- IN DATA ----
 
     // ---- OUT DATA ----
