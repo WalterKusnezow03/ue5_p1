@@ -23,8 +23,12 @@ void NNRequestHandle::OnBeginPlaySetupBatchTask(){
     delete batchTask;
     batchTask = nullptr;
 
-    unetSamples.Load();
-    raymodelSamples.Load();
+    if(loadSamples){
+        unetSamples.Load();
+        raymodelSamples.Load();
+    }
+
+    
 }
 
 PredictionTask* NNRequestHandle::GetTask(){
@@ -279,8 +283,10 @@ void NNRequestHandle::EndPlay(){
 }
 
 void NNRequestHandle::OnEndPlayBatchTaskSave(){
-    unetSamples.EndSave();
-    raymodelSamples.EndSave();
+    if(saveSamples){
+        unetSamples.EndSave();
+        raymodelSamples.EndSave();
+    }
 }
 
 #include "StoragePlugin/Storage/ImageData/ImageWriter/ImageWriter.h"

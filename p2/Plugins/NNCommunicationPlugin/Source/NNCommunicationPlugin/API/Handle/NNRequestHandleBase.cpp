@@ -2,6 +2,14 @@
 #include "DebugPlugin/DebugHelper.h"
 
 
+void NNRequestHandleBase::BeforeBeginPlaySetSampleUsuage(
+    bool inLoadSamples,
+    bool inSaveSamples
+){
+    saveSamples = inSaveSamples;
+    loadSamples = inLoadSamples;
+}
+
 void NNRequestHandleBase::BeginPlay(){
     OnBeginPlaySetupTask();
     OnBeginPlaySetupBatchTask();
@@ -45,7 +53,10 @@ void NNRequestHandleBase::Tick(FNNRequestHandleTickDataBase &tickData){
 }
 
 void NNRequestHandleBase::LoadBatchIfNotDoneYet(FNNRequestHandleTickDataBase &tickData){
-    // Batch loading is temporarily disabled until its implementation is restored.
+    if(!loadSamples){
+        return;
+    }
+
     if(!tickData.bBatchBinaryDataNeeded){
         return;
     }
@@ -219,6 +230,10 @@ void NNRequestHandleBase::OnTickTaskArrivedGroundTruth(){
 }
 
 void NNRequestHandleBase::OnTickTaskArrivedGroundTruthValid(){
+    if(!saveSamples){
+        return;
+    }
+
     //since the ground truth is valid it can be added as sample for training
     DebugHelper::logMessage("NNRequestHandleBase::OnTickTaskArrivedGroundTruthValid - Append Sample to Batch");
     FNNSampleSetBase *batchTaskPtr = GetBatchTask();
@@ -328,9 +343,12 @@ void NNRequestHandleBase::EndPlay(){
 }
 
 void NNRequestHandleBase::OnEndPlayBatchTaskSave(){
-    if(FNNSampleSetBase *batchTaskPtr = GetBatchTask()){
-        batchTaskPtr->EndSave();
+    if(saveSamples){
+        if(FNNSampleSetBase *batchTaskPtr = GetBatchTask()){
+            batchTaskPtr->EndSave();
+        }
     }
+    
     if(batchTask){
         delete batchTask;
         batchTask = nullptr;

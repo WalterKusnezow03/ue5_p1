@@ -4,7 +4,7 @@ print("import torch done")
 
 from . import NetCheckpoint as NetCheckpoint
 from .TensorInput import FTensor
-from .LossMetric import LossCache
+from Base.LossMetric import LossCache
 
 print("import net checkpoint done")
 
@@ -302,88 +302,6 @@ class NetBase(nn.Module):
 
     def InputPlusOutputSize(self):
         return self.InputTensorSizes() + self.OutputTensorSize()
-
-
-    '''def TrainFromBatchBinary(self, binary):
-        self.SwitchToGpu()
-
-        inputSize = self.InputTensorSizes()
-        sampleSize = self.InputPlusOutputSize()
-
-        ##old
-        ##size = H * W
-        ##sample: x + groundTruth
-        
-        ##sizeAll = (IN_CHANNELS + OUT_CHANNELS)
-        ##sampleSize = size * sizeAll ## 4
-
-
-
-        # =========================
-        # 1) EINMALIG Tensor bauen
-        # =========================
-        data = torch.tensor(binary, dtype=torch.float32)
-
-        numSamples = data.shape[0] // sampleSize
-        data = data[:numSamples * sampleSize]
-
-        # =========================
-        # 2) Reshape in Samples
-        # =========================
-        ##data = data.view(numSamples, 4, H, W)
-        data = data.view(numSamples, sizeAll, tensor0.H, tensor0.W)
-
-        ##stattdessen: data = data.view(numSamples, sizeAll, tensor0.H, tensor0.W)
-
-
-        ##x = data[:, 0:3, :, :]   # input channels
-        ##y = data[:, 3:4, :, :]   # target
-        x = data[:, 0:tensor0.Channels, :, :]   # input channels
-        y = data[:, tensor0.Channels:sizeAll, :, :]       # target
-
-
-        # =========================
-        # 3) GPU MOVE EINMAL
-        # =========================
-        x = x.to(self.GetDevice())
-        y = y.to(self.GetDevice())
-
-        print("samples:", numSamples)
-
-        epochs = 50
-        batch_size = 32
-
-        for epoch in range(epochs):
-
-            # shuffle indices (GPU-safe)
-            ##perm = torch.randperm(numSamples, device=device)
-            # shuffle indices CPU only
-            perm = torch.randperm(numSamples)
-
-            x_shuffled = x[perm]
-            y_shuffled = y[perm]
-
-            # batch loop
-            for i in range(0, numSamples, batch_size):
-                xb = x_shuffled[i:i+batch_size]
-                yb = y_shuffled[i:i+batch_size]
-
-                self.trainBatch(xb, yb)
-
-            print(self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", epochs, " LOSS ", self.latestLoss)
-        
-        ##rmv from gpu
-        x = None
-        y = None
-
-        ##saved by nn server.
-        self.saveCheckpoint()
-        self.exportNet()
-
-        ##reload net
-        self.SwitchToCpu()
-
-        print(self.logname,"_RUN_NN_BATCH_TRAIN_FINISHED")'''
 
     def TrainFromBatchBinary(self, binary):
 

@@ -43,6 +43,8 @@ void ANNCommunicationSocket::OnBeginPlayLaunchPython(){
 
 void ANNCommunicationSocket::RequestHandleBeginPlay(){
     if(requestHandle){
+        //load and save samples (since its python, editor usuage)
+        requestHandle->BeforeBeginPlaySetSampleUsuage(true, true); 
         requestHandle->BeginPlay();
     }
 }
@@ -57,7 +59,7 @@ void ANNCommunicationSocket::BeginPlay(){
 
     DebugHelper::logMessage("ANNCommunicationSocket BeginPlay - python");
     OnBeginPlayLaunchPython();
-    sendPythonHeartBeat = true;
+    sendPythonHeartBeat = true; //must be true for python to process tcp ip messages
 }
 
 bool ANNCommunicationSocket::NNIsConnected(){

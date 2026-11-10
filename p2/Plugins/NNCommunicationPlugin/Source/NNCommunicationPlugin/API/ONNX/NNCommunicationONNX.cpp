@@ -33,6 +33,8 @@ void ANNCommunicationONNX::BeginPlay(){
 
     OnBeginPlayLoadModels();
     if(requestHandle){
+
+        requestHandle->BeforeBeginPlaySetSampleUsuage(false, false);
         requestHandle->BeginPlay();
     }
 

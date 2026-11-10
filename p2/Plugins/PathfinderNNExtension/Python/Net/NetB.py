@@ -7,9 +7,9 @@ import torch.nn as nn
 print("import torch done")
 
 from .NetTypes import UNet as UNet
-from.TensorInput import FTensor
+from Base.Net.TensorInput import FTensor
 
-from . import NetBase as NetBase
+from Base.Net import NetBase as NetBase
 
 print("import unet done")
 

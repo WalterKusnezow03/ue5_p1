@@ -17,7 +17,7 @@ class UPathFinderNNRequestHandleInterface : public UInterface
 };
 
 /**
- * interface for NN Any user of Request Handler (Python Socket and ONNX actor)
+ * secondary interface for NN Any user of Request Handler (Python Socket and ONNX actor)
  */
 class PATHFINDERNNEXTENSION_API IPathFinderNNRequestHandleInterface
 {

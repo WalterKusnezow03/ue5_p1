@@ -7,9 +7,9 @@ import torch.nn as nn
 print("import torch done")
 
 from .NetTypes import TwoStreamConv as Net
-from .TensorInput import FTensor
+from Base.Net.TensorInput import FTensor
 
-from . import NetBase as NetBase
+from Base.Net import NetBase as NetBase
 
 print("import unet done")
 
@@ -126,7 +126,6 @@ class NetC(NetBase.NetBase):
     ### ----- not anymore! -----
     ### update forward data!!!
     ### update train function!!!
-
 
 
 

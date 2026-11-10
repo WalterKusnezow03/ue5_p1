@@ -24,6 +24,14 @@ class NNCOMMUNICATIONPLUGIN_API NNRequestHandleBase {
     // FNNSampleSetBase *batchTask = nullptr;
 
 public:
+    /// handle whether the batch should be loaded,
+    /// and whether samples should be appended 
+    /// (differentiate between compiled game onnx and python in editor usuage (training))
+    void BeforeBeginPlaySetSampleUsuage(
+        bool inLoadSamples,
+        bool inSaveSamples
+    );
+
     virtual void BeginPlay();
     virtual void Tick(FNNRequestHandleTickDataBase &tickData);
 
@@ -91,4 +99,5 @@ protected:
 
     //Save Flags
     bool saveSamples = true;
+    bool loadSamples = true;
 };

@@ -80,7 +80,7 @@ void ANNPathFinderSocket::Tick(float deltatime){
 
     NNRequestHandle *handle = GetHandle();
     FString hasHandle = handle != nullptr ? "Has Handle" : "No Handle";
-    DebugHelper::logMessage(FString::Printf(TEXT("ANNPathFinderSocket::Tick %s"), *hasHandle));
+    //DebugHelper::logMessage(FString::Printf(TEXT("ANNPathFinderSocket::Tick %s"), *hasHandle));
 
     Super::Tick(deltatime);
 }
