@@ -79,16 +79,36 @@ EActionType EntityAction::GetFollowingActionType(){
     return typeOfActionAfterTimeFinish;
 }
 
-void EntityAction::StartTimer(float time, EActionType nexttype){
+
+void EntityAction::StartTimer(float time, float delayTime){
     if(time >= 0.0f){
-        typeOfActionAfterTimeFinish = nexttype;
         hasTimerRunning = true;
         timer.Begin(time);
+        timeInitial = time;
+        delay = delayTime;
     }
 }
 
+void EntityAction::StartTimer(float time, EActionType nexttype, float delayTime){
+    if(time >= 0.0f){
+        StartTimer(time, delayTime);
+        typeOfActionAfterTimeFinish = nexttype;
+    }
+}
+
+
 bool EntityAction::HasTimer(){
     return hasTimerRunning;
+}
+
+bool EntityAction::TimerDelayPassed(){
+    if(hasTimerRunning){
+        if(timeInitial >= 0.0f){
+            float timePassed = timeInitial - timer.currentTimeLeft(); //AB = B - A
+            return timePassed > delay;
+        }
+    }
+    return true;
 }
 
 void EntityAction::abortTimer(){
@@ -105,11 +125,17 @@ void EntityAction::StartWithEvent(FString eventName, EActionType nexttype){
 }
 
 bool EntityAction::TryCompleteWithEvent(FString name){
+    if(MatchesEventName(name)){
+        hasEventStringAttached = false;
+        abortTimer();
+        return true;
+    }
+    return false;
+}
+
+bool EntityAction::MatchesEventName(FString eventName){
     if(hasEventStringAttached){
-        if(name.Equals(attachedEventString)){
-            hasEventStringAttached = false;
-            return true;
-        }
+        return eventName.Equals(attachedEventString);
     }
     return false;
 }

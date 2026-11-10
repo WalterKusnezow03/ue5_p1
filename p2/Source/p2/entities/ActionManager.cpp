@@ -2,6 +2,7 @@
 
 
 #include "ActionManager.h"
+#include "DebugPlugin/DebugHelper.h"
 
 ActionManager::ActionManager()
 {
@@ -81,9 +82,24 @@ void ActionManager::changeToActionTimed(EActionType wantedType, float time, EAct
 }
 
 void ActionManager::changeToActionWaitForEvent(EActionType wantedType, FString waitForEvent){
+    EActionType currentCopy = currentActionTask;
+
     changeToAction(wantedType);
     EntityAction &action = FindAction(wantedType);
-    action.StartWithEvent(waitForEvent, currentActionTask);
+    action.StartWithEvent(waitForEvent, currentCopy);
+}
+
+void ActionManager::changeToActionWaitForEvent(
+    EActionType wantedType, 
+    FString waitForEvent, 
+    float timeUntilAbort,
+    float delayBeforeAbort
+){
+    changeToActionWaitForEvent(wantedType, waitForEvent);
+
+    //or wait for timer
+    EntityAction &action = FindAction(wantedType);
+    action.StartTimer(timeUntilAbort, delayBeforeAbort);
 }
 
 void ActionManager::abortTimerOnAction(EActionType type){
@@ -94,7 +110,23 @@ void ActionManager::abortTimerOnAction(EActionType type){
     }
 }
 
+bool ActionManager::abortTimerOnEvent(FString event){
+    EntityAction &actionToAbort = currentAction();
+    if(
+        actionToAbort.TimerDelayPassed() && 
+        actionToAbort.TryCompleteWithEvent(event)
+    ){
+        DebugHelper::logMessage("ActionManager::abortTimerOnEvent with ", event);
+        changeToAction(actionToAbort.GetFollowingActionType());
+        return true;
+    }
+    return false;
+}
 
+bool ActionManager::ActionMatchesEventName(FString event){
+    EntityAction &action = currentAction();
+    return action.MatchesEventName(event);
+}
 
 ///@brief will OVERRIDE the given action of enum type!
 void ActionManager::setupAction(EActionType type){

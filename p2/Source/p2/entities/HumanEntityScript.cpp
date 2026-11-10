@@ -191,10 +191,21 @@ void AHumanEntityScript::adaptWeaponToCurrentPlayerVisibilty(){
 
 void AHumanEntityScript::FlagPlayerVisibleToNNInterface(){
     if(playerPointer && canSeePlayer){
-        //waiting delay for request
-        if(nnWaitDelay.timesUp()){
+
+        
+        if(actionManager.ActionMatchesEventName(WaitPlayerNNReappearanceTaskName)){
+            EntityAction &actionToAbort = actionManager.currentAction();
+            if(!actionToAbort.TimerDelayPassed()){
+                return;
+            }
+        }
+        FlagActorVisibleToNNInterface(playerPointer);
+        
+
+        //waiting delay for request    
+        /*if(nnWaitDelay.timesUp()){
             FlagActorVisibleToNNInterface(playerPointer);
-        }   
+        }*/  
 
         //FlagActorVisibleToNNInterface(playerPointer);
     }
@@ -227,7 +238,7 @@ void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(float deltat
     //the bot wait before performing new requests
 
     //added newly here, more performance
-    if(bWaitForPlayerVisibleAfterRequest){
+    /*if(bWaitForPlayerVisibleAfterRequest){
         nnWaitDelay.Tick(deltatime);
     }
     
@@ -240,9 +251,27 @@ void AHumanEntityScript::ResetRequestAllowedFlagIfCanSeePlayerAgain(float deltat
         {
             bWaitForPlayerVisibleAfterRequest = false; //is tested
         }
-        
-        //bWaitForPlayerVisibleAfterRequest = false; //is tested
+    }*/
+
+
+    //new
+    if(bWaitForPlayerVisibleAfterRequest){
+        if(canSeePlayer){
+            if(!actionManager.ActionMatchesEventName(WaitPlayerNNReappearanceTaskName)){
+                bWaitForPlayerVisibleAfterRequest = false;
+                return;
+            }
+
+            //if we indeed waited for this event, and it was aborted, 
+            //we are allowed to make a new prediction reuqest
+            if(actionManager.abortTimerOnEvent(WaitPlayerNNReappearanceTaskName)){
+                bWaitForPlayerVisibleAfterRequest = false;
+            }
+        }
     }
+
+
+
 }
 
 
@@ -262,10 +291,17 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         );
 
         //wait for player
-        actionManager.changeToActionTimed(EActionType::EWait, waitForPlayerReappearanceTime);
+        //actionManager.changeToActionTimed(EActionType::EWait, waitForPlayerReappearanceTime);
         
         //todo.
-        actionManager.changeToActionWaitForEvent(EActionType::EWait, TEXT("WaitPlayerNNReappearance"));
+        //blocks all cation right now!
+        //has to be updated if can see player!
+        actionManager.changeToActionWaitForEvent(
+            EActionType::EWait, 
+            WaitPlayerNNReappearanceTaskName, 
+            waitForPlayerReappearanceTime,
+            1.0f //min wait time
+        );
 
         //switch to closest to player.
         LookAt(positions[0]); //debug wise look at first position / might also be only one.
@@ -293,7 +329,7 @@ void AHumanEntityScript::ResponseNNPositions(const TArray<FVector> &positions){
         //the player needs some time to be behind cover.
         //creates more game realistic result, rather than instant
         float timeDelay = 1.0f; //1.0f
-        nnWaitDelay.Begin(timeDelay);
+        //nnWaitDelay.Begin(timeDelay);
     }
 }
 

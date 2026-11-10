@@ -318,6 +318,8 @@ void NNRequestHandleBase::GenerateAndNotifyResultPositionsForRequestQueue(){
 void NNRequestHandleBase::EndPlay(){
     if(task){
         task->EndSave();
+        delete task;
+        task = nullptr;
     }
     OnEndPlayBatchTaskSave();
 
@@ -328,6 +330,10 @@ void NNRequestHandleBase::EndPlay(){
 void NNRequestHandleBase::OnEndPlayBatchTaskSave(){
     if(FNNSampleSetBase *batchTaskPtr = GetBatchTask()){
         batchTaskPtr->EndSave();
+    }
+    if(batchTask){
+        delete batchTask;
+        batchTask = nullptr;
     }
 }
 

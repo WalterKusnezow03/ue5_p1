@@ -27,7 +27,6 @@ void ANNCommunicationONNX::OnEndPlayCleanUpHandleStructure(){
     requestTickData = nullptr;
 }
 
-
 void ANNCommunicationONNX::BeginPlay(){
     OnBeginPlaySetupHandleStructure();
     Super::BeginPlay();

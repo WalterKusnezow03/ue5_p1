@@ -107,7 +107,7 @@ protected:
 	//NN Result Process Visual
 	NNResultFlagManager nnResultFlagManager;
 	bool bWaitForPlayerGroundTruth = true;
-	Timer nnWaitDelay;
+	//Timer nnWaitDelay;
 	void UpdateWaitForGroundTruthStatusIfPlayerVisible();
 
 public:
@@ -118,6 +118,7 @@ public:
 
 protected:
 	float waitForPlayerReappearanceTime = 5.0f;
+	FString WaitPlayerNNReappearanceTaskName = "WaitPlayerNNReappearance";
 
 	// NN Interface
 };

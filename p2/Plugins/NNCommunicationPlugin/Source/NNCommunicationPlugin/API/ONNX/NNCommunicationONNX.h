@@ -24,6 +24,7 @@ protected:
 
     virtual void OnBeginPlaySetupHandleStructure();
     virtual void OnEndPlayCleanUpHandleStructure();
+    
     virtual void OnBeginPlayLoadModels();
 
 
@@ -55,6 +56,8 @@ protected:
     NNRequestHandleBase *requestHandle = nullptr;
     //FNNRequestHandleTickData requestTickData;
     FNNRequestHandleTickDataOnnx *requestTickData = nullptr;
+
+    
 
 public:
     //predicts a node if task not qeued

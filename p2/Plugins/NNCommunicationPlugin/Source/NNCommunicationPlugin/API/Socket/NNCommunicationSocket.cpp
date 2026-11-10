@@ -88,8 +88,8 @@ void ANNCommunicationSocket::TryReadPredictionData(){
         FString message = "ANNCommunicationSocket::REQUEST FINISH Arrived IMPLICIT!";
         DebugHelper::logMessage(message);
     }else{
-        FString message = "ANNCommunicationSocket::Result Page Not Ready!";
-        DebugHelper::logMessage(message);
+        //FString message = "ANNCommunicationSocket::Result Page Not Ready!";
+        //DebugHelper::logMessage(message);
     }
 }
 

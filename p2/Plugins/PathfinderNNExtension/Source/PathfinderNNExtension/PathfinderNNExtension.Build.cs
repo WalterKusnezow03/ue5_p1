@@ -88,8 +88,18 @@ public class PathfinderNNExtension : ModuleRules
 			}
 		}
 
+		if (Target.Type == TargetType.Editor)
+		{
+			// Code wird im Unreal Editor kompiliert
+			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=1");
+		}
+		else
+		{
+			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=0");
+		}
 
 
+		/*
 		// 1. Unreal-Standardabhängigkeiten (KEIN NNE, KEIN ORTCpu!)
 		//PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "Slate", "SlateCore" });
 
@@ -123,24 +133,17 @@ public class PathfinderNNExtension : ModuleRules
 		}
 
 
-		if (Target.Type == TargetType.Editor)
-		{
-			// Code wird im Unreal Editor kompiliert
-			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=1");
-		}
-		else
-		{
-			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=0");
-		}
+
 
 		//PLUGIN FLAG BEI BUILD
 		// Flag direkt im Plugin-Modul definieren
 		//PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=1");
 
 		AddONNXToBuild(ORXLibPath);
+		*/
 	}
 
-
+	/*
 	void AddONNXToBuild()
 	{
 		// 1. Unreal-Standardabhängigkeiten (KEIN NNE, KEIN ORTCpu!)
@@ -201,7 +204,7 @@ public class PathfinderNNExtension : ModuleRules
 		}
 
 		
-	}
+	}*/
 
 
 

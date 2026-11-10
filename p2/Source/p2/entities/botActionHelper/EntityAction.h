@@ -27,13 +27,19 @@ public:
 	//if times up, switch to next action
 	bool Tick(float deltatime);
 	EActionType GetFollowingActionType();
-	void StartTimer(float time, EActionType nexttype);
+	
+	void StartTimer(float time, float delayTime = 0.0f);
+	void StartTimer(float time, EActionType nexttype, float delayTime = 0.0f);
+	
 	bool HasTimer();
+	bool TimerDelayPassed();
 	void abortTimer();
 
 	//if event matches, switch to next action
 	void StartWithEvent(FString eventName, EActionType nexttype);
 	bool TryCompleteWithEvent(FString name);
+
+	bool MatchesEventName(FString eventName);
 
 private:
 	EActionType typeOfAction = EActionType::ERoam;
@@ -45,6 +51,8 @@ private:
 	EActionType typeOfActionAfterTimeFinish = EActionType::ENone;
 	Timer timer;
 	bool hasTimerRunning = false;
+	float timeInitial = 0.0f;
+	float delay = 0.0f;
 
 	// --- event switch of action ---
 	FString attachedEventString;
