@@ -5,6 +5,7 @@
 #include <map>
 
 /// Will support multi part of TNNSampleSetBase
+/// NOT TESTED! / NOT INTEGREATED!
 template <typename T>
 class NNCOMMUNICATIONPLUGIN_API TNNSampleSetBaseMultiPart : public FNNSampleSetBase {
 
@@ -80,10 +81,9 @@ public:
 
     void EndSave() override {
         partList.Save();
-        if(activeFile){
-            activeFile->EndSave();
-            delete activeFile;
-            activeFile = nullptr;
+        for(auto &pair : files){
+            FString name = pair.second;
+            CloseFile(name);
         }
     }
 
@@ -93,18 +93,13 @@ public:
             return;
         }
 
-        AddSampleAsync(saple); //sync will probably be bad with performance issues and sample set cleanup.
-
         /**
          * TODO:
          * to make this process async the sample set must be stored by ptr
          * and changed if needed
          * once the async process is finished, the remaining ptr can be deleted
          */
-        /*if(CurrentFileIsFull()){
-            OpenNextFile();
-        }
-        activeFile.AddSample(sample);*/
+        AddSampleAsync(sample); //sync will probably be bad with performance issues and sample set cleanup.
     }
 
     //load batch and move to next unloaded batch file
