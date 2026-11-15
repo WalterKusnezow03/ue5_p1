@@ -170,4 +170,27 @@ public:
     }
 
 
+    //testing needed
+    template <typename T, typename U>
+    static void ConvertBufferRaw(const TArray<T> &origin, TArray<U> &dest){
+        int32 originBytes = origin.Num() * sizeof(T);
+        int32 count = originBytes / sizeof(U);
+        dest.SetNumUninitialized(count);
+        uint8 *ptrDest = (uint8*) dest.GetData();
+
+        /*FMemory::Memcpy( 
+            void* Dest,
+            const void* Src,
+            SIZE_T Count
+        )*/
+        int32 bytesCopied = count * sizeof(U);
+        FMemory::Memcpy(ptrDest, origin.GetData(), bytesCopied); // append data = count * sizeT
+        ptrDest = nullptr;
+    }
+
+
+
+
+
+
 };

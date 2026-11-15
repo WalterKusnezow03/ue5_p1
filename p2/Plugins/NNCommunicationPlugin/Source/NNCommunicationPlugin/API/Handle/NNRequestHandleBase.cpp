@@ -39,7 +39,7 @@ FNNSampleSetBase *NNRequestHandleBase::GetBatchTask(){
 void NNRequestHandleBase::Tick(FNNRequestHandleTickDataBase &tickData){
     LoadBatchIfNotDoneYet(tickData);
 
-    OnTick();
+    OnTick(tickData.deltatime);
 
     //tick in connected? samples can be collected without.
     TickTask(tickData);
@@ -285,7 +285,7 @@ void NNRequestHandleBase::ReadDataResultImmidiate(TArray<float> &data){
         task->ProcessFromPredictionFloats(data);
         
         //notify registered actors to the task.
-        GenerateAndNotifyResultPositionsForRequestQueue();
+        GenerateAndNotifyResultDataForRequestQueue();
 
         //GeneratePredictionImage();
         OnPredictionArrive();
@@ -302,7 +302,7 @@ void NNRequestHandleBase::ReadDataResult(TArray<uint8> &bufferPrediction){
     task->ProcessFromPredictionBytes(bufferPrediction);
     
     //notify
-    GenerateAndNotifyResultPositionsForRequestQueue();
+    GenerateAndNotifyResultDataForRequestQueue();
 
     //use processed prediction data to display in a widget for example
     OnPredictionArrive();
@@ -314,7 +314,7 @@ void NNRequestHandleBase::ReadDataResult(TArray<uint8> &bufferPrediction){
 }
 
 //notfiy prediction positions
-void NNRequestHandleBase::GenerateAndNotifyResultPositionsForRequestQueue(){
+void NNRequestHandleBase::GenerateAndNotifyResultDataForRequestQueue(){
     if(task){
         task->GenerateAndNotifyResultData(requests.frontPackage());
     }
@@ -326,8 +326,6 @@ void NNRequestHandleBase::GenerateAndNotifyResultPositionsForRequestQueue(){
     //pop the finished front task
     requests.PopFront();
 }
-
-
 
 
 void NNRequestHandleBase::EndPlay(){

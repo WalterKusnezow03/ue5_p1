@@ -2,7 +2,7 @@
 
 #include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
-ANNCommunicationONNX *ANNCommunicationONNX::instancePtr = nullptr;
+
 
 
 ANNCommunicationONNX::ANNCommunicationONNX() : Super(){
@@ -137,9 +137,6 @@ bool ANNCommunicationONNX::PrepareRequestData(float deltatime){
 
 void ANNCommunicationONNX::EndPlay(const EEndPlayReason::Type EndPlayReason){
     OnEndPlayCleanUpHandleStructure();
-    if(instancePtr == this){
-        instancePtr = nullptr;
-    }
     
     Super::EndPlay(EndPlayReason);
 }

@@ -7,6 +7,7 @@
 
 /// @brief direves from UWidgetSlateWrapperBase to get the mesh data from internal pointer.
 /// allows to draw individual pixels of the widget
+/// ---> bad performance issues, is Deprecated / mark for removal
 UCLASS()
 class CUSTOMUIPLUGIN_API UWidgetPixelDraw : public UWidgetSlateWrapperBase{
     GENERATED_BODY()

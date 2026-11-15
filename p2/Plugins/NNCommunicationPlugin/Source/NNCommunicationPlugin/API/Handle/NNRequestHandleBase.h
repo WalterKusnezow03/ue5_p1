@@ -53,7 +53,7 @@ protected:
 
     virtual void OnEndPlayBatchTaskSave();
 
-    virtual void OnTick() {};
+    virtual void OnTick(float deltatime) {};
 
 
     FNNRequestQueue requests;
@@ -94,7 +94,7 @@ protected:
     bool TaskCompleted();
 
     //PREDICTION PROCESS
-    virtual void GenerateAndNotifyResultPositionsForRequestQueue();
+    virtual void GenerateAndNotifyResultDataForRequestQueue();
     bool alreadyReadPredictionData = false;
 
     //Save Flags

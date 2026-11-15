@@ -2,7 +2,8 @@
 #include "CoreMinimal.h"
 
 
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/NActorTrajectoryTracker.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/ActorTracker/ActorTrajectoryTracker.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/NActorTrajectoryTracker.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
 
@@ -53,7 +54,7 @@ public:
 protected:
     virtual void OnBeginPlaySetupTask() override;
     void OnBeginPlaySetupBatchTask() override;
-    void OnTick() override;
+    void OnTick(float deltatime) override;
     void OnTickTaskWaitForGroundTruth() override;
     void OnTickTaskArrivedGroundTruth() override;
     //void OnTickTaskArrivedGroundTruthValid() override;

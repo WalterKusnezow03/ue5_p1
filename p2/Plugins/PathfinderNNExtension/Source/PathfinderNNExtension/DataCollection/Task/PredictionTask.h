@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PathfinderNNExtension/DataCollection/PolygonCollection/NNPathFinderProxy.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/ActorTrajectoryTracker.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/ActorTracker/ActorTrajectoryTracker.h"
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Base/EPolygonSampleType.h"
 
@@ -47,10 +47,10 @@ public:
     int ResultDataSizeBytes() override;
 
     // heat map generation from result
-    void ProcessFromPredictionBytes(const TArray<uint8> &buffer) override;
+    /*void ProcessFromPredictionBytes(const TArray<uint8> &buffer) override;
 
     //for onnx handler
-    void ProcessFromPredictionFloats(const TArray<float> &buffer) override;
+    void ProcessFromPredictionFloats(const TArray<float> &buffer) override;*/
 
     void ColoredHeatMapWithTemporaryPlayer(
         Image &image,

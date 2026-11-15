@@ -6,6 +6,8 @@
 class NNCOMMUNICATIONPLUGIN_API SampleInterface {
 
 public:
+    virtual void ResetSampleData() {};
+
     // ---- REQUEST TO NN SIMPLE ACCESS ----
     //prepare data (for netB resize 144 for example)
     virtual void PrepareFitData() {};
@@ -17,14 +19,18 @@ public:
     virtual bool PrepareAppendRequestBinary(FONNXModelInput &input) = 0;
 
     //rename to ResultDataSizeBytes, not grid.
-    virtual int ResultDataSizeBytes() = 0; //ResultDataSizeBytes()
+    //virtual int ResultDataSizeBytes() = 0; //ResultDataSizeBytes()
+    virtual int ResultDataSizeBytes(){
+        return 0;
+    }
+
 
     virtual void AppendGroundTruth(TArray<uint8> &buffer) = 0;
     // ---- REQUEST TO NN SIMPLE ACCESS ----
 
     // ---- process result for game ----
-    virtual void ProcessFromPredictionBytes(const TArray<uint8> &buffer) = 0;
-    virtual void ProcessFromPredictionFloats(const TArray<float> &buffer) = 0;
+    virtual void ProcessFromPredictionBytes(const TArray<uint8> &buffer){};
+    virtual void ProcessFromPredictionFloats(const TArray<float> &buffer){};
     // ---- process result for game ----
 
 

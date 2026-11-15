@@ -37,7 +37,8 @@ public class NNCommunicationPlugin : ModuleRules
 				"DebugPlugin",
 				"PythonPlugin",
 				"SharedMemoryPlugin",
-				"LoadingScreenPlugin"
+				"LoadingScreenPlugin",
+				"StoragePlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);

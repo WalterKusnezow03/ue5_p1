@@ -10,10 +10,10 @@
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 #include "CoreMath/algorithm/Vector/PositionCluster.h"
 
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/TrajectoryCollection.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/Container/TrajectoryCollection.h"
 #include "PolygonPlugin/Public/GridBase/Operator/ConvolutionOperatorGauss.h"
 
-void FMeshedPolygonTrajectoryLayered::Reset(){
+void FMeshedPolygonTrajectoryLayered::ResetSampleData(){
     //CreateOrClearViewGrid(); //from raytracable polygon
     CreateOrClearGroundTruthGrid();
     CreateOrClearTrajectoryGrid();

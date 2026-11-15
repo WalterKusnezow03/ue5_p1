@@ -22,6 +22,8 @@ public IPathFinderNNRequestHandleInterface
     GENERATED_BODY()
 
 protected:
+    static ANNPathFinderONNX *instancePtr;
+
     NNRequestHandle *GetHandle();
 
     virtual void OnBeginPlayLoadModels() override;
@@ -48,7 +50,7 @@ public:
 
 protected:
     virtual void BeginPlay() override;
-    
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     
 
     HeatMapReceivers none;

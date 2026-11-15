@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActorTrajectoryTracker.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/ActorTracker/ActorTrajectoryTracker.h"
 #include <map>
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include "ActorTracking/Tracking/TrajectoryCollection/Container/Trajectory.h"
 
 /// @brief tracks N actor trajectories in a tick intervall
 /// Tick needs to be called from outside!
-class PATHFINDERNNEXTENSION_API NActorTrajectoryTracker {
+class ACTORTRACKING_API NActorTrajectoryTracker {
 
 public:
     //should only be called once.

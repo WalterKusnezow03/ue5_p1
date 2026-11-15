@@ -2,7 +2,7 @@
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 #include "PolygonPlugin/Public/Polygons/MergedPolygonRaytracable/MeshedPolygonRaytracable.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include"ActorTracking/Tracking/TrajectoryCollection/Container/Trajectory.h"
 
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
@@ -42,7 +42,7 @@ public:
     }
 
 public:
-    virtual void Reset() = 0;
+    virtual void ResetSampleData() override {};
     virtual void EmbedEnemyVision(const TArray<FVisionCone *> &cones) = 0;
     virtual void EmbedTrajectories(TArray<Trajectory> &trajectories) = 0;
     virtual void EmbedResultPosition(FVector &position) = 0;

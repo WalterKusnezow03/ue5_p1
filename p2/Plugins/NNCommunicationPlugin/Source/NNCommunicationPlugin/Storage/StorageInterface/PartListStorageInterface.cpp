@@ -1,0 +1,66 @@
+#include "PartListStorageInterface.h"
+
+
+
+PartListStorageInterface::PartListStorageInterface(){
+
+}
+
+PartListStorageInterface::~PartListStorageInterface(){
+
+}
+
+void PartListStorageInterface::Save(){
+    TArray<FString> filtered = makeUniqueNonEmpty(partNames);
+    StorageInterfaceStringArray::Save(makePath(), filtered);
+}
+
+bool PartListStorageInterface::Load(){
+    partNames.Empty();
+    return StorageInterfaceStringArray::Load(makePath(), partNames);
+}
+
+FString PartListStorageInterface::makePath(){
+    FString innerPath = FString::Printf(TEXT("%s_partList.bin"), *fileNameSavedBase);
+    FString path = BaseDir("PathFinderNNSamples") + innerPath;
+    return path;
+}
+
+
+FString PartListStorageInterface::AddNextFileName(){
+    AddFileName(SizeList());
+    FString name = MakeFileName(0);
+    if(SizeList() > 0){
+        name = partNames.Last();
+    }
+    return name;
+}
+
+FString PartListStorageInterface::AddFileNameIfNeeded(int index){
+    FString target = MakeFileName(index);
+    AddFileName(target);
+    return target;
+}
+
+void PartListStorageInterface::AddFileName(int index){
+    AddFileName(MakeFileName(index));
+}
+
+FString PartListStorageInterface::MakeFileName(int index){
+    return FString::Printf(TEXT("%s_%d"), *fileNameSavedBase, index);
+}
+
+
+void PartListStorageInterface::AddFileName(FString nameIn){
+    if(partNames.Contains(nameIn) == false){
+        partNames.Add(nameIn);
+    }
+}
+
+int32 PartListStorageInterface::SizeList(){
+    return partNames.Num();
+}
+
+TArray<FString> PartListStorageInterface::GetAllPartNames(){
+    return partNames;
+}

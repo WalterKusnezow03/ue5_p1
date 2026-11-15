@@ -26,11 +26,7 @@ protected:
     virtual void OnEndPlayCleanUpHandleStructure();
     
     virtual void OnBeginPlayLoadModels();
-
-
-
-    ONNXModel modelTrajectoryLayered;
-    ONNXModel rayModel;
+    
 
     virtual ONNXModel *FindSelectedModel();
     ONNXModel *FindSelectedModel(FString name);

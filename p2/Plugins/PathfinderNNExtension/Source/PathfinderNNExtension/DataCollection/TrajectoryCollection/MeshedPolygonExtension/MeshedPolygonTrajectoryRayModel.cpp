@@ -1,7 +1,7 @@
 #include "MeshedPolygonTrajectoryRayModel.h"
 
 
-void FMeshedPolygonTrajectoryRayModel::Reset(){
+void FMeshedPolygonTrajectoryRayModel::ResetSampleData(){
     ClearTrajectoryData();
     ClearEnemyVisionData();
     playerHitsGroundTruth.Empty();

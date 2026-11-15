@@ -20,6 +20,10 @@ bool PredictionTaskBase::IsValid(){
 }
 
 int PredictionTaskBase::ResultDataSizeBytes(){
+    if(SampleInterface *sample = GetSampleData()){
+        return sample->ResultDataSizeBytes();
+    }
+
     return 0; //to be overriden!
 }
 
@@ -133,12 +137,22 @@ bool PredictionTaskBase::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<ui
 void PredictionTaskBase::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
     //FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     //polygonDataCache.ProcessFromPredictionBytes(buffer);
+
+    if(SampleInterface *interface = GetSampleData()){
+        interface->ProcessFromPredictionBytes(buffer);
+    }
 }
 
 void PredictionTaskBase::ProcessFromPredictionFloats(const TArray<float> &buffer){
     //FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     //polygonDataCache.ProcessFromPredictionFloats(buffer);
+
+    if(SampleInterface *interface = GetSampleData()){
+        interface->ProcessFromPredictionFloats(buffer);
+    }
+
 }
+
 
 void PredictionTaskBase::MarkTaskFinished(){
     taskCompleted = true;

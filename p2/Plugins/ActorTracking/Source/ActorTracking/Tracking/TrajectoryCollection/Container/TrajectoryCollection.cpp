@@ -46,6 +46,24 @@ void TrajectoryCollection::PopFront(){
     }
 }
 
+bool TrajectoryCollection::GetLastWorldSpace(Trajectory &outTrajectory) const {
+    if(Num() > 0){
+        if(TDoubleLinkedList<Trajectory>::TDoubleLinkedListNode* Node = trajectories.GetTail()){
+            outTrajectory = Node->GetValue();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TrajectoryCollection::GetLastLocalSpace(Trajectory &outTrajectory, const FVector &worldPosition) const {
+    if(GetLastWorldSpace(outTrajectory)){
+        outTrajectory -= worldPosition;
+        return true;
+    }
+    return false;
+}
+
 int TrajectoryCollection::Num()const{
     return num;
 }

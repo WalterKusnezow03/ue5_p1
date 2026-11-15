@@ -70,20 +70,21 @@ protected:
         return dist;
     }
 
+    ///@brief override to calculate the distance between two Points.
     virtual float Dist2(const T &a, const T &b) = 0;
 };
 
-/// @brief Chamfer-Distanz speziell für FIntPoint (2D Integer)
+/// @brief Chamfer-Distance for FIntPoint
 class COREMATH_API FIntPointChamferDistance : public TChamferDistance<FIntPoint> {
 protected:
     float Dist2(const FIntPoint &a, const FIntPoint &b) override {
         float x = (b.X - a.X);
         float y = (b.Y - a.Y);
-        return x * x + y * y;
+        return x * x + y * y; //Size Squared.
     }
 };
 
-/// @brief Chamfer-Distanz für FVector (3D Float)
+/// @brief Chamfer-Distance for FVector
 class COREMATH_API FVectorChamferDistance : public TChamferDistance<FVector> {
 protected:
     float Dist2(const FVector &a, const FVector &b) override {

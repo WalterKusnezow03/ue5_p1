@@ -2,9 +2,12 @@
 
 #include "CoreMinimal.h"
 
-class PATHFINDERNNEXTENSION_API Trajectory {
+class ACTORTRACKING_API Trajectory {
 
 public:
+    Trajectory(){
+        timeStamp = FPlatformTime::Seconds();
+    }
 
     Trajectory(FVector &posIn){
         pos = posIn;

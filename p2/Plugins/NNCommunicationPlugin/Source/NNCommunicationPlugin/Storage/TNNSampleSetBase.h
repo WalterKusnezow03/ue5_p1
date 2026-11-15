@@ -13,7 +13,7 @@
 
 #include "FNNSampleSetBase.h"
 
-#include "TNNSampleSetStorageInterface.h"
+#include "NNCommunicationPlugin/Storage/StorageInterface/TNNSampleSetStorageInterface.h"
 
 //template sample set for any "SampleInterface"
 //todo: TSubClassOf must be ok / assert
@@ -45,6 +45,8 @@ protected:
     //no constructor, keep false false
     bool changedData = false;   //false
 
+    bool checkAddImmidiate = false; //false
+
 public:
 
     TNNSampleSetBase(){
@@ -52,17 +54,52 @@ public:
         ExtractFileName();
     }
 
+    /** temporary functionality for testing */
+    bool BatchIsFull() override {
+        return cache.Num() > MaxBatchSize();
+    }
+
+    /** testing needed! */
+    bool GetOverMaxBatchSizeSamples(
+        TArray<T> &outData
+    ){
+        if(BatchIsFull()){
+            int diff = cache.Num() - MaxBatchSize();
+            int offset = MaxBatchSize();
+
+            //append range
+            outData.Append(cache.GetData() + offset, diff);
+            
+            //remove spilled over data from cache
+            cache.RemoveAt(offset, diff, true);
+            
+            changedData = true;
+            return true;
+        }
+        return false;
+    }
+
 protected:
+
+    virtual int MaxBatchSize(){
+        return 1000;
+    }
+
     FString typeSavedName = "NONE";
     void ExtractType(){
         T temp;
         typeSavedName = temp.GetTypeString();
     }
 
+    /** base file name without override */
+    FString fileNameSaved_Base = "NONE";    
+
+    /** saved file name which can be changed */
     FString fileNameSaved = "NONE";
     void ExtractFileName(){
         T temp;
         fileNameSaved = temp.StorageFileName();
+        fileNameSaved_Base = temp.StorageFileName();
     }
 
 public:
@@ -169,12 +206,28 @@ protected:
         if(!sample.GetTypeString().Equals(typeSavedName)){
             return;
         }
+        if(checkAddImmidiate){
+            /**
+             * has to be asnyc, costs too much performance
+             */
+            FString message = FString::Printf(TEXT("TNNSampleSetBase::AddSample Check Add"));
+            DebugHelper::logMessage(message);
+            if(CanBeRemoved(sample)){
+                message = FString::Printf(TEXT("TNNSampleSetBase::AddSample Check Add Removed Immidiate"));
+                DebugHelper::logMessage(message);
+                return;
+            }
+            loadedSize++;
+        }
 
         cache.Add(sample);
         FString message = FString::Printf(TEXT("TNNSampleSetBase::AddSample %d"), cache.Num());
         DebugHelper::logMessage(message);
         changedData = true;
     }
+
+
+
 
 
     //resize all samples for correct nn usuage
@@ -187,9 +240,11 @@ protected:
         }
     } 
     
+    float MaxLoss(){
+        float maxLoss = 0.025f;
+        return maxLoss;
+    }
 
-
-    
     //clean up samples
     void FindCleanUpSimilarSamples(){
         if(cache.Num() > 1){
@@ -216,9 +271,10 @@ protected:
     TSet<int> FindMarkedForRemoval(float maxLoss){
         TSet<int> removedIndices;
         maxLoss = FMath::Clamp(std::abs(maxLoss), 0.0f, 1.0f);
-
         int difference = cache.Num() - loadedSize;
 
+        //deprecated
+        /*
         //filter all samples which were newly added to the set
         for (int i = 0; i < cache.Num(); i++){
             //if not removed yet
@@ -241,7 +297,7 @@ protected:
                                 )
                             );
 
-                                T &other = cache[j];
+                            T &other = cache[j];
                             if(current.IsSimilar(other, maxLoss)){
                                 removedIndices.Add(j);
                             }
@@ -249,13 +305,58 @@ protected:
                     }
                 }
             }    
+        }*/
+
+        //filter all samples which were newly added to the set
+        //from cache start
+        //this will be valid since all added samples must always
+        //be compared to the previous set.
+        for(int i = loadedSize; i < cache.Num(); i++){
+            T &current = cache[i];
+            if(!removedIndices.Contains(i)){
+                if(CanBeRemoved(current, i, maxLoss)){ //loadedSize instead of i?
+                    removedIndices.Add(i);
+                    LoadingScreenDispatcher::UpdateLoadingEntry(
+                        "TNNSampleSetBase::cleanup",
+                        FString::Printf(
+                            TEXT("Clean Up Samples %d of %d"),
+                            i - loadedSize + 1,
+                            difference
+                        )
+                    );
+                }
+            }
         }
+
         return removedIndices;
     }
-    
-    
-    
-    
+
+    bool CanBeRemoved(T &checkSample){
+        return CanBeRemoved(checkSample, cache.Num() - 1, MaxLoss());
+    }
+
+    bool CanBeRemoved(T &checkSample, int upperIndex, float maxLoss){
+        //check all samples until index
+        maxLoss = FMath::Clamp(std::abs(maxLoss), 0.0f, 1.0f);
+        if(IndexValid(upperIndex)){
+            for (int i = 0; i < upperIndex; i++){
+                T &other = cache[i];
+
+                //check for same sample by ptr
+                bool sameByAdress = &other == &checkSample;
+
+                if(!sameByAdress && checkSample.IsSimilar(other, maxLoss)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool IndexValid(int index){
+        return index >= 0 && index < cache.Num();
+    }
+
     void FilterOut(const TSet<int> &removeIndices){
         if(removeIndices.Num() <= 0){
             return;
@@ -321,8 +422,15 @@ protected:
 
     }
 
+public:
+    /// ---- Usuage by TNNSampleSetMultiPart only ----
+    FString GetFileNameBase(){
+        return fileNameSaved_Base;
+    }
 
-    
-
-
+    void UpdateFileNameSafe(FString inFileName){
+        if(inFileName.Contains(fileNameSaved_Base)){
+            fileNameSaved = inFileName;
+        }
+    }
 };

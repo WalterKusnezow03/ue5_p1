@@ -43,7 +43,8 @@ public class PathfinderNNExtension : ModuleRules
 				"CoreMath",
 				"StoragePlugin",
 				"PolygonPlugin",
-				"SharedMemoryPlugin",
+				//"SharedMemoryPlugin",
+				"ActorTracking",
 			}
 		);
 

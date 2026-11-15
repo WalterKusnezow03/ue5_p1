@@ -4,7 +4,7 @@
 #include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 
 
-
+ANNPathFinderONNX *ANNPathFinderONNX::instancePtr = nullptr;
 
 ANNPathFinderONNX::ANNPathFinderONNX() : Super(){
     PrimaryActorTick.bCanEverTick = true;
@@ -140,4 +140,12 @@ HeatMapReceivers &ANNPathFinderONNX::GetHeatMapReceivers(){
         return handle->GetHeatMapReceivers();
     }
     return none;
+}
+
+
+void ANNPathFinderONNX::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    if(instancePtr == this){
+        instancePtr = nullptr;
+    }
+    Super::EndPlay(EndPlayReason);
 }

@@ -2,7 +2,7 @@
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 #include "PolygonPlugin/Public/Polygons/MergedPolygonRaytracable/MeshedPolygonRaytracable.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include"ActorTracking/Tracking/TrajectoryCollection/Container/Trajectory.h"
 
 
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
@@ -24,7 +24,7 @@ class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryRayModel : public FMeshe
 //class PATHFINDERNNEXTENSION_API FMeshedPolygonTrajectoryRayModel : public FMeshedPolygonRaytracable {
 
 public:
-    void Reset() override;
+    void ResetSampleData() override;
 
     //todo:
     //to binary

@@ -1,9 +1,10 @@
 #include "NNPathFinderSocket.h"
 
 #include "DebugPlugin/DebugHelper.h"
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/Container/Trajectory.h"
+#include"ActorTracking/Tracking/TrajectoryCollection/Container/Trajectory.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/Color/MeshedPolygonColorAttributes.h"
 
+ANNPathFinderSocket* ANNPathFinderSocket::pathFinderIntancePtr = nullptr;
 
 void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 {
@@ -18,7 +19,7 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
         ANNPathFinderSocket* Spawned = World->SpawnActor<ANNPathFinderSocket>(
             ANNPathFinderSocket::StaticClass(), Location, Rotation, SpawnParams
         );   
-        instancePtr = Spawned;
+        pathFinderIntancePtr = Spawned;
     }
 }
 
@@ -170,4 +171,12 @@ HeatMapReceivers &ANNPathFinderSocket::GetHeatMapReceivers(){
         DebugHelper::logMessage("ANNPathFinderSocket::Could Not Find HeatMapReceivers!");
     }
     return empty;
+}
+
+
+void ANNPathFinderSocket::EndPlay(const EEndPlayReason::Type EndPlayReason){
+    if(pathFinderIntancePtr == this){
+        pathFinderIntancePtr = nullptr;
+    }
+    Super::EndPlay(EndPlayReason);
 }

@@ -15,7 +15,7 @@ public:
     FONNXModelsetup(EPolygonSampleType type);
 
     virtual FString MakeFilePath() override;
-    bool IsValid();
+    bool IsValid() override;
 
 
 protected:

@@ -6,8 +6,8 @@
 void PredictionTask::Reset(){
     PredictionTaskBase::Reset();
     trackedActorPtr = nullptr;
-    polygonDataUnetModel.Reset();
-    polygonRayModel.Reset();
+    polygonDataUnetModel.ResetSampleData();
+    polygonRayModel.ResetSampleData();
 
     //polygonDataCache.Reset();  //clear task polygon data
 }
@@ -171,7 +171,7 @@ bool PredictionTask::TickVisiblityCheckAndPrepareGroundTruthBinary(TArray<uint8>
 }
       
 //Heat map prediction embedding
-void PredictionTask::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
+/*void PredictionTask::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
     FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     polygonDataCache.ProcessFromPredictionBytes(buffer);
 }
@@ -179,7 +179,7 @@ void PredictionTask::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
 void PredictionTask::ProcessFromPredictionFloats(const TArray<float> &buffer){
     FMeshedPolygonTrajectoryLayeredInterface &polygonDataCache = GetPolygonData();
     polygonDataCache.ProcessFromPredictionFloats(buffer);
-}
+}*/
 
 bool PredictionTask::IsSameActor(AActor *actorCheck){
     if(actorCheck){

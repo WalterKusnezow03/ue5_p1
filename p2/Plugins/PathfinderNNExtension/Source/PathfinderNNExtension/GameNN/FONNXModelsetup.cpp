@@ -10,6 +10,7 @@ FONNXModelsetup::FONNXModelsetup(EPolygonSampleType type){
 
 void FONNXModelsetup::SetupFromType(EPolygonSampleType type){
     savedType = type;
+    InitInputAndOutputNames();
 
     if(type == EPolygonSampleType::EMeshedPolygonTrajectoryLayered){
         //as in python defined

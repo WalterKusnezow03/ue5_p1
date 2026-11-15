@@ -2,7 +2,7 @@
 
 #include "StoragePlugin/Storage/BaseInterface/StorageInterface.h"
 
-class PATHFINDERNNEXTENSION_API TNNSampleSetStorageInterface : public StorageInterface {
+class NNCOMMUNICATIONPLUGIN_API TNNSampleSetStorageInterface : public StorageInterface {
 
 public:
     TNNSampleSetStorageInterface() {};

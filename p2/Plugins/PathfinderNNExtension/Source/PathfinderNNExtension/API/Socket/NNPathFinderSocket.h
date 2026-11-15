@@ -6,7 +6,6 @@
 
 #include "PolygonPlugin/Public/Polygons/MeshedPolygon.h"
 
-#include "PathfinderNNExtension/DataCollection/TrajectoryCollection/NActorTrajectoryTracker.h"
 #include "PathfinderNNExtension/DataCollection/TrajectoryCollection/MeshedPolygonExtension/MeshedPolygonTrajectoryLayered.h"
 #include "PathfinderNNExtension/DataCollection/Task/PredictionTask.h"
 
@@ -35,7 +34,8 @@ public IPathFinderNNRequestHandleInterface
 
 
 protected:
-    
+    static ANNPathFinderSocket *pathFinderIntancePtr;
+
     //processes the requests
     NNRequestHandle *GetHandle();
 
@@ -45,7 +45,7 @@ public:
     static void MakePathFinderSocketInstance(UWorld *world);
 
     static ANNPathFinderSocket *PathFinderNNinstance(){
-        if(ANNPathFinderSocket *casted = Cast<ANNPathFinderSocket>(instancePtr)){
+        if(ANNPathFinderSocket *casted = Cast<ANNPathFinderSocket>(pathFinderIntancePtr)){
             return casted;
         }
         return nullptr;
@@ -88,6 +88,7 @@ protected:
 
     virtual void TickSocketConnected(float deltatime) override;
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     
 private:
 

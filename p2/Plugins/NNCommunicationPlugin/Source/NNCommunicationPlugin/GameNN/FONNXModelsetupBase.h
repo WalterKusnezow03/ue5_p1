@@ -13,7 +13,7 @@ public:
 
     virtual FString MakeFilePath();
     FString MakeFilePath(FString pluginName, FString fileName);
-    bool IsValid();
+    virtual bool IsValid();
 
     TArray<FTensorSetup> &GetInputTensors();
 

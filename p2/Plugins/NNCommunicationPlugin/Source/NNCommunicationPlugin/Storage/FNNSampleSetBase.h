@@ -20,6 +20,10 @@ public:
         return batchPrepared;
     }
 
+    virtual bool BatchIsFull(){
+        return false;
+    }
+
 protected:
     //no constructor, keep false false
     bool batchPrepared = false; //false

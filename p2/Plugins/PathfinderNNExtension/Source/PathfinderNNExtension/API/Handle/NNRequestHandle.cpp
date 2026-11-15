@@ -44,7 +44,7 @@ void NNRequestHandle::Tick(FNNRequestHandleTickDataBase &tickData){
 
 }
 
-void NNRequestHandle::OnTick(){
+void NNRequestHandle::OnTick(float deltatime){
     //actorTracker.Tick(tickData.deltatime);
 }
 
@@ -132,6 +132,7 @@ bool NNRequestHandle::PrepareTaskFor(FNNRequestPackage *package){
     }
     return false;
 }
+
 
 
 void NNRequestHandle::OnTickTaskWaitForGroundTruth(){
