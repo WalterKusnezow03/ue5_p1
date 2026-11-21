@@ -31,3 +31,4 @@ protected:
         polygonSampleTypeSaved = empty.GetType();
     }
 };
+

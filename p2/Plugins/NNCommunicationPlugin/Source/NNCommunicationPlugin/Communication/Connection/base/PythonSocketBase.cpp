@@ -113,6 +113,7 @@ void APythonSocketBase::TickSocketConnected(float deltatime){
 void APythonSocketBase::SendHeartBeat(){
     if(sendPythonHeartBeat){
         Send("EmptyData");
+        //DebugHelper::logMessage(" APythonSocketBase::SendHeartBeat()");
     }
 }
 

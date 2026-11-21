@@ -131,7 +131,10 @@ class NetBase(nn.Module):
     
     
     def __del__(self):
-        self.saveCheckpoint()
+        try:
+            self.saveCheckpoint()
+        except:
+            pass
         return
 
     def GetInputTensor(self, index):
@@ -231,7 +234,7 @@ class NetBase(nn.Module):
 
 
     def forward(self, x):
-        print("NNServerPathfinder_NetBase: Forward!")
+        #print("NNServerPathfinder_NetBase: Forward!")
         # Falls x eine Liste ist, entpacken wir die Argumente für self.net(*x)
         # heisst aus: lsit(x0,x1..xn)
         # wird forward(x0, x1, ... xn) zu argumenten!
@@ -241,7 +244,7 @@ class NetBase(nn.Module):
             result = self.net(x)
 
         self.latestResult = result
-        print("NNServerPathfinder_NetBase: Forward Finish!")
+        #print("NNServerPathfinder_NetBase: Forward Finish!")
         return result
 
     def SaveLossItemToCache(self, lossIn):
@@ -283,9 +286,9 @@ class NetBase(nn.Module):
 
         self.latestLoss = loss.item()
 
-         # In NetBase.py oder direkt beim Loss-Aufruf:
-        print("NNServerPathfinder_Net: PRED min/max:", pred.min().item(), pred.max().item())
-        print("NNServerPathfinder_Net: TARGET min/max:", batch_y.min().item(), batch_y.max().item())
+        # In NetBase.py oder direkt beim Loss-Aufruf:
+        #print("NNServerPathfinder_Net: PRED min/max:", pred.min().item(), pred.max().item())
+        #print("NNServerPathfinder_Net: TARGET min/max:", batch_y.min().item(), batch_y.max().item())
         ##print("NNServerPathfinder_NetB: BACKWARD FINISH!")
 
     ######## call this for learning a large set ########
@@ -394,7 +397,7 @@ class NetBase(nn.Module):
                 self.trainBatch(xb, yb)
                 self.SaveLossItemToCache(self.latestLoss)
 
-            print(self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", self.epochs, " LOSS ", self.latestLoss)
+            print("debug", self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", self.epochs, " LOSS ", self.latestLoss)
 
         # Cleanup GPU-Speicher
         del x, y, x_shuffled, y_shuffled
@@ -408,7 +411,7 @@ class NetBase(nn.Module):
         # Reload net
         self.SwitchToCpu()
 
-        print(self.logname, "_RUN_NN_BATCH_TRAIN_FINISHED")
+        print(f"debug{self.logname}_RUN_NN_BATCH_TRAIN_FINISHED", flush=True)
 
         self.isTraining = False
         self.lossCache.save_plot()

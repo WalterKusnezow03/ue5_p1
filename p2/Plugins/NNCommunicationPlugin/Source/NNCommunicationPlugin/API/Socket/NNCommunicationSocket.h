@@ -100,4 +100,6 @@ private:
     void TryReadPredictionData();
     void ProcessTrainingFlag();
     void TickRequestHandle();
+
+    void CheckIfTrainingAllowedAgain();
 };

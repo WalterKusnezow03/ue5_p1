@@ -54,6 +54,7 @@ FString PartListStorageInterface::MakeFileName(int index){
 void PartListStorageInterface::AddFileName(FString nameIn){
     if(partNames.Contains(nameIn) == false){
         partNames.Add(nameIn);
+        Save();
     }
 }
 
@@ -63,4 +64,24 @@ int32 PartListStorageInterface::SizeList(){
 
 TArray<FString> PartListStorageInterface::GetAllPartNames(){
     return partNames;
+}
+
+
+bool PartListStorageInterface::GetNextFileName(FString name, FString &outName) const {
+
+    for (int i = 0; i < partNames.Num(); i++){
+        const FString &current = partNames[i];
+        if(current.Equals(name)){
+            //check if next is possible
+            if(IsValidIndex(i+1)){
+                outName = partNames[i+1];
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool PartListStorageInterface::IsValidIndex(int i) const {
+    return i >= 0 && i < partNames.Num();
 }

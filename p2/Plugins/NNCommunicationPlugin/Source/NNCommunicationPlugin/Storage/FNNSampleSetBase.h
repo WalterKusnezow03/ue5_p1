@@ -24,8 +24,17 @@ public:
         return false;
     }
 
+    /// @brief implement only if needed
+    virtual void NotifyLoadNextBatch() {};
+
+    /// @brief implement tick for async sample clean up if needed
+    virtual void Tick(float deltatime) {};
+
+    bool checkDuplicatesOnSave = true;
+    
 protected:
     //no constructor, keep false false
     bool batchPrepared = false; //false
 
+    
 };

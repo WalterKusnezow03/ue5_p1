@@ -72,7 +72,8 @@ public:
             
             //remove spilled over data from cache
             cache.RemoveAt(offset, diff, true);
-            
+
+            loadedSize = cache.Num();
             changedData = true;
             return true;
         }
@@ -122,6 +123,8 @@ public:
         }
     }
 
+    
+
     void EndSave() override {
         OnSave(); //clean up samples before save
 
@@ -156,7 +159,9 @@ protected:
 
     virtual void OnSave(){
         ResizeAll(); //resize all samples for correct nn usuage
-        FindCleanUpSimilarSamples(); //takes a while...
+        if(checkDuplicatesOnSave){
+            FindCleanUpSimilarSamples(); //takes a while...
+        }
     }
 
     virtual void OnSaveFinalize(){
@@ -272,6 +277,9 @@ protected:
         TSet<int> removedIndices;
         maxLoss = FMath::Clamp(std::abs(maxLoss), 0.0f, 1.0f);
         int difference = cache.Num() - loadedSize;
+        if(difference <= 0){
+            return removedIndices;
+        }
 
         //deprecated
         /*

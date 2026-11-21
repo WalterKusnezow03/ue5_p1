@@ -15,7 +15,8 @@
 #include "StoragePlugin/Storage/ImageData/Image/Image.h"
 #include "PathfinderNNExtension/Interface/HeatMapReceiverCollection/HeatMapReceivers.h"
 
-#include "PathfinderNNExtension/Storage/Template/TPathFinderNNSampleSet.h"
+#include "PathfinderNNExtension/Storage/Template/TPathFinderNNSampleSetMultiPart.h"
+#include "PathfinderNNExtension/Storage/Template/TPathFinderNNSampleSet.h" //DEPRECATED
 
 #include "NNCommunicationPlugin/API/Handle/NNRequestHandleBase.h"
 
@@ -67,9 +68,14 @@ protected:
     virtual FNNSampleSetBase *GetBatchTask() override;
 
     //batch data for different sample types
-    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryLayered> unetSamples;
-    TPathFinderNNSampleSet<FMeshedPolygonTrajectoryRayModel> raymodelSamples;
+    //DEPRECATED
+    //TPathFinderNNSampleSet<FMeshedPolygonTrajectoryLayered> unetSamples;
+    //TPathFinderNNSampleSet<FMeshedPolygonTrajectoryRayModel> raymodelSamples;
+    //DEPRECATED
 
+    //not functional yet
+    TPathFinderNNSampleSetMultiPart<FMeshedPolygonTrajectoryLayered> unetSamples;
+    TPathFinderNNSampleSetMultiPart<FMeshedPolygonTrajectoryRayModel> raymodelSamples;
 
 protected:
     

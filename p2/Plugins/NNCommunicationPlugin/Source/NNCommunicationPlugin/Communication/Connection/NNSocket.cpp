@@ -84,7 +84,7 @@ void ANNSocket::TickSocketConnected(float deltatime){
      */
 
     /// ----- DO NOT REMOVE ----- (happens in super)
-    //Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
+    Send("EmptyData"); //MUST ALWAYS HAPPEN: OTHERWISE SOCKET IS BLOCKING IN PYTHON
     /// the python code will be stuck!!!
     /// ----- DO NOT REMOVE -----
 }

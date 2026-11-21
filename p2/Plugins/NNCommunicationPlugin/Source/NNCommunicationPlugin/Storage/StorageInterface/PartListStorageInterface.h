@@ -19,7 +19,10 @@ public:
 
     TArray<FString> GetAllPartNames();
 
-private:
+    /** tries to find the current file name and return the next one if possible */
+    bool GetNextFileName(FString name, FString &outName) const;
+
+protected:
     FString makePath();
 
     void AddFileName(int index);
@@ -28,4 +31,7 @@ private:
 
     FString fileNameSavedBase = "NONE";
     TArray<FString> partNames;
+
+private:
+    bool IsValidIndex(int i) const;
 };

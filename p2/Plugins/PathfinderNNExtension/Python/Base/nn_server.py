@@ -308,6 +308,20 @@ class NNServer:
                         self.bWaitingForBatch = False
         return
 
+    def closeConnect(self):
+        try:
+            if self.connection:
+                self.connection.close()
+                print("NNServer Connection closed")
+        except Exception as e:
+            print(f"NNServer Error closing connection: {e}")
+        
+        try:
+            if self.s:
+                self.s.close()
+                print("NNServer Socket closed")
+        except Exception as e:
+            print(f"NNServer Error closing socket: {e}")
 
     ##### DESTRUKTOR
     def __del__(self):
@@ -323,7 +337,7 @@ class NNServer:
         except:
             pass
 
-        print("NNServer sockets closed on delete")
+        print("NNServerPathFinderBase sockets closed on delete")
 
 
 
@@ -335,8 +349,10 @@ class NNServer:
 def Run():
     ## run until process finished
     serverVar = NNServer()
+    print("NNServerPathFinderBase Server RUN")
     while True and (serverVar.SHUTDOWNFLAG != True):
         serverVar.Tick()
+    print("NNServerPathFinderBase Server EXIT")
     serverVar.closeConnect()
 
 ##Run()

@@ -165,6 +165,6 @@ class UnrealSharedFrame:
             self.sem_Mutex.acquire()   # wartet bis C++ fertig ist
 
     def UpMutex(self):
-        if self.sem_Mutex:
+        if hasattr(self, 'sem_Mutex') and self.sem_Mutex:
             self.sem_Mutex.release()
 

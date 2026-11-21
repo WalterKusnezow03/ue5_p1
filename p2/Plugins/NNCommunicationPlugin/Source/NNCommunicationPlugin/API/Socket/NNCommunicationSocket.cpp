@@ -101,14 +101,29 @@ void ANNCommunicationSocket::TickRequestHandle(){
     }
 }
 
+void ANNCommunicationSocket::CheckIfTrainingAllowedAgain(){
+    //check page flag if write allowed again
+    //if set to false: data has been read and the next file can be loaded
+    /*if(frameManager.TryReadReadyFlag(frameNameBatch) == false){
+        if(requestHandle){
+            //notify
+            requestHandle->NotifyBatchTrainFinished();
+        }
+        trainingStartAllowed = true;
+    }*/
+}
+
 void ANNCommunicationSocket::ProcessTrainingFlag(){
-    if(!trainingStartAllowed || !requestTickData){
+    if(!requestTickData){
+        return;
+    }
+    if(!trainingStartAllowed){
         return;
     }
 
     if(requestTickData->bBatchBinaryOutChanged){
+        DebugHelper::logMessage("ANNCommunicationSocket::Train Start, write data ", requestTickData->batchDataOut.Num());
         WriteData(frameNameBatch, requestTickData->batchDataOut);
-        DebugHelper::logMessage("WRITE TRAIN BATCH ", requestTickData->batchDataOut.Num());
         trainingStartAllowed = false;
     }
 }
@@ -126,6 +141,7 @@ void ANNCommunicationSocket::Tick(float deltatime){
     //tick request handler
     TickRequestHandle();
 
+    CheckIfTrainingAllowedAgain();
     ProcessTrainingFlag();
 
     if(requestTickData && requestTickData->bGroundTruthBinaryOutChanged){
@@ -214,18 +230,27 @@ void ANNCommunicationSocket::WriteDataGroundTruth(
 
 /// receives all incoming python prints
 void ANNCommunicationSocket::OnReceivePythonPrint(FString Output){
+    if(logConnection){
+        DebugHelper::logMessage("ANNCommunicationSocket::PYTHON RECEIVED ", Output);
+    }
+
     Super::OnReceivePythonPrint(Output);
     
     // --- TODO! ---
     // Close the training frame when the Python process reports completion.
     if(CloseTrainSharedMemoryFrame(Output)){
         ClosePage(frameNameBatch);
+        DebugHelper::logMessage("ANNCommunicationSocket::Train Finished: (Message): ", Output);
+
+        //notify finish
+        if(requestHandle){
+            //notify
+            requestHandle->NotifyBatchTrainFinished();
+        }
     }
 
 
-    if(logConnection){
-        DebugHelper::logMessage("ANNPathFinderSocket::PYTHON ", Output);
-    }
+    
 }
 
 

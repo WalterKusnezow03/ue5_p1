@@ -11,14 +11,14 @@ public:
         ExtractFileName();
     }
 
-    virtual ~TPartListStorageInterface<T>() : ~PartListStorageInterface(){
+    virtual ~TPartListStorageInterface<T>() override {
 
     }
 
-private:
+protected:
 
     void ExtractFileName(){
         T sampleTemp;
-        fileNameSavedBase = sampleTemp.GetFileNameBase();
+        fileNameSavedBase = sampleTemp.StorageFileName();
     }
 };

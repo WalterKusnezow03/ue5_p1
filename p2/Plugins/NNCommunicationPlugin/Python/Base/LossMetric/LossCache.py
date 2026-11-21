@@ -1,5 +1,7 @@
-import matplotlib.pyplot as plt
 import os
+
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 
 class LossCache:
     def __init__(self):
@@ -25,23 +27,24 @@ class LossCache:
         # 2. Den Dateinamen mit dem Ordner verknüpfen
         full_path = os.path.join(script_dir, filename)
 
-        plt.figure(figsize=(10, 5))
+        figure = Figure(figsize=(10, 5))
+        FigureCanvasAgg(figure)
+        axes = figure.subplots()
 
         # Train & Test Kurven einzeichnen
         if self.CacheTrainSet:
-            plt.plot(self.CacheTrainSet, label="Train Loss", color="blue", linewidth=2)
+            axes.plot(self.CacheTrainSet, label="Train Loss", color="blue", linewidth=2)
         if self.CacheTestSet:
-            plt.plot(self.CacheTestSet, label="Test Loss", color="red", linewidth=2)
+            axes.plot(self.CacheTestSet, label="Test Loss", color="red", linewidth=2)
 
-        plt.title("Training & Test Loss")
-        plt.xlabel("Steps / Epoch")
-        plt.ylabel("Loss")
-        plt.legend()
-        plt.grid(True)
+        axes.set_title("Training & Test Loss")
+        axes.set_xlabel("Steps / Epoch")
+        axes.set_ylabel("Loss")
+        axes.legend()
+        axes.grid(True)
 
         # 3. Unter dem vollständigen Pfad speichern
-        plt.savefig(full_path)
-        plt.close() # Speicher freigeben
+        figure.savefig(full_path)
         print(f"Loss-Graph erfolgreich gespeichert unter: {full_path}")
 
     def __del__(self):
