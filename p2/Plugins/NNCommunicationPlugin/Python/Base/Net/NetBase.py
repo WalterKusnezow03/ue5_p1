@@ -131,7 +131,10 @@ class NetBase(nn.Module):
     
     
     def __del__(self):
-        self.saveCheckpoint()
+        try:
+            self.saveCheckpoint()
+        except:
+            pass
         return
 
     def GetInputTensor(self, index):
@@ -283,7 +286,7 @@ class NetBase(nn.Module):
 
         self.latestLoss = loss.item()
 
-        #In NetBase.py oder direkt beim Loss-Aufruf:
+        # In NetBase.py oder direkt beim Loss-Aufruf:
         #print("NNServerPathfinder_Net: PRED min/max:", pred.min().item(), pred.max().item())
         #print("NNServerPathfinder_Net: TARGET min/max:", batch_y.min().item(), batch_y.max().item())
         ##print("NNServerPathfinder_NetB: BACKWARD FINISH!")
@@ -394,7 +397,7 @@ class NetBase(nn.Module):
                 self.trainBatch(xb, yb)
                 self.SaveLossItemToCache(self.latestLoss)
 
-            print(self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", self.epochs, " LOSS ", self.latestLoss)
+            print("debug", self.logname, "_RUN_NN_BATCH_EPOCH_FINISHED", epoch + 1, "_of_", self.epochs, " LOSS ", self.latestLoss)
 
         # Cleanup GPU-Speicher
         del x, y, x_shuffled, y_shuffled
@@ -408,7 +411,7 @@ class NetBase(nn.Module):
         # Reload net
         self.SwitchToCpu()
 
-        print(f"{self.logname}_RUN_NN_BATCH_TRAIN_FINISHED", flush=True)
+        print(f"debug{self.logname}_RUN_NN_BATCH_TRAIN_FINISHED", flush=True)
 
         self.isTraining = False
         self.lossCache.save_plot()

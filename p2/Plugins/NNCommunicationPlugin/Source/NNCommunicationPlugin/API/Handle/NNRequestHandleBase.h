@@ -46,7 +46,7 @@ public:
     //only call from ONNX NN PathFinder ! - never anywhere else!
     void ReadDataResultImmidiate(TArray<float> &data);
 
-    virtual void NotifyBatchTrainFinished();
+    virtual void NotifyBatchTrainFinished(bool &hasNext);
 
 protected:
     virtual void OnBeginPlaySetupTask();

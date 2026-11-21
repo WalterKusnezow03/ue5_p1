@@ -88,3 +88,10 @@ void ANNSocket::TickSocketConnected(float deltatime){
     /// the python code will be stuck!!!
     /// ----- DO NOT REMOVE -----
 }
+
+
+
+void ANNSocket::OnReceivePythonPrint(FString message){
+    Super::OnReceivePythonPrint(message);
+    frameManager.NotifyMessageMirror(message);
+}

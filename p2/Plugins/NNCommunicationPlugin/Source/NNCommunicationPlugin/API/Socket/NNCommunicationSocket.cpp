@@ -102,12 +102,18 @@ void ANNCommunicationSocket::TickRequestHandle(){
 }
 
 void ANNCommunicationSocket::CheckIfTrainingAllowedAgain(){
+    //DEPRECATED
+
     //check page flag if write allowed again
     //if set to false: data has been read and the next file can be loaded
     /*if(frameManager.TryReadReadyFlag(frameNameBatch) == false){
         if(requestHandle){
             //notify
-            requestHandle->NotifyBatchTrainFinished();
+            bool hasNext = false;
+            requestHandle->NotifyBatchTrainFinished(hasNext);
+            if(hasNext){
+                SetTrainingAllowed();
+            }
         }
         trainingStartAllowed = true;
     }*/
@@ -245,7 +251,11 @@ void ANNCommunicationSocket::OnReceivePythonPrint(FString Output){
         //notify finish
         if(requestHandle){
             //notify
-            requestHandle->NotifyBatchTrainFinished();
+            bool hasNext = false;
+            requestHandle->NotifyBatchTrainFinished(hasNext);
+            if(hasNext){
+                SetTrainingAllowed();
+            }
         }
     }
 

@@ -84,6 +84,9 @@ class NNServer:
             message = receiver.unpackMessageToStringSplit(data, "_") #unpackMessageToString(data)
             ##print("NNServer received data as string: ", message)
 
+            ##mirror
+            print("mirror: ", data)
+
             self.ProcessMessage(message)
 
     
@@ -98,12 +101,13 @@ class NNServer:
     def ProcessMessage(self, message):
         if(len(message) > 0):
             prefix = message[0]
+            print("NNServer process message", prefix, " ", message)
             if(prefix == "SHUTDOWN"):
                 self.OnShutDown()
                 self.closeConnect()
                 self.SHUTDOWNFLAG = True
 
-            if(prefix == "FRAMEID"):
+            if(prefix == "FRAMEID" or prefix == "FRAMEIDCLOSE"):
                 print("NNServer received data as string: FRAME ID DATA: ", message)
                 self.CloseAndReopenSharedMemoryCommand(message)
                 
@@ -132,10 +136,15 @@ class NNServer:
 
     ##### not tested ! #####
     def CloseAndReopenSharedMemoryCommand(self, message):
-        if(len(message) >= 4):
+        if(len(message) >= 2):
             prefix = message[0]
-            if(prefix == "FRAMEID"):
-                
+            if(prefix == "FRAMEID"):  
+
+                print("NNServer FRAME ID: MESSAGE", message)
+                if(len(message) >= 4):
+                    shortTag = message[3]
+                    self.UpdateIfNewBatchReceived(shortTag)
+
                 if(len(message) == 4):
                     tagname, size, shortTag = message[1], int(message[2]), message[3]
                     if(len(tagname) < 2):
@@ -155,13 +164,22 @@ class NNServer:
                     if(self.sharedMemoryMap):
                         self.sharedMemoryMap.CloseAndReopenPageSemaphore(tagname, size, semMutexName, shortTag)
                         print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size, " ", semMutexName)
+
+            if(prefix == "FRAMEIDCLOSE"):
+                #closePage(self, shortTag):
+                ##print("NNServer FRAME ID: CLOSE SHARED MEMORY ", tagname)
+                return
                 
                 
 
     def TagIsGroundTruthButDontTrainLive(self, tag):
         return tag == self.frameNameGroundThruth and (self.trainLive == False)           
 
-                
+    def UpdateIfNewBatchReceived(self, someTag):
+        print("CHECK NEW BATCH ", someTag)
+        if someTag == self.frameNameBatch:
+            print("CHECK NEW BATCH OK ", someTag, " == ", self.frameNameBatch)
+            self.bWaitingForBatch = True      
 
     
 
@@ -308,6 +326,20 @@ class NNServer:
                         self.bWaitingForBatch = False
         return
 
+    def closeConnect(self):
+        try:
+            if self.connection:
+                self.connection.close()
+                print("NNServer Connection closed")
+        except Exception as e:
+            print(f"NNServer Error closing connection: {e}")
+        
+        try:
+            if self.s:
+                self.s.close()
+                print("NNServer Socket closed")
+        except Exception as e:
+            print(f"NNServer Error closing socket: {e}")
 
     ##### DESTRUKTOR
     def __del__(self):
@@ -323,7 +355,7 @@ class NNServer:
         except:
             pass
 
-        print("NNServer sockets closed on delete")
+        print("NNServerPathFinderBase sockets closed on delete")
 
 
 
@@ -335,8 +367,10 @@ class NNServer:
 def Run():
     ## run until process finished
     serverVar = NNServer()
+    print("NNServerPathFinderBase Server RUN")
     while True and (serverVar.SHUTDOWNFLAG != True):
         serverVar.Tick()
+    print("NNServerPathFinderBase Server EXIT")
     serverVar.closeConnect()
 
 ##Run()

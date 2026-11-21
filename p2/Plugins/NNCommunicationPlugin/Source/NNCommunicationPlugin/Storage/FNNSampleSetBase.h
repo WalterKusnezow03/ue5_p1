@@ -25,7 +25,9 @@ public:
     }
 
     /// @brief implement only if needed
-    virtual void NotifyLoadNextBatch() {};
+    virtual void NotifyLoadNextBatch(bool &hasNext) {
+        hasNext = false;
+    };
 
     /// @brief implement tick for async sample clean up if needed
     virtual void Tick(float deltatime) {};

@@ -39,7 +39,7 @@ protected:
 
     void ClosePage(FString name);
 
-    
+    virtual void OnReceivePythonPrint(FString message) override;
 
 public:
     ANNSocket();

@@ -5,7 +5,7 @@
 #include <semaphore.h>
 
 
-class SHAREDMEMORYPLUGIN_API FSharedFrame{
+class SHAREDMEMORYPLUGIN_API FSharedFrame final{
 
 public:
     FSharedFrame();
@@ -21,13 +21,14 @@ public:
 
     //returns: SharedFrameName_bytes
     FString SharedFrameIdentifier();
-    virtual FString SharedFrameIdentifierMessage(FString prefix);
-    virtual FString SharedFrameIdentifierMessage(FString prefix, FString postFixTag);
+    FString SharedFrameIdentifierMessage(FString prefix);
+    FString SharedFrameIdentifierMessage(FString prefix, FString postFixTag);
 
     bool SizeChanged(int sizeIn);
 
     bool TryReadReadyFlag();
     void MarkReadyFalse();
+
 
 private:
     bool closeOnDestroy = false;

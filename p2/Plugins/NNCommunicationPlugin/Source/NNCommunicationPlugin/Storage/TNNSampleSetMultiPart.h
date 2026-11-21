@@ -276,7 +276,8 @@ public:
         return batchPrepared;
     }
 
-    void NotifyLoadNextBatch() override {
+    void NotifyLoadNextBatch(bool &hasNext) override {
+        hasNext = false;
         DebugHelper::logMessage("TNNSampleSetBaseMultiPart::NotifyLoadNextBatch");
         if(accessLocked){
             DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Cant Load Batch, locked");
@@ -320,9 +321,8 @@ public:
                 )
             );
             OpenFile(nameNext);
+            hasNext = true;
         }
-
-
     };
 
 protected:

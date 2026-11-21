@@ -355,13 +355,13 @@ void NNRequestHandleBase::OnEndPlayBatchTaskSave(){
 
 
 
-void NNRequestHandleBase::NotifyBatchTrainFinished(){
+void NNRequestHandleBase::NotifyBatchTrainFinished(bool &hasNext){
     //since the training was finished a next batch file
     //for training can be loaded (sample set is split up in TNNSampleSetMultiPart)
     DebugHelper::logMessage("NNRequestHandleBase::NotifyLoadNextBatch Try");
     if(FNNSampleSetBase *ptr = GetBatchTask()){
         DebugHelper::logMessage("NNRequestHandleBase::NotifyLoadNextBatch");
-        ptr->NotifyLoadNextBatch();
+        ptr->NotifyLoadNextBatch(hasNext);
     }
 }
 

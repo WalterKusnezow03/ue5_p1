@@ -21,6 +21,9 @@ public:
 
     void ClosePage(FString pageName);
 
+    //notdy python receival
+    void NotifyMessageMirror(FString message);
+
 protected:
     virtual void WriteData(FString pageName, const TArray<uint8> &data, bool &frameChanged) override;
 
@@ -49,4 +52,8 @@ protected:
 
     //notify close
     std::map<FString, bool> frameNameCloseSendMap;
+
+    void FlagReadIfFound(std::map<FString, bool> &mapIn, const FString &message, const FString &prefix);
+    bool ExtractFrameName(const std::map<FString, bool> &mapIn, const FString &message, const FString &prefix, FString &outName);
+    static bool IsSharedFrameIdentifierMessage(const FString &inName, FString &outData);
 };

@@ -117,14 +117,77 @@ void FCommunicationSharedFrameManager::NotifyChangedFrame(
             FString message = frame->SharedFrameIdentifierMessage(prefixCommandForPython, name); 
 
             socket->Send(message);
-            //DebugHelper::logMessage("ANNSocket::FCommunicationSharedFrameManager:: Send frame name: ", message);
+            DebugHelper::logMessage("FCommunicationSharedFrameManager:: Send frame name: ", message);
         }
 
+        /** DEPRECATED, WAIT FOR MIRROR */
         //did send.
-        //frameNameSendMap[name] = true;
-        mapToMessage[name] = true; //update was send must be flagged to true.
+        //mapToMessage[name] = true; //update was send must be flagged to true.
+        //mapToMessage[name] = false;
     }
 }
+
+
+void FCommunicationSharedFrameManager::NotifyMessageMirror(FString message){
+    FString cleaned;
+    if(!IsSharedFrameIdentifierMessage(message, cleaned)){
+        return;
+    }
+
+    if(cleaned.StartsWith(TEXT("FRAMEID_"), ESearchCase::CaseSensitive)){
+        FlagReadIfFound(frameNameSendMap, cleaned, TEXT("FRAMEID"));
+    }else if(cleaned.StartsWith(TEXT("FRAMEIDCLOSE_"), ESearchCase::CaseSensitive)){
+        FlagReadIfFound(frameNameCloseSendMap, cleaned, TEXT("FRAMEIDCLOSE"));
+    }
+}
+
+void FCommunicationSharedFrameManager::FlagReadIfFound(std::map<FString, bool> &mapIn, const FString &message, const FString &prefix){
+    FString frameName;
+    if(ExtractFrameName(mapIn, message, prefix, frameName)){
+        auto found = mapIn.find(frameName);
+        found->second = true;
+        DebugHelper::logMessage("FCommunicationSharedFrameManager:: Receive frame name MIRROR ok: ", frameName);
+    }
+}
+
+bool FCommunicationSharedFrameManager::ExtractFrameName(const std::map<FString, bool> &mapIn, const FString &message, const FString &prefix, FString &outName){
+    for(const auto &pair : mapIn){
+        if(FSharedFrame *frame = FindFrame(pair.first)){
+            if(message.Equals(frame->SharedFrameIdentifierMessage(prefix, pair.first), ESearchCase::CaseSensitive)){
+                outName = pair.first;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool FCommunicationSharedFrameManager::IsSharedFrameIdentifierMessage(const FString &inName, FString &outData){
+    //LogTemp: 
+    //FCommunicationSharedFrameManager:: Check MIRROR: received payload  b'FRAMEID_/ueshmANNPathFinderSFNN_8_ANNPathFinderSFNN'  from numbytes 51
+
+    
+    const int32 start = inName.Find(TEXT("FRAMEID"), ESearchCase::CaseSensitive);
+    if(start == INDEX_NONE){
+        DebugHelper::logMessage("FCommunicationSharedFrameManager:: Receive frame name MIRROR BAD: ", inName);
+        return false;
+    }
+
+    int32 end = start;
+    while(end < inName.Len()){
+        const TCHAR character = inName[end];
+        if(!FChar::IsAlnum(character) && character != TEXT('_') &&
+           character != TEXT('/') && character != TEXT('-') && character != TEXT('.')){
+            break;
+        }
+        ++end;
+    }
+    outData = inName.Mid(start, end - start);
+    DebugHelper::logMessage("FCommunicationSharedFrameManager:: Receive frame name MIRROR OK?: ", outData);
+    return true;
+}
+
+
 
 
 //DEPRECATED!
