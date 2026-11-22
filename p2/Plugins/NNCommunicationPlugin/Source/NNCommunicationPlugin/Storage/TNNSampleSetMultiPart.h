@@ -34,6 +34,7 @@ protected:
     //may be disabled on async save -> TODO
     bool addAllowed = true;
 
+    /** acess lock for on async load of files and clean up bad file sizes / sample count */
     bool accessLocked = false;
 
     void LoadPartFile(){
@@ -91,7 +92,7 @@ public:
             this->FixupTooLargeFilesOnLoad();
             DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Cleaned Buffers PartFile size ", this->partList.SizeList());
 
-            this->CloseFilesExceptLast();
+            this->CloseFilesExceptLast(); //only last one needed to add new samples.
             DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Close up on Load finished ", this->partList.SizeList());
 
             // Return to game thread to signal completion
@@ -106,6 +107,7 @@ public:
         for(auto &pair : files){
             FString name = pair.first;
             CloseFile(name);
+            DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Close file end save ", name);
         }
         // Final flush to ensure all files are written
         //FPlatformFileManager::Get().GetPlatformFile().FlushFiles();
@@ -114,20 +116,25 @@ public:
 
     void AddSample(SampleInterface &sample) override {
         if(!addAllowed){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("TNNSampleSetBaseMultiPart::AddSample ADD NOT ALLOWED")
+                )
+            );
             return;
         }
-        if(!accessLocked){
+        if(accessLocked){
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("TNNSampleSetBaseMultiPart::AddSample ACCESS LOCKED")
+                )
+            );
+
+            AddSampleToTempSet(sample);
             return;
         }
 
-        /**
-         * TODO:
-         * to make this process async the sample set must be stored by ptr
-         * and changed if needed
-         * once the async process is finished, the remaining ptr can be deleted
-         */
-        AddSampleAsync(sample); //sync will probably be bad with performance issues and sample set cleanup.
-        //AddSampleSync(sample);
+        AddSampleSync(sample);
     }
 
     //load batch and move to next unloaded batch file
@@ -137,6 +144,13 @@ public:
 
 
 protected:
+
+    /** Add sample to temporary data collection (if access locked in async)
+     * will get processed later.
+     */
+    void AddSampleToTempSet(SampleInterface &sample){
+        //todo
+    }
 
     /** Add sample sync */
     void AddSampleSync(SampleInterface &sample){
@@ -155,6 +169,8 @@ protected:
     /** Add sample async */
     void AddSampleAsync(SampleInterface &sample){
         if(!addAllowed){
+            //if async process still running ignore the incoming sample.
+            //(i dont care.)
             return;
         }
         
@@ -168,7 +184,7 @@ protected:
                     file->AddSample(*samplePtr);
                 }
 
-                // Wenn du danach zurück auf den Game-Thread musst (z. B. für UI-Updates):
+                //unlock add allowed
                 Async(EAsyncExecution::TaskGraphMainThread, [this](){
                     this->addAllowed = true;
                 });
@@ -238,6 +254,8 @@ protected:
     void CloseFile(FString name, bool checkDuplicates){
         if(HasFile(name)){
             if(TNNSampleSetBase<T> *file = files[name]){
+                DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Close file ", name);
+                file->checkDuplicatesOnSave = checkDuplicates;
                 file->EndSave();
                 delete file;
                 file = nullptr;
@@ -276,6 +294,7 @@ public:
         return batchPrepared;
     }
 
+    /** tries to load next batch file for training (hasNext for sucessfull out flag) */
     void NotifyLoadNextBatch(bool &hasNext) override {
         hasNext = false;
         DebugHelper::logMessage("TNNSampleSetBaseMultiPart::NotifyLoadNextBatch");
@@ -297,20 +316,6 @@ public:
          *  -> thats why batch prepared will be set to false.
         */
         FString nameNext;
-        /*if (partList.GetNextFileName(activeFileName, nameNext)){ // -> hasNext
-            batchPrepared = false;
-            DebugHelper::logMessage(
-                FString::Printf(
-                    TEXT("TNNSampleSetBaseMultiPart::LoadNextBatchFile %s -> %s"),
-                    *activeFileName,
-                    *nameNext
-                )
-            );
-            OpenFile(nameNext);
-        }else{
-            DebugHelper::logMessage("TNNSampleSetBaseMultiPart::Cant Load Batch, no next file");
-        }*/
-
         if(GetNextUnloadedBatchName(nameNext)){
             batchPrepared = false;
             DebugHelper::logMessage(
@@ -320,6 +325,7 @@ public:
                     *nameNext
                 )
             );
+            CloseFile(activeFileName, false); //close previous file
             OpenFile(nameNext);
             hasNext = true;
         }

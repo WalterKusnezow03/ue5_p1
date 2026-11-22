@@ -60,9 +60,11 @@ void FCommunicationSharedFrameManager::ClosePage(FString pageName){
 void FCommunicationSharedFrameManager::NotifyChangedFrames(APythonSocketBase *socket){
     if(socket){
         
-        //notify opened frames
-        NotifyChangedFrames(socket, frameNameSendMap, "FRAMEID");
-        NotifyChangedFrames(socket, frameNameCloseSendMap, "FRAMEIDCLOSE");
+        //notify opened frames - wait for approval / mirror true
+        NotifyChangedFrames(socket, frameNameSendMap, "FRAMEID", true);
+        
+        //notify once
+        NotifyChangedFrames(socket, frameNameCloseSendMap, "FRAMEIDCLOSE", false);
 
 
         // notify closed frames
@@ -85,14 +87,15 @@ void FCommunicationSharedFrameManager::NotifyChangedFrames(APythonSocketBase *so
 void FCommunicationSharedFrameManager::NotifyChangedFrames(
     APythonSocketBase *socket,
     std::map<FString, bool> &mapToMessage,
-    FString prefixCommandForPython //might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+    FString prefixCommandForPython, //might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+    bool waitForMirror 
 ){
     if(socket){
         for(auto &pair : mapToMessage){
             FString name = pair.first;
             bool didSend = pair.second;
             if(!didSend){
-                NotifyChangedFrame(socket, mapToMessage, name, prefixCommandForPython);
+                NotifyChangedFrame(socket, mapToMessage, name, prefixCommandForPython, waitForMirror);
             }
         }
     }
@@ -103,7 +106,8 @@ void FCommunicationSharedFrameManager::NotifyChangedFrame(
     APythonSocketBase *socket,
     std::map<FString, bool> &mapToMessage,
     FString name, //shared frame name
-    FString prefixCommandForPython //might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+    FString prefixCommandForPython, //might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+    bool waitForMirror 
 ){
     if(socket){
         if(FSharedFrame *frame = FindFrame(name)){
@@ -123,7 +127,11 @@ void FCommunicationSharedFrameManager::NotifyChangedFrame(
         /** DEPRECATED, WAIT FOR MIRROR */
         //did send.
         //mapToMessage[name] = true; //update was send must be flagged to true.
-        //mapToMessage[name] = false;
+
+        if(!waitForMirror){
+            //did send.
+            mapToMessage[name] = true; //update was send must be flagged to true.
+        }
     }
 }
 

@@ -21,7 +21,9 @@ public:
 
     void ClosePage(FString pageName);
 
-    //notdy python receival
+    //notify python receival of the send data
+    //if not approved it will be kept send.
+    //verification ensures data has been received by python.
     void NotifyMessageMirror(FString message);
 
 protected:
@@ -31,14 +33,16 @@ protected:
     void NotifyChangedFrames(
         APythonSocketBase *socket,
         std::map<FString, bool> &mapToMessage,
-        FString prefixCommandForPython // might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+        FString prefixCommandForPython,// might be "FRAMEID" for open, or "FRAMEIDCLOSE" for closing the shared memory
+        bool waitForMirror 
     );
 
     void NotifyChangedFrame(
         APythonSocketBase *socket,
         std::map<FString, bool> &mapToMessage,
         FString name, // shared frame name
-        FString prefixCommandForPython
+        FString prefixCommandForPython,
+        bool waitForMirror 
     );
 
     //deprecated! 

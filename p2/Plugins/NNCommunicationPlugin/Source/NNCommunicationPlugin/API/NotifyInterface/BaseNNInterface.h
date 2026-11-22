@@ -13,7 +13,8 @@ class UBaseNNInterface : public UInterface
     GENERATED_BODY()
 };
 
-/// @brief interface for responding to pathfinder node pridictions
+/// @brief interface for responding to the requester with some data
+/// can be derived and data casted to correct format (e.g. TArray<FVector> for positions).
 class NNCOMMUNICATIONPLUGIN_API IBaseNNInterface
 {
     GENERATED_BODY()

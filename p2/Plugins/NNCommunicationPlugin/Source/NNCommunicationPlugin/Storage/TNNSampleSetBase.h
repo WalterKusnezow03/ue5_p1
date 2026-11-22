@@ -209,6 +209,14 @@ protected:
     void TAddSample(T &sample){
         //check for sample type
         if(!sample.GetTypeString().Equals(typeSavedName)){
+            
+            DebugHelper::logMessage(
+                FString::Printf(
+                    TEXT("TNNSampleSetBase::AddSample type mismatch"), 
+                    *sample.GetTypeString(),
+                    *typeSavedName
+                )
+            );
             return;
         }
         if(checkAddImmidiate){

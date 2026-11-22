@@ -93,5 +93,11 @@ void ANNSocket::TickSocketConnected(float deltatime){
 
 void ANNSocket::OnReceivePythonPrint(FString message){
     Super::OnReceivePythonPrint(message);
+    /** 
+     * python should pritn once a frame id and page data arrived.
+     * Triggers the verification process inside the framemanager
+     * and ensure the data, to open the page, is not send anymore.
+     * (Since it already has been opened inside python)
+     */
     frameManager.NotifyMessageMirror(message);
 }
