@@ -39,10 +39,11 @@ void ANNMovementSocket::OnBeginPlaySetupFrameNames(){
 
 void ANNMovementSocket::OnBeginPlayLaunchPython(){
     LaunchPythonProcess(
-        "PathFinderNNExtension", 
-        "nnpathfinder_server.py", //local nnpathfinder_server.py, from this plugin
+        "MovementNNExtension", 
+        "nnmovement_server.py", //local nnmovement_server.py, from this plugin
         "NNCommunicationPlugin", //hier ist python installiert.
-        "venv/bin/python"
+        "venv/bin/python",
+        {"PORT_5051"}
     ); 
 }
 

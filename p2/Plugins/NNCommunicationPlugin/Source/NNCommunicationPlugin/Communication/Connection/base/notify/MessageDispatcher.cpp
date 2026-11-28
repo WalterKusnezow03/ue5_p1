@@ -9,7 +9,7 @@ MessageDispatcher::~MessageDispatcher(){
 
 }
 
-void MessageDispatcher::Subscribe(INNPathFinderSocketMessageReceiver *other){
+void MessageDispatcher::Subscribe(INNSocketMessageReceiver *other){
     if(other != nullptr){
         //has
         if(!receiverSet.Contains(other)){
@@ -32,7 +32,7 @@ void MessageDispatcher::Dispatch(FString message){
     }
     
     for (int i = 0; i < receiverSet.Num(); i++){
-        if(INNPathFinderSocketMessageReceiver *current = receiverSet[i]){
+        if(INNSocketMessageReceiver *current = receiverSet[i]){
             current->ReceiveMessage(message);
         }
     }

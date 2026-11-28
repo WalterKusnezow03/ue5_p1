@@ -80,8 +80,7 @@ bool FMovementSample::PrepareAppendRequestBinary(FONNXModelInput &input){
 }
 
 int FMovementSample::ResultDataSizeBytes(){
-    return FMovementToken::NumFloats() * sizeof(float);
-    //return 0;
+    return numGroundTruthTokens * FMovementToken::NumFloats() * sizeof(float);
 }
 
 void FMovementSample::AppendGroundTruth(TArray<uint8> &buffer){
@@ -93,6 +92,11 @@ void FMovementSample::AppendGroundTruth(TArray<uint8> &buffer){
 
 // ---- process result for game ----
 void FMovementSample::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
+    if (buffer.Num() != ResultDataSizeBytes()){
+        predictionTokens.Empty();
+        UE_LOG(LogTemp, Error, TEXT("FMovementSample: Expected %d prediction bytes, got %d"), ResultDataSizeBytes(), buffer.Num());
+        return;
+    }
     TArray<float> floatBuffer;
     TemplateBufferStorageInterface::ConvertBufferRaw<uint8, float>(buffer, floatBuffer);
     ProcessFromPredictionFloats(floatBuffer);
@@ -100,17 +104,18 @@ void FMovementSample::ProcessFromPredictionBytes(const TArray<uint8> &buffer){
 
 void FMovementSample::ProcessFromPredictionFloats(const TArray<float> &buffer){
     predictionTokens.Empty();
-    int values = 4;
-    int count = buffer.Num() % values;
-    if(count > 0){
-        predictionTokens.SetNum(count);
-        int innerIndex = 0;
-        for (int i = values; i < buffer.Num(); i += values)
-        {
-            FMovementToken &tokenForConstruct = predictionTokens[innerIndex];
-            tokenForConstruct.Generate(buffer, i);
-            innerIndex++;
-        }
+    const int values = FMovementToken::NumFloats();
+    const int expectedValues = numGroundTruthTokens * values;
+    if (buffer.Num() != expectedValues){
+        UE_LOG(LogTemp, Error, TEXT("FMovementSample: Expected %d prediction floats, got %d"), expectedValues, buffer.Num());
+        return;
+    }
+    predictionTokens.SetNum(numGroundTruthTokens);
+    int innerIndex = 0;
+    for (int i = values; i <= buffer.Num(); i += values){
+        FMovementToken &tokenForConstruct = predictionTokens[innerIndex];
+        tokenForConstruct.Generate(buffer, i - 1);
+        innerIndex++;
     }
 }
 
@@ -121,17 +126,53 @@ void FMovementSample::ProcessFromPredictionFloats(const TArray<float> &buffer){
 //to be implemented!
 float FMovementSample::SimilarityOfSample(SampleInterface &other){
     if(FMovementSample *casted = TSampleCast<FMovementSample>(other)){
-        //compare tokens
+        //compare tokens linear
+        float loss = Loss(*casted);
+        
+        float similarity = FMath::Clamp(1.0f - loss, 0.0f, 1.0f);
+        return similarity;
     }
     return 0.0f;
+}
+
+float FMovementSample::Loss(FMovementSample &other){
+
+    float distanceSampleInput = DistanceSquared(inputTokens, other.inputTokens);
+    float distanceSampleGroundTruth = DistanceSquared(groundTruthTokens, other.groundTruthTokens);
+    float lossAll = distanceSampleInput + distanceSampleGroundTruth;
+
+    float maxLossPerToken = 10.0f;
+    float maxLoss = (inputTokens.Num() + other.inputTokens.Num() + groundTruthTokens.Num() + other.groundTruthTokens.Num()) / maxLossPerToken;
+    if(maxLoss > 0.0f){
+        return lossAll / maxLoss;
+    }
+    return 1.0f;
+}
+
+float FMovementSample::DistanceSquared(
+    const TArray<FMovementToken> &buffer,
+    const TArray<FMovementToken> &other
+){
+    float distance = 0.0f;
+    int minIndex = std::min(buffer.Num(), other.Num());
+    for (int i = 0; i < minIndex; i++){
+        distance += buffer[i].DistanceSquared(other[i]);
+    }
+    return distance;
 }
 
 
 
 
-void FMovementSample::EmbedTrajectories(const TArray<Trajectory> &buffer){
-    //split into 3 channels
-    //or 4, but each is a feature of (delta X, deltaY, deltaZ, deltaT)
+void FMovementSample::EmbedTrajectories(
+    const TArray<Trajectory> &buffer,
+    const FVector &locationOfRequest
+){
+    requestLocation = locationOfRequest;
+    //LogTrajectoryBuffer(buffer);
+
+    //split into 4 channels
+    //but each is a feature of (delta X, deltaY, deltaZ, deltaT)
     inputTokens.SetNum(numInputTokens);
     int diff = numInputTokens - buffer.Num();
 
@@ -143,6 +184,8 @@ void FMovementSample::EmbedTrajectories(const TArray<Trajectory> &buffer){
     }
 
     //if there were tokens missing, start at offset
+    //if too many trajectories in buffer: start from offset to end
+    //as they are sorted in time [min, ..., currentTime]
     int start = std::max(0, diff);
     int bufferIndex = 0;
     for (int i = start; i < inputTokens.Num(); i++){
@@ -156,6 +199,18 @@ void FMovementSample::EmbedTrajectories(const TArray<Trajectory> &buffer){
         token.Generate(currentTrajectory, prevTrajectory);
 
         bufferIndex++;
+    }
+}
+
+void FMovementSample::LogTrajectoryBuffer(const TArray<Trajectory> &buffer){
+    for (int i = 0; i < buffer.Num(); i++)
+    {
+        const Trajectory &current = buffer[i];
+        DebugHelper::logMessage(
+            FString::Printf(
+                TEXT("FMovementSample::Trajectory %d %s"), i, *current.GetPosition().ToString()
+            )
+        );
     }
 }
 
@@ -194,4 +249,42 @@ bool FMovementSample::GroundTruthRawReady(){
     //since we need one token more to compute the deltas
     //for n deltas, n+1 trajectories are needed
     return groundTruthRawBuffer.Num() + 1 >= numGroundTruthTokens;
+}
+
+
+void FMovementSample::NotifyTrajectoriesFor(INNMovementInterface *interface) const{
+    if(interface){
+        if(predictionTokens.Num() <= 0){
+            return;
+        }
+
+        TArray<FVector> constructed;
+        ConstructResultBuffer(constructed);
+        interface->ResponseNNMovementPositions(constructed);
+    }
+}
+
+void FMovementSample::ConstructResultBuffer(TArray<FVector> &constructed) const {
+    constructed.SetNum(predictionTokens.Num());
+    for (int i = 0; i < predictionTokens.Num(); i++){
+
+        //prev pos + token, or requestLocation as Fallback
+        FVector pos = GetPrevPos(constructed, i, requestLocation);
+        const FMovementToken &token = predictionTokens[i];
+        FVector dir = token.GetDirection();
+
+        //write new pos to buffer
+        constructed[i] = pos + dir;
+    }
+}
+
+FVector FMovementSample::GetPrevPos(
+    const TArray<FVector> &buffer, 
+    int index, 
+    const FVector &fallback
+) const {
+    if(index > 0 && index < buffer.Num()){
+        return buffer[index - 1];
+    }
+    return fallback;
 }

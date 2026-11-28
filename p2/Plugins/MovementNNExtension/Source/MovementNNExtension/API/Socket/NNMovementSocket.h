@@ -28,6 +28,11 @@ protected:
     bool logConnection = false;
 
 public:
+    virtual int GetPort() override {
+        return 5051; //5050 used by nn pathfinder
+    }
+
+
     static void MakeNNMovementSocketInstance(UWorld *world);
 
     static ANNMovementSocket *NNMovementinstance(){

@@ -10,11 +10,21 @@ void NNRequestHandleBase::BeforeBeginPlaySetSampleUsuage(
     loadSamples = inLoadSamples;
 }
 
+float NNRequestHandleBase::MillisToSeconds(float millis){
+    return millis / 1000.0f;
+}
+
 void NNRequestHandleBase::BeginPlay(){
     OnBeginPlaySetupTask();
     OnBeginPlaySetupBatchTask();
     alreadyReadPredictionData = false;
+    gameStateSetPaused = false;
 }
+
+void NNRequestHandleBase::SetGameStatePaused(bool state){
+    gameStateSetPaused = state;
+}
+
 
 void NNRequestHandleBase::OnBeginPlaySetupTask(){
     delete task;
@@ -37,7 +47,13 @@ FNNSampleSetBase *NNRequestHandleBase::GetBatchTask(){
 }
 
 void NNRequestHandleBase::Tick(FNNRequestHandleTickDataBase &tickData){
+    
     LoadBatchIfNotDoneYet(tickData);
+
+    //NEW UNTESTED
+    if(gameStateSetPaused){
+        return;
+    }
 
     OnTick(tickData.deltatime);
 
@@ -53,22 +69,25 @@ void NNRequestHandleBase::Tick(FNNRequestHandleTickDataBase &tickData){
 }
 
 void NNRequestHandleBase::LoadBatchIfNotDoneYet(FNNRequestHandleTickDataBase &tickData){
+    //DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet TRY A");
     if(!loadSamples){
         return;
     }
-
+    //DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet TRY B");
     if(!tickData.bBatchBinaryDataNeeded){
         return;
     }
+    //DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet TRY C");
     if(FNNSampleSetBase *batchTaskPtr = GetBatchTask()){
         //batch was not prepared yet: load
         if(!batchTaskPtr->BatchPrepared()){
-            DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet");
+            //DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet LOAD");
 
             TArray<uint8> &buffer = tickData.batchDataOut;
             batchTaskPtr->PrepareBatchBinary(buffer);
             if (buffer.Num() > 0) //size must be valid
             {
+                //DebugHelper::logMessage("NNRequestHandleBase::LoadBatchIfNotDoneYet OK");
                 tickData.bBatchBinaryOutChanged = true; //flag for writing to shared memory
                 //WriteData(frameNameBatch, buffer);
             }
@@ -352,7 +371,6 @@ void NNRequestHandleBase::OnEndPlayBatchTaskSave(){
         batchTask = nullptr;
     }
 }
-
 
 
 void NNRequestHandleBase::NotifyBatchTrainFinished(bool &hasNext){

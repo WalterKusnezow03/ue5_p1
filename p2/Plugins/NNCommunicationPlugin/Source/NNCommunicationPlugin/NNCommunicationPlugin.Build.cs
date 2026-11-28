@@ -65,6 +65,16 @@ public class NNCommunicationPlugin : ModuleRules
 			}
 		);
 
+		if (Target.Type == TargetType.Editor)
+		{
+			// Code wird im Unreal Editor kompiliert
+			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=1");
+		}
+		else
+		{
+			PublicDefinitions.Add("PLUGIN_GLOBAL_FLAG_USE_PYTHON_NN=0");
+		}
+
 
 		if (Target.Type != TargetType.Editor)
 		{

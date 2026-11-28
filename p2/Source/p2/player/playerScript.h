@@ -30,14 +30,17 @@
 #include "IkHumanoidModell/Ik/Controller/PlayerController/HumanoidPlayerController.h"
 #include "CoreMath/animation/timer/Timer.h"
 
-
+#include "MovementNNExtension/API/Handle/NotifyInterface/NNMovementInterface.h"
 
 #include "playerScript.generated.h"
 
 class APlateCarrier;
 
 UCLASS()
-class P2_API AplayerScript : public APlayerControllerWidgetInteractiveBase {
+class P2_API AplayerScript : 
+public APlayerControllerWidgetInteractiveBase,
+public INNMovementInterface
+{
 	GENERATED_BODY()
 
 public:
@@ -148,17 +151,19 @@ protected:
 	);
 
 
-
-
-	//DEBUG
-
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	
-	void DebugTickPathfinderNN(float deltatime);
 
 
 	//plate carrier
 	void SetupPlateCarrierOnBeginPlay();
 	APlateCarrier *plateCarrier = nullptr;
+
+
+protected:
+	//DEBUG
+
+	bool alreadyRequestedMovement = false;
+	void DebugNNMovementApi(float deltatime);
+public:
+	void ResponseNNMovementPositions(const TArray<FVector> &positions) override;
 };

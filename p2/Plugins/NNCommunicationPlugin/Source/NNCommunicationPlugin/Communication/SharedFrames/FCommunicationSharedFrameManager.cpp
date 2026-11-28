@@ -177,7 +177,7 @@ bool FCommunicationSharedFrameManager::IsSharedFrameIdentifierMessage(const FStr
     
     const int32 start = inName.Find(TEXT("FRAMEID"), ESearchCase::CaseSensitive);
     if(start == INDEX_NONE){
-        DebugHelper::logMessage("FCommunicationSharedFrameManager:: Receive frame name MIRROR BAD: ", inName);
+        //DebugHelper::logMessage("FCommunicationSharedFrameManager:: Receive frame name MIRROR BAD: ", inName);
         return false;
     }
 

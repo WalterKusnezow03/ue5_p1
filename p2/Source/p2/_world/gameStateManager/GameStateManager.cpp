@@ -4,6 +4,7 @@
 #include "p2/_world/worldLevel.h"
 #include "p2/ui/3Dui/GameStartRoom/GameStartRoom.h"
 #include "p2/ui/3Dui/PauseActor/PauseRoomActor.h"
+#include "MovementNNExtension/API/PublicInterface/NNMovementApi.h"
 
 GameStateManager::GameStateManager(){
 
@@ -22,6 +23,10 @@ bool GameStateManager::CanSwitchStates(EGameState stateIn){
 
 void GameStateManager::OverrideGameState(EGameState state){
     currentGameState = state;
+
+    //update NN blocker
+    bool isPause = !IsGameStatePlay();
+    NNMovementApi::SetGameStatePaused(isPause);
 }
 
 void GameStateManager::UpdateGameState(EGameState state){
@@ -74,6 +79,9 @@ void GameStateManager::SetGameStatePaused(){
     UpdateGameState(EGameState::EPauseScreen);
 }
 
+bool GameStateManager::IsGameStatePlay(){
+    return IsInState(EGameState::EGamePlay);
+}
 
 void GameStateManager::SwitchGameStatePausedAndChangeUi(){
     //only switchable if in play or pause

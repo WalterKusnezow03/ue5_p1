@@ -48,7 +48,11 @@ public:
 
     virtual void NotifyBatchTrainFinished(bool &hasNext);
 
+    void SetGameStatePaused(bool state);
+
 protected:
+    float MillisToSeconds(float millis);
+
     virtual void OnBeginPlaySetupTask();
     virtual void OnBeginPlaySetupBatchTask();
 
@@ -56,6 +60,8 @@ protected:
 
     virtual void OnTick(float deltatime) {};
 
+    /** blocks incoming requests but allows training data */
+    bool gameStateSetPaused = false;
 
     FNNRequestQueue requests;
 

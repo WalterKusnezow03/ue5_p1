@@ -5,6 +5,7 @@ import socket, struct
 from .InputOutput import receiver
 from .SharedMemory.sharedMemory import UnrealSharedFrame
 from .SharedMemory.sharedMemoryMap import UnrealSharedMemoryMap
+from . import ArgExtract
 ##from NNBase import CNNBase
 
 print("NNServer NN_SERVER MODULE LOADED")
@@ -31,7 +32,9 @@ class NNServer:
         ##CNNBase.debugTorch()
         self.SHUTDOWNFLAG = False
 
+        self.PORT = 5050
 
+        self.setupLogName()
 
 
         ##setup connection
@@ -40,15 +43,27 @@ class NNServer:
         self.setupFrameNames()
         self.setupFlags()
 
+    def setupLogName(self):
+        self.logName = "NNServer"
+
+    def findPortFromArgs(self):
+        port = ArgExtract.ArgumentExtractor.GetArgAsInt("PORT_")
+        if port != None:
+            print(self.logName, "NNServer Extracted Port(", port, ")")
+            self.PORT = port
+        else:
+            print(self.logName, "NNServer Extracted Port None")
+
     def setupConnection(self):
+        self.findPortFromArgs()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(("127.0.0.1", 5050))
+        self.s.bind(("127.0.0.1", self.PORT))
         self.s.listen(1)
-        print("NNServer Python server ready")
-        print("NNServer Waiting for connection...")
+        print(self.logName, "NNServer Python server ready")
+        print(self.logName, "NNServer Waiting for connection...")
         self.connection, self.addr = self.s.accept()
-        print("NNServer Connection from", self.addr)
+        print(self.logName, "NNServer Connection from", self.addr, " port ", self.PORT)
 
     def setupFrameNames(self):
         ##same as cpp socket (ANNPathFinderSocket)
@@ -56,11 +71,11 @@ class NNServer:
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
         self.frameNameNNType = "ANNPathFinderSFNN"
+        self.frameNameBatch = "ANNPathFinderSFB"
 
     def setupFlags(self):
         self.bWaitingForGroundTruth = False
         self.resultData = None
-        self.frameNameBatch = "ANNPathFinderSFB"
         self.bWaitingForBatch = True
         self.doBatchTraining = True
         self.trainLive = False
@@ -85,30 +100,30 @@ class NNServer:
             ##print("NNServer received data as string: ", message)
 
             ##mirror
-            print("mirror: ", data)
+            print(self.logName, "mirror: ", data)
 
             self.ProcessMessage(message)
 
     
 
     def OnShutDown(self):
-        print("NNServerPathfinder OnShutDown Save net")
+        print(self.logName, "NNServer OnShutDown Save net")
         self.SaveNet()
-        print("NNServerPathfinder OnShutDown FINISHED")
+        print(self.logName, "NNServer OnShutDown FINISHED")
         print("PYTHON_SAFE_TO_EXIT")
         return
 
     def ProcessMessage(self, message):
         if(len(message) > 0):
             prefix = message[0]
-            print("NNServer process message", prefix, " ", message)
+            print(self.logName, "NNServer process message", prefix, " ", message)
             if(prefix == "SHUTDOWN"):
                 self.OnShutDown()
                 self.closeConnect()
                 self.SHUTDOWNFLAG = True
 
             if(prefix == "FRAMEID" or prefix == "FRAMEIDCLOSE"):
-                print("NNServer received data as string: FRAME ID DATA: ", message)
+                print(self.logName, "NNServer received data as string: FRAME ID DATA: ", message)
                 self.CloseAndReopenSharedMemoryCommand(message)
                 
 
@@ -132,15 +147,38 @@ class NNServer:
         ##self.connection.close()
         ##self.s.close()
         self.openedconnection = False
-        print("SHUTDOWN_CONFIRMED")
+        print(self.logName, "SHUTDOWN_CONFIRMED")
+
+    def anySelfPage(self, messageArray):
+        arrayThis = [
+            self.frameNameRequest,
+            self.frameNameResult,
+            self.frameNameGroundThruth,
+            self.frameNameNNType,
+            self.frameNameBatch,
+        ]
+        print(self.logName, "NNServer Try findBatchName", arrayThis, " in ", messageArray)
+        for word in messageArray:
+            for name in arrayThis:
+                if name in word or name == word:
+                    return True
+
+
+        return False
 
     ##### not tested ! #####
     def CloseAndReopenSharedMemoryCommand(self, message):
+        if self.anySelfPage(message) == False:
+            
+            #print(self.logName, "NNServer Try findBatchName Failed" message)
+
+            return
+
         if(len(message) >= 2):
             prefix = message[0]
             if(prefix == "FRAMEID"):  
 
-                print("NNServer FRAME ID: MESSAGE", message)
+                print(self.logName, "NNServer FRAME ID: MESSAGE", message)
                 if(len(message) >= 4):
                     shortTag = message[3]
                     self.UpdateIfNewBatchReceived(shortTag)
@@ -153,7 +191,7 @@ class NNServer:
                         return
                     if(self.sharedMemoryMap):
                         self.sharedMemoryMap.CloseAndReopenPage(tagname, size, shortTag)
-                        print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
+                        print(self.logName, "NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size)
                 
                 if(len(message) == 5):
                     tagname, size, semMutexName, shortTag = message[1], int(message[2]), message[3], message[4]
@@ -163,7 +201,7 @@ class NNServer:
                         return
                     if(self.sharedMemoryMap):
                         self.sharedMemoryMap.CloseAndReopenPageSemaphore(tagname, size, semMutexName, shortTag)
-                        print("NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size, " ", semMutexName)
+                        print(self.logName, "NNServer FRAME ID: REOPEN SHARED MEMORY ", tagname, " ", size, " ", semMutexName)
 
             if(prefix == "FRAMEIDCLOSE"):
                 #closePage(self, shortTag):
@@ -176,9 +214,9 @@ class NNServer:
         return tag == self.frameNameGroundThruth and (self.trainLive == False)           
 
     def UpdateIfNewBatchReceived(self, someTag):
-        print("CHECK NEW BATCH ", someTag)
+        print(self.logName, "CHECK NEW BATCH ", someTag)
         if someTag == self.frameNameBatch:
-            print("CHECK NEW BATCH OK ", someTag, " == ", self.frameNameBatch)
+            print(self.logName, "CHECK NEW BATCH OK ", someTag, " == ", self.frameNameBatch)
             self.bWaitingForBatch = True      
 
     
@@ -227,16 +265,16 @@ class NNServer:
                     page.writeReadyFalse()
                     self.ProcessDataByMemoryTag(data, shortTag)
             else:
-                print("NNServerPathfinder shared mem Page not found", shortTag)
+                print(self.logName, "NNServer shared mem Page not found", shortTag)
 
     def ProcessDataByMemoryTag(self, data, shortTag):
-        print("NNServerPathfinder Data Process, Len of (",shortTag, "): ", len(data))
+        print(self.logName, "NNServer Data Process, Len of (",shortTag, "): ", len(data))
 
         if(shortTag == self.frameNameRequest):
             if(self.bWaitingForGroundTruth):
-                print("NNServerPathfinder_RUN_NN_RETURNED: WAIT GT")
+                print(self.logName, "NNServer_RUN_NN_RETURNED: WAIT GT")
                 return
-            print("NNServerPathfinder_RUN_NN")
+            print(self.logName, "NNServer_RUN_NN")
             ##run net
             NetRef = self.GetNet()
             if(NetRef != None):
@@ -246,7 +284,7 @@ class NNServer:
                 self.bResultDataWritten = False
 
                 ##write result
-                print("NNServerPathfinder_RUN_NN_Finish_A", len(self.resultData))
+                print(self.logName,"NNServer_RUN_NN_Finish_A", len(self.resultData))
                 ##self.WriteResultDataIfPending()
 
             return
@@ -263,29 +301,29 @@ class NNServer:
 
 
                 if(self.trainLive):
-                    print("NNServerPathfinder_RUN_NN_BACKPROP ", len(data))
+                    print(self.logName, "NNServer_RUN_NN_BACKPROP ", len(data))
 
                     if(NetRef != None):
                         NetRef.Net.learnData(data)
                     
 
                     ##self.Net.learnData(data)
-                    print("NNServerPathfinder_RUN_NN_BACKPROP_FINISH", len(data))
+                    print(self.logName,"NNServer_RUN_NN_BACKPROP_FINISH", len(data))
                 return
 
     def WriteResultDataIfPending(self):
         if(self.resultData != None and self.bResultDataWritten == False):
-            print("NNServerPathfinder_RequestFinishAvailable Start")
+            print(self.logName,"NNServer_RequestFinishAvailable Start")
             resultPage = self.sharedMemoryMap.findPage(self.frameNameResult)
             if(resultPage != None):
                 resultPage.write_data_only_float_array(self.resultData)
                 resultPage.writeReadyTrue()
-                print("NNServerPathfinder_RequestFinishAvailable Write! float:", len(self.resultData), " uint8 ", len(self.resultData) * 4)
+                print(self.logName,"NNServer_RequestFinishAvailable Write! float:", len(self.resultData), " uint8 ", len(self.resultData) * 4)
                 self.resultData = None
                 self.bResultDataWritten = True ##mark as true
                 return
             else:
-                print("NNServerPathfinder_RequestFinishAvailable BUT RESULT PAGE NOT SETUP")
+                print(self.logName,"NNServer_RequestFinishAvailable BUT RESULT PAGE NOT SETUP")
             
         return
 
@@ -301,13 +339,13 @@ class NNServer:
     def ProcessBatchOnce(self):
     
         if self.bWaitingForBatch:
-            print("NNServerPathfinder_ProcessBatch_Waiting")
+            print(self.logName,"NNServer_ProcessBatch_Waiting")
             if(self.sharedMemoryMap):
                 page = self.sharedMemoryMap.findPage(self.frameNameBatch)
                 if(page != None):
                     if(page.isReady()):
-                        print("NNServerPathfinder_ProcessBatch")
-                        print("ANNServerPathfinder_ProcessBatch")
+                        print(self.logName,"NNServer_ProcessBatch")
+                        print(self.logName,"NNServer_ProcessBatch")
                         data = page.read_data_only_float_array()
                         ##print("NNServerPathfinder shared mem Page Data Len of (",shortTag, "): ", len(data))
                         page.writeReadyFalse()
@@ -330,7 +368,7 @@ class NNServer:
         try:
             if self.connection:
                 self.connection.close()
-                print("NNServer Connection closed")
+                print(self.logName,"NNServer Connection closed")
         except Exception as e:
             print(f"NNServer Error closing connection: {e}")
         
@@ -355,7 +393,7 @@ class NNServer:
         except:
             pass
 
-        print("NNServerPathFinderBase sockets closed on delete")
+        print(self.logName,"NNServer sockets closed on delete")
 
 
 
@@ -367,10 +405,10 @@ class NNServer:
 def Run():
     ## run until process finished
     serverVar = NNServer()
-    print("NNServerPathFinderBase Server RUN")
+    print("NNServerBase Server RUN")
     while True and (serverVar.SHUTDOWNFLAG != True):
         serverVar.Tick()
-    print("NNServerPathFinderBase Server EXIT")
+    print("NNServerBase Server EXIT")
     serverVar.closeConnect()
 
 ##Run()

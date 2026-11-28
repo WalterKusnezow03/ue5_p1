@@ -17,7 +17,7 @@ class NetBase(nn.Module):
         super().__init__()
         self.epochs = 50 #100 #300
 
-        print("NNServerPathfinder_NetBase: INIT!")
+        print("NNServer_NetBase: INIT!")
 
         ##self.memory = []
         self.latestX = None
@@ -36,7 +36,7 @@ class NetBase(nn.Module):
         self.ReInitNet()
 
         
-        print("NNServerPathfinder_NetBase: finish construct!")
+        print("NNServer_NetBase: finish construct!")
 
     def InitializeTensorAndPathNames(self):
         #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
@@ -55,7 +55,7 @@ class NetBase(nn.Module):
         self.checkpointPath = "PyCheckpoint/netBcheckpoint.pth"
         self.ONNXPath = "Python/onnxExport/netB_ONNX.onnx"
 
-        self.logname = "NNServerPathfinder_NetBase"
+        self.logname = "NNServer_NetBase"
         #### MUST BE OVERRIDEN IN SUBCLASSES !!! #####
 
 
@@ -138,7 +138,7 @@ class NetBase(nn.Module):
         return
 
     def GetInputTensor(self, index):
-            return self.Tensors[index]
+        return self.Tensors[index]
 
     #######  FORWARD SINGLE REQUEST FROM BIN ########
 
@@ -190,6 +190,9 @@ class NetBase(nn.Module):
         #out = out.squeeze(0).squeeze(0)  # (142, 142)
         #return out.reshape(-1)           # 20164
         return out.reshape(-1).detach() ##detach um vom net loszulösen
+
+    
+
 
     def preprocessDataBinToTensor(self, data):
         # 1. Daten einmalig als 1D-Tensor laden

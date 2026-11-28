@@ -7,7 +7,7 @@
 #include "Networking.h"
 
 #include "PythonPlugin/Public/base/PythonLauncher.h"
-#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNPathFinderSocketMessageReceiver.h"
+#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNSocketMessageReceiver.h"
 #include "NNCommunicationPlugin/Communication/Connection/base/notify/MessageDispatcher.h"
 
 #include "PythonSocketBase.generated.h"
@@ -18,7 +18,8 @@ class NNCOMMUNICATIONPLUGIN_API APythonSocketBase : public APythonLauncher {
     GENERATED_BODY()
 
 public:
-    static int GetPort(){
+    /// should be overriden by subclasses using different python processes
+    virtual int GetPort(){
         return 5050;
     }
 
@@ -28,11 +29,12 @@ public:
         FString pluginName, 
         FString pyName, 
         FString pluginNamePython,
-        FString pythonExePath
+        FString pythonExePath,
+        TArray<FString> args = {}
     );
     void LaunchPythonProcess(FString pluginName, FString pyName);
 
-    void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
+    void SubscribeMessageListener(INNSocketMessageReceiver *listener);
 
 private:
     void SendHeartBeat();

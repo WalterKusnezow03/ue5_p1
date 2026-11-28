@@ -13,7 +13,7 @@ void UNNTrainWidget::ResetParent(){
 
 void UNNTrainWidget::NotifyLaunch(){
     if(parent){
-        parent->NotifyNNTrainLaunch();
+        parent->NotifyNNTrainLaunch(targetPlugin);
     }
 }
 
@@ -111,7 +111,17 @@ void UNNTrainWidget::Init(){
         GetHeatMapEnableDisableButton()
     );
     UpdateHeatMapSaveOnEndText();
+    SetupHeadLine();
 }
+
+void UNNTrainWidget::SetupHeadLine(){
+    if(UWidget *ptr = GetHeadLine()){
+        if(UTextBlock *casted = Cast<UTextBlock>(ptr)){
+            casted->SetText(FText::FromString(targetPlugin.ToLower()));
+        }
+    }
+}
+
 
 void UNNTrainWidget::ReceiveMessage(FString message){
     //DebugHelper::logMessage("UNNTrainWidget::Receive ", message);
@@ -121,6 +131,13 @@ void UNNTrainWidget::ReceiveMessage(FString message){
         
 
         //UNNTrainWidget::Receive NNServerPathfinder_NetA_RUN_NN_BATCH_EPOCH_FINISHED 14 _of_ 50  LOSS  0.01974029839038849
+
+        
+
+        if(message.Contains("BATCH_TRAIN_FINISHED")){
+            SetText("Train Finished");
+            return;
+        }
 
         if(message.Contains("EPOCH_FINISHED")){
         
@@ -252,6 +269,7 @@ FString UNNTrainWidget::FormatLossScientificCustom(const FString& InLossString, 
     return InLossString;
 }*/
 
+#include "p2/ui/3Dui/GameStartRoom/NNTrainWidget/StringFormat/NNTrainStringFormatter.h"
 bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResult)
 {
     if (Parts.Num() == 0) return false;
@@ -262,58 +280,13 @@ bool UNNTrainWidget::ExtractLoss(const TArray<FString>& Parts, FString& OutResul
         FString LossString = Parts[Index + 1];
 
         // Transforms scientific notation into custom compact format
-        FString FormattedLoss = FormatLossScientificCustom(LossString, 5);
+        FString FormattedLoss = NNTrainStringFormatter::FormatLossScientificCustom(LossString, 5);
 
         OutResult = "Loss: " + FormattedLoss;
         return true;
     }
     return false;
 }
-
-FString UNNTrainWidget::FormatLossScientificCustom(const FString& InLossString, int32 SignificantDigits)
-{
-    int32 EIndex = INDEX_NONE;
-    if (!InLossString.FindChar('e', EIndex) && !InLossString.FindChar('E', EIndex))
-    {
-        // Not scientific notation; return as-is
-        return InLossString;
-    }
-
-    // 1. Split into Mantissa and Exponent
-    FString MantissaStr = InLossString.Left(EIndex);
-    FString ExponentStr = InLossString.RightChop(EIndex + 1);
-
-    int32 Exponent = FCString::Atoi(*ExponentStr);
-
-    // Clean mantissa digits (remove sign and decimal point)
-    FString Sign = MantissaStr.StartsWith(TEXT("-")) ? TEXT("-") : TEXT("");
-    MantissaStr = MantissaStr.Replace(TEXT("-"), TEXT("")).Replace(TEXT("."), TEXT(""));
-
-    // 2. Format Negative Exponents -> 0.(ZerosCount)Mantissa
-    if (Exponent < 0)
-    {
-        int32 LeadingZerosCount = FMath::Abs(Exponent) - 1;
-
-        // Ensure we take only the requested significant digits starting from the first non-zero representation
-        if (MantissaStr.Len() > SignificantDigits)
-        {
-            MantissaStr = MantissaStr.Left(SignificantDigits);
-        }
-
-        if (LeadingZerosCount > 0)
-        {
-            return FString::Printf(TEXT("%s0.(%d)%s"), *Sign, LeadingZerosCount, *MantissaStr);
-        }
-        else
-        {
-            return FString::Printf(TEXT("%s0.%s"), *Sign, *MantissaStr);
-        }
-    }
-
-    // 3. Fallback for positive exponents if encountered
-    return InLossString;
-}
-
 
 
 //update for heatmap output enabled y/n

@@ -25,8 +25,11 @@ public:
     /// @brief switches to pause or closes pause screen, only if currently in play or pause mode!
     void SwitchGameStatePausedAndChangeUi();
 
-    ///@brief tells if currently paused by player (pause, loadscreen, all of them)
+    ///@brief tells if currently paused by player (just pause)
     bool GameStateIsPaused();
+
+    ///@brief tells if currently in state play, and nothing else
+    bool IsGameStatePlay();
 
 private:
     bool CanSwitchStates(EGameState stateIn);

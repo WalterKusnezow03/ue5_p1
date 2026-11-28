@@ -77,3 +77,22 @@ FString FPythonSetup::PluginDir(FString pluginName){
     return pluginDir;
 }
     
+
+
+
+void FPythonSetup::AddAdditionalArgumentsTo(FString &inArgs) const {
+    for(const FString &arg : additionalArguments){
+        if(arg.IsEmpty() == false){
+            inArgs += FString::Printf(TEXT(" \"%s\""), *arg); // Mit Quotes für Sicherheit
+        }
+    }
+}
+
+void FPythonSetup::AddAllArguments(const TArray<FString> &inArgs){
+    for (int i = 0; i < inArgs.Num(); i++){
+        const FString &current = inArgs[i];
+        if(!additionalArguments.Contains(current)){
+            additionalArguments.Add(current);
+        }
+    }
+}

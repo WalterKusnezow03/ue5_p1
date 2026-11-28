@@ -7,11 +7,11 @@
 #include "UObject/Interface.h"
 
 
-#include "NNPathFinderSocketMessageReceiver.generated.h"
+#include "NNSocketMessageReceiver.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UNNPathFinderSocketMessageReceiver : public UInterface
+class UNNSocketMessageReceiver : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -19,7 +19,7 @@ class UNNPathFinderSocketMessageReceiver : public UInterface
 /**
  * interface for calling back aactor on widget interaction - for example after timer.
  */
-class INNPathFinderSocketMessageReceiver
+class INNSocketMessageReceiver
 {
 	GENERATED_BODY()
 

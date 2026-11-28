@@ -1,6 +1,6 @@
 #include "NNPathFinderExtensionApi.h"
 
-#include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "NNCommunicationPlugin/Settings/NNSetting.h"
 
 #include "PathfinderNNExtension/API/Socket/NNPathFinderSocket.h"
 #include "PathfinderNNExtension/API/ONNX/NNPathFinderONNX.h"
@@ -36,13 +36,16 @@ void NNPathFinderExtensionApi::FlagVisible(AActor *actor){
 #include "NNCommunicationPlugin/API/RequestTakerInterface/NNRequestTakerInterfaceBase.h"
 
 void NNPathFinderExtensionApi::SetTrainingAllowed(){
+    DebugHelper::logMessage("NNPathFinderExtensionApi::SetTrainingAllowed");
     if(INNRequestTakerInterfaceBase *interface = TGetInstance<INNRequestTakerInterfaceBase>()){
         interface->SetTrainingAllowed();
+    }else{
+        DebugHelper::logMessage("NNPathFinderExtensionApi::SetTrainingAllowed NO INTERFACE");
     }
 }
 
 
-void NNPathFinderExtensionApi::SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener){
+void NNPathFinderExtensionApi::SubscribeMessageListener(INNSocketMessageReceiver *listener){
     if(NNPluginSettings::UsePythonNN()){
         if(ANNPathFinderSocket *socket = ANNPathFinderSocket::PathFinderNNinstance()){
             socket->SubscribeMessageListener(listener);

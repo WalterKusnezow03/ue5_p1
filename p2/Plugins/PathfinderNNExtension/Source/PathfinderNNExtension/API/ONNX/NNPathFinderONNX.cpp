@@ -1,5 +1,5 @@
 #include "NNPathFinderONNX.h"
-#include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "NNCommunicationPlugin/Settings/NNSetting.h"
 #include "PathfinderNNExtension/GameNN/FONNXModelsetup.h"
 #include "NNCommunicationPlugin/GameNN/ModelInput/FONNXModelInput.h"
 

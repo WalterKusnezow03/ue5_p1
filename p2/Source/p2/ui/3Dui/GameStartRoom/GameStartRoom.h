@@ -25,6 +25,12 @@ protected:
     
 
 public:
+    UPROPERTY(EditAnywhere, Category = "NN|PluginName")
+    FString targetPlugin_NNPathFinder = "PATHFINDERNNEXTENSION";
+
+    UPROPERTY(EditAnywhere, Category = "NN|PluginName")
+    FString targetPlugin_NNMovement = "MOVEMENTNNEXTENSION";
+
     
     AGameStartRoom();
 
@@ -45,7 +51,10 @@ public:
 
     void NotifyOnClickDispatch();
 
-    void NotifyNNTrainLaunch();
+    void NotifyNNTrainLaunch(FString targetPlugin);
+
+
+    
 
 protected:
     static void CreateInstanceIfNeeded(AActor *actor);
@@ -65,13 +74,17 @@ protected:
     //helper to get from inside of ACustomMeshUIActor
     UWorldCreatorWidget *GetWorldCreatorWidget();
     UWorldListWidget *GetWorldListWidget();
-    UNNTrainWidget *GetNNWidget();
+    UNNTrainWidget *GetNNWidget(FString target);
+    TArray<UNNTrainWidget *> GetNNWidgets();
 
     //saved as raw ui actor to prevent additional subclasses
     ACustomMeshUIActor *uiActorWorldCreator = nullptr;
     ACustomMeshUIActor *uiActorWorldList = nullptr;
-    ACustomMeshUIActor *uiActorNNTrain = nullptr;
+    ACustomMeshUIActor *uiActorNNTrain_PathFinder = nullptr;
+    ACustomMeshUIActor *uiActorNNTrain_Movement = nullptr;
 
     bool AnyTextFieldSelected();
     void ChangeLockPlayerMovementBasedOnSeletedTextField();
+
+    bool Match(FString targetPlugin, FString comparePlugin);
 };

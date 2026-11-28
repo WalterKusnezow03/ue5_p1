@@ -63,4 +63,11 @@ public:
     virtual FString StorageFileName(){
         return "SampleInterfaceBaseBin";
     }
+
+    UWorld *GetWorld(){
+        if(GEngine){
+            return GEngine->GetWorld();
+        }
+        return nullptr;
+    }
 };

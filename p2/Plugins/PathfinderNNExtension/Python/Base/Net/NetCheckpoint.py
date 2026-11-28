@@ -195,7 +195,7 @@ def ExportNetSingleTensor(
     Tensor,
     path="Python/onnxExport/netB_ONNX.onnx"
 ):
-    dummy_input = MakeDummyInput(Tensor)
+    dummy_input = MakeDummyInput(Tensor).to(next(net.parameters()).device)
 
     fastExport = True
     if(fastExport == False):
@@ -244,7 +244,8 @@ def ExportNetMultiTensor(
     Tensors,
     path="Python/onnxExport/netB_ONNX.onnx"
 ):
-    dummy_inputs = MakeDummyInputs(Tensors)
+    device = next(net.parameters()).device
+    dummy_inputs = tuple(dummy.to(device) for dummy in MakeDummyInputs(Tensors))
     input_names = MakeInputNames(Tensors)
 
 

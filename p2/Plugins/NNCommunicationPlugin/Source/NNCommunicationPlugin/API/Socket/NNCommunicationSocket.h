@@ -64,14 +64,15 @@ public:
     //connection state of socket to display in widget
     virtual bool NNIsConnected() override;
     //heatmap / other widget for minimap
-    
 
-    
+    virtual void SetGameStatePaused(bool state) override;
 
     virtual void SetTrainingAllowed() override;
     
 
 protected:
+    
+
     using ANNSocket::WriteData;
     void WriteDataRequest(TArray<uint8> &data, int resultBytes);
     void WriteDataGroundTruth(TArray<uint8> &buffer);

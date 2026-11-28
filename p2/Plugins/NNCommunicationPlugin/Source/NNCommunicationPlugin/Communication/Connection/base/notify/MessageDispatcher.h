@@ -8,10 +8,10 @@ public:
     MessageDispatcher();
     ~MessageDispatcher();
 
-    void Subscribe(INNPathFinderSocketMessageReceiver *other);
+    void Subscribe(INNSocketMessageReceiver *other);
 
     void Dispatch(FString message);
 
 private:
-    TArray<INNPathFinderSocketMessageReceiver *> receiverSet;
+    TArray<INNSocketMessageReceiver *> receiverSet;
 };

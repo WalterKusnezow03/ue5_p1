@@ -35,6 +35,11 @@ public:
         return pythonExe;
     }
 
+    //add additional arguments if needed, such a port_1234 etc.
+    void AddAdditionalArgumentsTo(FString &inArgs) const;
+
+    void AddAllArguments(const TArray<FString> &inArgs);
+
 private:
     FString PluginDir(FString pluginName);
     FString PythonPath(FString pluginName, FString pyName);
@@ -52,6 +57,10 @@ private:
     FString pythonExe = TEXT("/opt/homebrew/bin/python3");
     
     
-
+    //script name . py to be be executed
     FString debugScriptName;
+
+
+    //additional arguments for launch
+    TArray<FString> additionalArguments;
 };

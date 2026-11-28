@@ -28,6 +28,7 @@
 
 //nn plugin
 #include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
+#include "MovementNNExtension/API/PublicInterface/NNMovementApi.h"
 
 //gc
 #include "GcGameCore/Launcher/GcLauncher.h"
@@ -55,8 +56,9 @@ void AgameModeSubclass::BeginPlay()
 {
     Super::BeginPlay();
     DebugHelper::DebugToolsEnabled = true;
-
+    
     NNPathFinderExtensionApi::BeginPlay(GetWorld());
+    NNMovementApi::BeginPlay(GetWorld());
 
     //DEBUG
     RunTests(); 

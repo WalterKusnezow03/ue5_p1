@@ -47,3 +47,17 @@ void FMovementToken::Reset(){
     deltaZ = 0.0f;
     deltaT = 0.0f;
 }
+
+FVector FMovementToken::GetDirection() const {
+    return FVector(deltaX, deltaY, deltaZ);
+}
+
+
+float FMovementToken::DistanceSquared(const FMovementToken &other) const{
+    float dX = deltaX - other.deltaX;
+    float dY = deltaY - other.deltaY;
+    float dZ = deltaZ - other.deltaZ;
+    float dT = deltaT - other.deltaT;
+
+    return dX * dX + dY * dY + dZ * dZ + dT * dT;
+}

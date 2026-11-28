@@ -5,7 +5,7 @@
 #include "p2/ui/3Dui/GameStartRoom/TextBox/TextBoxWidget.h"
 #include "customuipluginbase/baseInterface/InterfaceHelper/derived/BorderInterfaceUtilButton.h"
 #include "p2/ui/3Dui/3DUiBase/UserUi3DBaseWidget.h"
-#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNPathFinderSocketMessageReceiver.h"
+#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNSocketMessageReceiver.h"
 
 #include "NNTrainWidget.generated.h"
 
@@ -15,7 +15,7 @@ UCLASS()
 class P2_API UNNTrainWidget : 
 public UUserUi3DBaseWidget, 
 public IBaseUiInterface,
-public INNPathFinderSocketMessageReceiver
+public INNSocketMessageReceiver
 {
     GENERATED_BODY()
 
@@ -25,6 +25,12 @@ public:
     void ResetParent();
 
     void NotifyLaunch();
+
+    UPROPERTY(EditAnywhere, Category = "WidgetSetting|PluginName")
+    FString targetPlugin = "none";
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
+    UWidget *GetHeadLine();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "WidgetSetting")
     UWidget *GetTextWidget();
@@ -58,6 +64,7 @@ protected:
     AGameStartRoom *parent = nullptr;
 
     void Init();
+    void SetupHeadLine();
     BorderInterfaceUtilButton playButtonUtil;
     BorderInterfaceUtilButton heatMapButtonUtil;
 
@@ -77,5 +84,5 @@ protected:
     void UpdateHeatMapSaveOnEndTextNextState();
     void UpdateHeatMapSaveOnEndText();
 
-    FString FormatLossScientificCustom(const FString &InLossString, int32 SignificantDigits);
+    
 };

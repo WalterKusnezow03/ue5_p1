@@ -180,7 +180,8 @@ void AplayerScript::Tick(float DeltaTime)
     updateUi();
     //TickMiniMap();
 
-    DebugTickPathfinderNN(DeltaTime);
+   
+    DebugNNMovementApi(DeltaTime);
 }
 
 void AplayerScript::TickBoneController(float DeltaTime){
@@ -701,14 +702,6 @@ void AplayerScript::EndPlay(const EEndPlayReason::Type EndPlayReason){
 
 
 
-//debug
-
-void AplayerScript::DebugTickPathfinderNN(float deltatime){
-    /*if(ANNPathFinderSocket *instance = ANNPathFinderSocket::PathFinderNNinstance()){
-        instance->PredictNode(this);
-    }*/
-}
-
 
 
 
@@ -735,3 +728,32 @@ void AplayerScript::SetupPlateCarrierOnBeginPlay(){
     }
 }
     
+
+#include "MovementNNExtension/API/PublicInterface/NNMovementApi.h"
+void AplayerScript::DebugNNMovementApi(float deltatime){
+    if(!alreadyRequestedMovement){
+        NNMovementApi::PredictTrajectories(
+            this, //INNMovementInterface *interfaceNotify,
+            this //AActor *actor
+        );
+        alreadyRequestedMovement = true;
+    }
+}
+
+void AplayerScript::ResponseNNMovementPositions(const TArray<FVector> &positions){
+    alreadyRequestedMovement = false;
+    //drawAll
+    FVector prev = GetActorLocation();
+    for (int i = 0; i < positions.Num(); i++){
+        const FVector &current = positions[i];
+
+        float time = 1.0f;
+        DebugHelper::showLineBetween(
+            GetWorld(), prev, current, FColor::Red, time
+        );
+        DebugHelper::showLineBetween(
+            GetWorld(), current, current + FVector(0,0,50), FColor::Cyan, time
+        );
+        prev = current;
+    }
+}

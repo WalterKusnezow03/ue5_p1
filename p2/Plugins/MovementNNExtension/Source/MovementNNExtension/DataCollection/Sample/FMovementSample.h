@@ -5,6 +5,7 @@
 #include "NNCommunicationPlugin/Communication/Sample/Interface/SampleInterface.h"
 #include "MovementNNExtension/DataCollection/Sample/Token/FMovementToken.h"
 #include "ActorTracking/Tracking/TrajectoryCollection/Container/Trajectory.h"
+#include "MovementNNExtension/API/Handle/NotifyInterface/NNMovementInterface.h"
 
 class MOVEMENTNNEXTENSION_API FMovementSample : public SampleInterface {
 
@@ -59,7 +60,9 @@ public:
 
 
     //MovementPredictionTask API
-    void EmbedTrajectories(const TArray<Trajectory> &buffer);
+    //Trajectory buffer expected in local space relative to 
+    //locationOfRequest
+    void EmbedTrajectories(const TArray<Trajectory> &buffer, const FVector &locationOfRequest);
 
     //MovementGroundTruthUpdate API
     //ground truth values are only added if the buffer is not
@@ -69,8 +72,16 @@ public:
     //MovementGroundTruthComplete API
     bool GroundTruthReady();
 
+
+    //respond to interface
+    //Trajectories will be responded in world space
+    //from locationOfRequest
+    void NotifyTrajectoriesFor(INNMovementInterface *interface) const;
+
+
+
 private:
-    int numInputTokens = 40;
+    int numInputTokens = 20;
     TArray<FMovementToken> inputTokens;
 
     int numGroundTruthTokens = 5;
@@ -82,4 +93,24 @@ private:
 
     TArray<Trajectory> groundTruthRawBuffer;
     bool GroundTruthRawReady();
+
+    FVector requestLocation;
+    
+
+    
+    void ConstructResultBuffer(TArray<FVector> &constructed) const;
+
+    FVector GetPrevPos(
+        const TArray<FVector> &buffer, 
+        int index, 
+        const FVector &fallback
+    ) const ;
+
+    float Loss(FMovementSample &other);
+    float DistanceSquared(
+        const TArray<FMovementToken> &buffer,
+        const TArray<FMovementToken> &other
+    );
+
+    void LogTrajectoryBuffer(const TArray<Trajectory> &buffer);
 };

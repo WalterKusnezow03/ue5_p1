@@ -66,6 +66,12 @@ bool ANNCommunicationSocket::NNIsConnected(){
     return IsConnected();
 }
 
+void ANNCommunicationSocket::SetGameStatePaused(bool state){
+    if(requestHandle){
+        requestHandle->SetGameStatePaused(state);
+    }
+}
+
 void ANNCommunicationSocket::ResetRequestData(float deltatime){
     //prepare and execute task
     if(requestTickData){
@@ -128,7 +134,7 @@ void ANNCommunicationSocket::ProcessTrainingFlag(){
     }
 
     if(requestTickData->bBatchBinaryOutChanged){
-        DebugHelper::logMessage("ANNCommunicationSocket::Train Start, write data ", requestTickData->batchDataOut.Num());
+        DebugHelper::logMessage("ANNCommunicationSocket::Train Start, write batch data ", requestTickData->batchDataOut.Num());
         WriteData(frameNameBatch, requestTickData->batchDataOut);
         trainingStartAllowed = false;
     }
@@ -171,6 +177,7 @@ void ANNCommunicationSocket::Tick(float deltatime){
 
 void ANNCommunicationSocket::SetTrainingAllowed(){
     trainingStartAllowed = true;
+    DebugHelper::logMessage("ANNCommunicationSocket::SetTrainingAllowed true");
 }
 
 
@@ -180,7 +187,7 @@ void ANNCommunicationSocket::TickSocketConnected(float deltatime){
     // --- nothing needed here for now ---
 
     if(logConnection){
-        DebugHelper::showScreenMessage("ANNPathFinderSocket::TickSocketConnected", FColor::Cyan);
+        DebugHelper::showScreenMessage("ANNCommunicationSocket::TickSocketConnected", FColor::Cyan);
     }
 
     

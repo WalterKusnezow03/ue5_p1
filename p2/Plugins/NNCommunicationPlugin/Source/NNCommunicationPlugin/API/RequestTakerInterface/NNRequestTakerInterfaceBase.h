@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "DebugPlugin/DebugHelper.h"
 #include "NNRequestTakerInterfaceBase.generated.h"
 
 // This class does not need to be modified.
@@ -32,8 +33,17 @@ public:
         UObject *targetObject = nullptr
     ){};
 
-	virtual void SetTrainingAllowed() {};
+	virtual void SetTrainingAllowed() {
+		FString message = "INNRequestTakerInterfaceBase::SetTrainingAllowed Not Implemented";
+		if (AActor *casted = Cast<AActor>(this))
+		{
+			FString postfix = casted->GetName();
+			message += FString::Printf(TEXT(" - %s"), *postfix);
+		}
+		DebugHelper::logMessage(message);
+	};
 
+	virtual void SetGameStatePaused(bool state) {};
 
 	virtual bool NNIsConnected(){
 		return false;

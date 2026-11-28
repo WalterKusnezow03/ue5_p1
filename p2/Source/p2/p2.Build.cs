@@ -34,6 +34,7 @@ public class p2 : ModuleRules
 			"AssetMakerEditorPlugin",
 			"NNCommunicationPlugin",
 			"PathfinderNNExtension",
+			"MovementNNExtension",
 			"DebugPlugin",
 			"ComputerVisionPlugin",
 			"AssetEnumCollection",

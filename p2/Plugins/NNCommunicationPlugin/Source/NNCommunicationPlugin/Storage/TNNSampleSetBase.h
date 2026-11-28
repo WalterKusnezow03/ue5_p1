@@ -116,7 +116,9 @@ public:
         TArray<uint8> Binary;
         if(interface.Load(Binary, fileNameSaved)){
             if(LoadFromBinary(Binary)){
-                DebugHelper::logMessage(FString::Printf(TEXT("TNNSampleSetBase::Loaded %d"), this->cache.Num()));
+                DebugHelper::logMessage(
+                    FString::Printf(TEXT("TNNSampleSetBase::Loaded %d %s"), this->cache.Num(), *fileNameSaved)
+                );
                 OnLoad();
                 // CleanUpSimilarSamples();
             }
@@ -190,7 +192,9 @@ public:
         for (int i = 0; i < cache.Num(); i++){
             cache[i].PrepareRequestAndResultBatchBinary(bytes);
         }
-        FString message = FString::Printf(TEXT("TNNSampleSetBase::Prepare Binary for Batch %d"), cache.Num());
+        FString message = FString::Printf(
+            TEXT("TNNSampleSetBase::Prepare Binary for Batch %d %s"), cache.Num(), *typeSavedName
+        );
         DebugHelper::logMessage(message);
         batchPrepared = true;
     }

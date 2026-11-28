@@ -52,9 +52,20 @@ bool MovementPredictionTask::IsSameActor(AActor *actorCheck){
 
 
 
-void MovementPredictionTask::EmbedRequestData(FNNRequestPackage &queue){
+void MovementPredictionTask::EmbedRequestData(FNNRequestPackage &package){
     // todo
     // will likely stay empty, no external data needed, just the tracked actor
+
+    //actor transform needed
+    /*if(UObject *ptr = package->GetTargetObject()){
+        if(AActor *actor = Cast<AActor>(ptr)){
+            //construct transform for trajectory move to world space
+
+        }
+
+    }*/
+    
+
 }
 
 
@@ -65,11 +76,10 @@ void MovementPredictionTask::GenerateAndNotifyResultData(FNNRequestPackage *queu
         
         TArray<IBaseNNInterface *> interfaces = queue->GetSubscribedActors();
         for (int i = 0; i < interfaces.Num(); i++){
-            /*if(IPathfinderNNInterface *current = Cast<IPathfinderNNInterface>(interfaces[i])){
-                
 
-                data.NotifyVisiblePositionsFor(current, useVisibility);
-            }*/
+            if(INNMovementInterface *current = Cast<INNMovementInterface>(interfaces[i])){
+                sampleData.NotifyTrajectoriesFor(current);
+            }
         }
     }
 }
@@ -118,7 +128,7 @@ void MovementPredictionTask::PrepareRequestMap(FMovementSample &polygonData){
         TArray<Trajectory> trajectories = trackedActorPtr->localTrajectories();
 
         //embed data
-        sampleData.EmbedTrajectories(trajectories);
+        sampleData.EmbedTrajectories(trajectories, locationOfRequest);
     }
 }
 

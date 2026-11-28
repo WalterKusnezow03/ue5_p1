@@ -24,6 +24,12 @@ public:
 
     void AppendToBuffer(TArray<uint8> &buffer) const;
 
+    FVector GetDirection() const;
+
+    //norman distance
+    float DistanceSquared(const FMovementToken &other) const;
+    
+
 private:
 
 

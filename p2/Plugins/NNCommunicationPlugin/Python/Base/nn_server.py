@@ -5,6 +5,7 @@ import socket, struct
 from .InputOutput import receiver
 from .SharedMemory.sharedMemory import UnrealSharedFrame
 from .SharedMemory.sharedMemoryMap import UnrealSharedMemoryMap
+from . import ArgExtract
 ##from NNBase import CNNBase
 
 print("NNServer NN_SERVER MODULE LOADED")
@@ -31,7 +32,7 @@ class NNServer:
         ##CNNBase.debugTorch()
         self.SHUTDOWNFLAG = False
 
-
+        self.PORT = 5050
 
 
         ##setup connection
@@ -40,15 +41,24 @@ class NNServer:
         self.setupFrameNames()
         self.setupFlags()
 
+    def findPortFromArgs(self):
+        port = ArgExtract.ArgumentExtractor.GetArgAsInt("PORT_")
+        if port != None:
+            print("NNServer Extracted Port(", port, ")")
+            self.PORT = port
+        else:
+            print("NNServer Extracted Port None")
+
     def setupConnection(self):
+        self.findPortFromArgs()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(("127.0.0.1", 5050))
+        self.s.bind(("127.0.0.1", self.PORT))
         self.s.listen(1)
         print("NNServer Python server ready")
         print("NNServer Waiting for connection...")
         self.connection, self.addr = self.s.accept()
-        print("NNServer Connection from", self.addr)
+        print(self.logName, "NNServer Connection from", self.addr, " port ", self.PORT)
 
     def setupFrameNames(self):
         ##same as cpp socket (ANNPathFinderSocket)
@@ -56,11 +66,11 @@ class NNServer:
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
         self.frameNameNNType = "ANNPathFinderSFNN"
+        self.frameNameBatch = "ANNPathFinderSFB"
 
     def setupFlags(self):
         self.bWaitingForGroundTruth = False
         self.resultData = None
-        self.frameNameBatch = "ANNPathFinderSFB"
         self.bWaitingForBatch = True
         self.doBatchTraining = True
         self.trainLive = False
@@ -301,7 +311,7 @@ class NNServer:
     def ProcessBatchOnce(self):
     
         if self.bWaitingForBatch:
-            print("NNServerPathfinder_ProcessBatch_Waiting")
+            print("NNServer_ProcessBatch_Waiting")
             if(self.sharedMemoryMap):
                 page = self.sharedMemoryMap.findPage(self.frameNameBatch)
                 if(page != None):

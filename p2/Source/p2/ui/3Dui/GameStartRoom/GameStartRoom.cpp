@@ -47,9 +47,12 @@ void AGameStartRoom::ClearReferencesOnEndPlay(){
     if(UWorldListWidget *widget = GetWorldListWidget()){
         widget->ResetParent();
     }
-    if(UNNTrainWidget *widget = GetNNWidget()){
-        widget->ResetParent();
+    for(UNNTrainWidget *widget : GetNNWidgets()){
+        if(widget){
+            widget->ResetParent();
+        }
     }
+    
 }
 
 void AGameStartRoom::SetParentReferencesOnWidgets(){
@@ -59,8 +62,10 @@ void AGameStartRoom::SetParentReferencesOnWidgets(){
     if(UWorldListWidget *widget = GetWorldListWidget()){
         widget->SetParent(this);
     }
-    if(UNNTrainWidget *widget = GetNNWidget()){
-        widget->SetParent(this);
+    for(UNNTrainWidget *widget : GetNNWidgets()){
+        if(widget){
+            widget->SetParent(this);
+        }
     }
 }
 
@@ -75,7 +80,10 @@ void AGameStartRoom::BeginPlay(){
 void AGameStartRoom::FindActorsOnBeginPlay(){
     uiActorWorldCreator = TFindChildActorByName<ACustomMeshUIActor>("WorldCreatorWidgetActorBP");
     uiActorWorldList = TFindChildActorByName<ACustomMeshUIActor>("WorldListWidgetActorBP");
-    uiActorNNTrain = TFindChildActorByName<ACustomMeshUIActor>("NNTrainWidgetActorBP");
+    
+    uiActorNNTrain_PathFinder = TFindChildActorByName<ACustomMeshUIActor>("NNTrainWidgetActor_Pathfinder");
+    uiActorNNTrain_Movement = TFindChildActorByName<ACustomMeshUIActor>("NNTrainWidgetActor_Movement");
+
 
     SetParentReferencesOnWidgets();
 }
@@ -95,11 +103,37 @@ UWorldListWidget *AGameStartRoom::GetWorldListWidget(){
     return nullptr;
 }
 
-UNNTrainWidget *AGameStartRoom::GetNNWidget(){
-    if(uiActorNNTrain){
-        return uiActorNNTrain->GetWidget<UNNTrainWidget>();
+UNNTrainWidget *AGameStartRoom::GetNNWidget(FString target){
+    //match name must be exact
+    if(Match(target, targetPlugin_NNPathFinder)){
+        DebugHelper::logMessage(FString::Printf(TEXT("AGameStartRoom::GetNNWidget pathfinder %s match %s"), *target, *targetPlugin_NNPathFinder));
+        if(uiActorNNTrain_PathFinder){
+            return uiActorNNTrain_PathFinder->GetWidget<UNNTrainWidget>();
+        }
+    }
+    if(Match(target, targetPlugin_NNMovement)){
+    //if(target.ToLower().Equals(targetPlugin_NNMovement.ToLower())){
+        DebugHelper::logMessage(FString::Printf(TEXT("AGameStartRoom::GetNNWidget movement %s match %s"), *target, *targetPlugin_NNMovement));
+        if(uiActorNNTrain_Movement){
+            return uiActorNNTrain_Movement->GetWidget<UNNTrainWidget>();
+        }
     }
     return nullptr;
+}
+
+bool AGameStartRoom::Match(FString targetPlugin, FString comparePlugin){
+    return targetPlugin.ToLower().Equals(comparePlugin.ToLower());
+}
+
+TArray<UNNTrainWidget *> AGameStartRoom::GetNNWidgets(){
+    TArray<UNNTrainWidget *> outArray;
+    if(uiActorNNTrain_PathFinder){
+        outArray.Add(uiActorNNTrain_PathFinder->GetWidget<UNNTrainWidget>());
+    }
+    if(uiActorNNTrain_Movement){
+        outArray.Add(uiActorNNTrain_Movement->GetWidget<UNNTrainWidget>());
+    }
+    return outArray;
 }
 
 void AGameStartRoom::Tick(float deltatime){
@@ -252,12 +286,34 @@ void AGameStartRoom::NotifyOnClickDispatch(){
 
 
 #include "PathfinderNNExtension/API/PublicInterface/NNPathFinderExtensionApi.h"
-void AGameStartRoom::NotifyNNTrainLaunch(){
-
-    //subscribe receiver
-    if(UNNTrainWidget *widget = GetNNWidget()){
-        NNPathFinderExtensionApi::SubscribeMessageListener(widget);
+void AGameStartRoom::NotifyNNTrainLaunch(FString targetPlugin){
+    
+    DebugHelper::logMessage("GameStartRoom::NNPathFinderExtensionApi::SetTrainingAllowed ", targetPlugin);
+    if(UNNTrainWidget *widget = GetNNWidget(targetPlugin)){
+        //find matching plugin static api.
+        if(Match(targetPlugin, targetPlugin_NNPathFinder)){
+            NNPathFinderExtensionApi::SubscribeMessageListener(widget);
+            NNPathFinderExtensionApi::SetTrainingAllowed();
+            DebugHelper::logMessage("GameStartRoom::NNPathFinderExtensionApi::SetTrainingAllowed");
+        }
+        if(Match(targetPlugin, targetPlugin_NNMovement)){
+            NNMovementApi::SubscribeMessageListener(widget);
+            NNMovementApi::SetTrainingAllowed();
+            DebugHelper::logMessage("GameStartRoom::NNMovementApi::SetTrainingAllowed");
+        }
     }
-    NNPathFinderExtensionApi::SetTrainingAllowed();
+
+        
+    
+
+
+    /*UPROPERTY(EditAnywhere, Category = "NN|PluginName")
+    FString targetPlugin_NNPathFinder = "PATHFINDERNNEXTENSION";
+
+    UPROPERTY(EditAnywhere, Category = "NN|PluginName")
+    FString targetPlugin_NNMovement = "MOVEMENTNNEXTENSION";*/
+
+
+    
    
 }

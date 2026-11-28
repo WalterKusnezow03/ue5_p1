@@ -43,6 +43,7 @@ public:
     ANNCommunicationONNX();
 
     virtual bool NNIsConnected() override;
+    void SetGameStatePaused(bool state) override;
 
 protected:
     virtual void BeginPlay() override;

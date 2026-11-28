@@ -18,7 +18,8 @@ void APythonSocketBase::LaunchPythonProcess(
     FString pluginName, 
     FString pyName, 
     FString pluginNamePython,
-    FString pythonExePath
+    FString pythonExePath,
+    TArray<FString> args
 ){
     if(serverRunning){
         return;
@@ -31,6 +32,7 @@ void APythonSocketBase::LaunchPythonProcess(
         pluginNamePython,
         pythonExePath //pluginname/source/pluginname/Python/path/to/python.bin
     );
+    package.AddAllArguments(args);
     LaunchPythonProcess(package);
 }
 
@@ -159,7 +161,7 @@ void APythonSocketBase::OpenSocket(float deltatime){
         //Restart();
         return;
     }else{
-        DebugHelper::logMessage("APythonSocketBase::SocketConnect Connected!");
+        DebugHelper::logMessage("APythonSocketBase::SocketConnect Connected!", GetPort());
         connected = true;
     }
 }
@@ -178,7 +180,9 @@ void APythonSocketBase::Send(FString message){
     TArray<uint8> Bytes;
     Bytes.Append((uint8*)Converter.Get(), Converter.Length());
 
-    //DebugHelper::logMessage("APythonSocketBase::SendMessage ", message);
+    /*DebugHelper::logMessage(
+        FString::Printf(TEXT("APythonSocketBase::SendMessage %s Port %d"), *message, GetPort())
+    );*/
     Send(Bytes);
 }
 
@@ -295,7 +299,7 @@ void APythonSocketBase::DebugSocketMessage(){
 
 
 
-void APythonSocketBase::SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener){
+void APythonSocketBase::SubscribeMessageListener(INNSocketMessageReceiver *listener){
     if(listener){
         messageDispatcher.Subscribe(listener);
     }

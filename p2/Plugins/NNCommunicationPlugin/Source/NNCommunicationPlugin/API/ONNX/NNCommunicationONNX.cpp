@@ -40,6 +40,12 @@ void ANNCommunicationONNX::BeginPlay(){
 
 }
 
+void ANNCommunicationONNX::SetGameStatePaused(bool state){
+    if(requestHandle){
+        requestHandle->SetGameStatePaused(state);
+    }
+}
+
 void ANNCommunicationONNX::OnBeginPlayLoadModels(){
     //modelTrajectoryLayered.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryLayered));
     //rayModel.LoadModel(FONNXModelsetup(EPolygonSampleType::EMeshedPolygonTrajectoryRayModel));    

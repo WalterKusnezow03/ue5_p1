@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "DebugPlugin/DebugHelper.h"
 
-class PATHFINDERNNEXTENSION_API NNPluginSettings{
+class NNCOMMUNICATIONPLUGIN_API NNPluginSettings{
 
 public:
     static bool UsePythonNN(){

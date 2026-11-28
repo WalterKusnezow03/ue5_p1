@@ -5,10 +5,13 @@
 void NNMovementRequestHandle::BeginPlay(){
     NNRequestHandleBase::BeginPlay();
 
-    float intervall = 0.1f;           // seconds -> 6ms
+    float intervall = MillisToSeconds(100);
+
     int listTrajectoriesmaxSize = 40; //max trajectories
     actorTracker.Setup(intervall, listTrajectoriesmaxSize);
 }
+
+
 
 void NNMovementRequestHandle::OnBeginPlaySetupTask(){
     delete task;

@@ -24,7 +24,7 @@ void ANNPathFinderSocket::MakePathFinderSocketInstance(UWorld* World)
 }
 
 
-#include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "NNCommunicationPlugin/Settings/NNSetting.h"
 
 void ANNCommunicationSocket::OnBeginPlaySetupHandleStructure(){
     requestHandle = new NNRequestHandle();
@@ -48,7 +48,8 @@ void ANNCommunicationSocket::OnBeginPlayLaunchPython(){
         "PathFinderNNExtension", 
         "nnpathfinder_server.py", //local nnpathfinder_server.py, from this plugin
         "NNCommunicationPlugin", //hier ist python installiert.
-        "venv/bin/python"
+        "venv/bin/python",
+        {"PORT_5050"}
     ); 
 }
 

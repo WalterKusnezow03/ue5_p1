@@ -1,10 +1,10 @@
 #pragma once
 #include "CoreMinimal.h"
 
-#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNPathFinderSocketMessageReceiver.h"
+#include "NNCommunicationPlugin/Communication/Connection/base/notify/NNSocketMessageReceiver.h"
 #include "PathfinderNNExtension/API/Handle/PathFinderNNRequestHandleInterface.h"
 #include "PathfinderNNExtension/Interface/PathfinderNNInterface.h"
-#include "PathfinderNNExtension/Settings/NNSetting.h"
+#include "NNCommunicationPlugin/Settings/NNSetting.h"
 #include "PathfinderNNExtension/API/Socket/NNPathFinderSocket.h"
 #include "PathfinderNNExtension/API/ONNX/NNPathFinderONNX.h"
 
@@ -31,7 +31,7 @@ public:
 
     static void SetTrainingAllowed();
 
-    static void SubscribeMessageListener(INNPathFinderSocketMessageReceiver *listener);
+    static void SubscribeMessageListener(INNSocketMessageReceiver *listener);
     
     static void SubscribeHeatMapListener(IPathfinderNNHeatMapReceiver *listener);
 

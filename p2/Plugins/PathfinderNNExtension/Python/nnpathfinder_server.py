@@ -67,7 +67,10 @@ class NNServerPathfinder(nn_server.NNServer):
         self.frameNameResult = "ANNPathFinderSFRES"
         self.frameNameGroundThruth = "ANNPathFinderSFGT"
         self.frameNameNNType = "ANNPathFinderSFNN"
-    
+        self.frameNameBatch = "ANNPathFinderSFB"
+
+    def setupLogName(self):
+        self.logName = "NNServerPathfinder"
 
 
     def GetNet(self):

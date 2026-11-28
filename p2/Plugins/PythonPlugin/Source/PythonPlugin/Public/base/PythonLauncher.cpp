@@ -30,6 +30,8 @@ void APythonLauncher::LaunchPythonProcess(const FPythonSetup &setup){
     //FString Args = FString::Printf(TEXT("\"%s\""), *setup.getPath());
     FString Args = FString::Printf(TEXT("-u \"%s\""), *setup.getPath()); //-u for print flushing into pipe instant
 
+    //not tested!
+    setup.AddAdditionalArgumentsTo(Args);
 
     //check ob script gefunden
     FString ScriptPath = setup.getPath();
